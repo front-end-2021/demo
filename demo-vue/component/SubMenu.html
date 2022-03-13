@@ -1,22 +1,21 @@
-<section class="submenu d-flex align-items-center justify-content-between" style="background: #2a5d78; max-height: 46px;">
+<section class="dnb_sub-menu d-flex align-items-center justify-content-between px-2" style="background: #2a5d78; max-height: 46px;">
     <ul class="horizontal-menu sub-menu d-flex align-items-center list-unstyled mb-0" style="height: 46px;padding-top: 4px;">
         <li v-for="(label, i) in Labels" :key="label">
-            <a class="cursor-pointer d-inline-block fw-bold text-decoration-none ms-2 mx-3" 
-            style="color: #70ccf8;font-size:14px;max-width: 215px;overflow: hidden;">{{label}}</a>
-            <div v-if="i == ActiveIndex"
-            class="arrow-top d-block" style="border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 10px solid white;
-            margin: -11px auto; clear: both; padding-top: 13px;max-width: 20px;"></div>
+            <a class="cursor-pointer d-inline-block fw-bold text-decoration-none ms-0 mx-3 dnb_menu_label" 
+            style="color: #70ccf8;font-size:14px;overflow: hidden;white-space: pre;">{{label}}</a>
+            <span v-if="i == ActiveIndex" class="arrow-top d-block" 
+            style="border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 10px solid white; margin: -11px auto; clear: both; padding-top: 13px;max-width: 20px;"></span>
         </li>
     </ul>
 
 
-    <div id="auswertung" class="px-2" style="position:relative">
-        <ul class="nav navbar-nav" id="submenu-right">
-            <li id="sb_right">
+    <div style="position:relative">
+        <ul class="nav navbar-nav">
+            <li>
                 <a href="#msReportMenu" class="text-white text-decoration-none">{{Evaluation}}</a>
             </li>
         </ul>
-        <div id="msReportMenu" class="msModal1 posAbsolute popReport-position" style="top: 60px; display: none;">
+        <div style="top: 60px; display: none;">
             <div class="md-title md-title-report">
                 <span class="text-title title-info-sub popReport-title">Report</span>
                 <span class="arrow-top1"></span>

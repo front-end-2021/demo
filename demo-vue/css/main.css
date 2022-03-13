@@ -1,0 +1,9 @@
+.dnb_menu_label {max-width: 215px;}
+.dnb_brand-n-user, .dnb_sub-menu {min-width: 830px;}
+
+@media screen and (max-width: 1086px) {
+    .dnb_menu_label {max-width: calc((100vw - 80px) / 7); text-overflow: ellipsis;}
+}
+@media screen and (max-width: 830px) {
+    .dnb_menu_label {max-width: 105px;}
+}
