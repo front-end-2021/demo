@@ -1,4 +1,6 @@
 .dnb_menu_label {max-width: 215px;}
+.dnb_menu_label:hover {cursor: pointer; color: white !important;}
+
 .dnb_brand-n-user, .dnb_sub-menu {min-width: 830px;}
 
 @media screen and (max-width: 1086px) {

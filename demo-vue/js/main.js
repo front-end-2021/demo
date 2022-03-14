@@ -1,6 +1,5 @@
-var RoadmapApp;
 $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
-    RoadmapApp = new Vue({
+    window.RoadmapApp = new Vue({
         el: '#RoadmapApp',
         template: template,
         data: {
@@ -14,10 +13,10 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
             this.getData();
 
             $(window).resize(function (e) {
-                console.log('window resize');
+                console.log('window resize', e);
             });
             this.$nextTick(function () {
-                console.log('created DOM')
+                console.log('nextTick created DOM')
             });
         },
         mounted() {
@@ -34,8 +33,10 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
             }
         },
         updated() {
+            console.log('updated');
+
             this.$nextTick(function () {
-                console.log('updated DOM')
+                console.log('nextTick updated DOM');
             });
         },
         methods: {            
@@ -47,7 +48,7 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
                     RoadmapApp.Actions = msRoadmap.getService().getActions();
                 }, 2000);
             },
-            getElementDetail(id, typeId){
+            getElementDetail(id, typeId) {
                 console.log('getElementDetail', id, typeId);
 
             }
