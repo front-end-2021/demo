@@ -3,6 +3,12 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
         el: '#RoadmapApp',
         template: template,
         data: {
+            Cache: {
+                TimeRangeTypeVal: -1,
+                TimeRangeStart: null,
+                TimeRangeEnd: null
+
+            },
             Maingoals: [],
             Subgoals: [],
             Actions: []

@@ -1,3 +1,18 @@
-<section>
-    
+<section class="dnb-filter-wrap rounded m-2 p-2" style="border:1px solid #e7e7e7;">
+    <div class="mb-3">
+        <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+            class="btn dropdown-toggle text-white" style="background-color: #38baf8;">{{ButtonShowHide}}
+        </button>
+    </div>
+    <div class="dnb-time_range-wrap d-flex align-items-center">
+        <div style="width: 111px;max-width: 111px;">
+            <span v-bind:id="TimeRangeId.TypeId" ></span>
+        </div>
+        <div class="d-inline-flex align-items-center ms-3">
+            <span>Start</span>
+            <span style="width: 120px;">
+                <input v-bind:id="TimeRangeId.StartId" />
+            </span>
+        </div>
+    </div>
 </section>
