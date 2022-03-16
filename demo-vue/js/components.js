@@ -86,8 +86,13 @@ msRoadmap.View = (function () {
                     ];
                     
                     return {
+                        Timerange: {
+                            TypeValue: -1,
+                            Start: null,
+                            End: null,
+                            TypeSource: trTypeSrc
+                        },
                         IsShow: true,
-                        TimeRangeTypeSrc: trTypeSrc,
                         Criterials: [],
                         SelectionSources: [],
                     }
@@ -105,22 +110,32 @@ msRoadmap.View = (function () {
                         if(this.IsShow) return 'Hide Filter';
                         return 'Show Filter';
                     },
-                    TimeRange() {
-                        const typeVal = this.$root && this.$root.Cache ? this.$root.Cache.TimeRangeTypeVal : -1;
-                        const start = this.$root && this.$root.Cache ? this.$root.Cache.TimeRangeStart : null;
-                        const end = this.$root && this.$root.Cache ? this.$root.Cache.TimeRangeEnd : null;
-                        return {
-                            TypeVal: typeVal, Start: start, End: end
-                        }
-                    }
                  },
                 mounted() {
                     this.getData();
-                    this.getKendoTimeRangeType();
-                    this.getKendoTimeRangeStart(this.$root);
-                    this.getKendoTimeRangeEnd(this.$root);
+                    this.$nextTick(() => {
+                        this.getKendoTimeRangeType(this.Timerange);
+                        this.getKendoTimeRangeStart(this.Timerange);
+                        this.getKendoTimeRangeEnd(this.Timerange);
+                      });
+                },
+                watch: {
+                    'Timerange.TypeValue'(newCache, oldCache){
+                        console.log(`(mFilter) Timerange.TypeValue: ${oldCache} => ${newCache}`);
+                    },
+                    'Timerange.Start'(newCache, oldCache){
+                        console.log(`(mFilter) Timerange.Start: ${oldCache} => ${newCache}`);
+                    },
+                    'Timerange.End'(newCache, oldCache){
+                        console.log(`(mFilter) Timerange.End: ${oldCache} => ${newCache}`);
+                    },
                 },
                 methods: {
+                    callService(){
+                        const timerange = JSON.parse((JSON.stringify(this.Timerange)));
+
+                        console.log(`(mFilter) call Service: \nTime Range = ${JSON.stringify(timerange)}`);
+                    },
                     getData(){
                         const _this = this;
                         setTimeout(function() {
@@ -134,82 +149,60 @@ msRoadmap.View = (function () {
                         }, 1500);
 
                         function testUpdateTimeRange(serverData){
-                            var datepicker = _this.getKendoTimeRangeStart(_this.$root);
+                            var datepicker = _this.getKendoTimeRangeStart();
                             if(datepicker) {
                                 datepicker.value(serverData.Start);
                                 datepicker.trigger("change");
                             }
-                            datepicker = _this.getKendoTimeRangeEnd(_this.$root);
+                            datepicker = _this.getKendoTimeRangeEnd();
                             if(datepicker) {
                                 datepicker.value(serverData.End);
                                 datepicker.trigger("change");
                             }
 
-                            const trTypeSrc = JSON.parse(JSON.stringify(_this.TimeRangeTypeSrc)).concat(serverData.TimeRangeSrc);
-                            const drp = _this.getKendoTimeRangeType();
-                            if(drp) {
-                                drp.setDataSource(trTypeSrc);
-                                drp.refresh();
-                            }
-                            _this.TimeRangeTypeSrc = trTypeSrc;
+                            const trTypeSrc = JSON.parse(JSON.stringify(_this.Timerange.TypeSource)).concat(serverData.TimeRangeSrc);
+                            _this.updateTimerangeTypeSource(trTypeSrc);
 
-                            console.log(_this.TimeRange)
+                            console.log(_this.Timerange)
                         }
                     },
-                    getKendoTimeRangeType(){
+                    updateTimerangeTypeSource(src){
+                        const drp = this.getKendoTimeRangeType();
+                        if(drp) {
+                            drp.setDataSource(src);
+                            drp.refresh();
+                        }
+                        this.Timerange.TypeSource = src;
+
+                    },
+                    getKendoTimeRangeType(timerange){
                         const trId = this.TimeRangeId.TypeId;
                         const trg = this.$el.querySelector(`#${trId}`);
-                        if(trg) {
-                            var drp = $(trg).data("kendoDropDownList");
-                            if(!drp) {
-                                const trTypeSrc = this.TimeRangeTypeSrc;
-                                const val = this.TimeRange.TypeVal;
-                                $(trg).kendoDropDownList({
-                                    dataTextField: "Name",
-                                    dataValueField: "Id",
-                                    dataSource: trTypeSrc,
-                                    value: val,
-                                    change: function(e) {
-                                        var value = this.value();
-                                        (!!RoadmapApp) && (RoadmapApp.Cache.TimeRangeTypeVal = value);
-                                      }
-                                });
-                                drp = $(trg).data("kendoDropDownList");
-                            }
-                            return drp;
-                        }
-                        
-                    },
-                    getKendoTimeRangeStart(root){
+                        const onChange = timerange ? function(value){
+                            timerange.TypeValue = value;
+                        } : null;
+                        const src = timerange ? timerange.TypeSource : [];
+                        const val = timerange ? timerange.TypeValue : 0;
+                        return this.$root.getKendoDropdownList(trg, onChange, src, val);                        
+                    },                    
+                    getKendoTimeRangeStart(timerange){
                         const trId = this.TimeRangeId.StartId;
                         const trg = this.$el.querySelector(`#${trId}`);
-                        return this.getKendoTimeRange(trg, function(value){
-                            (root && root.Cache) && (root.Cache.TimeRangeStart = value);
-                        }, this.TimeRange.Start);
+                        const onChange = timerange ? function(value){
+                            timerange.Start = value;
+                        } : null;
+                        const start = timerange ? timerange.Start : null;
+                        return this.$root.getKendoTimeRange(trg, onChange, start);
                     },
-                    getKendoTimeRangeEnd(root){
+                    getKendoTimeRangeEnd(timerange){
                         const trId = this.TimeRangeId.EndId;
                         const trg = this.$el.querySelector(`#${trId}`);
-                        return this.getKendoTimeRange(trg, function(value){
-                            (root && root.Cache) && (root.Cache.TimeRangeEnd = value);
-                        }, this.TimeRange.End);
+                        const onChange = timerange ? function(value){
+                            timerange.End = value;
+                        } : null;
+                        const end = timerange ? timerange.End : null;
+                        return this.$root.getKendoTimeRange(trg, onChange, end);
                     },
-                    getKendoTimeRange(trg, onChange, date){
-                        if(trg) {
-                            var dp = $(trg).data("kendoDatePicker");
-                            if(!dp) {
-                                $(trg).kendoDatePicker({
-                                    value: date, //format: "yyyy/MM/dd",
-                                    change: function() {
-                                        var value = this.value();
-                                        onChange(value);
-                                    }
-                                });
-                                dp = $(trg).data("kendoDatePicker");
-                            }
-                            return dp;
-                        }
-                    }
                 }
             });
         });

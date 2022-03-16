@@ -2,18 +2,13 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
     window.RoadmapApp = new Vue({
         el: '#RoadmapApp',
         template: template,
-        data: {
-            Cache: {
-                TimeRangeTypeVal: -1,
-                TimeRangeStart: null,
-                TimeRangeEnd: null
-            },
+        data: {            
             Maingoals: [],
             Subgoals: [],
             Actions: []
         },
         created() {
-            console.log('created')
+            console.log('RoadmapApp created')
 
             this.getData();
 
@@ -25,23 +20,12 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
             });
         },
         mounted() {
-            console.log('mounted')
+            console.log('RoadmapApp mounted')
         },
         computed: {
-            IsSharepoint() {
-                
-            },
         }, 
         watch: {
-            'Cache.TimeRangeStart'(newCache, oldCache){
-                console.log(`Cache.TimeRangeStart: ${oldCache} => ${newCache}`);
-            },
-            'Cache.TimeRangeEnd'(newCache, oldCache){
-                console.log(`Cache.TimeRangeEnd: ${oldCache} => ${newCache}`);
-            },
-            'Cache.TimeRangeTypeVal'(newCache, oldCache){
-                console.log(`Cache.TimeRangeTypeVal: ${oldCache} => ${newCache}`);
-            },
+            
         },
         provide() {
             return {
@@ -49,10 +33,10 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
             }
         },
         updated() {
-            console.log('updated');
+            console.log('RoadmapApp updated');
 
             this.$nextTick(function () {
-                console.log('nextTick updated DOM');
+                console.log('RoadmapApp nextTick updated DOM');
             });
         },
         methods: {            
@@ -63,6 +47,41 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
                     RoadmapApp.Subgoals = msRoadmap.getService().getSubgoals();
                     RoadmapApp.Actions = msRoadmap.getService().getActions();
                 }, 2000);
+            },
+            getKendoDropdownList(trg, onchange, src, val){
+                if(trg) {
+                    var drp = $(trg).data("kendoDropDownList");
+                    if(!drp) {
+                        $(trg).kendoDropDownList({
+                            dataTextField: "Name",
+                            dataValueField: "Id",
+                            dataSource: src,
+                            value: val,
+                            change: function(e) {
+                                var value = this.value();
+                                if(typeof onchange == 'function') onchange(value);
+                              }
+                        });
+                        drp = $(trg).data("kendoDropDownList");
+                    }
+                    return drp;
+                }
+            },
+            getKendoTimeRange(trg, onChange, date){
+                if(trg) {
+                    var dp = $(trg).data("kendoDatePicker");
+                    if(!dp) {
+                        $(trg).kendoDatePicker({
+                            value: date, //format: "yyyy/MM/dd",
+                            change: function() {
+                                var value = this.value();
+                                onChange(value);
+                            }
+                        });
+                        dp = $(trg).data("kendoDatePicker");
+                    }
+                    return dp;
+                }
             },
             getElementDetail(id, typeId) {
                 console.log('getElementDetail', id, typeId);
