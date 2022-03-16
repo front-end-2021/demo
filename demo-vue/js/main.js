@@ -7,7 +7,6 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
                 TimeRangeTypeVal: -1,
                 TimeRangeStart: null,
                 TimeRangeEnd: null
-
             },
             Maingoals: [],
             Subgoals: [],
@@ -32,7 +31,18 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
             IsSharepoint() {
                 
             },
-        }, //watch: {},
+        }, 
+        watch: {
+            'Cache.TimeRangeStart'(newCache, oldCache){
+                console.log(`Cache.TimeRangeStart: ${oldCache} => ${newCache}`);
+            },
+            'Cache.TimeRangeEnd'(newCache, oldCache){
+                console.log(`Cache.TimeRangeEnd: ${oldCache} => ${newCache}`);
+            },
+            'Cache.TimeRangeTypeVal'(newCache, oldCache){
+                console.log(`Cache.TimeRangeTypeVal: ${oldCache} => ${newCache}`);
+            },
+        },
         provide() {
             return {
                 getElementDetail: this.getElementDetail,

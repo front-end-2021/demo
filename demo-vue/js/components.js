@@ -80,17 +80,14 @@ msRoadmap.View = (function () {
                 template: template,
              //   props: ["subFilter"],
                 data: () => {
-                    const timeRangeTypeSrc = [
+                    const trTypeSrc = [
                         {Id: 0, Name: 'Show all'}, 
                         {Id: -1, Name: 'individual'}
                     ];
-
+                    
                     return {
                         IsShow: true,
-                        TimeRangeStart: null,
-                        TimeRangeEnd: null,
-                        TimeRangeTypeVal: -1,
-                        TimeRangeTypeSrc: timeRangeTypeSrc,
+                        TimeRangeTypeSrc: trTypeSrc,
                         Criterials: [],
                         SelectionSources: [],
                     }
@@ -108,11 +105,20 @@ msRoadmap.View = (function () {
                         if(this.IsShow) return 'Hide Filter';
                         return 'Show Filter';
                     },
+                    TimeRange() {
+                        const typeVal = this.$root && this.$root.Cache ? this.$root.Cache.TimeRangeTypeVal : -1;
+                        const start = this.$root && this.$root.Cache ? this.$root.Cache.TimeRangeStart : null;
+                        const end = this.$root && this.$root.Cache ? this.$root.Cache.TimeRangeEnd : null;
+                        return {
+                            TypeVal: typeVal, Start: start, End: end
+                        }
+                    }
                  },
                 mounted() {
                     this.getData();
                     this.getKendoTimeRangeType();
-                    this.getKendoTimeRangeStart();
+                    this.getKendoTimeRangeStart(this.$root);
+                    this.getKendoTimeRangeEnd(this.$root);
                 },
                 methods: {
                     getData(){
@@ -120,22 +126,35 @@ msRoadmap.View = (function () {
                         setTimeout(function() {
                             const serverData = {
                                 TimeRangeSrc: [{Id: 2022, Name: "2022"}],
-                                Start: new Date(2022, 0, 01)
+                                Start: new Date(2022, 0, 01), 
+                                End: new Date(2024, 2, 01)
                             }
-                            const datepicker = _this.getKendoTimeRangeStart();
+                            testUpdateTimeRange(serverData);
+                            
+                        }, 1500);
+
+                        function testUpdateTimeRange(serverData){
+                            var datepicker = _this.getKendoTimeRangeStart(_this.$root);
                             if(datepicker) {
                                 datepicker.value(serverData.Start);
                                 datepicker.trigger("change");
                             }
+                            datepicker = _this.getKendoTimeRangeEnd(_this.$root);
+                            if(datepicker) {
+                                datepicker.value(serverData.End);
+                                datepicker.trigger("change");
+                            }
 
-                            var timeRangeTypeSrc = JSON.parse(JSON.stringify(_this.TimeRangeTypeSrc)).concat(serverData.TimeRangeSrc);
+                            const trTypeSrc = JSON.parse(JSON.stringify(_this.TimeRangeTypeSrc)).concat(serverData.TimeRangeSrc);
                             const drp = _this.getKendoTimeRangeType();
                             if(drp) {
-                                drp.setDataSource(timeRangeTypeSrc);
+                                drp.setDataSource(trTypeSrc);
                                 drp.refresh();
                             }
-                            _this.TimeRangeTypeSrc = timeRangeTypeSrc;
-                        }, 1500);
+                            _this.TimeRangeTypeSrc = trTypeSrc;
+
+                            console.log(_this.TimeRange)
+                        }
                     },
                     getKendoTimeRangeType(){
                         const trId = this.TimeRangeId.TypeId;
@@ -143,16 +162,16 @@ msRoadmap.View = (function () {
                         if(trg) {
                             var drp = $(trg).data("kendoDropDownList");
                             if(!drp) {
-                                const src = this.TimeRangeTypeSrc;
-                                const val = this.TimeRangeTypeVal;
+                                const trTypeSrc = this.TimeRangeTypeSrc;
+                                const val = this.TimeRange.TypeVal;
                                 $(trg).kendoDropDownList({
                                     dataTextField: "Name",
                                     dataValueField: "Id",
-                                    dataSource: src,
+                                    dataSource: trTypeSrc,
                                     value: val,
                                     change: function(e) {
                                         var value = this.value();
-                                        RoadmapApp.Cache.TimeRangeTypeVal = value;
+                                        (!!RoadmapApp) && (RoadmapApp.Cache.TimeRangeTypeVal = value);
                                       }
                                 });
                                 drp = $(trg).data("kendoDropDownList");
@@ -161,18 +180,29 @@ msRoadmap.View = (function () {
                         }
                         
                     },
-                    getKendoTimeRangeStart(){
+                    getKendoTimeRangeStart(root){
                         const trId = this.TimeRangeId.StartId;
                         const trg = this.$el.querySelector(`#${trId}`);
+                        return this.getKendoTimeRange(trg, function(value){
+                            (root && root.Cache) && (root.Cache.TimeRangeStart = value);
+                        }, this.TimeRange.Start);
+                    },
+                    getKendoTimeRangeEnd(root){
+                        const trId = this.TimeRangeId.EndId;
+                        const trg = this.$el.querySelector(`#${trId}`);
+                        return this.getKendoTimeRange(trg, function(value){
+                            (root && root.Cache) && (root.Cache.TimeRangeEnd = value);
+                        }, this.TimeRange.End);
+                    },
+                    getKendoTimeRange(trg, onChange, date){
                         if(trg) {
                             var dp = $(trg).data("kendoDatePicker");
                             if(!dp) {
-                                const s = this.TimeRangeStart;
                                 $(trg).kendoDatePicker({
-                                    value: s, //format: "yyyy/MM/dd",
+                                    value: date, //format: "yyyy/MM/dd",
                                     change: function() {
                                         var value = this.value();
-                                        RoadmapApp.Cache.TimeRangeStart = value;
+                                        onChange(value);
                                     }
                                 });
                                 dp = $(trg).data("kendoDatePicker");
