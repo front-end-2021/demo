@@ -117,7 +117,7 @@ msRoadmap.View = (function () {
                         this.getKendoTimeRangeType(this.Timerange);
                         this.getKendoTimeRangeStart(this.Timerange);
                         this.getKendoTimeRangeEnd(this.Timerange);
-                      });
+                    });
                 },
                 watch: {
                     'Timerange.TypeValue'(newCache, oldCache){

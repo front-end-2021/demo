@@ -5,7 +5,10 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
         data: {            
             Maingoals: [],
             Subgoals: [],
-            Actions: []
+            Actions: [],
+            Account: {
+                Email: 'dainb@kloon.vn'
+            }
         },
         created() {
             console.log('RoadmapApp created')
@@ -20,7 +23,30 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
             });
         },
         mounted() {
-            console.log('RoadmapApp mounted')
+            console.log('RoadmapApp mounted');
+
+            this.$nextTick(() => {
+                console.log('RoadmapApp mounted DOM')
+
+                this.getKendoWindow('#dialog', this.$el, 
+                {
+                    activate: function() {
+                        const account = JSON.parse(JSON.stringify(RoadmapApp.Account));
+                        const $body = this.element.find('iframe').contents();
+                        const $inputEmail = $body.find((`input[type=email][name=email]`));
+                        $inputEmail.val(account.Email);
+                        
+                        const $inputPass = $body.find((`input[type=password][name=pass]`));
+                        
+                        const $btnLogin = $body.find(`input.login100-form-btn[type=submit]`);
+                        $btnLogin.click(function(e){
+                            console.log('window dialog btnLogin click')
+                            console.log($inputEmail.val(), $inputPass.val())
+
+                        });
+                    }
+                }).open();
+            });
         },
         computed: {
         }, 
@@ -47,6 +73,30 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
                     RoadmapApp.Subgoals = msRoadmap.getService().getSubgoals();
                     RoadmapApp.Actions = msRoadmap.getService().getActions();
                 }, 2000);
+            },
+            getKendoWindow(selector, this_$el, option){
+                this_$el = this_$el || this.$el;
+                const $window = $(this_$el.querySelector(selector));
+                var kWindow = $window.data("kendoWindow");
+                if(!kWindow) {
+                    option = option || {};
+                    option = Object.assign({
+                        title: 'Login form',
+                        content: {
+                            //url: "https://colorlib.com/etc/lf/Login_v18/index.html"
+                            url: "./login/Login V18.html", iframe: true
+                        },
+                        modal:true, visible: false,
+                        animation: {
+                            close: { effects: "fade:out" }
+                        },
+                        width: 900, height: 768
+                    }, option);
+                    $window.kendoWindow(option);
+                    kWindow = $window.data("kendoWindow");
+                    kWindow.center();
+                };
+                return kWindow;
             },
             getKendoDropdownList(trg, onchange, src, val){
                 if(trg) {
