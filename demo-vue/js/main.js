@@ -32,7 +32,8 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
                 {
                     activate: function() {
                         const account = JSON.parse(JSON.stringify(RoadmapApp.Account));
-                        const $body = this.element.find('iframe').contents();
+                        const thisWindow = this;
+                        const $body = thisWindow.element.find('iframe').contents();
                         const $inputEmail = $body.find((`input[type=email][name=email]`));
                         $inputEmail.val(account.Email);
                         
@@ -41,9 +42,16 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
                         const $btnLogin = $body.find(`input.login100-form-btn[type=submit]`);
                         $btnLogin.click(function(e){
                             console.log('window dialog btnLogin click')
-                            console.log($inputEmail.val(), $inputPass.val())
+                            console.log(thisWindow, $inputEmail.val(), $inputPass.val())
 
                         });
+                    }, 
+                    close: function(e){
+                        const account = JSON.parse(JSON.stringify(RoadmapApp.Account));
+                        const $body = this.element.find('iframe').contents();
+                        const $inputEmail = $body.find((`input[type=email][name=email]`));
+                        const $inputPass = $body.find((`input[type=password][name=pass]`));
+                        console.log($inputEmail.val(), $inputPass.val())
                     }
                 }).open();
             });
