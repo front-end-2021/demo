@@ -9,34 +9,36 @@ msActionPlanView = (function(){
                 data: () => {
                     return {
                         IsExpand: true,
-                        Subgoals: [],
                         
                     };
                 },
                 computed: { 
-
+                    Subgoals(){
+                        const maingoalId = this.item.Id;
+                        const lstSub = this.$root.ListSubgoal.filter(s => s.ParentId == maingoalId);
+                        return JSON.parse(JSON.stringify(lstSub));
+                    }
+                },
+                watch: {
+                    Subgoals(){
+                        console.log('ViewMainGoal watch Subgoals')
+                    }
                 },
                 created() {
-                    console.log('ViewMainGoal created')
+                    console.log(`ViewMainGoal ${this.item.Name} created`)
                 },
                 mounted() {
-                    console.log('ViewMainGoal mounted');
-                    this.getData();
+                    console.log(`ViewMainGoal ${this.item.Name} mounted`);
+                },                
+                updated() {
+                    console.log(`ViewMainGoal ${this.item.Name} updated`);
                 },
                 methods: {
-                    getData(){
-                        const _this = this;
-                        const lstSub = _this.$root.Subgoals.filter(s => s.ParentId == _this.item.Id);
-                        _this.Subgoals = lstSub;
-                    },
                     onClickExpandCollapse(e){
-                        console.log('ViewMainGoal onClickExpandCollapse', e.target)
                         this.IsExpand = !this.IsExpand;
                     },
                     onMoveCallback(evt, originalEvent){
-                        console.log(evt)
                         ActionPlanApp.DragEvent = evt;
-                        console.log(typeof ActionPlanApp.DragEvent)
                     },
                     handleSubgoalsChange(e) {
                         if(e.moved) {       // order trong maingoal
@@ -49,8 +51,7 @@ msActionPlanView = (function(){
                         if(e.removed) {       // order khac maingoal remove maingoal 1
                             this.updateDraggMIndex(e.removed);
                         }
-        
-                        console.log(`handleSubgoalsChange:`, e);
+                        //console.log(`handleSubgoalsChange:`, e);
                     },
                     updateDraggMIndexInsideMaingoal(eAction){
                         const iFrom = eAction.oldIndex;
@@ -60,22 +61,23 @@ msActionPlanView = (function(){
                     },
                     updateDraggMIndex(eAction){
                         const iFrom = eAction.oldIndex;
-                        const item = eAction.element;
+                        const element = eAction.element;
                         var iTo;
 
                         if(ActionPlanApp.DragEvent != null && typeof ActionPlanApp.DragEvent == 'object') {
                             iTo = ActionPlanApp.DragEvent.iTo;
-                            const groupFrom = ActionPlanApp.DragEvent.from;
                             const groupTo = ActionPlanApp.DragEvent.to;
 
-                            const mainDragDropFrom = groupFrom.className.split(' ').find(cls => cls.includes('mainDragDrop'));
-                            const mainFrom = mainDragDropFrom ? mainDragDropFrom.replace('mainDragDrop', '') : '';
                             const mainDragDropTo = groupTo.className.split(' ').find(cls => cls.includes('mainDragDrop'));
                             const mainTo = mainDragDropTo ? mainDragDropTo.replace('mainDragDrop', '') : '';
-                            console.log(mainFrom, mainTo, iFrom, iTo, item);
+                            //console.log(`mainTo: ${mainTo} \niFrom: ${iFrom} \niTo: ${iTo}`);
 
-                            ActionPlanApp.updateSubgoal(item.Id, {ParentId : mainTo});
-                        }                        
+                            ActionPlanApp.updateSubgoalToMain(element.Id, {
+                                ParentId : mainTo, 
+                                IFrom: iFrom, ITo: iTo
+                            });
+                            ActionPlanApp.DragEvent = null;
+                        }
                     },
                     addDraggIndexTo(iTo){
                         if(ActionPlanApp.DragEvent != null && typeof ActionPlanApp.DragEvent == 'object') {
@@ -103,11 +105,14 @@ msActionPlanView = (function(){
                     
                 },
                 created() {
-                    console.log('ViewSubGoal created')
+                    console.log(`ViewSubGoal ${this.item.Name} created`)
                 },
                 mounted() {
-                    console.log('ViewSubGoal mounted');
+                    console.log(`ViewSubGoal ${this.item.Name} mounted`);
                     this.getData();
+                },
+                updated() {
+                    console.log(`ViewSubGoal ${this.item.Name} updated`);
                 },
                 methods: {
                     getData(){

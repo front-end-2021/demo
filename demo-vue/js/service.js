@@ -9,11 +9,20 @@ const msRoadmap = {
                 {Id: '5cab2f37-f50e-3b3e-8c1f-a88a75284ea9', TypeId: 1, Name: 'Main goal 5', MIndex: 5}
             ];
         }
-        function getSubgoals () {
+        function getSubgoals (times) {
+            var index = times ? 1 + times : 1;
             return [
-                {Id: '1ee4e327-9c06-4bbb-9c72-86cc0f95954d', TypeId: 2, Name: 'Main 1 / Sub goal 1', MIndex: 1, ParentId: '5cab2f37-f50e-4b3e-8c4f-a88a75284ea5'},
-                {Id: '1ee4e327-9c06-4bbb-9c72-86cc0f9595fd', TypeId: 2, Name: 'Main 1 /Sub goal 2', MIndex: 2, ParentId: '5cab2f37-f50e-4b3e-8c4f-a88a75284ea5'},
-                {Id: '1ee4e327-9c06-3bbb-9c72-86cc0f9595fd', TypeId: 2, Name: 'Main 5 /Sub goal 3', MIndex: 3, ParentId: '5cab2f37-f50e-3b3e-8c1f-a88a75284ea9'}
+                {Id: '1ee4e327-9c06-4bbb-9c72-86cc0f95954d', TypeId: 2, Name: 'Main 1 / Sub goal 1', 
+                    MIndex: index, ParentId: '5cab2f37-f50e-4b3e-8c4f-a88a75284ea5'},
+                {Id: '1ee4e327-9c06-4bbb-9c72-86cc0f9595fd', TypeId: 2, Name: 'Main 1 /Sub goal 2', 
+                    MIndex: !times ? index + 1 : index + 2, ParentId: '5cab2f37-f50e-4b3e-8c4f-a88a75284ea5'},
+                {Id: '1ee4e327-9c06-4bbb-9c72-86cc0f95959d', TypeId: 2, Name: 'Main 1 / Sub goal 3', 
+                    MIndex: !times ? index + 2 : index + 1, ParentId: '5cab2f37-f50e-4b3e-8c4f-a88a75284ea5'},
+
+                {Id: '1ee4e327-9c06-9bbb-9c72-86cc0f9595fd', TypeId: 2, Name: 'Main 5 /Sub goal 4', 
+                    MIndex: 6, ParentId: '5cab2f37-f50e-3b3e-8c1f-a88a75284ea9'},
+                {Id: '1ee9e327-9c06-3bbb-9c72-86cc0f9595fd', TypeId: 2, Name: 'Main 5 /Sub goal 5', 
+                    MIndex: 7, ParentId: '5cab2f37-f50e-3b3e-8c1f-a88a75284ea9'}
             ];
         }
         function getActions () {

@@ -12,7 +12,7 @@
                            :move="onMoveCallback"
                            @change="handleSubgoalsChange">
                     <ViewSubGoal v-for="sub in Subgoals" 
-                                 :key="'id-'+sub.Id+'-mindex-'+sub.MIndex" 
+                                 :key="'id-'+sub.Id" 
                                  :item="sub" />
                 </draggable>
             </div>
