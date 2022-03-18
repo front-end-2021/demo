@@ -13,8 +13,8 @@
     
     <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2022.1.301/styles/kendo.default-v2.min.css"/>
 
-    <link href="https://raw.githubusercontent.com/front-end-2021/demo/main/demo-vue/css/main.css" rel="stylesheet" />
-    <!-- <link href="../css/main.css" rel="stylesheet" /> -->
+    <!-- Use for dev -->
+    <link href="../css/main.css" rel="stylesheet" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- <script src="../js/libs/jquery.min.js"></script> -->
@@ -32,6 +32,19 @@
     <script src="//cdn.jsdelivr.net/npm/sortablejs@1.8.4/Sortable.min.js"></script>
     <!-- CDNJS :: Vue.Draggable (https://cdnjs.com/) -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.20.0/vuedraggable.umd.min.js"></script>
+    <style>
+        .dnb_menu_label {max-width: 215px;}
+        .dnb_menu_label:hover {cursor: pointer; color: white !important;}
+
+        .dnb_brand-n-user, .dnb_sub-menu {min-width: 830px;}
+
+        @media screen and (max-width: 1086px) {
+            .dnb_menu_label {max-width: calc((100vw - 80px) / 7); text-overflow: ellipsis;}
+        }
+        @media screen and (max-width: 830px) {
+            .dnb_menu_label {max-width: 105px;}
+        }
+    </style>
 
 </head>
 
@@ -41,15 +54,17 @@
     <!-- <script src="../js/service.js"></script>
     <script src="../js/components.js"></script>
     <script src="../js/main.js"></script> -->
+
+    <!-- Release 1.0 -->
     <script type="application/javascript">
 
-        <!-- Services -->
+        //Services
         const msRoadmap={getService:function(){return{getMaingoals:function(){return[{Id:"5cab2f37-f50e-4b3e-8c4f-a88a75284ea5",TypeId:1,Name:"Main goal 1",MIndex:1},{Id:"5cab2f37-f50e-4b3e-8c4f-a88a75284ea9",TypeId:1,Name:"Main goal 2",MIndex:2},{Id:"5cab2f37-f50e-1b3e-8c3f-a88a75284ea9",TypeId:1,Name:"Main goal 3",MIndex:3},{Id:"5cab2f37-f50e-2b3e-8c2f-a88a75284ea9",TypeId:1,Name:"Main goal 4",MIndex:4},{Id:"5cab2f37-f50e-3b3e-8c1f-a88a75284ea9",TypeId:1,Name:"Main goal 5",MIndex:5}]},getSubgoals:function(e){var a=e?1+e:1;return[{Id:"1ee4e327-9c06-4bbb-9c72-86cc0f95954d",TypeId:2,Name:"Main 1 / Sub goal 1",MIndex:a,ParentId:"5cab2f37-f50e-4b3e-8c4f-a88a75284ea5"},{Id:"1ee4e327-9c06-4bbb-9c72-86cc0f9595fd",TypeId:2,Name:"Main 1 /Sub goal 2",MIndex:e?a+2:a+1,ParentId:"5cab2f37-f50e-4b3e-8c4f-a88a75284ea5"},{Id:"1ee4e327-9c06-4bbb-9c72-86cc0f95959d",TypeId:2,Name:"Main 1 / Sub goal 3",MIndex:e?a+1:a+2,ParentId:"5cab2f37-f50e-4b3e-8c4f-a88a75284ea5"},{Id:"1ee4e327-9c06-9bbb-9c72-86cc0f9595fd",TypeId:2,Name:"Main 5 /Sub goal 4",MIndex:6,ParentId:"5cab2f37-f50e-3b3e-8c1f-a88a75284ea9"},{Id:"1ee9e327-9c06-3bbb-9c72-86cc0f9595fd",TypeId:2,Name:"Main 5 /Sub goal 5",MIndex:7,ParentId:"5cab2f37-f50e-3b3e-8c1f-a88a75284ea9"}]},getActions:function(){return[{Id:"e24ef4fb-b166-4afa-95e5-37ade8cea728",TypeId:3,Name:"Main 1 / Sub goal 1 / Action 1",MIndex:1,ParentId:"1ee4e327-9c06-4bbb-9c72-86cc0f95954d"},{Id:"ecfc2c7a-b096-4fb0-977a-8152b1d1661a",TypeId:3,Name:"Main 1 / Sub goal 2 / Action 2",MIndex:2,ParentId:"1ee4e327-9c06-4bbb-9c72-86cc0f9595fd"}]}}}};
 
-        <!-- Components -->
+        //Components
         msRoadmap.View=function(){const e="https://raw.githubusercontent.com/front-end-2021/demo/main/demo-vue/component";function t(t,n){var a=e;return n&&Array.isArray(n)&&n.forEach(function(e){a+=`/${e}`}),`${a}/${t}`}return Vue.component("BrandAndUser",e=>{$.get(t("BrandAndUser.html"),t=>{e({template:t,data:()=>({LblProject:"Project",LblStrategy:"Strategy",Projects:[],Strategies:[],ActivePrj:-1,ActiveStrg:-1}),computed:{DisplayProject(){const e=this.ActivePrj;return this.Projects.find(t=>t.Id==e)||{Name:"..."}},DisplayStrategy(){const e=this.ActiveStrg;return this.Strategies.find(t=>t.Id==e)||{Name:"..."}}},mounted(){this.getData()},methods:{getData(){const e=this;setTimeout(function(){e.LblProject="Projekt",e.LblStrategy="Strategie",e.Projects=[{Id:62811,Name:"Roadmap tick Label"}],e.Strategies=[{Id:65603,Name:"Marketingstrategie"}],e.ActivePrj=62811,e.ActiveStrg=65603},2500)}}})})}),Vue.component("SubMenu",e=>{$.get(t("SubMenu.html"),t=>{e({template:t,data:()=>({Labels:["..."],ActiveIndex:-1,Evaluation:"Evaluation"}),computed:{},mounted(){this.getData()},methods:{getData(){const e=this;setTimeout(function(){e.Labels=["Markt Marktsegmentstrategie","Teilmarkt / Produktstrategie","Massnahmenplan","Marketingmix / Einsatzplanung","Roadmap","Team Board","Dashboard"],e.ActiveIndex=3,e.Evaluation="Auswertung"},1e3)}}})})}),Vue.component("mFilter",e=>{$.get(t("Filter.html"),t=>{e({template:t,data:()=>{return{Timerange:{TypeValue:-1,Start:null,End:null,TypeSource:[{Id:0,Name:"Show all"},{Id:-1,Name:"individual"}]},IsShow:!0,Criterials:[],SelectionSources:[]}},computed:{TimeRangeId(){const e=Date.now();return{TypeId:"dnbTimeRangeType"+e,StartId:"dnbTimeRangeStart"+e,EndId:"dnbTimeRangeEnd"+e}},ButtonShowHide(){return this.IsShow?"Hide Filter":"Show Filter"}},mounted(){this.getData(),this.$nextTick(()=>{this.getKendoTimeRangeType(this.Timerange),this.getKendoTimeRangeStart(this.Timerange),this.getKendoTimeRangeEnd(this.Timerange)})},watch:{"Timerange.TypeValue"(e,t){console.log(`(mFilter) Timerange.TypeValue: ${t} => ${e}`)},"Timerange.Start"(e,t){console.log(`(mFilter) Timerange.Start: ${t} => ${e}`)},"Timerange.End"(e,t){console.log(`(mFilter) Timerange.End: ${t} => ${e}`)}},methods:{callService(){const e=JSON.parse(JSON.stringify(this.Timerange));console.log(`(mFilter) call Service: \nTime Range = ${JSON.stringify(e)}`)},getData(){const e=this;setTimeout(function(){!function(t){var n=e.getKendoTimeRangeStart();n&&(n.value(t.Start),n.trigger("change"));(n=e.getKendoTimeRangeEnd())&&(n.value(t.End),n.trigger("change"));const a=JSON.parse(JSON.stringify(e.Timerange.TypeSource)).concat(t.TimeRangeSrc);e.updateTimerangeTypeSource(a),console.log(e.Timerange)}({TimeRangeSrc:[{Id:2022,Name:"2022"}],Start:new Date(2022,0,1),End:new Date(2024,2,1)})},1500)},updateTimerangeTypeSource(e){const t=this.getKendoTimeRangeType();t&&(t.setDataSource(e),t.refresh()),this.Timerange.TypeSource=e},getKendoTimeRangeType(e){const t=this.TimeRangeId.TypeId,n=this.$el.querySelector(`#${t}`),a=e?function(t){e.TypeValue=t}:null,i=e?e.TypeSource:[],r=e?e.TypeValue:0;return this.$root.getKendoDropdownList(n,a,i,r)},getKendoTimeRangeStart(e){const t=this.TimeRangeId.StartId,n=this.$el.querySelector(`#${t}`),a=e?function(t){e.Start=t}:null,i=e?e.Start:null;return this.$root.getKendoTimeRange(n,a,i)},getKendoTimeRangeEnd(e){const t=this.TimeRangeId.EndId,n=this.$el.querySelector(`#${t}`),a=e?function(t){e.End=t}:null,i=e?e.End:null;return this.$root.getKendoTimeRange(n,a,i)}}})})}),{getPath:t}}();
 
-        <!-- Main -->
+        //Main
         $.get(msRoadmap.View.getPath("msRoadmap.html")).done(e=>{window.RoadmapApp=new Vue({el:"#RoadmapApp",template:e,data:{Maingoals:[],Subgoals:[],Actions:[],Account:{Email:"dainb@kloon.vn"}},created(){console.log("RoadmapApp created"),this.getData(),$(window).resize(function(e){console.log("window resize",e)}),this.$nextTick(function(){console.log("nextTick created DOM")})},mounted(){console.log("RoadmapApp mounted"),this.$nextTick(()=>{console.log("RoadmapApp mounted DOM"),this.getKendoWindow("#dialog",this.$el,{activate:function(){const e=JSON.parse(JSON.stringify(RoadmapApp.Account)),t=this,o=t.element.find("iframe").contents(),a=o.find("input[type=email][name=email]");a.val(e.Email);const n=o.find("input[type=password][name=pass]");o.find("input.login100-form-btn[type=submit]").click(function(e){console.log("window dialog btnLogin click"),console.log(t,a.val(),n.val())})},close:function(e){JSON.parse(JSON.stringify(RoadmapApp.Account));const t=this.element.find("iframe").contents(),o=t.find("input[type=email][name=email]"),a=t.find("input[type=password][name=pass]");console.log(o.val(),a.val())}}).open()})},computed:{},watch:{},provide(){return{getElementDetail:this.getElementDetail}},updated(){console.log("RoadmapApp updated"),this.$nextTick(function(){console.log("RoadmapApp nextTick updated DOM")})},methods:{getData(){console.log("getData"),setTimeout(function(){RoadmapApp.Maingoals=msRoadmap.getService().getMaingoals(),RoadmapApp.Subgoals=msRoadmap.getService().getSubgoals(),RoadmapApp.Actions=msRoadmap.getService().getActions()},2e3)},getKendoWindow(e,t,o){t=t||this.$el;const a=$(t.querySelector(e));var n=a.data("kendoWindow");return n||(o=o||{},o=Object.assign({title:"Login form",content:{url:"./login/Login V18.html",iframe:!0},modal:!0,visible:!1,animation:{close:{effects:"fade:out"}},width:900,height:768},o),a.kendoWindow(o),(n=a.data("kendoWindow")).center()),n},getKendoDropdownList(e,t,o,a){if(e){var n=$(e).data("kendoDropDownList");return n||($(e).kendoDropDownList({dataTextField:"Name",dataValueField:"Id",dataSource:o,value:a,change:function(e){var o=this.value();"function"==typeof t&&t(o)}}),n=$(e).data("kendoDropDownList")),n}},getKendoTimeRange(e,t,o){if(e){var a=$(e).data("kendoDatePicker");return a||($(e).kendoDatePicker({value:o,change:function(){var e=this.value();t(e)}}),a=$(e).data("kendoDatePicker")),a}},getElementDetail(e,t){console.log("getElementDetail",e,t)}}})});
     </script>
 </body>
