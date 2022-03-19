@@ -63,7 +63,7 @@ $.get(msActionPlanView.getPath('AppActionPlan.html')).done(template => {
                 if(sub) {
                     const MIndex1 = sub.MIndex;
                     var MIndex2 = subs.find((s, i) => { return i == option.ITo });
-                    if(MIndex2) {
+                    if(typeof MIndex2 == 'object') {
                         MIndex2 = MIndex2.MIndex;
                     } else if(subs.length > 0) {
                         MIndex2 = subs[subs.length - 1].MIndex;
