@@ -5,6 +5,7 @@ msRoadmap.View = (function () {
         $.get( getPath('BrandAndUser.html'), template => {
             resolve({
                 template: template,
+                inject: ['openLoginWindow'],
                 data: () => {
                     return {
                         LblProject: 'Project',
@@ -25,6 +26,9 @@ msRoadmap.View = (function () {
                         const aS = this.ActiveStrg;
                         const s = this.Strategies.find(st => st.Id == aS) || {Name: '...'};                        
                         return s;
+                    },
+                    UserLoginId(){
+                        return `userLogin-${Date.now()}`
                     }
                 },
                 mounted() {
@@ -41,7 +45,19 @@ msRoadmap.View = (function () {
                             _this.ActivePrj = 62811;
                             _this.ActiveStrg = 65603;
                         }, 2500);
-                    }
+                    },
+                    onOpenLoginWindow(e){
+                        const queryId = `#${this.UserLoginId}`;
+                        const thisRef = this;
+                        this.openLoginWindow(queryId, function onDestroy (){
+                            let div = thisRef.$el.querySelector(queryId);
+                            if(div) return;
+                            div = document.createElement("div");
+                            div.id = thisRef.UserLoginId;
+                            thisRef.$el.append(div);
+                        });
+
+                    },
                 }
             });
         });

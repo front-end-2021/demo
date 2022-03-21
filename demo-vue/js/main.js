@@ -28,7 +28,29 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
             this.$nextTick(() => {
                 console.log('RoadmapApp mounted DOM')
 
-                this.getKendoWindow('#dialog', this.$el, 
+            });
+        },
+        computed: {
+        }, 
+        watch: {
+            
+        },
+        provide() {
+            return {
+                getElementDetail: this.getElementDetail,
+                openLoginWindow: this.openLoginWindow,
+            }
+        },
+        updated() {
+            console.log('RoadmapApp updated');
+
+            this.$nextTick(function () {
+                console.log('RoadmapApp nextTick updated DOM');
+            });
+        },
+        methods: {        
+            openLoginWindow(queryId, onDestroy){
+                this.getKendoWindow(queryId,
                 {
                     activate: function() {
                         const account = JSON.parse(JSON.stringify(RoadmapApp.Account));
@@ -44,36 +66,23 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
                             console.log('window dialog btnLogin click')
                             console.log(thisWindow, $inputEmail.val(), $inputPass.val())
 
+                            destroy();
+                            onDestroy();
                         });
+                        function destroy(){
+                            var kWindow = $(queryId).data("kendoWindow");
+                            if(kWindow) kWindow.destroy();
+                        }
                     }, 
                     close: function(e){
                         const account = JSON.parse(JSON.stringify(RoadmapApp.Account));
                         const $body = this.element.find('iframe').contents();
                         const $inputEmail = $body.find((`input[type=email][name=email]`));
                         const $inputPass = $body.find((`input[type=password][name=pass]`));
-                        console.log($inputEmail.val(), $inputPass.val())
+                        console.log($inputEmail.val(), $inputPass.val());
                     }
                 }).open();
-            });
-        },
-        computed: {
-        }, 
-        watch: {
-            
-        },
-        provide() {
-            return {
-                getElementDetail: this.getElementDetail,
-            }
-        },
-        updated() {
-            console.log('RoadmapApp updated');
-
-            this.$nextTick(function () {
-                console.log('RoadmapApp nextTick updated DOM');
-            });
-        },
-        methods: {            
+            },    
             getData() {
                 console.log('getData');
                 setTimeout(function() {
@@ -82,9 +91,8 @@ $.get(msRoadmap.View.getPath('msRoadmap.html')).done(template => {
                     RoadmapApp.Actions = msRoadmap.getService().getActions();
                 }, 2000);
             },
-            getKendoWindow(selector, this_$el, option){
-                this_$el = this_$el || this.$el;
-                const $window = $(this_$el.querySelector(selector));
+            getKendoWindow(selector, option){
+                const $window = $(selector);
                 var kWindow = $window.data("kendoWindow");
                 if(!kWindow) {
                     option = option || {};
