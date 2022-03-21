@@ -51,13 +51,12 @@
 <body>
     
     <div id="RoadmapApp"></div>
-    <!-- <script src="../js/service.js"></script>
-    <script src="../js/components.js"></script>
-    <script src="../js/main.js"></script> -->
+    <script src="./js/service.js"></script>
+    <script src="./js/components.js"></script>
+    <script src="./js/main.js"></script>
 
     <!-- Release 1.0 -->
-    <script type="application/javascript">
-
+    <!-- <script type="application/javascript">
         //Services
         const msRoadmap={getService:function(){return{getMaingoals:function(){return[{Id:"5cab2f37-f50e-4b3e-8c4f-a88a75284ea5",TypeId:1,Name:"Main goal 1",MIndex:1},{Id:"5cab2f37-f50e-4b3e-8c4f-a88a75284ea9",TypeId:1,Name:"Main goal 2",MIndex:2},{Id:"5cab2f37-f50e-1b3e-8c3f-a88a75284ea9",TypeId:1,Name:"Main goal 3",MIndex:3},{Id:"5cab2f37-f50e-2b3e-8c2f-a88a75284ea9",TypeId:1,Name:"Main goal 4",MIndex:4},{Id:"5cab2f37-f50e-3b3e-8c1f-a88a75284ea9",TypeId:1,Name:"Main goal 5",MIndex:5}]},getSubgoals:function(e){var a=e?1+e:1;return[{Id:"1ee4e327-9c06-4bbb-9c72-86cc0f95954d",TypeId:2,Name:"Main 1 / Sub goal 1",MIndex:a,ParentId:"5cab2f37-f50e-4b3e-8c4f-a88a75284ea5"},{Id:"1ee4e327-9c06-4bbb-9c72-86cc0f9595fd",TypeId:2,Name:"Main 1 /Sub goal 2",MIndex:e?a+2:a+1,ParentId:"5cab2f37-f50e-4b3e-8c4f-a88a75284ea5"},{Id:"1ee4e327-9c06-4bbb-9c72-86cc0f95959d",TypeId:2,Name:"Main 1 / Sub goal 3",MIndex:e?a+1:a+2,ParentId:"5cab2f37-f50e-4b3e-8c4f-a88a75284ea5"},{Id:"1ee4e327-9c06-9bbb-9c72-86cc0f9595fd",TypeId:2,Name:"Main 5 /Sub goal 4",MIndex:6,ParentId:"5cab2f37-f50e-3b3e-8c1f-a88a75284ea9"},{Id:"1ee9e327-9c06-3bbb-9c72-86cc0f9595fd",TypeId:2,Name:"Main 5 /Sub goal 5",MIndex:7,ParentId:"5cab2f37-f50e-3b3e-8c1f-a88a75284ea9"}]},getActions:function(){return[{Id:"e24ef4fb-b166-4afa-95e5-37ade8cea728",TypeId:3,Name:"Main 1 / Sub goal 1 / Action 1",MIndex:1,ParentId:"1ee4e327-9c06-4bbb-9c72-86cc0f95954d"},{Id:"ecfc2c7a-b096-4fb0-977a-8152b1d1661a",TypeId:3,Name:"Main 1 / Sub goal 2 / Action 2",MIndex:2,ParentId:"1ee4e327-9c06-4bbb-9c72-86cc0f9595fd"}]}}}};
 
@@ -66,7 +65,7 @@
 
         //Main
         $.get(msRoadmap.View.getPath("msRoadmap.html")).done(e=>{window.RoadmapApp=new Vue({el:"#RoadmapApp",template:e,data:{Maingoals:[],Subgoals:[],Actions:[],Account:{Email:"dainb@kloon.vn"}},created(){console.log("RoadmapApp created"),this.getData(),$(window).resize(function(e){console.log("window resize",e)}),this.$nextTick(function(){console.log("nextTick created DOM")})},mounted(){console.log("RoadmapApp mounted"),this.$nextTick(()=>{console.log("RoadmapApp mounted DOM"),this.getKendoWindow("#dialog",this.$el,{activate:function(){const e=JSON.parse(JSON.stringify(RoadmapApp.Account)),t=this,o=t.element.find("iframe").contents(),a=o.find("input[type=email][name=email]");a.val(e.Email);const n=o.find("input[type=password][name=pass]");o.find("input.login100-form-btn[type=submit]").click(function(e){console.log("window dialog btnLogin click"),console.log(t,a.val(),n.val())})},close:function(e){JSON.parse(JSON.stringify(RoadmapApp.Account));const t=this.element.find("iframe").contents(),o=t.find("input[type=email][name=email]"),a=t.find("input[type=password][name=pass]");console.log(o.val(),a.val())}}).open()})},computed:{},watch:{},provide(){return{getElementDetail:this.getElementDetail}},updated(){console.log("RoadmapApp updated"),this.$nextTick(function(){console.log("RoadmapApp nextTick updated DOM")})},methods:{getData(){console.log("getData"),setTimeout(function(){RoadmapApp.Maingoals=msRoadmap.getService().getMaingoals(),RoadmapApp.Subgoals=msRoadmap.getService().getSubgoals(),RoadmapApp.Actions=msRoadmap.getService().getActions()},2e3)},getKendoWindow(e,t,o){t=t||this.$el;const a=$(t.querySelector(e));var n=a.data("kendoWindow");return n||(o=o||{},o=Object.assign({title:"Login form",content:{url:"./login/Login V18.html",iframe:!0},modal:!0,visible:!1,animation:{close:{effects:"fade:out"}},width:900,height:768},o),a.kendoWindow(o),(n=a.data("kendoWindow")).center()),n},getKendoDropdownList(e,t,o,a){if(e){var n=$(e).data("kendoDropDownList");return n||($(e).kendoDropDownList({dataTextField:"Name",dataValueField:"Id",dataSource:o,value:a,change:function(e){var o=this.value();"function"==typeof t&&t(o)}}),n=$(e).data("kendoDropDownList")),n}},getKendoTimeRange(e,t,o){if(e){var a=$(e).data("kendoDatePicker");return a||($(e).kendoDatePicker({value:o,change:function(){var e=this.value();t(e)}}),a=$(e).data("kendoDatePicker")),a}},getElementDetail(e,t){console.log("getElementDetail",e,t)}}})});
-    </script>
+    </script> -->
 </body>
 
 </html>

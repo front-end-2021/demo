@@ -1,5 +1,5 @@
 msRoadmap.View = (function () {
-    const __rootFolder__ = '../component';
+    const __rootFolder__ = '../../demo-vue/component';
 
     Vue.component('BrandAndUser', (resolve) => {
         $.get( getPath('BrandAndUser.html'), template => {
