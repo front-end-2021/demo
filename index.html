@@ -50,7 +50,7 @@
 
     </style>
     <style id="dnba-style-texting">
-        .dnba-texting { 
+        .dnba-texting_9 { 
             animation: typewriter 0.72s steps(9) 0.6s 1 normal both, 
                         endtyping 1.8s steps(9) 0.6s 1 normal both, 
                         blinkTextCursor 0.6s steps(66) infinite normal; 
@@ -62,7 +62,7 @@
     <main id="dainb-app" style="font-size: 3rem;">
         <section class="dnb-title" style="display:flex;justify-content: center;align-items: center;flex-direction:column">
             <h1 class="dnba-text-typing" style="font-size: 9rem;">
-                <p class="dnba-texting">Hello!</p>
+                <p class="dnba-texting_9">Hello!</p>
             </h1>
             
             <div class="dnba-text-typing text-typing-2">
@@ -73,8 +73,14 @@
     <script>
         const list = document.querySelectorAll('.dnba-text-typing');
         Array.prototype.forEach.call(list, function (item) {
+            //addAnimation(item);
             addOrserver(item, function(mutation){            
-                const target = mutation.target;      //console.log(mutation);debugger;
+                const target = mutation.target;      console.log(mutation);
+                if(target.className.includes('dnba-type-running') && mutation.addedNodes.length == 1 && mutation.removedNodes.length) {
+                    target.classList.remove('dnba-type-running');
+                    return;
+                }
+
                 addAnimation(target);
             });
         });
@@ -100,18 +106,19 @@
         }
 
         function addAnimation(node){
-            if(node.className.includes('dnba-type-running')) return;
             if(isWidthOverView(node, window.outerWidth)) return;
-            node.classList.add('dnba-type-running');
+            if(node.className.includes('dnba-type-running')) return;
+            
             const text = node.innerText;
             node.innerHTML = '';
-
+            
             const className = updateStyle(text, callBackEnd);
-
+            
             addChildTag(node, text, className);
-
-            function callBackEnd(){
-                node.classList.remove('dnba-type-running');
+            
+            node.classList.add('dnba-type-running');
+            function callBackEnd() {
+                node.innerHTML = text;
             }
         }
 
@@ -129,21 +136,22 @@
 
         function updateStyle(text, callBackEnd){
             const styleAnim = document.getElementById('dnba-style-texting');
-            var className, endtyping;
+            var className, durationEnd;
 
             styleAnim.innerHTML = getAnimTyping(text);
 
-            setTimeout(callBackEnd, endtyping + 0.666);
+            setTimeout(callBackEnd, durationEnd * 1000 + 666);
+            console.log(durationEnd * 1000 + 666)
 
             return className;
 
             function getAnimTyping(text){
                 const steps = parseInt(text.length * 1.5);
                 const durationTexting = steps / 11;
-                const durationEnd = durationTexting * 1.32;
+                durationEnd = roundeFloat(durationTexting * 1.32);
                 const durationBlind = durationTexting / 4.5;
                 const typewriter = `typewriter ${roundeFloat(durationTexting)}s steps(${steps}) 0.6s 1 normal both`;
-                endtyping = `endtyping ${roundeFloat(durationEnd)}s steps(${steps}) 0.6s 1 normal both`;
+                const endtyping = `endtyping ${durationEnd}s steps(${steps}) 0.6s 1 normal both`;
                 const blinkTextCursor = `blinkTextCursor ${roundeFloat(durationBlind)}s steps(${steps * 2}) infinite normal`;
                 className = `dnba-texting_${steps.toString().replace('.', '_')}`;
                 return `.${className} { animation: ${typewriter}, ${endtyping}, ${blinkTextCursor};}`;
@@ -153,12 +161,12 @@
         setTimeout(function(){
             changeText('My name is Dainb');
             setTimeout(function(){
-                changeText('This is demo DOM innerText change');
+                changeText('This is demo  change');
                 setTimeout(function(){
-                    changeText('I will make library in front-end-2021 collections and You can do something awsome ...!');
+                    changeText('I will ma awsome ...!');
                 }, 9000);
             }, 6000);
-        }, 3000);
+        }, 9000);
 
         function changeText(text){
             const h1Typing = document.querySelector('h1.dnba-text-typing'); 
