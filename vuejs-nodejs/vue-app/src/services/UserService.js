@@ -7,7 +7,19 @@ export async function getAllUsers() {
     return response.data;
 }
 
+export async function getUser(id, token) {
+    const response = await axios.get(`${serverUrl}/api/user`, {
+        params: {
+          id: id, token: token
+        }
+    });
+    return response.data;
+}
+
 export async function createUser(data) {
-    const response = await axios.post(`${serverUrl}/api/user`, {user: data});
+    const entry = {
+        user: data
+    }
+    const response = await axios.post(`${serverUrl}/api/user`, entry);
     return response.data;
 }

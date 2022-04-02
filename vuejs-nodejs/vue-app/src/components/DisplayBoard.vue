@@ -5,7 +5,8 @@
         {{numberOfUsers}}
         </div>
         <div class="btn">
-            <button @click='getAllUsers()' type="button" class="btn btn-warning">Get all Users</button>
+            <button @click='getAllUsers()' type="button" 
+            class="btn btn-warning">Get all Users</button>
         </div>
     </div>
 </template>
@@ -16,7 +17,7 @@
         props: ['numberOfUsers'],
         methods: {
             getAllUsers() {
-                this.$emit('getAllUsers')
+                this.$emit('getAllUsers');
             }
         }
     }

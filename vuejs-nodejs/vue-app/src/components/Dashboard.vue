@@ -7,7 +7,7 @@
                 <CreateUser @createUser="userCreate($event)" />
             </div>
             <div class="col-md-4">
-                <DisplayBoard :numberOfUsers="numberOfUsers" @getAllUsers="getAllUsers()" />
+                <DisplayBoard :numberOfUsers="NumberOfUsers" @getAllUsers="getAllUsers()" />
             </div>
           </div>
     </div>
@@ -18,11 +18,11 @@
 </template>
 
 <script>
-import Header from './Header.vue'
-import CreateUser from './CreateUser.vue'
-import DisplayBoard from './DisplayBoard.vue'
-import Users from './Users.vue'
-import { getAllUsers, createUser } from '../services/UserService'
+import Header from './Header.vue';
+import CreateUser from './CreateUser.vue';
+import DisplayBoard from './DisplayBoard.vue';
+import Users from './Users.vue';
+import { createUser } from '../services/UserService';
 
 export default {
   name: 'Dashboard',
@@ -35,27 +35,40 @@ export default {
   data() {
       return {
           users: [],
-          numberOfUsers: 0
       }
   },
+  inject: ['getUsers'],
+  provide() { // use function syntax so that we can access `this`
+    return {
+      setDetails: this.setDetails,
+    }
+  },
+  computed: {
+    NumberOfUsers(){
+      return this.users.length;
+    },
+  },
   methods: {
-    getAllUsers() {
-      getAllUsers().then(response => {
-        console.log(response)
-        this.users = response.data
-        this.numberOfUsers = this.users.length
+    getAllUsers(isReload) {
+      this.getUsers(isReload).then(data => {
+        console.log(data)
+        this.users = data;
       })
     },
     userCreate(data) {
       console.log('data:::', data)
       createUser(data).then(response => {
         console.log(response);
-        this.getAllUsers();
+        this.getAllUsers(true);
       });
-    }
+    },
+    setDetails(item){
+      const index = this.users.findIndex(u => u.id == item.id);
+      if(index > -1) this.users.splice(index, 1, item);
+    },
   },
   mounted () {
-    this.getAllUsers();
+    
   }
 }
 </script>

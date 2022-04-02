@@ -8,6 +8,7 @@
                 <th>Firstname</th>
                 <th>Lastname</th>
                 <th>Email</th>
+                <th>Details</th>
             </tr>
             </thead>
             <tbody>
@@ -16,6 +17,8 @@
                   <td>{{ item.firstName }}</td>
                   <td>{{ item.lastName }}</td>
                   <td>{{ item.email }}</td>
+                  <td><button @click='getDetails(item.id)' type="button" 
+                    class="btn btn-primary">Details</button></td>
               </tr>
             </tbody>
         </table>
@@ -23,9 +26,24 @@
 </template>
 
 <script>
-
+    import { getUser } from '../services/UserService';
     export default {
         name: 'Users',
-        props: ['users']
+        props: ['users'],
+        inject: ['getToken', 'setDetails'],
+        data(){
+            return {
+                lstUser: this.users,
+            }
+        },
+        methods: {
+            getDetails(id) {
+                const token = this.getToken();
+                getUser(id, token).then(res => {
+                    const item = res.data;
+                    this.setDetails(item);
+                });
+            }
+        }
      }
 </script>
