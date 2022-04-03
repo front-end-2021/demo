@@ -12,12 +12,12 @@
             </tr>
             </thead>
             <tbody>
-              <tr v-for="item in users" :key="item.id">
-                  <td>{{ item.id }}</td>
-                  <td>{{ item.firstName }}</td>
-                  <td>{{ item.lastName }}</td>
-                  <td>{{ item.email }}</td>
-                  <td><button @click='getDetails(item.id)' type="button" 
+              <tr v-for="item in users" :key="item.Id">
+                  <td>{{ item.Id }}</td>
+                  <td>{{ item.FirstName }}</td>
+                  <td>{{ item.LastName }}</td>
+                  <td>{{ item.Email }}</td>
+                  <td><button @click='getDetails(item.Id)' type="button" 
                     class="btn btn-primary">Details</button></td>
               </tr>
             </tbody>

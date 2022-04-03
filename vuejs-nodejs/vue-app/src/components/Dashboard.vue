@@ -63,7 +63,7 @@ export default {
       });
     },
     setDetails(item){
-      const index = this.users.findIndex(u => u.id == item.id);
+      const index = this.users.findIndex(u => u.Id == item.Id);
       if(index > -1) this.users.splice(index, 1, item);
     },
   },
