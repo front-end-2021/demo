@@ -8,15 +8,11 @@ function InitDb() {
 
 function getAllUsers() {
     const db = openTheDatabase(Constants.DbNameObj.Account);
-    const Model = Constants.User.getModel();
     
     return new Promise((resolve, reject) => {
         if(db != null) {
-            const sql = `SELECT ${Model.Id} Id,
-                    ${Model.FirstName} FirstName,
-                    ${Model.LastName} LastName,
-                    ${Model.Email} Email
-                FROM User ORDER BY ${Model.FirstName}`;
+            const Model = Constants.User.getModel();
+            const sql = `${Constants.User.querySelect()} ORDER BY ${Model.FirstName}`;
             db.all(sql, (err, rows) => {
                 if (err) {
                     throw err;
@@ -29,30 +25,20 @@ function getAllUsers() {
     });
 }
 
-function getUsers(dateOfBirth) {
+function getUser(id) {
     const db = openTheDatabase(Constants.DbNameObj.Account);
-    const Model = Constants.User.getModel();
-    const lstRow = [];
 
     return new Promise((reslv, rej) => {
         if(db != null) {
-            const whereC = `WHERE ${Model.DoB} = ?`;
-            const sql = `SELECT ${Model.Id} Id,
-                    ${Model.FirstName} FirstName,
-                    ${Model.LastName} LastName,
-                    ${Model.Email} Email
-                FROM User ${whereC}
-                ORDER BY ${Model.FirstName}`;
-
-            db.each(sql, [dateOfBirth], (err, row) => {
+            const Model = Constants.User.getModel();
+            const sql = Constants.User.querySelect(`WHERE ${Model.Id} = ?`);
+            db.get(sql, [id], (err, result) => {  
                 if (err) {
                     throw err;
+                } else {
+                    reslv(result);
                 }
-                lstRow.push(row);
             });
-
-            reslv(lstRow);
-
             db.close(); // close the database connection
         } else rej();
     });
@@ -103,6 +89,6 @@ function getTableInDb(dbName) {
 module.exports = {
     InitDb: InitDb,
     getAllUsers: getAllUsers,
-    getUsers: getUsers,
+    getUser: getUser,
     insertUser: insertUser
 }

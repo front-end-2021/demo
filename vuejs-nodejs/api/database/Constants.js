@@ -26,6 +26,13 @@ module.exports = {
             const field = `${Model.FirstName}, ${Model.LastName}, ${Model.Email}, ${Model.DoB}`;
             const iQuery = `INSERT INTO ${User}(${field}) VALUES(?, ?, ?, ?)`;
             return iQuery;
+        },
+        querySelect: function(whereSelect){
+            const Model = this.getModel();
+            const TbUser = this.getName();
+            var where = whereSelect ? whereSelect : '';
+            const sQuery = `SELECT ${Model.Id} Id, ${Model.FirstName} FirstName, ${Model.LastName} LastName, ${Model.Email} Email FROM ${TbUser} ${where}`;
+            return sQuery;
         }
     }
 }
