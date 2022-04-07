@@ -1,20 +1,26 @@
-const redis = require('redis');
-const client = redis.createClient(6379);
+const database = require('./DbSqLite');
 
-client.on('error', (err) => {
-    console.log("Error " + err)
-});
+const redis = require('redis');
+const client = redis.createClient();
+
+client.on('error', (err) => { console.log("Error " + err) });
 
 const usersRedisKey = 'account:users';
-
 function getAllUsers() {
-    return client.get(usersRedisKey, (err, users) => {
-        if(users) {
-            return {
-                source: 'cache',
-                data: JSON.parse(users)
-            }
+    var users;
+    (async () => {
+       await client.connect();
+        users = await client.get(usersRedisKey);
+        if(!users) {
+            users = await Promise.all([database.getAllUsers()]);
+            await client.set(usersRedisKey, JSON.stringify(users));
+        } else {
+            users =  JSON.parse(users);
         }
-        
-    });
+    })();
+    return users;
+}
+
+module.exports = {
+    getAllUsers: getAllUsers
 }

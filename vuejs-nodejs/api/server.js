@@ -1,5 +1,4 @@
 const database = require('./database/DbSqLite');
-database.InitDb();
 
 require('dotenv').config({ path: 'local.env' });
 const env = require('@ltv/env');

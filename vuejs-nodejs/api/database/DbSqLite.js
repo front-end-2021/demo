@@ -2,9 +2,7 @@ const Constants = require('./Constants');
 const sqlite3 = require('sqlite3').verbose();
 const Promise = require('bluebird');
 
-function InitDb() {
-    InitAccount();
-}
+InitAccount();
 
 function getAllUsers() {
     const db = openTheDatabase(Constants.DbNameObj.Account);
@@ -87,7 +85,6 @@ function getTableInDb(dbName) {
 }
 
 module.exports = {
-    InitDb: InitDb,
     getAllUsers: getAllUsers,
     getUser: getUser,
     insertUser: insertUser
