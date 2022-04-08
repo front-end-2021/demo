@@ -1,5 +1,5 @@
-//const database = require('./database/DbSqLite');
-const dbRedis = require('./database/DbRedis');
+//https://medium.com/bb-tutorials-and-thoughts/how-to-develop-and-build-vue-js-app-with-nodejs-bd86feec1a20
+const database = require('./database/DbSqLite');
 
 require('dotenv').config({ path: 'local.env' });
 const env = require('@ltv/env');
@@ -15,23 +15,14 @@ var users = []; // getUsers();
 app.get('/api/users', cors(appExp.getCorsOptions()), function (req, res, next) {
   console.log('api/users called!!!!!!!', jwtKey);
 
-  dbRedis.getAllUsers().then(rows => {
+  database.getAllUsers().then(rows => {
     users = rows;
     res.json({
       key: jwtKey,
-      data: encrypData(rows)
+      data: encrypData(users)
     });
     next();
-  }).catch(err => { console.log(err) });;
-
-  // database.getAllUsers().then(rows => {
-  //   users = rows;
-  //   res.json({
-  //     key: jwtKey,
-  //     data: encrypData(users)
-  //   });
-  //   next();
-  // });
+  });
 });
 
 app.get('/api/user', cors(appExp.getCorsOptions()), function (req, res, next) {  
