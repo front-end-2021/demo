@@ -1,4 +1,5 @@
-const database = require('./database/DbSqLite');
+//const database = require('./database/DbSqLite');
+const dbRedis = require('./database/DbRedis');
 
 require('dotenv').config({ path: 'local.env' });
 const env = require('@ltv/env');
@@ -13,15 +14,24 @@ const jwtKey = appExp.createToken('dainb', 'abc123');
 var users = []; // getUsers();
 app.get('/api/users', cors(appExp.getCorsOptions()), function (req, res, next) {
   console.log('api/users called!!!!!!!', jwtKey);
-  database.getAllUsers().then(rows => {
-    users = rows;
 
+  dbRedis.getAllUsers().then(rows => {
+    users = rows;
     res.json({
       key: jwtKey,
-      data: encrypData(users)
+      data: encrypData(rows)
     });
     next();
-  });
+  }).catch(err => { console.log(err) });;
+
+  // database.getAllUsers().then(rows => {
+  //   users = rows;
+  //   res.json({
+  //     key: jwtKey,
+  //     data: encrypData(users)
+  //   });
+  //   next();
+  // });
 });
 
 app.get('/api/user', cors(appExp.getCorsOptions()), function (req, res, next) {  
