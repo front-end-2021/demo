@@ -74,15 +74,6 @@ function InitAccount(){
     db.close();
 }
 
-function getTableInDb(dbName) {
-    switch(dbName) {
-        case Constants.DbNameObj.Account:
-            return {
-                User: Constants.User.getName()
-            }        
-    }
-    return '';
-}
 
 module.exports = {
     getAllUsers: getAllUsers,
