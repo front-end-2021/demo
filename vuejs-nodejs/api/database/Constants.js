@@ -1,11 +1,43 @@
+const global = require('./Global')
 
 module.exports = {
     DbNameObj: {
-        Account: 'Account'
+        Account: 'Account',
+        Project: 'Project'
+    },
+    Project: {
+        getProject: function () { return 'Project'},
+        getProjectGroup: function () { return 'ProjectGroup'},
+        getModel: function () {
+            const projectGroupM = global.getBaseModel();
+            const projectM = Object.assign({
+                ProjectGroupId: 'ProjectGroupId', PriorityGroupName: 'PriorityGroupName',
+                StartYear: 'StartYear', EndYear: 'EndYear'
+            }, global.getBaseModel());
+            return {
+                Project: projectM, 
+                ProjectGroup: projectGroupM
+            }
+        },
+        queryCreateTable: function (tableName) {
+            if(tableName == this.getProject()) {
+                const Model = this.getModel().Project;
+                const cols1 = `${global.getQueryIntAutoIncrease(Model.Id)}, ${Model.Name} TEXT, ${Model.ProjectGroupId} INTEGER, ${Model.PriorityGroupName} TEXT`;
+                const cols2 = `${Model.CreatedBy} INTEGER, ${Model.CreatedDate} TEXT, ${Model.ModifiedBy} INTEGER, ${Model.ModifiedDate} TEXT`;
+                const cols3 = `${Model.StartYear} INTEGER, ${Model.EndYear} INTEGER, ${Model.MIndex} INTEGER`;
+                return `${global.getQueryCreateTable(tableName)} (${cols1}, ${cols2}, ${cols3})`;
+            }
+            if(tableName == this.getProjectGroup()) {
+                const Model = this.getModel().ProjectGroup;
+                const cols1 = `${global.getQueryIntAutoIncrease(Model.Id)}, ${Model.Name} TEXT, ${Model.MIndex} INTEGER`;
+                const cols2 = `${Model.CreatedBy} INTEGER, ${Model.CreatedDate} TEXT, ${Model.ModifiedBy} INTEGER, ${Model.ModifiedDate} TEXT`;
+                return `${global.getQueryCreateTable(tableName)} (${cols1}, ${cols2})`;
+            }
+        }
     },
     User: {
-        getName: function() {return 'User'},
-        getModel: function() {
+        getName: function () {return 'User'},
+        getModel: function () {
             return {
                 Id: 'Id',
                 FirstName: 'FirstName',
@@ -14,25 +46,22 @@ module.exports = {
                 DoB: 'DateOfBirth'
             }
         },
-        queryCreateTable: function() {
+        queryCreateTable: function () {
             const User = this.getName();
             const Model = this.getModel();
-            const cQuery = `CREATE TABLE IF NOT EXISTS ${User} (${Model.Id} INTEGER PRIMARY KEY AUTOINCREMENT, ${Model.FirstName} TEXT, ${Model.LastName} TEXT, ${Model.Email} TEXT, ${Model.DoB} TEXT)`;
-            return cQuery;
+            const columns = `${global.getQueryIntAutoIncrease(Model.Id)}, ${Model.FirstName} TEXT, ${Model.LastName} TEXT, ${Model.Email} TEXT, ${Model.DoB} TEXT`;
+            return `${global.getQueryCreateTable(User)} (${columns})`;
         },
-        queryInsert: function(){
+        queryInsert: function () {
             const User = this.getName();
             const Model = this.getModel();
-            const field = `${Model.FirstName}, ${Model.LastName}, ${Model.Email}, ${Model.DoB}`;
-            const iQuery = `INSERT INTO ${User}(${field}) VALUES(?, ?, ?, ?)`;
-            return iQuery;
+            return global.getQueryInsert(User, Model.FirstName, Model.LastName, Model.Email, Model.DoB);
         },
-        querySelect: function(whereSelect){
+        querySelect: function (whereSelect) {
             const Model = this.getModel();
             const TbUser = this.getName();
             var where = whereSelect ? whereSelect : '';
-            const sQuery = `SELECT ${Model.Id} Id, ${Model.FirstName} FirstName, ${Model.LastName} LastName, ${Model.Email} Email FROM ${TbUser} ${where}`;
-            return sQuery;
+            return `SELECT ${Model.Id} Id, ${Model.FirstName}, ${Model.LastName}, ${Model.Email} FROM ${TbUser} ${where}`;
         }
     }
 }

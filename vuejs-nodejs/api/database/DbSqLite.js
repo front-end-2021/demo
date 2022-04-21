@@ -41,10 +41,11 @@ function getUser(id) {
         } else rej();
     });
 }
-function insertUser(entry){
+function insertUser(entry) {
     const db = openTheDatabase(Constants.DbNameObj.Account);
     if(db != null && typeof entry == 'object') {
         const query = Constants.User.queryInsert();
+        console.log(query)
         const model = Constants.User.getModel();
         entry = Object.assign(model, entry);
         const values = [entry.FirstName, entry.LastName, entry.Email, entry.DoB];
@@ -59,13 +60,13 @@ function insertUser(entry){
     return -1;
 }
 
-function openTheDatabase(dbName){
+function openTheDatabase(dbName) {
     if(typeof dbName != 'string') return null;
     const dbPath = `./database/${dbName}.db`;
     return new sqlite3.Database(dbPath);
 }
 
-function InitAccount(){
+function InitAccount() {
     const db = openTheDatabase(Constants.DbNameObj.Account);
     db.serialize(() => {
         const query = Constants.User.queryCreateTable();
@@ -73,7 +74,6 @@ function InitAccount(){
     });
     db.close();
 }
-
 
 module.exports = {
     getAllUsers: getAllUsers,
