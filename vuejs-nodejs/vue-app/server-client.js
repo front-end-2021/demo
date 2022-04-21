@@ -10,7 +10,7 @@ const app = express(),
 app.use(bodyParser.json());
 app.use(express.static(process.cwd() + '/my-app'));
 
-app.get('/', (req,res) => {
+app.get('/', (req, res) => {
   res.sendFile(process.cwd() + '/public/index.html');
 });
 
