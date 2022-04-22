@@ -1,7 +1,26 @@
+const sqlite3 = require('sqlite3').verbose();
+const Promise = require('bluebird');
+
+function openTheDatabase(dbName) {
+    if(typeof dbName != 'string') return null;
+    const dbPath = `./database/${dbName}.db`;
+    return new sqlite3.Database(dbPath);
+}
+
 module.exports = {
-    getString: function (date) {    // default format YYYY-MM-DD HH:MM:SS.SSS
+    runQuery: function(dbName, callback){
+        const db = openTheDatabase(dbName);
+        return new Promise((resolve, reject) => {
+            if(db != null) {
+                callback(db, resolve);
+                db.close(); // close the database connection
+            } else reject(); 
+        });
+    },
+    getString: function (date) {
         if(this.isValidDate(date)) {
-            return date.toLocaleString('en-GB', { timeZone: 'UTC' })
+            return date.toUTCString();
+            //return date.toLocaleString('en-GB', { timeZone: 'UTC' })    // default format YYYY-MM-DD HH:MM:SS.SSS
         }
         return '';
     },
