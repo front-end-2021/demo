@@ -1,11 +1,10 @@
 const Constants = require('./Constants');
-const sqlite3 = require('sqlite3').verbose();
-const Promise = require('bluebird');
+const global = require('./Global')
 
 InitProject();
 
 function InitProject() {
-    const db = openTheDatabase(Constants.DbNameObj.Project);
+    const db = global.openTheDatabase(Constants.DbNameObj.Project);
     db.serialize(() => {
         var query = Constants.Project.queryCreateTable(Constants.Project.getProject());
         db.run(query);
@@ -15,8 +14,30 @@ function InitProject() {
     db.close();
 }
 
+function getProjectGroups(){
+    return global.runQuery(Constants.DbNameObj.Project, function(db, resolve){
+        const Project = Constants.Project;
+        const Model = Project.getModel().ProjectGroup;
+        const sql = `${Project.querySelect(Project.getProjectGroup())} ORDER BY ${Model.MIndex}`;
+        db.all(sql, (err, rows) => {
+            if (err) { throw err; } 
+            else { resolve(rows); }
+        });
+    });
+}
+function getProjects(){
+    return global.runQuery(Constants.DbNameObj.Project, function(db, resolve){
+        const Project = Constants.Project;
+        const Model = Project.getModel().Project;
+        const sql = `${Project.querySelect(Project.getProject())} ORDER BY ${Model.MIndex}`;
+        db.all(sql, (err, rows) => {
+            if (err) { throw err; } 
+            else { resolve(rows); }
+        });
+    });
+}
+
 module.exports = {
-    getAllUsers: getAllUsers,
-    getUser: getUser,
-    insertUser: insertUser
+    getProjectGroups: getProjectGroups,
+    getProjects: getProjects
 }

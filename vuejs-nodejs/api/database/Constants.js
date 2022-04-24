@@ -5,6 +5,32 @@ module.exports = {
         Account: 'Account',
         Project: 'Project'
     },
+    AccountRole: {
+        getName: function () {return 'AccountRole'},
+        getModel: function (){
+            const modelCM = global.getModelCM();
+            return Object.assign({
+                Id: 'Id',
+                AccountId: 'AccountId',
+                RoleId: 'RoleId',
+                ProjectGroupId: 'ProjectGroupId',
+                ProjectId: 'ProjectId',
+                StrategyId: 'StrategyId'
+            }, modelCM) 
+        },
+        queryCreateTable: function () {
+            const Acc = this.getName();
+            const Model = this.getModel();
+            const cols1 = `${global.getQueryIntAutoIncrease(Model.Id)}, ${Model.AccountId} INTEGER, ${Model.RoleId} INTEGER`;
+            const cols2 = `${Model.ProjectGroupId} INTEGER, ${Model.ProjectId} INTEGER, ${Model.StrategyId} INTEGER`;
+            return `${global.getQueryCreateTable(Acc)} (${cols1}, ${cols2}, ${global.getColumnsCM()})`;
+        },
+        queryInsert: function () {
+            const User = this.getName();
+            const Model = this.getModel();
+            return global.getQueryInsert(User, Model.AccountId, Model.RoleId, Model.ProjectGroupId, Model.ProjectId, Model.StrategyId, Model.CreatedBy, Model.CreatedDate, Model.ModifiedBy, Model.ModifiedDate);
+        }
+    },
     Project: {
         getProject: function () { return 'Project'},
         getProjectGroup: function () { return 'ProjectGroup'},
@@ -13,7 +39,7 @@ module.exports = {
             const projectM = Object.assign({
                 ProjectGroupId: 'ProjectGroupId', PriorityGroupName: 'PriorityGroupName',
                 StartYear: 'StartYear', EndYear: 'EndYear'
-            }, global.getBaseModel());
+            }, projectGroupM);
             return {
                 Project: projectM, 
                 ProjectGroup: projectGroupM
@@ -22,17 +48,30 @@ module.exports = {
         queryCreateTable: function (tableName) {
             if(tableName == this.getProject()) {
                 const Model = this.getModel().Project;
-                const cols1 = `${global.getQueryIntAutoIncrease(Model.Id)}, ${Model.Name} TEXT, ${Model.ProjectGroupId} INTEGER, ${Model.PriorityGroupName} TEXT`;
-                const cols2 = `${Model.CreatedBy} INTEGER, ${Model.CreatedDate} TEXT, ${Model.ModifiedBy} INTEGER, ${Model.ModifiedDate} TEXT`;
-                const cols3 = `${Model.StartYear} INTEGER, ${Model.EndYear} INTEGER, ${Model.MIndex} INTEGER`;
-                return `${global.getQueryCreateTable(tableName)} (${cols1}, ${cols2}, ${cols3})`;
+                const cols1 = `${global.getQueryIntAutoIncrease(Model.Id)}, ${Model.Name} TEXT, ${Model.ProjectGroupId} INTEGER`;
+                const cols3 = `${Model.StartYear} INTEGER, ${Model.EndYear} INTEGER, ${Model.MIndex} INTEGER NOT NULL, ${Model.PriorityGroupName} TEXT`;
+                return `${global.getQueryCreateTable(tableName)} (${cols1}, ${global.getColumnsCM()}, ${cols3})`;
             }
             if(tableName == this.getProjectGroup()) {
                 const Model = this.getModel().ProjectGroup;
-                const cols1 = `${global.getQueryIntAutoIncrease(Model.Id)}, ${Model.Name} TEXT, ${Model.MIndex} INTEGER`;
-                const cols2 = `${Model.CreatedBy} INTEGER, ${Model.CreatedDate} TEXT, ${Model.ModifiedBy} INTEGER, ${Model.ModifiedDate} TEXT`;
-                return `${global.getQueryCreateTable(tableName)} (${cols1}, ${cols2})`;
+                const cols1 = `${global.getQueryIntAutoIncrease(Model.Id)}, ${Model.Name} TEXT, ${Model.MIndex} INTEGER NOT NULL`;
+                return `${global.getQueryCreateTable(tableName)} (${cols1}, ${global.getColumnsCM()})`;
             }
+        },
+        querySelect: function (tableName, whereSelect) {
+            var Table, columns;
+            if(tableName == this.getProject()) {
+                Table = this.getProject()
+                const Model = this.getModel().Project;
+                columns = `${Model.Id}, ${Model.MIndex}, ${Model.Name}, ${Model.CreatedDate}, ${Model.StartYear}`
+                columns += `, ${Model.EndYear}, ${Model.ProjectGroupId}, ${Model.PriorityGroupName}, ${Model.ModifiedDate}`
+            } else if(tableName == this.getProjectGroup()) {
+                Table = this.getProjectGroup()
+                const Model = this.getModel().ProjectGroup;
+                columns = `${Model.Id}, ${Model.MIndex}, ${Model.Name}, ${Model.CreatedDate}`
+            }
+            var where = whereSelect ? whereSelect : '';
+            return `SELECT ${columns} FROM ${Table} ${where}`;
         }
     },
     User: {

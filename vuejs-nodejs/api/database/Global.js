@@ -24,12 +24,20 @@ module.exports = {
         }
         return '';
     },
-    getBaseModel: function () {
+    getModelCM: function() {
         return {
-            Id: 'Id', Name: 'Name', MIndex: 'MIndex',
             CreatedDate: 'CreatedDate', CreatedBy: 'CreatedBy',
             ModifiedDate: 'ModifiedDate', ModifiedBy: 'ModifiedBy'
         }
+    },
+    getColumnsCM: function() {
+        const Model = this.getModelCM();
+        return `${Model.CreatedBy} INTEGER, ${Model.CreatedDate} TEXT, ${Model.ModifiedBy} INTEGER, ${Model.ModifiedDate} TEXT`
+    },
+    getBaseModel: function () {
+        return Object.assign({
+            Id: 'Id', Name: 'Name', MIndex: 'MIndex'
+        }, this.getModelCM())
     },
     getQueryInsert: function () {
         if(arguments.length < 1) throw new Error('param must has table name');
@@ -52,5 +60,10 @@ module.exports = {
     },
     isValidDate: function (d) {
         return d instanceof Date && !isNaN(d);
+    },
+    openTheDatabase(dbName) {
+        if(typeof dbName != 'string') return null;
+        const dbPath = `./database/${dbName}.db`;
+        return new sqlite3.Database(dbPath);
     }
 }

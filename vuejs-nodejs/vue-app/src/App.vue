@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <Dashboard v-if="settings == true"/>
+    <ProjectOverview v-else />
   </div>
 </template>
 
@@ -9,11 +10,13 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import { getAllUsers } from './services/UserService';
 import Dashboard from './components/Dashboard.vue';
+import ProjectOverview from './components/project/ProjectOverview.vue'
 
 export default {
   name: 'App',
   components: {
-    Dashboard
+    Dashboard,
+    ProjectOverview
   },
   data() {
       return {
@@ -23,7 +26,7 @@ export default {
   },
   mounted() {
     console.log("I am in mounted!!!")
-    this.settings = true;
+    //this.settings = true;
 
   },
   setup () {

@@ -11,8 +11,11 @@ const app = appExp.App,
 
 const jwtKey = appExp.createToken('dainb', 'abc123');
 
-var users = []; // getUsers();
-app.get('/api/users', cors(appExp.getCorsOptions()), function (req, res, next) {
+const Constants = require('./Constants')
+
+// #region user/Account
+var users = [];
+app.get(Constants.ApiUsersPath, cors(appExp.getCorsOptions()), (req, res, next) => {
   console.log('api/users called!!!!!!!', jwtKey);
 
   database.getAllUsers().then(rows => {
@@ -22,29 +25,46 @@ app.get('/api/users', cors(appExp.getCorsOptions()), function (req, res, next) {
       data: encrypData(users)
     });
     next();
-  });
-});
+  })
+})
 
-app.get('/api/user', cors(appExp.getCorsOptions()), function (req, res, next) {  
+app.get(Constants.ApiUserPath, cors(appExp.getCorsOptions()), (req, res) => {  
   const query = req.query;
   const token = query.token;
   if(token != jwtKey) return;
-  console.log('api/user called', query);
   const id = parseInt(query.id);
   res.json({
     data: users.find(u => u.Id == id)
-  });
-});
+  })
+})
 
-app.post('/api/user', cors(appExp.getCorsOptions()), (req, res) => {
+app.post(Constants.ApiUserPath, cors(appExp.getCorsOptions()), (req, res, next) => {
   const user = req.body.user;
-  //user.id = Math.floor(Math.random() * 100);
-  console.log('Adding user:::::', user);
-  const id = database.insertUser(user);
-  user.Id = id;
-  users.push(user);
-  res.json(user);
-});
+  database.insertUser(user).then(newId => {
+    user.Id = newId;
+    users.push(user);
+    res.json(user)
+    next();
+  })
+})
+// endregion
+
+app.get(Constants.ApiProjectGroupsPath, cors(appExp.getCorsOptions()), (req, res, next) => {
+  database.getProjectGroups().then(rows => {
+    res.json({
+      data: rows
+    })
+    next()
+  })
+})
+app.get(Constants.ApiProjectsPath, cors(appExp.getCorsOptions()), (req, res, next) => {
+  database.getProjects().then(rows => {
+    res.json({
+      data: rows
+    })
+    next()
+  })
+})
 
 app.get('/', (req,res) => {
   res.sendFile(process.cwd() + '/index.html');
@@ -55,7 +75,7 @@ app.listen(port, () => {
 });
 
 function encrypData(dUsrs) {
-  const a = JSON.parse(JSON.stringify(dUsrs));
+  const a = JSON.parse(JSON.stringify(dUsrs));    // copy
   a.forEach(u => {
     u.FirstName = 'N/A';
     u.Email = '***';
