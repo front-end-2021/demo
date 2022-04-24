@@ -43,6 +43,7 @@ app.post(Constants.ApiUserPath, cors(appExp.getCorsOptions()), (req, res, next) 
   database.insertUser(user).then(newId => {
     user.Id = newId;
     users.push(user);
+    console.log('new user id', newId)
     res.json(user)
     next();
   })

@@ -15,8 +15,35 @@
         <tbody>
             <tr v-for="project in ProjectsView" :key="project.Id">
                 <td v-bind:rowspan="project.RowSpan"
-                    v-if="project.RowSpan">{{project.ProjectGroupName}}</td>
-                <th scope="row">{{project.Name}}</th>
+                    v-if="project.RowSpan">
+                    <div class="d-inline-flex">
+                        <div>{{project.ProjectGroupName}}</div>
+                        <div class="btn-group">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" 
+                            aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a @click="(e) => { openModelEditProjectGroup(project.ProjectGroupId) }"
+                                    data-toggle="modal" data-target="#DnbP_rojectGroupModal_Edit"
+                                    class="dropdown-item" href="#" >{{Menu.Edit}}</a>
+                                <a class="dropdown-item" href="#">{{Menu.Delete}}</a>
+                                <a class="dropdown-item" href="#">{{Menu.NewProject}}</a>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <th scope="row">
+                    <div class="d-inline-flex">
+                        <div>{{project.Name}}</div>
+                        <div class="btn-group">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" 
+                            aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#">{{Menu.Edit}}</a>
+                                <a class="dropdown-item" href="#">{{Menu.Delete}}</a>
+                            </div>
+                        </div>
+                    </div>
+                </th>
                 <td>{{project.PriorityGroupName}}</td>
                 <td>{{project.CreatedDate}}</td>
                 <td>{{project.ModifiedDate}}</td>
@@ -24,18 +51,27 @@
         </tbody>
         </table>
     </div>
+    <ProjectGroupEdit id="DnbP_rojectGroupModal_Edit"
+        @onCloseProjectGroupEdit="closeModelEditProjectGroup"
+        :item="ProjectGroupModel.Data" />
   </div>
 </template>
 
 <script>
+import $ from "jquery";
+import ProjectGroupEdit from './ProjectGroupEdit.vue'
 import { getProjectGroups, getProjects } from '../../services/ProjectService';
 
 export default {
   name: 'ProjectOverview',
+  components: {
+    ProjectGroupEdit
+  },
   data() {
     return {
         LstProjectGroup: [],
         LstProject: [],
+        ProjectGroupModel: { Id: -1, Data: {}}
     }
   },
   mounted () {
@@ -48,6 +84,11 @@ export default {
     })
   },
   computed: {
+      Menu(){
+          return {
+              Edit: 'Edit', Delete: 'Delete', NewProject: 'Create new Project'
+          }
+      },
       Label(){ return 'Project overview'},
       Head() {
             const groupName = 'Group name'
@@ -89,12 +130,20 @@ export default {
         }
   },
   methods: {
-      addProjectGroup() {
-
+      openModelEditProjectGroup(projectGroupId) {
+          this.ProjectGroupModel.Id = projectGroupId;
+          this.ProjectGroupModel.Data = this.getProjectGroup(projectGroupId);
       },
-      getProjectsFrom(projectGroupId) {
-          return this.LstProject.filter(p => p.ProjectGroupId == projectGroupId);
+      getProjectGroup(projectGroupId){
+          return this.LstProjectGroup.find(pg => pg.Id == projectGroupId);
+      },
+     closeModelEditProjectGroup: function (data){
+          this.ProjectGroupModel.Id = -1;
+          $('#DnbP_rojectGroupModal_Edit').modal('hide')
+          if(data != undefined) {     // save and update
+             console.log('Save and Update', data)
+          }
       }
-  }
+  },
 }
 </script>

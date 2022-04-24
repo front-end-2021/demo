@@ -6,10 +6,11 @@
 </template>
 
 <script>
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
-import { getAllUsers } from './services/UserService';
-import Dashboard from './components/Dashboard.vue';
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'bootstrap'
+import { getAllUsers } from './services/UserService'
+import Dashboard from './components/Dashboard.vue'
 import ProjectOverview from './components/project/ProjectOverview.vue'
 
 export default {
