@@ -23,7 +23,7 @@
                             aria-haspopup="true" aria-expanded="false"></button>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a @click="(e) => { openModelEditProjectGroup(project.ProjectGroupId) }"
-                                    data-toggle="modal" data-target="#DnbP_rojectGroupModal_Edit"
+                                    data-toggle="modal" v-bind:data-target="'#DnbP_projectGroupModal_Edit' + IdPopup"
                                     class="dropdown-item" href="#" >{{Menu.Edit}}</a>
                                 <a class="dropdown-item" href="#">{{Menu.Delete}}</a>
                                 <a class="dropdown-item" href="#">{{Menu.NewProject}}</a>
@@ -38,7 +38,9 @@
                             <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" 
                             aria-haspopup="true" aria-expanded="false"></button>
                             <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="#">{{Menu.Edit}}</a>
+                                <a @click="(e) => { openModelEditProject(project.Id) }"
+                                    data-toggle="modal" v-bind:data-target="'#DnbP_projectModal_Edit' + IdPopup"
+                                    class="dropdown-item" href="#">{{Menu.Edit}}</a>
                                 <a class="dropdown-item" href="#">{{Menu.Delete}}</a>
                             </div>
                         </div>
@@ -51,27 +53,32 @@
         </tbody>
         </table>
     </div>
-    <ProjectGroupEdit id="DnbP_rojectGroupModal_Edit"
+    <ProjectGroupEdit v-bind:id="'DnbP_projectGroupModal_Edit' + IdPopup"
         @onCloseProjectGroupEdit="closeModelEditProjectGroup"
         :item="ProjectGroupModel.Data" />
+    <ProjectEdit v-bind:id="'DnbP_projectModal_Edit' + IdPopup"
+        @onCloseProjectEdit="closeModelEditProject"
+        :item="ProjectModel.Data"/>
   </div>
 </template>
 
 <script>
 import $ from "jquery";
 import ProjectGroupEdit from './ProjectGroupEdit.vue'
+import ProjectEdit from './ProjectEdit.vue'
 import { getProjectGroups, getProjects } from '../../services/ProjectService';
 
 export default {
   name: 'ProjectOverview',
   components: {
-    ProjectGroupEdit
+    ProjectGroupEdit, ProjectEdit
   },
   data() {
     return {
         LstProjectGroup: [],
         LstProject: [],
-        ProjectGroupModel: { Id: -1, Data: {}}
+        ProjectGroupModel: { Id: -1, Data: {}},
+        ProjectModel: { Id: -1, Data: {}},
     }
   },
   mounted () {
@@ -127,6 +134,9 @@ export default {
                 return true
             })
             return Projects;
+        },
+        IdPopup(){
+            return Date.now()
         }
   },
   methods: {
@@ -134,16 +144,40 @@ export default {
           this.ProjectGroupModel.Id = projectGroupId;
           this.ProjectGroupModel.Data = this.getProjectGroup(projectGroupId);
       },
-      getProjectGroup(projectGroupId){
+      getProjectGroup(projectGroupId) {
           return this.LstProjectGroup.find(pg => pg.Id == projectGroupId);
       },
-     closeModelEditProjectGroup: function (data){
+     closeModelEditProjectGroup(data) {
           this.ProjectGroupModel.Id = -1;
-          $('#DnbP_rojectGroupModal_Edit').modal('hide')
+          $(`#DnbP_projectGroupModal_Edit${this.IdPopup}`).modal('hide')
           if(data != undefined) {     // save and update
-             console.log('Save and Update', data)
+            const pg = this.LstProjectGroup.find(_pg => _pg.Id == data.Id);
+            if(pg) {
+                pg.Name = data.Name;
+                pg.ModifiedDate = new Date().toUTCString()
+            }
           }
-      }
+          this.ProjectGroupModel.Data = {}
+      },
+      openModelEditProject(projectId) {
+          this.ProjectModel.Id = projectId;
+          this.ProjectModel.Data = this.getProject(projectId);
+      },
+      getProject(projectId){
+          return this.LstProject.find(p => p.Id == projectId)
+      },
+      closeModelEditProject(data) {
+            this.ProjectModel.Id = -1;
+            $(`#DnbP_projectModal_Edit${this.IdPopup}`).modal('hide')
+            if(typeof data == 'object') {
+                const p = this.LstProject.find(_p => _p.Id == data.Id)
+                if(p) {
+                    p.Name = data.Name;
+                    p.ModifiedDate = new Date().toUTCString()
+                }
+            }
+            this.ProjectModel.Data = {}
+      },
   },
 }
 </script>

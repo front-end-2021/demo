@@ -30,13 +30,10 @@
 <script>
 
 export default {
-  name: 'ProjectGroupEdit',
+  name: 'ProjectEdit',
   props: ['item'],
   data() {
-      
-    return {
-        Data: {}
-    }
+    return { Data: {} }
   },
   computed: {
       Label(){
@@ -44,14 +41,14 @@ export default {
           return {
               Title: pgName,
               Save: 'Save and Close',
-              Name: `Name of project group`
+              Name: `Name of project`
           }
       },
       TagId(){
           const dateNow = Date.now();
           return {
-              LabelName: `project-group-name_${dateNow}`,
-              LabelTitle: `project-group-tlt_${dateNow}`
+              LabelName: `project-name_${dateNow}`,
+              LabelTitle: `project-tlt_${dateNow}`
           }
       }
   },
@@ -63,13 +60,13 @@ export default {
   },
   methods: {
       saveAndClose() {
-        if(this.hasChanges())
-            this.$emit('onCloseProjectGroupEdit', this.Data);
+        if(this.hasChanges() && this.Data.Name.trim() != '')
+            this.$emit('onCloseProjectEdit', this.Data);
         else 
             this.onClose()
       },
       onClose() {
-          this.$emit('onCloseProjectGroupEdit', undefined);
+          this.$emit('onCloseProjectEdit', undefined);
       },
       hasChanges(){
           const k1 = this.item;
