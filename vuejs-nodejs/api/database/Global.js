@@ -65,5 +65,8 @@ module.exports = {
         if(typeof dbName != 'string') return null;
         const dbPath = `./database/${dbName}.db`;
         return new sqlite3.Database(dbPath);
+    },
+    SqliteDataType: {
+        INT: 'INTEGER', NULL: 'NULL', TEXT: 'TEXT', BLOB: 'BLOB', REAL: 'REAL'
     }
 }
