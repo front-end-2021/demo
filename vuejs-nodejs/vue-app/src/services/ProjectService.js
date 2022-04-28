@@ -10,3 +10,11 @@ export async function getProjects() {
     const response = await axios.get(`${serverUrl}/api/projects`);
     return response.data;
 }
+
+export async function createProjectGroup(data) {
+    const entry = {
+        projectgroup: data
+    }
+    const response = await axios.post(`${serverUrl}/api/projectgroup`, entry);
+    return response.data;
+}

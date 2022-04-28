@@ -66,6 +66,15 @@ app.get(Constants.ApiProjectsPath, cors(appExp.getCorsOptions()), (req, res, nex
     next()
   })
 })
+app.post(Constants.ApiProjectGroupPath, cors(appExp.getCorsOptions()), (req, res, next) => {
+  const entry = req.body.projectgroup;
+  console.log('create project group')
+  database.insertProjectGroup(entry).then(newId => {
+    console.log('new project group id', newId)
+    res.json(newId)
+    next();
+  })
+})
 
 app.get('/', (req,res) => {
   res.sendFile(process.cwd() + '/index.html');

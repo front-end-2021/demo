@@ -40,7 +40,7 @@ export default {
   },
   computed: {
       Label(){
-          const pgName = this.item.Name ? `Edit ${this.item.Name}` : '';
+          var pgName = this.item.Name ? `Edit ${this.item.Name}` : (this.item.Name == '' ? 'Create Project group' : '');
           return {
               Title: pgName,
               Save: 'Save and Close',

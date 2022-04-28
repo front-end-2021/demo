@@ -5,7 +5,13 @@
         <caption>{{Label}}</caption>
         <thead>
             <tr>
-                <th scope="col">{{Head.GroupName}}</th>
+                <th scope="col">
+                    <span>{{Head.GroupName}}</span>
+                    <a @click="openAddNewProjectGroup"
+                    data-toggle="modal" 
+                    v-bind:data-target="'#DnbP_projectGroupModal_Edit' + IdPopup"
+                    class="btn">+</a>
+                </th>
                 <th scope="col">{{Head.ProjectName}}</th>
                 <th scope="col">{{Head.Owner}}</th>
                 <th scope="col">{{Head.CreatedDate}}</th>
@@ -13,7 +19,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="project in ProjectsView" :key="project.Id">
+            <tr v-for="project in ProjectsView" :key="project.ProjectGroupId + project.Id">
                 <td v-bind:rowspan="project.RowSpan"
                     v-if="project.RowSpan">
                     <div class="d-inline-flex">
@@ -23,7 +29,8 @@
                             aria-haspopup="true" aria-expanded="false"></button>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a @click="(e) => { openModelEditProjectGroup(project.ProjectGroupId) }"
-                                    data-toggle="modal" v-bind:data-target="'#DnbP_projectGroupModal_Edit' + IdPopup"
+                                    data-toggle="modal" 
+                                    v-bind:data-target="'#DnbP_projectGroupModal_Edit' + IdPopup"
                                     class="dropdown-item" href="#" >{{Menu.Edit}}</a>
                                 <a class="dropdown-item" href="#">{{Menu.Delete}}</a>
                                 <a class="dropdown-item" href="#">{{Menu.NewProject}}</a>
@@ -34,12 +41,13 @@
                 <th scope="row">
                     <div class="d-inline-flex">
                         <div>{{project.Name}}</div>
-                        <div class="btn-group">
+                        <div v-if="project.Name" class="btn-group">
                             <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" 
                             aria-haspopup="true" aria-expanded="false"></button>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a @click="(e) => { openModelEditProject(project.Id) }"
-                                    data-toggle="modal" v-bind:data-target="'#DnbP_projectModal_Edit' + IdPopup"
+                                    data-toggle="modal" 
+                                    v-bind:data-target="'#DnbP_projectModal_Edit' + IdPopup"
                                     class="dropdown-item" href="#">{{Menu.Edit}}</a>
                                 <a class="dropdown-item" href="#">{{Menu.Delete}}</a>
                             </div>
@@ -54,7 +62,7 @@
         </table>
     </div>
     <ProjectGroupEdit v-bind:id="'DnbP_projectGroupModal_Edit' + IdPopup"
-        @onCloseProjectGroupEdit="closeModelEditProjectGroup"
+        @onCloseProjectGroupEdit="onCloseProjectGroupEdit"
         :item="ProjectGroupModel.Data" />
     <ProjectEdit v-bind:id="'DnbP_projectModal_Edit' + IdPopup"
         @onCloseProjectEdit="closeModelEditProject"
@@ -66,7 +74,7 @@
 import $ from "jquery";
 import ProjectGroupEdit from './ProjectGroupEdit.vue'
 import ProjectEdit from './ProjectEdit.vue'
-import { getProjectGroups, getProjects } from '../../services/ProjectService';
+import { getProjectGroups, getProjects, createProjectGroup } from '../../services/ProjectService';
 
 export default {
   name: 'ProjectOverview',
@@ -110,12 +118,14 @@ export default {
         ProjectsView() {
             const rowSpans = []
             const lstProject = this.LstProject;
-            this.LstProjectGroup.filter(pg => {
+            const lstProjectGroup = this.LstProjectGroup;
+            lstProjectGroup.filter(pg => {
                 const countP = lstProject.filter(p => { return p.ProjectGroupId == pg.Id }).length;
                 rowSpans.push({
                     ProjectGroupId: pg.Id, ProjectGroupName: pg.Name,
                     RowSpan: countP
                 })
+                return true;
             })
 
             var fIndexPg = -1;
@@ -128,11 +138,26 @@ export default {
                     if(r2) {
                         p2.RowSpan = r2.RowSpan;
                         p2.ProjectGroupName = r2.ProjectGroupName;
+                        p2.ProjectGroupId = fIndexPg
                     }
                 }
                 Projects.push(p2);
                 return true
             })
+            rowSpans.filter(r => r.RowSpan < 1).forEach(rs => {
+                const p = lstProjectGroup.find(pg => rs.ProjectGroupId == pg.Id);
+                if(p) {
+                    const name = p.Name;
+                    const p2 = JSON.parse(JSON.stringify(p))
+                    p2.ProjectGroupName = name;
+                    p2.Name = undefined;
+                    p2.RowSpan = 1;
+                    p2.ProjectGroupId = p.Id;
+                    p2.Id = 0;
+                    Projects.push(p2);
+                }
+            })
+
             return Projects;
         },
         IdPopup(){
@@ -147,7 +172,7 @@ export default {
       getProjectGroup(projectGroupId) {
           return this.LstProjectGroup.find(pg => pg.Id == projectGroupId);
       },
-     closeModelEditProjectGroup(data) {
+     onCloseProjectGroupEdit(data) {
           this.ProjectGroupModel.Id = -1;
           $(`#DnbP_projectGroupModal_Edit${this.IdPopup}`).modal('hide')
           if(data != undefined) {     // save and update
@@ -155,6 +180,13 @@ export default {
             if(pg) {
                 pg.Name = data.Name;
                 pg.ModifiedDate = new Date().toUTCString()
+
+            } else {
+                data.CreatedBy = 1;
+                delete data.Id;
+                createProjectGroup(data).then(response => {
+                    console.log(response)
+                })
             }
           }
           this.ProjectGroupModel.Data = {}
@@ -177,6 +209,10 @@ export default {
                 }
             }
             this.ProjectModel.Data = {}
+      },
+      openAddNewProjectGroup(){
+            this.ProjectGroupModel.Id = 0;
+            this.ProjectGroupModel.Data = {Name: '', Id: 0};
       },
   },
 }
