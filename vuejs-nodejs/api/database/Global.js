@@ -24,6 +24,14 @@ module.exports = {
         }
         return '';
     },
+    getDate: function(dateStr) {
+        if(typeof dateStr == 'string')
+            if(!dateStr.includes('GMT')) {
+                dateStr += ' GMT';
+                return new Date(dateStr)
+            }
+        return new Date()
+    },
     getModelCM: function() {
         return {
             CreatedDate: 'CreatedDate', CreatedBy: 'CreatedBy',

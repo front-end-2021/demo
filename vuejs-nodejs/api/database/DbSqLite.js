@@ -7,5 +7,6 @@ module.exports = {
     insertUser: Account.insertUser,
 
     getProjects: Project.getProjects,
+    insertProjectGroup: Project.insertProjectGroup,
     getProjectGroups: Project.getProjectGroups
 }
