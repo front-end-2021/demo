@@ -32,7 +32,9 @@ module.exports = {
     },
     getColumnsCM: function() {
         const Model = this.getModelCM();
-        return `${Model.CreatedBy} INTEGER, ${Model.CreatedDate} TEXT, ${Model.ModifiedBy} INTEGER, ${Model.ModifiedDate} TEXT`
+        const colCreate = `${Model.CreatedBy} ${this.SqDType.INT}, ${Model.CreatedDate} ${this.SqDType.TEXT}`
+        const colModify = `${Model.ModifiedBy} ${this.SqDType.INT}, ${Model.ModifiedDate} ${this.SqDType.TEXT}`
+        return `${colCreate}, ${colModify}`
     },
     getBaseModel: function () {
         return Object.assign({
@@ -61,12 +63,8 @@ module.exports = {
     isValidDate: function (d) {
         return d instanceof Date && !isNaN(d);
     },
-    openTheDatabase(dbName) {
-        if(typeof dbName != 'string') return null;
-        const dbPath = `./database/${dbName}.db`;
-        return new sqlite3.Database(dbPath);
-    },
-    SqliteDataType: {
+    openTheDatabase : openTheDatabase,
+    SqDType: {
         INT: 'INTEGER', NULL: 'NULL', TEXT: 'TEXT', BLOB: 'BLOB', REAL: 'REAL'
     }
 }
