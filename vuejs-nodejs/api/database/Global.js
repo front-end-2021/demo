@@ -65,6 +65,7 @@ module.exports = {
     },
     openTheDatabase : openTheDatabase,
     SqDType: {
-        INT: 'INTEGER', NULL: 'NULL', TEXT: 'TEXT', BLOB: 'BLOB', REAL: 'REAL'
+        INT: 'INTEGER', NULL: 'NULL', TEXT: 'TEXT', BLOB: 'BLOB', REAL: 'REAL',
+        AUTOINC: 'AUTOINCREMENT'
     }
 }

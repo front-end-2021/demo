@@ -25,6 +25,26 @@ function getProjectGroups(){
         });
     });
 }
+function insertProjectGroup(entry){
+    return global.runQuery(Constants.DbNameObj.Project, function(db, resolve) {
+        if(typeof entry == 'object') {
+            const prj = Constants.Project;
+            const model = prj.getModel().ProjectGroup
+            entry = Object.assign(model, entry);
+            const query = `INSERT INTO ProjectGroup (Name, MIndex, CreatedBy, CreatedDate)
+            SELECT ${entry.Name} Name, MAX(Id) + 1 MIndex, ${entry.CreatedBy} CreatedBy, DATETIME('NOW') CreatedDate FROM ProjectGroup;`
+            // const values = [entry.FirstName, entry.LastName, entry.Email, entry.DoB];
+            // db.run(query, values, (err) => {
+            //     if(err) {
+            //         throw err;
+            //     } else {
+            //         resolve(this.lastID)
+            //     }
+            // });
+        }
+    });
+}
+
 function getProjects(){
     return global.runQuery(Constants.DbNameObj.Project, function(db, resolve){
         const Project = Constants.Project;
@@ -37,7 +57,9 @@ function getProjects(){
     });
 }
 
+
 module.exports = {
     getProjectGroups: getProjectGroups,
+    insertProjectGroup: insertProjectGroup,
     getProjects: getProjects
 }

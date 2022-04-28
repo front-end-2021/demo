@@ -48,13 +48,14 @@ module.exports = {
         queryCreateTable: function (tableName) {
             if(tableName == this.getProject()) {
                 const Model = this.getModel().Project;
-                const cols1 = `${global.getQueryIntAutoIncrease(Model.Id)}, ${Model.Name} TEXT, ${Model.ProjectGroupId} INTEGER`;
-                const cols3 = `${Model.StartYear} INTEGER, ${Model.EndYear} INTEGER, ${Model.MIndex} INTEGER NOT NULL, ${Model.PriorityGroupName} TEXT`;
-                return `${global.getQueryCreateTable(tableName)} (${cols1}, ${global.getColumnsCM()}, ${cols3})`;
+                const cols1 = `${global.getQueryIntAutoIncrease(Model.Id)}, ${Model.Name} ${global.SqDType.TEXT}, ${Model.ProjectGroupId} ${global.SqDType.INT}`;
+                const cols3 = `${Model.StartYear} ${global.SqDType.INT}, ${Model.EndYear} ${global.SqDType.INT}`;
+                const cols4 = `${Model.MIndex} ${global.SqDType.INT} NOT NULL, ${Model.PriorityGroupName} ${global.SqDType.TEXT}`;
+                return `${global.getQueryCreateTable(tableName)} (${cols1}, ${global.getColumnsCM()}, ${cols3}, ${cols4})`;
             }
             if(tableName == this.getProjectGroup()) {
                 const Model = this.getModel().ProjectGroup;
-                const cols1 = `${global.getQueryIntAutoIncrease(Model.Id)}, ${Model.Name} TEXT, ${Model.MIndex} INTEGER NOT NULL`;
+                const cols1 = `${global.getQueryIntAutoIncrease(Model.Id)}, ${Model.Name} ${global.SqDType.TEXT}, ${Model.MIndex} ${global.SqDType.INT} NOT NULL`;
                 return `${global.getQueryCreateTable(tableName)} (${cols1}, ${global.getColumnsCM()})`;
             }
         },
