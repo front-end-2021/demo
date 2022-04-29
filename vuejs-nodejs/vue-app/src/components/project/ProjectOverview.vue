@@ -19,7 +19,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="project in ProjectsView" :key="project.ProjectGroupId + project.Id">
+            <tr v-for="project in ProjectsView" :key="'projectgroup' + project.ProjectGroupId + 'project' + project.Id">
                 <td v-bind:rowspan="project.RowSpan"
                     v-if="project.RowSpan">
                     <div class="d-inline-flex">
@@ -75,6 +75,7 @@ import $ from "jquery";
 import ProjectGroupEdit from './ProjectGroupEdit.vue'
 import ProjectEdit from './ProjectEdit.vue'
 import { getProjectGroups, getProjects, createProjectGroup } from '../../services/ProjectService';
+import { getDate, toString } from '../../common/global';
 
 export default {
   name: 'ProjectOverview',
@@ -92,9 +93,19 @@ export default {
   mounted () {
     const thisRef = this;
     getProjectGroups().then(response => {
+        response.data.forEach(pg => {
+            var d = pg.CreatedDate;
+            d = getDate(d);
+            pg.CreatedDate = toString(d, 'dd-MM-YYYY')
+        })
         thisRef.LstProjectGroup = response.data;
     })
     getProjects().then(response => {
+        response.data.forEach(p => {
+            var d = p.CreatedDate;
+            d = getDate(d);
+            p.CreatedDate = toString(d)
+        })
         thisRef.LstProject = response.data;
     })
   },
