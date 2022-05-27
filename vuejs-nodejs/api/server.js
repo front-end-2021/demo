@@ -68,15 +68,22 @@ app.get(Constants.ApiProjectsPath, cors(appExp.getCorsOptions()), (req, res, nex
 })
 app.post(Constants.ApiProjectGroupPath, cors(appExp.getCorsOptions()), (req, res, next) => {
   const entry = req.body.projectgroup;
-  console.log('create project group')
-  database.insertProjectGroup(entry).then(newId => {
-    console.log('new project group id', newId)
-    res.json(newId)
-    next();
-  })
+  if(entry.Id < 1) {
+    console.log('create project group')
+    database.insertProjectGroup(entry).then(newId => {
+      res.json(newId)
+      next()
+    })
+  } else {
+    console.log('edit project group')
+    database.editProjectGroup(entry).then(status => {
+      res.json({ Status: status })
+      next()
+    })
+  }
 })
 
-app.get('/', (req,res) => {
+app.get('/', (req, res) => {
   res.sendFile(process.cwd() + '/index.html');
 });
 

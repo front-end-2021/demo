@@ -8,5 +8,6 @@ module.exports = {
 
     getProjects: Project.getProjects,
     insertProjectGroup: Project.insertProjectGroup,
+    editProjectGroup: Project.editProjectGroup,
     getProjectGroups: Project.getProjectGroups
 }

@@ -74,7 +74,7 @@
 import $ from "jquery";
 import ProjectGroupEdit from './ProjectGroupEdit.vue'
 import ProjectEdit from './ProjectEdit.vue'
-import { getProjectGroups, getProjects, createProjectGroup } from '../../services/ProjectService';
+import { getProjectGroups, getProjects, createProjectGroup, editProjectGroup } from '../../services/ProjectService';
 import { getDate, toString } from '../../common/global';
 
 export default {
@@ -190,11 +190,11 @@ export default {
             const pg = this.LstProjectGroup.find(_pg => _pg.Id == data.Id);
             if(pg) {
                 pg.Name = data.Name;
-                pg.ModifiedDate = new Date().toUTCString()
-
+                pg.ModifiedDate = new Date().toUTCString();
+                editProjectGroup(pg);
             } else {
                 data.CreatedBy = 1;
-                delete data.Id;
+                data.Id = 0;
                 createProjectGroup(data).then(response => {
                     console.log(response)
                 })

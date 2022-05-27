@@ -18,3 +18,7 @@ export async function createProjectGroup(data) {
     const response = await axios.post(`${serverUrl}/api/projectgroup`, entry);
     return response.data;
 }
+
+export async function editProjectGroup (data) {
+    await createProjectGroup(data);
+}

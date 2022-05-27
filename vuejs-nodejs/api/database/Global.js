@@ -67,5 +67,8 @@ module.exports = {
     SqDType: {
         INT: 'INTEGER', NULL: 'NULL', TEXT: 'TEXT', BLOB: 'BLOB', REAL: 'REAL',
         AUTOINC: 'AUTOINCREMENT'
+    },
+    DbStatus: {
+        Error: -1, Success: 1
     }
 }

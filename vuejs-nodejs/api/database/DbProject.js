@@ -43,6 +43,23 @@ function insertProjectGroup(entry) {
         }
     });
 }
+function editProjectGroup(entry){
+    return global.runQuery(Constants.DbNameObj.Project, function(db, resolve) {
+        if(typeof entry == 'object') {
+            const prj = Constants.Project;
+            const model = prj.getModel().ProjectGroup
+            entry = Object.assign(model, entry);
+            const query = `UPDATE ProjectGroup SET Name = ?, MIndex = ?
+                            WHERE Id = ?;`
+            const values = [entry.Name, entry.MIndex, entry.Id];
+            db.run(query, values, (err) => {
+                if(err) { throw err; } else {
+                    resolve(global.DbStatus.Success, entry.Id)
+                }
+            });
+        }
+    });
+}
 
 function getProjects() {
     return global.runQuery(Constants.DbNameObj.Project, function(db, resolve){
@@ -60,5 +77,6 @@ function getProjects() {
 module.exports = {
     getProjectGroups: getProjectGroups,
     insertProjectGroup: insertProjectGroup,
+    editProjectGroup: editProjectGroup,
     getProjects: getProjects
 }
