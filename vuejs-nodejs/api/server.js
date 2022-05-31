@@ -75,12 +75,15 @@ app.post(Constants.ApiProjectGroupPath, cors(appExp.getCorsOptions()), (req, res
       next()
     })
   } else {
-    console.log('edit project group')
+    console.log('edit project group', req.ip)
     database.editProjectGroup(entry).then(status => {
       res.json({ Status: status })
       next()
     })
   }
+})
+app.delete(Constants.ApiProjectGroupPath, cors(appExp.getCorsOptions()), (req, res, next) => {
+  
 })
 
 app.get('/', (req, res) => {

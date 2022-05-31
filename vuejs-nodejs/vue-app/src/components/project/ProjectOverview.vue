@@ -10,7 +10,7 @@
                     <a @click="openAddNewProjectGroup"
                     data-toggle="modal" 
                     v-bind:data-target="'#DnbP_projectGroupModal_Edit' + IdPopup"
-                    class="btn">+</a>
+                    class="btn"><strong>+</strong></a>
                 </th>
                 <th scope="col">{{Head.ProjectName}}</th>
                 <th scope="col">{{Head.Owner}}</th>
@@ -29,10 +29,11 @@
                             aria-haspopup="true" aria-expanded="false"></button>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a @click="(e) => { openModelEditProjectGroup(project.ProjectGroupId) }"
-                                    data-toggle="modal" 
                                     v-bind:data-target="'#DnbP_projectGroupModal_Edit' + IdPopup"
-                                    class="dropdown-item" href="#" >{{Menu.Edit}}</a>
-                                <a class="dropdown-item" href="#">{{Menu.Delete}}</a>
+                                    data-toggle="modal" class="dropdown-item" href="#" >{{Menu.Edit}}</a>
+                                <a @click="(e) => { openModelDeleteProjectGroup(project.ProjectGroupId) }"
+                                    v-bind:data-target="'#DnbP_projectGroupModal_Edit' + IdPopup"
+                                    data-toggle="modal" class="dropdown-item" href="#">{{Menu.Delete}}</a>
                                 <a class="dropdown-item" href="#">{{Menu.NewProject}}</a>
                             </div>
                         </div>
@@ -46,9 +47,8 @@
                             aria-haspopup="true" aria-expanded="false"></button>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a @click="(e) => { openModelEditProject(project.Id) }"
-                                    data-toggle="modal" 
                                     v-bind:data-target="'#DnbP_projectModal_Edit' + IdPopup"
-                                    class="dropdown-item" href="#">{{Menu.Edit}}</a>
+                                    data-toggle="modal" class="dropdown-item" href="#">{{Menu.Edit}}</a>
                                 <a class="dropdown-item" href="#">{{Menu.Delete}}</a>
                             </div>
                         </div>
@@ -74,7 +74,8 @@
 import $ from "jquery";
 import ProjectGroupEdit from './ProjectGroupEdit.vue'
 import ProjectEdit from './ProjectEdit.vue'
-import { getProjectGroups, getProjects, createProjectGroup, editProjectGroup } from '../../services/ProjectService';
+import { getProjectGroups, getProjects, deleteProjectGroup,
+        createProjectGroup, editProjectGroup } from '../../services/ProjectService';
 import { getDate, toString } from '../../common/global';
 
 export default {
@@ -177,36 +178,44 @@ export default {
   },
   methods: {
       openModelEditProjectGroup(projectGroupId) {
-          this.ProjectGroupModel.Id = projectGroupId;
-          this.ProjectGroupModel.Data = this.getProjectGroup(projectGroupId);
+          this.ProjectGroupModel.Id = projectGroupId
+          this.ProjectGroupModel.Data = this.getProjectGroup(projectGroupId)
+      },
+      openModelDeleteProjectGroup(projectGroupId) {
+          this.ProjectGroupModel.Id = projectGroupId
+          const pg = this.getProjectGroup(projectGroupId);
+          this.ProjectGroupModel.Data = { Id: -1, Name: pg.Name }
       },
       getProjectGroup(projectGroupId) {
           return this.LstProjectGroup.find(pg => pg.Id == projectGroupId);
       },
-     onCloseProjectGroupEdit(data) {
-          this.ProjectGroupModel.Id = -1;
+      onCloseProjectGroupEdit(data) {
           $(`#DnbP_projectGroupModal_Edit${this.IdPopup}`).modal('hide')
-          if(data != undefined) {     // save and update
+          if(data != undefined) {       // save and update (saveAndClose)
             const pg = this.LstProjectGroup.find(_pg => _pg.Id == data.Id);
-            if(pg) {
+            if(pg) {                    // edit
                 pg.Name = data.Name;
                 pg.ModifiedDate = new Date().toUTCString();
                 editProjectGroup(pg);
-            } else {
-                data.CreatedBy = 1;
-                data.Id = 0;
+            } else {                    // create
+                data.CreatedBy = 1;             // hardcode
+                data.Id = 0;                    // hardcode
                 createProjectGroup(data).then(response => {
                     console.log(response)
                 })
             }
+            if(this.ProjectGroupModel.Id > 0 && !pg){       // delete
+                deleteProjectGroup(this.ProjectGroupModel.Id)
+            }
           }
+          this.ProjectGroupModel.Id = -1;
           this.ProjectGroupModel.Data = {}
       },
       openModelEditProject(projectId) {
           this.ProjectModel.Id = projectId;
           this.ProjectModel.Data = this.getProject(projectId);
       },
-      getProject(projectId){
+      getProject(projectId) {
           return this.LstProject.find(p => p.Id == projectId)
       },
       closeModelEditProject(data) {
@@ -221,7 +230,7 @@ export default {
             }
             this.ProjectModel.Data = {}
       },
-      openAddNewProjectGroup(){
+      openAddNewProjectGroup() {
             this.ProjectGroupModel.Id = 0;
             this.ProjectGroupModel.Data = {Name: '', Id: 0};
       },

@@ -11,7 +11,7 @@
             </div>
             <div class="modal-body">
                 <label v-bind:for="TagId.LabelName">{{Label.Name}}</label>
-                <div class="input-group mb-3">
+                <div class="input-group mb-3" v-if="!Label.IsDelete">
                     <input type="text" class="form-control" 
                         v-model="Data.Name"
                         v-bind:id="TagId.LabelName" 
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-
+// element nay duoc bind va khong bi destroy (do su dung model cua bootstrap5)
 export default {
   name: 'ProjectGroupEdit',
   props: ['item'],
@@ -40,11 +40,18 @@ export default {
   },
   computed: {
       Label(){
-          var pgName = this.item.Name ? `Edit ${this.item.Name}` : (this.item.Name == '' ? 'Create Project group' : '');
+          var tlt = 'Create Project group'
+          var lbl = `Name of project group`
+          if(this.item.Id > 0) tlt = `Edit ${this.item.Name}`
+          if(this.item.Id < 0) {
+              tlt = 'Delete Project group'
+              lbl = `Delete ${this.item.Name}?`
+            }
           return {
-              Title: pgName,
+              IsDelete: this.item.Id < 0,
+              Title: tlt,
               Save: 'Save and Close',
-              Name: `Name of project group`
+              Name: lbl
           }
       },
       TagId(){
@@ -56,14 +63,14 @@ export default {
       }
   },
   watch: {
-    item(newItem) {
+    item(newItem) {         // dung ham nay vi item duoc set o ProjectOverview.vue
       const model = JSON.parse(JSON.stringify(newItem))
-      this.Data = model;
+      this.Data = model     // can update lai Data de hien thi dung
     }
   },
   methods: {
       saveAndClose() {
-        if(this.hasChanges())
+        if(this.hasChanges() || this.Label.IsDelete)
             this.$emit('onCloseProjectGroupEdit', this.Data);
         else 
             this.onClose()
