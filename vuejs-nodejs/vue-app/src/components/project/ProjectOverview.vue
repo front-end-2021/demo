@@ -92,23 +92,7 @@ export default {
     }
   },
   mounted () {
-    const thisRef = this;
-    getProjectGroups().then(response => {
-        response.data.forEach(pg => {
-            var d = pg.CreatedDate;
-            d = getDate(d);
-            pg.CreatedDate = toString(d, 'dd-MM-YYYY')
-        })
-        thisRef.LstProjectGroup = response.data;
-    })
-    getProjects().then(response => {
-        response.data.forEach(p => {
-            var d = p.CreatedDate;
-            d = getDate(d);
-            p.CreatedDate = toString(d)
-        })
-        thisRef.LstProject = response.data;
-    })
+    this.getDataApi()
   },
   computed: {
       Menu(){
@@ -177,62 +161,97 @@ export default {
         }
   },
   methods: {
+      getDataApi(){
+            const thisRef = this;
+            getProjectGroups().then(response => {
+                response.data.forEach(pg => {
+                    var d = pg.CreatedDate
+                    d = getDate(d)
+                    pg.CreatedDate = toString(d, 'dd-MM-YYYY')
+                    
+                    d = pg.ModifiedDate
+                    d = getDate(d, true)
+                    pg.ModifiedDate = toString(d, 'dd-MM-YYYY')
+                })
+                thisRef.LstProjectGroup = response.data
+            })
+            getProjects().then(response => {
+                response.data.forEach(p => {
+                    var d = p.CreatedDate
+                    d = getDate(d)
+                    p.CreatedDate = toString(d)
+
+                    d = p.ModifiedDate
+                    d = getDate(d, true)
+                    p.ModifiedDate = toString(d, 'dd-MM-YYYY')
+                })
+                thisRef.LstProject = response.data
+            })
+      },
       openModelEditProjectGroup(projectGroupId) {
           this.ProjectGroupModel.Id = projectGroupId
           this.ProjectGroupModel.Data = this.getProjectGroup(projectGroupId)
       },
       openModelDeleteProjectGroup(projectGroupId) {
           this.ProjectGroupModel.Id = projectGroupId
-          const pg = this.getProjectGroup(projectGroupId);
+          const pg = this.getProjectGroup(projectGroupId)
           this.ProjectGroupModel.Data = { Id: -1, Name: pg.Name }
       },
       getProjectGroup(projectGroupId) {
-          return this.LstProjectGroup.find(pg => pg.Id == projectGroupId);
+          return this.LstProjectGroup.find(pg => pg.Id == projectGroupId)
       },
       onCloseProjectGroupEdit(data) {
           $(`#DnbP_projectGroupModal_Edit${this.IdPopup}`).modal('hide')
           if(data != undefined) {       // save and update (saveAndClose)
-            const pg = this.LstProjectGroup.find(_pg => _pg.Id == data.Id);
-            if(pg) {                    // edit
-                pg.Name = data.Name;
-                pg.ModifiedDate = new Date().toUTCString();
-                editProjectGroup(pg);
-            } else {                    // create
-                data.CreatedBy = 1;             // hardcode
-                data.Id = 0;                    // hardcode
-                createProjectGroup(data).then(response => {
-                    console.log(response)
+          const pg = this.LstProjectGroup.find(_pg => _pg.Id == data.Id);
+          const thisRef = this
+            if(this.ProjectGroupModel.Id > 0 && !pg){       // DELETE
+                deleteProjectGroup(this.ProjectGroupModel.Id).then(resp => {
+                    console.log('deleteProjectGroup: ', resp)
+                    if(resp.data.Status == 1)       // global.DbStatus.Success
+                        thisRef.getDataApi()
                 })
-            }
-            if(this.ProjectGroupModel.Id > 0 && !pg){       // delete
-                deleteProjectGroup(this.ProjectGroupModel.Id)
+            } else {
+                if(pg) {                                    // EDIT
+                    pg.ModifiedBy = 1             // hardcode
+                    pg.Name = data.Name
+                    editProjectGroup(pg)
+                } else {                                    // CREATE
+                    data.CreatedBy = 1             // hardcode
+                    data.Id = 0                    // hardcode
+                    createProjectGroup(data).then((rs) => {
+                        console.log('createProjectGroup: ', rs)
+                        if(rs.data.Status == 1)       // global.DbStatus.Success
+                            thisRef.getDataApi()
+                    })
+                }
             }
           }
-          this.ProjectGroupModel.Id = -1;
+          this.ProjectGroupModel.Id = -1
           this.ProjectGroupModel.Data = {}
       },
       openModelEditProject(projectId) {
-          this.ProjectModel.Id = projectId;
-          this.ProjectModel.Data = this.getProject(projectId);
+          this.ProjectModel.Id = projectId
+          this.ProjectModel.Data = this.getProject(projectId)
       },
       getProject(projectId) {
           return this.LstProject.find(p => p.Id == projectId)
       },
       closeModelEditProject(data) {
-            this.ProjectModel.Id = -1;
+            this.ProjectModel.Id = -1
             $(`#DnbP_projectModal_Edit${this.IdPopup}`).modal('hide')
             if(typeof data == 'object') {
                 const p = this.LstProject.find(_p => _p.Id == data.Id)
                 if(p) {
-                    p.Name = data.Name;
+                    p.Name = data.Name
                     p.ModifiedDate = new Date().toUTCString()
                 }
             }
             this.ProjectModel.Data = {}
       },
       openAddNewProjectGroup() {
-            this.ProjectGroupModel.Id = 0;
-            this.ProjectGroupModel.Data = {Name: '', Id: 0};
+            this.ProjectGroupModel.Id = 0
+            this.ProjectGroupModel.Data = {Name: '', Id: 0}
       },
   },
 }

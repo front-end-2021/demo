@@ -69,7 +69,7 @@ module.exports = {
             } else if(tableName == this.getProjectGroup()) {
                 Table = this.getProjectGroup()
                 const Model = this.getModel().ProjectGroup;
-                columns = `${Model.Id}, ${Model.MIndex}, ${Model.Name}, ${Model.CreatedDate}`
+                columns = `${Model.Id}, ${Model.MIndex}, ${Model.Name}, ${Model.CreatedDate}, ${Model.ModifiedDate}`
             }
             var where = whereSelect ? whereSelect : '';
             return `SELECT ${columns} FROM ${Table} ${where}`;

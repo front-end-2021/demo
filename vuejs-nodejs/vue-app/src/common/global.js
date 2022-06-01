@@ -11,15 +11,18 @@ function getDay(date, format) {
     }
 }
 
-export function getDate (dateStr) {
-    if(typeof dateStr == 'string')
+export function getDate (dateStr, isModifiedDate) {
+    if(typeof dateStr == 'string') {
         if(!dateStr.includes('GMT')) {
             dateStr += ' GMT';
-            return new Date(dateStr)
         }
+        return new Date(dateStr)
+    }
+    if(typeof isModifiedDate == 'boolean') return ''
     return new Date()
 }
 export function toString(date, format) {
+    if(!date) return ''
     format = format || 'ddd MM/dd/YYYY';
     if(!format.includes(':')) {
         format += ' hh:mm:ss'

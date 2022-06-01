@@ -31,13 +31,14 @@ function insertProjectGroup(entry) {
             const prj = Constants.Project;
             const model = prj.getModel().ProjectGroup
             entry = Object.assign(model, entry);
-            const query = `INSERT INTO ProjectGroup (Name, MIndex, CreatedBy, CreatedDate)
+            const query = `INSERT INTO ${prj.getProjectGroup()} (Name, MIndex, CreatedBy, CreatedDate)
                         SELECT ? Name, (MAX(Id) + 1) MIndex, ? CreatedBy, DATETIME('NOW') CreatedDate 
                         FROM ProjectGroup;`
             const values = [entry.Name, entry.CreatedBy];
             db.run(query, values, (err) => {
-                if(err) { throw err; } else {
-                    resolve(this.lastID)
+                if(err) { throw err; } 
+                else {
+                    resolve(global.DbStatus.Success)
                 }
             });
         }
@@ -46,19 +47,36 @@ function insertProjectGroup(entry) {
 function editProjectGroup(entry){
     return global.runQuery(Constants.DbNameObj.Project, function(db, resolve) {
         if(typeof entry == 'object') {
-            const prj = Constants.Project;
+            const prj = Constants.Project
             const model = prj.getModel().ProjectGroup
-            entry = Object.assign(model, entry);
-            const query = `UPDATE ProjectGroup SET Name = ?, MIndex = ?
+            entry = Object.assign(model, entry)
+            const query = `UPDATE ${prj.getProjectGroup()} 
+                        SET Name = ?, MIndex = ?, ModifiedBy = ?, ModifiedDate = DATETIME('NOW')
                             WHERE Id = ?;`
-            const values = [entry.Name, entry.MIndex, entry.Id];
+            const values = [entry.Name, entry.MIndex, entry.ModifiedBy, entry.Id];
             db.run(query, values, (err) => {
-                if(err) { throw err; } else {
+                if(err) { throw err; } 
+                else {
                     resolve(global.DbStatus.Success, entry.Id)
                 }
-            });
+            })
         }
-    });
+    })
+}
+function deleteProjectGroup(id){
+    return global.runQuery(Constants.DbNameObj.Project, function(db, resolve){
+        if(typeof id == 'number' && id > 0) {
+            const prj = Constants.Project
+            const query = `DELETE FROM ${prj.getProjectGroup()} WHERE Id = ?;`
+            const values = [id];
+            db.run(query, values, (err) => {
+                if(err) { throw err; } 
+                else {
+                    resolve(global.DbStatus.Success)
+                }
+            })
+        }
+    })
 }
 
 function getProjects() {
@@ -78,5 +96,6 @@ module.exports = {
     getProjectGroups: getProjectGroups,
     insertProjectGroup: insertProjectGroup,
     editProjectGroup: editProjectGroup,
+    deleteProjectGroup: deleteProjectGroup,
     getProjects: getProjects
 }

@@ -9,5 +9,6 @@ module.exports = {
     getProjects: Project.getProjects,
     insertProjectGroup: Project.insertProjectGroup,
     editProjectGroup: Project.editProjectGroup,
+    deleteProjectGroup: Project.deleteProjectGroup,
     getProjectGroups: Project.getProjectGroups
 }

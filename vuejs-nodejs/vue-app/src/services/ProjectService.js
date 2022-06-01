@@ -15,17 +15,16 @@ export async function createProjectGroup(data) {
     const entry = {
         projectgroup: data
     }
-    const response = await axios.post(`${serverUrl}/api/projectgroup`, entry)
-    return response.data
+    const res = await axios.post(`${serverUrl}/api/projectgroup`, entry)
+    return res
 }
 
 export async function editProjectGroup (data) {
     return await createProjectGroup(data)
 }
 export async function deleteProjectGroup(_id) {
-    console.log(_id)
-    await axios.delete(`${serverUrl}/api/projectgroup`, {
-        id: _id
+    const res = await axios.delete(`${serverUrl}/api/projectgroup`, {
+        data: { Id: _id }
     })
-    
+    return res;
 }

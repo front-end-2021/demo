@@ -70,8 +70,8 @@ app.post(Constants.ApiProjectGroupPath, cors(appExp.getCorsOptions()), (req, res
   const entry = req.body.projectgroup;
   if(entry.Id < 1) {
     console.log('create project group')
-    database.insertProjectGroup(entry).then(newId => {
-      res.json(newId)
+    database.insertProjectGroup(entry).then((status) => {
+      res.json({ Status: status })
       next()
     })
   } else {
@@ -83,7 +83,12 @@ app.post(Constants.ApiProjectGroupPath, cors(appExp.getCorsOptions()), (req, res
   }
 })
 app.delete(Constants.ApiProjectGroupPath, cors(appExp.getCorsOptions()), (req, res, next) => {
-  
+  const entry = req.body;
+  console.log('app.delete: ', entry)
+  database.deleteProjectGroup(entry.Id).then(status => {
+    res.json({ Status: status })
+    next()
+  })
 })
 
 app.get('/', (req, res) => {
