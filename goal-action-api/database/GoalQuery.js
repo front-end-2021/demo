@@ -5,7 +5,7 @@ const dbName = `GoalAction`
 const tableName = 'Maingoal'
 const cols = `Id TEXT NOT NULL UNIQUE, Name TEXT NOT NULL UNIQUE, 
 Description TEXT, Budget REAL DEFAULT 0, Start TEXT, End TEXT`
-dbLite.tableReady(dbName, tableName, cols)
+dbLite.readyTable(dbName, tableName, cols)
 
 function getMaingoals() {
     return new Promise((resolve, reject) => {

@@ -1,12 +1,12 @@
 const sqlite3 = require('sqlite3').verbose()
 
-function databaseReady(dbName) {
+function readyDatabase(dbName) {
     if (typeof dbName != 'string') return null;
     const dbPath = `./database/${dbName}.db`;
     return new sqlite3.Database(dbPath);
 }
 function openDatabase(dbName) {
-    const db = databaseReady(dbName)
+    const db = readyDatabase(dbName)
     return new Promise((resolve, reject) => {
         if (db) {
             resolve(db)
@@ -14,8 +14,8 @@ function openDatabase(dbName) {
         } else { reject() }
     })
 }
-function tableReady(dbName, tableName, columns) {
-    const db = databaseReady(dbName)
+function readyTable(dbName, tableName, columns) {
+    const db = readyDatabase(dbName)
     db.serialize(() => {
         const query = `CREATE TABLE IF NOT EXISTS ${tableName} (${columns})`;
         db.run(query)
@@ -23,14 +23,14 @@ function tableReady(dbName, tableName, columns) {
     db.close();
 }
 function insertIntoTable(dbName, tableName, columns, values) {
-    const db = databaseReady(dbName)
+    const db = readyDatabase(dbName)
     db.serialize(() => {
         db.run(`INSERT INTO ${tableName} (${columns}) VALUES (${values})`)
     });
     db.close();
 }
 function selectFromTable(dbName, query) {
-    const db = databaseReady(dbName)
+    const db = readyDatabase(dbName)
     return new Promise((reslove, reject) => {
         db.serialize(() => {
             db.all(query, function (err, rows) {
@@ -42,7 +42,7 @@ function selectFromTable(dbName, query) {
     })
 }
 function getFromTable(dbName, query) {
-    const db = databaseReady(dbName)
+    const db = readyDatabase(dbName)
     return new Promise((resolve, reject) => {
         db.serialize(() => {
             db.get(query, function (err, row) {
@@ -56,7 +56,7 @@ function getFromTable(dbName, query) {
 }
 module.exports = {
     openDatabase: openDatabase,
-    tableReady: tableReady,
+    readyTable: readyTable,
     insertIntoTable: insertIntoTable,
     selectFromTable: selectFromTable,
     getFromTable: getFromTable
