@@ -1,3 +1,5 @@
 bin/
 .vs/
 obj/
+goal-action-api/node_modules/
+goal-action-api/package-lock.json
