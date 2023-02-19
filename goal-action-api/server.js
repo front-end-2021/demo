@@ -6,11 +6,11 @@ const AppExpress = require('./AppExpress')
 const app = AppExpress.App,
     port = 8001;
 
-//http://localhost:8001/api/goals
-app.get(`/api/goals`,
+//http://localhost:8001/api/mains
+app.get(`/api/mains`,
     cors(AppExpress.getCorsOptions()),
     (req, res, next) => {
-        database.getMaingoals().then(rows => {
+        database.getMainSubGoals(true).then(rows => {
             res.json({
                 data: rows
             });
@@ -24,17 +24,17 @@ app.get('/api/goal',
     (req, res) => {
         const query = req.query;
         const id = query.id;
-        database.getMaingoal(id).then(row => {
+        database.getMainSubBy(id).then(row => {
             res.json({
                 data: row
             })
         })
     }
 )
-app.post('/api/goal',
+app.post('/api/main',
     cors(AppExpress.getCorsOptions()),
     (req, res, next) => {
-        const goal = req.body;
+        const goal = req.body;  // {Name: string, Description: string, Start: string, End: string, Budget: number}
         database.insertNewMain(goal)
         res.json('insert goal')
         next();

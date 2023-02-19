@@ -46,8 +46,8 @@ function getFromTable(dbName, query) {
     return new Promise((resolve, reject) => {
         db.serialize(() => {
             db.get(query, function (err, row) {
-                if(row) resolve(row)
-                if(err) reject(err)
+                if (row) resolve(row)
+                if (err) reject(err)
             });
         });
         db.close();
