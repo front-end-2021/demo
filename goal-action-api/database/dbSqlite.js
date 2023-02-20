@@ -54,10 +54,23 @@ function getFromTable(dbName, query) {
     })
 
 }
+function updateTable(dbName, query, values) {
+    const db = readyDatabase(dbName)
+    return new Promise((resolve, reject) => {
+        db.serialize(() => {
+            db.run(query, values, function (err) {
+                reject(err)
+            });
+            resolve()
+        });
+        db.close();
+    })
+}
 module.exports = {
     openDatabase: openDatabase,
     readyTable: readyTable,
     insertIntoTable: insertIntoTable,
     selectFromTable: selectFromTable,
-    getFromTable: getFromTable
+    getFromTable: getFromTable,
+    updateTable: updateTable
 }

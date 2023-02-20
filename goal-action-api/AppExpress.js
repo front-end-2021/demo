@@ -1,13 +1,13 @@
 require('dotenv').config({ path: 'local.env' });
-
+const cors = require('cors');
 const express = require('express');
 const app = express(),
     bodyParser = require("body-parser"),
-    corsOrigin = process.env.CORS_ORIGIN;
+    corsOrigin = "*"//process.env.CORS_ORIGIN;
 
 const workingDir = process.env.WORKING_DIR;
 
-app.use(bodyParser.json()); //app.use(cors());
+app.use(bodyParser.json()); app.use(cors());
 app.use(express.static(process.cwd() + workingDir));
 app.use(function (req, res, next) {
     // Website you wish to allow to connect

@@ -23,15 +23,47 @@ function getMainSubGoals(isMain) {
         })
     })
 }
-function getMainSubBy(id) {
+function getMainSubBy(id, isMain) {
+    const tName = isMain ? tableName : tableSub
     return new Promise((resolve, reject) => {
         dbLite.getFromTable(dbName,
-            `SELECT * FROM ${tableName} WHERE Id = '${id}'`).then(row => {
+            `SELECT * FROM ${tName} WHERE Id = '${id}'`).then(row => {
                 resolve(row)
             }, err => {
                 reject(err)
             })
     })
+}
+function updateGoal(main) {
+    if (!uuidValidate(main.Id) || main.Id == NIL_UUID) Promise.resolve(0);
+    let values = []
+    let qry = `UPDATE ${tableName} SET`
+    if(main.Name) {
+        values.push(main.Name)
+        qry += ` Name=?`
+    }
+    if(main.Description) {
+        values.push(main.Description)
+        qry += `, Description=?`
+    }
+    if(main.Budget && typeof main.Budget == 'number') {
+        values.push(main.Budget)
+        qry += `, Budget=?`
+    }
+    if(main.Start) {
+        values.push(main.Start)
+        qry += `, Start=?`
+    }
+    if(main.End) {
+        values.push(main.End)
+        qry += `, End=?`
+    }
+    if(values.length) {
+        values.push(main.Id)
+        qry += ` WHERE Id=?`
+        return dbLite.updateTable(dbName, qry, values)
+    }
+    return Promise.resolve(0);
 }
 function insertNewMain(main) {
     if (typeof main.Name != 'string') return
@@ -85,4 +117,6 @@ module.exports = {
     insertNewMain: insertNewMain,
     getMainSubBy: getMainSubBy,
     insertNewSub: insertNewSub,
+    dbName: dbName,
+    updateGoal: updateGoal
 }

@@ -1,21 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title>Goal-action api</title>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <main id="app">
-      <div>
-        <table></table>
-      </div>
-    </main>
-    
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+  <title>Goal-action api</title>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+        Please enable it to continue.</strong>
+  </noscript>
+  <main id="app">
+    <div>
+      **API**
+      <ol>
+        <li>
+          Get all Maingoal: <i>http://localhost:8001/api/mains</i>
+        </li>
+        <li>
+          Get all Subgoal: <i>http://localhost:8001/api/subs</i>
+        </li>
+        <li>
+          Get all Action: <i>http://localhost:8001/api/actions</i>
+        </li>
+        <li>
+          Get Main: <i>http://localhost:8001/api/main?id=uuid</i>
+        </li>
+        <li>
+          Get Sub: <i>http://localhost:8001/api/sub?id=uuid</i>
+        </li>
+        <li>
+          Get Action: <i>http://localhost:8001/api/action?id=uuid</i>
+        </li>
+        <li>
+          <div>Add new Maingoal: <i>http://localhost:8001/api/main</i></div>
+          <pre>- body: {
+              "Name" : "Name Goal",
+              ["Description: "Des ...",]
+              ["Budget" : 100,]
+              ["Start: "20-Feb-2023",]
+              ["End: "20-Feb-2023"]
+          }</pre>
+        </li>
+        <li>
+          <div>Add new Subgoal: <i>http://localhost:8001/api/main</i></div>
+          <pre>- body: {
+            "Name" : "Name Goal",
+            "ParentId" : "(uuid Maingoal)",
+            ["Description: "Des ...",]
+            ["Budget" : 100,]
+            ["Start: "20-Feb-2023",]
+            ["End: "20-Feb-2023"]
+            }</pre>
+        </li>
+        <li>
+          <div>Add new Action: <i>http://localhost:8001/api/action</i></div>
+          <pre>- body: {
+            "Name" : "Name Action",
+            "ParentId" : "(uuid Subgoal)",
+            ["Description: "Des ...",]
+            ["ExpectCost" : 100,]
+            ["TrueCost" : 100,]
+            ["Start: "20-Feb-2023",]
+            ["End: "20-Feb-2023"]
+            }</pre>
+        </li>
+        <li>
+          <div>Update Goal: <i>http://localhost:8001/api/goal/(uuid goal)</i></div>
+          <pre>- body: {
+            "Name" : "Name Goal update",
+            ["Description: "Des update ..",]
+            ["Budget" : 100,]
+            ["Start: "20-Feb-2023",]
+            ["End: "20-Feb-2023"]
+            }</pre>
+        </li>
+        <li>
+          <div>Add new Action: <i>http://localhost:8001/api/action/(uuid action)</i></div>
+          <pre>- body: {
+            "Name" : "Name Action update",
+            "ParentId" : "(uuid Subgoal)",
+            ["Description: "Des update ...",]
+            ["ExpectCost" : 100,]
+            ["TrueCost" : 100,]
+            ["Start: "20-Feb-2023",]
+            ["End: "20-Feb-2023"]
+            }</pre>
+        </li>
+      </ol>
+
+    </div>
+  </main>
+
+</body>
+
 </html>
