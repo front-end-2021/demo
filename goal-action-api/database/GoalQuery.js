@@ -6,11 +6,11 @@ const dbLite = require('./dbSqlite')
 const dbName = `GoalAction`
 const tableName = 'Maingoal'
 const cols = `Id TEXT NOT NULL UNIQUE, Name TEXT NOT NULL UNIQUE, 
-Description TEXT, Budget REAL DEFAULT 0, Start TEXT, End TEXT`
+Description TEXT, Budget REAL DEFAULT 0, Start TEXT, End TEXT, IsDone INTEGER DEFAULT 0`
 dbLite.readyTable(dbName, tableName, cols)
 const tableSub = 'Subgoal'
 const colsSub = `Id TEXT NOT NULL UNIQUE, ParentId TEXT NOT NULL, Name TEXT NOT NULL UNIQUE, 
-Description TEXT, Budget REAL DEFAULT 0, Start TEXT, End TEXT`
+Description TEXT, Budget REAL DEFAULT 0, Start TEXT, End TEXT, IsDone INTEGER DEFAULT 0`
 dbLite.readyTable(dbName, tableSub, colsSub)
 
 function getMainSubGoals(isMain) {

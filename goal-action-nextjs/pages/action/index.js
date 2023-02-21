@@ -2,8 +2,8 @@ import { useState } from "react"
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import style from '../goal/style.module.scss'
 
-export function ActionItem({ Name, Description, ExpCost, TrueCost, Start, End, IsDone }) {
-    const [isDone, setIsDone] = useState(IsDone)
+export function ActionItem({ Name, Description, ExpCost,
+    TrueCost, Start, End, IsDone, Id, setActionDone }) {
     const [isShowMenu, setShowMenu] = useState(false)
 
     function getClassOverDate() {
@@ -23,8 +23,19 @@ export function ActionItem({ Name, Description, ExpCost, TrueCost, Start, End, I
         }
         return ''
     }
+    function onToggleDone(e) {
+        const is_done = !IsDone
+        setActionDone(Id, is_done)
+    }
+    function onToggleMenu(e) {
+        setShowMenu(!isShowMenu)
+    }
+    function getClsDone() {
+        if (IsDone) return `bi bi-check-circle-fill`
+        return `bi bi-check-circle`
+    }
     return (
-        <div className={style.dnb_item_container + `${isDone ? ` ${style.dnb_item_done}` : ''}`}>
+        <div className={style.dnb_item_container + `${IsDone ? ` ${style.dnb_item_done}` : ''}`}>
             <div className="dnb-item-title">&#9632; {Name}</div>
             <p className={"dnb-item-description " + style.o_81}>{Description}</p>
             <div className={style.dnb_item_cost}>
@@ -45,20 +56,21 @@ export function ActionItem({ Name, Description, ExpCost, TrueCost, Start, End, I
                     </> : <></>
                 }
             </div>
-            <div className={style.dnb_i_options}>
+            <div className={style.dnb_i_options}
+                onClick={onToggleMenu}>
                 <span className="bi bi-layout-sidebar">&nbsp; Menu &nbsp; </span>
-                {
-                    isShowMenu ? <span className="bi bi-chevron-down"></span> :
-                        <span className="bi bi-chevron-right"></span>
-                }
+                <span className={`bi bi-chevron-${isShowMenu ? 'down' : 'right'}`}></span>
             </div>
             {
                 isShowMenu ? <div className={style.dnb_i_menu}>
                     <i className="bi bi-pencil-square">&nbsp; Edit</i>
                     <i className="bi bi-files">&nbsp; Duplicate</i>
                     <span className="bi bi-trash">&nbsp; Delete</span>
-                    <span className="bi bi-check-circle-fill">&nbsp; Done</span>
-                </div> : ''
+                    <span>
+                        <span className={getClsDone()}
+                            onClick={onToggleDone}>&nbsp; Done</span>
+                    </span>
+                </div> : <></>
             }
         </div>
     )

@@ -6,7 +6,7 @@ const dbGoal = require('./GoalQuery')
 const tableName = 'Action'
 const cols = `Id TEXT NOT NULL UNIQUE, ParentId TEXT NOT NULL, 
 Name TEXT NOT NULL UNIQUE, Description TEXT, 
-Start TEXT, End TEXT, 
+Start TEXT, End TEXT, IsDone INTEGER DEFAULT 0,
 ExpectCost REAL DEFAULT 0, TrueCost REAL DEFAULT 0`
 dbLite.readyTable(dbGoal.dbName, tableName, cols)
 
