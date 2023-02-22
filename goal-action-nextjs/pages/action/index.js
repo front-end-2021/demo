@@ -153,15 +153,15 @@ export function FormEditItem({ Id, ParentId,
         const newName = e.target.value
         if (newName.trim() == '') setName(Name)
     }
-    function handleChangeDes(e){
+    function handleChangeDes(e) {
         const newDes = e.target.value
         setDes(newDes)
     }
-    function handleChangeExpectCost (e) {
+    function handleChangeExpectCost(e) {
         const newExp = e.target.value
         setExpectCost(newExp)
     }
-    function handleChangeTrueCost (e) {
+    function handleChangeTrueCost(e) {
         const newTrue = e.target.value
         setTrueCost(newTrue)
     }
@@ -171,11 +171,13 @@ export function FormEditItem({ Id, ParentId,
         return <>&#9632;</>
     }
     function onSaveDataItem() {
+        const s = new Date(start).toDateString()
+        const e = new Date(end).toDateString()
         onSaveData({
             Id, ParentId,
             Name: name, Description: des,
             ExpCost: expectCost, TrueCost: trueCost,
-            Start: start, End: end,
+            Start: s, End: e,
         })
     }
     return (
@@ -187,19 +189,19 @@ export function FormEditItem({ Id, ParentId,
             <textarea style={{
                 width: 'calc(100% - 24px)', resize: 'none', height: '81px',
                 marginLeft: '18px', marginTop: '6px'
-            }} onChange={handleChangeDes}>{des}</textarea>
+            }} onChange={handleChangeDes} defaultValue={des} />
             <div className={style.dnb_item_cost}>
                 {children}
                 <span className={style.dnb_icost + " dnb-expect-cost"}>P:
                     <span className={style.dnb_icost_value}>$
-                        <input type="number" value={expectCost} style={{ width: '80px' }} 
-                        onChange={handleChangeExpectCost}/>
+                        <input type="number" value={expectCost} style={{ width: '80px' }}
+                            onChange={handleChangeExpectCost} />
                     </span>
                 </span>
                 <span className={style.dnb_icost + " dnb-true-cost"}>C:
                     <span className={style.dnb_icost_value}>$
-                        <input type="number" value={trueCost} style={{ width: '80px' }} 
-                        onChange={handleChangeTrueCost}/>
+                        <input type="number" value={trueCost} style={{ width: '80px' }}
+                            onChange={handleChangeTrueCost} />
                     </span>
                 </span>
             </div>

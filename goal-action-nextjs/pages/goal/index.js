@@ -91,6 +91,12 @@ export class MainGoal extends Component {
             }
         }
     }
+    getDateString(dateStr) {
+        if (!dateStr) return ''
+        const d = new Date(dateStr)
+        if (!(d instanceof Date)) return ''
+        return d.toDateString().slice(4)
+    }
     render() {
         const { ListMain, ListSub, ListAction,
             ListMainDone, ListSubDone, ListActionDone } = this.state
@@ -107,7 +113,7 @@ export class MainGoal extends Component {
                                 Budget={Budget}
                                 ExpCost={this.getExpectedCost(ListSub.filter(s => s.ParentId == Id))}
                                 TrueCost={this.getTrueCost(ListSub.filter(s => s.ParentId == Id))}
-                                Start={Start} End={End}
+                                Start={this.getDateString(Start)} End={this.getDateString(End)}
                                 setGoalDone={this.setGoalDone} />
                             <div className={style.dnb_item_list_sub}>
                                 <div className={style.dnb_item_view}>
@@ -123,7 +129,7 @@ export class MainGoal extends Component {
                                                     Budget={Budget}
                                                     ExpCost={this.getExpC(ListAction.filter(a => a.ParentId == Id).map(a => a.ExpectCost))}
                                                     TrueCost={this.getTrueC(ListAction.filter(a => a.ParentId == Id).map(a => a.TrueCost))}
-                                                    Start={Start} End={End}
+                                                    Start={this.getDateString(Start)} End={this.getDateString(End)}
                                                     setGoalDone={this.setGoalDone} />
                                                 <div className={style.dnb_item_list_action}>
                                                     {
@@ -135,7 +141,7 @@ export class MainGoal extends Component {
                                                                 Id={Id} Name={Name} Description={Description}
                                                                 ExpCost={ExpectCost} TrueCost={TrueCost}
                                                                 IsDone={isActnDone}
-                                                                Start={Start} End={End}
+                                                                Start={this.getDateString(Start)} End={this.getDateString(End)}
                                                                 setActionDone={this.setActionDone} />
                                                         })
                                                     }
