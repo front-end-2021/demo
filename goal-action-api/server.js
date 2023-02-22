@@ -101,9 +101,9 @@ app.put('/api/goal/:id',
     cors(AppExpress.getCorsOptions()),
     (req, res, next) => {
         const main = req.body;
-        main.Id = req.params.id
-        dbGoal.updateGoal(main).then(n => {
-            res.json(`update main ${main.Id}`)
+        const id = req.params.id
+        dbGoal.updateGoal(id, main).then(n => {
+            res.json(`update main ${id}`)
             next();
         })
     }
@@ -112,9 +112,9 @@ app.put('/api/action/:id',
     cors(AppExpress.getCorsOptions()),
     (req, res, next) => {
         const action = req.body;
-        action.Id = req.params.id
-        dbAction.updateAction(action).then(n => {
-            res.json(`update action ${action.Id}`)
+        const id = req.params.id
+        dbAction.updateAction(id, action).then(n => {
+            res.json(`update action ${id}`)
             next();
         })
     }

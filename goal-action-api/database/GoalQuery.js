@@ -34,8 +34,8 @@ function getMainSubBy(id, isMain) {
             })
     })
 }
-function updateGoal(main) {
-    if (!uuidValidate(main.Id) || main.Id == NIL_UUID) Promise.resolve(0);
+function updateGoal(id, main) {
+    if (!uuidValidate(id) || id == NIL_UUID) Promise.resolve(0);
     let values = []
     let qry = `UPDATE ${tableName} SET`
     if(main.Name) {
@@ -59,7 +59,7 @@ function updateGoal(main) {
         qry += `, End=?`
     }
     if(values.length) {
-        values.push(main.Id)
+        values.push(id)
         qry += ` WHERE Id=?`
         return dbLite.updateTable(dbName, qry, values)
     }

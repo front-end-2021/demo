@@ -58,8 +58,8 @@ function insertNewAction(action) {
         dbLite.insertIntoTable(dbGoal.dbName, tableName, columns, values)
     })
 }
-function updateAction(action) {
-    if (!uuidValidate(action.Id) || action.Id == NIL_UUID) Promise.resolve(0);
+function updateAction(id, action) {
+    if (!uuidValidate(id) || id == NIL_UUID) Promise.resolve(0);
     let values = []
     let qry = `UPDATE ${tableName} SET`
     if(action.Name) {
@@ -87,7 +87,7 @@ function updateAction(action) {
         qry += `, End=?`
     }
     if(values.length) {
-        values.push(action.Id)
+        values.push(id)
         qry += ` WHERE Id=?`
         return dbLite.updateTable(dbGoal.dbName, qry, values)
     }
