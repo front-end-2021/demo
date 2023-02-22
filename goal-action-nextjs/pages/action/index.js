@@ -97,7 +97,29 @@ export function ActionItem({ Name, Description, ExpCost, ParentId,
     )
 }
 
-function FormEditAction({ Id, Name, Description, ExpCost, TrueCost, Start, End, ParentId, onCancelEditForm }) {
+function FormEditAction({ Id, Name, Description, ExpCost, TrueCost,
+    Start, End, ParentId, onCancelEditForm }) {
+
+    function onSaveData(item) {
+        console.log(`onSaveData Action`, item)
+    }
+    return (
+        <FormEditItem
+            Id={Id} ParentId={ParentId}
+            Name={Name} Description={Description}
+            ExpCost={ExpCost} TrueCost={TrueCost}
+            Start={Start} End={End}
+            onSaveData={onSaveData}
+            onCancelEditForm={onCancelEditForm} />
+    )
+}
+
+export function FormEditItem({ Id, ParentId,
+    Name, Description,
+    ExpCost, TrueCost,
+    Start, End,
+    children, typeid, onSaveData,
+    onCancelEditForm }) {
     const [name, setName] = useState(Name)
     const [des, setDes] = useState(Description)
     const [expectCost, setExpectCost] = useState(ExpCost)
@@ -123,36 +145,61 @@ function FormEditAction({ Id, Name, Description, ExpCost, TrueCost, Start, End, 
         const newD = e.target.value
         setEnd(newD)
     }
-    function handlerChangeName(e) {
+    function handleChangeName(e) {
         const newName = e.target.value
         setName(newName)
     }
-    function handlerMouseOutChangeName(e) {
+    function handleMouseOutChangeName(e) {
         const newName = e.target.value
         if (newName.trim() == '') setName(Name)
     }
-    function onSaveData(e) {
-
+    function handleChangeDes(e){
+        const newDes = e.target.value
+        setDes(newDes)
+    }
+    function handleChangeExpectCost (e) {
+        const newExp = e.target.value
+        setExpectCost(newExp)
+    }
+    function handleChangeTrueCost (e) {
+        const newTrue = e.target.value
+        setTrueCost(newTrue)
+    }
+    function getIcon() {
+        if (typeid == 1) return <>&#9673;</>
+        if (typeid == 2) return <>&#9670;</>
+        return <>&#9632;</>
+    }
+    function onSaveDataItem() {
+        onSaveData({
+            Id, ParentId,
+            Name: name, Description: des,
+            ExpCost: expectCost, TrueCost: trueCost,
+            Start: start, End: end,
+        })
     }
     return (
         <div className={style.dnb_item_container}>
-            <div className="dnb-item-title">&#9632; <input style={{ width: 'calc(100% - 24px)' }}
-                type="text" value={name} onChange={handlerChangeName}  maxLength="150"
-                onMouseOut={handlerMouseOutChangeName}/>
+            <div className="dnb-item-title">{getIcon()} <input style={{ width: 'calc(100% - 24px)' }}
+                type="text" value={name} onChange={handleChangeName} maxLength="150"
+                onMouseOut={handleMouseOutChangeName} />
             </div>
             <textarea style={{
                 width: 'calc(100% - 24px)', resize: 'none', height: '81px',
                 marginLeft: '18px', marginTop: '6px'
-            }}>{des}</textarea>
+            }} onChange={handleChangeDes}>{des}</textarea>
             <div className={style.dnb_item_cost}>
+                {children}
                 <span className={style.dnb_icost + " dnb-expect-cost"}>P:
                     <span className={style.dnb_icost_value}>$
-                        <input type="number" value={expectCost} style={{ width: '80px' }} />
+                        <input type="number" value={expectCost} style={{ width: '80px' }} 
+                        onChange={handleChangeExpectCost}/>
                     </span>
                 </span>
                 <span className={style.dnb_icost + " dnb-true-cost"}>C:
                     <span className={style.dnb_icost_value}>$
-                        <input type="number" value={trueCost} style={{ width: '80px' }} />
+                        <input type="number" value={trueCost} style={{ width: '80px' }} 
+                        onChange={handleChangeTrueCost}/>
                     </span>
                 </span>
             </div>
@@ -168,7 +215,7 @@ function FormEditAction({ Id, Name, Description, ExpCost, TrueCost, Start, End, 
             </div>
             <div className={style.dnb_i_menu}>
                 <span className="bi bi-database-up"
-                    onClick={onSaveData}>&nbsp; Save &nbsp;</span>
+                    onClick={onSaveDataItem}>&nbsp; Save &nbsp;</span>
                 <span className="bi bi-x-circle"
                     onClick={onCancelEditForm}>&nbsp; Cancel &nbsp;</span>
             </div>
