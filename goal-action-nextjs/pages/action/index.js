@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
+import { ListDataContext } from "../goal"
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import style from '../goal/style.module.scss'
 
@@ -38,7 +39,7 @@ export function ActionItem({ Name, Description, ExpCost, ParentId,
     function onShowEditForm(e) {
         setEditView(true)
     }
-    function onCancelEditForm() {
+    function onCloseEditForm() {
         setEditView(false)
     }
     return (
@@ -89,7 +90,7 @@ export function ActionItem({ Name, Description, ExpCost, ParentId,
                         ExpCost={ExpCost}
                         TrueCost={TrueCost}
                         Start={Start} End={End}
-                        onCancelEditForm={onCancelEditForm}
+                        onCloseEditForm={onCloseEditForm}
                     />
             }
         </>
@@ -98,32 +99,64 @@ export function ActionItem({ Name, Description, ExpCost, ParentId,
 }
 
 function FormEditAction({ Id, Name, Description, ExpCost, TrueCost,
-    Start, End, ParentId, onCancelEditForm }) {
-
+    Start, End, ParentId, onCloseEditForm }) {
+    const [expectCost, setExpectCost] = useState(ExpCost)
+    const [trueCost, setTrueCost] = useState(TrueCost)
+    function handleChangeExpectCost(e) {
+        const newExp = e.target.value
+        setExpectCost(newExp)
+    }
+    function handleChangeTrueCost(e) {
+        const newTrue = e.target.value
+        setTrueCost(newTrue)
+    }
+    const {
+        ListAction } = useContext(ListDataContext)
     function onSaveData(item) {
+        item.ExpCost = expectCost
+        item.TrueCost = trueCost
         console.log(`onSaveData Action`, item)
+        const _action_ = ListAction.find(a => a.Id == Id)
+        if (_action_) {
+            _action_.Name = item.Name
+            _action_.Description = item.Description
+            _action_.ExpCost = expectCost
+            _action_.TrueCost = trueCost
+            _action_.Start = item.Start
+            _action_.End = item.End
+        }
+        onCloseEditForm()
     }
     return (
         <FormEditItem
             Id={Id} ParentId={ParentId}
             Name={Name} Description={Description}
-            ExpCost={ExpCost} TrueCost={TrueCost}
             Start={Start} End={End}
             onSaveData={onSaveData}
-            onCancelEditForm={onCancelEditForm} />
+            onCloseEditForm={onCloseEditForm} >
+            <span className={style.dnb_icost + " dnb-expect-cost"}>P:
+                <span className={style.dnb_icost_value}>$
+                    <input type="number" value={expectCost} style={{ width: '80px' }}
+                        onChange={handleChangeExpectCost} />
+                </span>
+            </span>
+            <span className={style.dnb_icost + " dnb-true-cost"}>C:
+                <span className={style.dnb_icost_value}>$
+                    <input type="number" value={trueCost} style={{ width: '80px' }}
+                        onChange={handleChangeTrueCost} />
+                </span>
+            </span>
+        </FormEditItem>
     )
 }
 
 export function FormEditItem({ Id, ParentId,
     Name, Description,
-    ExpCost, TrueCost,
     Start, End,
     children, typeid, onSaveData,
-    onCancelEditForm }) {
+    onCloseEditForm }) {
     const [name, setName] = useState(Name)
     const [des, setDes] = useState(Description)
-    const [expectCost, setExpectCost] = useState(ExpCost)
-    const [trueCost, setTrueCost] = useState(TrueCost)
     const [start, setStart] = useState(getStartValue())
     const [end, setEnd] = useState(getEndValue())
     function getStartValue() {
@@ -157,14 +190,6 @@ export function FormEditItem({ Id, ParentId,
         const newDes = e.target.value
         setDes(newDes)
     }
-    function handleChangeExpectCost(e) {
-        const newExp = e.target.value
-        setExpectCost(newExp)
-    }
-    function handleChangeTrueCost(e) {
-        const newTrue = e.target.value
-        setTrueCost(newTrue)
-    }
     function getIcon() {
         if (typeid == 1) return <>&#9673;</>
         if (typeid == 2) return <>&#9670;</>
@@ -176,7 +201,6 @@ export function FormEditItem({ Id, ParentId,
         onSaveData({
             Id, ParentId,
             Name: name, Description: des,
-            ExpCost: expectCost, TrueCost: trueCost,
             Start: s, End: e,
         })
     }
@@ -192,18 +216,6 @@ export function FormEditItem({ Id, ParentId,
             }} onChange={handleChangeDes} defaultValue={des} />
             <div className={style.dnb_item_cost}>
                 {children}
-                <span className={style.dnb_icost + " dnb-expect-cost"}>P:
-                    <span className={style.dnb_icost_value}>$
-                        <input type="number" value={expectCost} style={{ width: '80px' }}
-                            onChange={handleChangeExpectCost} />
-                    </span>
-                </span>
-                <span className={style.dnb_icost + " dnb-true-cost"}>C:
-                    <span className={style.dnb_icost_value}>$
-                        <input type="number" value={trueCost} style={{ width: '80px' }}
-                            onChange={handleChangeTrueCost} />
-                    </span>
-                </span>
             </div>
             <div className={style.dnb_item_date}>
                 <span className={style.dnb_past_date + " dnb-d-start"}>
@@ -219,7 +231,7 @@ export function FormEditItem({ Id, ParentId,
                 <span className="bi bi-database-up"
                     onClick={onSaveDataItem}>&nbsp; Save &nbsp;</span>
                 <span className="bi bi-x-circle"
-                    onClick={onCancelEditForm}>&nbsp; Cancel &nbsp;</span>
+                    onClick={onCloseEditForm}>&nbsp; Cancel &nbsp;</span>
             </div>
         </div>
     )

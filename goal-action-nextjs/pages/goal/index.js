@@ -1,30 +1,50 @@
-import { Component, useState } from "react"
+import {
+    StrictMode,
+    Component, useState,
+    createContext, useContext
+} from "react"
 import { getDataGoalAction } from "../../service"
 import { ActionItem, FormEditItem } from "../action"
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import style from './style.module.scss'
 
-export class MainGoal extends Component {
+export const ListDataContext = createContext({
+    ListMain: [], ListSub: [], ListAction: []
+})
+export class Marketing extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            ListMain: [], ListSub: [], ListAction: [],
-            ListMainDone: [], ListSubDone: [], ListActionDone: []
+            ListMain: [], ListSub: [], ListAction: []
         }
     }
+    render() {
+        return (
+            <ListDataContext.Provider value={this.state}>
+                <MainGoal />
+            </ListDataContext.Provider>)
+    }
+}
+class MainGoal extends Component {
+    static contextType = ListDataContext
+    constructor(props) {
+        super(props)
+        this.state = { ListMainDone: [], ListSubDone: [], ListActionDone: [] }
+    }
     componentDidMount = () => {
+        const { ListMain, ListSub, ListAction } = this.context
         getDataGoalAction('mains').then(mains => {
-            this.setState({ ListMain: mains })
+            mains.forEach(m => ListMain.push(m))
             const lstMainIdDone = mains.filter(m => !!m.IsDone).map(m => m.Id)
             this.setState({ ListMainDone: lstMainIdDone })
         })
         getDataGoalAction('subs').then(subs => {
-            this.setState({ ListSub: subs })
+            subs.forEach(s => ListSub.push(s))
             const lstSubIdDone = subs.filter(s => !!s.IsDone).map(s => s.Id)
             this.setState({ ListSubDone: lstSubIdDone })
         })
         getDataGoalAction('actions').then(actions => {
-            this.setState({ ListAction: actions })
+            actions.forEach(a => ListAction.push(a))
             const lstAcIdDone = actions.filter(a => !!a.IsDone).map(a => a.Id)
             this.setState({ ListActionDone: lstAcIdDone })
         })
@@ -33,7 +53,7 @@ export class MainGoal extends Component {
         return lstExp.reduce((acu, crt) => acu + crt, 0)
     }
     getExpectedCost = (listSub) => {
-        const { ListAction } = this.state
+        const { ListAction } = this.context
         const lstExp = listSub.map(s => ListAction.filter(a => a.ParentId == s.Id).map(a => a.ExpectCost))[0]
         return Array.isArray(lstExp) ? this.getExpC(lstExp) : 0
     }
@@ -41,7 +61,7 @@ export class MainGoal extends Component {
         return lstTrue.reduce((acu, crt) => acu + crt, 0)
     }
     getTrueCost = (listSub) => {
-        const { ListAction } = this.state
+        const { ListAction } = this.context
         const lstTrue = listSub.map(s => ListAction.filter(a => a.ParentId == s.Id).map(a => a.TrueCost))[0]
         return Array.isArray(lstTrue) ? this.getTrueC(lstTrue) : 0
     }
@@ -97,72 +117,80 @@ export class MainGoal extends Component {
         if (!(d instanceof Date)) return ''
         return d.toDateString().slice(4)
     }
+    getListSub = (mId) => {
+        const { ListSub } = this.context
+        return ListSub.filter(s => s.ParentId == mId)
+    }
+    getListAction = (sId) => {
+        const { ListAction } = this.context
+        return ListAction.filter(a => a.ParentId == sId)
+    }
     render() {
-        const { ListMain, ListSub, ListAction,
-            ListMainDone, ListSubDone, ListActionDone } = this.state
+        const { ListMainDone, ListSubDone, ListActionDone } = this.state
         return (
-            <div>
-                {
-                    ListMain.map(main => {
-                        const { Id, Name, Description, Budget, Start, End } = main
-                        const isMainDone = ListMainDone.includes(Id)
-                        return <div className={style.dnb_item_view}>
-                            <GoalItem key={Id}
-                                Id={Id} Name={Name} Description={Description}
-                                IsDone={isMainDone}
-                                Budget={Budget}
-                                ExpCost={this.getExpectedCost(ListSub.filter(s => s.ParentId == Id))}
-                                TrueCost={this.getTrueCost(ListSub.filter(s => s.ParentId == Id))}
-                                Start={this.getDateString(Start)} End={this.getDateString(End)}
-                                setGoalDone={this.setGoalDone} />
-                            <div className={style.dnb_item_list_sub}>
-                                <div className={style.dnb_item_view}>
-                                    {
-                                        ListSub.filter(s => s.ParentId == Id).map(sub => {
-                                            const { Id, ParentId, Name, Description, Budget, Start, End } = sub
-                                            const isSubDone = ListMainDone.includes(ParentId) || ListSubDone.includes(Id)
-                                            return <>
-                                                <GoalItem key={Id}
-                                                    ParentId={ParentId}
-                                                    Id={Id} Name={Name} Description={Description}
-                                                    IsDone={isSubDone}
-                                                    Budget={Budget}
-                                                    ExpCost={this.getExpC(ListAction.filter(a => a.ParentId == Id).map(a => a.ExpectCost))}
-                                                    TrueCost={this.getTrueC(ListAction.filter(a => a.ParentId == Id).map(a => a.TrueCost))}
-                                                    Start={this.getDateString(Start)} End={this.getDateString(End)}
-                                                    setGoalDone={this.setGoalDone} />
-                                                <div className={style.dnb_item_list_action}>
-                                                    {
-                                                        ListAction.filter(a => a.ParentId == Id).map(action => {
-                                                            const { Id, Name, Description, Start, End, ExpectCost, TrueCost, ParentId } = action
-                                                            const isActnDone = ListMainDone.includes(main.Id) || ListSubDone.includes(ParentId) || ListActionDone.includes(Id)
-                                                            return <ActionItem key={Id}
-                                                                ParentId={ParentId}
-                                                                Id={Id} Name={Name} Description={Description}
-                                                                ExpCost={ExpectCost} TrueCost={TrueCost}
-                                                                IsDone={isActnDone}
-                                                                Start={this.getDateString(Start)} End={this.getDateString(End)}
-                                                                setActionDone={this.setActionDone} />
-                                                        })
-                                                    }
-                                                </div>
-                                            </>
-                                        })
-                                    }
+            <ListDataContext.Consumer>{context =>
+                <StrictMode>
+                    {
+                        context.ListMain.map((main, _im) => {
+                            const { Id, Name, Description, Budget, Start, End } = main
+                            const isMainDone = ListMainDone.includes(Id)
+                            return <div className={style.dnb_item_view} key={`dnb-key-wrap-main${_im}`}>
+                                <GoalItem key={Id}
+                                    Id={Id} Name={Name} Description={Description}
+                                    IsDone={isMainDone}
+                                    Budget={Budget}
+                                    ExpCost={this.getExpectedCost(this.getListSub(Id))}
+                                    TrueCost={this.getTrueCost(this.getListSub(Id))}
+                                    Start={this.getDateString(Start)} End={this.getDateString(End)}
+                                    setGoalDone={this.setGoalDone} />
+                                <div className={style.dnb_item_list_sub}>
+                                    <div className={style.dnb_item_view}>
+                                        {
+                                            this.getListSub(Id).map((sub, _i_) => {
+                                                const { Id, ParentId, Name, Description, Budget, Start, End } = sub
+                                                const isSubDone = ListMainDone.includes(ParentId) || ListSubDone.includes(Id)
+                                                return <>
+                                                    <GoalItem key={Id}
+                                                        ParentId={ParentId}
+                                                        Id={Id} Name={Name} Description={Description}
+                                                        IsDone={isSubDone}
+                                                        Budget={Budget}
+                                                        ExpCost={this.getExpC(this.getListAction(Id).map(a => a.ExpectCost))}
+                                                        TrueCost={this.getTrueC(this.getListAction(Id).map(a => a.TrueCost))}
+                                                        Start={this.getDateString(Start)} End={this.getDateString(End)}
+                                                        setGoalDone={this.setGoalDone} />
+                                                    <div className={style.dnb_item_list_action} key={`dnb-key-wrapact-sub${_i_}`}>
+                                                        {
+                                                            this.getListAction(Id).map(action => {
+                                                                const { Id, Name, Description, Start, End, ExpectCost, TrueCost, ParentId } = action
+                                                                const isActnDone = ListMainDone.includes(main.Id) || ListSubDone.includes(ParentId) || ListActionDone.includes(Id)
+                                                                return <ActionItem key={Id}
+                                                                    ParentId={ParentId}
+                                                                    Id={Id} Name={Name} Description={Description}
+                                                                    ExpCost={ExpectCost} TrueCost={TrueCost}
+                                                                    IsDone={isActnDone}
+                                                                    Start={this.getDateString(Start)} End={this.getDateString(End)}
+                                                                    setActionDone={this.setActionDone} />
+                                                            })
+                                                        }
+                                                    </div>
+                                                </>
+                                            })
+                                        }
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    })
-                }
-
-                <style jsx global>{`
+                        })
+                    }
+                    <style key={`dnb-style`} jsx global>{`
             body {
                 font-size: 16px;
               }
               .bi-layout-sidebar::before {
                 transform: rotate(-90deg);
               }}`}</style>
-            </div>
+                </StrictMode>}
+            </ListDataContext.Consumer>
         )
     }
 }
@@ -206,7 +234,7 @@ function GoalItem({ Name, Description, Budget, ExpCost, TrueCost,
     function onShowEditForm(e) {
         setEditView(true)
     }
-    function onCancelEditForm() {
+    function onCloseEditForm() {
         setEditView(false)
     }
     return (
@@ -265,7 +293,7 @@ function GoalItem({ Name, Description, Budget, ExpCost, TrueCost,
                         ExpCost={ExpCost}
                         TrueCost={TrueCost}
                         Start={Start} End={End}
-                        onCancelEditForm={onCancelEditForm}
+                        onCloseEditForm={onCloseEditForm}
                     />
             }
         </>
@@ -273,14 +301,28 @@ function GoalItem({ Name, Description, Budget, ExpCost, TrueCost,
 }
 function FormEditGoal({ Id, ParentId,
     Name, Description, Budget,
-    ExpCost, TrueCost, Start, End, onCancelEditForm }) {
+    ExpCost, TrueCost, Start, End, onCloseEditForm }) {
     const [budget, setBudget] = useState(Budget)
     function onHandleChangeBudget(e) {
         const newB = e.target.value
         setBudget(newB)
     }
+    const { ListMain, ListSub } = useContext(ListDataContext)
     function onSaveData(goal) {
-        console.log(`onSaveData Goal`, goal)
+        let item;
+        if (!ParentId) {
+            item = ListMain.find(m => m.Id == Id)
+        } else {
+            item = ListSub.find(m => m.Id == Id)
+        }
+        if (item) {
+            item.Name = goal.Name
+            item.Description = goal.Description
+            item.Start = goal.Start
+            item.End = goal.End
+        }
+        onCloseEditForm()
+        console.log(`onSaveData Goal`, goal, item)
     }
     return (
         <FormEditItem
@@ -289,7 +331,7 @@ function FormEditGoal({ Id, ParentId,
             Name={Name} Description={Description}
             ExpCost={ExpCost} TrueCost={TrueCost}
             Start={Start} End={End}
-            onCancelEditForm={onCancelEditForm} >
+            onCloseEditForm={onCloseEditForm} >
             <span className={style.dnb_icost + " dnb-budget-cost"}>B:
                 <span className={style.dnb_icost_value}>$
                     <input type="number" value={budget} style={{ width: '80px' }}
@@ -298,6 +340,12 @@ function FormEditGoal({ Id, ParentId,
             </span>
             <span className={style.dnb_icost + " dnb-open-cost"}>o:
                 <span className={style.dnb_icost_value}></span>
+            </span>
+            <span className={style.dnb_icost + " dnb-expect-cost"}>P:
+                <span className={style.dnb_icost_value}>${ExpCost}</span>
+            </span>
+            <span className={style.dnb_icost + " dnb-true-cost"}>C:
+                <span className={style.dnb_icost_value}>${TrueCost}</span>
             </span>
         </FormEditItem>
     )
