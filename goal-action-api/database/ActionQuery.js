@@ -19,6 +19,16 @@ function getActions() {
         })
     })
 }
+function getActionsBySubId(subId) {
+    return new Promise((resolve, reject) => {
+        dbLite.selectFromTable(dbGoal.dbName, 
+            `SELECT * FROM ${tableName} WHERE ParentId = '${subId}'`).then(rows => {
+            resolve(rows)
+        }, err => {
+            reject(err)
+        })
+    })
+}
 function getActionBy(id) {
     return new Promise((resolve, reject) => {
         dbLite.getFromTable(dbGoal.dbName,
@@ -97,5 +107,6 @@ module.exports = {
     getActions: getActions,
     getActionBy: getActionBy,
     insertNewAction: insertNewAction,
-    updateAction: updateAction
+    updateAction: updateAction,
+    getActionsBySubId: getActionsBySubId,
 }

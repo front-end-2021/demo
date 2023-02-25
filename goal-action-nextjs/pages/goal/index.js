@@ -5,6 +5,8 @@ import {
 } from "react"
 import { getDataGoalAction } from "../../service"
 import { ActionItem, FormEditItem } from "../action"
+import { getExpC, getTrueC, getTrueCost, 
+    getExpectedCost, getDateString } from "../../global"
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import style from './style.module.scss'
 
@@ -38,32 +40,22 @@ class MainGoal extends Component {
             const lstMainIdDone = mains.filter(m => !!m.IsDone).map(m => m.Id)
             this.setState({ ListMainDone: lstMainIdDone })
         })
-        getDataGoalAction('subs').then(subs => {
+        getDataGoalAction('allsub').then(subs => {
             subs.forEach(s => ListSub.push(s))
             const lstSubIdDone = subs.filter(s => !!s.IsDone).map(s => s.Id)
             this.setState({ ListSubDone: lstSubIdDone })
         })
-        getDataGoalAction('actions').then(actions => {
+        getDataGoalAction('allaction').then(actions => {
             actions.forEach(a => ListAction.push(a))
             const lstAcIdDone = actions.filter(a => !!a.IsDone).map(a => a.Id)
             this.setState({ ListActionDone: lstAcIdDone })
         })
     }
-    getExpC(lstExp) {
-        return lstExp.reduce((acu, crt) => acu + crt, 0)
-    }
     getExpectedCost = (listSub) => {
-        const { ListAction } = this.context
-        const lstExp = listSub.map(s => ListAction.filter(a => a.ParentId == s.Id).map(a => a.ExpectCost))[0]
-        return Array.isArray(lstExp) ? this.getExpC(lstExp) : 0
-    }
-    getTrueC(lstTrue) {
-        return lstTrue.reduce((acu, crt) => acu + crt, 0)
-    }
+        return getExpectedCost.call(this, listSub)
+    }   
     getTrueCost = (listSub) => {
-        const { ListAction } = this.context
-        const lstTrue = listSub.map(s => ListAction.filter(a => a.ParentId == s.Id).map(a => a.TrueCost))[0]
-        return Array.isArray(lstTrue) ? this.getTrueC(lstTrue) : 0
+        return getTrueCost.call(this, listSub)
     }
     setGoalDone = (goal, isMain) => {  // {Id, IsDone}
         if (isMain) {
@@ -111,12 +103,6 @@ class MainGoal extends Component {
             }
         }
     }
-    getDateString(dateStr) {
-        if (!dateStr) return ''
-        const d = new Date(dateStr)
-        if (!(d instanceof Date)) return ''
-        return d.toDateString().slice(4)
-    }
     getListSub = (mId) => {
         const { ListSub } = this.context
         return ListSub.filter(s => s.ParentId == mId)
@@ -141,7 +127,7 @@ class MainGoal extends Component {
                                     Budget={Budget}
                                     ExpCost={this.getExpectedCost(this.getListSub(Id))}
                                     TrueCost={this.getTrueCost(this.getListSub(Id))}
-                                    Start={this.getDateString(Start)} End={this.getDateString(End)}
+                                    Start={getDateString(Start)} End={getDateString(End)}
                                     setGoalDone={this.setGoalDone} />
                                 <div className={style.dnb_item_list_sub}>
                                     <div className={style.dnb_item_view}>
@@ -155,9 +141,9 @@ class MainGoal extends Component {
                                                         Id={Id} Name={Name} Description={Description}
                                                         IsDone={isSubDone}
                                                         Budget={Budget}
-                                                        ExpCost={this.getExpC(this.getListAction(Id).map(a => a.ExpectCost))}
-                                                        TrueCost={this.getTrueC(this.getListAction(Id).map(a => a.TrueCost))}
-                                                        Start={this.getDateString(Start)} End={this.getDateString(End)}
+                                                        ExpCost={getExpC(this.getListAction(Id).map(a => a.ExpectCost))}
+                                                        TrueCost={getTrueC(this.getListAction(Id).map(a => a.TrueCost))}
+                                                        Start={getDateString(Start)} End={getDateString(End)}
                                                         setGoalDone={this.setGoalDone} />
                                                     <div className={style.dnb_item_list_action} key={`dnb-key-wrapact-sub${_i_}`}>
                                                         {
@@ -169,7 +155,7 @@ class MainGoal extends Component {
                                                                     Id={Id} Name={Name} Description={Description}
                                                                     ExpCost={ExpectCost} TrueCost={TrueCost}
                                                                     IsDone={isActnDone}
-                                                                    Start={this.getDateString(Start)} End={this.getDateString(End)}
+                                                                    Start={getDateString(Start)} End={getDateString(End)}
                                                                     setActionDone={this.setActionDone} />
                                                             })
                                                         }
@@ -195,7 +181,7 @@ class MainGoal extends Component {
     }
 }
 
-function GoalItem({ Name, Description, Budget, ExpCost, TrueCost,
+export function GoalItem({ Name, Description, Budget, ExpCost, TrueCost,
     Start, End, IsDone, ParentId, setGoalDone, Id }) {
     const [isEditView, setEditView] = useState(false)
     const [isShowMenu, setShowMenu] = useState(false)

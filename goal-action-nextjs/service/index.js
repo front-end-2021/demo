@@ -14,3 +14,13 @@ export function getDataGoalAction(apiPath) {
             .then(rData => { resolve(rData.data) })
     })
 }
+export function getDataGoalActionWith(apiPath, params) {
+    const url = `${host}${apiPath}`
+    return new Promise((resolve, reject) => {
+        axios.get(url, Object.assign({
+            params: params
+        }, config))
+            .then(res => { return res.data })
+            .then(rData => { resolve(rData.data) })
+    })
+}

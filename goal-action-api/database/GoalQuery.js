@@ -13,6 +13,16 @@ const colsSub = `Id TEXT NOT NULL UNIQUE, ParentId TEXT NOT NULL, Name TEXT NOT 
 Description TEXT, Budget REAL DEFAULT 0, Start TEXT, End TEXT, IsDone INTEGER DEFAULT 0`
 dbLite.readyTable(dbName, tableSub, colsSub)
 
+function getSubsByMainId(mainId) {
+    return new Promise((resolve, reject) => {
+        dbLite.selectFromTable(dbName,
+            `SELECT * FROM ${tableSub} WHERE ParentId = '${mainId}'`).then(rows => {
+                resolve(rows)
+            }, err => {
+                reject(err)
+            })
+    })
+}
 function getMainSubGoals(isMain) {
     const tName = isMain ? tableName : tableSub
     return new Promise((resolve, reject) => {
@@ -38,27 +48,27 @@ function updateGoal(id, main) {
     if (!uuidValidate(id) || id == NIL_UUID) Promise.resolve(0);
     let values = []
     let qry = `UPDATE ${tableName} SET`
-    if(main.Name) {
+    if (main.Name) {
         values.push(main.Name)
         qry += ` Name=?`
     }
-    if(main.Description) {
+    if (main.Description) {
         values.push(main.Description)
         qry += `, Description=?`
     }
-    if(main.Budget && typeof main.Budget == 'number') {
+    if (main.Budget && typeof main.Budget == 'number') {
         values.push(main.Budget)
         qry += `, Budget=?`
     }
-    if(main.Start) {
+    if (main.Start) {
         values.push(main.Start)
         qry += `, Start=?`
     }
-    if(main.End) {
+    if (main.End) {
         values.push(main.End)
         qry += `, End=?`
     }
-    if(values.length) {
+    if (values.length) {
         values.push(id)
         qry += ` WHERE Id=?`
         return dbLite.updateTable(dbName, qry, values)
@@ -118,5 +128,6 @@ module.exports = {
     getMainSubBy: getMainSubBy,
     insertNewSub: insertNewSub,
     dbName: dbName,
-    updateGoal: updateGoal
+    updateGoal: updateGoal,
+    getSubsByMainId: getSubsByMainId,
 }

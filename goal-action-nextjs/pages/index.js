@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { Marketing } from './goal';
+import { ListMainProvider } from './goal/GoalComponent';
 import styles from '../styles/Home.module.css';
 
 export default function Home() {
@@ -11,6 +12,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Marketing />
+      <ListMainProvider />
       <main>
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
