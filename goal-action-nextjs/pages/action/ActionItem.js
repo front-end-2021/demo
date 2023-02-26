@@ -3,9 +3,90 @@ import { getDateString, getDateCalendarValue } from "../../global"
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import style from '../goal/style.module.scss'
 
+export function GoalActionView({ typeid, children,
+    name, des, isDone, start, end,
+    setEditView, onToggleDone }) {
+    const [isShowMenu, setShowMenu] = useState(false)
+
+    function getStartTag() {
+        if (!start) return <></>
+        return <>
+            <span className={`bi bi-calendar2-week${getClassOverDate(start)}`} />
+            <span className={`dnb-d-start${getClassOverDate(start)}`}>&nbsp;{getDateString(start)}</span>
+        </>
+    }
+    function getEndTag() {
+        if (!end) return <></>
+        return <>
+            <span className={style.dnb_d_div}>&minus;</span>
+            <span className="dnb-d-end">{getDateString(end)}</span>
+        </>
+    }
+    function getClsDone() {
+        if (isDone) return `bi bi-check-circle-fill`
+        return `bi bi-check-circle`
+    }
+    function getMenuTag() {
+        if (!isShowMenu) return <></>
+        return <>
+            <div className={style.dnb_i_menu}>
+                <span>{getEditTag()}</span>
+                <span>{getDuplicateTag()}</span>
+                <span>{getDeleteTag()}</span>
+                <span style={{ cursor: 'initial' }}>
+                    <span className={getClsDone()} style={{ cursor: 'pointer' }}
+                        onClick={onToggleDone}>&nbsp; Finish</span>
+                </span>
+                <span>{getAddNewTag()}</span>
+            </div>
+        </>
+    }
+    function getDeleteTag() {
+        if (isDone) return <i className="bi bi-trash">&nbsp; Delete</i>
+        return <span className="bi bi-trash" style={{ cursor: 'pointer' }}
+            onClick={() => void (0)}>&nbsp; Delete</span>
+    }
+    function getEditTag() {
+        if (isDone) return <i className="bi bi-pencil-square" >&nbsp; Edit</i>
+        return <span className="bi bi-pencil-square" style={{ cursor: 'pointer' }}
+            onClick={() => setEditView(true)}>&nbsp; Edit</span>
+    }
+    function getDuplicateTag() {
+        if (isDone) return <i className="bi bi-files">&nbsp; Duplicate</i>
+        return <span className="bi bi-files" style={{ cursor: 'pointer' }}
+            onClick={() => void (0)}>&nbsp; Duplicate</span>
+    }
+    function getAddNewTag() {
+        if (typeid > 2) return <></>
+        if (isDone) return <span className="bi bi-plus-circle-dotted">&nbsp; New {getIcon(typeid + 1)}</span>
+        return <span className="bi bi-plus-circle-dotted" style={{ cursor: 'pointer' }}
+            onClick={() => void (0)}>&nbsp; New {getIcon(typeid + 1)}</span>
+    }
+    return (
+        <div className={style.dnb_item_container + `${isDone ? ` ${style.dnb_item_done}` : ''}`}>
+            <div className="dnb-item-title">{getIcon(typeid)} {name}</div>
+            <p className={"dnb-item-description " + style.o_81}>{des}</p>
+            <div className={style.dnb_item_cost}>
+                {children}
+            </div>
+            <div className={style.dnb_item_date + getClassOverDate(end)}>
+                {getStartTag()}
+                {getEndTag()}
+            </div>
+            <div className={style.dnb_i_options}>
+                <span className="bi bi-layout-sidebar"
+                    onClick={() => setShowMenu(!isShowMenu)}>&nbsp; Menu &nbsp; </span>
+                <span className={`bi bi-chevron-${isShowMenu ? 'down' : 'right'}`}
+                    onClick={() => setShowMenu(!isShowMenu)} />
+            </div>
+            {getMenuTag()}
+            <style jsx>{`.bi-layout-sidebar {cursor: pointer}
+            .bi-layout-sidebar::before {transform: rotate(-90deg);}`}</style>
+        </div>
+    )
+}
 export function Action({ item, updateAction }) {
     const [isEditView, setEditView] = useState(false)
-    const [isShowMenu, setShowMenu] = useState(false)
     const [name, setName] = useState(item.Name)
     const [des, setDes] = useState(item.Description)
     const [isDone, setDone] = useState(item.IsDone)
@@ -23,13 +104,6 @@ export function Action({ item, updateAction }) {
     function updateNewAction(p) {
         const newAction = { Id: item.Id, ParentId: item.ParentId }
         updateAction(Object.assign(newAction, p))
-    }
-    function onToggleMenu(e) {
-        setShowMenu(!isShowMenu)
-    }
-    function getClsDone() {
-        if (isDone) return `bi bi-check-circle-fill`
-        return `bi bi-check-circle`
     }
     function onCloseEditForm() {
         setEditView(false)
@@ -59,62 +133,24 @@ export function Action({ item, updateAction }) {
         updateNewAction(newAction)
         setEditView(false)
     }
-    function getEndTag() {
-        if (!end) return <></>
-        return <>
-            <span className={style.dnb_d_div}>&minus;</span>
-            <span className="dnb-d-end">{getDateString(end)}</span>
-        </>
-    }
-    function getStartTag() {
-        if (!start) return <></>
-        return <>
-            <span className={`bi bi-calendar2-week${getClassOverDate(start)}`} />
-            <span className={`dnb-d-start${getClassOverDate(start)}`}>&nbsp;{getDateString(start)}</span>
-        </>
-    }
     return (
         <>
             {
                 !isEditView ?
-                    <div className={style.dnb_item_container + `${isDone ? ` ${style.dnb_item_done}` : ''}`}>
-                        <div className="dnb-item-title">&#9632; {name}</div>
-                        <p className={"dnb-item-description " + style.o_81}>{des}</p>
-                        <div className={style.dnb_item_cost}>
-                            <span className={style.dnb_icost + ' dnb-expect-cost'}>P:
-                                <span className={style.dnb_icost_value}>${expectCost}</span>
-                            </span>
-                            <span className={style.dnb_icost + " dnb-true-cost"}>C:
-                                <span className={style.dnb_icost_value}>${trueCost}</span>
-                            </span>
-                        </div>
-                        <div className={style.dnb_item_date + getClassOverDate(end)}>
-                            {getStartTag()}
-                            {getEndTag()}
-                        </div>
-                        <div className={style.dnb_i_options}
-                            onClick={onToggleMenu}>
-                            <span className="bi bi-layout-sidebar">&nbsp; Menu &nbsp; </span>
-                            <span className={`bi bi-chevron-${isShowMenu ? 'down' : 'right'}`}></span>
-                        </div>
-                        {
-                            isShowMenu ? <div className={style.dnb_i_menu}>
-                                <i className="bi bi-pencil-square"
-                                    onClick={() => setEditView(true)}>&nbsp; Edit</i>
-                                <i className="bi bi-files">&nbsp; Duplicate</i>
-                                <span className="bi bi-trash">&nbsp; Delete</span>
-                                <span>
-                                    <span className={getClsDone()}
-                                        onClick={onToggleDone}>&nbsp; Done</span>
-                                </span>
-                            </div> : <></>
-                        }
-                    </div> :
-                    <FormEditAction Id={item.Id} ParentId={item.ParentId}
-                        Name={name} Description={des}
-                        ExpCost={expectCost}
-                        TrueCost={trueCost}
-                        Start={start} End={end}
+                    <GoalActionView
+                        typeid={3}
+                        name={name} des={des} isDone={isDone} start={start} end={end}
+                        setEditView={setEditView} onToggleDone={onToggleDone} >
+                        <span className={style.dnb_icost + ' dnb-expect-cost'}>P:
+                            <span className={style.dnb_icost_value}>${expectCost}</span>
+                        </span>
+                        <span className={style.dnb_icost + " dnb-true-cost"}>C:
+                            <span className={style.dnb_icost_value}>${trueCost}</span>
+                        </span>
+                    </GoalActionView> :
+                    <FormEditAction
+                        Name={name} Description={des} Start={start} End={end}
+                        ExpCost={expectCost} TrueCost={trueCost}
                         onSaveAction={onSaveAction}
                         onCloseEditForm={onCloseEditForm}
                     />
@@ -192,11 +228,6 @@ export function FormEditItem({ Name, Description, Start, End,
         const newDes = e.target.value
         setDes(newDes)
     }
-    function getIcon() {
-        if (typeid == 1) return <>&#9673;</>
-        if (typeid == 2) return <>&#9670;</>
-        return <>&#9632;</>
-    }
     function onSaveDataItem() {
         const s = getDateString(start)
         const e = getDateString(end)
@@ -206,7 +237,7 @@ export function FormEditItem({ Name, Description, Start, End,
     }
     return (
         <div className={style.dnb_item_container}>
-            <div className="dnb-item-title">{getIcon()} <input style={{ width: 'calc(100% - 24px)' }}
+            <div className="dnb-item-title">{getIcon(typeid)} <input style={{ width: 'calc(100% - 24px)' }}
                 type="text" value={name} onChange={handleChangeName} maxLength="150"
                 onMouseOut={handleMouseOutChangeName} />
             </div>
@@ -244,4 +275,9 @@ export function getClassOverDate(start_end) {
         return ' ' + style.dnb_past_date
     }
     return ''
+}
+function getIcon(typeid) {
+    if (typeid == 1) return <>&#9673;</>
+    if (typeid == 2) return <>&#9670;</>
+    return <>&#9632;</>
 }

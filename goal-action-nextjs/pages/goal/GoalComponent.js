@@ -43,14 +43,8 @@ export class ListMainProvider extends Component {
         if (!cost) return 0
         return typeof cost.TrueC == 'number' ? cost.TrueC : 0
     }
-    setGoalDone = ({ Id, IsDone }) => {
-        const { ListMain } = this.state
-        const m = ListMain.find(_m => _m.Id == Id)
-        if (m) {
-            m.IsDone = IsDone
-            const i = ListMain.map(_m => _m.Id).indexOf(Id)
-            ListMain.splice(i, 1, m)
-        }
+    updateGoal = (newGoal) => {
+
     }
     render() {
         const { ListMain } = this.state
@@ -64,13 +58,12 @@ export class ListMainProvider extends Component {
                                 item={main}
                                 ExpCost={this.getExpectCost(Id)}
                                 TrueCost={this.getTrueCost(Id)}
-                                setGoalDone={this.setGoalDone} />
+                                updateGoal={this.updateGoal}  />
                             <ListSubgoal ParentId={Id} />
                         </div>
                     })
                 }
-                <style jsx global>{`body {font-size: 16px;}
-              .bi-layout-sidebar::before {transform: rotate(-90deg);}}`}</style>
+                <style jsx global>{`body {font-size: 16px;} }`}</style>
             </>
         )
     }

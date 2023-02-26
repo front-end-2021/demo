@@ -4,7 +4,7 @@ import {
     createContext, useContext
 } from "react"
 import { getDataGoalAction } from "../../service"
-import { FormEditItem, getClassOverDate } from "../action/ActionItem"
+import { FormEditItem, getClassOverDate, GoalActionView } from "../action/ActionItem"
 import {
     getExpC, getTrueC, getTrueCost,
     getExpectedCost, getDateString
@@ -14,24 +14,14 @@ import style from './style.module.scss'
 
 export function GoalItem({ item, ExpCost, TrueCost, updateGoal }) {
     const [isEditView, setEditView] = useState(false)
-    const [isShowMenu, setShowMenu] = useState(false)
     const [name, setName] = useState(item.Name)
     const [des, setDes] = useState(item.Description)
     const [isDone, setDone] = useState(item.IsDone)
     const [start, setStart] = useState(item.Start)
     const [end, setEnd] = useState(item.End)
     const [budget, setBudget] = useState(item.Budget)
-   
-    function getValueOpenCost() {
-        const oCost = budget - ExpCost
-        if (oCost < 0) return `-$${Math.abs(oCost)}`
-        return `$${oCost}`
-    }
-    function getClsCostNegative() {
-        if (budget - ExpCost < 0)
-            return ` ${style.dnb_ocost_negative}`
-        return ''
-    }
+
+
     function onToggleDone(e) {
         const is_done = !isDone
         updateNewGoal({ IsDone: is_done })
@@ -41,14 +31,6 @@ export function GoalItem({ item, ExpCost, TrueCost, updateGoal }) {
         const newGoal = { Id: item.Id }
         if (item.ParentId) newGoal.ParentId = item.ParentId
         updateGoal(Object.assign(newGoal, p))
-    }
-    function getClsDone() {
-        if (isDone) return `bi bi-check-circle-fill`
-        return `bi bi-check-circle`
-    }
-    function getClsItemDone() {
-        if (!isDone) return ''
-        return ` ${style.dnb_item_done}`
     }
     function onCloseEditForm() {
         setEditView(false)
@@ -75,76 +57,32 @@ export function GoalItem({ item, ExpCost, TrueCost, updateGoal }) {
         updateNewGoal(newGoal)
         setEditView(false)
     }
-    function getStartTag() {
-        if (!start) return <></>
-        return <>
-            <span className={`bi bi-calendar2-week${getClassOverDate(start)}`} />
-            <span className={style.dnb_past_date + ` dnb-d-start${getClassOverDate(start)}`}>&nbsp;{getDateString(start)}</span>
-        </>
-    }
-    function getEndTag() {
-        if (!end) return <></>
-        return <>
-            <span className={style.dnb_d_div}>&minus;</span>
-            <span className="dnb-d-end">{getDateString(end)}</span>
-        </>
-    }
-    function getMenuTag() {
-        if (!isShowMenu) return <></>
-        return <>
-            <div className={style.dnb_i_menu}>
-                <i className="bi bi-pencil-square"
-                    onClick={() => setEditView(true)}>&nbsp; Edit</i>
-                <i className="bi bi-files">&nbsp; Duplicate</i>
-                <span className="bi bi-trash">&nbsp; Delete</span>
-                <span>
-                    <span className={getClsDone()}
-                        onClick={onToggleDone}>&nbsp; Finish</span>
-                </span>
-                <span className="bi bi-plus-circle-dotted">&nbsp; New {
-                    item.ParentId ? <>&#9632;</> : <>&#9670;</>}</span>
-            </div>
-        </>
-    }
     return (
-        <>
-            {
-                !isEditView ?
-                    <div className={style.dnb_item_container + `${getClsItemDone()}`}>
-                        <div className="dnb-item-title">{!item.ParentId ? <>&#9673;</> : <>&#9670;</>} {name}</div>
-                        <p className={style.o_81 + "dnb-item-description"}>{des}</p>
-                        <div className={style.dnb_item_cost}>
-                            <span className={style.dnb_icost + " dnb-budget-cost"}>B:
-                                <span className={style.dnb_icost_value}>${budget}</span>
-                            </span>
-                            <span className={style.dnb_icost + " dnb-open-cost" + getClsCostNegative()}>o:
-                                <span className={style.dnb_icost_value}>{getValueOpenCost()}</span>
-                            </span>
-                            <span className={style.dnb_icost + " dnb-expect-cost"}>P:
-                                <span className={style.dnb_icost_value}>${ExpCost}</span>
-                            </span>
-                            <span className={style.dnb_icost + " dnb-true-cost"}>C:
-                                <span className={style.dnb_icost_value}>${TrueCost}</span>
-                            </span>
-                        </div>
-                        <div className={style.dnb_item_date + getClassOverDate(end)}>
-                            {getStartTag()}
-                            {getEndTag()}
-                        </div>
-                        <div className={style.dnb_i_options}
-                            onClick={() => setShowMenu(!isShowMenu)}>
-                            <span className="bi bi-layout-sidebar">&nbsp; Menu &nbsp;</span>
-                            <span className={`bi bi-chevron-${isShowMenu ? 'down' : 'right'}`}></span>
-                        </div>
-                        {getMenuTag()}
-                    </div> :
-                    <FormEditGoal ParentId={item.ParentId}
-                        Name={item.Name} Description={item.Description} Start={item.Start} End={item.End}
-                        Budget={item.Budget} ExpCost={ExpCost} TrueCost={TrueCost}
-                        onCloseEditForm={onCloseEditForm} onSaveGoal={onSaveGoal}
-                    />
-            }
-        </>
+        <>{
+            !isEditView ?
+                <GoalActionView
+                    typeid={!item.ParentId ? 1 : 2}
+                    name={name} des={des} isDone={isDone} start={start} end={end}
+                    setEditView={setEditView} onToggleDone={onToggleDone} >
+                    <span className={style.dnb_icost + " dnb-budget-cost"}>B:
+                        <span className={style.dnb_icost_value}>${budget}</span>
+                    </span>
+                    <span className={style.dnb_icost + " dnb-open-cost" + getClsCostNegative(budget, ExpCost)}>o:
+                        <span className={style.dnb_icost_value}>{getValueOpenCost(budget, ExpCost)}</span>
+                    </span>
+                    <span className={style.dnb_icost + " dnb-expect-cost"}>P:
+                        <span className={style.dnb_icost_value}>${ExpCost}</span>
+                    </span>
+                    <span className={style.dnb_icost + " dnb-true-cost"}>C:
+                        <span className={style.dnb_icost_value}>${TrueCost}</span>
+                    </span>
+                </GoalActionView> :
+                <FormEditGoal ParentId={item.ParentId}
+                    Name={name} Description={des} Start={start} End={end}
+                    Budget={budget} ExpCost={ExpCost} TrueCost={TrueCost}
+                    onCloseEditForm={onCloseEditForm} onSaveGoal={onSaveGoal}
+                />
+        }</>
     )
 }
 function FormEditGoal({ ParentId,
@@ -157,7 +95,7 @@ function FormEditGoal({ ParentId,
         setBudget(newB)
     }
     function onSaveData(goal) {
-        goal.Budget = +btget
+        goal.Budget = +budget
         if (!!ParentId) goal.ParentId = ParentId
         onSaveGoal(goal)
     }
@@ -172,15 +110,25 @@ function FormEditGoal({ ParentId,
                         onChange={onHandleChangeBudget} />
                 </span>
             </span>
-            <span className={style.dnb_icost + " dnb-open-cost"}>o:
-                <span className={style.dnb_icost_value}></span>
+            <span className={style.dnb_icost + " dnb-open-cost" + getClsCostNegative(budget, ExpCost)}>o:
+                <span className={style.dnb_icost_value}>{getValueOpenCost(budget, ExpCost)}</span>
             </span>
-            <span className={style.dnb_icost + " dnb-expect-cost"}>P:
+            <span className={style.dnb_icost + " dnb-expect-cost " + style.o_50}>P:
                 <span className={style.dnb_icost_value}>${ExpCost}</span>
             </span>
-            <span className={style.dnb_icost + " dnb-true-cost"}>C:
+            <span className={style.dnb_icost + " dnb-true-cost " + style.o_50}>C:
                 <span className={style.dnb_icost_value}>${TrueCost}</span>
             </span>
         </FormEditItem>
     )
+}
+function getClsCostNegative(budget, ExpCost) {
+    if (budget - ExpCost < 0)
+        return ` ${style.dnb_ocost_negative}`
+    return ''
+}
+function getValueOpenCost(budget, ExpCost) {
+    const oCost = budget - ExpCost
+    if (oCost < 0) return `-$${Math.abs(oCost)}`
+    return `$${oCost}`
 }
