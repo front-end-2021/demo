@@ -71,34 +71,34 @@ function insertNewAction(action) {
 function updateAction(id, action) {
     if (!uuidValidate(id) || id == NIL_UUID) Promise.resolve(0);
     let values = []
-    let qry = `UPDATE ${tableName} SET`
+    let qrPram = ``
     if(action.Name) {
         values.push(action.Name)
-        qry += ` Name=?`
+        qrPram += `Name=?`
     }
     if(action.Description) {
         values.push(action.Description)
-        qry += `, Description=?`
+        qrPram += qrPram ? `, Description=?` : `Description=?`
     }
     if(action.ExpectCost && typeof action.ExpectCost == 'number') {
         values.push(action.ExpectCost)
-        qry += `, ExpectCost=?`
+        qrPram += qrPram ? `, ExpectCost=?` : `ExpectCost=?`
     }
     if(action.TrueCost && typeof action.TrueCost == 'number') {
         values.push(action.TrueCost)
-        qry += `, TrueCost=?`
+        qrPram += qrPram ? `, TrueCost=?` : `TrueCost=?`
     }
     if(action.Start) {
         values.push(action.Start)
-        qry += `, Start=?`
+        qrPram += qrPram ? `, Start=?` : `Start=?`
     }
     if(action.End) {
         values.push(action.End)
-        qry += `, End=?`
+        qrPram += qrPram ? `, End=?` : `End=?`
     }
-    if(values.length) {
+    if(values.length && qrPram) {
         values.push(id)
-        qry += ` WHERE Id=?`
+        const qry = `UPDATE ${tableName} SET ${qrPram} WHERE Id=?`
         return dbLite.updateTable(dbGoal.dbName, qry, values)
     }
     return Promise.resolve(0);

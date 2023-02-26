@@ -46,31 +46,32 @@ function getMainSubBy(id, isMain) {
 }
 function updateGoal(id, main) {
     if (!uuidValidate(id) || id == NIL_UUID) Promise.resolve(0);
+    const tName = !main.ParentId ? tableName : tableSub
     let values = []
-    let qry = `UPDATE ${tableName} SET`
+    let qrPram = ``
     if (main.Name) {
         values.push(main.Name)
-        qry += ` Name=?`
+        qrPram += `Name=?`
     }
     if (main.Description) {
         values.push(main.Description)
-        qry += `, Description=?`
+        qrPram += qrPram ? `, Description=?` : `Description=?`
     }
     if (main.Budget && typeof main.Budget == 'number') {
         values.push(main.Budget)
-        qry += `, Budget=?`
+        qrPram += qrPram ? `, Budget=?` : `Budget=?`
     }
     if (main.Start) {
         values.push(main.Start)
-        qry += `, Start=?`
+        qrPram += qrPram ? `, Start=?` : `Start=?`
     }
     if (main.End) {
         values.push(main.End)
-        qry += `, End=?`
+        qrPram += qrPram ? `, End=?` : `End=?`
     }
     if (values.length) {
         values.push(id)
-        qry += ` WHERE Id=?`
+        const qry = `UPDATE ${tName} SET ${qrPram} WHERE Id=?`
         return dbLite.updateTable(dbName, qry, values)
     }
     return Promise.resolve(0);

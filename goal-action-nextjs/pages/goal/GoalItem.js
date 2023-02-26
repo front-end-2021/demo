@@ -1,18 +1,11 @@
-import {
-    StrictMode,
-    Component, useState,
-    createContext, useContext
-} from "react"
-import { getDataGoalAction } from "../../service"
-import { FormEditItem, getClassOverDate, GoalActionView } from "../action/ActionItem"
-import {
-    getExpC, getTrueC, getTrueCost,
-    getExpectedCost, getDateString
-} from "../../global"
+import { useState } from "react"
+import { updateGoalWithId } from "../../service"
+import { FormEditItem, GoalActionView } from "../action/GoalActionViewForm"
+import { getDateString } from "../../global"
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import style from './style.module.scss'
 
-export function GoalItem({ item, ExpCost, TrueCost, updateGoal }) {
+export function GoalItem({ item, ExpCost, TrueCost, updateGoalUI }) {
     const [isEditView, setEditView] = useState(false)
     const [name, setName] = useState(item.Name)
     const [des, setDes] = useState(item.Description)
@@ -21,41 +14,52 @@ export function GoalItem({ item, ExpCost, TrueCost, updateGoal }) {
     const [end, setEnd] = useState(item.End)
     const [budget, setBudget] = useState(item.Budget)
 
-
     function onToggleDone(e) {
         const is_done = !isDone
-        updateNewGoal({ IsDone: is_done })
+        updateNewGoalUI({ IsDone: is_done })
         setDone(is_done)
     }
-    function updateNewGoal(p) {
+    function updateNewGoalUI(p) {
         const newGoal = { Id: item.Id }
         if (item.ParentId) newGoal.ParentId = item.ParentId
-        updateGoal(Object.assign(newGoal, p))
+        updateGoalUI(Object.assign(newGoal, p))
     }
     function onCloseEditForm() {
         setEditView(false)
     }
     function onSaveGoal(newGoal) {
-        if (typeof newGoal.Name == 'string' && newGoal.Name) {
+        const entry = {}
+        if (item.ParentId) entry.ParentId = item.ParentId
+        if (typeof newGoal.Name == 'string' && newGoal.Name.trim() != ''
+            && newGoal.Name != name) {
             setName(newGoal.Name)
+            entry.Name = newGoal.Name
         }
-        if (typeof newGoal.Description == 'string' && newGoal.Description) {
+        if (typeof newGoal.Description == 'string' && newGoal.Description != des) {
             setDes(newGoal.Description)
+            entry.Description = newGoal.Description
         }
-        if (typeof newGoal.IsDone == 'boolean' && newGoal.IsDone) {
+        if (typeof newGoal.IsDone == 'boolean' && newGoal.IsDone != isDone) {
             setDone(newGoal.IsDone)
+            entry.IsDone = newGoal.IsDone
         }
-        if (typeof newGoal.Start == 'string') {
+        if (typeof newGoal.Start == 'string' &&
+            getDateString(start) != getDateString(newGoal.Start)) {
             setStart(newGoal.Start)
+            entry.Start = getDateString(newGoal.Start)
         }
-        if (typeof newGoal.End == 'string') {
+        if (typeof newGoal.End == 'string' &&
+            getDateString(end) != getDateString(newGoal.End)) {
             setEnd(newGoal.End)
+            entry.End = getDateString(newGoal.End)
         }
-        if (typeof newGoal.Budget == 'number' && newGoal.Budget) {
+        if (typeof newGoal.Budget == 'number' && newGoal.Budget != budget) {
             setBudget(newGoal.Budget)
+            entry.Budget = newGoal.Budget
         }
-        updateNewGoal(newGoal)
+        updateNewGoalUI(newGoal)
         setEditView(false)
+        updateGoalWithId(item.Id, entry)
     }
     return (
         <>{

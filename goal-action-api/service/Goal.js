@@ -39,7 +39,7 @@ function insertMain(app, corOptions) {
 function updateGoal(app, corOptions) {
     app.put('/api/goal/:id', cors(corOptions),
         (req, res, next) => {
-            const main = req.body;
+            const main = req.body.params;
             const id = req.params.id
             dbGoal.updateGoal(id, main).then(n => {
                 res.json(`update main ${id}`)

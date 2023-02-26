@@ -1,4 +1,4 @@
-import { useState, useContext } from "react"
+import { useState } from "react"
 import { getDateString, getDateCalendarValue } from "../../global"
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import style from '../goal/style.module.scss'
@@ -85,121 +85,6 @@ export function GoalActionView({ typeid, children,
         </div>
     )
 }
-export function Action({ item, updateAction }) {
-    const [isEditView, setEditView] = useState(false)
-    const [name, setName] = useState(item.Name)
-    const [des, setDes] = useState(item.Description)
-    const [isDone, setDone] = useState(item.IsDone)
-    const [start, setStart] = useState(item.Start)
-    const [end, setEnd] = useState(item.End)
-    const [expectCost, setExpectCost] = useState(item.ExpectCost)
-    const [trueCost, setTrueCost] = useState(item.TrueCost)
-
-    function onToggleDone(e) {
-        const is_done = !isDone
-        updateNewAction({ IsDone: is_done })
-        setDone(is_done)
-        // call api put
-    }
-    function updateNewAction(p) {
-        const newAction = { Id: item.Id, ParentId: item.ParentId }
-        updateAction(Object.assign(newAction, p))
-    }
-    function onCloseEditForm() {
-        setEditView(false)
-    }
-    function onSaveAction(newAction) {
-        if (typeof newAction.Name == 'string' && newAction.Name) {
-            setName(newAction.Name)
-        }
-        if (typeof newAction.Description == 'string' && newAction.Description) {
-            setDes(newAction.Description)
-        }
-        if (typeof newAction.IsDone == 'boolean' && newAction.IsDone) {
-            setDone(newAction.IsDone)
-        }
-        if (typeof newAction.Start == 'string') {
-            setStart(newAction.Start)
-        }
-        if (typeof newAction.End == 'string') {
-            setEnd(newAction.End)
-        }
-        if (typeof newAction.ExpectCost == 'number' && newAction.ExpectCost) {
-            setExpectCost(newAction.ExpectCost)
-        }
-        if (typeof newAction.TrueCost == 'number' && newAction.TrueCost) {
-            setTrueCost(newAction.TrueCost)
-        }
-        updateNewAction(newAction)
-        setEditView(false)
-    }
-    return (
-        <>
-            {
-                !isEditView ?
-                    <GoalActionView
-                        typeid={3}
-                        name={name} des={des} isDone={isDone} start={start} end={end}
-                        setEditView={setEditView} onToggleDone={onToggleDone} >
-                        <span className={style.dnb_icost + ' dnb-expect-cost'}>P:
-                            <span className={style.dnb_icost_value}>${expectCost}</span>
-                        </span>
-                        <span className={style.dnb_icost + " dnb-true-cost"}>C:
-                            <span className={style.dnb_icost_value}>${trueCost}</span>
-                        </span>
-                    </GoalActionView> :
-                    <FormEditAction
-                        Name={name} Description={des} Start={start} End={end}
-                        ExpCost={expectCost} TrueCost={trueCost}
-                        onSaveAction={onSaveAction}
-                        onCloseEditForm={onCloseEditForm}
-                    />
-            }
-        </>
-
-    )
-}
-
-function FormEditAction({ Name, Description, Start, End,
-    ExpCost, TrueCost,
-    onCloseEditForm, onSaveAction }) {
-    const [expectCost, setExpectCost] = useState(ExpCost)
-    const [trueCost, setTrueCost] = useState(TrueCost)
-    function handleChangeExpectCost(e) {
-        const newExp = e.target.value
-        setExpectCost(newExp)
-    }
-    function handleChangeTrueCost(e) {
-        const newTrue = e.target.value
-        setTrueCost(newTrue)
-    }
-
-    function onSaveData(item) {
-        item.ExpectCost = +expectCost
-        item.TrueCost = +trueCost
-        onSaveAction(item)
-    }
-    return (
-        <FormEditItem
-            Name={Name} Description={Description} Start={Start} End={End}
-            onSaveData={onSaveData}
-            onCloseEditForm={onCloseEditForm} >
-            <span className={style.dnb_icost + " dnb-expect-cost"}>P:
-                <span className={style.dnb_icost_value}>$
-                    <input type="number" value={expectCost} style={{ width: '80px' }}
-                        onChange={handleChangeExpectCost} />
-                </span>
-            </span>
-            <span className={style.dnb_icost + " dnb-true-cost"}>C:
-                <span className={style.dnb_icost_value}>$
-                    <input type="number" value={trueCost} style={{ width: '80px' }}
-                        onChange={handleChangeTrueCost} />
-                </span>
-            </span>
-        </FormEditItem>
-    )
-}
-
 export function FormEditItem({ Name, Description, Start, End,
     children, typeid,
     onSaveData, onCloseEditForm }) {
@@ -250,7 +135,12 @@ export function FormEditItem({ Name, Description, Start, End,
             </div>
             <div className={style.dnb_item_date}>
                 <span className={style.dnb_past_date + " dnb-d-start"}>
-                    <input type="date" value={start} onChange={handleChangeStart} />
+                    {
+                        end ? <input type="date" value={start} max={end}
+                            onChange={handleChangeStart} /> :
+                            <input type="date" value={start}
+                                onChange={handleChangeStart} />
+                    }
                 </span>
                 <span className={style.dnb_d_div}>&minus;</span>
                 <span className="dnb-d-end">
@@ -267,7 +157,7 @@ export function FormEditItem({ Name, Description, Start, End,
         </div>
     )
 }
-export function getClassOverDate(start_end) {
+function getClassOverDate(start_end) {
     if (!start_end) return ''
     const _date = new Date(start_end)
     const now = new Date(new Date().toDateString())

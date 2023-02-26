@@ -1,6 +1,5 @@
 import Head from 'next/head';
-import { Marketing } from './goal';
-import { ListMainProvider } from './goal/GoalComponent';
+import { ListMainProvider } from './goal';
 import styles from '../styles/Home.module.css';
 
 export default function Home() {
@@ -11,7 +10,7 @@ export default function Home() {
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Marketing />
+      
       <ListMainProvider />
       <main>
         <h1 className={styles.title}>

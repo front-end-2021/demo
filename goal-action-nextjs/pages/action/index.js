@@ -1,105 +1,99 @@
-import { useState, useContext } from "react"
-import { ListDataContext } from "../goal"
+import { useState } from "react"
+import { getDateString } from "../../global"
+import { FormEditItem, GoalActionView } from "./GoalActionViewForm"
+import { updateActionWithId } from "../../service"
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import style from '../goal/style.module.scss'
 
-export function ActionItem({ Name, Description, ExpCost, ParentId,
-    TrueCost, Start, End, IsDone, Id, setActionDone }) {
+export function Action({ item, updateAction }) {
     const [isEditView, setEditView] = useState(false)
-    const [isShowMenu, setShowMenu] = useState(false)
+    const [name, setName] = useState(item.Name)
+    const [des, setDes] = useState(item.Description)
+    const [isDone, setDone] = useState(item.IsDone)
+    const [start, setStart] = useState(item.Start)
+    const [end, setEnd] = useState(item.End)
+    const [expectCost, setExpectCost] = useState(item.ExpectCost)
+    const [trueCost, setTrueCost] = useState(item.TrueCost)
 
-    function getClassOverDate() {
-        if (!End) return ''
-        const end = new Date(End)
-        const now = new Date(new Date().toDateString())
-        if (end.getTime() < now.getTime()) {
-            return ' ' + style.dnb_past_date
-        }
-        return ''
-    }
-    function getStartOverDate() {
-        const start = new Date(Start)
-        const now = new Date(new Date().toDateString())
-        if (start.getTime() < now.getTime()) {
-            return ' ' + style.dnb_past_date
-        }
-        return ''
-    }
     function onToggleDone(e) {
-        const is_done = !IsDone
-        setActionDone(Id, is_done)
+        const is_done = !isDone
+        updateNewAction({ IsDone: is_done })
+        setDone(is_done)
+        // call api put
     }
-    function onToggleMenu(e) {
-        setShowMenu(!isShowMenu)
-    }
-    function getClsDone() {
-        if (IsDone) return `bi bi-check-circle-fill`
-        return `bi bi-check-circle`
-    }
-    function onShowEditForm(e) {
-        setEditView(true)
+    function updateNewAction(p) {
+        const newAction = { Id: item.Id, ParentId: item.ParentId }
+        updateAction(Object.assign(newAction, p))
     }
     function onCloseEditForm() {
         setEditView(false)
+    }
+    function onSaveAction(newAction) {
+        const entry = {}
+        if (typeof newAction.Name == 'string' && newAction.Name.trim() != ''
+            && newAction.Name != name) {
+            setName(newAction.Name)
+            entry.Name = newAction.Name
+        }
+        if (typeof newAction.Description == 'string' && newAction.Description != des) {
+            setDes(newAction.Description)
+            entry.Description = newAction.Description
+        }
+        if (typeof newAction.IsDone == 'boolean' && newAction.IsDone != isDone) {
+            setDone(newAction.IsDone)
+            entry.IsDone = newAction.IsDone
+        }
+        if (typeof newAction.Start == 'string' &&
+            getDateString(start) != getDateString(newAction.Start)) {
+            setStart(newAction.Start)
+            entry.Start = getDateString(newAction.Start)
+        }
+        if (typeof newAction.End == 'string' &&
+            getDateString(end) != getDateString(newAction.End)) {
+            setEnd(newAction.End)
+            entry.End = getDateString(newAction.End)
+        }
+        if (typeof newAction.ExpectCost == 'number' && newAction.ExpectCost != expectCost) {
+            setExpectCost(newAction.ExpectCost)
+            entry.ExpectCost = newAction.ExpectCost
+        }
+        if (typeof newAction.TrueCost == 'number' && newAction.TrueCost != trueCost) {
+            setTrueCost(newAction.TrueCost)
+            entry.TrueCost = newAction.TrueCost
+        }
+        updateNewAction(newAction)
+        setEditView(false)
+        updateActionWithId(item.Id, entry)
     }
     return (
         <>
             {
                 !isEditView ?
-                    <div className={style.dnb_item_container + `${IsDone ? ` ${style.dnb_item_done}` : ''}`}>
-                        <div className="dnb-item-title">&#9632; {Name}</div>
-                        <p className={"dnb-item-description " + style.o_81}>{Description}</p>
-                        <div className={style.dnb_item_cost}>
-                            <span className={style.dnb_icost + ' dnb-expect-cost'}>P:
-                                <span className={style.dnb_icost_value}>${ExpCost}</span>
-                            </span>
-                            <span className={style.dnb_icost + " dnb-true-cost"}>C:
-                                <span className={style.dnb_icost_value}>${TrueCost}</span>
-                            </span>
-                        </div>
-                        <div className={style.dnb_item_date + getClassOverDate()}>
-                            <span className={`bi bi-calendar2-week${getStartOverDate()}`} />
-                            <span className={`dnb-d-start${getStartOverDate()}`}>&nbsp;{Start}</span>
-                            {
-                                End ? <>
-                                    <span className={style.dnb_d_div}>&minus;</span>
-                                    <span className="dnb-d-end">{End}</span>
-                                </> : <></>
-                            }
-                        </div>
-                        <div className={style.dnb_i_options}
-                            onClick={onToggleMenu}>
-                            <span className="bi bi-layout-sidebar">&nbsp; Menu &nbsp; </span>
-                            <span className={`bi bi-chevron-${isShowMenu ? 'down' : 'right'}`}></span>
-                        </div>
-                        {
-                            isShowMenu ? <div className={style.dnb_i_menu}>
-                                <i className="bi bi-pencil-square"
-                                    onClick={onShowEditForm}>&nbsp; Edit</i>
-                                <i className="bi bi-files">&nbsp; Duplicate</i>
-                                <span className="bi bi-trash">&nbsp; Delete</span>
-                                <span>
-                                    <span className={getClsDone()}
-                                        onClick={onToggleDone}>&nbsp; Done</span>
-                                </span>
-                            </div> : <></>
-                        }
-                    </div> :
-                    <FormEditAction ParentId={ParentId}
-                        Id={Id} Name={Name} Description={Description}
-                        ExpCost={ExpCost}
-                        TrueCost={TrueCost}
-                        Start={Start} End={End}
+                    <GoalActionView
+                        typeid={3}
+                        name={name} des={des} isDone={isDone} start={start} end={end}
+                        setEditView={setEditView} onToggleDone={onToggleDone} >
+                        <span className={style.dnb_icost + ' dnb-expect-cost'}>P:
+                            <span className={style.dnb_icost_value}>${expectCost}</span>
+                        </span>
+                        <span className={style.dnb_icost + " dnb-true-cost"}>C:
+                            <span className={style.dnb_icost_value}>${trueCost}</span>
+                        </span>
+                    </GoalActionView> :
+                    <FormEditAction
+                        Name={name} Description={des} Start={start} End={end}
+                        ExpCost={expectCost} TrueCost={trueCost}
+                        onSaveAction={onSaveAction}
                         onCloseEditForm={onCloseEditForm}
                     />
             }
         </>
-
     )
 }
 
-function FormEditAction({ Id, Name, Description, ExpCost, TrueCost,
-    Start, End, ParentId, onCloseEditForm }) {
+function FormEditAction({ Name, Description, Start, End,
+    ExpCost, TrueCost,
+    onCloseEditForm, onSaveAction }) {
     const [expectCost, setExpectCost] = useState(ExpCost)
     const [trueCost, setTrueCost] = useState(TrueCost)
     function handleChangeExpectCost(e) {
@@ -110,28 +104,15 @@ function FormEditAction({ Id, Name, Description, ExpCost, TrueCost,
         const newTrue = e.target.value
         setTrueCost(newTrue)
     }
-    const {
-        ListAction } = useContext(ListDataContext)
+
     function onSaveData(item) {
-        item.ExpCost = expectCost
-        item.TrueCost = trueCost
-        console.log(`onSaveData Action`, item)
-        const _action_ = ListAction.find(a => a.Id == Id)
-        if (_action_) {
-            _action_.Name = item.Name
-            _action_.Description = item.Description
-            _action_.ExpCost = expectCost
-            _action_.TrueCost = trueCost
-            _action_.Start = item.Start
-            _action_.End = item.End
-        }
-        onCloseEditForm()
+        item.ExpectCost = +expectCost
+        item.TrueCost = +trueCost
+        onSaveAction(item)
     }
     return (
         <FormEditItem
-            Id={Id} ParentId={ParentId}
-            Name={Name} Description={Description}
-            Start={Start} End={End}
+            Name={Name} Description={Description} Start={Start} End={End}
             onSaveData={onSaveData}
             onCloseEditForm={onCloseEditForm} >
             <span className={style.dnb_icost + " dnb-expect-cost"}>P:
@@ -147,92 +128,5 @@ function FormEditAction({ Id, Name, Description, ExpCost, TrueCost,
                 </span>
             </span>
         </FormEditItem>
-    )
-}
-
-export function FormEditItem({ Id, ParentId,
-    Name, Description,
-    Start, End,
-    children, typeid, onSaveData,
-    onCloseEditForm }) {
-    const [name, setName] = useState(Name)
-    const [des, setDes] = useState(Description)
-    const [start, setStart] = useState(getStartValue())
-    const [end, setEnd] = useState(getEndValue())
-    function getStartValue() {
-        const s0 = new Date(Start)
-        const s = new Date(s0.getTime() + 24000 * 3600)
-        return s.toISOString().split('T')[0]
-    }
-    function getEndValue() {
-        if (!End) return ''
-        const e0 = new Date(End)
-        const e = new Date(e0.getTime() + 24000 * 3600)
-        return e.toISOString().split('T')[0]
-    }
-    function handleChangeStart(e) {
-        const newD = e.target.value
-        setStart(newD)
-    }
-    function handleChangeEnd(e) {
-        const newD = e.target.value
-        setEnd(newD)
-    }
-    function handleChangeName(e) {
-        const newName = e.target.value
-        setName(newName)
-    }
-    function handleMouseOutChangeName(e) {
-        const newName = e.target.value
-        if (newName.trim() == '') setName(Name)
-    }
-    function handleChangeDes(e) {
-        const newDes = e.target.value
-        setDes(newDes)
-    }
-    function getIcon() {
-        if (typeid == 1) return <>&#9673;</>
-        if (typeid == 2) return <>&#9670;</>
-        return <>&#9632;</>
-    }
-    function onSaveDataItem() {
-        const s = new Date(start).toDateString()
-        const e = new Date(end).toDateString()
-        onSaveData({
-            Id, ParentId,
-            Name: name, Description: des,
-            Start: s, End: e,
-        })
-    }
-    return (
-        <div className={style.dnb_item_container}>
-            <div className="dnb-item-title">{getIcon()} <input style={{ width: 'calc(100% - 24px)' }}
-                type="text" value={name} onChange={handleChangeName} maxLength="150"
-                onMouseOut={handleMouseOutChangeName} />
-            </div>
-            <textarea style={{
-                width: 'calc(100% - 24px)', resize: 'none', height: '81px',
-                marginLeft: '18px', marginTop: '6px'
-            }} onChange={handleChangeDes} defaultValue={des} />
-            <div className={style.dnb_item_cost}>
-                {children}
-            </div>
-            <div className={style.dnb_item_date}>
-                <span className={style.dnb_past_date + " dnb-d-start"}>
-                    <input type="date" value={start} onChange={handleChangeStart} />
-                </span>
-                <span className={style.dnb_d_div}>&minus;</span>
-                <span className="dnb-d-end">
-                    <input type="date" value={end} min={start}
-                        onChange={handleChangeEnd} />
-                </span>
-            </div>
-            <div className={style.dnb_i_menu}>
-                <span className="bi bi-database-up"
-                    onClick={onSaveDataItem}>&nbsp; Save &nbsp;</span>
-                <span className="bi bi-x-circle"
-                    onClick={onCloseEditForm}>&nbsp; Cancel &nbsp;</span>
-            </div>
-        </div>
     )
 }

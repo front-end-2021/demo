@@ -50,7 +50,7 @@ function insertAction(app, corOptions) {
 function updateAction(app, corOptions) {
     app.put('/api/action/:id', cors(corOptions),
         (req, res, next) => {
-            const action = req.body;
+            const action = req.body.params;
             const id = req.params.id
             dbAction.updateAction(id, action).then(n => {
                 res.json(`update action ${id}`)

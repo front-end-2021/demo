@@ -9,11 +9,6 @@ export function getTrueCost(listSub) {
     const lstTrue = listSub.map(s => ListAction.filter(a => a.ParentId == s.Id).map(a => a.TrueCost))[0]
     return Array.isArray(lstTrue) ? getTrueC(lstTrue) : 0
 }
-export function getExpectedCost(listSub) {
-    const { ListAction } = this.context
-    const lstExp = listSub.map(s => ListAction.filter(a => a.ParentId == s.Id).map(a => a.ExpectCost))[0]
-    return Array.isArray(lstExp) ? getExpC(lstExp) : 0
-}
 export function getDateString(dateStr) {
     if (!dateStr) return ''
     const d = new Date(dateStr)

@@ -24,3 +24,21 @@ export function getDataGoalActionWith(apiPath, params) {
             .then(rData => { resolve(rData.data) })
     })
 }
+export function updateActionWithId(id, item) {
+    const url = `${host}action/${id}`
+    return new Promise((resolve, reject) => {
+        axios.put(url, Object.assign({
+            params: item
+        }, config))
+            .then(res => { console.log(res) })
+    })
+}
+export function updateGoalWithId(id, item) {
+    const url = `${host}goal/${id}`
+    return new Promise((resolve, reject) => {
+        axios.put(url, Object.assign({
+            params: item
+        }, config))
+            .then(res => { console.log(res) })
+    })
+}
