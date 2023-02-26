@@ -69,6 +69,10 @@ function updateGoal(id, main) {
         values.push(main.End)
         qrPram += qrPram ? `, End=?` : `End=?`
     }
+    if (typeof main.IsDone == 'boolean') {
+        values.push(main.IsDone ? 1 : 0)
+        qrPram += qrPram ? `, IsDone=?` : `IsDone=?`
+    }
     if (values.length) {
         values.push(id)
         const qry = `UPDATE ${tName} SET ${qrPram} WHERE Id=?`
@@ -78,8 +82,9 @@ function updateGoal(id, main) {
 }
 function insertNewMain(main) {
     if (typeof main.Name != 'string') return
+    const newId = uuidv4()
     let columns = `Id, Name`
-    let values = `'${uuidv4()}', '${main.Name}'`
+    let values = `'${newId}', '${main.Name}'`
     if (main.Start) {
         columns += `, Start`
         values += `, '${main.Start}'`
@@ -97,13 +102,17 @@ function insertNewMain(main) {
         values += `, ${main.Budget}`
     }
     dbLite.insertIntoTable(dbName, tableName, columns, values)
+    return newId
 }
 function insertNewSub(sub) {
-    if (typeof sub.Name != 'string') return
-    if (!uuidValidate(sub.ParentId) || sub.ParentId == NIL_UUID) return
-    getMainSubBy(sub.ParentId).then(row => {
+    if (typeof sub.Name != 'string') return Promise.resolve('invalid Name')
+    if (!uuidValidate(sub.ParentId) || sub.ParentId == NIL_UUID) {
+        return Promise.resolve('invalid ParentId')
+    }
+    return new Promise(res => {
+        const newId = uuidv4()
         let columns = `Id, ParentId, Name`
-        let values = `'${uuidv4()}', '${sub.ParentId}', '${sub.Name}'`
+        let values = `'${newId}', '${sub.ParentId}', '${sub.Name}'`
         if (sub.Start) {
             columns += `, Start`
             values += `, '${sub.Start}'`
@@ -120,7 +129,9 @@ function insertNewSub(sub) {
             columns += `, Budget`
             values += `, ${sub.Budget}`
         }
-        dbLite.insertIntoTable(dbName, tableSub, columns, values)
+        const query = `SELECT * FROM ${tableSub} WHERE Name = '${sub.Name}'`
+        dbLite.insertIntoTable(dbName, tableSub, columns, values, query)
+        res(newId)
     })
 }
 module.exports = {

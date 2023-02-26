@@ -5,7 +5,8 @@ import { getDateString } from "../../global"
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import style from './style.module.scss'
 
-export function GoalItem({ item, ExpCost, TrueCost, updateGoalUI }) {
+export function GoalItem({ item, ExpCost, TrueCost,
+    updateGoalUI, addNewSub, addNewAction }) {
     const [isEditView, setEditView] = useState(false)
     const [name, setName] = useState(item.Name)
     const [des, setDes] = useState(item.Description)
@@ -16,8 +17,10 @@ export function GoalItem({ item, ExpCost, TrueCost, updateGoalUI }) {
 
     function onToggleDone(e) {
         const is_done = !isDone
-        updateNewGoalUI({ IsDone: is_done })
+        const entry = { IsDone: is_done }
+        updateNewGoalUI(entry)
         setDone(is_done)
+        updateGoalWithId(item.Id, entry)    // api put
     }
     function updateNewGoalUI(p) {
         const newGoal = { Id: item.Id }
@@ -39,10 +42,6 @@ export function GoalItem({ item, ExpCost, TrueCost, updateGoalUI }) {
             setDes(newGoal.Description)
             entry.Description = newGoal.Description
         }
-        if (typeof newGoal.IsDone == 'boolean' && newGoal.IsDone != isDone) {
-            setDone(newGoal.IsDone)
-            entry.IsDone = newGoal.IsDone
-        }
         if (typeof newGoal.Start == 'string' &&
             getDateString(start) != getDateString(newGoal.Start)) {
             setStart(newGoal.Start)
@@ -59,7 +58,11 @@ export function GoalItem({ item, ExpCost, TrueCost, updateGoalUI }) {
         }
         updateNewGoalUI(newGoal)
         setEditView(false)
-        updateGoalWithId(item.Id, entry)
+        updateGoalWithId(item.Id, entry)    // api put
+    }
+    function addNewChild(typeid) {
+        if (typeid == 2) addNewSub(item.Id)
+        if (typeid == 3) addNewAction(item.Id)
     }
     return (
         <>{
@@ -67,6 +70,7 @@ export function GoalItem({ item, ExpCost, TrueCost, updateGoalUI }) {
                 <GoalActionView
                     typeid={!item.ParentId ? 1 : 2}
                     name={name} des={des} isDone={isDone} start={start} end={end}
+                    addNewChild={addNewChild}
                     setEditView={setEditView} onToggleDone={onToggleDone} >
                     <span className={style.dnb_icost + " dnb-budget-cost"}>B:
                         <span className={style.dnb_icost_value}>${budget}</span>
@@ -89,7 +93,7 @@ export function GoalItem({ item, ExpCost, TrueCost, updateGoalUI }) {
         }</>
     )
 }
-function FormEditGoal({ ParentId,
+export function FormEditGoal({ ParentId,
     Name, Description, Start, End,
     Budget, ExpCost, TrueCost,
     onCloseEditForm, onSaveGoal }) {
@@ -103,26 +107,39 @@ function FormEditGoal({ ParentId,
         if (!!ParentId) goal.ParentId = ParentId
         onSaveGoal(goal)
     }
-    return (
-        <FormEditItem
-            Name={Name} Description={Description} Start={Start} End={End}
-            typeid={!ParentId ? 1 : 2} onSaveData={onSaveData}
-            onCloseEditForm={onCloseEditForm} >
-            <span className={style.dnb_icost + " dnb-budget-cost"}>B:
-                <span className={style.dnb_icost_value}>$
-                    <input type="number" value={budget} style={{ width: '80px' }}
-                        onChange={onHandleChangeBudget} />
-                </span>
-            </span>
+    function getExpectCostTags() {
+        if (!ExpCost) return <></>
+        return <>
             <span className={style.dnb_icost + " dnb-open-cost" + getClsCostNegative(budget, ExpCost)}>o:
                 <span className={style.dnb_icost_value}>{getValueOpenCost(budget, ExpCost)}</span>
             </span>
             <span className={style.dnb_icost + " dnb-expect-cost " + style.o_50}>P:
                 <span className={style.dnb_icost_value}>${ExpCost}</span>
             </span>
-            <span className={style.dnb_icost + " dnb-true-cost " + style.o_50}>C:
-                <span className={style.dnb_icost_value}>${TrueCost}</span>
+        </>
+    }
+    function getTrueCostTag() {
+        if (!TrueCost) return <></>
+        return <span className={style.dnb_icost + " dnb-true-cost " + style.o_50}>C:
+            <span className={style.dnb_icost_value}>${TrueCost}</span>
+        </span>
+    }
+    function onCancelEditForm(){
+        onCloseEditForm(ParentId)
+    }
+    return (
+        <FormEditItem
+            Name={Name} Description={Description} Start={Start} End={End}
+            typeid={!ParentId ? 1 : 2} onSaveData={onSaveData}
+            onCloseEditForm={onCancelEditForm} >
+            <span className={style.dnb_icost + " dnb-budget-cost"}>B:
+                <span className={style.dnb_icost_value}>$
+                    <input type="number" value={budget} style={{ width: '80px' }}
+                        onChange={onHandleChangeBudget} />
+                </span>
             </span>
+            {getExpectCostTags()}
+            {getTrueCostTag()}
         </FormEditItem>
     )
 }

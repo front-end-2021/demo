@@ -5,6 +5,7 @@ import style from '../goal/style.module.scss'
 
 export function GoalActionView({ typeid, children,
     name, des, isDone, start, end,
+    addNewChild,
     setEditView, onToggleDone }) {
     const [isShowMenu, setShowMenu] = useState(false)
 
@@ -60,7 +61,7 @@ export function GoalActionView({ typeid, children,
         if (typeid > 2) return <></>
         if (isDone) return <span className="bi bi-plus-circle-dotted">&nbsp; New {getIcon(typeid + 1)}</span>
         return <span className="bi bi-plus-circle-dotted" style={{ cursor: 'pointer' }}
-            onClick={() => void (0)}>&nbsp; New {getIcon(typeid + 1)}</span>
+            onClick={() => addNewChild(typeid + 1)}>&nbsp; New {getIcon(typeid + 1)}</span>
     }
     return (
         <div className={style.dnb_item_container + `${isDone ? ` ${style.dnb_item_done}` : ''}`}>

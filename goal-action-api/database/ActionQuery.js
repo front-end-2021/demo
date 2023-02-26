@@ -21,12 +21,12 @@ function getActions() {
 }
 function getActionsBySubId(subId) {
     return new Promise((resolve, reject) => {
-        dbLite.selectFromTable(dbGoal.dbName, 
+        dbLite.selectFromTable(dbGoal.dbName,
             `SELECT * FROM ${tableName} WHERE ParentId = '${subId}'`).then(rows => {
-            resolve(rows)
-        }, err => {
-            reject(err)
-        })
+                resolve(rows)
+            }, err => {
+                reject(err)
+            })
     })
 }
 function getActionBy(id) {
@@ -39,12 +39,16 @@ function getActionBy(id) {
             })
     })
 }
+
 function insertNewAction(action) {
-    if (typeof action.Name != 'string') return
-    if (!uuidValidate(action.ParentId) || action.ParentId == NIL_UUID) return
-    dbGoal.getMainSubBy(action.ParentId).then(row => {
+    if (typeof action.Name != 'string') return Promise.resolve('invalid Name')
+    if (!uuidValidate(action.ParentId) || action.ParentId == NIL_UUID) {
+        return Promise.resolve('invalid ParentId')
+    }
+    return new Promise(res => {
+        const newId = uuidv4()
         let columns = `Id, ParentId, Name`
-        let values = `'${uuidv4()}', '${action.ParentId}', '${action.Name}'`
+        let values = `'${newId}', '${action.ParentId}', '${action.Name}'`
         if (action.Start) {
             columns += `, Start`
             values += `, '${action.Start}'`
@@ -65,38 +69,44 @@ function insertNewAction(action) {
             columns += `, TrueCost`
             values += `, ${action.TrueCost}`
         }
-        dbLite.insertIntoTable(dbGoal.dbName, tableName, columns, values)
+        const query = `SELECT * FROM ${tableName} WHERE Name = '${action.Name}'`
+        dbLite.insertIntoTable(dbGoal.dbName, tableName, columns, values, query)
+        res(newId)
     })
 }
 function updateAction(id, action) {
     if (!uuidValidate(id) || id == NIL_UUID) Promise.resolve(0);
     let values = []
     let qrPram = ``
-    if(action.Name) {
+    if (action.Name) {
         values.push(action.Name)
         qrPram += `Name=?`
     }
-    if(action.Description) {
+    if (action.Description) {
         values.push(action.Description)
         qrPram += qrPram ? `, Description=?` : `Description=?`
     }
-    if(action.ExpectCost && typeof action.ExpectCost == 'number') {
+    if (action.ExpectCost && typeof action.ExpectCost == 'number') {
         values.push(action.ExpectCost)
         qrPram += qrPram ? `, ExpectCost=?` : `ExpectCost=?`
     }
-    if(action.TrueCost && typeof action.TrueCost == 'number') {
+    if (action.TrueCost && typeof action.TrueCost == 'number') {
         values.push(action.TrueCost)
         qrPram += qrPram ? `, TrueCost=?` : `TrueCost=?`
     }
-    if(action.Start) {
+    if (action.Start) {
         values.push(action.Start)
         qrPram += qrPram ? `, Start=?` : `Start=?`
     }
-    if(action.End) {
+    if (action.End) {
         values.push(action.End)
         qrPram += qrPram ? `, End=?` : `End=?`
     }
-    if(values.length && qrPram) {
+    if (typeof action.IsDone == 'boolean') {
+        values.push(action.IsDone ? 1 : 0)
+        qrPram += qrPram ? `, IsDone=?` : `IsDone=?`
+    }
+    if (values.length && qrPram) {
         values.push(id)
         const qry = `UPDATE ${tableName} SET ${qrPram} WHERE Id=?`
         return dbLite.updateTable(dbGoal.dbName, qry, values)

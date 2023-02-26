@@ -21,3 +21,8 @@ export function getDateCalendarValue(dateStr){
     const d = new Date(d0.getTime() + 24000 * 3600)
     return d.toISOString().split('T')[0]
 }
+export function getDateAfterDaysString(dayAfter){
+    const dN = Date.now() + dayAfter * 24000 * 3600
+    const d = new Date(dN)
+    return d.toDateString().slice(4)
+}

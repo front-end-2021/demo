@@ -39,10 +39,11 @@ function getActionById(app, corOptions) {
 function insertAction(app, corOptions) {
     app.post('/api/action', cors(corOptions),
         (req, res, next) => {
-            const action = req.body;
-            dbAction.insertNewAction(action)
-            res.json('insert action')
-            next();
+            const action = req.body.params;
+            dbAction.insertNewAction(action).then(newId =>{
+                res.json(newId)
+                next()
+            })
         }
     )
 }

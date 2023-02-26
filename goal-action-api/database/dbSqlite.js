@@ -5,15 +5,6 @@ function readyDatabase(dbName) {
     const dbPath = `./database/${dbName}.db`;
     return new sqlite3.Database(dbPath);
 }
-function openDatabase(dbName) {
-    const db = readyDatabase(dbName)
-    return new Promise((resolve, reject) => {
-        if (db) {
-            resolve(db)
-            db.close(); // close the database connection
-        } else { reject() }
-    })
-}
 function readyTable(dbName, tableName, columns) {
     const db = readyDatabase(dbName)
     db.serialize(() => {
@@ -22,10 +13,15 @@ function readyTable(dbName, tableName, columns) {
     });
     db.close();
 }
-function insertIntoTable(dbName, tableName, columns, values) {
+function insertIntoTable(dbName, tableName, columns, values, query) {
     const db = readyDatabase(dbName)
     db.serialize(() => {
-        db.run(`INSERT INTO ${tableName} (${columns}) VALUES (${values})`)
+        let r;
+        db.get(query, function (err, row) {
+            r = row
+        })
+        if(!r)
+            db.run(`INSERT INTO ${tableName} (${columns}) VALUES (${values})`)        
     });
     db.close();
 }
@@ -52,7 +48,6 @@ function getFromTable(dbName, query) {
         });
         db.close();
     })
-
 }
 function updateTable(dbName, query, values) {
     const db = readyDatabase(dbName)
@@ -67,7 +62,6 @@ function updateTable(dbName, query, values) {
     })
 }
 module.exports = {
-    openDatabase: openDatabase,
     readyTable: readyTable,
     insertIntoTable: insertIntoTable,
     selectFromTable: selectFromTable,

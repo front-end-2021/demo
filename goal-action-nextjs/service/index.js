@@ -19,8 +19,7 @@ export function getDataGoalActionWith(apiPath, params) {
     return new Promise((resolve, reject) => {
         axios.get(url, Object.assign({
             params: params
-        }, config))
-            .then(res => { return res.data })
+        }, config)).then(res => { return res.data })
             .then(rData => { resolve(rData.data) })
     })
 }
@@ -40,5 +39,23 @@ export function updateGoalWithId(id, item) {
             params: item
         }, config))
             .then(res => { console.log(res) })
+    })
+}
+export function insertSub(sub) {
+    return new Promise((resolve, reject) => {
+        axios.post(`${host}sub`, Object.assign({
+            params: sub
+        }, config)).then(res => {
+            resolve(res.data)
+        })
+    })
+}
+export function insertAction(item) {
+    return new Promise((resolve, reject) => {
+        axios.post(`${host}action`, Object.assign({
+            params: item
+        }, config)).then(res => {
+            resolve(res.data)
+        })
     })
 }

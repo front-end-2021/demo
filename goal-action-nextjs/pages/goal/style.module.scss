@@ -11,8 +11,8 @@ $width: 300px;
 
 .dnb_item_list_sub,
 .dnb_item_list_action {
-  display: inline-block;
-  width: $width;
+  display: grid;
+  min-width: $width;
 }
 
 .dnb_item_container {

@@ -10,9 +10,10 @@ export default function Home() {
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      
-      <ListMainProvider />
       <main>
+        <ListMainProvider />
+      </main>
+      <article>
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
@@ -48,12 +49,12 @@ export default function Home() {
             </p>
           </a>
         </div>
-      </main>
+      </article>
 
       <Footer />
 
       <style jsx>{`
-    main {
+    article {
       padding: 5rem 0;
       flex: 1;
       display: flex;

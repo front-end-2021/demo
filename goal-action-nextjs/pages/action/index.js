@@ -17,9 +17,10 @@ export function Action({ item, updateAction }) {
 
     function onToggleDone(e) {
         const is_done = !isDone
-        updateNewAction({ IsDone: is_done })
+        const entry = { IsDone: is_done }
+        updateNewAction(entry)
         setDone(is_done)
-        // call api put
+        updateActionWithId(item.Id, entry)      // api put
     }
     function updateNewAction(p) {
         const newAction = { Id: item.Id, ParentId: item.ParentId }
@@ -63,7 +64,7 @@ export function Action({ item, updateAction }) {
         }
         updateNewAction(newAction)
         setEditView(false)
-        updateActionWithId(item.Id, entry)
+        updateActionWithId(item.Id, entry)  // api put
     }
     return (
         <>
@@ -91,7 +92,7 @@ export function Action({ item, updateAction }) {
     )
 }
 
-function FormEditAction({ Name, Description, Start, End,
+export function FormEditAction({ Name, Description, Start, End,
     ExpCost, TrueCost,
     onCloseEditForm, onSaveAction }) {
     const [expectCost, setExpectCost] = useState(ExpCost)
@@ -113,17 +114,19 @@ function FormEditAction({ Name, Description, Start, End,
     return (
         <FormEditItem
             Name={Name} Description={Description} Start={Start} End={End}
-            onSaveData={onSaveData}
+            typeid={3} onSaveData={onSaveData}
             onCloseEditForm={onCloseEditForm} >
             <span className={style.dnb_icost + " dnb-expect-cost"}>P:
                 <span className={style.dnb_icost_value}>$
-                    <input type="number" value={expectCost} style={{ width: '80px' }}
+                    <input type="number" value={expectCost}
+                        style={{ width: '80px' }}
                         onChange={handleChangeExpectCost} />
                 </span>
             </span>
             <span className={style.dnb_icost + " dnb-true-cost"}>C:
                 <span className={style.dnb_icost_value}>$
-                    <input type="number" value={trueCost} style={{ width: '80px' }}
+                    <input type="number" value={trueCost}
+                        style={{ width: '80px' }}
                         onChange={handleChangeTrueCost} />
                 </span>
             </span>

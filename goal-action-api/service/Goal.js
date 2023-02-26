@@ -29,8 +29,8 @@ function insertMain(app, corOptions) {
     app.post('/api/main', cors(corOptions),
         (req, res, next) => {
             const goal = req.body;
-            dbGoal.insertNewMain(goal)
-            res.json('insert goal')
+            const newId = dbGoal.insertNewMain(goal)
+            res.json(newId)
             next();
         }
     )
@@ -87,10 +87,11 @@ function getSubById(app, corOptions) {
 function insertSub(app, corOptions) {
     app.post('/api/sub', cors(corOptions),
         (req, res, next) => {
-            const sub = req.body;
-            dbGoal.insertNewSub(sub)
-            res.json('insert sub')
-            next();
+            const sub = req.body.params;
+            dbGoal.insertNewSub(sub).then(newId => {
+                res.json(newId)
+                next()
+            })
         }
     )
 }
