@@ -1,8 +1,25 @@
 $width: 300px;
+$round: 9px;
+$m3px: 3px;
+$bgcolor: white;
 
 .dnb_item_view {
   display: flex;
-  margin-bottom: 6px;
+  margin-bottom: $m3px;
+
+  .dnb_add_action {
+    display: inline-flex;
+    align-items: center;
+    margin-left: $m3px;
+    min-height: 90px;
+
+    >div {
+      height: 81px;
+      background-color: $bgcolor;
+      border-radius: $round;
+      padding: 27px 9px;
+    }
+  }
 }
 
 .dnb_item_view:last-child {
@@ -15,21 +32,36 @@ $width: 300px;
 }
 
 .dnb_item_list_action {
-  width: calc(100vw - $width - $width - 120px);
-  max-width: calc(100vw - $width - $width - 120px);
-  display: flex;flex-wrap: wrap;
+  width: calc(100vw - $width - $width - 96px);
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .dnb_item_container {
-  border: 1px solid #0fa8bf;
   display: inline-block;
-  border-right-color: white;
   width: $width;
   min-width: $width;
-  background-color: white;
-  padding: 3px;
-  margin: 0;
+  background-color: $bgcolor;
+  padding: 6px 6px $m3px 6px;
+  margin: $m3px $m3px 0 $m3px;
   box-sizing: border-box;
+  border-radius: $round;
+
+  .dnb_edit_name {
+    width: calc(100% - 21px);
+  }
+
+  .dnb_item_description {
+    font-size: 12px;
+  }
+
+  .dnb_edit_des {
+    width: 100%;
+    resize: none;
+    min-height: 81px;
+    margin-left: 0px;
+    margin-top: 2 * $m3px;
+  }
 
   .dnb_item_cost {
     display: grid;
@@ -58,7 +90,7 @@ $width: 300px;
 
   &.dnb_item_done+.dnb_item_list_sub,
   &.dnb_item_done+.dnb_item_list_action {
-    opacity: 51%;
+    opacity: 0.51;
 
     .dnb_i_menu {
       pointer-events: none;
@@ -66,8 +98,18 @@ $width: 300px;
   }
 }
 
+.dnb_item_container.dnb_item_edit {
+  .dnb_edit_start {
+    width: $width - 173px;
+  }
+
+  .dnb_edit_end {
+    width: $width - 174px;
+  }
+}
+
 .dnb_item_done {
-  opacity: 51%;
+  opacity: 0.69;
 }
 
 .dnb_item_list_action {
@@ -92,8 +134,8 @@ $width: 300px;
 
 .dnb_i_options {
   padding-top: 6px;
-  margin: 9px 0 6px 3px;
-  border-top: 1px solid #cdcdcd;
+  margin: 9px 0 6px 0;
+  border-top: 1px solid #eeeeeecf;
 }
 
 .bi-layout-sidebar::before {
@@ -111,4 +153,14 @@ $width: 300px;
 
 .o_81 {
   opacity: 0.81;
+}
+
+.dnb_add_main {
+  display: inline-block;
+  background-color: $bgcolor;
+  width: $width;
+  margin-left: $m3px;
+  margin-top: $m3px;
+  padding: 12px 2 * $m3px;
+  border-radius: $round;
 }

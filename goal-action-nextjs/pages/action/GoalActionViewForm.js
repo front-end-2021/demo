@@ -5,7 +5,7 @@ import style from '../goal/style.module.scss'
 
 export function GoalActionView({ typeid, children,
     name, des, isDone, start, end,
-    addNewChild, 
+    addNewChild,
     handleDelete, handlerDuplicate,
     setEditView, onToggleDone }) {
     const [isShowMenu, setShowMenu] = useState(false)
@@ -67,7 +67,7 @@ export function GoalActionView({ typeid, children,
     return (
         <div className={style.dnb_item_container + `${isDone ? ` ${style.dnb_item_done}` : ''}`}>
             <div className="dnb-item-title">{getIcon(typeid)} {name}</div>
-            <p className={"dnb-item-description " + style.o_81}>{des}</p>
+            <p className={style.dnb_item_description + ' ' + style.o_81}>{des}</p>
             <div className={style.dnb_item_cost}>
                 {children}
             </div>
@@ -76,8 +76,8 @@ export function GoalActionView({ typeid, children,
                 {getEndTag()}
             </div>
             <div className={style.dnb_i_options}>
-                <span className="bi bi-layout-sidebar"
-                    onClick={() => setShowMenu(!isShowMenu)}>&nbsp; Menu &nbsp; </span>
+                <span onClick={() => setShowMenu(!isShowMenu)}
+                    className="bi bi-layout-sidebar">&nbsp; {isShowMenu ? 'Close' : 'Menu'} &nbsp;</span>
                 <span className={`bi bi-chevron-${isShowMenu ? 'down' : 'right'}`}
                     onClick={() => setShowMenu(!isShowMenu)} />
             </div>
@@ -122,32 +122,38 @@ export function FormEditItem({ Name, Description, Start, End,
             Name: name, Description: des, Start: s, End: e,
         })
     }
+    function styleColorDate(dStr) {
+        var d = new Date(dStr)
+        const now = new Date(new Date().toDateString())
+        if (d.getTime() < now.getTime()) return { color: 'red' }
+    }
+    function getHeightDesArea() {
+        const t = des || ''
+        const l = t.length
+        if (l < 141) return
+        return `${Math.ceil(l * 30 / 51)}px`
+    }
     return (
-        <div className={style.dnb_item_container}>
-            <div className="dnb-item-title">{getIcon(typeid)} <input style={{ width: 'calc(100% - 24px)' }}
-                type="text" value={name} onChange={handleChangeName} maxLength="150"
+        <div className={style.dnb_item_container + ' ' + style.dnb_item_edit}>
+            <div className="dnb-item-title">{getIcon(typeid)} <input value={name} maxLength="150"
+                className={style.dnb_edit_name} type="text" onChange={handleChangeName}
                 onMouseOut={handleMouseOutChangeName} />
             </div>
-            <textarea style={{
-                width: 'calc(100% - 24px)', resize: 'none', height: '81px',
-                marginLeft: '18px', marginTop: '6px'
-            }} onChange={handleChangeDes} defaultValue={des} />
+            <textarea className={style.dnb_edit_des} style={{ height: getHeightDesArea() }}
+                onChange={handleChangeDes} defaultValue={des} />
             <div className={style.dnb_item_cost}>
                 {children}
             </div>
             <div className={style.dnb_item_date}>
+                <span className="bi bi-calendar2-week" style={{ marginRight: '3px' }}></span>
                 <span className={style.dnb_past_date + " dnb-d-start"}>
-                    {
-                        end ? <input type="date" value={start} max={end}
-                            onChange={handleChangeStart} /> :
-                            <input type="date" value={start}
-                                onChange={handleChangeStart} />
-                    }
+                    <input type="date" value={start} max={end} className={style.dnb_edit_start}
+                        style={styleColorDate(start)} onChange={handleChangeStart} />
                 </span>
                 <span className={style.dnb_d_div}>&minus;</span>
                 <span className="dnb-d-end">
-                    <input type="date" value={end} min={start}
-                        onChange={handleChangeEnd} />
+                    <input type="date" value={end} min={start} className={style.dnb_edit_end}
+                        style={styleColorDate(end)} onChange={handleChangeEnd} />
                 </span>
             </div>
             <div className={style.dnb_i_menu}>

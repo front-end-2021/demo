@@ -70,11 +70,13 @@ export class ListMainProvider extends Component {
                             updateDataGoals={this.updateDataGoals} />
                     })
                 }
-                <style jsx global>{`body {font-size: 16px;} }`}</style>
+                <style jsx global>{`body {font-size: 16px;background-color: #eeeeee96;} }`}</style>
                 {
-                    !NewMain ? <span className="bi bi-plus-circle-dotted"
-                        onClick={() => this.setState({ NewMain: true })}
-                        style={{ cursor: 'pointer' }} >&nbsp; New &#9673;</span> :
+                    !NewMain ? <div className={style.dnb_add_main}>
+                        <span className="bi bi-plus-circle-dotted"
+                            onClick={() => this.setState({ NewMain: true })}
+                            style={{ cursor: 'pointer' }} >&nbsp; New &#9673;</span>
+                    </div> :
                         <div className={style.dnb_item_view}>
                             <FormEditGoal
                                 Name={`Main goal ${Date.now()}`}
@@ -216,7 +218,7 @@ class Maingoal extends Component {
                         !NewSub ? <></> :
                             <div className={style.dnb_item_view}>
                                 <FormEditGoal ParentId={item.Id}
-                                    Name={`New Subgoal ${Date.now()}`}
+                                    Name={`Subgoal ${Date.now()}`}
                                     Start={getDateAfterDaysString(0)}
                                     End={getDateAfterDaysString(1)}
                                     Budget={0}

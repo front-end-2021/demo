@@ -164,10 +164,14 @@ export class Subgoal extends Component {
                         })
                     }
                     {
-                        !NewAction ? <></> :
+                        !NewAction ? <div className={style.dnb_add_action}>
+                            <div onClick={() => this.addNewAction(item.Id)}>
+                                <span className="bi bi-plus-circle-dotted"
+                                    style={{ cursor: 'pointer' }}>&nbsp; New &#9632;</span>
+                            </div></div> :
                             <div className={style.dnb_item_view}>
                                 <FormEditAction
-                                    Name={`New Action ${Date.now()}`}
+                                    Name={`Action ${Date.now()}`}
                                     Start={getDateAfterDaysString(0)}
                                     End={getDateAfterDaysString(1)}
                                     ExpCost={0} TrueCost={0}
