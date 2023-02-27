@@ -59,3 +59,9 @@ export function insertAction(item) {
         })
     })
 }
+export function deleteAction(id) {
+    return axios.delete(`${host}action/${id}`,
+        config).then(res => {
+            return res
+        })
+}

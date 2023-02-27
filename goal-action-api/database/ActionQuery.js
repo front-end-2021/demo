@@ -39,7 +39,11 @@ function getActionBy(id) {
             })
     })
 }
-
+function deleteAction(id) {
+    return dbLite.deleteItemFrom(dbGoal.dbName, tableName, id).then(() => {
+        return `Delete Action success`
+    })
+}
 function insertNewAction(action) {
     if (typeof action.Name != 'string') return Promise.resolve('invalid Name')
     if (!uuidValidate(action.ParentId) || action.ParentId == NIL_UUID) {
@@ -69,8 +73,8 @@ function insertNewAction(action) {
             columns += `, TrueCost`
             values += `, ${action.TrueCost}`
         }
-        const query = `SELECT * FROM ${tableName} WHERE Name = '${action.Name}'`
-        dbLite.insertIntoTable(dbGoal.dbName, tableName, columns, values, query)
+        const qVerify = `SELECT * FROM ${tableName} WHERE Name = '${action.Name}'`
+        dbLite.insertIntoTable(dbGoal.dbName, tableName, columns, values, qVerify)
         res(newId)
     })
 }
@@ -119,4 +123,5 @@ module.exports = {
     insertNewAction: insertNewAction,
     updateAction: updateAction,
     getActionsBySubId: getActionsBySubId,
+    deleteAction: deleteAction
 }

@@ -20,10 +20,26 @@ function insertIntoTable(dbName, tableName, columns, values, query) {
         db.get(query, function (err, row) {
             r = row
         })
-        if(!r)
-            db.run(`INSERT INTO ${tableName} (${columns}) VALUES (${values})`)        
+        if (!r)
+            db.run(`INSERT INTO ${tableName} (${columns}) VALUES (${values})`)
     });
     db.close();
+}
+function deleteItemFrom(dbName, tableName, id, query) {
+    const db = readyDatabase(dbName)
+    return new Promise((resolve, reject) => {
+        db.serialize(() => {
+            if (typeof query == 'string' && query.trim() != '') db.run(query)
+            db.run(`DELETE FROM ${tableName} WHERE Id=(?)`, id, function (err) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve();
+                }
+            });
+        });
+        db.close();
+    })
 }
 function selectFromTable(dbName, query) {
     const db = readyDatabase(dbName)
@@ -66,5 +82,6 @@ module.exports = {
     insertIntoTable: insertIntoTable,
     selectFromTable: selectFromTable,
     getFromTable: getFromTable,
-    updateTable: updateTable
+    updateTable: updateTable,
+    deleteItemFrom: deleteItemFrom,
 }

@@ -6,7 +6,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import style from './style.module.scss'
 
 export function GoalItem({ item, ExpCost, TrueCost,
-    updateGoalUI, addNewSub, addNewAction }) {
+    updateGoalUI, insertNewChild, onDeleteGoal, handlerDuplicate }) {
     const [isEditView, setEditView] = useState(false)
     const [name, setName] = useState(item.Name)
     const [des, setDes] = useState(item.Description)
@@ -61,8 +61,8 @@ export function GoalItem({ item, ExpCost, TrueCost,
         updateGoalWithId(item.Id, entry)    // api put
     }
     function addNewChild(typeid) {
-        if (typeid == 2) addNewSub(item.Id)
-        if (typeid == 3) addNewAction(item.Id)
+        if (typeid == 2) insertNewChild(item.Id)
+        if (typeid == 3) insertNewChild(item.Id)
     }
     return (
         <>{
@@ -70,7 +70,8 @@ export function GoalItem({ item, ExpCost, TrueCost,
                 <GoalActionView
                     typeid={!item.ParentId ? 1 : 2}
                     name={name} des={des} isDone={isDone} start={start} end={end}
-                    addNewChild={addNewChild}
+                    addNewChild={addNewChild} 
+                    handleDelete={onDeleteGoal} handlerDuplicate={handlerDuplicate}
                     setEditView={setEditView} onToggleDone={onToggleDone} >
                     <span className={style.dnb_icost + " dnb-budget-cost"}>B:
                         <span className={style.dnb_icost_value}>${budget}</span>
@@ -124,7 +125,7 @@ export function FormEditGoal({ ParentId,
             <span className={style.dnb_icost_value}>${TrueCost}</span>
         </span>
     }
-    function onCancelEditForm(){
+    function onCancelEditForm() {
         onCloseEditForm(ParentId)
     }
     return (

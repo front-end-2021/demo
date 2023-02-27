@@ -9,10 +9,15 @@ $width: 300px;
   margin-bottom: 0;
 }
 
-.dnb_item_list_sub,
-.dnb_item_list_action {
+.dnb_item_list_sub {
   display: grid;
   min-width: $width;
+}
+
+.dnb_item_list_action {
+  width: calc(100vw - $width - $width - 120px);
+  max-width: calc(100vw - $width - $width - 120px);
+  display: flex;flex-wrap: wrap;
 }
 
 .dnb_item_container {

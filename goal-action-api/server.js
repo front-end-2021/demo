@@ -23,6 +23,7 @@ apiAction.getActionsBySubId(app, AppExpress.getCorsOptions())
 apiAction.getActionById(app, AppExpress.getCorsOptions())
 apiAction.insertAction(app, AppExpress.getCorsOptions())
 apiAction.updateAction(app, AppExpress.getCorsOptions())
+apiAction.deleteAction(app, AppExpress.getCorsOptions())
 
 
 app.get('/', (req, res) => {

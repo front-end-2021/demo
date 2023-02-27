@@ -1,7 +1,7 @@
 import { Component } from "react"
 import {
     getDataGoalAction, getDataGoalActionWith,
-    insertSub, insertAction
+    insertSub, insertAction, deleteAction
 } from "../../service"
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
 import { FormEditGoal } from "./GoalItem"
@@ -28,6 +28,10 @@ export class ListMainProvider extends Component {
     updateDataGoals = (newGoal) => {
         updateGoalUI.call(this.state.ListMain, newGoal)
     }
+    onDeleteMain = (id) => {
+        const lstMain = this.state.ListMain
+        console.log(`ondelete main`, id)
+    }
     render() {
         const { ListMain } = this.state
         return (
@@ -35,6 +39,7 @@ export class ListMainProvider extends Component {
                 {
                     ListMain.map(main => {
                         return <Maingoal item={main} key={main.Id}
+                            onDeleteMain={this.onDeleteMain}
                             updateDataGoals={this.updateDataGoals} />
                     })
                 }
@@ -119,6 +124,24 @@ class Maingoal extends Component {
     updateDataSubs = (newGoal) => {
         updateGoalUI.call(this.state.ListSub, newGoal)
     }
+    onDeleteGoal = () => {
+        const { item, onDeleteMain } = this.props
+        onDeleteMain(item.Id)
+    }
+    onDeleteSub = (id) => {
+        const lstSub = this.state.ListSub
+        console.log(`on delete sub`, id)
+    }
+    onDuplicateSubgoal = (sub) => {
+        insertSub(sub).then(newId => {
+            if (!newId.includes('invalid')) {
+                sub.Id = newId
+                const lstSub = this.state.ListSub
+                lstSub.push(sub)
+                this.setState({ ListSub: lstSub })
+            }
+        })
+    }
     render() {
         const { NewSub, ListSub, ExpectCost, TrueCost } = this.state
         const { item } = this.props
@@ -129,7 +152,8 @@ class Maingoal extends Component {
                     ExpCost={ExpectCost}
                     TrueCost={TrueCost}
                     updateGoalUI={this.updateGoalUI}
-                    addNewSub={this.handleAddNewSub} />
+                    insertNewChild={this.handleAddNewSub}
+                    onDeleteGoal={this.onDeleteGoal} />
                 <div className={style.dnb_item_list_sub}>
                     {
                         !NewSub ? <></> :
@@ -150,6 +174,8 @@ class Maingoal extends Component {
                                 item={sub}
                                 updateDataSubs={this.updateDataSubs}
                                 pushExpectCost={this.pushExpectCost}
+                                onDeleteSub={this.onDeleteSub}
+                                onDuplicateSubgoal={this.onDuplicateSubgoal}
                                 pushTrueCost={this.pushTrueCost} />
                         })
                     }
@@ -245,15 +271,50 @@ class Subgoal extends Component {
         if (item.End.trim() == '') delete item.End
         item.ParentId = this.props.item.Id
         insertAction(item).then(newId => {
-            console.log(newId)
             if (!newId.includes('invalid')) {
                 item.Id = newId
                 const lstAction = this.state.ListAction
                 lstAction.push(item)
-                this.setState({ ListAction: lstAction })
+                this.setStateRelative(lstAction)
             }
             this.onCancelAddNewAction()
         })
+    }
+    onDeleteGoal = () => {
+        const { item, onDeleteSub } = this.props
+        onDeleteSub(item.Id)
+    }
+    onDeleteAction = (id) => {
+        const lstAction = this.state.ListAction
+        const _i = lstAction.map(a => a.Id).indexOf(id)
+        if (_i > -1) {
+            lstAction.splice(_i, 1) // remove
+            this.setStateRelative(lstAction)
+            deleteAction(id)
+        }
+        console.log(`on delete action`, id)
+    }
+    setStateRelative = (lstAction) => {
+        this.setState({ ListAction: lstAction })
+        this.setState({ ExpectCost: getExpC(lstAction.map(s => s.ExpectCost)) })
+        this.setState({ TrueCost: getTrueC(lstAction.map(s => s.TrueCost)) })
+    }
+    onDuplicateAction = (item) => {
+        insertAction(item).then(newId => {
+            if (!newId.includes('invalid')) {
+                item.Id = newId
+                const lstAction = this.state.ListAction
+                lstAction.push(item)
+                this.setStateRelative(lstAction)
+            }
+        })
+    }
+    handlerDuplicate = () => {
+        const { item, onDuplicateSubgoal } = this.props
+        const _item = JSON.parse(JSON.stringify(item))  // copy
+        delete _item.Id
+        _item.Name = `${_item.Name} (1)`
+        onDuplicateSubgoal(_item)
     }
     render() {
         const { item } = this.props
@@ -265,8 +326,19 @@ class Subgoal extends Component {
                     ExpCost={ExpectCost}
                     TrueCost={TrueCost}
                     updateGoalUI={this.updateGoalUI}
-                    addNewAction={this.addNewAction} />
+                    insertNewChild={this.addNewAction}
+                    onDeleteGoal={this.onDeleteGoal}
+                    handlerDuplicate={this.handlerDuplicate} />
                 <div className={style.dnb_item_list_action}>
+                    {
+                        ListAction.map(action => {
+                            return <Action key={action.Id}
+                                item={action}
+                                onDeleteAction={this.onDeleteAction}
+                                onDuplicateAction={this.onDuplicateAction}
+                                updateAction={this.updateAction} />
+                        })
+                    }
                     {
                         !NewAction ? <></> :
                             <div className={style.dnb_item_view}>
@@ -279,13 +351,6 @@ class Subgoal extends Component {
                                     onSaveAction={this.onInsertNewAction}
                                 />
                             </div>
-                    }
-                    {
-                        ListAction.map(action => {
-                            return <Action key={action.Id}
-                                item={action}
-                                updateAction={this.updateAction} />
-                        })
                     }
                 </div>
             </div>

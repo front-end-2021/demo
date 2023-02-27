@@ -40,7 +40,7 @@ function insertAction(app, corOptions) {
     app.post('/api/action', cors(corOptions),
         (req, res, next) => {
             const action = req.body.params;
-            dbAction.insertNewAction(action).then(newId =>{
+            dbAction.insertNewAction(action).then(newId => {
                 res.json(newId)
                 next()
             })
@@ -60,10 +60,23 @@ function updateAction(app, corOptions) {
         }
     )
 }
+//http://localhost:8001/api/action/uuid
+function deleteAction(app, corOptions) {
+    app.delete('/api/action/:id', cors(corOptions),
+        (req, res, next) => {
+            const id = req.params.id
+            dbAction.deleteAction(id).then(n => {
+                res.json(n);
+                next()
+            })
+        }
+    )
+}
 module.exports = {
     getAllActions: getAllActions,
     getActionById: getActionById,
     insertAction: insertAction,
     updateAction: updateAction,
     getActionsBySubId: getActionsBySubId,
+    deleteAction: deleteAction,
 }

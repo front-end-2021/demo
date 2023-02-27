@@ -5,7 +5,8 @@ import style from '../goal/style.module.scss'
 
 export function GoalActionView({ typeid, children,
     name, des, isDone, start, end,
-    addNewChild,
+    addNewChild, 
+    handleDelete, handlerDuplicate,
     setEditView, onToggleDone }) {
     const [isShowMenu, setShowMenu] = useState(false)
 
@@ -45,7 +46,7 @@ export function GoalActionView({ typeid, children,
     function getDeleteTag() {
         if (isDone) return <i className="bi bi-trash">&nbsp; Delete</i>
         return <span className="bi bi-trash" style={{ cursor: 'pointer' }}
-            onClick={() => void (0)}>&nbsp; Delete</span>
+            onClick={() => handleDelete()}>&nbsp; Delete</span>
     }
     function getEditTag() {
         if (isDone) return <i className="bi bi-pencil-square" >&nbsp; Edit</i>
@@ -55,7 +56,7 @@ export function GoalActionView({ typeid, children,
     function getDuplicateTag() {
         if (isDone) return <i className="bi bi-files">&nbsp; Duplicate</i>
         return <span className="bi bi-files" style={{ cursor: 'pointer' }}
-            onClick={() => void (0)}>&nbsp; Duplicate</span>
+            onClick={() => handlerDuplicate()}>&nbsp; Duplicate</span>
     }
     function getAddNewTag() {
         if (typeid > 2) return <></>
@@ -150,10 +151,16 @@ export function FormEditItem({ Name, Description, Start, End,
                 </span>
             </div>
             <div className={style.dnb_i_menu}>
-                <span className="bi bi-database-up"
-                    onClick={onSaveDataItem}>&nbsp; Save &nbsp;</span>
-                <span className="bi bi-x-circle"
-                    onClick={onCloseEditForm}>&nbsp; Cancel &nbsp;</span>
+                <span >
+                    <span className="bi bi-database-up"
+                        onClick={onSaveDataItem}
+                        style={{ cursor: 'pointer' }}>&nbsp; Save &nbsp;</span>
+                </span>
+                <span >
+                    <span className="bi bi-x-circle"
+                        onClick={onCloseEditForm}
+                        style={{ cursor: 'pointer' }}>&nbsp; Cancel &nbsp;</span>
+                </span>
             </div>
         </div>
     )

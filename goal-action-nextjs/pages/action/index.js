@@ -5,7 +5,7 @@ import { updateActionWithId } from "../../service"
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import style from '../goal/style.module.scss'
 
-export function Action({ item, updateAction }) {
+export function Action({ item, updateAction, onDeleteAction, onDuplicateAction }) {
     const [isEditView, setEditView] = useState(false)
     const [name, setName] = useState(item.Name)
     const [des, setDes] = useState(item.Description)
@@ -66,6 +66,15 @@ export function Action({ item, updateAction }) {
         setEditView(false)
         updateActionWithId(item.Id, entry)  // api put
     }
+    function handleDelete() {
+        onDeleteAction(item.Id)
+    }
+    function handlerDuplicate() {
+        const _item = JSON.parse(JSON.stringify(item))  // copy
+        delete _item.Id
+        _item.Name = `${_item.Name} (1)`
+        onDuplicateAction(_item)
+    }
     return (
         <>
             {
@@ -73,7 +82,8 @@ export function Action({ item, updateAction }) {
                     <GoalActionView
                         typeid={3}
                         name={name} des={des} isDone={isDone} start={start} end={end}
-                        setEditView={setEditView} onToggleDone={onToggleDone} >
+                        setEditView={setEditView} onToggleDone={onToggleDone}
+                        handleDelete={handleDelete} handlerDuplicate={handlerDuplicate}>
                         <span className={style.dnb_icost + ' dnb-expect-cost'}>P:
                             <span className={style.dnb_icost_value}>${expectCost}</span>
                         </span>

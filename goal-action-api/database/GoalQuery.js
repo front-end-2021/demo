@@ -129,8 +129,8 @@ function insertNewSub(sub) {
             columns += `, Budget`
             values += `, ${sub.Budget}`
         }
-        const query = `SELECT * FROM ${tableSub} WHERE Name = '${sub.Name}'`
-        dbLite.insertIntoTable(dbName, tableSub, columns, values, query)
+        const qVerify = `SELECT * FROM ${tableSub} WHERE Name = '${sub.Name}'`
+        dbLite.insertIntoTable(dbName, tableSub, columns, values, qVerify)
         res(newId)
     })
 }
