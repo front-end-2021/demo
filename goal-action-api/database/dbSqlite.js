@@ -1,4 +1,5 @@
 const sqlite3 = require('sqlite3').verbose()
+const vCommon = require('./common')
 
 function readyDatabase(dbName) {
     if (typeof dbName != 'string') return null;
@@ -25,12 +26,53 @@ function insertIntoTable(dbName, tableName, columns, values, query) {
     });
     db.close();
 }
-function deleteItemFrom(dbName, tableName, id, query) {
+function deleteItemFrom(dbName, tableName, id) {
     const db = readyDatabase(dbName)
     return new Promise((resolve, reject) => {
         db.serialize(() => {
-            if (typeof query == 'string' && query.trim() != '') db.run(query)
             db.run(`DELETE FROM ${tableName} WHERE Id=(?)`, id, function (err) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve();
+                }
+            });
+        });
+        db.close();
+    })
+}
+function deleteMainFrom(id) {
+    const db = readyDatabase(vCommon.dbName)
+    return new Promise((resolve, reject) => {
+        db.serialize(() => {
+            db.run(`DELETE FROM ${vCommon.tableAction}
+            WHERE Id IN (SELECT a.Id FROM ${vCommon.tableAction} AS a
+                INNER JOIN ${vCommon.tableSub} AS s ON s.Id = a.ParentId
+                INNER JOIN ${vCommon.tableMain} AS m ON m.Id = s.ParentId
+                WHERE m.Id=(?) )`, id
+            );
+            db.run(`DELETE FROM ${vCommon.tableSub} 
+            WHERE Id IN (SELECT s.Id FROM ${vCommon.tableSub} as s
+                INNER JOIN ${vCommon.tableMain} as m ON m.Id = s.ParentId
+                WHERE m.Id=(?) )`, id
+            );
+            db.run(`DELETE FROM ${vCommon.tableMain} WHERE Id=(?)`, id, function (err) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve();
+                }
+            });
+        });
+        db.close();
+    })
+}
+function deleteSubFrom(id) {
+    const db = readyDatabase(vCommon.dbName)
+    return new Promise((resolve, reject) => {
+        db.serialize(() => {
+            db.run(`DELETE FROM ${vCommon.tableAction} WHERE ParentId=(?)`, id)
+            db.run(`DELETE FROM ${vCommon.tableSub} WHERE Id=(?)`, id, function (err) {
                 if (err) {
                     reject(err)
                 } else {
@@ -84,4 +126,6 @@ module.exports = {
     getFromTable: getFromTable,
     updateTable: updateTable,
     deleteItemFrom: deleteItemFrom,
+    deleteSubFrom: deleteSubFrom,
+    deleteMainFrom: deleteMainFrom,
 }

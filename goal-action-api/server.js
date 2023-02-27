@@ -8,6 +8,7 @@ const apiGoal = require('./service/Goal')
 apiGoal.getAllMains(app, AppExpress.getCorsOptions())
 apiGoal.getMainById(app, AppExpress.getCorsOptions())
 apiGoal.insertMain(app, AppExpress.getCorsOptions())
+apiGoal.deleteMain(app, AppExpress.getCorsOptions())
 
 apiGoal.updateGoal(app, AppExpress.getCorsOptions())
 
@@ -15,6 +16,7 @@ apiGoal.getAllSubs(app, AppExpress.getCorsOptions())
 apiGoal.getSubsByMainId(app, AppExpress.getCorsOptions())
 apiGoal.getSubById(app, AppExpress.getCorsOptions())
 apiGoal.insertSub(app, AppExpress.getCorsOptions())
+apiGoal.deleteSub(app, AppExpress.getCorsOptions())
 
 
 const apiAction = require('./service/Action')

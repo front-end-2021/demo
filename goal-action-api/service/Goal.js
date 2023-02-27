@@ -83,6 +83,18 @@ function getSubById(app, corOptions) {
         }
     )
 }
+// { Name: string, Description: string, Start: string, End: string, Budget: number}
+function insertMain(app, corOptions) {
+    app.post('/api/main', cors(corOptions),
+        (req, res, next) => {
+            const goal = req.body.params;
+            dbGoal.insertNewMain(goal).then(newId => {
+                res.json(newId)
+                next()
+            })
+        }
+    )
+}
 // {ParentId: string, Name: string, Description: string, Start: string, End: string, Budget: number}
 function insertSub(app, corOptions) {
     app.post('/api/sub', cors(corOptions),
@@ -95,6 +107,31 @@ function insertSub(app, corOptions) {
         }
     )
 }
+//http://localhost:8001/api/sub/uuid
+function deleteSub(app, corOptions) {
+    app.delete('/api/sub/:id', cors(corOptions),
+        (req, res, next) => {
+            const id = req.params.id
+            dbGoal.deleteSub(id).then(n => {
+                res.json(n)
+                next()
+            })
+        }
+    )
+}
+//http://localhost:8001/api/main/uuid
+function deleteMain(app, corOptions) {
+    app.delete('/api/main/:id', cors(corOptions),
+        (req, res, next) => {
+            const id = req.params.id
+            dbGoal.deleteMain(id).then(n => {
+                res.json(n)
+                next()
+            })
+        }
+    )
+}
+
 module.exports = {
     getAllMains: getAllMains,
     getMainById: getMainById,
@@ -104,4 +141,6 @@ module.exports = {
     getSubsByMainId: getSubsByMainId,
     getSubById: getSubById,
     insertSub: insertSub,
+    deleteSub: deleteSub,
+    deleteMain: deleteMain,
 }

@@ -41,6 +41,15 @@ export function updateGoalWithId(id, item) {
             .then(res => { console.log(res) })
     })
 }
+export function insertMain(goal) {
+    return new Promise((resolve, reject) => {
+        axios.post(`${host}main`, Object.assign({
+            params: goal
+        }, config)).then(res => {
+            resolve(res.data)
+        })
+    })
+}
 export function insertSub(sub) {
     return new Promise((resolve, reject) => {
         axios.post(`${host}sub`, Object.assign({
@@ -61,6 +70,18 @@ export function insertAction(item) {
 }
 export function deleteAction(id) {
     return axios.delete(`${host}action/${id}`,
+        config).then(res => {
+            return res
+        })
+}
+export function deleteSubApi(id) {
+    return axios.delete(`${host}sub/${id}`,
+        config).then(res => {
+            return res
+        })
+}
+export function deleteMainApi(id) {
+    return axios.delete(`${host}main/${id}`,
         config).then(res => {
             return res
         })

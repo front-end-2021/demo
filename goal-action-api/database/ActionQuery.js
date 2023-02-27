@@ -2,17 +2,17 @@ const { v4: uuidv4 } = require('uuid');
 const { NIL: NIL_UUID } = require('uuid');
 const { validate: uuidValidate } = require('uuid')
 const dbLite = require('./dbSqlite')
-const dbGoal = require('./GoalQuery')
-const tableName = 'Action'
+const vCommon = require('./common')
+
 const cols = `Id TEXT NOT NULL UNIQUE, ParentId TEXT NOT NULL, 
 Name TEXT NOT NULL UNIQUE, Description TEXT, 
 Start TEXT, End TEXT, IsDone INTEGER DEFAULT 0,
 ExpectCost REAL DEFAULT 0, TrueCost REAL DEFAULT 0`
-dbLite.readyTable(dbGoal.dbName, tableName, cols)
+dbLite.readyTable(vCommon.dbName, vCommon.tableAction, cols)
 
 function getActions() {
     return new Promise((resolve, reject) => {
-        dbLite.selectFromTable(dbGoal.dbName, `SELECT * FROM ${tableName}`).then(rows => {
+        dbLite.selectFromTable(vCommon.dbName, `SELECT * FROM ${vCommon.tableAction}`).then(rows => {
             resolve(rows)
         }, err => {
             reject(err)
@@ -21,8 +21,8 @@ function getActions() {
 }
 function getActionsBySubId(subId) {
     return new Promise((resolve, reject) => {
-        dbLite.selectFromTable(dbGoal.dbName,
-            `SELECT * FROM ${tableName} WHERE ParentId = '${subId}'`).then(rows => {
+        dbLite.selectFromTable(vCommon.dbName,
+            `SELECT * FROM ${vCommon.tableAction} WHERE ParentId = '${subId}'`).then(rows => {
                 resolve(rows)
             }, err => {
                 reject(err)
@@ -31,8 +31,8 @@ function getActionsBySubId(subId) {
 }
 function getActionBy(id) {
     return new Promise((resolve, reject) => {
-        dbLite.getFromTable(dbGoal.dbName,
-            `SELECT * FROM ${tableName} WHERE Id = '${id}'`).then(row => {
+        dbLite.getFromTable(vCommon.dbName,
+            `SELECT * FROM ${vCommon.tableAction} WHERE Id = '${id}'`).then(row => {
                 resolve(row)
             }, err => {
                 reject(err)
@@ -40,7 +40,7 @@ function getActionBy(id) {
     })
 }
 function deleteAction(id) {
-    return dbLite.deleteItemFrom(dbGoal.dbName, tableName, id).then(() => {
+    return dbLite.deleteItemFrom(vCommon.dbName, vCommon.tableAction, id).then(() => {
         return `Delete Action success`
     })
 }
@@ -73,8 +73,8 @@ function insertNewAction(action) {
             columns += `, TrueCost`
             values += `, ${action.TrueCost}`
         }
-        const qVerify = `SELECT * FROM ${tableName} WHERE Name = '${action.Name}'`
-        dbLite.insertIntoTable(dbGoal.dbName, tableName, columns, values, qVerify)
+        const qVerify = `SELECT * FROM ${vCommon.tableAction} WHERE Name = '${action.Name}'`
+        dbLite.insertIntoTable(vCommon.dbName, vCommon.tableAction, columns, values, qVerify)
         res(newId)
     })
 }
@@ -112,8 +112,8 @@ function updateAction(id, action) {
     }
     if (values.length && qrPram) {
         values.push(id)
-        const qry = `UPDATE ${tableName} SET ${qrPram} WHERE Id=?`
-        return dbLite.updateTable(dbGoal.dbName, qry, values)
+        const qry = `UPDATE ${vCommon.tableAction} SET ${qrPram} WHERE Id=?`
+        return dbLite.updateTable(vCommon.dbName, qry, values)
     }
     return Promise.resolve(0);
 }

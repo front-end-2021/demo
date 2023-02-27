@@ -2,21 +2,20 @@ const { v4: uuidv4 } = require('uuid');
 const { NIL: NIL_UUID } = require('uuid');
 const { validate: uuidValidate } = require('uuid')
 const dbLite = require('./dbSqlite')
+const vCommon = require('./common')
 
-const dbName = `GoalAction`
-const tableName = 'Maingoal'
 const cols = `Id TEXT NOT NULL UNIQUE, Name TEXT NOT NULL UNIQUE, 
 Description TEXT, Budget REAL DEFAULT 0, Start TEXT, End TEXT, IsDone INTEGER DEFAULT 0`
-dbLite.readyTable(dbName, tableName, cols)
-const tableSub = 'Subgoal'
+dbLite.readyTable(vCommon.dbName, vCommon.tableMain, cols)
+
 const colsSub = `Id TEXT NOT NULL UNIQUE, ParentId TEXT NOT NULL, Name TEXT NOT NULL UNIQUE, 
 Description TEXT, Budget REAL DEFAULT 0, Start TEXT, End TEXT, IsDone INTEGER DEFAULT 0`
-dbLite.readyTable(dbName, tableSub, colsSub)
+dbLite.readyTable(vCommon.dbName, vCommon.tableSub, colsSub)
 
 function getSubsByMainId(mainId) {
     return new Promise((resolve, reject) => {
-        dbLite.selectFromTable(dbName,
-            `SELECT * FROM ${tableSub} WHERE ParentId = '${mainId}'`).then(rows => {
+        dbLite.selectFromTable(vCommon.dbName,
+            `SELECT * FROM ${vCommon.tableSub} WHERE ParentId = '${mainId}'`).then(rows => {
                 resolve(rows)
             }, err => {
                 reject(err)
@@ -24,9 +23,9 @@ function getSubsByMainId(mainId) {
     })
 }
 function getMainSubGoals(isMain) {
-    const tName = isMain ? tableName : tableSub
+    const tName = isMain ? vCommon.tableMain : vCommon.tableSub
     return new Promise((resolve, reject) => {
-        dbLite.selectFromTable(dbName, `SELECT * FROM ${tName}`).then(rows => {
+        dbLite.selectFromTable(vCommon.dbName, `SELECT * FROM ${tName}`).then(rows => {
             resolve(rows)
         }, err => {
             reject(err)
@@ -34,9 +33,9 @@ function getMainSubGoals(isMain) {
     })
 }
 function getMainSubBy(id, isMain) {
-    const tName = isMain ? tableName : tableSub
+    const tName = isMain ? vCommon.tableMain : vCommon.tableSub
     return new Promise((resolve, reject) => {
-        dbLite.getFromTable(dbName,
+        dbLite.getFromTable(vCommon.dbName,
             `SELECT * FROM ${tName} WHERE Id = '${id}'`).then(row => {
                 resolve(row)
             }, err => {
@@ -46,7 +45,7 @@ function getMainSubBy(id, isMain) {
 }
 function updateGoal(id, main) {
     if (!uuidValidate(id) || id == NIL_UUID) Promise.resolve(0);
-    const tName = !main.ParentId ? tableName : tableSub
+    const tName = !main.ParentId ? vCommon.tableMain : vCommon.tableSub
     let values = []
     let qrPram = ``
     if (main.Name) {
@@ -76,33 +75,38 @@ function updateGoal(id, main) {
     if (values.length) {
         values.push(id)
         const qry = `UPDATE ${tName} SET ${qrPram} WHERE Id=?`
-        return dbLite.updateTable(dbName, qry, values)
+        return dbLite.updateTable(vCommon.dbName, qry, values)
     }
     return Promise.resolve(0);
 }
 function insertNewMain(main) {
-    if (typeof main.Name != 'string') return
-    const newId = uuidv4()
-    let columns = `Id, Name`
-    let values = `'${newId}', '${main.Name}'`
-    if (main.Start) {
-        columns += `, Start`
-        values += `, '${main.Start}'`
-    }
-    if (main.End) {
-        columns += `, End`
-        values += `, '${main.End}'`
-    }
-    if (main.Description) {
-        columns += `, Description`
-        values += `, '${main.Description}'`
-    }
-    if (main.Budget) {
-        columns += `, Budget`
-        values += `, ${main.Budget}`
-    }
-    dbLite.insertIntoTable(dbName, tableName, columns, values)
-    return newId
+    if (typeof main.Name != 'string') return Promise.resolve('invalid Name')
+    delete main.ParentId
+    return new Promise(res => {
+        const newId = uuidv4()
+        let columns = `Id, Name`
+        let values = `'${newId}', '${main.Name}'`
+        if (main.Start) {
+            columns += `, Start`
+            values += `, '${main.Start}'`
+        }
+        if (main.End) {
+            columns += `, End`
+            values += `, '${main.End}'`
+        }
+        if (main.Description) {
+            columns += `, Description`
+            values += `, '${main.Description}'`
+        }
+        if (main.Budget) {
+            columns += `, Budget`
+            values += `, ${main.Budget}`
+        }
+        const qVerify = `SELECT * FROM ${vCommon.tableMain} WHERE Name = '${main.Name}'`
+        dbLite.insertIntoTable(vCommon.dbName, vCommon.tableMain, columns, values, qVerify)
+        res(newId)
+    })
+
 }
 function insertNewSub(sub) {
     if (typeof sub.Name != 'string') return Promise.resolve('invalid Name')
@@ -129,9 +133,19 @@ function insertNewSub(sub) {
             columns += `, Budget`
             values += `, ${sub.Budget}`
         }
-        const qVerify = `SELECT * FROM ${tableSub} WHERE Name = '${sub.Name}'`
-        dbLite.insertIntoTable(dbName, tableSub, columns, values, qVerify)
+        const qVerify = `SELECT * FROM ${vCommon.tableSub} WHERE Name = '${sub.Name}'`
+        dbLite.insertIntoTable(vCommon.dbName, vCommon.tableSub, columns, values, qVerify)
         res(newId)
+    })
+}
+function deleteSub(id) {
+    return dbLite.deleteSubFrom(id).then(() => {
+        return `Delete Subgoal success`
+    })
+}
+function deleteMain(id) {
+    return dbLite.deleteMainFrom(id).then(() => {
+        return `Delete Subgoal success`
     })
 }
 module.exports = {
@@ -139,7 +153,8 @@ module.exports = {
     insertNewMain: insertNewMain,
     getMainSubBy: getMainSubBy,
     insertNewSub: insertNewSub,
-    dbName: dbName,
     updateGoal: updateGoal,
     getSubsByMainId: getSubsByMainId,
+    deleteSub: deleteSub,
+    deleteMain: deleteMain,
 }

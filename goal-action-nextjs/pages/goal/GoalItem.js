@@ -18,6 +18,7 @@ export function GoalItem({ item, ExpCost, TrueCost,
     function onToggleDone(e) {
         const is_done = !isDone
         const entry = { IsDone: is_done }
+        if(item.ParentId) entry.ParentId = item.ParentId
         updateNewGoalUI(entry)
         setDone(is_done)
         updateGoalWithId(item.Id, entry)    // api put
