@@ -3,9 +3,10 @@ import { updateGoalWithId } from "../../service"
 import { FormEditItem, GoalActionView } from "../action/GoalActionViewForm"
 import { getDateString } from "../../global"
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import style from './style.module.scss'
+import style from '../../styles/ga.module.scss'
 
 export function GoalItem({ item, ExpCost, TrueCost,
+    isExpand, handleExpand,
     updateGoalUI, insertNewChild, onDeleteGoal, handlerDuplicate }) {
     const [isEditView, setEditView] = useState(false)
     const [name, setName] = useState(item.Name)
@@ -18,7 +19,7 @@ export function GoalItem({ item, ExpCost, TrueCost,
     function onToggleDone(e) {
         const is_done = !isDone
         const entry = { IsDone: is_done }
-        if(item.ParentId) entry.ParentId = item.ParentId
+        if (item.ParentId) entry.ParentId = item.ParentId
         updateNewGoalUI(entry)
         setDone(is_done)
         updateGoalWithId(item.Id, entry)    // api put
@@ -67,31 +68,34 @@ export function GoalItem({ item, ExpCost, TrueCost,
     }
     return (
         <>{
-            !isEditView ?
-                <GoalActionView
-                    typeid={!item.ParentId ? 1 : 2}
-                    name={name} des={des} isDone={isDone} start={start} end={end}
-                    addNewChild={addNewChild} 
-                    handleDelete={onDeleteGoal} handlerDuplicate={handlerDuplicate}
-                    setEditView={setEditView} onToggleDone={onToggleDone} >
-                    <span className={style.dnb_icost + " dnb-budget-cost"}>B:
-                        <span className={style.dnb_icost_value}>${budget}</span>
-                    </span>
-                    <span className={style.dnb_icost + " dnb-open-cost" + getClsCostNegative(budget, ExpCost)}>o:
-                        <span className={style.dnb_icost_value}>{getValueOpenCost(budget, ExpCost)}</span>
-                    </span>
-                    <span className={style.dnb_icost + " dnb-expect-cost"}>P:
-                        <span className={style.dnb_icost_value}>${ExpCost}</span>
-                    </span>
-                    <span className={style.dnb_icost + " dnb-true-cost"}>C:
-                        <span className={style.dnb_icost_value}>${TrueCost}</span>
-                    </span>
-                </GoalActionView> :
-                <FormEditGoal ParentId={item.ParentId}
-                    Name={name} Description={des} Start={start} End={end}
-                    Budget={budget} ExpCost={ExpCost} TrueCost={TrueCost}
-                    onCloseEditForm={onCloseEditForm} onSaveGoal={onSaveGoal}
-                />
+            !isEditView ? <GoalActionView
+                typeid={!item.ParentId ? 1 : 2} lessC={ExpCost - TrueCost}
+                isExpand={isExpand} handleExpand={handleExpand}
+                name={name} des={des} isDone={isDone} start={start} end={end}
+                addNewChild={addNewChild}
+                handleDelete={onDeleteGoal} handlerDuplicate={handlerDuplicate}
+                setEditView={setEditView} onToggleDone={onToggleDone} >
+                <span title="Budget Cost"
+                    className={`${style.dnb_icost} dnb-budget-cost`}>B:
+                    <span className={style.dnb_icost_value}>${budget}</span>
+                </span>
+                <span className={`${style.dnb_icost} dnb-open-cost ${getClsCostNegative(budget, ExpCost)}`}
+                    title="Open Cost">o:
+                    <span className={style.dnb_icost_value}>{getValueOpenCost(budget, ExpCost)}</span>
+                </span>
+                <span title="Sum(Actions) Expected Cost"
+                    className={`${style.dnb_icost} dnb-expect-cost`}>P:
+                    <span className={style.dnb_icost_value}>${ExpCost}</span>
+                </span>
+                <span title="Sum(Action) True Cost"
+                    className={`${style.dnb_icost} dnb-true-cost`}>C:
+                    <span className={style.dnb_icost_value}>${TrueCost}</span>
+                </span>
+            </GoalActionView> : <FormEditGoal ParentId={item.ParentId}
+                Name={name} Description={des} Start={start} End={end}
+                Budget={budget} ExpCost={ExpCost} TrueCost={TrueCost}
+                onCloseEditForm={onCloseEditForm} onSaveGoal={onSaveGoal}
+            />
         }</>
     )
 }
@@ -112,17 +116,17 @@ export function FormEditGoal({ ParentId,
     function getExpectCostTags() {
         if (!ExpCost) return <></>
         return <>
-            <span className={style.dnb_icost + " dnb-open-cost" + getClsCostNegative(budget, ExpCost)}>o:
+            <span className={`${style.dnb_icost} dnb-open-cost ${getClsCostNegative(budget, ExpCost)}`}>o:
                 <span className={style.dnb_icost_value}>{getValueOpenCost(budget, ExpCost)}</span>
             </span>
-            <span className={style.dnb_icost + " dnb-expect-cost " + style.o_50}>P:
+            <span className={`${style.dnb_icost} dnb-expect-cost ${style.o_50}`}>P:
                 <span className={style.dnb_icost_value}>${ExpCost}</span>
             </span>
         </>
     }
     function getTrueCostTag() {
         if (!TrueCost) return <></>
-        return <span className={style.dnb_icost + " dnb-true-cost " + style.o_50}>C:
+        return <span className={`${style.dnb_icost} dnb-true-cost ${style.o_50}`}>C:
             <span className={style.dnb_icost_value}>${TrueCost}</span>
         </span>
     }
@@ -132,9 +136,10 @@ export function FormEditGoal({ ParentId,
     return (
         <FormEditItem
             Name={Name} Description={Description} Start={Start} End={End}
-            typeid={!ParentId ? 1 : 2} onSaveData={onSaveData}
+            typeid={!ParentId ? 1 : 2} lessC={ExpCost - TrueCost}
+            onSaveData={onSaveData}
             onCloseEditForm={onCancelEditForm} >
-            <span className={style.dnb_icost + " dnb-budget-cost"}>B:
+            <span className={`${style.dnb_icost} dnb-budget-cost`}>B:
                 <span className={style.dnb_icost_value}>$
                     <input type="number" value={budget} style={{ width: '80px' }}
                         onChange={onHandleChangeBudget} />

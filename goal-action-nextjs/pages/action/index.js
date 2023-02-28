@@ -3,7 +3,7 @@ import { getDateString } from "../../global"
 import { FormEditItem, GoalActionView } from "./GoalActionViewForm"
 import { updateActionWithId } from "../../service"
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import style from '../goal/style.module.scss'
+import style from '../../styles/ga.module.scss'
 
 export function Action({ item, updateAction, onDeleteAction, onDuplicateAction }) {
     const [isEditView, setEditView] = useState(false)
@@ -14,6 +14,7 @@ export function Action({ item, updateAction, onDeleteAction, onDuplicateAction }
     const [end, setEnd] = useState(item.End)
     const [expectCost, setExpectCost] = useState(item.ExpectCost)
     const [trueCost, setTrueCost] = useState(item.TrueCost)
+    const [isExpand, setExpand] = useState(true)
 
     function onToggleDone(e) {
         const is_done = !isDone
@@ -75,19 +76,25 @@ export function Action({ item, updateAction, onDeleteAction, onDuplicateAction }
         _item.Name = `${_item.Name} (1)`
         onDuplicateAction(_item)
     }
+    function handleExpand(isExpd) {
+        setExpand(isExpd)
+    }
     return (
         <>
             {
                 !isEditView ?
                     <GoalActionView
-                        typeid={3}
+                        typeid={3} lessC={expectCost - trueCost}
+                        isExpand={isExpand} handleExpand={handleExpand}
                         name={name} des={des} isDone={isDone} start={start} end={end}
                         setEditView={setEditView} onToggleDone={onToggleDone}
                         handleDelete={handleDelete} handlerDuplicate={handlerDuplicate}>
-                        <span className={style.dnb_icost + ' dnb-expect-cost'}>P:
+                        <span title="Expected Cost"
+                            className={`${style.dnb_icost} dnb-expect-cost`}>P:
                             <span className={style.dnb_icost_value}>${expectCost}</span>
                         </span>
-                        <span className={style.dnb_icost + " dnb-true-cost"}>C:
+                        <span title="True Cost"
+                            className={`${style.dnb_icost} dnb-true-cost`}>C:
                             <span className={style.dnb_icost_value}>${trueCost}</span>
                         </span>
                     </GoalActionView> :
@@ -115,7 +122,6 @@ export function FormEditAction({ Name, Description, Start, End,
         const newTrue = e.target.value
         setTrueCost(newTrue)
     }
-
     function onSaveData(item) {
         item.ExpectCost = +expectCost
         item.TrueCost = +trueCost
@@ -124,16 +130,17 @@ export function FormEditAction({ Name, Description, Start, End,
     return (
         <FormEditItem
             Name={Name} Description={Description} Start={Start} End={End}
-            typeid={3} onSaveData={onSaveData}
+            typeid={3} lessC={expectCost - trueCost}
+            onSaveData={onSaveData}
             onCloseEditForm={onCloseEditForm} >
-            <span className={style.dnb_icost + " dnb-expect-cost"}>P:
+            <span className={`${style.dnb_icost} dnb-expect-cost`}>P:
                 <span className={style.dnb_icost_value}>$
                     <input type="number" value={expectCost}
                         style={{ width: '80px' }}
                         onChange={handleChangeExpectCost} />
                 </span>
             </span>
-            <span className={style.dnb_icost + " dnb-true-cost"}>C:
+            <span className={`${style.dnb_icost} dnb-true-cost`}>C:
                 <span className={style.dnb_icost_value}>$
                     <input type="number" value={trueCost}
                         style={{ width: '80px' }}

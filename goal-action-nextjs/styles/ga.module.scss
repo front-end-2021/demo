@@ -3,9 +3,14 @@ $round: 9px;
 $m3px: 3px;
 $bgcolor: white;
 
+.dnb_main_container {
+  margin-top: $m3px;
+  padding-bottom: 3 * $m3px;
+}
+
 .dnb_item_view {
   display: flex;
-  margin-bottom: $m3px;
+  margin-bottom: 2 * $m3px;
 
   .dnb_add_action {
     display: inline-flex;
@@ -14,10 +19,10 @@ $bgcolor: white;
     min-height: 90px;
 
     >div {
-      height: 81px;
+      height: 78px;
       background-color: $bgcolor;
       border-radius: $round;
-      padding: 27px 9px;
+      padding: 27px 33px;
     }
   }
 }
@@ -51,16 +56,37 @@ $bgcolor: white;
     width: calc(100% - 21px);
   }
 
+  .dnb_item_title {
+    cursor: pointer;
+  }
+
+  $hDes: 288px;
+
   .dnb_item_description {
     font-size: 12px;
+    overflow: hidden;
+    max-height: $hDes;
+    display: -webkit-box;
+    -webkit-line-clamp: 18;
+    -webkit-box-orient: vertical;
+
+    >* {
+      max-width: $width - 12px;
+    }
+
+    >img {
+      display: -webkit-box;
+      margin: 0 auto;
+    }
   }
 
   .dnb_edit_des {
     width: 100%;
     resize: none;
-    min-height: 81px;
+    min-height: 159px;
     margin-left: 0px;
     margin-top: 2 * $m3px;
+    max-height: $hDes + 120px;
   }
 
   .dnb_item_cost {
@@ -82,6 +108,7 @@ $bgcolor: white;
     display: flex;
     align-items: baseline;
     margin-top: 3px;
+    cursor: default;
 
     .dnb_d_div {
       padding: 0 3px;
@@ -109,13 +136,12 @@ $bgcolor: white;
 }
 
 .dnb_item_done {
-  opacity: 0.69;
+  >* {
+    opacity: 0.3;
+  }
 }
 
 .dnb_item_list_action {
-  .dnb_item_container {
-    border-right-color: #0fa8bf;
-  }
 
   .dnb_item_container:last-child {
     height: -webkit-fill-available;
@@ -143,6 +169,7 @@ $bgcolor: white;
 }
 
 .dnb_ocost_negative,
+.d_exp_less_true,
 .dnb_past_date {
   color: red;
 }
@@ -163,4 +190,77 @@ $bgcolor: white;
   margin-top: $m3px;
   padding: 12px 2 * $m3px;
   border-radius: $round;
+}
+
+$wCost: 114px;
+$wCollapse: 100%;
+
+.dnb_main_collapse {
+  display: block;
+  width: calc(100vw - 81px);
+
+  .dnb_item_title {
+    display: inline-block;
+    padding-right: 4 * $m3px;
+    width: calc(100% - 728px);
+  }
+
+  .dnb_item_container {
+    display: block;
+    min-width: initial;
+    width: $wCollapse;
+    padding-top: 0;
+  }
+
+  .dnb_item_cost {
+    display: inline-grid;
+    font-size: 14px;
+    grid-template-columns: $wCost $wCost $wCost $wCost;
+    max-width: 4 * $wCost;
+  }
+
+  .dnb_item_date {
+    display: inline-flex;
+    font-size: 14px;
+  }
+}
+
+.dnb_item_container.d_item_collapse {
+
+  &+.dnb_item_list_sub {
+    display: block;
+    max-width: initial;
+    width: $wCollapse;
+    min-width: initial;
+
+    .dnb_item_title {
+      margin-left: 9px;
+      margin-right: -9px;
+    }
+
+    .dnb_item_date {
+      display: inline-flex;
+      font-size: 14px;
+    }
+
+    .dnb_item_view {
+      display: block;
+    }
+
+    .dnb_item_description,
+    .dnb_add_action,
+    .dnb_i_options {
+      display: none;
+    }
+
+    .dnb_item_list_action {
+      display: block;
+      width: $wCollapse;
+
+      .dnb_item_title {
+        margin-left: 15px;
+        margin-right: -15px;
+      }
+    }
+  }
 }

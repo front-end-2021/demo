@@ -9,7 +9,7 @@ import { FormEditGoal } from "./GoalItem"
 import { GoalItem } from "./GoalItem"
 import { Subgoal } from "./Subgoal"
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import style from './style.module.scss'
+import style from '../../styles/ga.module.scss'
 
 export class ListMainProvider extends Component {
     constructor(props) {
@@ -70,7 +70,7 @@ export class ListMainProvider extends Component {
                             updateDataGoals={this.updateDataGoals} />
                     })
                 }
-                <style jsx global>{`body {font-size: 16px;background-color: #eeeeee96;} }`}</style>
+                <style jsx global>{`body {font-size: 16px;background-color:#eeeeeefa;} }`}</style>
                 {
                     !NewMain ? <div className={style.dnb_add_main}>
                         <span className="bi bi-plus-circle-dotted"
@@ -96,7 +96,7 @@ class Maingoal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            ListSub: [],
+            ListSub: [], IsExpand: true,
             ExpectCost: 0, TrueCost: 0,
             NewSub: null
         }
@@ -201,21 +201,24 @@ class Maingoal extends Component {
             }
         })
     }
+    handleExpand = (isExpand) => {
+        this.setState({ IsExpand: isExpand })
+    }
     render() {
-        const { NewSub, ListSub, ExpectCost, TrueCost } = this.state
+        const { NewSub, ListSub, ExpectCost, TrueCost, IsExpand } = this.state
         const { item } = this.props
         return (
-            <div className={style.dnb_item_view}>
+            <div className={`${style.dnb_item_view} ${style.dnb_main_container}${!IsExpand ? ` ${style.dnb_main_collapse}` : ''}`}>
                 <GoalItem
                     item={item}
-                    ExpCost={ExpectCost}
-                    TrueCost={TrueCost}
+                    ExpCost={ExpectCost} TrueCost={TrueCost}
+                    handleExpand={this.handleExpand} isExpand={IsExpand}
                     updateGoalUI={this.updateGoalUI}
                     insertNewChild={this.handleAddNewSub}
                     onDeleteGoal={this.onDeleteGoal} />
                 <div className={style.dnb_item_list_sub}>
                     {
-                        !NewSub ? <></> :
+                        !IsExpand || !NewSub ? <></> :
                             <div className={style.dnb_item_view}>
                                 <FormEditGoal ParentId={item.Id}
                                     Name={`Subgoal ${Date.now()}`}
@@ -230,7 +233,7 @@ class Maingoal extends Component {
                     {
                         ListSub.map(sub => {
                             return <Subgoal key={sub.Id}
-                                item={sub}
+                                item={sub} isExpandMain={IsExpand}
                                 updateDataSubs={this.updateDataSubs}
                                 pushExpectCost={this.pushExpectCost}
                                 onDeleteSub={this.onDeleteSub}

@@ -6,13 +6,13 @@ import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
 import { GoalItem } from "./GoalItem"
 import { Action, FormEditAction } from "../action"
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import style from './style.module.scss'
+import style from '../../styles/ga.module.scss'
 
 export class Subgoal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            ListAction: [],
+            ListAction: [], IsExpand: true,
             ExpectCost: 0, TrueCost: 0,
             NewAction: null
         }
@@ -140,15 +140,39 @@ export class Subgoal extends Component {
         _item.Name = `${_item.Name} (1)`
         onDuplicateSubgoal(_item)
     }
+    getFormActionAddEdit = () => {
+        const { item, isExpandMain } = this.props
+        if (!isExpandMain) return <></>
+        const { NewAction, IsExpand } = this.state
+        if (!IsExpand) return <></>
+        return <>{!NewAction ? <div className={style.dnb_add_action}>
+            <div onClick={() => this.addNewAction(item.Id)}>
+                <span className="bi bi-plus-circle-dotted"
+                    style={{ cursor: 'pointer' }}>&nbsp; New &#9632;</span>
+            </div></div> :
+            <div className={style.dnb_item_view}>
+                <FormEditAction
+                    Name={`Action ${Date.now()}`}
+                    Start={getDateAfterDaysString(0)}
+                    End={getDateAfterDaysString(1)}
+                    ExpCost={0} TrueCost={0}
+                    onCloseEditForm={this.onCancelAddNewAction}
+                    onSaveAction={this.onInsertNewAction}
+                />
+            </div>}</>
+    }
+    handleExpand = (isExpand) => {
+        this.setState({ IsExpand: isExpand })
+    }
     render() {
         const { item } = this.props
-        const { ListAction, ExpectCost, TrueCost, NewAction } = this.state
+        const { ListAction, ExpectCost, TrueCost, IsExpand } = this.state
         return (
             <div className={style.dnb_item_view}>
                 <GoalItem
                     item={item}
-                    ExpCost={ExpectCost}
-                    TrueCost={TrueCost}
+                    ExpCost={ExpectCost} TrueCost={TrueCost}
+                    handleExpand={this.handleExpand} isExpand={IsExpand}
                     updateGoalUI={this.updateGoalUI}
                     insertNewChild={this.addNewAction}
                     onDeleteGoal={this.onDeleteGoal}
@@ -163,23 +187,7 @@ export class Subgoal extends Component {
                                 updateAction={this.updateAction} />
                         })
                     }
-                    {
-                        !NewAction ? <div className={style.dnb_add_action}>
-                            <div onClick={() => this.addNewAction(item.Id)}>
-                                <span className="bi bi-plus-circle-dotted"
-                                    style={{ cursor: 'pointer' }}>&nbsp; New &#9632;</span>
-                            </div></div> :
-                            <div className={style.dnb_item_view}>
-                                <FormEditAction
-                                    Name={`Action ${Date.now()}`}
-                                    Start={getDateAfterDaysString(0)}
-                                    End={getDateAfterDaysString(1)}
-                                    ExpCost={0} TrueCost={0}
-                                    onCloseEditForm={this.onCancelAddNewAction}
-                                    onSaveAction={this.onInsertNewAction}
-                                />
-                            </div>
-                    }
+                    {this.getFormActionAddEdit()}
                 </div>
             </div>
         )

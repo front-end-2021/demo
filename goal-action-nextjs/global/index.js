@@ -26,3 +26,14 @@ export function getDateAfterDaysString(dayAfter){
     const d = new Date(dN)
     return d.toDateString().slice(4)
 }
+export function getIcon(typeid) {
+    if (typeid == 1) return <>&#9673;</>
+    if (typeid == 2) return <>&#9670;</>
+    return <>&#9632;</>
+}
+export function isDateLessNow(start_end) {
+    if (!start_end) return false
+    const _date = new Date(start_end)
+    const now = new Date(new Date().toDateString())
+    return _date.getTime() < now.getTime()
+}

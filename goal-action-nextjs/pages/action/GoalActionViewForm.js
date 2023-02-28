@@ -1,10 +1,15 @@
 import { useState } from "react"
-import { getDateString, getDateCalendarValue } from "../../global"
+import {
+    getDateString, getDateCalendarValue,
+    getIcon, isDateLessNow
+} from "../../global"
+import { GoalActionCollapse } from "../goal/GoalCollapse"
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import style from '../goal/style.module.scss'
+import style from '../../styles/ga.module.scss'
 
-export function GoalActionView({ typeid, children,
+export function GoalActionView({ typeid, children, lessC,
     name, des, isDone, start, end,
+    isExpand, handleExpand,
     addNewChild,
     handleDelete, handlerDuplicate,
     setEditView, onToggleDone }) {
@@ -14,14 +19,22 @@ export function GoalActionView({ typeid, children,
         if (!start) return <></>
         return <>
             <span className={`bi bi-calendar2-week${getClassOverDate(start)}`} />
-            <span className={`dnb-d-start${getClassOverDate(start)}`}>&nbsp;{getDateString(start)}</span>
+            {
+                !isDateLessNow(start) ? <span className={`dnb-d-start`}>&nbsp;{getDateString(start)}</span> :
+                    <span title="Start Date is in the past from Current Date"
+                        className={`dnb-d-start${getClassOverDate(start)}`}>&nbsp;{getDateString(start)}</span>
+            }
         </>
     }
     function getEndTag() {
         if (!end) return <></>
         return <>
             <span className={style.dnb_d_div}>&minus;</span>
-            <span className="dnb-d-end">{getDateString(end)}</span>
+            {
+                !isDateLessNow(end) ? <span className="dnb-d-end">{getDateString(end)}</span> :
+                    <span title="End Date is in the past from Current Date"
+                        className="dnb-d-end">{getDateString(end)}</span>
+            }
         </>
     }
     function getClsDone() {
@@ -64,31 +77,58 @@ export function GoalActionView({ typeid, children,
         return <span className="bi bi-plus-circle-dotted" style={{ cursor: 'pointer' }}
             onClick={() => addNewChild(typeid + 1)}>&nbsp; New {getIcon(typeid + 1)}</span>
     }
+    function getDesTag() {
+        const _des = { __html: des }
+        return <p dangerouslySetInnerHTML={_des}
+            className={style.dnb_item_description + ' ' + style.o_81} />
+    }
+    function getNameTag() {
+        if (lessC < 0) {
+            return <div title="Expected Cost is less then True Cost"
+                className={`${style.dnb_item_title} ${style.d_exp_less_true}`}
+                onClick={() => handleExpand(false)}>{getIcon(typeid)} {name}</div>
+        }
+        return <div className={style.dnb_item_title}
+            onClick={() => handleExpand(false)}>{getIcon(typeid)} {name}</div>
+    }
+    function onExpand() {
+        handleExpand(true)
+    }
     return (
-        <div className={style.dnb_item_container + `${isDone ? ` ${style.dnb_item_done}` : ''}`}>
-            <div className="dnb-item-title">{getIcon(typeid)} {name}</div>
-            <p className={style.dnb_item_description + ' ' + style.o_81}>{des}</p>
-            <div className={style.dnb_item_cost}>
-                {children}
-            </div>
-            <div className={style.dnb_item_date + getClassOverDate(end)}>
-                {getStartTag()}
-                {getEndTag()}
-            </div>
-            <div className={style.dnb_i_options}>
-                <span onClick={() => setShowMenu(!isShowMenu)}
-                    className="bi bi-layout-sidebar">&nbsp; {isShowMenu ? 'Close' : 'Menu'} &nbsp;</span>
-                <span className={`bi bi-chevron-${isShowMenu ? 'down' : 'right'}`}
-                    onClick={() => setShowMenu(!isShowMenu)} />
-            </div>
-            {getMenuTag()}
-            <style jsx>{`.bi-layout-sidebar {cursor: pointer}
+        <>{
+            isExpand ? <div className={style.dnb_item_container + `${isDone ? ` ${style.dnb_item_done}` : ''}`}>
+                {getNameTag()}
+                {getDesTag()}
+                <div className={style.dnb_item_cost}>
+                    {children}
+                </div>
+                <div className={style.dnb_item_date + getClassOverDate(end)}>
+                    {getStartTag()}
+                    {isExpand ? getEndTag() : <></>}
+                </div>
+                {
+                    !isExpand ? <></> : <div className={style.dnb_i_options}>
+                        <span onClick={() => setShowMenu(!isShowMenu)}
+                            className="bi bi-layout-sidebar">&nbsp; {isShowMenu ? 'Collapse' : 'Menu'} &nbsp;</span>
+                        <span className={`bi bi-chevron-${isShowMenu ? 'down' : 'right'}`}
+                            onClick={() => setShowMenu(!isShowMenu)} />
+                    </div>
+                }
+                {getMenuTag()}
+                <style jsx>{`.bi-layout-sidebar {cursor: pointer}
             .bi-layout-sidebar::before {transform: rotate(-90deg);}`}</style>
-        </div>
+            </div> : <GoalActionCollapse typeid={typeid} lessC={lessC}
+                name={name} isDone={isDone} start={start} end={end}
+                handleExpand={onExpand}>
+                <div className={style.dnb_item_cost}>
+                    {children}
+                </div>
+            </GoalActionCollapse>
+        }</>
     )
 }
 export function FormEditItem({ Name, Description, Start, End,
-    children, typeid,
+    children, typeid, lessC,
     onSaveData, onCloseEditForm }) {
     const [name, setName] = useState(Name)
     const [des, setDes] = useState(Description)
@@ -133,10 +173,15 @@ export function FormEditItem({ Name, Description, Start, End,
         if (l < 141) return
         return `${Math.ceil(l * 30 / 51)}px`
     }
+    function getClsExpLess() {
+        return lessC < 0 ? ` ${style.d_exp_less_true}` : ''
+    }
     return (
-        <div className={style.dnb_item_container + ' ' + style.dnb_item_edit}>
-            <div className="dnb-item-title">{getIcon(typeid)} <input value={name} maxLength="150"
-                className={style.dnb_edit_name} type="text" onChange={handleChangeName}
+        <div className={`${style.dnb_item_container} ${style.dnb_item_edit}`}>
+            <div className={getClsExpLess()}>{getIcon(typeid)} <input
+                value={name} maxLength="150"
+                className={`${style.dnb_edit_name} ${getClsExpLess()}`}
+                type="text" onChange={handleChangeName}
                 onMouseOut={handleMouseOutChangeName} />
             </div>
             <textarea className={style.dnb_edit_des} style={{ height: getHeightDesArea() }}
@@ -172,16 +217,8 @@ export function FormEditItem({ Name, Description, Start, End,
     )
 }
 function getClassOverDate(start_end) {
-    if (!start_end) return ''
-    const _date = new Date(start_end)
-    const now = new Date(new Date().toDateString())
-    if (_date.getTime() < now.getTime()) {
-        return ' ' + style.dnb_past_date
+    if (isDateLessNow(start_end)) {
+        return ` ${style.dnb_past_date}`
     }
     return ''
-}
-function getIcon(typeid) {
-    if (typeid == 1) return <>&#9673;</>
-    if (typeid == 2) return <>&#9670;</>
-    return <>&#9632;</>
 }
