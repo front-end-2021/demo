@@ -3,5 +3,28 @@ bin/
 obj/
 goal-action-api/node_modules/
 goal-action-api/package-lock.json
+
 marketing-app/node_modules/
 marketing-app/package-lock.json
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+marketing-app/.pnp
+marketing-app/.pnp.js
+
+# testing
+marketing-app/coverage
+
+# production
+marketing-app/build
+
+# misc
+marketing-app/.DS_Store
+marketing-app/.env.local
+marketing-app/.env.development.local
+marketing-app/.env.test.local
+marketing-app/.env.production.local
+
+marketing-app/npm-debug.log*
+marketing-app/yarn-debug.log*
+marketing-app/yarn-error.log*
