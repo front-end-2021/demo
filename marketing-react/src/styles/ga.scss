@@ -37,7 +37,7 @@ $bgcolor: white;
 }
 
 .dnb_item_list_action {
-    width: calc(100vw - $width - $width - 96px);
+    width: calc(100vw - 2 * $width - 96px);
     display: flex;
     flex-wrap: wrap;
 }
@@ -192,74 +192,145 @@ $bgcolor: white;
     border-radius: $round;
 }
 
-$wCost: 114px;
+$wCost: 120px;
 $wCollapse: 100%;
+$fSizeCollp: 14px;
+$wCalendar: 192px;
 
-.dnb_main_collapse {
+.dnb_item_container.d_item_collapse {
+    width: calc(100vw - 2 * $width - 96px);
+    display: inline-grid;
+    grid-template-columns: auto 2 * $wCost $wCalendar;
+    padding-top: $m3px;
+    align-content: center;
+
+    .dnb_item_cost {
+        font-size: $fSizeCollp;
+    }
+
+    .dnb_item_date {
+        font-size: $fSizeCollp;
+        margin-top: 0;
+        padding-top: 0;
+    }
+}
+
+.dnb_item_view.dnb_sub_collapse {
+    flex-direction: column;
+
+    .dnb_item_container.d_item_collapse {
+        width: calc(100vw - $width - 96px - 6px);
+        display: inline-grid;
+        grid-template-columns: auto 4 * $wCost $wCalendar;
+
+        .dnb_item_title {
+            display: inline-block;
+        }
+
+        .dnb_item_cost {
+            display: inline-grid;
+            grid-template-columns: $wCost $wCost $wCost $wCost;
+            font-size: $fSizeCollp;
+        }
+
+        .dnb_item_date {
+            display: inline-flex;
+            padding-top: 0;
+            margin-top: 0;
+            font-size: $fSizeCollp;
+        }
+
+        &+.dnb_item_list_action {
+            flex-direction: column;
+            width: calc(100vw - $width - 90px);
+
+            .dnb_item_container {
+                grid-template-columns: auto 2 * $wCost $wCalendar;
+            }
+
+            .dnb_item_title {
+                padding-left: 9px;
+            }
+
+            .dnb_item_cost {
+                grid-template-columns: $wCost $wCost;
+            }
+        }
+    }
+}
+
+.dnb_item_view.dnb_main_collapse {
     display: block;
-    width: calc(100vw - 81px);
+    width: calc(100vw - 96px);
 
     .dnb_item_title {
-        display: inline-block;
         padding-right: 4 * $m3px;
-        width: calc(100% - 728px);
     }
 
     .dnb_item_container {
-        display: block;
+        display: inline-grid;
         min-width: initial;
         width: $wCollapse;
-        padding-top: 0;
+        grid-template-columns: auto 4 * $wCost $wCalendar;
     }
 
     .dnb_item_cost {
         display: inline-grid;
-        font-size: 14px;
+        font-size: $fSizeCollp;
         grid-template-columns: $wCost $wCost $wCost $wCost;
         max-width: 4 * $wCost;
     }
 
     .dnb_item_date {
         display: inline-flex;
-        font-size: 14px;
+        font-size: $fSizeCollp;
+        margin-top: 0;
     }
-}
 
-.dnb_item_container.d_item_collapse {
+    .dnb_item_container.d_item_collapse {
 
-    &+.dnb_item_list_sub {
-        display: block;
-        max-width: initial;
-        width: $wCollapse;
-        min-width: initial;
-
-        .dnb_item_title {
-            margin-left: 9px;
-            margin-right: -9px;
-        }
-
-        .dnb_item_date {
-            display: inline-flex;
-            font-size: 14px;
-        }
-
-        .dnb_item_view {
+        &+.dnb_item_list_sub {
             display: block;
-        }
-
-        .dnb_item_description,
-        .dnb_add_action,
-        .dnb_i_options {
-            display: none;
-        }
-
-        .dnb_item_list_action {
-            display: block;
+            max-width: initial;
             width: $wCollapse;
+            min-width: initial;
 
             .dnb_item_title {
-                margin-left: 15px;
-                margin-right: -15px;
+                padding-left: 9px;
+            }
+
+            .dnb_item_view {
+                display: block;
+            }
+
+            .dnb_item_description,
+            .dnb_add_action,
+            .dnb_i_options {
+                display: none;
+            }
+
+            .dnb_item_list_action {
+                display: block;
+                width: $wCollapse;
+
+                .dnb_item_container {
+                    grid-template-columns: auto 2 * $wCost $wCalendar;
+                }
+
+                .dnb_item_title {
+                    padding-left: 15px;
+                }
+
+                .dnb_item_cost {
+                    grid-template-columns: $wCost $wCost;
+                }
+
+            }
+
+            .dnb_item_view.dnb_sub_collapse {
+                .dnb_item_container.d_item_collapse {
+                    width: calc(100vw - 96px);
+                }
             }
         }
     }

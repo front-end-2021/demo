@@ -35,26 +35,26 @@ export function GoalItem({ item, ExpCost, TrueCost,
     function onSaveGoal(newGoal) {
         const entry = {}
         if (item.ParentId) entry.ParentId = item.ParentId
-        if (typeof newGoal.Name == 'string' && newGoal.Name.trim() != ''
-            && newGoal.Name != name) {
+        if (typeof newGoal.Name === 'string' && newGoal.Name.trim() !== ''
+            && newGoal.Name !== name) {
             setName(newGoal.Name)
             entry.Name = newGoal.Name
         }
-        if (typeof newGoal.Description == 'string' && newGoal.Description != des) {
+        if (typeof newGoal.Description === 'string' && newGoal.Description !== des) {
             setDes(newGoal.Description)
             entry.Description = newGoal.Description
         }
-        if (typeof newGoal.Start == 'string' &&
-            getDateString(start) != getDateString(newGoal.Start)) {
+        if (typeof newGoal.Start === 'string' &&
+            getDateString(start) !== getDateString(newGoal.Start)) {
             setStart(newGoal.Start)
             entry.Start = getDateString(newGoal.Start)
         }
-        if (typeof newGoal.End == 'string' &&
-            getDateString(end) != getDateString(newGoal.End)) {
+        if (typeof newGoal.End === 'string' &&
+            getDateString(end) !== getDateString(newGoal.End)) {
             setEnd(newGoal.End)
             entry.End = getDateString(newGoal.End)
         }
-        if (typeof newGoal.Budget == 'number' && newGoal.Budget != budget) {
+        if (typeof newGoal.Budget === 'number' && newGoal.Budget !== budget) {
             setBudget(newGoal.Budget)
             entry.Budget = newGoal.Budget
         }
@@ -63,8 +63,8 @@ export function GoalItem({ item, ExpCost, TrueCost,
         updateGoalWithId(item.Id, entry)    // api put
     }
     function addNewChild(typeid) {
-        if (typeid == 2) insertNewChild(item.Id)
-        if (typeid == 3) insertNewChild(item.Id)
+        if (typeid === 2) insertNewChild(item.Id)
+        if (typeid === 3) insertNewChild(item.Id)
     }
     return (
         <>{

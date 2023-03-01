@@ -47,31 +47,31 @@ export class Subgoal extends Component {
     }
     updateAction = (newAction) => {
         const lstAction = this.state.ListAction
-        const _action = lstAction.find(a => a.Id == newAction.Id)
+        const _action = lstAction.find(a => a.Id === newAction.Id)
         if (_action) {
             let hasExpectCost = false, hasTrueCost = false
-            if (typeof newAction.Name == 'string' &&
-                newAction.Name.trim() != '' && _action.Name != newAction.Name) {
+            if (typeof newAction.Name === 'string' &&
+                newAction.Name.trim() !== '' && _action.Name !== newAction.Name) {
                 _action.Name = newAction.Name
             }
-            if (typeof newAction.Description == 'string' &&
-                _action.Description != newAction.Description) {
+            if (typeof newAction.Description === 'string' &&
+                _action.Description !== newAction.Description) {
                 _action.Description = newAction.Description
             }
-            if (typeof newAction.IsDone == 'boolean' && _action.IsDone != newAction.IsDone) {
+            if (typeof newAction.IsDone === 'boolean' && _action.IsDone !== newAction.IsDone) {
                 _action.IsDone = newAction.IsDone
             }
-            if (typeof newAction.Start == 'string' && _action.Start != newAction.Start)
+            if (typeof newAction.Start === 'string' && _action.Start !== newAction.Start)
                 _action.Start = newAction.Start
-            if (typeof newAction.End == 'string' && _action.End != newAction.End) {
+            if (typeof newAction.End === 'string' && _action.End !== newAction.End) {
                 _action.End = newAction.End
             }
-            if (typeof newAction.ExpectCost == 'number' &&
-                _action.ExpectCost != newAction.ExpectCost) {
+            if (typeof newAction.ExpectCost === 'number' &&
+                _action.ExpectCost !== newAction.ExpectCost) {
                 _action.ExpectCost = newAction.ExpectCost
                 hasExpectCost = true
             }
-            if (typeof newAction.TrueCost == 'number' && _action.TrueCost != newAction.TrueCost) {
+            if (typeof newAction.TrueCost === 'number' && _action.TrueCost !== newAction.TrueCost) {
                 _action.TrueCost = newAction.TrueCost
                 hasTrueCost = true
             }
@@ -88,11 +88,11 @@ export class Subgoal extends Component {
         this.setState({ NewAction: null })
     }
     onInsertNewAction = (item) => {
-        if (item.Start.trim() == '') delete item.Start
-        if (typeof item.Description != 'string' || item.Description.trim() == '') {
+        if (item.Start.trim() === '') delete item.Start
+        if (typeof item.Description !== 'string' || item.Description.trim() === '') {
             delete item.Description
         }
-        if (item.End.trim() == '') delete item.End
+        if (item.End.trim() === '') delete item.End
         item.ParentId = this.props.item.Id
         insertAction(item).then(newId => {
             if (!newId.includes('invalid')) {
@@ -141,8 +141,8 @@ export class Subgoal extends Component {
         onDuplicateSubgoal(_item)
     }
     getFormActionAddEdit = () => {
-        const { item, isExpandMain } = this.props
-        if (!isExpandMain) return <></>
+        const { item, isExpandParent } = this.props
+        if (!isExpandParent) return <></>
         const { NewAction, IsExpand } = this.state
         if (!IsExpand) return <></>
         return <>{!NewAction ? <div className='dnb_add_action'>
@@ -162,17 +162,20 @@ export class Subgoal extends Component {
             </div>}</>
     }
     handleExpand = (isExpand) => {
+        if (!this.props.isExpandParent) {
+            return
+        }
         this.setState({ IsExpand: isExpand })
     }
     render() {
-        const { item } = this.props
+        const { item, isExpandParent } = this.props
         const { ListAction, ExpectCost, TrueCost, IsExpand } = this.state
         return (
-            <div className='dnb_item_view'>
+            <div className={`dnb_item_view${!IsExpand ? ' dnb_sub_collapse' : ''}`}>
                 <GoalItem
                     item={item}
                     ExpCost={ExpectCost} TrueCost={TrueCost}
-                    handleExpand={this.handleExpand} isExpand={IsExpand}
+                    handleExpand={this.handleExpand} isExpand={IsExpand && isExpandParent}
                     updateGoalUI={this.updateGoalUI}
                     insertNewChild={this.addNewAction}
                     onDeleteGoal={this.onDeleteGoal}
@@ -181,7 +184,7 @@ export class Subgoal extends Component {
                     {
                         ListAction.map(action => {
                             return <Action key={action.Id}
-                                item={action}
+                                item={action} isExpandParent={IsExpand && isExpandParent}
                                 onDeleteAction={this.onDeleteAction}
                                 onDuplicateAction={this.onDuplicateAction}
                                 updateAction={this.updateAction} />

@@ -43,11 +43,11 @@ export class ListMainProvider extends Component {
         this.setState({ NewMain: false })
     }
     onInsertNewMain = (goal) => {
-        if (goal.Start.trim() == '') delete goal.Start
-        if (typeof goal.Description != 'string' || goal.Description.trim() == '') {
+        if (goal.Start.trim() === '') delete goal.Start
+        if (typeof goal.Description !== 'string' || goal.Description.trim() === '') {
             delete goal.Description
         }
-        if (goal.End.trim() == '') delete goal.End
+        if (goal.End.trim() === '') delete goal.End
 
         insertMain(goal).then(newId => {
             if (!newId.includes('invalid')) {
@@ -126,11 +126,11 @@ class Maingoal extends Component {
         this.setState({ NewSub: null })
     }
     onInsertNewSub = (sub) => {
-        if (sub.Start.trim() == '') delete sub.Start
-        if (typeof sub.Description != 'string' || sub.Description.trim() == '') {
+        if (sub.Start.trim() === '') delete sub.Start
+        if (typeof sub.Description !== 'string' || sub.Description.trim() === '') {
             delete sub.Description
         }
-        if (sub.End.trim() == '') delete sub.End
+        if (sub.End.trim() === '') delete sub.End
 
         insertSub(sub).then(newId => {
             if (!newId.includes('invalid')) {
@@ -144,22 +144,22 @@ class Maingoal extends Component {
     }
     pushExpectCost = (expectC, sId) => {
         const { ListSub, ExpectCost } = this.state
-        const sub = ListSub.find(s => s.Id == sId)
+        const sub = ListSub.find(s => s.Id === sId)
         if (sub) {
             sub.ExpectCost = expectC
             const exp = getExpC(ListSub.map(s => s.ExpectCost))
-            if (exp != ExpectCost) {
+            if (exp !== ExpectCost) {
                 this.setState({ ExpectCost: exp })
             }
         }
     }
     pushTrueCost = (trueC, sId) => {
         const { ListSub, TrueCost } = this.state
-        const sub = ListSub.find(s => s.Id == sId)
+        const sub = ListSub.find(s => s.Id === sId)
         if (sub) {
             sub.TrueCost = trueC
             const _true = getTrueC(ListSub.map(s => s.TrueCost))
-            if (_true != TrueCost) {
+            if (_true !== TrueCost) {
                 this.setState({ TrueCost: _true })
             }
         }
@@ -180,11 +180,11 @@ class Maingoal extends Component {
                 lstSub.splice(_i, 1)    // remove
                 this.setState({ ListSub: lstSub })
                 const exp = getExpC(lstSub.map(s => s.ExpectCost))
-                if (exp != this.state.ExpectCost) {
+                if (exp !== this.state.ExpectCost) {
                     this.setState({ ExpectCost: exp })
                 }
                 const _true = getTrueC(lstSub.map(s => s.TrueCost))
-                if (_true != this.state.TrueCost) {
+                if (_true !== this.state.TrueCost) {
                     this.setState({ TrueCost: _true })
                 }
             }
@@ -232,7 +232,7 @@ class Maingoal extends Component {
                     {
                         ListSub.map(sub => {
                             return <Subgoal key={sub.Id}
-                                item={sub} isExpandMain={IsExpand}
+                                item={sub} isExpandParent={IsExpand}
                                 updateDataSubs={this.updateDataSubs}
                                 pushExpectCost={this.pushExpectCost}
                                 onDeleteSub={this.onDeleteSub}
@@ -248,25 +248,25 @@ class Maingoal extends Component {
 
 function updateGoalUI(newGoal) {
     const listMainSub = this
-    const _goal_ = listMainSub.find(g => g.Id == newGoal.Id)
+    const _goal_ = listMainSub.find(g => g.Id === newGoal.Id)
     if (_goal_) {
-        if (typeof newGoal.Name == 'string' &&
-            newGoal.Name.trim() != '' && newGoal.Name != _goal_.Name) {
+        if (typeof newGoal.Name === 'string' &&
+            newGoal.Name.trim() !== '' && newGoal.Name !== _goal_.Name) {
             _goal_.Name = newGoal.Name
         }
-        if (typeof newGoal.Description == 'string' && newGoal.Description != _goal_.Description) {
+        if (typeof newGoal.Description === 'string' && newGoal.Description !== _goal_.Description) {
             _goal_.Description = newGoal.Description
         }
-        if (typeof newGoal.IsDone == 'boolean' && newGoal.IsDone != _goal_.IsDone) {
+        if (typeof newGoal.IsDone === 'boolean' && newGoal.IsDone !== _goal_.IsDone) {
             _goal_.IsDone = newGoal.IsDone
         }
-        if (typeof newGoal.Start == 'string' && newGoal.Start != _goal_.Start) {
+        if (typeof newGoal.Start === 'string' && newGoal.Start !== _goal_.Start) {
             _goal_.Start = newGoal.Start
         }
-        if (typeof newGoal.End == 'string' && newGoal.End != _goal_.End) {
+        if (typeof newGoal.End === 'string' && newGoal.End !== _goal_.End) {
             _goal_.End = newGoal.End
         }
-        if (typeof newGoal.Budget == 'number' && newGoal.Budget != _goal_.Budget) {
+        if (typeof newGoal.Budget === 'number' && newGoal.Budget !== _goal_.Budget) {
             _goal_.Budget = newGoal.Budget
         }
     }

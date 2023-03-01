@@ -115,9 +115,7 @@ export function GoalActionView({ typeid, children, lessC,
             </div> : <GoalActionCollapse typeid={typeid} lessC={lessC}
                 name={name} isDone={isDone} start={start} end={end}
                 handleExpand={onExpand}>
-                <div className='dnb_item_cost'>
-                    {children}
-                </div>
+                {children}
             </GoalActionCollapse>
         }</>
     )
@@ -144,7 +142,7 @@ export function FormEditItem({ Name, Description, Start, End,
     }
     function handleMouseOutChangeName(e) {
         const newName = e.target.value
-        if (newName.trim() == '') setName(Name)
+        if (newName.trim() === '') setName(Name)
     }
     function handleChangeDes(e) {
         const newDes = e.target.value

@@ -6,7 +6,7 @@ export function getTrueC(lstTrue) {
 }
 export function getTrueCost(listSub) {
     const { ListAction } = this.context
-    const lstTrue = listSub.map(s => ListAction.filter(a => a.ParentId == s.Id).map(a => a.TrueCost))[0]
+    const lstTrue = listSub.map(s => ListAction.filter(a => a.ParentId === s.Id).map(a => a.TrueCost))[0]
     return Array.isArray(lstTrue) ? getTrueC(lstTrue) : 0
 }
 export function getDateString(dateStr) {
@@ -27,8 +27,8 @@ export function getDateAfterDaysString(dayAfter){
     return d.toDateString().slice(4)
 }
 export function getIcon(typeid) {
-    if (typeid == 1) return <>&#9673;</>
-    if (typeid == 2) return <>&#9670;</>
+    if (typeid === 1) return <>&#9673;</>
+    if (typeid === 2) return <>&#9670;</>
     return <>&#9632;</>
 }
 export function isDateLessNow(start_end) {

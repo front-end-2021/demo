@@ -5,7 +5,7 @@ import { updateActionWithId } from "../../service"
 import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
 import '../../styles/ga.scss'
 
-export function Action({ item, updateAction, onDeleteAction, onDuplicateAction }) {
+export function Action({ item, updateAction, onDeleteAction, onDuplicateAction, isExpandParent }) {
     const [isEditView, setEditView] = useState(false)
     const [name, setName] = useState(item.Name)
     const [des, setDes] = useState(item.Description)
@@ -32,34 +32,34 @@ export function Action({ item, updateAction, onDeleteAction, onDuplicateAction }
     }
     function onSaveAction(newAction) {
         const entry = {}
-        if (typeof newAction.Name == 'string' && newAction.Name.trim() != ''
-            && newAction.Name != name) {
+        if (typeof newAction.Name == 'string' && newAction.Name.trim() !== ''
+            && newAction.Name !== name) {
             setName(newAction.Name)
             entry.Name = newAction.Name
         }
-        if (typeof newAction.Description == 'string' && newAction.Description != des) {
+        if (typeof newAction.Description == 'string' && newAction.Description !== des) {
             setDes(newAction.Description)
             entry.Description = newAction.Description
         }
-        if (typeof newAction.IsDone == 'boolean' && newAction.IsDone != isDone) {
+        if (typeof newAction.IsDone == 'boolean' && newAction.IsDone !== isDone) {
             setDone(newAction.IsDone)
             entry.IsDone = newAction.IsDone
         }
         if (typeof newAction.Start == 'string' &&
-            getDateString(start) != getDateString(newAction.Start)) {
+            getDateString(start) !== getDateString(newAction.Start)) {
             setStart(newAction.Start)
             entry.Start = getDateString(newAction.Start)
         }
         if (typeof newAction.End == 'string' &&
-            getDateString(end) != getDateString(newAction.End)) {
+            getDateString(end) !== getDateString(newAction.End)) {
             setEnd(newAction.End)
             entry.End = getDateString(newAction.End)
         }
-        if (typeof newAction.ExpectCost == 'number' && newAction.ExpectCost != expectCost) {
+        if (typeof newAction.ExpectCost == 'number' && newAction.ExpectCost !== expectCost) {
             setExpectCost(newAction.ExpectCost)
             entry.ExpectCost = newAction.ExpectCost
         }
-        if (typeof newAction.TrueCost == 'number' && newAction.TrueCost != trueCost) {
+        if (typeof newAction.TrueCost == 'number' && newAction.TrueCost !== trueCost) {
             setTrueCost(newAction.TrueCost)
             entry.TrueCost = newAction.TrueCost
         }
@@ -77,6 +77,7 @@ export function Action({ item, updateAction, onDeleteAction, onDuplicateAction }
         onDuplicateAction(_item)
     }
     function handleExpand(isExpd) {
+        if(!isExpandParent) return
         setExpand(isExpd)
     }
     return (
@@ -85,7 +86,7 @@ export function Action({ item, updateAction, onDeleteAction, onDuplicateAction }
                 !isEditView ?
                     <GoalActionView
                         typeid={3} lessC={expectCost - trueCost}
-                        isExpand={isExpand} handleExpand={handleExpand}
+                        isExpand={isExpand && isExpandParent} handleExpand={handleExpand}
                         name={name} des={des} isDone={isDone} start={start} end={end}
                         setEditView={setEditView} onToggleDone={onToggleDone}
                         handleDelete={handleDelete} handlerDuplicate={handlerDuplicate}>
