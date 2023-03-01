@@ -213,13 +213,19 @@ $wCalendar: 192px;
         margin-top: 0;
         padding-top: 0;
     }
+
+    @-moz-document url-prefix() {
+        .dnb_item_date {
+            font-size: $fSizeCollp - 1px;
+        }
+    }
 }
 
 .dnb_item_view.dnb_sub_collapse {
     flex-direction: column;
 
     .dnb_item_container.d_item_collapse {
-        width: calc(100vw - $width - 96px - 6px);
+        width: calc(100vw - $width - 96px);
         display: inline-grid;
         grid-template-columns: auto 4 * $wCost $wCalendar;
 
@@ -231,6 +237,7 @@ $wCalendar: 192px;
             display: inline-grid;
             grid-template-columns: $wCost $wCost $wCost $wCost;
             font-size: $fSizeCollp;
+            margin-left: 0;
         }
 
         .dnb_item_date {
@@ -238,6 +245,12 @@ $wCalendar: 192px;
             padding-top: 0;
             margin-top: 0;
             font-size: $fSizeCollp;
+        }
+
+        @-moz-document url-prefix() {
+            .dnb_item_date {
+                font-size: $fSizeCollp - 1px;
+            }
         }
 
         &+.dnb_item_list_action {
@@ -261,7 +274,8 @@ $wCalendar: 192px;
 
 .dnb_item_view.dnb_main_collapse {
     display: block;
-    width: calc(100vw - 96px);
+    width: calc(100vw - 90px);
+    padding-bottom: 5 * $m3px;
 
     .dnb_item_title {
         padding-right: 4 * $m3px;
@@ -285,6 +299,12 @@ $wCalendar: 192px;
         display: inline-flex;
         font-size: $fSizeCollp;
         margin-top: 0;
+    }
+
+    @-moz-document url-prefix() {
+        .dnb_item_date {
+            font-size: $fSizeCollp - 1px;
+        }
     }
 
     .dnb_item_container.d_item_collapse {
@@ -329,7 +349,7 @@ $wCalendar: 192px;
 
             .dnb_item_view.dnb_sub_collapse {
                 .dnb_item_container.d_item_collapse {
-                    width: calc(100vw - 96px);
+                    width: calc(100vw - 90px);
                 }
             }
         }
@@ -342,4 +362,109 @@ $wCalendar: 192px;
 
 .bi-layout-sidebar::before {
     transform: rotate(-90deg);
+}
+
+@media screen and (max-width: 1449px) {
+    .dnb_item_container.d_item_collapse {
+        display: block !important;
+
+        .dnb_item_cost {
+            display: inline-grid;
+            grid-template-columns: $wCost $wCost;
+        }
+
+        .dnb_item_date {
+            display: inline-block;
+        }
+    }
+
+    .dnb_item_title {
+        display: block !important;
+    }
+
+    .dnb_item_view.dnb_main_collapse .dnb_item_cost {
+        grid-template-columns: 120px 120px 120px 120px;
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 1180px) {
+    .dnb_item_view.dnb_main_collapse {
+        width: calc(100vw - 6px);
+    }
+
+    .dnb_item_list_sub {
+        width: calc(100vw - $width - 5px);
+    }
+
+    .dnb_item_view.dnb_sub_collapse .dnb_item_container.d_item_collapse {
+        width: calc(100vw - $width - 12px);
+    }
+
+    .dnb_item_list_action {
+        width: calc(100vw - 2 * $width - 12px);
+
+        .dnb_item_container.d_item_collapse {
+            width: calc(100vw - 2 * $width - 12px);
+        }
+    }
+
+}
+
+@media screen and (max-width: 918px) {
+    .dnb_item_view.dnb_main_collapse {
+        width: 100vw !important;
+    }
+
+    .dnb_item_container.d_item_collapse {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .dnb_item_list_action {
+        width: 100% !important;
+    }
+}
+
+@media screen and (max-width: 675px) {
+    .dnb_main_container {
+        flex-direction: column;
+    }
+
+    .dnb_item_list_sub,
+    .dnb_item_container.d_item_collapse {
+        width: 100% !important;
+    }
+}
+
+@media screen and (max-width: 642px) {
+    .dnb_item_view {
+        flex-direction: column;
+
+        .dnb_item_view {
+            margin-left: 6px;
+
+            &.dnb_sub_collapse {
+                margin-left: 0;width: 100vw;
+            }
+
+            .dnb_item_list_action .dnb_item_container {
+                margin-left: 12px;
+
+                &.d_item_collapse {
+                    margin-left: 0;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 540px) {
+    .dnb_main_container > .dnb_item_container {margin-left: 0;}
+    .dnb_item_container {
+        width: 100%;
+        margin-right: 0;
+    }
+    .dnb_item_list_sub > .dnb_item_view > .dnb_item_container{width: calc(100% - 3px);}
 }
