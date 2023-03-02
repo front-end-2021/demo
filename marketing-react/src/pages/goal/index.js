@@ -1,7 +1,7 @@
 import { Component } from "react"
 import {
     getDataGoalAction, getDataGoalActionWith,
-    insertSub, deleteSubApi,
+    insertSub, deleteSubApi, duplicateSub,
     insertMain, deleteMainApi
 } from "../../service"
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
@@ -191,7 +191,7 @@ class Maingoal extends Component {
         })
     }
     onDuplicateSubgoal = (sub) => {
-        insertSub(sub).then(newId => {
+        duplicateSub(sub).then(newId => {
             if (!newId.includes('invalid')) {
                 sub.Id = newId
                 const lstSub = this.state.ListSub
@@ -217,17 +217,16 @@ class Maingoal extends Component {
                     onDeleteGoal={this.onDeleteGoal} />
                 <div className='dnb_item_list_sub'>
                     {
-                        !IsExpand || !NewSub ? <></> :
-                            <div className='dnb_item_view'>
-                                <FormEditGoal ParentId={item.Id}
-                                    Name={`Subgoal ${Date.now()}`}
-                                    Start={getDateAfterDaysString(0)}
-                                    End={getDateAfterDaysString(1)}
-                                    Budget={0}
-                                    onCloseEditForm={this.onCancelAddNewSub}
-                                    onSaveGoal={this.onInsertNewSub}
-                                />
-                            </div>
+                        !IsExpand || !NewSub ? <></> : <div className='dnb_item_view'>
+                            <FormEditGoal ParentId={item.Id}
+                                Name={`Subgoal ${Date.now()}`}
+                                Start={getDateAfterDaysString(0)}
+                                End={getDateAfterDaysString(1)}
+                                Budget={0}
+                                onCloseEditForm={this.onCancelAddNewSub}
+                                onSaveGoal={this.onInsertNewSub}
+                            />
+                        </div>
                     }
                     {
                         ListSub.map(sub => {

@@ -131,6 +131,18 @@ function deleteMain(app, corOptions) {
         }
     )
 }
+//http://localhost:8001/api/copysub
+function duplicateSub(app, corOptions) {
+    app.post('/api/copysub', cors(corOptions),
+        (req, res, next) => {
+            const sub = req.body.params;
+            dbGoal.duplicateSub(sub).then(n => {
+                res.json(n)
+                next()
+            })
+        }
+    )
+}
 
 module.exports = {
     getAllMains: getAllMains,
@@ -143,4 +155,5 @@ module.exports = {
     insertSub: insertSub,
     deleteSub: deleteSub,
     deleteMain: deleteMain,
+    duplicateSub: duplicateSub,
 }

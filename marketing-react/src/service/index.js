@@ -86,3 +86,12 @@ export function deleteMainApi(id) {
             return res
         })
 }
+export function duplicateSub(sub) {
+    return new Promise((resolve, reject) => {
+        axios.post(`${host}copysub`, Object.assign({
+            params: sub
+        }, config)).then(res => {
+            resolve(res.data)
+        })
+    })
+}

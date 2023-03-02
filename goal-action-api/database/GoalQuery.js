@@ -4,11 +4,11 @@ const { validate: uuidValidate } = require('uuid')
 const dbLite = require('./dbSqlite')
 const vCommon = require('./common')
 
-const cols = `Id TEXT NOT NULL UNIQUE, Name TEXT NOT NULL UNIQUE, 
+const cols = `Id TEXT NOT NULL UNIQUE, Name TEXT NOT NULL, 
 Description TEXT, Budget REAL DEFAULT 0, Start TEXT, End TEXT, IsDone INTEGER DEFAULT 0`
 dbLite.readyTable(vCommon.dbName, vCommon.tableMain, cols)
 
-const colsSub = `Id TEXT NOT NULL UNIQUE, ParentId TEXT NOT NULL, Name TEXT NOT NULL UNIQUE, 
+const colsSub = `Id TEXT NOT NULL UNIQUE, ParentId TEXT NOT NULL, Name TEXT NOT NULL, 
 Description TEXT, Budget REAL DEFAULT 0, Start TEXT, End TEXT, IsDone INTEGER DEFAULT 0`
 dbLite.readyTable(vCommon.dbName, vCommon.tableSub, colsSub)
 
@@ -102,8 +102,7 @@ function insertNewMain(main) {
             columns += `, Budget`
             values += `, ${main.Budget}`
         }
-        const qVerify = `SELECT * FROM ${vCommon.tableMain} WHERE Name = '${main.Name}'`
-        dbLite.insertIntoTable(vCommon.dbName, vCommon.tableMain, columns, values, qVerify)
+        dbLite.insertIntoTable(vCommon.dbName, vCommon.tableMain, columns, values)
         res(newId)
     })
 
@@ -115,26 +114,8 @@ function insertNewSub(sub) {
     }
     return new Promise(res => {
         const newId = uuidv4()
-        let columns = `Id, ParentId, Name`
-        let values = `'${newId}', '${sub.ParentId}', '${sub.Name}'`
-        if (sub.Start) {
-            columns += `, Start`
-            values += `, '${sub.Start}'`
-        }
-        if (sub.End) {
-            columns += `, End`
-            values += `, '${sub.End}'`
-        }
-        if (sub.Description) {
-            columns += `, Description`
-            values += `, '${sub.Description}'`
-        }
-        if (sub.Budget) {
-            columns += `, Budget`
-            values += `, ${sub.Budget}`
-        }
-        const qVerify = `SELECT * FROM ${vCommon.tableSub} WHERE Name = '${sub.Name}'`
-        dbLite.insertIntoTable(vCommon.dbName, vCommon.tableSub, columns, values, qVerify)
+        const subO = vCommon.getColSub(sub, newId)
+        dbLite.insertIntoTable(vCommon.dbName, vCommon.tableSub, subO.Columns, subO.Values)
         res(newId)
     })
 }
@@ -148,6 +129,14 @@ function deleteMain(id) {
         return `Delete Subgoal success`
     })
 }
+function duplicateSub(sub) {
+    if (!uuidValidate(sub.Id) || sub.Id == NIL_UUID) {
+        return Promise.resolve('invalid ParentId')
+    }
+    return dbLite.duplicateSub(vCommon.dbName, sub).then((newSubId) => {
+        return newSubId;
+    })
+}
 module.exports = {
     getMainSubGoals: getMainSubGoals,
     insertNewMain: insertNewMain,
@@ -157,4 +146,5 @@ module.exports = {
     getSubsByMainId: getSubsByMainId,
     deleteSub: deleteSub,
     deleteMain: deleteMain,
+    duplicateSub: duplicateSub
 }

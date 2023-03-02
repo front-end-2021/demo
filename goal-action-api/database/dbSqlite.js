@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose()
 const vCommon = require('./common')
+const { v4: uuidv4 } = require('uuid');
 
 function readyDatabase(dbName) {
     if (typeof dbName != 'string') return null;
@@ -14,15 +15,10 @@ function readyTable(dbName, tableName, columns) {
     });
     db.close();
 }
-function insertIntoTable(dbName, tableName, columns, values, query) {
+function insertIntoTable(dbName, tableName, columns, values) {
     const db = readyDatabase(dbName)
     db.serialize(() => {
-        let r;
-        db.get(query, function (err, row) {
-            r = row
-        })
-        if (!r)
-            db.run(`INSERT INTO ${tableName} (${columns}) VALUES (${values})`)
+        db.run(`INSERT INTO ${tableName} (${columns}) VALUES (${values})`)
     });
     db.close();
 }
@@ -95,6 +91,35 @@ function selectFromTable(dbName, query) {
         db.close();
     })
 }
+function duplicateSub(dbName, subg) {
+    const db = readyDatabase(dbName)
+    const sid = subg.Id
+    const newId = uuidv4()
+    const qrySlAction = `SELECT * FROM ${vCommon.tableAction} WHERE ParentId='${sid}'`
+    return new Promise((reslove, reject) => {
+        db.serialize(() => {
+            const subO = vCommon.getColSub(subg, newId)
+            db.run(`INSERT INTO ${vCommon.tableSub} (${subO.Columns}) VALUES (${subO.Values})`)
+
+            db.all(qrySlAction, function (err, rows) {
+                if (rows && rows.length) {
+                    const qr1 = `INSERT INTO ${vCommon.tableAction}(Id, ParentId, Name, Description, Start, End, IsDone, ExpectCost, TrueCost)`
+                    const qr2 = `${qr1} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                    rows.forEach(a => {
+                        a.Id = uuidv4()
+                        a.ParentId = newId
+                        a.Name = `${a.Name} (1)`
+                        db.run(qr2, [a.Id, a.ParentId, a.Name, a.Description, a.Start, a.End, a.IsDone, a.ExpectCost, a.TrueCost]);
+                    })
+                    reslove(newId)
+                }
+                if (err) reject(err)
+                db.close();
+            });
+        });
+        
+    })
+}
 function getFromTable(dbName, query) {
     const db = readyDatabase(dbName)
     return new Promise((resolve, reject) => {
@@ -128,4 +153,5 @@ module.exports = {
     deleteItemFrom: deleteItemFrom,
     deleteSubFrom: deleteSubFrom,
     deleteMainFrom: deleteMainFrom,
+    duplicateSub: duplicateSub
 }

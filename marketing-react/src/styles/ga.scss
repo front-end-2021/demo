@@ -58,13 +58,17 @@ $bgcolor: white;
 
     .dnb_item_title {
         cursor: pointer;
+        margin-bottom: $m3px;
     }
 
     $hDes: 288px;
 
     .dnb_item_description {
         font-size: 12px;
+        padding-top: $m3px;
+        margin-bottom: $m3px;
         overflow: hidden;
+        min-height: 10 * $m3px;
         max-height: $hDes;
         display: -webkit-box;
         -webkit-line-clamp: 18;

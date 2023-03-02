@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { updateGoalWithId } from "../../service"
-import { FormEditItem, GoalActionView } from "../action/GoalActionViewForm"
+import { FormEditItem, GoalActionView } from "../action/CommonView"
 import { getDateString } from "../../global"
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import '../../styles/ga.scss'

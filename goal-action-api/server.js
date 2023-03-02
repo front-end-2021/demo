@@ -17,6 +17,7 @@ apiGoal.getSubsByMainId(app, AppExpress.getCorsOptions())
 apiGoal.getSubById(app, AppExpress.getCorsOptions())
 apiGoal.insertSub(app, AppExpress.getCorsOptions())
 apiGoal.deleteSub(app, AppExpress.getCorsOptions())
+apiGoal.duplicateSub(app, AppExpress.getCorsOptions())
 
 
 const apiAction = require('./service/Action')

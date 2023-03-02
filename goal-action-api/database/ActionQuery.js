@@ -5,7 +5,7 @@ const dbLite = require('./dbSqlite')
 const vCommon = require('./common')
 
 const cols = `Id TEXT NOT NULL UNIQUE, ParentId TEXT NOT NULL, 
-Name TEXT NOT NULL UNIQUE, Description TEXT, 
+Name TEXT NOT NULL, Description TEXT, 
 Start TEXT, End TEXT, IsDone INTEGER DEFAULT 0,
 ExpectCost REAL DEFAULT 0, TrueCost REAL DEFAULT 0`
 dbLite.readyTable(vCommon.dbName, vCommon.tableAction, cols)
@@ -73,8 +73,8 @@ function insertNewAction(action) {
             columns += `, TrueCost`
             values += `, ${action.TrueCost}`
         }
-        const qVerify = `SELECT * FROM ${vCommon.tableAction} WHERE Name = '${action.Name}'`
-        dbLite.insertIntoTable(vCommon.dbName, vCommon.tableAction, columns, values, qVerify)
+        
+        dbLite.insertIntoTable(vCommon.dbName, vCommon.tableAction, columns, values)
         res(newId)
     })
 }

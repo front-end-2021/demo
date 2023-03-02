@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { getDateString } from "../../global"
-import { FormEditItem, GoalActionView } from "./GoalActionViewForm"
+import { FormEditItem, GoalActionView } from "./CommonView"
 import { updateActionWithId } from "../../service"
 import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
 import '../../styles/ga.scss'
@@ -18,9 +18,9 @@ export function Action({ item, updateAction, onDeleteAction, onDuplicateAction, 
 
     function onToggleDone(e) {
         const is_done = !isDone
-        const entry = { IsDone: is_done }
+        const entry = { IsDone: !!is_done }
         updateNewAction(entry)
-        setDone(is_done)
+        setDone(!!is_done)
         updateActionWithId(item.Id, entry)      // api put
     }
     function updateNewAction(p) {

@@ -136,7 +136,6 @@ export class Subgoal extends Component {
     handlerDuplicate = () => {
         const { item, onDuplicateSubgoal } = this.props
         const _item = JSON.parse(JSON.stringify(item))  // copy
-        delete _item.Id
         _item.Name = `${_item.Name} (1)`
         onDuplicateSubgoal(_item)
     }

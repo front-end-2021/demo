@@ -10,10 +10,7 @@ function App() {
         <Home />
       </section>
       <section className="App-header">
-        <img width={90} height={90} src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
+        <img width={60} height={60} src={logo} className="App-logo" alt="logo" />
       </section>
     </div>
   );
