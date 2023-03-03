@@ -70,4 +70,9 @@
 # Dockerlization
 1. Existed: Dockerfile
 2. Build image: ```docker build -t goal-action-api .```
-3. Build container: ```docker run -dp 8001:8001 goal-action-api```
+3. Run container: ```docker run -dp 8001:8001 goal-action-api```
+
+# Persist Data
+1. Create volume: ```docker volume create marketing-db```
+2. Run container: ```docker run -dp 8001:8001 goal-action-api --mount type=volume,src=marketing-db,target=/database```
+3. meta info: ```docker volume inspect marketing-db```
