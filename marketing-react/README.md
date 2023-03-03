@@ -68,3 +68,11 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+# Dockerlization
+1. Existed: Dockerfile
+2. Build image: ```docker build -t marketing-react .```
+3. Build container: ```docker run -dp 3000:3000 marketing-react```
+
+<i>Ref: https://jsramblings.com/dockerizing-a-react-app/</i>

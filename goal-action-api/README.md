@@ -53,3 +53,21 @@
     }    </code>
 12. Get Actions by SubId: [get .../api/actions?subid=](http://localhost:8001/api/actions?subid=uuid)
 13. Get Subs by MainId: [get .../api/subs?mainid=](http://localhost:8001/api/subs?mainid=uuid)
+14. Duplicate Sub: [post .../api/copysub](http://localhost:8001/api/copysub)
+    - body: <code>{<br/>
+        &nbsp; "Name" : "Name Goal", <br/>
+        &nbsp; "ParentId" : "(uuid Maingoal)", <br/>
+        &nbsp; ["Description: "Des ...",] <br/>
+        &nbsp; ["Budget" : 100,] <br/>
+        &nbsp; ["Start: "20-Feb-2023",] <br/>
+        &nbsp; ["End: "20-Feb-2023"] <br/>
+    }</code>
+15. Duplicate Action = Insert Action
+16. Delete Main: [delete .../api/main/:id](http://localhost:8001/api/main/uuid)
+17. Delete Sub: [delete .../api/sub/:id](http://localhost:8001/api/sub/uuid)
+17. Delete Action: [delete .../api/action/:id](http://localhost:8001/api/action/uuid)
+
+# Dockerlization
+1. Existed: Dockerfile
+2. Build image: ```docker build -t goal-action-api .```
+3. Build container: ```docker run -dp 8001:8001 goal-action-api```

@@ -19,26 +19,26 @@
       **API**
       <ol>
         <li>
-          Get all Maingoal: <i>http://localhost:8001/api/mains</i>
+          Get all Maingoal: <a href="http://localhost:8001/api/mains">get .../api/mains</a>
         </li>
         <li>
-          Get all Subgoal: <i>http://localhost:8001/api/subs</i>
+          Get all Subgoal: <a href="http://localhost:8001/api/allsub">get .../api/allsub</a>
         </li>
         <li>
-          Get all Action: <i>http://localhost:8001/api/actions</i>
+          Get all Action: <a href="http://localhost:8001/api/allaction">get .../api/allaction</a>
         </li>
         <li>
-          Get Main: <i>http://localhost:8001/api/main?id=uuid</i>
+          Get Main by Id: <a href="http://localhost:8001/api/main?id=">get .../api/main?id=</a>
         </li>
         <li>
-          Get Sub: <i>http://localhost:8001/api/sub?id=uuid</i>
+          Get Sub: <a href="http://localhost:8001/api/sub?id=">get .../api/sub?id=</a>
         </li>
         <li>
-          Get Action: <i>http://localhost:8001/api/action?id=uuid</i>
+          Get Action: <a href="http://localhost:8001/api/action?id=">get .../api/action?id=</a>
         </li>
         <li>
-          <div>Add new Maingoal: <i>http://localhost:8001/api/main</i></div>
-          <pre>- body: {
+          <div>Add new Maingoal: <a href="http://localhost:8001/api/main">post .../api/main</a>
+            <pre>- body: {
               "Name" : "Name Goal",
               ["Description: "Des ...",]
               ["Budget" : 100,]
@@ -47,8 +47,8 @@
           }</pre>
         </li>
         <li>
-          <div>Add new Subgoal: <i>http://localhost:8001/api/main</i></div>
-          <pre>- body: {
+          <div>Add new Subgoal: <a href="http://localhost:8001/api/sub">post .../api/sub</a>
+            <pre>- body: {
             "Name" : "Name Goal",
             "ParentId" : "(uuid Maingoal)",
             ["Description: "Des ...",]
@@ -58,8 +58,8 @@
             }</pre>
         </li>
         <li>
-          <div>Add new Action: <i>http://localhost:8001/api/action</i></div>
-          <pre>- body: {
+          <div>Add new Action: <a href="http://localhost:8001/api/action">post .../api/action</a>
+            <pre>- body: {
             "Name" : "Name Action",
             "ParentId" : "(uuid Subgoal)",
             ["Description: "Des ...",]
@@ -70,8 +70,8 @@
             }</pre>
         </li>
         <li>
-          <div>Update Goal: <i>http://localhost:8001/api/goal/(uuid goal)</i></div>
-          <pre>- body: {
+          <div>Update Goal: <a href="http://localhost:8001/api/goal/:id">put .../api/goal/:id</a>
+            <pre>- body: {
             "Name" : "Name Goal update",
             ["Description: "Des update ..",]
             ["Budget" : 100,]
@@ -80,8 +80,8 @@
             }</pre>
         </li>
         <li>
-          <div>Add new Action: <i>http://localhost:8001/api/action/(uuid action)</i></div>
-          <pre>- body: {
+          <div>Update Action: <a href="http://localhost:8001/api/action/:id">put .../api/action/:id</a>
+            <pre>- body: {
             "Name" : "Name Action update",
             "ParentId" : "(uuid Subgoal)",
             ["Description: "Des update ...",]
@@ -90,6 +90,32 @@
             ["Start: "20-Feb-2023",]
             ["End: "20-Feb-2023"]
             }</pre>
+        </li>
+        <li>
+          Get Actions by SubId: <a href="http://localhost:8001/api/actions?subid=">get .../api/actions?subid=</a>
+        </li>
+        <li>
+          Get Subs by MainId: <a href="http://localhost:8001/api/subs?mainid=">get .../api/subs?mainid=</a>
+        </li>
+        <li>
+          <div>Duplicate Subgoal: <a href="http://localhost:8001/api/copysub">post .../api/copysub</a>
+            <pre>- body: {
+            "Name" : "Name Goal",
+            "ParentId" : "(uuid Maingoal)",
+            ["Description: "Des ...",]
+            ["Budget" : 100,]
+            ["Start: "20-Feb-2023",]
+            ["End: "20-Feb-2023"]
+            }</pre>
+        </li>
+        <li>
+          Delete Main: <a href="http://localhost:8001/api/main/id=">delete .../api/main/id=</a>
+        </li>
+        <li>
+          Delete Sub: <a href="http://localhost:8001/api/sub/id=">delete .../api/sub/id=</a>
+        </li>
+        <li>
+          Delete Action: <a href="http://localhost:8001/api/action/id=">delete .../api/action/id=</a>
         </li>
       </ol>
 
