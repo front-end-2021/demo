@@ -1,12 +1,11 @@
-import { Component } from "react"
+import React, { Component } from "react"
 import {
     getDataGoalAction, getDataGoalActionWith,
     insertSub, deleteSubApi, duplicateSub,
     insertMain, deleteMainApi
 } from "../../service"
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
-import { FormEditGoal } from "./GoalItem"
-import { GoalItem } from "./GoalItem"
+import { FormEditGoal, GoalItem } from "./GoalItem"
 import { Subgoal } from "./Subgoal"
 import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
 import '../../styles/ga.scss'
@@ -91,6 +90,7 @@ export class ListMainProvider extends Component {
         )
     }
 }
+
 class Maingoal extends Component {
     constructor(props) {
         super(props)
