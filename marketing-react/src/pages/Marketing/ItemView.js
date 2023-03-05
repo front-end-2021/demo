@@ -2,7 +2,7 @@ import { useState, useContext } from "react"
 import { getDateCalendarValue, getDateString, getIcon, isDateLessNow } from "../../global"
 import { ItemContext } from "./Maingoal"
 
-export function GoalActionView({ children,
+export function ItemViewExpand({ children,
     handleExpand, addNewChild,
     handleDelete, handlerDuplicate,
     setEditView, onToggleDone }) {
@@ -111,13 +111,13 @@ export function GoalActionView({ children,
                     </div>
                 }
                 {getMenuTag()}
-            </div> : <GoalActionCollapse handleExpand={onExpand}>
+            </div> : <ItemViewCollapse handleExpand={onExpand}>
                 {children}
-            </GoalActionCollapse>
+            </ItemViewCollapse>
         }</>
     )
 }
-export function FormEditItem({ children, onSaveData, onCloseEditForm }) {
+export function ItemViewEdit({ children, isExpectLessTrue, onSaveData, onCloseEditForm }) {
     const item = useContext(ItemContext)
     const [name, setName] = useState(item.Name)
     const [des, setDes] = useState(item.Description)
@@ -162,7 +162,7 @@ export function FormEditItem({ children, onSaveData, onCloseEditForm }) {
         return `${Math.ceil(l * 30 / 51)}px`
     }
     function getClsExpLess() {
-        return item.ExpectCost < item.TrueCost ? ` d_exp_less_true` : ''
+        return isExpectLessTrue ? ` d_exp_less_true` : ''
     }
     return (
         <div className={`dnb_item_container dnb_item_edit`}>
@@ -210,7 +210,7 @@ function getClassOverDate(start_end) {
     }
     return ''
 }
-function GoalActionCollapse({ children, handleExpand }) {
+function ItemViewCollapse({ children, handleExpand }) {
     const item = useContext(ItemContext)
     function getStartTag() {
         if (!item.Start) return <></>
@@ -236,7 +236,7 @@ function GoalActionCollapse({ children, handleExpand }) {
         </>
     }
     function getNameTag() {
-        if (item.Budget < item.ExpectCost) {
+        if (item.ExpectCost < item.TrueCost) {
             return <div title="Expected Cost is less then True Cost"
                 className={`dnb_item_title d_exp_less_true`}
                 onClick={() => handleExpand()}>{getIcon(item.TypeId)} {item.Name}</div>

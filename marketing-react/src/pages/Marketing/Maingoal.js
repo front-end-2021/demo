@@ -4,7 +4,7 @@ import {
     insertSub, deleteSubApi, duplicateSub
 } from "../../service"
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
-import { GoalItem, FormEditGoal } from "./GoalView"
+import { GoalItemView, GoalItemEdit } from "./GoalView"
 import { Subgoal } from "./Subgoal"
 
 export const ItemContext = React.createContext()//Name, Description, IsDone, Start, End, IsExpand, TypeId [, ExpectCost, TrueCost, Budget, OpenCost] 
@@ -128,46 +128,42 @@ export class Maingoal extends Component {
             IsExpand: IsExpand,
             TypeId: 1, ExpectCost: ExpectCost, TrueCost: TrueCost
         }, item)
-        const newSubCxt = {
-            Name: `Subgoal ${Date.now()}`, Start: getDateAfterDaysString(0),
-            End: getDateAfterDaysString(1), Budget: 0, ParentId: item.Id
-        }
         return (
-            <>
-                <div className={`dnb_item_view dnb_main_container${!IsExpand ? ` dnb_main_collapse` : ''}`}>
-                    <ItemContext.Provider value={mainCxt}>
-                        <GoalItem
-                            handleExpand={this.handleExpand}
-                            updateGoalUI={this.updateGoalUI}
-                            insertNewChild={this.handleAddNewSub}
-                            onDeleteGoal={this.onDeleteGoal} />
-                    </ItemContext.Provider>
-                    <div className='dnb_item_list_sub'>
-                        {
-                            !IsExpand || !NewSub ? <></> : <div className='dnb_item_view'>
-                                <ItemContext.Provider value={newSubCxt}>
-                                    <FormEditGoal
-                                        onCloseEditForm={this.onCancelAddNewSub}
-                                        onSaveGoal={this.onInsertNewSub}
-                                    />
-                                </ItemContext.Provider>
-                            </div>
-                        }
-                        {
-                            ListSub.map(sub => {
-                                return <Subgoal key={sub.Id}
-                                    item={sub} isExpandParent={IsExpand}
-                                    updateDataSubs={this.updateDataSubs}
-                                    pushExpectCost={this.pushExpectCost}
-                                    onDeleteSub={this.onDeleteSub}
-                                    onDuplicateSubgoal={this.onDuplicateSubgoal}
-                                    pushTrueCost={this.pushTrueCost} />
-                            })
-                        }
-                    </div>
+            <div className={`dnb_item_view dnb_main_container${!IsExpand ? ` dnb_main_collapse` : ''}`}>
+                <ItemContext.Provider value={mainCxt}>
+                    <GoalItemView
+                        handleExpand={this.handleExpand}
+                        updateGoalUI={this.updateGoalUI}
+                        insertNewChild={this.handleAddNewSub}
+                        onDeleteGoal={this.onDeleteGoal} />
+                </ItemContext.Provider>
+                <div className='dnb_item_list_sub'>
+                    {
+                        !IsExpand || !NewSub ? <></> : <div className='dnb_item_view'>
+                            <ItemContext.Provider value={{
+                                Name: `Subgoal ${Date.now()}`, Start: getDateAfterDaysString(0),
+                                End: getDateAfterDaysString(1), Budget: 0, ParentId: item.Id
+                            }}>
+                                <GoalItemEdit
+                                    onCloseEditForm={this.onCancelAddNewSub}
+                                    onSaveGoal={this.onInsertNewSub}
+                                />
+                            </ItemContext.Provider>
+                        </div>
+                    }
+                    {
+                        ListSub.map(sub => {
+                            return <Subgoal key={sub.Id}
+                                item={sub} isExpandParent={IsExpand}
+                                updateDataSubs={this.updateDataSubs}
+                                pushExpectCost={this.pushExpectCost}
+                                onDeleteSub={this.onDeleteSub}
+                                onDuplicateSubgoal={this.onDuplicateSubgoal}
+                                pushTrueCost={this.pushTrueCost} />
+                        })
+                    }
                 </div>
-            </>
-
+            </div>
         )
     }
 }

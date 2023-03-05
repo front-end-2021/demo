@@ -28,8 +28,7 @@ export function updateActionWithId(id, item) {
     return new Promise((resolve, reject) => {
         axios.put(url, Object.assign({
             params: item
-        }, config))
-            .then(res => { console.log(res) })
+        }, config)).then(res => { return res })
     })
 }
 export function updateGoalWithId(id, item) {
@@ -37,8 +36,7 @@ export function updateGoalWithId(id, item) {
     return new Promise((resolve, reject) => {
         axios.put(url, Object.assign({
             params: item
-        }, config))
-            .then(res => { console.log(res) })
+        }, config)).then(res => { return res })
     })
 }
 export function insertMain(goal) {

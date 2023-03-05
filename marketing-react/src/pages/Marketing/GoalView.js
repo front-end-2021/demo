@@ -1,10 +1,10 @@
 import { useState, useContext } from "react"
 import { updateGoalWithId } from "../../service"
-import { GoalActionView, FormEditItem } from "./ItemView"
+import { ItemViewExpand, ItemViewEdit } from "./ItemView"
 import { getDateString } from "../../global"
 import { ItemContext } from "./Maingoal"
 
-export function GoalItem({ handleExpand, updateGoalUI,
+export function GoalItemView({ handleExpand, updateGoalUI,
     insertNewChild, onDeleteGoal, handlerDuplicate }) {
     const item = useContext(ItemContext)
     const [isEditView, setEditView] = useState(false)
@@ -62,7 +62,7 @@ export function GoalItem({ handleExpand, updateGoalUI,
     }
     return (
         <>{
-            !isEditView ? <GoalActionView handleExpand={handleExpand}
+            !isEditView ? <ItemViewExpand handleExpand={handleExpand}
                 addNewChild={addNewChild}
                 handleDelete={onDeleteGoal} handlerDuplicate={handlerDuplicate}
                 setEditView={setEditView} onToggleDone={onToggleDone} >
@@ -82,13 +82,13 @@ export function GoalItem({ handleExpand, updateGoalUI,
                     className={`dnb_icost dnb-true-cost`}>C:
                     <span className={`dnb_icost_value`}>${item.TrueCost}</span>
                 </span>
-            </GoalActionView> : <FormEditGoal 
+            </ItemViewExpand> : <GoalItemEdit 
                 onCloseEditForm={onCloseEditForm} onSaveGoal={onSaveGoal}
             />
         }</>
     )
 }
-export function FormEditGoal({
+export function GoalItemEdit({
     onCloseEditForm, onSaveGoal }) {
     const { ParentId,
         Name, Description, Start, End,
@@ -124,7 +124,7 @@ export function FormEditGoal({
         onCloseEditForm(ParentId)
     }
     return (
-        <FormEditItem
+        <ItemViewEdit
             Name={Name} Description={Description} Start={Start} End={End}
             typeid={!ParentId ? 1 : 2} lessC={ExpectCost - TrueCost}
             onSaveData={onSaveData}
@@ -137,7 +137,7 @@ export function FormEditGoal({
             </span>
             {getExpectCostTags()}
             {getTrueCostTag()}
-        </FormEditItem>
+        </ItemViewEdit>
     )
 }
 function getClsCostNegative(budget, ExpCost) {

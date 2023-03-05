@@ -3,8 +3,8 @@ import {
     getDataGoalActionWith, insertAction, deleteAction
 } from "../../service"
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
-import { GoalItem } from "./GoalView"
-import { Action, FormEditAction } from "./Action"
+import { GoalItemView } from "./GoalView"
+import { Action, ActionViewEdit } from "./Action"
 import { ItemContext } from "./Maingoal"
 
 export class Subgoal extends Component {
@@ -46,7 +46,8 @@ export class Subgoal extends Component {
     }
     updateAction = (newAction) => {
         const lstAction = this.state.ListAction
-        this.setStateRelative(lstAction)
+        this.setState({ ExpectCost: getExpC(lstAction.map(s => s.ExpectCost)) })
+        this.setState({ TrueCost: getTrueC(lstAction.map(s => s.TrueCost)) })
     }
     onCancelAddNewAction = (sId) => {
         this.setState({ NewAction: null })
@@ -117,7 +118,7 @@ export class Subgoal extends Component {
                     Name: `Action ${Date.now()}`, Start: getDateAfterDaysString(0), 
                     End: getDateAfterDaysString(1), ExpectCost: 0, TrueCost: 0
                 }}>
-                    <FormEditAction 
+                    <ActionViewEdit 
                         onCloseEditForm={this.onCancelAddNewAction}
                         onSaveAction={this.onInsertNewAction}
                     />
@@ -141,7 +142,7 @@ export class Subgoal extends Component {
             <>
                 <div className={`dnb_item_view${!IsExpand ? ' dnb_sub_collapse' : ''}`}>
                     <ItemContext.Provider value={valContext}>
-                        <GoalItem
+                        <GoalItemView
                             handleExpand={this.handleExpand}
                             updateGoalUI={this.updateGoalUI}
                             insertNewChild={this.addNewAction}

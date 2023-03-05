@@ -1,6 +1,6 @@
 import { useState, useContext } from "react"
 import { getDateString } from "../../global"
-import { GoalActionView, FormEditItem } from "./ItemView"
+import { ItemViewExpand, ItemViewEdit } from "./ItemView"
 import { updateActionWithId } from "../../service"
 import { ItemContext } from "./Maingoal"
 
@@ -79,7 +79,7 @@ export function Action({ item, isExpandParent,
         }, item)}>
             {
                 !isEditView ?
-                    <GoalActionView handleExpand={handleExpand}
+                    <ItemViewExpand handleExpand={handleExpand}
                         setEditView={setEditView} onToggleDone={onToggleDone}
                         handleDelete={handleDelete} handlerDuplicate={handlerDuplicate}>
                         <span title="Expected Cost"
@@ -90,9 +90,9 @@ export function Action({ item, isExpandParent,
                             className='dnb_icost dnb-true-cost'>C:
                             <span className='dnb_icost_value'>${item.TrueCost}</span>
                         </span>
-                    </GoalActionView>
+                    </ItemViewExpand>
                     :
-                    <FormEditAction
+                    <ActionViewEdit
                         onSaveAction={onSaveAction}
                         onCloseEditForm={onCloseEditForm} />
             }
@@ -100,7 +100,7 @@ export function Action({ item, isExpandParent,
     )
 }
 
-export function FormEditAction({ onCloseEditForm, onSaveAction }) {
+export function ActionViewEdit({ onCloseEditForm, onSaveAction }) {
     const item = useContext(ItemContext)
     const [expectCost, setExpectCost] = useState(item.ExpectCost)
     const [trueCost, setTrueCost] = useState(item.TrueCost)
@@ -118,7 +118,8 @@ export function FormEditAction({ onCloseEditForm, onSaveAction }) {
         onSaveAction(item)
     }
     return (
-        <FormEditItem
+        <ItemViewEdit
+            isExpectLessTrue={expectCost < trueCost}
             onSaveData={onSaveData}
             onCloseEditForm={onCloseEditForm} >
             <span className='dnb_icost dnb-expect-cost'>P:
@@ -135,6 +136,6 @@ export function FormEditAction({ onCloseEditForm, onSaveAction }) {
                         onChange={handleChangeTrueCost} />
                 </span>
             </span>
-        </FormEditItem>
+        </ItemViewEdit>
     )
 }

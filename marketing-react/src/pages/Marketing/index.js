@@ -4,7 +4,7 @@ import {
     insertMain, deleteMainApi
 } from "../../service"
 import { getDateAfterDaysString } from "../../global"
-import { FormEditGoal } from "./GoalView"
+import { GoalItemEdit } from "./GoalView"
 import { Maingoal, updateGoalUI } from "./Maingoal"
 import { ItemContext } from "./Maingoal"
 import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
@@ -60,10 +60,6 @@ export class ListMain extends Component {
     }
     render() {
         const { ListMain, NewMain } = this.state
-        const newMainCxt = {
-            Name: `Main goal ${Date.now()}`, Start: getDateAfterDaysString(0),
-            End: getDateAfterDaysString(1), Budget: 0
-        }
         return (
             <>
                 {
@@ -80,8 +76,11 @@ export class ListMain extends Component {
                             style={{ cursor: 'pointer' }} >&nbsp; New &#9673;</span>
                     </div> :
                         <div className='dnb_item_view'>
-                            <ItemContext.Provider value={newMainCxt}>
-                                <FormEditGoal
+                            <ItemContext.Provider value={{
+                                Name: `Main goal ${Date.now()}`, Start: getDateAfterDaysString(0),
+                                End: getDateAfterDaysString(1), Budget: 0
+                            }}>
+                                <GoalItemEdit
                                     onCloseEditForm={this.onCancelAddNewMain}
                                     onSaveGoal={this.onInsertNewMain}
                                 />
