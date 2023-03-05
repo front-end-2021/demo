@@ -102,22 +102,68 @@ function duplicateSub(dbName, subg) {
             db.run(`INSERT INTO ${vCommon.tableSub} (${subO.Columns}) VALUES (${subO.Values})`)
 
             db.all(qrySlAction, function (err, rows) {
-                if (rows && rows.length) {
-                    const qr1 = `INSERT INTO ${vCommon.tableAction}(Id, ParentId, Name, Description, Start, End, IsDone, ExpectCost, TrueCost)`
-                    const qr2 = `${qr1} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-                    rows.forEach(a => {
-                        a.Id = uuidv4()
-                        a.ParentId = newId
-                        a.Name = `${a.Name} (1)`
-                        db.run(qr2, [a.Id, a.ParentId, a.Name, a.Description, a.Start, a.End, a.IsDone, a.ExpectCost, a.TrueCost]);
-                    })
+                if (rows) {
+                    if (rows.length) {
+                        const qr1 = `INSERT INTO ${vCommon.tableAction}(Id, ParentId, Name, Description, Start, End, IsDone, ExpectCost, TrueCost)`
+                        const qr2 = `${qr1} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                        rows.forEach(a => {
+                            a.Id = uuidv4()
+                            a.ParentId = newId
+                            a.Name = `${a.Name} (1)`
+                            db.run(qr2, [a.Id, a.ParentId, a.Name, a.Description, a.Start, a.End, a.IsDone, a.ExpectCost, a.TrueCost]);
+                        })
+                    }
                     reslove(newId)
                 }
                 if (err) reject(err)
                 db.close();
             });
         });
-        
+
+    })
+}
+function duplicateMain(dbName, maing) {
+    const db = readyDatabase(dbName)
+    const mid = maing.Id
+    const newId = uuidv4()
+    const qrySlSub = `SELECT * FROM ${vCommon.tableSub} WHERE ParentId='${mid}'`
+    return new Promise((reslove, reject) => {
+        // db.serialize(() => {
+        //     const mainO = vCommon.getColMain(maing, newId)
+        //     db.run(`INSERT INTO ${vCommon.tableMain} (${mainO.Columns}) VALUES (${mainO.Values})`)
+        //     db.all(qrySlSub, function (err, rows) {
+        //         if (rows) {
+        //             if (rows.length) {
+        //                 const qr1 = `INSERT INTO ${vCommon.tableSub}(Id, ParentId, Name, Description, Start, End, IsDone, ExpectCost, TrueCost)`
+        //                 const qr2 = `${qr1} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        //                 rows.forEach(a => {
+        //                     a.Id = uuidv4()
+        //                     a.ParentId = newId
+        //                     a.Name = `${a.Name} (1)`
+        //                     db.run(qr2, [a.Id, a.ParentId, a.Name, a.Description, a.Start, a.End, a.IsDone, a.ExpectCost, a.TrueCost]);
+        //                 })
+        //             }
+        //             const qrSlAction = `SELECT * FROM ${vCommon.tableAction} WHERE ParentId IN (SELECT Id FROM ${vCommon.tableSub} WHERE ParentId='${mid}')`
+        //             db.all(qrSlAction, function (errA, aRows) {
+        //                 if (aRows) {
+        //                     const qr1 = `INSERT INTO ${vCommon.tableAction}(Id, ParentId, Name, Description, Start, End, IsDone, ExpectCost, TrueCost)`
+        //                     const qr2 = `${qr1} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        //                     aRows.forEach(a => {
+        //                         a.Id = uuidv4()
+        //                         a.Name = `${a.Name} (1)`
+        //                         db.run(qr2, [a.Id, a.ParentId, a.Name, a.Description, a.Start, a.End, a.IsDone, a.ExpectCost, a.TrueCost]);
+        //                     })
+        //                     resolve(newId)
+        //                 }
+        //                 if (errA) reject(errA)
+        //             })
+        //             reslove(newId)
+        //         }
+        //         if (err) reject(err)
+        //         db.close();
+        //     })
+        // })
+        reslove(newId)
     })
 }
 function getFromTable(dbName, query) {

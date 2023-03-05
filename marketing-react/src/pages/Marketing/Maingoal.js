@@ -124,13 +124,18 @@ export class Maingoal extends Component {
     render() {
         const { NewSub, ListSub, ExpectCost, TrueCost, IsExpand } = this.state
         const { item } = this.props
-        const mainContext = Object.assign({ IsExpand: IsExpand,
+        const mainCxt = Object.assign({
+            IsExpand: IsExpand,
             TypeId: 1, ExpectCost: ExpectCost, TrueCost: TrueCost
         }, item)
+        const newSubCxt = {
+            Name: `Subgoal ${Date.now()}`, Start: getDateAfterDaysString(0),
+            End: getDateAfterDaysString(1), Budget: 0, ParentId: item.Id
+        }
         return (
             <>
                 <div className={`dnb_item_view dnb_main_container${!IsExpand ? ` dnb_main_collapse` : ''}`}>
-                    <ItemContext.Provider value={mainContext}>
+                    <ItemContext.Provider value={mainCxt}>
                         <GoalItem
                             handleExpand={this.handleExpand}
                             updateGoalUI={this.updateGoalUI}
@@ -140,14 +145,12 @@ export class Maingoal extends Component {
                     <div className='dnb_item_list_sub'>
                         {
                             !IsExpand || !NewSub ? <></> : <div className='dnb_item_view'>
-                                <FormEditGoal ParentId={item.Id}
-                                    Name={`Subgoal ${Date.now()}`}
-                                    Start={getDateAfterDaysString(0)}
-                                    End={getDateAfterDaysString(1)}
-                                    Budget={0}
-                                    onCloseEditForm={this.onCancelAddNewSub}
-                                    onSaveGoal={this.onInsertNewSub}
-                                />
+                                <ItemContext.Provider value={newSubCxt}>
+                                    <FormEditGoal
+                                        onCloseEditForm={this.onCancelAddNewSub}
+                                        onSaveGoal={this.onInsertNewSub}
+                                    />
+                                </ItemContext.Provider>
                             </div>
                         }
                         {
@@ -170,8 +173,8 @@ export class Maingoal extends Component {
 }
 
 export function updateGoalUI(newGoal) {
-    const listMainSub = this
-    const _goal_ = listMainSub.find(g => g.Id === newGoal.Id)
+    const lstChild = this
+    const _goal_ = lstChild.find(g => g.Id === newGoal.Id)
     if (_goal_) {
         if (typeof newGoal.Name === 'string' &&
             newGoal.Name.trim() !== '' && newGoal.Name !== _goal_.Name) {

@@ -1,4 +1,3 @@
-import { ListMainProvider } from './goal';
 import { ListMain } from './Marketing';
 import '../styles/home.scss';
 
@@ -9,7 +8,6 @@ export default function Home() {
             <link rel="icon" href="/favicon.ico" />
             <main>
                 <ListMain />
-                <ListMainProvider />
             </main>
             <article>
                 <h1 className='title'>

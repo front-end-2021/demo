@@ -40,7 +40,9 @@ export function GoalActionView({ children,
         return <>
             <div className='dnb_i_menu'>
                 <span>{getEditTag()}</span>
-                <span>{getDuplicateTag()}</span>
+                {
+                    item.TypeId > 1 ? <span>{getDuplicateTag()}</span> : <></>
+                }
                 <span>{getDeleteTag()}</span>
                 <span style={{ cursor: 'initial' }}>
                     <span className={getClsDone()} style={{ cursor: 'pointer' }}
@@ -109,9 +111,7 @@ export function GoalActionView({ children,
                     </div>
                 }
                 {getMenuTag()}
-            </div> : <GoalActionCollapse typeid={item.TypeId} lessC={item.Budget - item.ExpectCost}
-                name={item.Name} isDone={item.IsDone} start={item.Start} end={item.End}
-                handleExpand={onExpand}>
+            </div> : <GoalActionCollapse handleExpand={onExpand}>
                 {children}
             </GoalActionCollapse>
         }</>
@@ -210,44 +210,42 @@ function getClassOverDate(start_end) {
     }
     return ''
 }
-function GoalActionCollapse({
-    typeid, lessC, children,
-    name, isDone, start, end,
-    handleExpand }) {
+function GoalActionCollapse({ children, handleExpand }) {
+    const item = useContext(ItemContext)
     function getStartTag() {
-        if (!start) return <></>
+        if (!item.Start) return <></>
         return <>
-            <span className={`bi bi-calendar2-week${getClassOverDate(start)}`} />
+            <span className={`bi bi-calendar2-week${getClassOverDate(item.Start)}`} />
             {
-                !isDateLessNow(start) ? <span
-                    className={`dnb-d-start`}>&nbsp;{getDateString(start)}</span> :
+                !isDateLessNow(item.Start) ? <span
+                    className={`dnb-d-start`}>&nbsp;{getDateString(item.Start)}</span> :
                     <span title="Start Date is in the past from Current Date"
-                        className={`dnb-d-start${getClassOverDate(start)}`}>&nbsp;{getDateString(start)}</span>
+                        className={`dnb-d-start${getClassOverDate(item.Start)}`}>&nbsp;{getDateString(item.Start)}</span>
             }
         </>
     }
     function getEndTag() {
-        if (!end) return <></>
+        if (!item.End) return <></>
         return <>
             <span className={`dnb_d_div`}>&minus;</span>
             {
-                !isDateLessNow(end) ? <span className="dnb-d-end">{getDateString(end)}</span> :
+                !isDateLessNow(item.End) ? <span className="dnb-d-end">{getDateString(item.End)}</span> :
                     <span title="End Date is in the past from Current Date"
-                        className="dnb-d-end">{getDateString(end)}</span>
+                        className="dnb-d-end">{getDateString(item.End)}</span>
             }
         </>
     }
     function getNameTag() {
-        if (lessC < 0) {
+        if (item.Budget < item.ExpectCost) {
             return <div title="Expected Cost is less then True Cost"
                 className={`dnb_item_title d_exp_less_true`}
-                onClick={() => handleExpand()}>{getIcon(typeid)} {name}</div>
+                onClick={() => handleExpand()}>{getIcon(item.TypeId)} {item.Name}</div>
         }
         return <div className={`dnb_item_title`}
-            onClick={() => handleExpand()}>{getIcon(typeid)} {name}</div>
+            onClick={() => handleExpand()}>{getIcon(item.TypeId)} {item.Name}</div>
     }
     function getClsWrap() {
-        return `dnb_item_container d_item_collapse${isDone ? ` dnb_item_done` : ''}`
+        return `dnb_item_container d_item_collapse${item.IsDone ? ` dnb_item_done` : ''}`
     }
     return (
         <div className={getClsWrap()}>
@@ -255,7 +253,7 @@ function GoalActionCollapse({
             <div className={`dnb_item_cost`}>
                 {children}
             </div>
-            <div className={`dnb_item_date ${getClassOverDate(end)}`}>
+            <div className={`dnb_item_date ${getClassOverDate(item.End)}`}>
                 {getStartTag()}
                 {getEndTag()}
             </div>

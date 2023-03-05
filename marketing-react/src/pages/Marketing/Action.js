@@ -11,13 +11,12 @@ export function Action({ item, isExpandParent,
     function onToggleDone(e) {
         const is_done = !item.IsDone
         const entry = { IsDone: !!is_done }
-        updateNewAction(entry)
+        onUpdateAction(entry)
         item.IsDone = !!is_done
         updateActionWithId(item.Id, entry)      // api put
     }
-    function updateNewAction(p) {
-        const newAction = { Id: item.Id, ParentId: item.ParentId }
-        updateAction(Object.assign(newAction, p))
+    function onUpdateAction(p) {
+        updateAction(Object.assign(item, p))
     }
     function onCloseEditForm() {
         setEditView(false)
@@ -57,7 +56,7 @@ export function Action({ item, isExpandParent,
             item.TrueCost = newAction.TrueCost
             entry.TrueCost = newAction.TrueCost
         }
-        updateNewAction(newAction)
+        onUpdateAction(newAction)
         setEditView(false)
         updateActionWithId(item.Id, entry)  // api put
     }
@@ -75,33 +74,29 @@ export function Action({ item, isExpandParent,
         setExpand(isExpd)
     }
     return (
-        <>
+        <ItemContext.Provider value={Object.assign({
+            IsExpand: isExpandParent && isExpand, TypeId: 3
+        }, item)}>
             {
                 !isEditView ?
-                    <ItemContext.Provider value={Object.assign({
-                        IsExpand: isExpandParent && isExpand,
-                        TypeId: 3, ExpectCost: item.ExpectCost, TrueCost: item.TrueCost
-                    }, item)}>
-                        <GoalActionView handleExpand={handleExpand}
-                            setEditView={setEditView} onToggleDone={onToggleDone}
-                            handleDelete={handleDelete} handlerDuplicate={handlerDuplicate}>
-                            <span title="Expected Cost"
-                                className='dnb_icost dnb-expect-cost'>P:
-                                <span className='dnb_icost_value'>${item.ExpectCost}</span>
-                            </span>
-                            <span title="True Cost"
-                                className='dnb_icost dnb-true-cost'>C:
-                                <span className='dnb_icost_value'>${item.TrueCost}</span>
-                            </span>
-                        </GoalActionView>
-                    </ItemContext.Provider>
+                    <GoalActionView handleExpand={handleExpand}
+                        setEditView={setEditView} onToggleDone={onToggleDone}
+                        handleDelete={handleDelete} handlerDuplicate={handlerDuplicate}>
+                        <span title="Expected Cost"
+                            className='dnb_icost dnb-expect-cost'>P:
+                            <span className='dnb_icost_value'>${item.ExpectCost}</span>
+                        </span>
+                        <span title="True Cost"
+                            className='dnb_icost dnb-true-cost'>C:
+                            <span className='dnb_icost_value'>${item.TrueCost}</span>
+                        </span>
+                    </GoalActionView>
                     :
                     <FormEditAction
                         onSaveAction={onSaveAction}
-                        onCloseEditForm={onCloseEditForm}
-                    />
+                        onCloseEditForm={onCloseEditForm} />
             }
-        </>
+        </ItemContext.Provider>
     )
 }
 

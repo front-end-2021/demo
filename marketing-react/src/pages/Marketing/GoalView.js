@@ -82,9 +82,7 @@ export function GoalItem({ handleExpand, updateGoalUI,
                     className={`dnb_icost dnb-true-cost`}>C:
                     <span className={`dnb_icost_value`}>${item.TrueCost}</span>
                 </span>
-            </GoalActionView> : <FormEditGoal ParentId={item.ParentId}
-                Name={item.Name} Description={item.Description} Start={item.Start} End={item.End}
-                Budget={item.Budget} ExpCost={item.ExpectCost} TrueCost={item.TrueCost}
+            </GoalActionView> : <FormEditGoal 
                 onCloseEditForm={onCloseEditForm} onSaveGoal={onSaveGoal}
             />
         }</>

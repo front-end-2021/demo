@@ -46,42 +46,7 @@ export class Subgoal extends Component {
     }
     updateAction = (newAction) => {
         const lstAction = this.state.ListAction
-        const _action = lstAction.find(a => a.Id === newAction.Id)
-        if (_action) {
-            let hasExpectCost = false, hasTrueCost = false
-            if (typeof newAction.Name === 'string' &&
-                newAction.Name.trim() !== '' && _action.Name !== newAction.Name) {
-                _action.Name = newAction.Name
-            }
-            if (typeof newAction.Description === 'string' &&
-                _action.Description !== newAction.Description) {
-                _action.Description = newAction.Description
-            }
-            if (typeof newAction.IsDone === 'boolean' && _action.IsDone !== newAction.IsDone) {
-                _action.IsDone = newAction.IsDone
-            }
-            if (typeof newAction.Start === 'string' && _action.Start !== newAction.Start)
-                _action.Start = newAction.Start
-            if (typeof newAction.End === 'string' && _action.End !== newAction.End) {
-                _action.End = newAction.End
-            }
-            if (typeof newAction.ExpectCost === 'number' &&
-                _action.ExpectCost !== newAction.ExpectCost) {
-                _action.ExpectCost = newAction.ExpectCost
-                hasExpectCost = true
-            }
-            if (typeof newAction.TrueCost === 'number' && _action.TrueCost !== newAction.TrueCost) {
-                _action.TrueCost = newAction.TrueCost
-                hasTrueCost = true
-            }
-            this.setState({ ListAction: lstAction })
-            if (hasExpectCost) {
-                this.setState({ ExpectCost: getExpC(lstAction.map(s => s.ExpectCost)) })
-            }
-            if (hasTrueCost) {
-                this.setState({ TrueCost: getTrueC(lstAction.map(s => s.TrueCost)) })
-            }
-        }
+        this.setStateRelative(lstAction)
     }
     onCancelAddNewAction = (sId) => {
         this.setState({ NewAction: null })
@@ -115,7 +80,6 @@ export class Subgoal extends Component {
             this.setStateRelative(lstAction)
             deleteAction(id)
         }
-        console.log(`on delete action`, id)
     }
     setStateRelative = (lstAction) => {
         this.setState({ ListAction: lstAction })
