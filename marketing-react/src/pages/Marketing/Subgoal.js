@@ -4,7 +4,7 @@ import {
 } from "../../service"
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
 import { GoalItemView } from "./GoalView"
-import { Action, ActionViewEdit } from "./Action"
+import { ActionView, ActionViewEdit } from "./Action"
 import { ItemContext } from "./Maingoal"
 
 export class Subgoal extends Component {
@@ -115,20 +115,18 @@ export class Subgoal extends Component {
             </div></div> :
             <div className='dnb_item_view'>
                 <ItemContext.Provider value={{
-                    Name: `Action ${Date.now()}`, Start: getDateAfterDaysString(0), 
+                    Name: `Action ${Date.now()}`, Start: getDateAfterDaysString(0),
                     End: getDateAfterDaysString(1), ExpectCost: 0, TrueCost: 0
                 }}>
-                    <ActionViewEdit 
+                    <ActionViewEdit
                         onCloseEditForm={this.onCancelAddNewAction}
                         onSaveAction={this.onInsertNewAction}
                     />
                 </ItemContext.Provider>
             </div>}</>
     }
-    handleExpand = (isExpand) => {
-        if (!this.props.isExpandParent) {
-            return
-        }
+    onExpandSub = (isExpand) => {
+        if (!this.props.isExpandParent) return
         this.setState({ IsExpand: isExpand })
     }
     render() {
@@ -136,6 +134,8 @@ export class Subgoal extends Component {
         const { ListAction, ExpectCost, TrueCost, IsExpand } = this.state
         const valContext = Object.assign({
             IsExpand: isExpandParent && IsExpand,
+            handleExpand: this.onExpandSub,
+            handleDelete: this.onDeleteGoal,
             TypeId: 2, ExpectCost: ExpectCost, TrueCost: TrueCost
         }, item)
         return (
@@ -143,16 +143,14 @@ export class Subgoal extends Component {
                 <div className={`dnb_item_view${!IsExpand ? ' dnb_sub_collapse' : ''}`}>
                     <ItemContext.Provider value={valContext}>
                         <GoalItemView
-                            handleExpand={this.handleExpand}
                             updateGoalUI={this.updateGoalUI}
                             insertNewChild={this.addNewAction}
-                            onDeleteGoal={this.onDeleteGoal}
                             handlerDuplicate={this.handlerDuplicate} />
                     </ItemContext.Provider>
                     <div className='dnb_item_list_action'>
                         {
                             ListAction.map(action => {
-                                return <Action key={action.Id}
+                                return <ActionView key={action.Id}
                                     item={action} isExpandParent={isExpandParent && IsExpand}
                                     onDeleteAction={this.onDeleteAction}
                                     onDuplicateAction={this.onDuplicateAction}

@@ -3,8 +3,8 @@ import { getDateCalendarValue, getDateString, getIcon, isDateLessNow } from "../
 import { ItemContext } from "./Maingoal"
 
 export function ItemViewExpand({ children,
-    handleExpand, addNewChild,
-    handleDelete, handlerDuplicate,
+    addNewChild,
+    handlerDuplicate,
     setEditView, onToggleDone }) {
     const item = useContext(ItemContext)
     const [isShowMenu, setShowMenu] = useState(false)
@@ -55,7 +55,7 @@ export function ItemViewExpand({ children,
     function getDeleteTag() {
         if (item.IsDone) return <i className="bi bi-trash">&nbsp; Delete</i>
         return <span className="bi bi-trash" style={{ cursor: 'pointer' }}
-            onClick={() => handleDelete()}>&nbsp; Delete</span>
+            onClick={() => item.handleDelete()}>&nbsp; Delete</span>
     }
     function getEditTag() {
         if (item.IsDone) return <i className="bi bi-pencil-square" >&nbsp; Edit</i>
@@ -78,17 +78,13 @@ export function ItemViewExpand({ children,
         return <p dangerouslySetInnerHTML={_des}
             className='dnb_item_description o_81' />
     }
-    function getNameTag() {
-        if (item.ExpectCost < item.TrueCost) {
-            return <div title="Expected Cost is less then True Cost"
-                className={`dnb_item_title d_exp_less_true`}
-                onClick={() => handleExpand(false)}>{getIcon(item.TypeId)} {item.Name}</div>
-        }
-        return <div className='dnb_item_title'
-            onClick={() => handleExpand(false)}>{getIcon(item.TypeId)} {item.Name}</div>
+    function isLess() {
+        return item.ExpectCost < item.TrueCost
     }
-    function onExpand() {
-        handleExpand(true)
+    function getNameTag() {
+        return <div title={isLess() ? 'Expected Cost is less then True Cost' : null}
+            className={`dnb_item_title${isLess() ? ' d_exp_less_true' : ''}`}
+            onClick={() => item.handleExpand(false)}>{getIcon(item.TypeId)} {item.Name}</div>
     }
     return (
         <>{
@@ -111,13 +107,14 @@ export function ItemViewExpand({ children,
                     </div>
                 }
                 {getMenuTag()}
-            </div> : <ItemViewCollapse handleExpand={onExpand}>
+            </div> : <ItemViewCollapse>
                 {children}
             </ItemViewCollapse>
         }</>
     )
 }
-export function ItemViewEdit({ children, isExpectLessTrue, onSaveData, onCloseEditForm }) {
+export function ItemViewEdit({ children, isExpectLessTrue, 
+    onSaveData, onCloseEditForm }) {
     const item = useContext(ItemContext)
     const [name, setName] = useState(item.Name)
     const [des, setDes] = useState(item.Description)
@@ -210,7 +207,7 @@ function getClassOverDate(start_end) {
     }
     return ''
 }
-function ItemViewCollapse({ children, handleExpand }) {
+function ItemViewCollapse({ children }) {
     const item = useContext(ItemContext)
     function getStartTag() {
         if (!item.Start) return <></>
@@ -220,7 +217,8 @@ function ItemViewCollapse({ children, handleExpand }) {
                 !isDateLessNow(item.Start) ? <span
                     className={`dnb-d-start`}>&nbsp;{getDateString(item.Start)}</span> :
                     <span title="Start Date is in the past from Current Date"
-                        className={`dnb-d-start${getClassOverDate(item.Start)}`}>&nbsp;{getDateString(item.Start)}</span>
+                        className={`dnb-d-start${getClassOverDate(item.Start)}`}
+                    >&nbsp;{getDateString(item.Start)}</span>
             }
         </>
     }
@@ -235,14 +233,15 @@ function ItemViewCollapse({ children, handleExpand }) {
             }
         </>
     }
+    function isLess() {
+        return item.ExpectCost < item.TrueCost
+    }
     function getNameTag() {
-        if (item.ExpectCost < item.TrueCost) {
-            return <div title="Expected Cost is less then True Cost"
-                className={`dnb_item_title d_exp_less_true`}
-                onClick={() => handleExpand()}>{getIcon(item.TypeId)} {item.Name}</div>
-        }
-        return <div className={`dnb_item_title`}
-            onClick={() => handleExpand()}>{getIcon(item.TypeId)} {item.Name}</div>
+        return <div title={isLess() ? 'Expected Cost is less then True Cost' : null}
+            className={`dnb_item_title${isLess() ? ' d_exp_less_true' : ''}`} >
+            <span onClick={() => item.handleExpand(true)}
+            >{getIcon(item.TypeId)} {item.Name}</span>
+        </div>
     }
     function getClsWrap() {
         return `dnb_item_container d_item_collapse${item.IsDone ? ` dnb_item_done` : ''}`

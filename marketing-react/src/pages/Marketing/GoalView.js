@@ -4,8 +4,8 @@ import { ItemViewExpand, ItemViewEdit } from "./ItemView"
 import { getDateString } from "../../global"
 import { ItemContext } from "./Maingoal"
 
-export function GoalItemView({ handleExpand, updateGoalUI,
-    insertNewChild, onDeleteGoal, handlerDuplicate }) {
+export function GoalItemView({ updateGoalUI,
+    insertNewChild, handlerDuplicate }) {
     const item = useContext(ItemContext)
     const [isEditView, setEditView] = useState(false)
 
@@ -62,9 +62,9 @@ export function GoalItemView({ handleExpand, updateGoalUI,
     }
     return (
         <>{
-            !isEditView ? <ItemViewExpand handleExpand={handleExpand}
+            !isEditView ? <ItemViewExpand
                 addNewChild={addNewChild}
-                handleDelete={onDeleteGoal} handlerDuplicate={handlerDuplicate}
+                handlerDuplicate={handlerDuplicate}
                 setEditView={setEditView} onToggleDone={onToggleDone} >
                 <span title="Budget Cost"
                     className={`dnb_icost dnb-budget-cost`}>B:
@@ -78,11 +78,11 @@ export function GoalItemView({ handleExpand, updateGoalUI,
                     className={`dnb_icost dnb-expect-cost`}>P:
                     <span className={`dnb_icost_value`}>${item.ExpectCost}</span>
                 </span>
-                <span title="Sum(Action) True Cost"
+                <span title="Sum(Actions) True Cost"
                     className={`dnb_icost dnb-true-cost`}>C:
                     <span className={`dnb_icost_value`}>${item.TrueCost}</span>
                 </span>
-            </ItemViewExpand> : <GoalItemEdit 
+            </ItemViewExpand> : <GoalItemEdit
                 onCloseEditForm={onCloseEditForm} onSaveGoal={onSaveGoal}
             />
         }</>
@@ -91,7 +91,6 @@ export function GoalItemView({ handleExpand, updateGoalUI,
 export function GoalItemEdit({
     onCloseEditForm, onSaveGoal }) {
     const { ParentId,
-        Name, Description, Start, End,
         Budget, ExpectCost, TrueCost, } = useContext(ItemContext)
     const [budget, setBudget] = useState(Budget)
     function onHandleChangeBudget(e) {
@@ -125,8 +124,7 @@ export function GoalItemEdit({
     }
     return (
         <ItemViewEdit
-            Name={Name} Description={Description} Start={Start} End={End}
-            typeid={!ParentId ? 1 : 2} lessC={ExpectCost - TrueCost}
+            isExpectLessTrue={ExpectCost < TrueCost}
             onSaveData={onSaveData}
             onCloseEditForm={onCancelEditForm} >
             <span className={`dnb_icost dnb-budget-cost`}>B:

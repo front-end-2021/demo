@@ -4,7 +4,7 @@ import { ItemViewExpand, ItemViewEdit } from "./ItemView"
 import { updateActionWithId } from "../../service"
 import { ItemContext } from "./Maingoal"
 
-export function Action({ item, isExpandParent,
+export function ActionView({ item, isExpandParent,
     updateAction, onDeleteAction, onDuplicateAction }) {
     const [isExpand, setExpand] = useState(true)
     const [isEditView, setEditView] = useState(false)
@@ -69,19 +69,22 @@ export function Action({ item, isExpandParent,
         _item.Name = `${_item.Name} (1)`
         onDuplicateAction(_item)
     }
-    function handleExpand(isExpd) {
+    function onExpand(isExpd) {
         if (!isExpandParent) return
         setExpand(isExpd)
     }
     return (
         <ItemContext.Provider value={Object.assign({
-            IsExpand: isExpandParent && isExpand, TypeId: 3
+            IsExpand: isExpandParent && isExpand,
+            TypeId: 3,
+            handleExpand: onExpand,
+            handleDelete: handleDelete
         }, item)}>
             {
                 !isEditView ?
-                    <ItemViewExpand handleExpand={handleExpand}
+                    <ItemViewExpand
                         setEditView={setEditView} onToggleDone={onToggleDone}
-                        handleDelete={handleDelete} handlerDuplicate={handlerDuplicate}>
+                        handlerDuplicate={handlerDuplicate}>
                         <span title="Expected Cost"
                             className='dnb_icost dnb-expect-cost'>P:
                             <span className='dnb_icost_value'>${item.ExpectCost}</span>

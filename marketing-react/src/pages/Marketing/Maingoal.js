@@ -7,8 +7,8 @@ import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
 import { GoalItemView, GoalItemEdit } from "./GoalView"
 import { Subgoal } from "./Subgoal"
 
-export const ItemContext = React.createContext()//Name, Description, IsDone, Start, End, IsExpand, TypeId [, ExpectCost, TrueCost, Budget, OpenCost] 
-
+//Name, Description, IsDone, Start, End, IsExpand, TypeId [, ExpectCost, TrueCost, Budget, OpenCost] 
+export const ItemContext = React.createContext()
 export class Maingoal extends Component {
     constructor(props) {
         super(props)
@@ -118,7 +118,7 @@ export class Maingoal extends Component {
             }
         })
     }
-    handleExpand = (isExpand) => {
+    onExpandMain = (isExpand) => {
         this.setState({ IsExpand: isExpand })
     }
     render() {
@@ -126,16 +126,16 @@ export class Maingoal extends Component {
         const { item } = this.props
         const mainCxt = Object.assign({
             IsExpand: IsExpand,
+            handleExpand: this.onExpandMain,
+            handleDelete: this.onDeleteGoal,
             TypeId: 1, ExpectCost: ExpectCost, TrueCost: TrueCost
         }, item)
         return (
             <div className={`dnb_item_view dnb_main_container${!IsExpand ? ` dnb_main_collapse` : ''}`}>
                 <ItemContext.Provider value={mainCxt}>
                     <GoalItemView
-                        handleExpand={this.handleExpand}
                         updateGoalUI={this.updateGoalUI}
-                        insertNewChild={this.handleAddNewSub}
-                        onDeleteGoal={this.onDeleteGoal} />
+                        insertNewChild={this.handleAddNewSub} />
                 </ItemContext.Provider>
                 <div className='dnb_item_list_sub'>
                     {
