@@ -11,7 +11,7 @@ export class Subgoal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            ListAction: [],
+            ListAction: null,
             IsExpand: true, ExpectCost: 0, TrueCost: 0,
             NewAction: null
         }
@@ -139,16 +139,16 @@ export class Subgoal extends Component {
             TypeId: 2, ExpectCost: ExpectCost, TrueCost: TrueCost
         }, item)
         return (
-            <>
-                <div className={`dnb_item_view${!IsExpand ? ' dnb_sub_collapse' : ''}`}>
-                    <ItemContext.Provider value={valContext}>
-                        <GoalItemView
-                            updateGoalUI={this.updateGoalUI}
-                            insertNewChild={this.addNewAction}
-                            handlerDuplicate={this.handlerDuplicate} />
-                    </ItemContext.Provider>
-                    <div className='dnb_item_list_action'>
-                        {
+            <div className={`dnb_item_view${!IsExpand ? ' dnb_sub_collapse' : ''}`}>
+                <ItemContext.Provider value={valContext}>
+                    <GoalItemView
+                        updateGoalUI={this.updateGoalUI}
+                        insertNewChild={this.addNewAction}
+                        handlerDuplicate={this.handlerDuplicate} />
+                </ItemContext.Provider>
+                <div className='dnb_item_list_action'>{
+                    !Array.isArray(ListAction) ? <span className="fb-loading"></span>
+                        : <>{
                             ListAction.map(action => {
                                 return <ActionView key={action.Id}
                                     item={action} isExpandParent={isExpandParent && IsExpand}
@@ -157,10 +157,10 @@ export class Subgoal extends Component {
                                     updateAction={this.updateAction} />
                             })
                         }
-                        {this.getFormActionAddEdit()}
-                    </div>
+                            {this.getFormActionAddEdit()}</>
+                }
                 </div>
-            </>
+            </div>
         )
     }
 }

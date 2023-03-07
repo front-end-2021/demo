@@ -7,13 +7,12 @@ import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
 import { GoalItemView, GoalItemEdit } from "./GoalView"
 import { Subgoal } from "./Subgoal"
 
-//Name, Description, IsDone, Start, End, IsExpand, TypeId [, ExpectCost, TrueCost, Budget, OpenCost] 
 export const ItemContext = React.createContext()
 export class Maingoal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            ListSub: [],
+            ListSub: null,
             IsExpand: true, ExpectCost: 0, TrueCost: 0,
             NewSub: null
         }
@@ -152,7 +151,12 @@ export class Maingoal extends Component {
                         </div>
                     }
                     {
-                        ListSub.map(sub => {
+                        !Array.isArray(ListSub) ? <div className="dnb_item_list_sub">
+                            <div className="dnb_item_view">
+                                <div className="dnb_item_container fb-loading"></div>
+                                <div className="dnb_item_list_action"></div>
+                            </div>
+                        </div> : <>{ListSub.map(sub => {
                             return <Subgoal key={sub.Id}
                                 item={sub} isExpandParent={IsExpand}
                                 updateDataSubs={this.updateDataSubs}
@@ -160,7 +164,8 @@ export class Maingoal extends Component {
                                 onDeleteSub={this.onDeleteSub}
                                 onDuplicateSubgoal={this.onDuplicateSubgoal}
                                 pushTrueCost={this.pushTrueCost} />
-                        })
+                        })}
+                        </>
                     }
                 </div>
             </div>

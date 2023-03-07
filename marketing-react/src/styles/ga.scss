@@ -34,6 +34,7 @@ $bgcolor: white;
 .dnb_item_list_sub {
     display: grid;
     min-width: $width;
+    .fb-loading {margin-top: $m3px;}
 }
 
 .dnb_item_list_action {
@@ -421,7 +422,6 @@ $wPC: $wCost + 6px;
 .bi-layout-sidebar::before {
     transform: rotate(-90deg);
 }
-
 
 @media screen and (max-width: 1449px) {
     .dnb_item_container.d_item_collapse {

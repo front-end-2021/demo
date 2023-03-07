@@ -1,21 +1,24 @@
 import React, { Component } from "react"
 import {
-    getDataGoalAction,
-    insertMain, deleteMainApi
+    getDataGoalAction, insertMain, deleteMainApi
 } from "../../service"
 import { getDateAfterDaysString } from "../../global"
 import { GoalItemEdit } from "./GoalView"
 import { Maingoal, updateGoalUI } from "./Maingoal"
 import { ItemContext } from "./Maingoal"
+import { LoadingProvider } from "../../global/Context"
+import { LoadingContext } from "../../global/Context"
 import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
 import '../../styles/ga.scss'
 
-export class ListMain extends Component {
+class ListMain extends Component {
+    static contextType = LoadingContext
     constructor(props) {
         super(props)
-        this.state = { ListMain: [], NewMain: false }
+        this.state = { ListMain: null, NewMain: false }
     }
     componentDidMount = () => {
+        const { hide } = this.context;
         getDataGoalAction('mains').then(mains => {
             const lstMain = []
             mains.forEach(m => {
@@ -23,6 +26,7 @@ export class ListMain extends Component {
                 lstMain.push(m)
             })
             this.setState({ ListMain: lstMain })
+            hide()
         })
     }
     updateDataGoals = (newGoal) => {
@@ -63,11 +67,11 @@ export class ListMain extends Component {
         return (
             <>
                 {
-                    ListMain.map(main => {
+                    !Array.isArray(ListMain) ? <></> : <>{ListMain.map(main => {
                         return <Maingoal item={main} key={main.Id}
                             onDeleteMain={this.onDeleteMain}
                             updateDataGoals={this.updateDataGoals} />
-                    })
+                    })}</>
                 }
                 {
                     !NewMain ? <div className='dnb_add_main'>
@@ -90,4 +94,12 @@ export class ListMain extends Component {
             </>
         )
     }
+}
+export function Marketing() {
+
+    return (
+        <LoadingProvider>
+            <ListMain />
+        </LoadingProvider>
+    )
 }
