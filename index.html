@@ -15,16 +15,19 @@
             display: inline-block; 
             max-width: initial !important;
             width: initial !important;
+            margin-bottom: 3px;
         }
+        h1.dnba-text-typing {font-size: 90px;height: 126px;}
         .dnba-check-width_1line {white-space: nowrap !important;}
         .dnba-text-typing * {
             display: inline-block;
             border-right-style: solid;
             white-space: nowrap;
             overflow: hidden;
+            margin-top: 3px;
         }
         .dnba-text-typing > p {
-            padding: 3px 0 0 0 !important; 
+            padding: 0 !important; 
             margin: 0 !important; 
             border-left: none !important; border-top: none !important; border-bottom: none !important; 
             position: initial !important; 
@@ -61,7 +64,7 @@
 <body>
     <main id="dainb-app" style="font-size: 3rem;">
         <section class="dnb-title" style="display:flex;justify-content: center;align-items: center;flex-direction:column">
-            <h1 class="dnba-text-typing" style="font-size: 9rem;">
+            <h1 class="dnba-text-typing">
                 <p class="dnba-texting_9">Hello!</p>
             </h1>
             
@@ -162,11 +165,8 @@
             changeText('My name is Dainb');
             setTimeout(function(){
                 changeText('This is demo  change');
-                setTimeout(function(){
-                    changeText('I will ma awsome ...!');
-                }, 9000);
             }, 6000);
-        }, 9000);
+        }, 3000);
 
         function changeText(text){
             const h1Typing = document.querySelector('h1.dnba-text-typing'); 
