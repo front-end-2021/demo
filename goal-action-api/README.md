@@ -74,5 +74,5 @@
 
 # Persist Data
 1. Create volume: ```docker volume create marketing-db```
-2. Run container: ```docker run -dp 8001:8001 goal-action-api --mount type=volume,src=marketing-db,target=/database```
+2. Run container: ```docker run -dp 8001:8001 --mount type=volume,src=marketing-db,target=/database goal-action-api```
 3. meta info: ```docker volume inspect marketing-db```

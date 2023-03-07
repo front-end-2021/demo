@@ -1,19 +1,18 @@
-import { Component } from "react"
+import React, { Component } from "react"
 import {
     getDataGoalActionWith, insertAction, deleteAction
 } from "../../service"
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
-import { GoalItem } from "./GoalItem"
-import { Action, FormEditAction } from "../action"
-import 'bootstrap-icons/font/bootstrap-icons.css'
-import '../../styles/ga.scss'
+import { GoalItemView } from "./GoalView"
+import { ActionView, ActionViewEdit } from "./Action"
+import { ItemContext } from "./Maingoal"
 
 export class Subgoal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            ListAction: [], IsExpand: true,
-            ExpectCost: 0, TrueCost: 0,
+            ListAction: [],
+            IsExpand: true, ExpectCost: 0, TrueCost: 0,
             NewAction: null
         }
     }
@@ -47,42 +46,8 @@ export class Subgoal extends Component {
     }
     updateAction = (newAction) => {
         const lstAction = this.state.ListAction
-        const _action = lstAction.find(a => a.Id === newAction.Id)
-        if (_action) {
-            let hasExpectCost = false, hasTrueCost = false
-            if (typeof newAction.Name === 'string' &&
-                newAction.Name.trim() !== '' && _action.Name !== newAction.Name) {
-                _action.Name = newAction.Name
-            }
-            if (typeof newAction.Description === 'string' &&
-                _action.Description !== newAction.Description) {
-                _action.Description = newAction.Description
-            }
-            if (typeof newAction.IsDone === 'boolean' && _action.IsDone !== newAction.IsDone) {
-                _action.IsDone = newAction.IsDone
-            }
-            if (typeof newAction.Start === 'string' && _action.Start !== newAction.Start)
-                _action.Start = newAction.Start
-            if (typeof newAction.End === 'string' && _action.End !== newAction.End) {
-                _action.End = newAction.End
-            }
-            if (typeof newAction.ExpectCost === 'number' &&
-                _action.ExpectCost !== newAction.ExpectCost) {
-                _action.ExpectCost = newAction.ExpectCost
-                hasExpectCost = true
-            }
-            if (typeof newAction.TrueCost === 'number' && _action.TrueCost !== newAction.TrueCost) {
-                _action.TrueCost = newAction.TrueCost
-                hasTrueCost = true
-            }
-            this.setState({ ListAction: lstAction })
-            if (hasExpectCost) {
-                this.setState({ ExpectCost: getExpC(lstAction.map(s => s.ExpectCost)) })
-            }
-            if (hasTrueCost) {
-                this.setState({ TrueCost: getTrueC(lstAction.map(s => s.TrueCost)) })
-            }
-        }
+        this.setState({ ExpectCost: getExpC(lstAction.map(s => s.ExpectCost)) })
+        this.setState({ TrueCost: getTrueC(lstAction.map(s => s.TrueCost)) })
     }
     onCancelAddNewAction = (sId) => {
         this.setState({ NewAction: null })
@@ -116,7 +81,6 @@ export class Subgoal extends Component {
             this.setStateRelative(lstAction)
             deleteAction(id)
         }
-        console.log(`on delete action`, id)
     }
     setStateRelative = (lstAction) => {
         this.setState({ ListAction: lstAction })
@@ -150,48 +114,53 @@ export class Subgoal extends Component {
                     style={{ cursor: 'pointer' }}>&nbsp; New &#9632;</span>
             </div></div> :
             <div className='dnb_item_view'>
-                <FormEditAction
-                    Name={`Action ${Date.now()}`}
-                    Start={getDateAfterDaysString(0)}
-                    End={getDateAfterDaysString(1)}
-                    ExpCost={0} TrueCost={0}
-                    onCloseEditForm={this.onCancelAddNewAction}
-                    onSaveAction={this.onInsertNewAction}
-                />
+                <ItemContext.Provider value={{
+                    Name: `Action ${Date.now()}`, Start: getDateAfterDaysString(0),
+                    End: getDateAfterDaysString(1), ExpectCost: 0, TrueCost: 0
+                }}>
+                    <ActionViewEdit
+                        onCloseEditForm={this.onCancelAddNewAction}
+                        onSaveAction={this.onInsertNewAction}
+                    />
+                </ItemContext.Provider>
             </div>}</>
     }
-    handleExpand = (isExpand) => {
-        if (!this.props.isExpandParent) {
-            return
-        }
+    onExpandSub = (isExpand) => {
+        if (!this.props.isExpandParent) return
         this.setState({ IsExpand: isExpand })
     }
     render() {
         const { item, isExpandParent } = this.props
         const { ListAction, ExpectCost, TrueCost, IsExpand } = this.state
+        const valContext = Object.assign({
+            IsExpand: isExpandParent && IsExpand,
+            handleExpand: this.onExpandSub,
+            handleDelete: this.onDeleteGoal,
+            TypeId: 2, ExpectCost: ExpectCost, TrueCost: TrueCost
+        }, item)
         return (
-            <div className={`dnb_item_view${!IsExpand ? ' dnb_sub_collapse' : ''}`}>
-                <GoalItem
-                    item={item}
-                    ExpCost={ExpectCost} TrueCost={TrueCost}
-                    handleExpand={this.handleExpand} isExpand={IsExpand && isExpandParent}
-                    updateGoalUI={this.updateGoalUI}
-                    insertNewChild={this.addNewAction}
-                    onDeleteGoal={this.onDeleteGoal}
-                    handlerDuplicate={this.handlerDuplicate} />
-                <div className='dnb_item_list_action'>
-                    {
-                        ListAction.map(action => {
-                            return <Action key={action.Id}
-                                item={action} isExpandParent={IsExpand && isExpandParent}
-                                onDeleteAction={this.onDeleteAction}
-                                onDuplicateAction={this.onDuplicateAction}
-                                updateAction={this.updateAction} />
-                        })
-                    }
-                    {this.getFormActionAddEdit()}
+            <>
+                <div className={`dnb_item_view${!IsExpand ? ' dnb_sub_collapse' : ''}`}>
+                    <ItemContext.Provider value={valContext}>
+                        <GoalItemView
+                            updateGoalUI={this.updateGoalUI}
+                            insertNewChild={this.addNewAction}
+                            handlerDuplicate={this.handlerDuplicate} />
+                    </ItemContext.Provider>
+                    <div className='dnb_item_list_action'>
+                        {
+                            ListAction.map(action => {
+                                return <ActionView key={action.Id}
+                                    item={action} isExpandParent={isExpandParent && IsExpand}
+                                    onDeleteAction={this.onDeleteAction}
+                                    onDuplicateAction={this.onDuplicateAction}
+                                    updateAction={this.updateAction} />
+                            })
+                        }
+                        {this.getFormActionAddEdit()}
+                    </div>
                 </div>
-            </div>
+            </>
         )
     }
 }

@@ -208,6 +208,14 @@ $wCalendar: 192px;
     padding-top: $m3px;
     align-content: center;
 
+    .dnb_item_title {
+        cursor: default;
+
+        >span {
+            cursor: pointer;
+        }
+    }
+
     .dnb_item_cost {
         font-size: $fSizeCollp;
     }
@@ -267,6 +275,10 @@ $wCalendar: 192px;
 
             .dnb_item_title {
                 padding-left: 9px;
+
+                >span {
+                    cursor: default;
+                }
             }
 
             .dnb_item_cost {
@@ -321,6 +333,10 @@ $wCalendar: 192px;
 
             .dnb_item_title {
                 padding-left: 9px;
+
+                >span {
+                    cursor: default;
+                }
             }
 
             .dnb_item_view {
@@ -343,6 +359,10 @@ $wCalendar: 192px;
 
                 .dnb_item_title {
                     padding-left: 15px;
+
+                    >span {
+                        cursor: default;
+                    }
                 }
 
                 .dnb_item_cost {
@@ -367,6 +387,7 @@ $wCalendar: 192px;
 .bi-layout-sidebar::before {
     transform: rotate(-90deg);
 }
+
 
 @media screen and (max-width: 1449px) {
     .dnb_item_container.d_item_collapse {
@@ -450,7 +471,8 @@ $wCalendar: 192px;
             margin-left: 6px;
 
             &.dnb_sub_collapse {
-                margin-left: 0;width: 100vw;
+                margin-left: 0;
+                width: 100vw;
             }
 
             .dnb_item_list_action .dnb_item_container {
@@ -465,10 +487,16 @@ $wCalendar: 192px;
 }
 
 @media screen and (max-width: 540px) {
-    .dnb_main_container > .dnb_item_container {margin-left: 0;}
+    .dnb_main_container>.dnb_item_container {
+        margin-left: 0;
+    }
+
     .dnb_item_container {
         width: 100%;
         margin-right: 0;
     }
-    .dnb_item_list_sub > .dnb_item_view > .dnb_item_container{width: calc(100% - 3px);}
+
+    .dnb_item_list_sub>.dnb_item_view>.dnb_item_container {
+        width: calc(100% - 3px);
+    }
 }

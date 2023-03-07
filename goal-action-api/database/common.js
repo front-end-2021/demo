@@ -25,10 +25,34 @@ function getColSub(sub, newId) {
         Columns: columns, Values: values
     }
 }
+function getColMain(main, newId) {
+    let columns = `Id, Name`
+    let values = `'${newId}', '${main.Name}'`
+    if (main.Start) {
+        columns += `, Start`
+        values += `, '${main.Start}'`
+    }
+    if (main.End) {
+        columns += `, End`
+        values += `, '${main.End}'`
+    }
+    if (main.Description) {
+        columns += `, Description`
+        values += `, '${main.Description}'`
+    }
+    if (main.Budget) {
+        columns += `, Budget`
+        values += `, ${main.Budget}`
+    }
+    return {
+        Columns: columns, Values: values
+    }
+}
 module.exports = {
     dbName: dbName,
     tableMain: tableMain,
     tableSub: tableSub,
     tableAction: tableAction,
-    getColSub: getColSub
+    getColSub: getColSub,
+    getColMain: getColMain,
 }

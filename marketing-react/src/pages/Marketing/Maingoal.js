@@ -1,102 +1,20 @@
-import { Component } from "react"
+import React, { Component } from "react"
 import {
-    getDataGoalAction, getDataGoalActionWith,
-    insertSub, deleteSubApi, duplicateSub,
-    insertMain, deleteMainApi
+    getDataGoalActionWith,
+    insertSub, deleteSubApi, duplicateSub
 } from "../../service"
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
-import { FormEditGoal } from "./GoalItem"
-import { GoalItem } from "./GoalItem"
+import { GoalItemView, GoalItemEdit } from "./GoalView"
 import { Subgoal } from "./Subgoal"
-import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
-import '../../styles/ga.scss'
 
-export class ListMainProvider extends Component {
-    constructor(props) {
-        super(props)
-        this.state = { ListMain: [], NewMain: false }
-    }
-    componentDidMount = () => {
-        getDataGoalAction('mains').then(mains => {
-            const lstMain = []
-            mains.forEach(m => {
-                m.IsDone = !!m.IsDone
-                lstMain.push(m)
-            })
-            this.setState({ ListMain: lstMain })
-        })
-    }
-    updateDataGoals = (newGoal) => {
-        updateGoalUI.call(this.state.ListMain, newGoal)
-    }
-    onDeleteMain = (id) => {
-        const lstMain = this.state.ListMain
-        deleteMainApi(id).then(res => {
-            const _i = lstMain.map(m => m.Id).indexOf(id)
-            if (_i > -1) {
-                lstMain.splice(_i, 1)       // remove
-                this.setState({ ListMain: lstMain })
-            }
-        })
-    }
-    onCancelAddNewMain = () => {
-        this.setState({ NewMain: false })
-    }
-    onInsertNewMain = (goal) => {
-        if (goal.Start.trim() === '') delete goal.Start
-        if (typeof goal.Description !== 'string' || goal.Description.trim() === '') {
-            delete goal.Description
-        }
-        if (goal.End.trim() === '') delete goal.End
-
-        insertMain(goal).then(newId => {
-            if (!newId.includes('invalid')) {
-                goal.Id = newId
-                const lstMain = this.state.ListMain
-                lstMain.push(goal)
-                this.setState({ ListMain: lstMain })
-            }
-            this.onCancelAddNewMain()
-        })
-    }
-    render() {
-        const { ListMain, NewMain } = this.state
-        return (
-            <>
-                {
-                    ListMain.map(main => {
-                        return <Maingoal item={main} key={main.Id}
-                            onDeleteMain={this.onDeleteMain}
-                            updateDataGoals={this.updateDataGoals} />
-                    })
-                }
-                {
-                    !NewMain ? <div className='dnb_add_main'>
-                        <span className="bi bi-plus-circle-dotted"
-                            onClick={() => this.setState({ NewMain: true })}
-                            style={{ cursor: 'pointer' }} >&nbsp; New &#9673;</span>
-                    </div> :
-                        <div className='dnb_item_view'>
-                            <FormEditGoal
-                                Name={`Main goal ${Date.now()}`}
-                                Start={getDateAfterDaysString(0)}
-                                End={getDateAfterDaysString(1)}
-                                Budget={0}
-                                onCloseEditForm={this.onCancelAddNewMain}
-                                onSaveGoal={this.onInsertNewMain}
-                            />
-                        </div>
-                }
-            </>
-        )
-    }
-}
-class Maingoal extends Component {
+//Name, Description, IsDone, Start, End, IsExpand, TypeId [, ExpectCost, TrueCost, Budget, OpenCost] 
+export const ItemContext = React.createContext()
+export class Maingoal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            ListSub: [], IsExpand: true,
-            ExpectCost: 0, TrueCost: 0,
+            ListSub: [],
+            IsExpand: true, ExpectCost: 0, TrueCost: 0,
             NewSub: null
         }
     }
@@ -200,32 +118,37 @@ class Maingoal extends Component {
             }
         })
     }
-    handleExpand = (isExpand) => {
+    onExpandMain = (isExpand) => {
         this.setState({ IsExpand: isExpand })
     }
     render() {
         const { NewSub, ListSub, ExpectCost, TrueCost, IsExpand } = this.state
         const { item } = this.props
+        const mainCxt = Object.assign({
+            IsExpand: IsExpand,
+            handleExpand: this.onExpandMain,
+            handleDelete: this.onDeleteGoal,
+            TypeId: 1, ExpectCost: ExpectCost, TrueCost: TrueCost
+        }, item)
         return (
             <div className={`dnb_item_view dnb_main_container${!IsExpand ? ` dnb_main_collapse` : ''}`}>
-                <GoalItem
-                    item={item}
-                    ExpCost={ExpectCost} TrueCost={TrueCost}
-                    handleExpand={this.handleExpand} isExpand={IsExpand}
-                    updateGoalUI={this.updateGoalUI}
-                    insertNewChild={this.handleAddNewSub}
-                    onDeleteGoal={this.onDeleteGoal} />
+                <ItemContext.Provider value={mainCxt}>
+                    <GoalItemView
+                        updateGoalUI={this.updateGoalUI}
+                        insertNewChild={this.handleAddNewSub} />
+                </ItemContext.Provider>
                 <div className='dnb_item_list_sub'>
                     {
                         !IsExpand || !NewSub ? <></> : <div className='dnb_item_view'>
-                            <FormEditGoal ParentId={item.Id}
-                                Name={`Subgoal ${Date.now()}`}
-                                Start={getDateAfterDaysString(0)}
-                                End={getDateAfterDaysString(1)}
-                                Budget={0}
-                                onCloseEditForm={this.onCancelAddNewSub}
-                                onSaveGoal={this.onInsertNewSub}
-                            />
+                            <ItemContext.Provider value={{
+                                Name: `Subgoal ${Date.now()}`, Start: getDateAfterDaysString(0),
+                                End: getDateAfterDaysString(1), Budget: 0, ParentId: item.Id
+                            }}>
+                                <GoalItemEdit
+                                    onCloseEditForm={this.onCancelAddNewSub}
+                                    onSaveGoal={this.onInsertNewSub}
+                                />
+                            </ItemContext.Provider>
                         </div>
                     }
                     {
@@ -245,9 +168,9 @@ class Maingoal extends Component {
     }
 }
 
-function updateGoalUI(newGoal) {
-    const listMainSub = this
-    const _goal_ = listMainSub.find(g => g.Id === newGoal.Id)
+export function updateGoalUI(newGoal) {
+    const lstChild = this
+    const _goal_ = lstChild.find(g => g.Id === newGoal.Id)
     if (_goal_) {
         if (typeof newGoal.Name === 'string' &&
             newGoal.Name.trim() !== '' && newGoal.Name !== _goal_.Name) {

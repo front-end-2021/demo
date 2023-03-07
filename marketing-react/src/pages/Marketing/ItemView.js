@@ -1,40 +1,38 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
 import { getDateCalendarValue, getDateString, getIcon, isDateLessNow } from "../../global"
-import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
-import '../../styles/ga.scss'
+import { ItemContext } from "./Maingoal"
 
-export function GoalActionView({ typeid, children, lessC,
-    name, des, isDone, start, end,
-    isExpand, handleExpand,
+export function ItemViewExpand({ children,
     addNewChild,
-    handleDelete, handlerDuplicate,
+    handlerDuplicate,
     setEditView, onToggleDone }) {
+    const item = useContext(ItemContext)
     const [isShowMenu, setShowMenu] = useState(false)
 
     function getStartTag() {
-        if (!start) return <></>
+        if (!item.Start) return <></>
         return <>
-            <span className={`bi bi-calendar2-week${getClassOverDate(start)}`} />
+            <span className={`bi bi-calendar2-week${getClassOverDate(item.Start)}`} />
             {
-                !isDateLessNow(start) ? <span className={`dnb-d-start`}>&nbsp;{getDateString(start)}</span> :
+                !isDateLessNow(item.Start) ? <span className={`dnb-d-start`}>&nbsp;{getDateString(item.Start)}</span> :
                     <span title="Start Date is in the past from Current Date"
-                        className={`dnb-d-start${getClassOverDate(start)}`}>&nbsp;{getDateString(start)}</span>
+                        className={`dnb-d-start${getClassOverDate(item.Start)}`}>&nbsp;{getDateString(item.Start)}</span>
             }
         </>
     }
     function getEndTag() {
-        if (!end) return <></>
+        if (!item.End) return <></>
         return <>
             <span className='dnb_d_div'>&minus;</span>
             {
-                !isDateLessNow(end) ? <span className="dnb-d-end">{getDateString(end)}</span> :
+                !isDateLessNow(item.End) ? <span className="dnb-d-end">{getDateString(item.End)}</span> :
                     <span title="End Date is in the past from Current Date"
-                        className="dnb-d-end">{getDateString(end)}</span>
+                        className="dnb-d-end">{getDateString(item.End)}</span>
             }
         </>
     }
     function getClsDone() {
-        if (isDone) return `bi bi-check-circle-fill`
+        if (item.IsDone) return `bi bi-check-circle-fill`
         return `bi bi-check-circle`
     }
     function getMenuTag() {
@@ -42,7 +40,9 @@ export function GoalActionView({ typeid, children, lessC,
         return <>
             <div className='dnb_i_menu'>
                 <span>{getEditTag()}</span>
-                <span>{getDuplicateTag()}</span>
+                {
+                    item.TypeId > 1 ? <span>{getDuplicateTag()}</span> : <></>
+                }
                 <span>{getDeleteTag()}</span>
                 <span style={{ cursor: 'initial' }}>
                     <span className={getClsDone()} style={{ cursor: 'pointer' }}
@@ -53,57 +53,53 @@ export function GoalActionView({ typeid, children, lessC,
         </>
     }
     function getDeleteTag() {
-        if (isDone) return <i className="bi bi-trash">&nbsp; Delete</i>
+        if (item.IsDone) return <i className="bi bi-trash">&nbsp; Delete</i>
         return <span className="bi bi-trash" style={{ cursor: 'pointer' }}
-            onClick={() => handleDelete()}>&nbsp; Delete</span>
+            onClick={() => item.handleDelete()}>&nbsp; Delete</span>
     }
     function getEditTag() {
-        if (isDone) return <i className="bi bi-pencil-square" >&nbsp; Edit</i>
+        if (item.IsDone) return <i className="bi bi-pencil-square" >&nbsp; Edit</i>
         return <span className="bi bi-pencil-square" style={{ cursor: 'pointer' }}
             onClick={() => setEditView(true)}>&nbsp; Edit</span>
     }
     function getDuplicateTag() {
-        if (isDone) return <i className="bi bi-files">&nbsp; Duplicate</i>
+        if (item.IsDone) return <i className="bi bi-files">&nbsp; Duplicate</i>
         return <span className="bi bi-files" style={{ cursor: 'pointer' }}
             onClick={() => handlerDuplicate()}>&nbsp; Duplicate</span>
     }
     function getAddNewTag() {
-        if (typeid > 2) return <></>
-        if (isDone) return <span className="bi bi-plus-circle-dotted">&nbsp; New {getIcon(typeid + 1)}</span>
+        if (item.TypeId > 2) return <></>
+        if (item.IsDone) return <span className="bi bi-plus-circle-dotted">&nbsp; New {getIcon(item.TypeId + 1)}</span>
         return <span className="bi bi-plus-circle-dotted" style={{ cursor: 'pointer' }}
-            onClick={() => addNewChild(typeid + 1)}>&nbsp; New {getIcon(typeid + 1)}</span>
+            onClick={() => addNewChild(item.TypeId + 1)}>&nbsp; New {getIcon(item.TypeId + 1)}</span>
     }
     function getDesTag() {
-        const _des = { __html: des }
+        const _des = { __html: item.Description }
         return <p dangerouslySetInnerHTML={_des}
             className='dnb_item_description o_81' />
     }
-    function getNameTag() {
-        if (lessC < 0) {
-            return <div title="Expected Cost is less then True Cost"
-                className={`dnb_item_title d_exp_less_true`}
-                onClick={() => handleExpand(false)}>{getIcon(typeid)} {name}</div>
-        }
-        return <div className='dnb_item_title'
-            onClick={() => handleExpand(false)}>{getIcon(typeid)} {name}</div>
+    function isLess() {
+        return item.ExpectCost < item.TrueCost
     }
-    function onExpand() {
-        handleExpand(true)
+    function getNameTag() {
+        return <div title={isLess() ? 'Expected Cost is less then True Cost' : null}
+            className={`dnb_item_title${isLess() ? ' d_exp_less_true' : ''}`}
+            onClick={() => item.handleExpand(false)}>{getIcon(item.TypeId)} {item.Name}</div>
     }
     return (
         <>{
-            isExpand ? <div className={`dnb_item_container${isDone ? ` dnb_item_done` : ''}`}>
+            item.IsExpand ? <div className={`dnb_item_container${item.IsDone ? ` dnb_item_done` : ''}`}>
                 {getNameTag()}
                 {getDesTag()}
                 <div className='dnb_item_cost'>
                     {children}
                 </div>
-                <div className={`dnb_item_date${getClassOverDate(end)}`}>
+                <div className={`dnb_item_date${getClassOverDate(item.End)}`}>
                     {getStartTag()}
-                    {isExpand ? getEndTag() : <></>}
+                    {item.IsExpand ? getEndTag() : <></>}
                 </div>
                 {
-                    !isExpand ? <></> : <div className='dnb_i_options'>
+                    !item.IsExpand ? <></> : <div className='dnb_i_options'>
                         <span onClick={() => setShowMenu(!isShowMenu)}
                             className="bi bi-layout-sidebar">&nbsp; {isShowMenu ? 'Hide' : 'Menu'} &nbsp;</span>
                         <span className={`bi bi-chevron-${isShowMenu ? 'down' : 'right'}`}
@@ -111,22 +107,19 @@ export function GoalActionView({ typeid, children, lessC,
                     </div>
                 }
                 {getMenuTag()}
-            </div> : <GoalActionCollapse typeid={typeid} lessC={lessC}
-                name={name} isDone={isDone} start={start} end={end}
-                handleExpand={onExpand}>
+            </div> : <ItemViewCollapse>
                 {children}
-            </GoalActionCollapse>
+            </ItemViewCollapse>
         }</>
     )
 }
-export function FormEditItem({ Name, Description, Start, End,
-    children, typeid, lessC,
+export function ItemViewEdit({ children, isExpectLessTrue, 
     onSaveData, onCloseEditForm }) {
-    const [name, setName] = useState(Name)
-    const [des, setDes] = useState(Description)
-    const [start, setStart] = useState(getDateCalendarValue(Start))
-    const [end, setEnd] = useState(getDateCalendarValue(End))
-
+    const item = useContext(ItemContext)
+    const [name, setName] = useState(item.Name)
+    const [des, setDes] = useState(item.Description)
+    const [start, setStart] = useState(getDateCalendarValue(item.Start))
+    const [end, setEnd] = useState(getDateCalendarValue(item.End))
     function handleChangeStart(e) {
         const newD = e.target.value
         setStart(newD)
@@ -141,7 +134,7 @@ export function FormEditItem({ Name, Description, Start, End,
     }
     function handleMouseOutChangeName(e) {
         const newName = e.target.value
-        if (newName.trim() === '') setName(Name)
+        if (newName.trim() === '') setName(item.Name)
     }
     function handleChangeDes(e) {
         const newDes = e.target.value
@@ -166,11 +159,11 @@ export function FormEditItem({ Name, Description, Start, End,
         return `${Math.ceil(l * 30 / 51)}px`
     }
     function getClsExpLess() {
-        return lessC < 0 ? ` d_exp_less_true` : ''
+        return isExpectLessTrue ? ` d_exp_less_true` : ''
     }
     return (
         <div className={`dnb_item_container dnb_item_edit`}>
-            <div className={getClsExpLess()}>{getIcon(typeid)} <input
+            <div className={getClsExpLess()}>{getIcon(item.Typeid)} <input
                 value={name} maxLength="150"
                 className={`dnb_edit_name ${getClsExpLess()}`}
                 type="text" onChange={handleChangeName}
@@ -214,44 +207,44 @@ function getClassOverDate(start_end) {
     }
     return ''
 }
-function GoalActionCollapse({
-    typeid, lessC, children,
-    name, isDone, start, end,
-    handleExpand }) {
+function ItemViewCollapse({ children }) {
+    const item = useContext(ItemContext)
     function getStartTag() {
-        if (!start) return <></>
+        if (!item.Start) return <></>
         return <>
-            <span className={`bi bi-calendar2-week${getClassOverDate(start)}`} />
+            <span className={`bi bi-calendar2-week${getClassOverDate(item.Start)}`} />
             {
-                !isDateLessNow(start) ? <span
-                    className={`dnb-d-start`}>&nbsp;{getDateString(start)}</span> :
+                !isDateLessNow(item.Start) ? <span
+                    className={`dnb-d-start`}>&nbsp;{getDateString(item.Start)}</span> :
                     <span title="Start Date is in the past from Current Date"
-                        className={`dnb-d-start${getClassOverDate(start)}`}>&nbsp;{getDateString(start)}</span>
+                        className={`dnb-d-start${getClassOverDate(item.Start)}`}
+                    >&nbsp;{getDateString(item.Start)}</span>
             }
         </>
     }
     function getEndTag() {
-        if (!end) return <></>
+        if (!item.End) return <></>
         return <>
             <span className={`dnb_d_div`}>&minus;</span>
             {
-                !isDateLessNow(end) ? <span className="dnb-d-end">{getDateString(end)}</span> :
+                !isDateLessNow(item.End) ? <span className="dnb-d-end">{getDateString(item.End)}</span> :
                     <span title="End Date is in the past from Current Date"
-                        className="dnb-d-end">{getDateString(end)}</span>
+                        className="dnb-d-end">{getDateString(item.End)}</span>
             }
         </>
     }
+    function isLess() {
+        return item.ExpectCost < item.TrueCost
+    }
     function getNameTag() {
-        if (lessC < 0) {
-            return <div title="Expected Cost is less then True Cost"
-                className={`dnb_item_title d_exp_less_true`}
-                onClick={() => handleExpand()}>{getIcon(typeid)} {name}</div>
-        }
-        return <div className={`dnb_item_title`}
-            onClick={() => handleExpand()}>{getIcon(typeid)} {name}</div>
+        return <div title={isLess() ? 'Expected Cost is less then True Cost' : null}
+            className={`dnb_item_title${isLess() ? ' d_exp_less_true' : ''}`} >
+            <span onClick={() => item.handleExpand(true)}
+            >{getIcon(item.TypeId)} {item.Name}</span>
+        </div>
     }
     function getClsWrap() {
-        return `dnb_item_container d_item_collapse${isDone ? ` dnb_item_done` : ''}`
+        return `dnb_item_container d_item_collapse${item.IsDone ? ` dnb_item_done` : ''}`
     }
     return (
         <div className={getClsWrap()}>
@@ -259,7 +252,7 @@ function GoalActionCollapse({
             <div className={`dnb_item_cost`}>
                 {children}
             </div>
-            <div className={`dnb_item_date ${getClassOverDate(end)}`}>
+            <div className={`dnb_item_date ${getClassOverDate(item.End)}`}>
                 {getStartTag()}
                 {getEndTag()}
             </div>

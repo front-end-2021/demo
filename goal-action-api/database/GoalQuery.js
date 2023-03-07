@@ -84,25 +84,8 @@ function insertNewMain(main) {
     delete main.ParentId
     return new Promise(res => {
         const newId = uuidv4()
-        let columns = `Id, Name`
-        let values = `'${newId}', '${main.Name}'`
-        if (main.Start) {
-            columns += `, Start`
-            values += `, '${main.Start}'`
-        }
-        if (main.End) {
-            columns += `, End`
-            values += `, '${main.End}'`
-        }
-        if (main.Description) {
-            columns += `, Description`
-            values += `, '${main.Description}'`
-        }
-        if (main.Budget) {
-            columns += `, Budget`
-            values += `, ${main.Budget}`
-        }
-        dbLite.insertIntoTable(vCommon.dbName, vCommon.tableMain, columns, values)
+        const mainO = vCommon.getColMain(main, newId)
+        dbLite.insertIntoTable(vCommon.dbName, vCommon.tableMain, mainO.Columns, mainO.Values)
         res(newId)
     })
 
