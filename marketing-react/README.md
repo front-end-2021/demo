@@ -19,8 +19,10 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 <i>Ref: https://jsramblings.com/dockerizing-a-react-app/</i>
 <br/><br/>
 
-# Document (Getting Started with Create React App)
+# Present (demo)
+![main view](https://raw.githubusercontent.com/front-end-2021/demo/main/marketing-react/present.jpg)
 
+# Document (Getting Started with Create React App)
 <details>
 <summary>This project was bootstrapped with <a href="https://github.com/facebook/create-react-app">Create React App</a>
 </summary>
