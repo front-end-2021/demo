@@ -163,7 +163,7 @@ export function ItemViewEdit({ children, isExpectLessTrue,
     }
     return (
         <div className={`dnb_item_container dnb_item_edit`}>
-            <div className={getClsExpLess()}>{getIcon(item.Typeid)} <input
+            <div className={getClsExpLess()}>{getIcon(item.TypeId)} <input
                 value={name} maxLength="150"
                 className={`dnb_edit_name ${getClsExpLess()}`}
                 type="text" onChange={handleChangeName}
