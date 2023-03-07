@@ -200,6 +200,7 @@ $wCost: 120px;
 $wCollapse: 100%;
 $fSizeCollp: 14px;
 $wCalendar: 192px;
+$wPC: $wCost + 6px;
 
 .dnb_item_container.d_item_collapse {
     width: calc(100vw - 2 * $width - 96px);
@@ -295,6 +296,39 @@ $wCalendar: 192px;
 
     .dnb_item_title {
         padding-right: 4 * $m3px;
+    }
+
+    &>.dnb_item_container.d_item_collapse {
+        grid-template-columns: auto 2 * $wCost + 2 * $wPC $wCalendar;
+
+        &>.dnb_item_cost {
+            grid-template-columns: $wCost $wCost $wPC $wPC;
+            max-width: initial;
+
+            .dnb-expect-cost .dnb_icost_value,
+            .dnb-true-cost .dnb_icost_value {
+                font-weight: 700;
+            }
+        }
+
+        &+.dnb_item_list_sub {
+            &>.dnb_item_view {
+                &>.d_item_collapse {
+                    grid-template-columns: auto 2 * $wCost + 2 * $wPC $wCalendar;
+
+                    &>.dnb_item_cost {
+                        grid-template-columns: $wCost $wCost $wPC $wPC;
+                        max-width: initial;
+
+                        .dnb-expect-cost .dnb_icost_value,
+                        .dnb-true-cost .dnb_icost_value {
+                            font-weight: 600;
+                            color: #999;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     .dnb_item_container {
