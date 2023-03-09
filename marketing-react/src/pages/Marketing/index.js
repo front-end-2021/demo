@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import {
-    getDataGoalAction, insertMain, deleteMainApi
+    getDataGoalAction, apiInsertMain, apiDeleteMain
 } from "../../service"
 import { getDateAfterDaysString } from "../../global"
 import { GoalItemEdit } from "./GoalView"
@@ -18,7 +18,7 @@ class ListMain extends Component {
         this.state = { ListMain: null, NewMain: false }
     }
     componentDidMount = () => {
-        const { hide } = this.context;
+        const { setLoading } = this.context;
         getDataGoalAction('mains').then(mains => {
             const lstMain = []
             mains.forEach(m => {
@@ -26,7 +26,7 @@ class ListMain extends Component {
                 lstMain.push(m)
             })
             this.setState({ ListMain: lstMain })
-            hide()
+            setLoading(false)
         })
     }
     updateDataGoals = (newGoal) => {
@@ -34,7 +34,7 @@ class ListMain extends Component {
     }
     onDeleteMain = (id) => {
         const lstMain = this.state.ListMain
-        deleteMainApi(id).then(res => {
+        apiDeleteMain(id).then(res => {
             const _i = lstMain.map(m => m.Id).indexOf(id)
             if (_i > -1) {
                 lstMain.splice(_i, 1)       // remove
@@ -52,7 +52,7 @@ class ListMain extends Component {
         }
         if (goal.End.trim() === '') delete goal.End
 
-        insertMain(goal).then(newId => {
+        apiInsertMain(goal).then(newId => {
             if (!newId.includes('invalid')) {
                 goal.Id = newId
                 const lstMain = this.state.ListMain

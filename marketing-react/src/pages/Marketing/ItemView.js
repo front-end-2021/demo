@@ -2,10 +2,8 @@ import { useState, useContext } from "react"
 import { getDateCalendarValue, getDateString, getIcon, isDateLessNow } from "../../global"
 import { ItemContext } from "./Maingoal"
 
-export function ItemViewExpand({ children,
-    addNewChild,
-    handlerDuplicate,
-    setEditView, onToggleDone }) {
+export function ItemViewExpand({ children, className,
+    addNewChild, setEditView, onToggleDone }) {
     const item = useContext(ItemContext)
     const [isShowMenu, setShowMenu] = useState(false)
 
@@ -65,7 +63,7 @@ export function ItemViewExpand({ children,
     function getDuplicateTag() {
         if (item.IsDone) return <i className="bi bi-files">&nbsp; Duplicate</i>
         return <span className="bi bi-files" style={{ cursor: 'pointer' }}
-            onClick={() => handlerDuplicate()}>&nbsp; Duplicate</span>
+            onClick={() => item.handleDuplicate()}>&nbsp; Duplicate</span>
     }
     function getAddNewTag() {
         if (item.TypeId > 2) return <></>
@@ -78,17 +76,22 @@ export function ItemViewExpand({ children,
         return <p dangerouslySetInnerHTML={_des}
             className='dnb_item_description o_81' />
     }
-    function isLess() {
-        return item.ExpectCost < item.TrueCost
-    }
     function getNameTag() {
-        return <div title={isLess() ? 'Expected Cost is less then True Cost' : null}
-            className={`dnb_item_title${isLess() ? ' d_exp_less_true' : ''}`}
+        const isLess = item.ExpectCost < item.TrueCost
+        return <div title={isLess ? 'Expected Cost is less then True Cost' : null}
+            className={`dnb_item_title${isLess ? ' d_exp_less_true' : ''}`}
             onClick={() => item.handleExpand(false)}>{getIcon(item.TypeId)} {item.Name}</div>
+    }
+    function getClassWrap() {
+        let _r = `dnb_item_container`
+        if(typeof className == 'string' && className.trim() !== '')
+            _r += ` ${className}`
+        if (item.IsDone) _r += ` dnb_item_done`
+        return _r
     }
     return (
         <>{
-            item.IsExpand ? <div className={`dnb_item_container${item.IsDone ? ` dnb_item_done` : ''}`}>
+            item.IsExpand ? <div className={getClassWrap()}>
                 {getNameTag()}
                 {getDesTag()}
                 <div className='dnb_item_cost'>
@@ -113,7 +116,7 @@ export function ItemViewExpand({ children,
         }</>
     )
 }
-export function ItemViewEdit({ children, isExpectLessTrue, 
+export function ItemViewEdit({ children, isExpectLessTrue,
     onSaveData, onCloseEditForm }) {
     const item = useContext(ItemContext)
     const [name, setName] = useState(item.Name)
@@ -233,12 +236,10 @@ function ItemViewCollapse({ children }) {
             }
         </>
     }
-    function isLess() {
-        return item.ExpectCost < item.TrueCost
-    }
     function getNameTag() {
-        return <div title={isLess() ? 'Expected Cost is less then True Cost' : null}
-            className={`dnb_item_title${isLess() ? ' d_exp_less_true' : ''}`} >
+        const isLess = item.ExpectCost < item.TrueCost
+        return <div title={isLess ? 'Expected Cost is less then True Cost' : null}
+            className={`dnb_item_title${isLess ? ' d_exp_less_true' : ''}`} >
             <span onClick={() => item.handleExpand(true)}
             >{getIcon(item.TypeId)} {item.Name}</span>
         </div>

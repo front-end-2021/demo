@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import {
     getDataGoalActionWith,
-    insertSub, deleteSubApi, duplicateSub
+    apiInsertSub, apiDeleteSub, apiDuplicateSub
 } from "../../service"
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
 import { GoalItemView, GoalItemEdit } from "./GoalView"
@@ -12,9 +12,8 @@ export class Maingoal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            ListSub: null,
+            ListSub: null, NewSub: null,
             IsExpand: true, ExpectCost: 0, TrueCost: 0,
-            NewSub: null
         }
     }
     componentDidMount = () => {
@@ -49,7 +48,7 @@ export class Maingoal extends Component {
         }
         if (sub.End.trim() === '') delete sub.End
 
-        insertSub(sub).then(newId => {
+        apiInsertSub(sub).then(newId => {
             if (!newId.includes('invalid')) {
                 sub.Id = newId
                 const lstSub = this.state.ListSub
@@ -91,7 +90,7 @@ export class Maingoal extends Component {
     onDeleteSub = (id) => {
         const lstSub = this.state.ListSub
         console.log(`on delete sub`, id)
-        deleteSubApi(id).then(() => {
+        apiDeleteSub(id).then(() => {
             const _i = lstSub.map(s => s.Id).indexOf(id)
             if (_i > -1) {
                 lstSub.splice(_i, 1)    // remove
@@ -108,7 +107,7 @@ export class Maingoal extends Component {
         })
     }
     onDuplicateSubgoal = (sub) => {
-        duplicateSub(sub).then(newId => {
+        apiDuplicateSub(sub).then(newId => {
             if (!newId.includes('invalid')) {
                 sub.Id = newId
                 const lstSub = this.state.ListSub

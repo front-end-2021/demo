@@ -4,8 +4,7 @@ import { ItemViewExpand, ItemViewEdit } from "./ItemView"
 import { getDateString } from "../../global"
 import { ItemContext } from "./Maingoal"
 
-export function GoalItemView({ updateGoalUI,
-    insertNewChild, handlerDuplicate }) {
+export function GoalItemView({ updateGoalUI, insertNewChild }) {
     const item = useContext(ItemContext)
     const [isEditView, setEditView] = useState(false)
 
@@ -64,7 +63,6 @@ export function GoalItemView({ updateGoalUI,
         <>{
             !isEditView ? <ItemViewExpand
                 addNewChild={addNewChild}
-                handlerDuplicate={handlerDuplicate}
                 setEditView={setEditView} onToggleDone={onToggleDone} >
                 <span title="Budget Cost"
                     className={`dnb_icost dnb-budget-cost`}>B:

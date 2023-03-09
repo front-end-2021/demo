@@ -3,93 +3,92 @@ import axios from "axios"
 const config = {
     headers: {
         'Access-Control-Allow-Origin': '*'
-    },
+    }, timeout: 6000,
 }
 const host = `http://localhost:8001/api/`
+function callApiData() {
+    const testMs = 1500
+    return new Promise(res => {
+        setTimeout(res, testMs)
+    })
+}
 export function getDataGoalAction(apiPath) {
     const url = `${host}${apiPath}`
-    return new Promise((resolve, reject) => {
-        axios.get(url, config)
+    return callApiData().then(r => {
+        return axios.get(url, config)
             .then(res => { return res.data })
-            .then(rData => { resolve(rData.data) })
+            .then(rData => { return rData.data })
     })
+
 }
 export function getDataGoalActionWith(apiPath, params) {
     const url = `${host}${apiPath}`
-    return new Promise((resolve, reject) => {
-        axios.get(url, Object.assign({
+    return callApiData().then(r => {
+        return axios.get(url, Object.assign({
             params: params
         }, config)).then(res => { return res.data })
-            .then(rData => { resolve(rData.data) })
+            .then(rData => { return rData.data })
     })
 }
 export function updateActionWithId(id, item) {
     const url = `${host}action/${id}`
-    return new Promise((resolve, reject) => {
-        axios.put(url, Object.assign({
-            params: item
+    return callApiData().then(r => {
+        return axios.put(url, Object.assign({
+            params: item,
         }, config)).then(res => { return res })
     })
 }
 export function updateGoalWithId(id, item) {
     const url = `${host}goal/${id}`
-    return new Promise((resolve, reject) => {
-        axios.put(url, Object.assign({
+    return callApiData().then(r => {
+        return axios.put(url, Object.assign({
             params: item
         }, config)).then(res => { return res })
     })
 }
-export function insertMain(goal) {
-    return new Promise((resolve, reject) => {
-        axios.post(`${host}main`, Object.assign({
+export function apiInsertMain(goal) {
+    return callApiData().then(d => {
+        return axios.post(`${host}main`, Object.assign({
             params: goal
-        }, config)).then(res => {
-            resolve(res.data)
-        })
+        }, config)).then(res => { return res.data })
     })
 }
-export function insertSub(sub) {
-    return new Promise((resolve, reject) => {
-        axios.post(`${host}sub`, Object.assign({
-            params: sub
-        }, config)).then(res => {
-            resolve(res.data)
-        })
+export function apiInsertSub(sub) {
+    return axios.post(`${host}sub`, Object.assign({
+        params: sub
+    }, config)).then(res => { return res.data })
+}
+export function apiInsertAction(item) {
+    return callApiData().then(d => {
+        return axios.post(`${host}action`,
+            Object.assign({
+                params: item
+            }, config)).then(res => { return res.data })
     })
 }
-export function insertAction(item) {
-    return new Promise((resolve, reject) => {
-        axios.post(`${host}action`, Object.assign({
-            params: item
-        }, config)).then(res => {
-            resolve(res.data)
-        })
+export function apiDeleteAction(id) {
+    return callApiData().then(d => {
+        return axios.delete(`${host}action/${id}`,
+            config).then(res => { return res })
     })
 }
-export function deleteAction(id) {
-    return axios.delete(`${host}action/${id}`,
-        config).then(res => {
-            return res
-        })
+export function apiDeleteSub(id) {
+    return callApiData().then(d => {
+        return axios.delete(`${host}sub/${id}`,
+            config).then(res => { return res })
+    })
 }
-export function deleteSubApi(id) {
-    return axios.delete(`${host}sub/${id}`,
-        config).then(res => {
-            return res
-        })
+export function apiDeleteMain(id) {
+    return callApiData().then(d => {
+        return axios.delete(`${host}main/${id}`,
+            config).then(res => { return res })
+    })
 }
-export function deleteMainApi(id) {
-    return axios.delete(`${host}main/${id}`,
-        config).then(res => {
-            return res
-        })
-}
-export function duplicateSub(sub) {
-    return new Promise((resolve, reject) => {
-        axios.post(`${host}copysub`, Object.assign({
-            params: sub
-        }, config)).then(res => {
-            resolve(res.data)
-        })
+export function apiDuplicateSub(sub) {
+    return callApiData().then(d => {
+        return axios.post(`${host}copysub`,
+            Object.assign({
+                params: sub
+            }, config)).then(res => { return res.data })
     })
 }

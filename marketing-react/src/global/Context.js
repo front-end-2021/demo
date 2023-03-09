@@ -1,4 +1,6 @@
-import React, { useContext, useState } from 'react'
+import React, {
+    useContext, useState,
+} from 'react'
 
 export const LoadingContext = React.createContext()
 
@@ -10,8 +12,7 @@ export function LoadingProvider({ children }) {
         <LoadingContext.Provider
             value={{
                 loading: loading,
-                show: () => setLoading(true),
-                hide: () => setLoading(false)
+                setLoading: (isLoading) => setLoading(!!isLoading),
             }}>
             {children}
             {loading && <Loading />}
@@ -20,7 +21,7 @@ export function LoadingProvider({ children }) {
 }
 function Loading() {
     return <div style={{
-        width: '100vw', height: '100vh',
+        width: '100vw', height: '100vh', zIndex: 9999,
         background: 'black', color: 'white',
         position: 'fixed', top: '0', left: '0',
         opacity: '0.123', textAlign: 'center'

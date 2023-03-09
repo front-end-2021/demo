@@ -5,23 +5,21 @@ import { updateActionWithId } from "../../service"
 import { ItemContext } from "./Maingoal"
 
 export function ActionView({ item, isExpandParent,
-    updateAction, onDeleteAction, onDuplicateAction }) {
+    pushUpdateAction, onDeleteAction, onDuplicateAction }) {
     const [isExpand, setExpand] = useState(true)
     const [isEditView, setEditView] = useState(false)
+    const [isloading, setLoading] = useState(false)
     function onToggleDone(e) {
         const is_done = !item.IsDone
         const entry = { IsDone: !!is_done }
-        onUpdateAction(entry)
         item.IsDone = !!is_done
         updateActionWithId(item.Id, entry)      // api put
-    }
-    function onUpdateAction(p) {
-        updateAction(Object.assign(item, p))
     }
     function onCloseEditForm() {
         setEditView(false)
     }
     function onSaveAction(newAction) {
+        setLoading(true)
         const entry = {}
         if (typeof newAction.Name == 'string' && newAction.Name.trim() !== ''
             && newAction.Name !== item.Name) {
@@ -33,7 +31,8 @@ export function ActionView({ item, isExpandParent,
             item.Description = newAction.Description
             entry.Description = newAction.Description
         }
-        if (typeof newAction.IsDone == 'boolean' && newAction.IsDone !== item.IsDone) {
+        if (typeof newAction.IsDone == 'boolean' &&
+            newAction.IsDone !== item.IsDone) {
             item.IsDone = newAction.IsDone
             entry.IsDone = newAction.IsDone
         }
@@ -47,18 +46,26 @@ export function ActionView({ item, isExpandParent,
             item.End = newAction.End
             entry.End = getDateString(newAction.End)
         }
+        let isChangeExpect = false
         if (typeof newAction.ExpectCost == 'number' &&
             newAction.ExpectCost !== item.ExpectCost) {
             item.ExpectCost = newAction.ExpectCost
             entry.ExpectCost = newAction.ExpectCost
+            isChangeExpect = true
         }
-        if (typeof newAction.TrueCost == 'number' && newAction.TrueCost !== item.TrueCost) {
+        let isChangeTrue = false
+        if (typeof newAction.TrueCost == 'number' &&
+            newAction.TrueCost !== item.TrueCost) {
             item.TrueCost = newAction.TrueCost
             entry.TrueCost = newAction.TrueCost
+            isChangeTrue = false
         }
-        onUpdateAction(newAction)
+        pushUpdateAction({ isChangeExpect, isChangeTrue })
         setEditView(false)
         updateActionWithId(item.Id, entry)  // api put
+            .then(res => {
+                setLoading(false)
+            })
     }
     function handleDelete() {
         onDeleteAction(item.Id)
@@ -78,13 +85,14 @@ export function ActionView({ item, isExpandParent,
             IsExpand: isExpandParent && isExpand,
             TypeId: 3,
             handleExpand: onExpand,
-            handleDelete: handleDelete
+            handleDelete: handleDelete,
+            handleDuplicate: handlerDuplicate,
         }, item)}>
             {
                 !isEditView ?
-                    <ItemViewExpand
-                        setEditView={setEditView} onToggleDone={onToggleDone}
-                        handlerDuplicate={handlerDuplicate}>
+                    <ItemViewExpand className={isloading ? 'fb-loading' : ''}
+                        setEditView={setEditView}
+                        onToggleDone={onToggleDone}>
                         <span title="Expected Cost"
                             className='dnb_icost dnb-expect-cost'>P:
                             <span className='dnb_icost_value'>${item.ExpectCost}</span>

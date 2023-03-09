@@ -4,11 +4,6 @@ export function getExpC(lstExp) {
 export function getTrueC(lstTrue) {
     return lstTrue.reduce((acu, crt) => acu + crt, 0)
 }
-export function getTrueCost(listSub) {
-    const { ListAction } = this.context
-    const lstTrue = listSub.map(s => ListAction.filter(a => a.ParentId === s.Id).map(a => a.TrueCost))[0]
-    return Array.isArray(lstTrue) ? getTrueC(lstTrue) : 0
-}
 export function getDateString(dateStr) {
     if (!dateStr) return ''
     const d = new Date(dateStr)

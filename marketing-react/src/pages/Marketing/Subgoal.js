@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import {
-    getDataGoalActionWith, insertAction, deleteAction
+    getDataGoalActionWith, apiInsertAction, apiDeleteAction
 } from "../../service"
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
 import { GoalItemView } from "./GoalView"
@@ -11,9 +11,8 @@ export class Subgoal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            ListAction: null,
+            ListAction: null, NewAction: null,
             IsExpand: true, ExpectCost: 0, TrueCost: 0,
-            NewAction: null
         }
     }
     componentDidMount = () => {
@@ -24,18 +23,16 @@ export class Subgoal extends Component {
                 a.IsDone = !!a.IsDone
                 lstAction.push(a)
             })
+            const expC = getExpC(lstAction.map(s => s.ExpectCost))
+            const trueC = getTrueC(lstAction.map(s => s.TrueCost))
             this.setState({
                 ListAction: lstAction,
-                ExpectCost: getExpC(lstAction.map(s => s.ExpectCost)),
-                TrueCost: getTrueC(lstAction.map(s => s.TrueCost))
+                ExpectCost: expC, TrueCost: trueC
             })
+            const { pushTrueCost, pushExpectCost, item } = this.props
+            pushExpectCost(expC, item.Id)
+            pushTrueCost(trueC, item.Id)
         })
-    }
-    componentDidUpdate = () => {
-        const { ExpectCost, TrueCost } = this.state
-        const { pushExpectCost, pushTrueCost, item } = this.props
-        pushExpectCost(ExpectCost, item.Id)
-        pushTrueCost(TrueCost, item.Id)
     }
     updateGoalUI = (newGoal) => {
         const { updateDataSubs } = this.props
@@ -44,10 +41,20 @@ export class Subgoal extends Component {
     addNewAction = (sId) => {
         this.setState({ NewAction: { ParentId: sId } })
     }
-    updateAction = (newAction) => {
+    pushUpdateAction = ({ isChangeExpect, isChangeTrue }) => {
         const lstAction = this.state.ListAction
-        this.setState({ ExpectCost: getExpC(lstAction.map(s => s.ExpectCost)) })
-        this.setState({ TrueCost: getTrueC(lstAction.map(s => s.TrueCost)) })
+        if (isChangeExpect) {
+            const exp = getExpC(lstAction.map(s => s.ExpectCost))
+            this.setState({ ExpectCost: exp })
+            const { pushExpectCost, item } = this.props
+            pushExpectCost(exp, item.Id)
+        }
+        if (isChangeTrue) {
+            const trueC = getTrueC(lstAction.map(s => s.TrueCost))
+            this.setState({ TrueCost: trueC })
+            const { pushTrueCost, item } = this.props
+            pushTrueCost(trueC, item.Id)
+        }
     }
     onCancelAddNewAction = (sId) => {
         this.setState({ NewAction: null })
@@ -59,7 +66,7 @@ export class Subgoal extends Component {
         }
         if (item.End.trim() === '') delete item.End
         item.ParentId = this.props.item.Id
-        insertAction(item).then(newId => {
+        apiInsertAction(item).then(newId => {
             if (!newId.includes('invalid')) {
                 item.Id = newId
                 const lstAction = this.state.ListAction
@@ -79,7 +86,7 @@ export class Subgoal extends Component {
         if (_i > -1) {
             lstAction.splice(_i, 1) // remove
             this.setStateRelative(lstAction)
-            deleteAction(id)
+            apiDeleteAction(id)
         }
     }
     setStateRelative = (lstAction) => {
@@ -88,7 +95,7 @@ export class Subgoal extends Component {
         this.setState({ TrueCost: getTrueC(lstAction.map(s => s.TrueCost)) })
     }
     onDuplicateAction = (item) => {
-        insertAction(item).then(newId => {
+        apiInsertAction(item).then(newId => {
             if (!newId.includes('invalid')) {
                 item.Id = newId
                 const lstAction = this.state.ListAction
@@ -136,6 +143,7 @@ export class Subgoal extends Component {
             IsExpand: isExpandParent && IsExpand,
             handleExpand: this.onExpandSub,
             handleDelete: this.onDeleteGoal,
+            handleDuplicate: this.handlerDuplicate,
             TypeId: 2, ExpectCost: ExpectCost, TrueCost: TrueCost
         }, item)
         return (
@@ -143,8 +151,7 @@ export class Subgoal extends Component {
                 <ItemContext.Provider value={valContext}>
                     <GoalItemView
                         updateGoalUI={this.updateGoalUI}
-                        insertNewChild={this.addNewAction}
-                        handlerDuplicate={this.handlerDuplicate} />
+                        insertNewChild={this.addNewAction} />
                 </ItemContext.Provider>
                 <div className='dnb_item_list_action'>{
                     !Array.isArray(ListAction) ? <span className="fb-loading"></span>
@@ -154,7 +161,7 @@ export class Subgoal extends Component {
                                     item={action} isExpandParent={isExpandParent && IsExpand}
                                     onDeleteAction={this.onDeleteAction}
                                     onDuplicateAction={this.onDuplicateAction}
-                                    updateAction={this.updateAction} />
+                                    pushUpdateAction={this.pushUpdateAction} />
                             })
                         }
                             {this.getFormActionAddEdit()}</>

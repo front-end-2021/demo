@@ -34,7 +34,7 @@ $bgcolor: white;
 .dnb_item_list_sub {
     display: grid;
     min-width: $width;
-    .fb-loading {margin-top: $m3px;}
+    .fb-loading {margin-top: $m3px; height: auto;}
 }
 
 .dnb_item_list_action {
