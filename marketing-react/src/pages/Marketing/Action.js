@@ -3,12 +3,13 @@ import { getDateString } from "../../global"
 import { ItemViewExpand, ItemViewEdit } from "./ItemView"
 import { updateActionWithId } from "../../service"
 import { ItemContext } from "./Maingoal"
+import { useDispatch } from "react-redux"
+import { setItems } from "../../global/ReduxStore"
 
 export function ActionView({ item, isExpandParent,
     pushUpdateAction, onDeleteAction, onDuplicateAction }) {
     const [isExpand, setExpand] = useState(true)
     const [isEditView, setEditView] = useState(false)
-    const [isloading, setLoading] = useState(false)
     function onToggleDone(e) {
         const is_done = !item.IsDone
         const entry = { IsDone: !!is_done }
@@ -18,53 +19,40 @@ export function ActionView({ item, isExpandParent,
     function onCloseEditForm() {
         setEditView(false)
     }
-    function onSaveAction(newAction) {
-        setLoading(true)
-        const entry = {}
-        if (typeof newAction.Name == 'string' && newAction.Name.trim() !== ''
-            && newAction.Name !== item.Name) {
-            item.Name = newAction.Name
-            entry.Name = newAction.Name
+    const dispatch = useDispatch()
+    function onSaveAction(entry) {
+        const isChangeExpect = typeof entry.ExpectCost === 'number'
+        if (isChangeExpect) {
+            item.ExpectCost = entry.ExpectCost
         }
-        if (typeof newAction.Description == 'string' &&
-            newAction.Description !== item.Description) {
-            item.Description = newAction.Description
-            entry.Description = newAction.Description
+        const isChangeTrue = typeof entry.TrueCost === 'number'
+        if (isChangeTrue) {
+            item.TrueCost = entry.TrueCost
         }
-        if (typeof newAction.IsDone == 'boolean' &&
-            newAction.IsDone !== item.IsDone) {
-            item.IsDone = newAction.IsDone
-            entry.IsDone = newAction.IsDone
+        if (typeof entry.Name == 'string' && entry.Name.trim() !== '') {
+            item.Name = entry.Name
         }
-        if (typeof newAction.Start == 'string' &&
-            getDateString(item.Start) !== getDateString(newAction.Start)) {
-            item.Start = newAction.Start
-            entry.Start = getDateString(newAction.Start)
+        if (typeof entry.Description === 'string') {
+            item.Description = entry.Description
         }
-        if (typeof newAction.End == 'string' &&
-            getDateString(item.End) !== getDateString(newAction.End)) {
-            item.End = newAction.End
-            entry.End = getDateString(newAction.End)
+        entry.IsDone = item.IsDone
+        if (typeof entry.Start === 'string') {
+            item.Start = entry.Start
+            entry.Start = getDateString(entry.Start)
         }
-        let isChangeExpect = false
-        if (typeof newAction.ExpectCost == 'number' &&
-            newAction.ExpectCost !== item.ExpectCost) {
-            item.ExpectCost = newAction.ExpectCost
-            entry.ExpectCost = newAction.ExpectCost
-            isChangeExpect = true
-        }
-        let isChangeTrue = false
-        if (typeof newAction.TrueCost == 'number' &&
-            newAction.TrueCost !== item.TrueCost) {
-            item.TrueCost = newAction.TrueCost
-            entry.TrueCost = newAction.TrueCost
-            isChangeTrue = false
+        if (typeof entry.End === 'string') {
+            item.End = entry.End
+            entry.End = getDateString(entry.End)
         }
         pushUpdateAction({ isChangeExpect, isChangeTrue })
         setEditView(false)
+        const ids = [item.Id, item.ParentId]
+        let isAdd = true
+        dispatch(setItems({ ids, isAdd }))
         updateActionWithId(item.Id, entry)  // api put
             .then(res => {
-                setLoading(false)
+                isAdd = false
+                dispatch(setItems({ ids, isAdd }))
             })
     }
     function handleDelete() {
@@ -90,7 +78,7 @@ export function ActionView({ item, isExpandParent,
         }, item)}>
             {
                 !isEditView ?
-                    <ItemViewExpand className={isloading ? 'fb-loading' : ''}
+                    <ItemViewExpand
                         setEditView={setEditView}
                         onToggleDone={onToggleDone}>
                         <span title="Expected Cost"
@@ -123,10 +111,28 @@ export function ActionViewEdit({ onCloseEditForm, onSaveAction }) {
         const newTrue = e.target.value
         setTrueCost(newTrue)
     }
-    function onSaveData(item) {
-        item.ExpectCost = +expectCost
-        item.TrueCost = +trueCost
-        onSaveAction(item)
+    function onSaveData(_item) {
+        const nExp = +expectCost
+        if (item.ExpectCost !== nExp) {
+            _item.ExpectCost = +expectCost
+        }
+        const nTrue = +trueCost
+        if (item.TrueCost !== nTrue) {
+            _item.TrueCost = +trueCost
+        }
+        if (item.Name === _item.Name.trim()) {
+            delete _item.Name
+        }
+        if (item.Description === _item.Description) {
+            delete _item.Description
+        }
+        if (getDateString(item.Start) === getDateString(_item.Start)) {
+            delete _item.Start
+        }
+        if (getDateString(item.End) === getDateString(_item.End)) {
+            delete _item.End
+        }
+        onSaveAction(_item)
     }
     return (
         <ItemViewEdit

@@ -1,12 +1,14 @@
 import { useState, useContext } from "react"
 import { getDateCalendarValue, getDateString, getIcon, isDateLessNow } from "../../global"
+import { useSelector } from "react-redux"
 import { ItemContext } from "./Maingoal"
 
 export function ItemViewExpand({ children, className,
     addNewChild, setEditView, onToggleDone }) {
     const item = useContext(ItemContext)
     const [isShowMenu, setShowMenu] = useState(false)
-
+    const { Items } = useSelector((state) => state.loading)
+    
     function getStartTag() {
         if (!item.Start) return <></>
         return <>
@@ -84,9 +86,12 @@ export function ItemViewExpand({ children, className,
     }
     function getClassWrap() {
         let _r = `dnb_item_container`
-        if(typeof className == 'string' && className.trim() !== '')
+        if (typeof className == 'string' && className.trim() !== '')
             _r += ` ${className}`
         if (item.IsDone) _r += ` dnb_item_done`
+        if (Items.includes(item.Id)) {
+            _r += ` fb-loading`
+        }
         return _r
     }
     return (

@@ -8,6 +8,7 @@ import { Maingoal, updateGoalUI } from "./Maingoal"
 import { ItemContext } from "./Maingoal"
 import { LoadingProvider } from "../../global/Context"
 import { LoadingContext } from "../../global/Context"
+import { MReduxProvider } from "../../global/ReduxStore"
 import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
 import '../../styles/ga.scss'
 
@@ -99,7 +100,9 @@ export function Marketing() {
 
     return (
         <LoadingProvider>
-            <ListMain />
+            <MReduxProvider>
+                <ListMain />
+            </MReduxProvider>
         </LoadingProvider>
     )
 }

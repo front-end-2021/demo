@@ -1,6 +1,7 @@
 import React, {
     useContext, useState,
 } from 'react'
+import '../styles/animation.scss'
 
 export const LoadingContext = React.createContext()
 
@@ -21,13 +22,18 @@ export function LoadingProvider({ children }) {
 }
 function Loading() {
     return <div style={{
-        width: '100vw', height: '100vh', zIndex: 9999,
+        width: '100vw', height: '100vh', 
+        zIndex: 9999, opacity: '0.357', 
         background: 'black', color: 'white',
         position: 'fixed', top: '0', left: '0',
-        opacity: '0.123', textAlign: 'center'
     }}>
-        <span style={{
-            position: 'absolute', top: '50%', transform: `translate(-50%)`
-        }}>...</span>
+        <div style={{
+            position: 'absolute', top: '50%', left: '50%',
+            transform: `translate(-50%)`, zIndex: 999
+        }} className="d-loading">
+            <span className="d-pulse d-pulse-1"></span>
+            <span className="d-pulse d-pulse-2"></span>
+            <span className="d-pulse d-pulse-3"></span>
+        </div>
     </div>;
 }
