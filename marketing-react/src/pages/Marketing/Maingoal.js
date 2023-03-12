@@ -87,10 +87,10 @@ export class Maingoal extends Component {
         const { item, onDeleteMain } = this.props
         onDeleteMain(item.Id)
     }
-    onDeleteSub = (id) => {
+    onDeleteSub = (item) => {
+        const id = item.Id
         const lstSub = this.state.ListSub
-        console.log(`on delete sub`, id)
-        apiDeleteSub(id).then(() => {
+        return apiDeleteSub(id).then(() => {
             const _i = lstSub.map(s => s.Id).indexOf(id)
             if (_i > -1) {
                 lstSub.splice(_i, 1)    // remove
@@ -104,6 +104,7 @@ export class Maingoal extends Component {
                     this.setState({ TrueCost: _true })
                 }
             }
+            return [id, item.ParentId]
         })
     }
     onDuplicateSubgoal = (sub) => {

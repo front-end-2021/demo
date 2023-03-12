@@ -3,13 +3,14 @@ import { getDateCalendarValue, getDateString, getIcon, isDateLessNow } from "../
 import { useDispatch, useSelector } from "react-redux"
 import { ItemContext } from "./Maingoal"
 import { showMenu, showEdit } from "../../global/ReduxStore"
+import { useDialog } from "../../global/Context"
 
 export function ItemViewExpand({ children, className,
     addNewChild, onToggleDone }) {
     const item = useContext(ItemContext)
     const LoadingItems = useSelector(state => state.loading.Items)
     const MenuId = useSelector(state => state.focus.MenuId)
-
+    const dialog = useDialog()
     function getStartTag() {
         if (!item.Start) return <></>
         return <>
@@ -55,10 +56,16 @@ export function ItemViewExpand({ children, className,
             </div>
         </>
     }
+    function showConfirmDelete(){
+        dialog.setDialog({
+            children: <div>Are you sure? Delete "{item.Name}"</div>,
+            ok: () => item.handleDelete()
+        })
+    }
     function getDeleteTag() {
         if (item.IsDone) return <i className="bi bi-trash">&nbsp; Delete</i>
         return <span className="bi bi-trash" style={{ cursor: 'pointer' }}
-            onClick={() => item.handleDelete()}>&nbsp; Delete</span>
+            onClick={showConfirmDelete}>&nbsp; Delete</span>
     }
     const dispatch = useDispatch()
     function getEditTag() {

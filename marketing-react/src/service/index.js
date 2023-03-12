@@ -3,11 +3,11 @@ import axios from "axios"
 const config = {
     headers: {
         'Access-Control-Allow-Origin': '*'
-    }, timeout: 6000,
+    }, timeout: 9999,
 }
 const host = `http://localhost:8001/api/`
-function callApiData() {
-    const testMs = 1500
+function callApiData(testMs) {
+    testMs = testMs || 1500
     return new Promise(res => {
         setTimeout(res, testMs)
     })

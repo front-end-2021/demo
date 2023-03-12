@@ -1,4 +1,58 @@
 $priColor: #0070f3;
+$width: 300px;
+$round: 9px;
+$redColor: #d01a17;
+
+.dnb-pos-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+$gayColor: #eee;
+.dnb-dialog {
+    display: inline-grid;
+    grid-template-rows: 48px auto 51px;
+    min-width: $width;
+    min-height: 150px;
+    border-radius: $round;
+    background-color: white;
+    color: #333;
+    overflow: hidden;
+
+    .dnb-dialog-head {
+        padding: 9px;
+        margin-bottom: 6px;
+        text-align: center;
+    }
+
+    .dnb-dialog-body {
+        padding: 0 9px;
+    }
+
+    .dnb-dialog-buttons {
+        display: grid;
+        grid-template-columns: 50% 50%;
+        border-top: 1px solid $gayColor;
+
+        &>span {
+            text-align: center;
+            padding-top: 12px;
+            cursor: pointer;
+            color: $priColor;
+            font-weight: 600;
+
+            &:hover {
+                background-color: $gayColor;
+            }
+        }
+
+        &>span:first-child {
+            border-right: 1px solid $gayColor;
+            color: $redColor;
+        }
+    }
+}
 
 .container {
     min-height: 100vh;
@@ -73,6 +127,26 @@ $priColor: #0070f3;
 
 .logo {
     height: 1em;
+}
+
+.dnb-bg-processing {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    color: white;
+
+    .dnb-bg-process-overlay {
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        opacity: 0.357;
+        background-color: black;
+    }
 }
 
 @media (max-width: 600px) {

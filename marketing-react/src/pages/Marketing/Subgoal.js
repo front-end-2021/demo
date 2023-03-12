@@ -96,8 +96,12 @@ class Subgoal extends Component {
         this.pushUpdateAction({ isChangeExpect, isChangeTrue })
     }
     onDeleteGoal = () => {
-        const { item, onDeleteSub } = this.props
-        onDeleteSub(item.Id)
+        const { item, onDeleteSub, setItems } = this.props
+        const ids = [item.Id, item.ParentId]
+        setItems({ ids, isAdd: true })
+        onDeleteSub(item).then(() => {
+            setItems({ ids, isAdd: false })
+        })
     }
     onDeleteAction = (action) => {
         const lstAction = this.state.ListAction

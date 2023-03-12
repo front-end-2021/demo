@@ -6,7 +6,7 @@ import { getDateAfterDaysString } from "../../global"
 import { GoalItemEdit } from "./GoalView"
 import { Maingoal, updateGoalUI } from "./Maingoal"
 import { ItemContext } from "./Maingoal"
-import { LoadingProvider } from "../../global/Context"
+import { ProcessingProvider } from "../../global/Context"
 import { LoadingContext } from "../../global/Context"
 import { MReduxProvider } from "../../global/ReduxStore"
 import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
@@ -99,10 +99,10 @@ class ListMain extends Component {
 export function Marketing() {
 
     return (
-        <LoadingProvider>
+        <ProcessingProvider>
             <MReduxProvider>
                 <ListMain />
             </MReduxProvider>
-        </LoadingProvider>
+        </ProcessingProvider>
     )
 }

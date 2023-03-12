@@ -51,9 +51,6 @@ export function ActionView({ item, isExpandParent,
         const ids = [item.Id, item.ParentId]
         dispatch(setItems({ ids, isAdd }))
     }
-    function handleDelete() {
-        onDeleteAction(item)
-    }
     function handlerDuplicate() {
         const _item = JSON.parse(JSON.stringify(item))  // copy
         _item.Name = `${_item.Name} (1)`
@@ -69,7 +66,7 @@ export function ActionView({ item, isExpandParent,
             IsExpand: isExpandParent && isExpand,
             TypeId: 3,
             handleExpand: onExpand,
-            handleDelete: handleDelete,
+            handleDelete: () => onDeleteAction(item),
             handleDuplicate: handlerDuplicate,
         }, item)}>
             {

@@ -102,8 +102,9 @@ footer {
 }
 
 .fb-loading {
-    height: 183px;
+    @extend .animated-fb-loading;
+    height: initial;
+    min-height: 183px;
     width: 300px;
     border-radius: 9px;
-    @extend .animated-fb-loading;
 }

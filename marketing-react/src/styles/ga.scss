@@ -134,10 +134,8 @@ $bgcolor: white;
     }
 
     &.fb-loading {
-        min-height: 156px;
-
         &>* {
-            display: none;
+            opacity: 0;
         }
     }
 }
