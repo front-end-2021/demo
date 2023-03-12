@@ -20,9 +20,32 @@ const loading = createSlice({
     }
 })
 export const { setItems } = loading.actions
-const MarketingStore = configureStore({
+const focusitem = createSlice({
+    name: 'focusitem',
+    initialState: {
+        MenuId: null,
+        EditId: null
+    },
+    reducers: {
+        showMenu: (state, action) => {
+            state.EditId = null
+            const id = action.payload
+            if (state.MenuId !== id) state.MenuId = id
+            else state.MenuId = null
+        },
+        showEdit: (state, action) => {
+            state.MenuId = null
+            const id = action.payload
+            if (state.EditId !== id) state.EditId = id
+            else state.EditId = null
+        },
+    }
+})
+export const { showMenu, showEdit } = focusitem.actions
+export const MarketingStore = configureStore({
     reducer: {
-        loading: loading.reducer
+        loading: loading.reducer,
+        focus: focusitem.reducer
     }
 })
 

@@ -3,23 +3,20 @@ import { getDateString } from "../../global"
 import { ItemViewExpand, ItemViewEdit } from "./ItemView"
 import { updateActionWithId } from "../../service"
 import { ItemContext } from "./Maingoal"
-import { useDispatch } from "react-redux"
-import { setItems } from "../../global/ReduxStore"
+import { useDispatch, useSelector } from "react-redux"
+import { setItems, showEdit } from "../../global/ReduxStore"
 
 export function ActionView({ item, isExpandParent,
     pushUpdateAction, onDeleteAction, onDuplicateAction }) {
     const [isExpand, setExpand] = useState(true)
-    const [isEditView, setEditView] = useState(false)
+    const EditId = useSelector(state => state.focus.EditId)
+    const dispatch = useDispatch()
     function onToggleDone(e) {
         const is_done = !item.IsDone
         const entry = { IsDone: !!is_done }
         item.IsDone = !!is_done
         updateActionWithId(item.Id, entry)      // api put
     }
-    function onCloseEditForm() {
-        setEditView(false)
-    }
-    const dispatch = useDispatch()
     function onSaveAction(entry) {
         const isChangeExpect = typeof entry.ExpectCost === 'number'
         if (isChangeExpect) {
@@ -45,24 +42,23 @@ export function ActionView({ item, isExpandParent,
             entry.End = getDateString(entry.End)
         }
         pushUpdateAction({ isChangeExpect, isChangeTrue })
-        setEditView(false)
-        const ids = [item.Id, item.ParentId]
-        let isAdd = true
-        dispatch(setItems({ ids, isAdd }))
+        dispatch(showEdit(item.Id))
+        addLoadingItems(true)
         updateActionWithId(item.Id, entry)  // api put
-            .then(res => {
-                isAdd = false
-                dispatch(setItems({ ids, isAdd }))
-            })
+            .then(res => { addLoadingItems(false) })
+    }
+    function addLoadingItems(isAdd) {
+        const ids = [item.Id, item.ParentId]
+        dispatch(setItems({ ids, isAdd }))
     }
     function handleDelete() {
-        onDeleteAction(item.Id)
+        onDeleteAction(item)
     }
     function handlerDuplicate() {
         const _item = JSON.parse(JSON.stringify(item))  // copy
-        delete _item.Id
         _item.Name = `${_item.Name} (1)`
         onDuplicateAction(_item)
+        addLoadingItems(true)
     }
     function onExpand(isExpd) {
         if (!isExpandParent) return
@@ -77,9 +73,8 @@ export function ActionView({ item, isExpandParent,
             handleDuplicate: handlerDuplicate,
         }, item)}>
             {
-                !isEditView ?
+                EditId !== item.Id ?
                     <ItemViewExpand
-                        setEditView={setEditView}
                         onToggleDone={onToggleDone}>
                         <span title="Expected Cost"
                             className='dnb_icost dnb-expect-cost'>P:
@@ -91,15 +86,13 @@ export function ActionView({ item, isExpandParent,
                         </span>
                     </ItemViewExpand>
                     :
-                    <ActionViewEdit
-                        onSaveAction={onSaveAction}
-                        onCloseEditForm={onCloseEditForm} />
+                    <ActionViewEdit onSaveAction={onSaveAction} />
             }
         </ItemContext.Provider>
     )
 }
 
-export function ActionViewEdit({ onCloseEditForm, onSaveAction }) {
+export function ActionViewEdit({ onSaveAction, className }) {
     const item = useContext(ItemContext)
     const [expectCost, setExpectCost] = useState(item.ExpectCost)
     const [trueCost, setTrueCost] = useState(item.TrueCost)
@@ -113,32 +106,37 @@ export function ActionViewEdit({ onCloseEditForm, onSaveAction }) {
     }
     function onSaveData(_item) {
         const nExp = +expectCost
-        if (item.ExpectCost !== nExp) {
-            _item.ExpectCost = +expectCost
-        }
         const nTrue = +trueCost
-        if (item.TrueCost !== nTrue) {
-            _item.TrueCost = +trueCost
-        }
-        if (item.Name === _item.Name.trim()) {
-            delete _item.Name
-        }
-        if (item.Description === _item.Description) {
-            delete _item.Description
-        }
-        if (getDateString(item.Start) === getDateString(_item.Start)) {
-            delete _item.Start
-        }
-        if (getDateString(item.End) === getDateString(_item.End)) {
-            delete _item.End
+        const isEdit = typeof item.Id === 'string' && item.Id.includes('-')
+        if (isEdit) {
+            if (item.ExpectCost !== nExp) {
+                _item.ExpectCost = nExp
+            }
+            if (item.TrueCost !== nTrue) {
+                _item.TrueCost = nTrue
+            }
+            if (item.Name === _item.Name.trim()) {
+                delete _item.Name
+            }
+            if (item.Description === _item.Description) {
+                delete _item.Description
+            }
+            if (getDateString(item.Start) === getDateString(_item.Start)) {
+                delete _item.Start
+            }
+            if (getDateString(item.End) === getDateString(_item.End)) {
+                delete _item.End
+            }
+        } else {    // add new
+            _item.ExpectCost = nExp
+            _item.TrueCost = nTrue
         }
         onSaveAction(_item)
     }
     return (
-        <ItemViewEdit
+        <ItemViewEdit className={className}
             isExpectLessTrue={expectCost < trueCost}
-            onSaveData={onSaveData}
-            onCloseEditForm={onCloseEditForm} >
+            onSaveData={onSaveData} >
             <span className='dnb_icost dnb-expect-cost'>P:
                 <span className='dnb_icost_value'>$
                     <input type="number" value={expectCost}

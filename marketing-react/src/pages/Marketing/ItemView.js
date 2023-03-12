@@ -1,22 +1,25 @@
 import { useState, useContext } from "react"
 import { getDateCalendarValue, getDateString, getIcon, isDateLessNow } from "../../global"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { ItemContext } from "./Maingoal"
+import { showMenu, showEdit } from "../../global/ReduxStore"
 
 export function ItemViewExpand({ children, className,
-    addNewChild, setEditView, onToggleDone }) {
+    addNewChild, onToggleDone }) {
     const item = useContext(ItemContext)
-    const [isShowMenu, setShowMenu] = useState(false)
-    const { Items } = useSelector((state) => state.loading)
-    
+    const LoadingItems = useSelector(state => state.loading.Items)
+    const MenuId = useSelector(state => state.focus.MenuId)
+
     function getStartTag() {
         if (!item.Start) return <></>
         return <>
             <span className={`bi bi-calendar2-week${getClassOverDate(item.Start)}`} />
             {
-                !isDateLessNow(item.Start) ? <span className={`dnb-d-start`}>&nbsp;{getDateString(item.Start)}</span> :
+                !isDateLessNow(item.Start) ? <span className={`dnb-d-start`}
+                >&nbsp;{getDateString(item.Start)}</span> :
                     <span title="Start Date is in the past from Current Date"
-                        className={`dnb-d-start${getClassOverDate(item.Start)}`}>&nbsp;{getDateString(item.Start)}</span>
+                        className={`dnb-d-start${getClassOverDate(item.Start)}`}
+                    >&nbsp;{getDateString(item.Start)}</span>
             }
         </>
     }
@@ -36,7 +39,7 @@ export function ItemViewExpand({ children, className,
         return `bi bi-check-circle`
     }
     function getMenuTag() {
-        if (!isShowMenu) return <></>
+        if (MenuId !== item.Id) return <></>
         return <>
             <div className='dnb_i_menu'>
                 <span>{getEditTag()}</span>
@@ -57,15 +60,19 @@ export function ItemViewExpand({ children, className,
         return <span className="bi bi-trash" style={{ cursor: 'pointer' }}
             onClick={() => item.handleDelete()}>&nbsp; Delete</span>
     }
+    const dispatch = useDispatch()
     function getEditTag() {
         if (item.IsDone) return <i className="bi bi-pencil-square" >&nbsp; Edit</i>
         return <span className="bi bi-pencil-square" style={{ cursor: 'pointer' }}
-            onClick={() => setEditView(true)}>&nbsp; Edit</span>
+            onClick={() => dispatch(showEdit(item.Id))}>&nbsp; Edit</span>
     }
     function getDuplicateTag() {
         if (item.IsDone) return <i className="bi bi-files">&nbsp; Duplicate</i>
         return <span className="bi bi-files" style={{ cursor: 'pointer' }}
-            onClick={() => item.handleDuplicate()}>&nbsp; Duplicate</span>
+            onClick={() => {
+                dispatch(showMenu(item.Id))
+                item.handleDuplicate()
+            }}>&nbsp; Duplicate</span>
     }
     function getAddNewTag() {
         if (item.TypeId > 2) return <></>
@@ -89,7 +96,7 @@ export function ItemViewExpand({ children, className,
         if (typeof className == 'string' && className.trim() !== '')
             _r += ` ${className}`
         if (item.IsDone) _r += ` dnb_item_done`
-        if (Items.includes(item.Id)) {
+        if (LoadingItems.includes(item.Id)) {
             _r += ` fb-loading`
         }
         return _r
@@ -108,10 +115,11 @@ export function ItemViewExpand({ children, className,
                 </div>
                 {
                     !item.IsExpand ? <></> : <div className='dnb_i_options'>
-                        <span onClick={() => setShowMenu(!isShowMenu)}
-                            className="bi bi-layout-sidebar">&nbsp; {isShowMenu ? 'Hide' : 'Menu'} &nbsp;</span>
-                        <span className={`bi bi-chevron-${isShowMenu ? 'down' : 'right'}`}
-                            onClick={() => setShowMenu(!isShowMenu)} />
+                        <span onClick={() => dispatch(showMenu(item.Id))}
+                            className="bi bi-layout-sidebar"
+                        >&nbsp; {MenuId === item.Id ? 'Hide' : 'Menu'} &nbsp;</span>
+                        <span onClick={() => dispatch(showMenu(item.Id))}
+                            className={`bi bi-chevron-${MenuId === item.Id ? 'down' : 'right'}`} />
                     </div>
                 }
                 {getMenuTag()}
@@ -121,13 +129,13 @@ export function ItemViewExpand({ children, className,
         }</>
     )
 }
-export function ItemViewEdit({ children, isExpectLessTrue,
-    onSaveData, onCloseEditForm }) {
+export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData }) {
     const item = useContext(ItemContext)
     const [name, setName] = useState(item.Name)
     const [des, setDes] = useState(item.Description)
     const [start, setStart] = useState(getDateCalendarValue(item.Start))
     const [end, setEnd] = useState(getDateCalendarValue(item.End))
+    const dispatch = useDispatch()
     function handleChangeStart(e) {
         const newD = e.target.value
         setStart(newD)
@@ -169,8 +177,14 @@ export function ItemViewEdit({ children, isExpectLessTrue,
     function getClsExpLess() {
         return isExpectLessTrue ? ` d_exp_less_true` : ''
     }
+    function getClsItem() {
+        let _r = `dnb_item_container dnb_item_edit`
+        if (typeof className === 'string' && className.trim() !== '')
+            _r += ` fb-loading`
+        return _r
+    }
     return (
-        <div className={`dnb_item_container dnb_item_edit`}>
+        <div className={getClsItem()}>
             <div className={getClsExpLess()}>{getIcon(item.TypeId)} <input
                 value={name} maxLength="150"
                 className={`dnb_edit_name ${getClsExpLess()}`}
@@ -202,7 +216,7 @@ export function ItemViewEdit({ children, isExpectLessTrue,
                 </span>
                 <span >
                     <span className="bi bi-x-circle"
-                        onClick={onCloseEditForm}
+                        onClick={() => dispatch(showEdit(item.Id))}
                         style={{ cursor: 'pointer' }}>&nbsp; Cancel &nbsp;</span>
                 </span>
             </div>

@@ -6,8 +6,10 @@ import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
 import { GoalItemView } from "./GoalView"
 import { ActionView, ActionViewEdit } from "./Action"
 import { ItemContext } from "./Maingoal"
+import { connect } from "react-redux"
+import { showEdit, setItems } from "../../global/ReduxStore"
 
-export class Subgoal extends Component {
+class Subgoal extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -38,8 +40,10 @@ export class Subgoal extends Component {
         const { updateDataSubs } = this.props
         updateDataSubs(newGoal)
     }
-    addNewAction = (sId) => {
-        this.setState({ NewAction: { ParentId: sId } })
+    addNewAction = (dateNow) => {
+        const { showEdit } = this.props
+        showEdit(dateNow)
+        this.setState({ NewAction: dateNow })
     }
     pushUpdateAction = ({ isChangeExpect, isChangeTrue }) => {
         const lstAction = this.state.ListAction
@@ -56,51 +60,65 @@ export class Subgoal extends Component {
             pushTrueCost(trueC, item.Id)
         }
     }
-    onCancelAddNewAction = (sId) => {
-        this.setState({ NewAction: null })
-    }
-    onInsertNewAction = (item) => {
-        if (item.Start.trim() === '') delete item.Start
-        if (typeof item.Description !== 'string' || item.Description.trim() === '') {
-            delete item.Description
+    onInsertNewAction = (_item) => {
+        const { setItems, showEdit, item } = this.props
+        const dateNow = this.state.NewAction
+        const subId = item.Id
+        const ids = [dateNow, subId]
+        let isAdd = true
+        setItems({ ids, isAdd })
+        _item.ParentId = subId
+
+        delete _item.Id
+        if (_item.Start && _item.Start.trim() === '') delete _item.Start
+        if (typeof _item.Description !== 'string' ||
+            _item.Description.trim() === '') {
+            delete _item.Description
         }
-        if (item.End.trim() === '') delete item.End
-        item.ParentId = this.props.item.Id
-        apiInsertAction(item).then(newId => {
+        if (_item.End && _item.End.trim() === '') delete _item.End
+
+        apiInsertAction(_item).then(newId => {
+            showEdit(dateNow)
+            this.setState({ NewAction: null })
+            isAdd = false
+            setItems({ ids, isAdd })
+
             if (!newId.includes('invalid')) {
-                item.Id = newId
+                _item.Id = newId
                 const lstAction = this.state.ListAction
-                lstAction.push(item)
-                this.setStateRelative(lstAction)
+                lstAction.push(_item)
+                this.onChangeState(lstAction, _item.ExpectCost > 0, _item.TrueCost > 0)
             }
-            this.onCancelAddNewAction()
         })
+    }
+    onChangeState = (lstAction, isChangeExpect, isChangeTrue) => {
+        this.setState({ ListAction: lstAction })
+        this.pushUpdateAction({ isChangeExpect, isChangeTrue })
     }
     onDeleteGoal = () => {
         const { item, onDeleteSub } = this.props
         onDeleteSub(item.Id)
     }
-    onDeleteAction = (id) => {
+    onDeleteAction = (action) => {
         const lstAction = this.state.ListAction
-        const _i = lstAction.map(a => a.Id).indexOf(id)
+        const _i = lstAction.map(a => a.Id).indexOf(action.Id)
         if (_i > -1) {
+            apiDeleteAction(action.Id)
             lstAction.splice(_i, 1) // remove
-            this.setStateRelative(lstAction)
-            apiDeleteAction(id)
+            this.onChangeState(lstAction, action.ExpectCost > 0, action.TrueCost > 0)
         }
     }
-    setStateRelative = (lstAction) => {
-        this.setState({ ListAction: lstAction })
-        this.setState({ ExpectCost: getExpC(lstAction.map(s => s.ExpectCost)) })
-        this.setState({ TrueCost: getTrueC(lstAction.map(s => s.TrueCost)) })
-    }
     onDuplicateAction = (item) => {
+        const { setItems } = this.props
+        const ids = [item.Id, item.ParentId]
+        const isAdd = false
         apiInsertAction(item).then(newId => {
+            setItems({ ids, isAdd })
             if (!newId.includes('invalid')) {
                 item.Id = newId
                 const lstAction = this.state.ListAction
                 lstAction.push(item)
-                this.setStateRelative(lstAction)
+                this.onChangeState(lstAction, item.ExpectCost > 0, item.TrueCost > 0)
             }
         })
     }
@@ -111,26 +129,32 @@ export class Subgoal extends Component {
         onDuplicateSubgoal(_item)
     }
     getFormActionAddEdit = () => {
-        const { item, isExpandParent } = this.props
+        const { isExpandParent, EditId, LoadingItems } = this.props
         if (!isExpandParent) return <></>
         const { NewAction, IsExpand } = this.state
         if (!IsExpand) return <></>
-        return <>{!NewAction ? <div className='dnb_add_action'>
-            <div onClick={() => this.addNewAction(item.Id)}>
-                <span className="bi bi-plus-circle-dotted"
-                    style={{ cursor: 'pointer' }}>&nbsp; New &#9632;</span>
-            </div></div> :
-            <div className='dnb_item_view'>
-                <ItemContext.Provider value={{
-                    Name: `Action ${Date.now()}`, Start: getDateAfterDaysString(0),
-                    End: getDateAfterDaysString(1), ExpectCost: 0, TrueCost: 0
-                }}>
-                    <ActionViewEdit
-                        onCloseEditForm={this.onCancelAddNewAction}
-                        onSaveAction={this.onInsertNewAction}
-                    />
-                </ItemContext.Provider>
-            </div>}</>
+        const isAddNew = NewAction && EditId === NewAction
+        const clsLoading = isAddNew && LoadingItems.includes(NewAction) ? 'fb-loading' : ''
+        return <>{
+            isAddNew ?
+                <div className='dnb_item_view' >
+                    <ItemContext.Provider value={{
+                        Id: NewAction,
+                        Name: `Action ${Date.now()}`, Start: getDateAfterDaysString(0),
+                        End: getDateAfterDaysString(1), ExpectCost: 0, TrueCost: 0
+                    }}>
+                        <ActionViewEdit className={clsLoading}
+                            onSaveAction={this.onInsertNewAction} />
+                    </ItemContext.Provider>
+                </div>
+                :
+                <div className='dnb_add_action'>
+                    <div onClick={() => this.addNewAction(Date.now())}>
+                        <span className="bi bi-plus-circle-dotted"
+                            style={{ cursor: 'pointer' }}>&nbsp; New &#9632;</span>
+                    </div>
+                </div>
+        }</>
     }
     onExpandSub = (isExpand) => {
         if (!this.props.isExpandParent) return
@@ -151,7 +175,7 @@ export class Subgoal extends Component {
                 <ItemContext.Provider value={valContext}>
                     <GoalItemView
                         updateGoalUI={this.updateGoalUI}
-                        insertNewChild={this.addNewAction} />
+                        insertNewChild={() => this.addNewAction(Date.now())} />
                 </ItemContext.Provider>
                 <div className='dnb_item_list_action'>{
                     !Array.isArray(ListAction) ? <span className="fb-loading"></span>
@@ -171,3 +195,13 @@ export class Subgoal extends Component {
         )
     }
 }
+const mapState = (state) => ({
+    EditId: state.focus.EditId,
+    LoadingItems: state.loading.Items
+})
+const mapDispatch = {
+    showEdit, setItems
+}
+export const SubgoalConnect = connect(
+    mapState, mapDispatch
+)(Subgoal)

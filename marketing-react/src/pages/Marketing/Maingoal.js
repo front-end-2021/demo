@@ -5,7 +5,7 @@ import {
 } from "../../service"
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
 import { GoalItemView, GoalItemEdit } from "./GoalView"
-import { Subgoal } from "./Subgoal"
+import { SubgoalConnect } from "./Subgoal"
 
 export const ItemContext = React.createContext()
 export class Maingoal extends Component {
@@ -156,7 +156,7 @@ export class Maingoal extends Component {
                                 <div className="dnb_item_list_action"></div>
                             </div>
                         </div> : <>{ListSub.map(sub => {
-                            return <Subgoal key={sub.Id}
+                            return <SubgoalConnect key={sub.Id}
                                 item={sub} isExpandParent={IsExpand}
                                 updateDataSubs={this.updateDataSubs}
                                 pushExpectCost={this.pushExpectCost}

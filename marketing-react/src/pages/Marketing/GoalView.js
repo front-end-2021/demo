@@ -3,11 +3,13 @@ import { updateGoalWithId } from "../../service"
 import { ItemViewExpand, ItemViewEdit } from "./ItemView"
 import { getDateString } from "../../global"
 import { ItemContext } from "./Maingoal"
+import { useDispatch, useSelector } from "react-redux"
+import { showEdit } from "../../global/ReduxStore"
 
 export function GoalItemView({ updateGoalUI, insertNewChild }) {
     const item = useContext(ItemContext)
-    const [isEditView, setEditView] = useState(false)
-
+    const EditId = useSelector(state => state.focus.EditId)
+    const dispatch = useDispatch()
     function onToggleDone(e) {
         const is_done = !item.IsDone
         const entry = { IsDone: is_done }
@@ -20,9 +22,6 @@ export function GoalItemView({ updateGoalUI, insertNewChild }) {
         const newGoal = { Id: item.Id }
         if (item.ParentId) newGoal.ParentId = item.ParentId
         updateGoalUI(Object.assign(newGoal, p))
-    }
-    function onCloseEditForm() {
-        setEditView(false)
     }
     function onSaveGoal(newGoal) {
         const entry = {}
@@ -52,7 +51,7 @@ export function GoalItemView({ updateGoalUI, insertNewChild }) {
             entry.Budget = newGoal.Budget
         }
         updateNewGoalUI(newGoal)
-        setEditView(false)
+        dispatch(showEdit(item.Id)) // false
         updateGoalWithId(item.Id, entry)    // api put
     }
     function addNewChild(typeid) {
@@ -61,9 +60,9 @@ export function GoalItemView({ updateGoalUI, insertNewChild }) {
     }
     return (
         <>{
-            !isEditView ? <ItemViewExpand
+            EditId !== item.Id ? <ItemViewExpand
                 addNewChild={addNewChild}
-                setEditView={setEditView} onToggleDone={onToggleDone} >
+                onToggleDone={onToggleDone} >
                 <span title="Budget Cost"
                     className={`dnb_icost dnb-budget-cost`}>B:
                     <span className={`dnb_icost_value`}>${item.Budget}</span>
@@ -80,14 +79,11 @@ export function GoalItemView({ updateGoalUI, insertNewChild }) {
                     className={`dnb_icost dnb-true-cost`}>C:
                     <span className={`dnb_icost_value`}>${item.TrueCost}</span>
                 </span>
-            </ItemViewExpand> : <GoalItemEdit
-                onCloseEditForm={onCloseEditForm} onSaveGoal={onSaveGoal}
-            />
+            </ItemViewExpand> : <GoalItemEdit onSaveGoal={onSaveGoal} />
         }</>
     )
 }
-export function GoalItemEdit({
-    onCloseEditForm, onSaveGoal }) {
+export function GoalItemEdit({ onSaveGoal }) {
     const { ParentId,
         Budget, ExpectCost, TrueCost, } = useContext(ItemContext)
     const [budget, setBudget] = useState(Budget)
@@ -117,14 +113,10 @@ export function GoalItemEdit({
             <span className={`dnb_icost_value`}>${TrueCost}</span>
         </span>
     }
-    function onCancelEditForm() {
-        onCloseEditForm(ParentId)
-    }
     return (
         <ItemViewEdit
             isExpectLessTrue={ExpectCost < TrueCost}
-            onSaveData={onSaveData}
-            onCloseEditForm={onCancelEditForm} >
+            onSaveData={onSaveData} >
             <span className={`dnb_icost dnb-budget-cost`}>B:
                 <span className={`dnb_icost_value`}>$
                     <input type="number" value={budget} style={{ width: '80px' }}

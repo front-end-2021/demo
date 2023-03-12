@@ -59,6 +59,7 @@ export function apiInsertSub(sub) {
     }, config)).then(res => { return res.data })
 }
 export function apiInsertAction(item) {
+    delete item.Id
     return callApiData().then(d => {
         return axios.post(`${host}action`,
             Object.assign({
