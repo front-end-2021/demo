@@ -9,6 +9,7 @@ apiGoal.getAllMains(app, AppExpress.getCorsOptions())
 apiGoal.getMainById(app, AppExpress.getCorsOptions())
 apiGoal.insertMain(app, AppExpress.getCorsOptions())
 apiGoal.deleteMain(app, AppExpress.getCorsOptions())
+apiGoal.duplicateMain(app, AppExpress.getCorsOptions())
 
 apiGoal.updateGoal(app, AppExpress.getCorsOptions())
 

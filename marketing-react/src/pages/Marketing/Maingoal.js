@@ -1,7 +1,6 @@
 import React, { Component } from "react"
 import {
-    getDataGoalActionWith,
-    apiInsertSub, apiDeleteSub, apiDuplicateSub
+    getDataGoalActionWith, apiInsertSub, apiDeleteSub, apiDuplicateSub
 } from "../../service"
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
 import { GoalItemView, GoalItemEdit } from "./GoalView"
@@ -122,11 +121,12 @@ export class Maingoal extends Component {
     }
     render() {
         const { NewSub, ListSub, ExpectCost, TrueCost, IsExpand } = this.state
-        const { item } = this.props
+        const { item, onDuplicateMain } = this.props
         const mainCxt = Object.assign({
             IsExpand: IsExpand,
             handleExpand: this.onExpandMain,
             handleDelete: this.onDeleteGoal,
+            handleDuplicate: onDuplicateMain,
             TypeId: 1, ExpectCost: ExpectCost, TrueCost: TrueCost
         }, item)
         return (

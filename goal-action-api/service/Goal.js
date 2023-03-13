@@ -24,17 +24,6 @@ function getMainById(app, corOptions) {
         }
     )
 }
-// {Name: string, Description: string, Start: string, End: string, Budget: number}
-function insertMain(app, corOptions) {
-    app.post('/api/main', cors(corOptions),
-        (req, res, next) => {
-            const goal = req.body;
-            const newId = dbGoal.insertNewMain(goal)
-            res.json(newId)
-            next();
-        }
-    )
-}
 //http://localhost:8001/api/goal/6931cc40-4c1c-42f4-9a0a-a1620d2c6fb3
 function updateGoal(app, corOptions) {
     app.put('/api/goal/:id', cors(corOptions),
@@ -83,6 +72,7 @@ function getSubById(app, corOptions) {
         }
     )
 }
+
 // { Name: string, Description: string, Start: string, End: string, Budget: number}
 function insertMain(app, corOptions) {
     app.post('/api/main', cors(corOptions),
@@ -143,6 +133,18 @@ function duplicateSub(app, corOptions) {
         }
     )
 }
+//http://localhost:8001/api/copymain/uuid
+function duplicateMain(app, corOptions) {
+    app.put('/api/copymain/:id', cors(corOptions),
+        (req, res, next) => {
+            const { id } = req.params
+            dbGoal.duplicateMain(id).then(n => {
+                res.json(n)
+                next()
+            })
+        }
+    )
+}
 
 module.exports = {
     getAllMains: getAllMains,
@@ -156,4 +158,5 @@ module.exports = {
     deleteSub: deleteSub,
     deleteMain: deleteMain,
     duplicateSub: duplicateSub,
+    duplicateMain: duplicateMain,
 }

@@ -122,48 +122,64 @@ function duplicateSub(dbName, subg) {
 
     })
 }
-function duplicateMain(dbName, maing) {
+function duplicateMain(dbName, mainid) {
     const db = readyDatabase(dbName)
-    const mid = maing.Id
     const newId = uuidv4()
-    const qrySlSub = `SELECT * FROM ${vCommon.tableSub} WHERE ParentId='${mid}'`
     return new Promise((reslove, reject) => {
-        // db.serialize(() => {
-        //     const mainO = vCommon.getColMain(maing, newId)
-        //     db.run(`INSERT INTO ${vCommon.tableMain} (${mainO.Columns}) VALUES (${mainO.Values})`)
-        //     db.all(qrySlSub, function (err, rows) {
-        //         if (rows) {
-        //             if (rows.length) {
-        //                 const qr1 = `INSERT INTO ${vCommon.tableSub}(Id, ParentId, Name, Description, Start, End, IsDone, ExpectCost, TrueCost)`
-        //                 const qr2 = `${qr1} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-        //                 rows.forEach(a => {
-        //                     a.Id = uuidv4()
-        //                     a.ParentId = newId
-        //                     a.Name = `${a.Name} (1)`
-        //                     db.run(qr2, [a.Id, a.ParentId, a.Name, a.Description, a.Start, a.End, a.IsDone, a.ExpectCost, a.TrueCost]);
-        //                 })
-        //             }
-        //             const qrSlAction = `SELECT * FROM ${vCommon.tableAction} WHERE ParentId IN (SELECT Id FROM ${vCommon.tableSub} WHERE ParentId='${mid}')`
-        //             db.all(qrSlAction, function (errA, aRows) {
-        //                 if (aRows) {
-        //                     const qr1 = `INSERT INTO ${vCommon.tableAction}(Id, ParentId, Name, Description, Start, End, IsDone, ExpectCost, TrueCost)`
-        //                     const qr2 = `${qr1} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-        //                     aRows.forEach(a => {
-        //                         a.Id = uuidv4()
-        //                         a.Name = `${a.Name} (1)`
-        //                         db.run(qr2, [a.Id, a.ParentId, a.Name, a.Description, a.Start, a.End, a.IsDone, a.ExpectCost, a.TrueCost]);
-        //                     })
-        //                     resolve(newId)
-        //                 }
-        //                 if (errA) reject(errA)
-        //             })
-        //             reslove(newId)
-        //         }
-        //         if (err) reject(err)
-        //         db.close();
-        //     })
-        // })
-        reslove(newId)
+        db.serialize(() => {
+            db.get(`SELECT * FROM Maingoal WHERE Id = '${mainid}'`,
+                function (err, maing) {
+                    if (maing) {
+                        const mid = maing.Id
+                        maing.Name = `COPY ${maing.Name}`
+                        const mainO = vCommon.getColMain(maing, newId)
+                        db.run(`INSERT INTO ${vCommon.tableMain} (${mainO.Columns}) VALUES (${mainO.Values})`)  // insert Main
+                        const newMaingoal = maing
+                        newMaingoal.Id = newId
+                        const newSubIds = []
+                        const oldSubIds = []
+                        db.all(`SELECT * FROM ${vCommon.tableSub} WHERE ParentId='${mid}'`, function (err, subs) {
+                            if (Array.isArray(subs) && subs.length) {
+                                const qrS1 = `INSERT INTO ${vCommon.tableSub}(Id, ParentId, Name, Description, Start, End, IsDone, Budget)`
+                                const stmtS = db.prepare(`${qrS1} VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+                                subs.forEach(s => {
+                                    const newSId = uuidv4()
+                                    oldSubIds.push(s.Id)
+                                    newSubIds.push(newSId)
+                                    s.Name = `${s.Name} (1)`
+                                    stmtS.run([newSId, newId, s.Name, s.Description, s.Start, s.End, s.IsDone, s.Budget])
+                                })
+                                stmtS.finalize();
+
+                                const slctSub = `(SELECT Id AS ParentId FROM ${vCommon.tableSub} WHERE ParentId = '${mid}')`
+                                const qrA = `SELECT * FROM ${vCommon.tableAction} Where ParentId IN ${slctSub}`
+                                db.all(qrA, function (errA, actions) {
+                                    if (Array.isArray(actions) && actions.length) {
+                                        const qrA1 = `INSERT INTO ${vCommon.tableAction}(Id, ParentId, Name, Description, Start, End, IsDone, ExpectCost, TrueCost)`
+                                        const stmt = db.prepare(`${qrA1} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+                                        actions.forEach(a => {
+                                            const oldSubId = a.ParentId
+                                            const _i = oldSubIds.indexOf(oldSubId)
+                                            const newSubId = newSubIds[_i]
+                                            a.Name = `${a.Name} (1)`
+                                            stmt.run([uuidv4(), newSubId, a.Name, a.Description, a.Start, a.End, a.IsDone, a.ExpectCost, a.TrueCost])
+                                        })
+                                        stmt.finalize();
+                                    }
+                                    if (errA) reject(errA)
+                                    db.close();
+                                    reslove(newMaingoal)
+                                })
+                            } else {
+                                db.close();
+                                reslove(newMaingoal)
+                            }
+                            if (err) reject(err)
+                        })
+                    } else db.close();
+                    if (err) reject(err)
+                })
+        })
     })
 }
 function getFromTable(dbName, query) {
@@ -199,5 +215,6 @@ module.exports = {
     deleteItemFrom: deleteItemFrom,
     deleteSubFrom: deleteSubFrom,
     deleteMainFrom: deleteMainFrom,
-    duplicateSub: duplicateSub
+    duplicateSub: duplicateSub,
+    duplicateMain: duplicateMain
 }

@@ -44,9 +44,7 @@ export function ItemViewExpand({ children, className,
         return <>
             <div className='dnb_i_menu'>
                 <span>{getEditTag()}</span>
-                {
-                    item.TypeId > 1 ? <span>{getDuplicateTag()}</span> : <></>
-                }
+                <span>{getDuplicateTag()}</span>
                 <span>{getDeleteTag()}</span>
                 <span style={{ cursor: 'initial' }}>
                     <span className={getClsDone()} style={{ cursor: 'pointer' }}
@@ -56,7 +54,7 @@ export function ItemViewExpand({ children, className,
             </div>
         </>
     }
-    function showConfirmDelete(){
+    function showConfirmDelete() {
         dialog.setDialog({
             children: <div>Are you sure? Delete "{item.Name}"</div>,
             ok: () => item.handleDelete()
@@ -78,7 +76,7 @@ export function ItemViewExpand({ children, className,
         return <span className="bi bi-files" style={{ cursor: 'pointer' }}
             onClick={() => {
                 dispatch(showMenu(item.Id))
-                item.handleDuplicate()
+                item.handleDuplicate(item)
             }}>&nbsp; Duplicate</span>
     }
     function getAddNewTag() {

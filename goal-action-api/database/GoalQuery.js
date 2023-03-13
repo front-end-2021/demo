@@ -80,6 +80,7 @@ function updateGoal(id, main) {
     return Promise.resolve(0);
 }
 function insertNewMain(main) {
+    if (typeof main != 'object') return Promise.resolve('main null')
     if (typeof main.Name != 'string') return Promise.resolve('invalid Name')
     delete main.ParentId
     return new Promise(res => {
@@ -91,6 +92,7 @@ function insertNewMain(main) {
 
 }
 function insertNewSub(sub) {
+    if (typeof sub != 'object') return Promise.resolve('invalid sub')
     if (typeof sub.Name != 'string') return Promise.resolve('invalid Name')
     if (!uuidValidate(sub.ParentId) || sub.ParentId == NIL_UUID) {
         return Promise.resolve('invalid ParentId')
@@ -120,6 +122,14 @@ function duplicateSub(sub) {
         return newSubId;
     })
 }
+function duplicateMain(mainid) {
+    if (!uuidValidate(mainid) || mainid == NIL_UUID) {
+        return Promise.resolve('invalid Main Id')
+    }
+    return dbLite.duplicateMain(vCommon.dbName, mainid).then((mewMain) => {
+        return mewMain;
+    })
+}
 module.exports = {
     getMainSubGoals: getMainSubGoals,
     insertNewMain: insertNewMain,
@@ -129,5 +139,6 @@ module.exports = {
     getSubsByMainId: getSubsByMainId,
     deleteSub: deleteSub,
     deleteMain: deleteMain,
-    duplicateSub: duplicateSub
+    duplicateSub: duplicateSub,
+    duplicateMain: duplicateMain,
 }

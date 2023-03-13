@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import {
-    getDataGoalAction, apiInsertMain, apiDeleteMain
+    getDataGoalAction, apiDuplicateMain,
+    apiInsertMain, apiDeleteMain
 } from "../../service"
 import { getDateAfterDaysString } from "../../global"
 import { GoalItemEdit } from "./GoalView"
@@ -34,6 +35,8 @@ class ListMain extends Component {
         updateGoalUI.call(this.state.ListMain, newGoal)
     }
     onDeleteMain = (id) => {
+        const { setLoading } = this.context;
+        setLoading(true)
         const lstMain = this.state.ListMain
         apiDeleteMain(id).then(res => {
             const _i = lstMain.map(m => m.Id).indexOf(id)
@@ -41,6 +44,7 @@ class ListMain extends Component {
                 lstMain.splice(_i, 1)       // remove
                 this.setState({ ListMain: lstMain })
             }
+            setLoading(false)
         })
     }
     onCancelAddNewMain = () => {
@@ -63,6 +67,16 @@ class ListMain extends Component {
             this.onCancelAddNewMain()
         })
     }
+    onDuplicateMain = (main) => {
+        const { setLoading } = this.context;
+        setLoading(true)
+        const lstMain = this.state.ListMain
+        apiDuplicateMain(main.Id).then(newMain => {
+            lstMain.push(newMain)
+            this.setState({ ListMain: lstMain })
+            setLoading(false)
+        })
+    }
     render() {
         const { ListMain, NewMain } = this.state
         return (
@@ -70,6 +84,7 @@ class ListMain extends Component {
                 {
                     !Array.isArray(ListMain) ? <></> : <>{ListMain.map(main => {
                         return <Maingoal item={main} key={main.Id}
+                            onDuplicateMain={this.onDuplicateMain}
                             onDeleteMain={this.onDeleteMain}
                             updateDataGoals={this.updateDataGoals} />
                     })}</>

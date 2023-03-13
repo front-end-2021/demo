@@ -93,3 +93,9 @@ export function apiDuplicateSub(sub) {
             }, config)).then(res => { return res.data })
     })
 }
+export function apiDuplicateMain(mainid) {
+    return callApiData().then(d => {
+        return axios.put(`${host}copymain/${mainid}`, config)
+            .then(res => { return res.data })
+    })
+}
