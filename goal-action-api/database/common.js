@@ -48,6 +48,21 @@ function getColMain(main, newId) {
         Columns: columns, Values: values
     }
 }
+const insertIntoSub = `INSERT INTO ${tableSub}(Id, ParentId, Name, Description, Start, End, IsDone, Budget)`
+const deleteSub = `DELETE FROM ${tableSub} WHERE Id IN (
+    SELECT s.Id FROM ${tableSub} as s
+    INNER JOIN ${tableMain} as m ON m.Id = s.ParentId
+    WHERE m.Id=(?) )`
+const insertIntoAct = `INSERT INTO ${tableAction}(Id, ParentId, Name, Description, Start, End, IsDone, ExpectCost, TrueCost)`
+function selectAction(mid) {
+    const slctSub = `(SELECT Id AS ParentId FROM ${tableSub} WHERE ParentId = '${mid}')`
+    return `SELECT * FROM ${tableAction} Where ParentId IN ${slctSub}`
+}
+const deleteAction = `DELETE FROM ${tableAction} WHERE Id IN (
+    SELECT a.Id FROM ${tableAction} AS a
+    INNER JOIN ${tableSub} AS s ON s.Id = a.ParentId
+    INNER JOIN ${tableMain} AS m ON m.Id = s.ParentId
+    WHERE m.Id=(?) )`
 module.exports = {
     dbName: dbName,
     tableMain: tableMain,
@@ -55,4 +70,9 @@ module.exports = {
     tableAction: tableAction,
     getColSub: getColSub,
     getColMain: getColMain,
+    insertIntoSub: insertIntoSub,
+    deleteSub: deleteSub,
+    insertIntoAction: insertIntoAct,
+    selectAction: selectAction,
+    deleteAction: deleteAction,
 }
