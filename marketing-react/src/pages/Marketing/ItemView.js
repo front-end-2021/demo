@@ -3,7 +3,7 @@ import { getDateCalendarValue, getDateString, getIcon, isDateLessNow } from "../
 import { useDispatch, useSelector } from "react-redux"
 import { ItemContext } from "./Maingoal"
 import { showMenu, showEdit } from "../../global/ReduxStore"
-import { useDialog } from "../../global/Context"
+import { useDialog, ConfirmType } from "../../global/Context"
 
 export function ItemViewExpand({ children, className,
     addNewChild, onToggleDone }) {
@@ -12,7 +12,6 @@ export function ItemViewExpand({ children, className,
     const MenuId = useSelector(state => state.focus.MenuId)
     const dialog = useDialog()
     function getStartTag() {
-        if (!item.Start) return <></>
         return <>
             <span className={`bi bi-calendar2-week${getClassOverDate(item.Start)}`} />
             {
@@ -25,11 +24,11 @@ export function ItemViewExpand({ children, className,
         </>
     }
     function getEndTag() {
-        if (!item.End) return <></>
         return <>
             <span className='dnb_d_div'>&minus;</span>
             {
-                !isDateLessNow(item.End) ? <span className="dnb-d-end">{getDateString(item.End)}</span> :
+                !isDateLessNow(item.End) ? <span className="dnb-d-end"
+                >{getDateString(item.End)}</span> :
                     <span title="End Date is in the past from Current Date"
                         className="dnb-d-end">{getDateString(item.End)}</span>
             }
@@ -56,7 +55,10 @@ export function ItemViewExpand({ children, className,
     }
     function showConfirmDelete() {
         dialog.setDialog({
-            children: <div>Are you sure? Delete "{item.Name}"</div>,
+            type: ConfirmType.default,
+            html_: <div>Do You want to delete?<br />
+                <i>{item.Name}</i>
+            </div>,
             ok: () => item.handleDelete()
         })
     }
@@ -71,13 +73,37 @@ export function ItemViewExpand({ children, className,
         return <span className="bi bi-pencil-square" style={{ cursor: 'pointer' }}
             onClick={() => dispatch(showEdit(item.Id))}>&nbsp; Edit</span>
     }
+    function showConfirmDuplicate() {
+        const _item = JSON.parse(JSON.stringify(item))
+        if (item.TypeId < 3) {
+            dialog.setDialog({
+                type: ConfirmType.default,
+                title: 'Confirm Copy',
+                html_: <i>{item.Name}</i>,
+                ok: () => {
+                    dispatch(showMenu(_item.Id))
+                    item.handleDuplicate(_item)
+                }
+            })
+            return
+        }
+        dialog.setDialog({
+            type: ConfirmType.ConfirmWithDate,
+            Start: _item.Start,
+            End: _item.End,
+            html_: <div>{_item.Name}</div>,
+            ok: (start, end) => {
+                dispatch(showMenu(_item.Id))
+                _item.Start = getDateString(start)
+                _item.End = getDateString(end)
+                item.handleDuplicate(_item)
+            }
+        })
+    }
     function getDuplicateTag() {
         if (item.IsDone) return <i className="bi bi-files">&nbsp; Duplicate</i>
         return <span className="bi bi-files" style={{ cursor: 'pointer' }}
-            onClick={() => {
-                dispatch(showMenu(item.Id))
-                item.handleDuplicate(item)
-            }}>&nbsp; Duplicate</span>
+            onClick={showConfirmDuplicate}>&nbsp; Duplicate</span>
     }
     function getAddNewTag() {
         if (item.TypeId > 2) return <></>
@@ -115,8 +141,8 @@ export function ItemViewExpand({ children, className,
                     {children}
                 </div>
                 <div className={`dnb_item_date${getClassOverDate(item.End)}`}>
-                    {getStartTag()}
-                    {item.IsExpand ? getEndTag() : <></>}
+                    {item.Start && getStartTag()}
+                    {item.IsExpand ? item.End && getEndTag() : <></>}
                 </div>
                 {
                     !item.IsExpand ? <></> : <div className='dnb_i_options'>

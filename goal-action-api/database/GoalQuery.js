@@ -114,12 +114,12 @@ function deleteMain(id) {
         return `Delete Subgoal success`
     })
 }
-function duplicateSub(sub) {
-    if (!uuidValidate(sub.Id) || sub.Id == NIL_UUID) {
+function duplicateSub(id) {
+    if (!uuidValidate(id) || id == NIL_UUID) {
         return Promise.resolve('invalid ParentId')
     }
-    return dbLite.duplicateSub(vCommon.dbName, sub).then((newSubId) => {
-        return newSubId;
+    return dbLite.duplicateSub(vCommon.dbName, id).then(newSub => {
+        return newSub;
     })
 }
 function duplicateMain(mainid) {

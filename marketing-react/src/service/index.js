@@ -85,12 +85,10 @@ export function apiDeleteMain(id) {
             config).then(res => { return res })
     })
 }
-export function apiDuplicateSub(sub) {
+export function apiDuplicateSub(subid) {
     return callApiData().then(d => {
-        return axios.post(`${host}copysub`,
-            Object.assign({
-                params: sub
-            }, config)).then(res => { return res.data })
+        return axios.put(`${host}copysub/${subid}`, config)
+            .then(res => { return res.data })
     })
 }
 export function apiDuplicateMain(mainid) {

@@ -107,12 +107,14 @@ export class Maingoal extends Component {
         })
     }
     onDuplicateSubgoal = (sub) => {
-        apiDuplicateSub(sub).then(newId => {
-            if (!newId.includes('invalid')) {
-                sub.Id = newId
+        const { setLoading } = this.props
+        setLoading(true)
+        apiDuplicateSub(sub.Id).then(newSub => {
+            if (typeof newSub === 'object') {
                 const lstSub = this.state.ListSub
-                lstSub.push(sub)
+                lstSub.push(newSub)
                 this.setState({ ListSub: lstSub })
+                setLoading(false)
             }
         })
     }

@@ -51,9 +51,8 @@ export function ActionView({ item, isExpandParent,
         const ids = [item.Id, item.ParentId]
         dispatch(setItems({ ids, isAdd }))
     }
-    function handlerDuplicate() {
-        const _item = JSON.parse(JSON.stringify(item))  // copy
-        _item.Name = `${_item.Name} (1)`
+    function handlerDuplicate(_item) {
+        _item.Name = `COPY ${_item.Name}`
         onDuplicateAction(_item)
         addLoadingItems(true)
     }

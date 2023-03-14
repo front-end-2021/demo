@@ -121,13 +121,13 @@ function deleteMain(app, corOptions) {
         }
     )
 }
-//http://localhost:8001/api/copysub
+//http://localhost:8001/api/copysub/uuid
 function duplicateSub(app, corOptions) {
-    app.post('/api/copysub', cors(corOptions),
+    app.put('/api/copysub/:id', cors(corOptions),
         (req, res, next) => {
-            const sub = req.body.params;
-            dbGoal.duplicateSub(sub).then(n => {
-                res.json(n)
+            const { id } = req.params
+            dbGoal.duplicateSub(id).then(newSub => {
+                res.json(newSub)
                 next()
             })
         }
@@ -138,8 +138,8 @@ function duplicateMain(app, corOptions) {
     app.put('/api/copymain/:id', cors(corOptions),
         (req, res, next) => {
             const { id } = req.params
-            dbGoal.duplicateMain(id).then(n => {
-                res.json(n)
+            dbGoal.duplicateMain(id).then(newMain => {
+                res.json(newMain)
                 next()
             })
         }

@@ -1,6 +1,5 @@
-import React, {
-    useContext, useState,
-} from 'react'
+import React, { useContext, useState, } from 'react'
+import { getDateCalendarValue } from '.'
 import '../styles/animation.scss'
 
 export const LoadingContext = React.createContext()
@@ -9,9 +8,21 @@ export const LoadingContext = React.createContext()
 export const DialogContext = React.createContext()
 export const useDialog = () => useContext(DialogContext)
 
+export const ConfirmType = {
+    default: 0,
+    ConfirmWithDate: 1
+}
 export function ProcessingProvider({ children }) {
     const [loading, setLoading] = useState(true)
     const [dialog, setDialog] = useState(null)
+    function getConfirtView() {
+        switch (dialog.type) {
+            case ConfirmType.ConfirmWithDate:
+                return <ConfirmViewWithDate context={dialog} />
+            default:
+                return <ConfirmView context={dialog} />
+        }
+    }
     return (
         <LoadingContext.Provider
             value={{
@@ -24,7 +35,7 @@ export function ProcessingProvider({ children }) {
                     setDialog: (context) => setDialog(context)
                 }}>
                 {children}
-                {dialog && <ConfirmView context={dialog} />}
+                {dialog && getConfirtView()}
             </DialogContext.Provider>
             {loading && <Loading />}
         </LoadingContext.Provider>
@@ -45,8 +56,8 @@ function BackgroundProcessing({ children }) {
         {children}
     </div>
 }
-function ConfirmView({ context }) {
-    const { children, ok, cancel } = context
+function ConfirmView({ context, children }) {
+    const { html_, ok, title } = context
     const dialog = useDialog()
     function confirmOk() {
         if (typeof ok === 'function') ok()
@@ -55,20 +66,69 @@ function ConfirmView({ context }) {
     function onCloseView() {
         dialog.setDialog(null)
     }
-    function confirmCancel() {
-        if (typeof cancel === 'function') cancel()
-        onCloseView()
-    }
     return <BackgroundProcessing>
         <div className='dnb-pos-center dnb-dialog animated bounceInDown'>
             <div className='dnb-dialog-head'>
-                <strong>Confirm</strong>
+                <strong>{title ? title : 'Confirm'}</strong>
             </div>
-            <div className='dnb-dialog-body'>{children}</div>
+            <div className='dnb-dialog-body'>
+                {html_}
+                {children}
+            </div>
             <div className='dnb-dialog-buttons'>
-                <span onClick={confirmCancel}>Cancel</span>
+                <span onClick={onCloseView}>Cancel</span>
                 <span onClick={confirmOk}>Ok</span>
             </div>
         </div>
     </BackgroundProcessing>
+}
+function ConfirmViewWithDate({ context }) {
+    const dialog = useDialog()
+    const { html_, ok, Start, End } = context
+    const [start, setStart] = useState(getDateCalendarValue(Start))
+    const [end, setEnd] = useState(getDateCalendarValue(End))
+    function onCloseView() { dialog.setDialog(null) }
+    function handleChangeStart(e) {
+        const newD = e.target.value
+        setStart(newD)
+    }
+    function handleChangeEnd(e) {
+        const newD = e.target.value
+        setEnd(newD)
+    }
+    function confirmOk() {
+        if (typeof ok === 'function') ok(start, end)
+        onCloseView()
+    }
+    return (
+        <BackgroundProcessing>
+            <div className='dnb-pos-center dnb-dialog animated bounceInDown'>
+                <div className='dnb-dialog-head'>
+                    <strong>Confirm Copy</strong>
+                </div>
+                <div className='dnb-dialog-body'>
+                    {html_}
+                    <div style={{ padding: '15px', textAlign: 'center' }}>
+                        <span className='dnb-d-start'>
+                            <strong>Start: </strong>
+                            <input type="date" value={start}
+                                className='dnb_edit_start' max={end}
+                                onChange={handleChangeStart} />
+                        </span>
+                        &nbsp;<span className='dnb_d_div'>&minus;</span>&nbsp;
+                        <span className='dnb-d-end'>
+                            <strong>End: </strong>
+                            <input type="date" value={end}
+                                className='dnb_edit_start' min={end}
+                                onChange={handleChangeEnd} />
+                        </span>
+                    </div>
+                </div>
+                <div className='dnb-dialog-buttons'>
+                    <span onClick={onCloseView}>Cancel</span>
+                    <span onClick={confirmOk}>Ok</span>
+                </div>
+            </div>
+        </BackgroundProcessing>
+    )
 }

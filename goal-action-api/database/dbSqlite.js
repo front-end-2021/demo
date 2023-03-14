@@ -77,51 +77,61 @@ function selectFromTable(dbName, query) {
         db.close();
     })
 }
-function duplicateSub(dbName, subg) {
+function duplicateSub(dbName, subid) {
     const db = readyDatabase(dbName)
-    const sid = subg.Id
-    const newId = uuidv4()
-    const qrySlAction = `SELECT * FROM ${vCommon.tableAction} WHERE ParentId='${sid}'`
     return new Promise((reslove, reject) => {
         db.serialize(() => {
-            const subO = vCommon.getColSub(subg, newId)
-            db.run(`INSERT INTO ${vCommon.tableSub} (${subO.Columns}) VALUES (${subO.Values})`)
+            db.get(`SELECT * FROM ${vCommon.tableSub} WHERE Id = '${subid}'`,
+                function (err, subg) {
+                    if (subg) {
+                        const newId = uuidv4()
+                        const sid = subg.Id
+                        subg.Name = `COPY ${subg.Name}`
+                        const subO = vCommon.getColSub(subg, newId)
+                        db.run(`INSERT INTO ${vCommon.tableSub} (${subO.Columns}) VALUES (${subO.Values})`)
 
-            db.all(qrySlAction, function (err, rows) {
-                if (rows) {
-                    if (rows.length) {
-                        const qr2 = `${vCommon.insertIntoAction} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-                        rows.forEach(a => {
-                            a.Id = uuidv4()
-                            a.ParentId = newId
-                            a.Name = `${a.Name} (1)`
-                            db.run(qr2, [a.Id, a.ParentId, a.Name, a.Description,
-                            a.Start, a.End, a.IsDone, a.ExpectCost, a.TrueCost]);
-                        })
-                    }
-                    reslove(newId)
+                        const newSub = subg
+                        newSub.Id = newId
+
+                        const qrySlAction = `SELECT * FROM ${vCommon.tableAction} WHERE ParentId='${sid}'`
+                        db.all(qrySlAction, function (err, actions) {
+                            if (Array.isArray(actions) && actions.length) {
+                                const qr2 = `${vCommon.insertIntoAction} VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                                actions.forEach(a => {
+                                    a.Id = uuidv4()
+                                    a.ParentId = newId
+                                    a.Name = `${a.Name} (1)`
+                                    db.run(qr2, [a.Id, a.ParentId, a.Name, a.Description,
+                                    a.Start, a.End, a.IsDone, a.ExpectCost, a.TrueCost]);
+                                })
+                            }
+                            if (err) reject(err)
+                            db.close();
+                            reslove(newSub)
+                        });
+                    } else db.close();
+                    if (err) reject(err)
                 }
-                if (err) reject(err)
-                db.close();
-            });
+            )
         });
-
     })
 }
 function duplicateMain(dbName, mainid) {
     const db = readyDatabase(dbName)
-    const newId = uuidv4()
     return new Promise((reslove, reject) => {
         db.serialize(() => {
-            db.get(`SELECT * FROM Maingoal WHERE Id = '${mainid}'`,
+            db.get(`SELECT * FROM ${vCommon.tableMain} WHERE Id = '${mainid}'`,
                 function (err, maing) {
                     if (maing) {
+                        const newId = uuidv4()
                         const mid = maing.Id
                         maing.Name = `COPY ${maing.Name}`
                         const mainO = vCommon.getColMain(maing, newId)
                         db.run(`INSERT INTO ${vCommon.tableMain} (${mainO.Columns}) VALUES (${mainO.Values})`)  // insert Main
+
                         const newMain = maing
                         newMain.Id = newId
+
                         db.all(`SELECT * FROM ${vCommon.tableSub} WHERE ParentId='${mid}'`, function (err, subs) {
                             if (Array.isArray(subs) && subs.length) {
                                 const newSubIds = []

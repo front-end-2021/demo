@@ -72,18 +72,22 @@ class ListMain extends Component {
         setLoading(true)
         const lstMain = this.state.ListMain
         apiDuplicateMain(main.Id).then(newMain => {
-            lstMain.push(newMain)
-            this.setState({ ListMain: lstMain })
-            setLoading(false)
+            if (typeof newMain === 'object') {
+                lstMain.push(newMain)
+                this.setState({ ListMain: lstMain })
+                setLoading(false)
+            }
         })
     }
     render() {
         const { ListMain, NewMain } = this.state
+        const { setLoading } = this.context;
         return (
             <>
                 {
                     !Array.isArray(ListMain) ? <></> : <>{ListMain.map(main => {
                         return <Maingoal item={main} key={main.Id}
+                            setLoading={setLoading}
                             onDuplicateMain={this.onDuplicateMain}
                             onDeleteMain={this.onDeleteMain}
                             updateDataGoals={this.updateDataGoals} />
@@ -94,8 +98,8 @@ class ListMain extends Component {
                         <span className="bi bi-plus-circle-dotted"
                             onClick={() => this.setState({ NewMain: true })}
                             style={{ cursor: 'pointer' }} >&nbsp; New &#9673;</span>
-                    </div> :
-                        <div className='dnb_item_view'>
+                    </div>
+                        : <div className='dnb_item_view'>
                             <ItemContext.Provider value={{
                                 Name: `Main goal ${Date.now()}`, Start: getDateAfterDaysString(0),
                                 End: getDateAfterDaysString(1), Budget: 0
