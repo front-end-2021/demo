@@ -520,13 +520,20 @@ $wPC: $wCost + 6px;
             }
 
             .dnb_item_list_action .dnb_item_container {
-                margin-left: 12px;
 
                 &.d_item_collapse {
                     margin-left: 0;
                 }
             }
         }
+    }
+    .dnb_item_container .dnb_item_description > * {
+        max-width: initial;
+        width: 100%;
+    }
+    .dnb-wrap-2-sticky {
+        position: sticky;
+        top: 0;
     }
 }
 
@@ -542,5 +549,11 @@ $wPC: $wCost + 6px;
 
     .dnb_item_list_sub>.dnb_item_view>.dnb_item_container {
         width: calc(100% - 3px);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .dnb_item_cost {
+        grid-template-columns: 180px 180px !important;
     }
 }

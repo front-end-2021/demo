@@ -132,28 +132,39 @@ export function ItemViewExpand({ children, className,
         }
         return _r
     }
+    function renderBodyExpand() {
+        return <>
+            {getNameTag()}
+            {getDesTag()}
+            <div className='dnb_item_cost'>
+                {children}
+            </div>
+            <div className={`dnb_item_date${getClassOverDate(item.End)}`}>
+                {item.Start && getStartTag()}
+                {item.IsExpand ? item.End && getEndTag() : <></>}
+            </div>
+            {
+                !item.IsExpand ? <></> : <div className='dnb_i_options'>
+                    <span onClick={() => dispatch(showMenu(item.Id))}
+                        className="bi bi-layout-sidebar"
+                    >&nbsp; {MenuId === item.Id ? 'Hide' : 'Menu'} &nbsp;</span>
+                    <span onClick={() => dispatch(showMenu(item.Id))}
+                        className={`bi bi-chevron-${MenuId === item.Id ? 'down' : 'right'}`} />
+                </div>
+            }
+            {getMenuTag()}
+        </>
+    }
     return (
         <>{
             item.IsExpand ? <div className={getClassWrap()}>
-                {getNameTag()}
-                {getDesTag()}
-                <div className='dnb_item_cost'>
-                    {children}
-                </div>
-                <div className={`dnb_item_date${getClassOverDate(item.End)}`}>
-                    {item.Start && getStartTag()}
-                    {item.IsExpand ? item.End && getEndTag() : <></>}
-                </div>
                 {
-                    !item.IsExpand ? <></> : <div className='dnb_i_options'>
-                        <span onClick={() => dispatch(showMenu(item.Id))}
-                            className="bi bi-layout-sidebar"
-                        >&nbsp; {MenuId === item.Id ? 'Hide' : 'Menu'} &nbsp;</span>
-                        <span onClick={() => dispatch(showMenu(item.Id))}
-                            className={`bi bi-chevron-${MenuId === item.Id ? 'down' : 'right'}`} />
-                    </div>
+                    item.TypeId > 2 ? <>{renderBodyExpand()}</>
+                        :
+                        <div className="dnb-wrap-2-sticky">
+                            {renderBodyExpand()}
+                        </div>
                 }
-                {getMenuTag()}
             </div> : <ItemViewCollapse>
                 {children}
             </ItemViewCollapse>
