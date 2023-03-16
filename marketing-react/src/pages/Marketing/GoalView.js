@@ -12,10 +12,11 @@ export function GoalItemView({ updateGoalUI }) {
     const dispatch = useDispatch()
     function onToggleDone(e) {
         const is_done = !item.IsDone
-        const entry = { IsDone: is_done }
-        if (item.ParentId) entry.ParentId = item.ParentId
+        const entry = item
+        entry.IsDone = is_done
         updateNewGoalUI(entry)
         updateGoalWithId(item.Id, entry)    // api put
+        item.IsDone = is_done
     }
     function updateNewGoalUI(p) {
         const newGoal = { Id: item.Id }

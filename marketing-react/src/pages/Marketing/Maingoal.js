@@ -93,10 +93,8 @@ export class Maingoal extends Component {
     }
     updateDataSubs = (newGoal) => {
         const lstSub = this.state.ListSub
-        logItem(lstSub)
         updateGoalUI.call(lstSub, newGoal)
         this.setState({ ListSub: lstSub })
-        logItem(lstSub)
     }
     onDeleteGoal = () => {
         const { item, onDeleteMain } = this.props
@@ -139,7 +137,7 @@ export class Maingoal extends Component {
     }
     getButtonAddSub = () => {
         const { IsExpand } = this.state
-        if(!IsExpand) return <></>
+        if (!IsExpand) return <></>
         return <div className='dnb_add_main'>
             <span className="bi bi-plus-circle-dotted"
                 onClick={this.handleAddNewSub}
@@ -188,8 +186,8 @@ export class Maingoal extends Component {
                                 <div className="dnb_item_list_action"></div>
                             </div>
                         </div> : <>{ListSub.map(sub => {
-                            const keyUpdate = `${sub.Id}${sub.IsDone}`
-                            return <SubgoalConnect key={keyUpdate}
+                            return <SubgoalConnect key={sub.Id}
+                                keyUpdate={sub.IsDone}
                                 item={sub} isExpandParent={IsExpand}
                                 updateDataSubs={this.updateDataSubs}
                                 pushExpectCost={this.pushExpectCost}
@@ -223,7 +221,8 @@ export function updateGoalUI(newGoal) {
             newGoal.Name.trim() !== '' && newGoal.Name !== _goal_.Name) {
             _goal_.Name = newGoal.Name
         }
-        if (typeof newGoal.Description === 'string' && newGoal.Description !== _goal_.Description) {
+        if (typeof newGoal.Description === 'string' &&
+            newGoal.Description !== _goal_.Description) {
             _goal_.Description = newGoal.Description
         }
         if (typeof newGoal.IsDone === 'boolean' && newGoal.IsDone !== _goal_.IsDone) {

@@ -31,7 +31,9 @@ class ListMain extends Component {
         })
     }
     updateDataGoals = (newGoal) => {
-        updateGoalUI.call(this.state.ListMain, newGoal)
+        const lstMain = this.state.ListMain
+        updateGoalUI.call(lstMain, newGoal)
+        this.setState({ ListMain: lstMain })
     }
     onDeleteMain = (id) => {
         const { setLoading } = this.context;
@@ -85,8 +87,8 @@ class ListMain extends Component {
             <>
                 {
                     !Array.isArray(ListMain) ? <></> : <>{ListMain.map(main => {
-                        const keyUpdate = `${main.Id}${main.IsDone}`
-                        return <MaingoalConnect item={main} key={keyUpdate}
+                        return <MaingoalConnect item={main} key={main.Id}
+                            keyUpdate={main.IsDone}
                             setLoading={setLoading}
                             onDuplicateMain={this.onDuplicateMain}
                             onDeleteMain={this.onDeleteMain}

@@ -40,7 +40,9 @@ $bgcolor: white;
         height: auto;
     }
 }
+
 $offst: 36px;
+
 .dnb_item_list_action {
     width: calc(100vw - 2 * $width - $offst);
     display: flex;
@@ -177,6 +179,8 @@ $offst: 36px;
     padding-top: 6px;
     margin: 9px 0 6px 0;
     border-top: 1px solid #eeeeeecf;
+    display: grid;
+    grid-template-columns: 50% 50%;
 }
 
 .bi-layout-sidebar::before {
@@ -496,6 +500,13 @@ $wPC: $wCost + 6px;
     }
 }
 
+@media screen and (max-width: 852px) {
+    .dnb-wrap-2-sticky {
+        position: sticky;
+        top: 0;
+    }
+}
+
 @media screen and (max-width: 675px) {
     .dnb_main_container {
         flex-direction: column;
@@ -527,10 +538,12 @@ $wPC: $wCost + 6px;
             }
         }
     }
-    .dnb_item_container .dnb_item_description > * {
+
+    .dnb_item_container .dnb_item_description>* {
         max-width: initial;
         width: 100%;
     }
+
     .dnb-wrap-2-sticky {
         position: sticky;
         top: 0;

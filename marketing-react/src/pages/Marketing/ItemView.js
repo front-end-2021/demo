@@ -44,10 +44,6 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
                 <span>{getEditTag()}</span>
                 <span>{getDuplicateTag()}</span>
                 <span>{getDeleteTag()}</span>
-                <span style={{ cursor: 'initial' }}>
-                    <span className={getClsDone()} style={{ cursor: 'pointer' }}
-                        onClick={onToggleDone}>&nbsp; Finish</span>
-                </span>
                 <span>{getAddNewTag()}</span>
             </div>
         </>
@@ -131,6 +127,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
         }
         return _r
     }
+    function toggleViewMenu() { dispatch(showMenu(item.Id)) }
     function renderBodyExpand() {
         return <>
             {getNameTag()}
@@ -144,11 +141,22 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
             </div>
             {
                 !item.IsExpand ? <></> : <div className='dnb_i_options'>
-                    <span onClick={() => dispatch(showMenu(item.Id))}
-                        className="bi bi-layout-sidebar"
-                    >&nbsp; {MenuId === item.Id ? 'Hide' : 'Menu'} &nbsp;</span>
-                    <span onClick={() => dispatch(showMenu(item.Id))}
-                        className={`bi bi-chevron-${MenuId === item.Id ? 'down' : 'right'}`} />
+                    <span style={{ cursor: 'initial' }}>
+                        <span className={getClsDone()} style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                                if (MenuId === item.Id) dispatch(showMenu(item.Id))
+                                onToggleDone()
+                            }}>&nbsp; Finish</span>
+                    </span>
+                    {
+                        item.IsDone ? <></> :
+                            <div>
+                                <span onClick={toggleViewMenu} className="bi bi-layout-sidebar"
+                                >&nbsp; Menu &nbsp;</span>
+                                <span onClick={toggleViewMenu}
+                                    className={`bi bi-chevron-${MenuId === item.Id ? 'down' : 'right'}`} />
+                            </div>
+                    }
                 </div>
             }
             {getMenuTag()}
