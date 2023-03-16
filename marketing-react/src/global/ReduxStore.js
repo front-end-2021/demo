@@ -36,6 +36,7 @@ const focusitem = createSlice({
         showEdit: (state, action) => {
             state.MenuId = null
             const id = action.payload
+            
             if (state.EditId !== id) state.EditId = id
             else state.EditId = null
         },

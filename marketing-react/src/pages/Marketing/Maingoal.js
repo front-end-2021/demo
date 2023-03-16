@@ -5,6 +5,9 @@ import {
 import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
 import { GoalItemView, GoalItemEdit } from "./GoalView"
 import { SubgoalConnect } from "./Subgoal"
+import { connect } from "react-redux"
+import { showEdit, setItems } from "../../global/ReduxStore"
+import { logItem } from "../../global/GlobalLog"
 
 export const ItemContext = React.createContext()
 export class Maingoal extends Component {
@@ -34,11 +37,11 @@ export class Maingoal extends Component {
         const { updateDataGoals } = this.props
         updateDataGoals(newGoal)
     }
-    handleAddNewSub = (mId) => {
-        this.setState({ NewSub: { ParentId: mId } })
-    }
-    onCancelAddNewSub = (mId) => {
-        this.setState({ NewSub: null })
+    handleAddNewSub = () => {
+        const dateNow = Date.now()
+        const { showEdit } = this.props
+        showEdit(dateNow)
+        this.setState({ NewSub: dateNow })
     }
     onInsertNewSub = (sub) => {
         if (sub.Start.trim() === '') delete sub.Start
@@ -47,14 +50,23 @@ export class Maingoal extends Component {
         }
         if (sub.End.trim() === '') delete sub.End
 
+        const { setItems, item } = this.props
+        const dateNow = this.state.NewSub
+        const mainId = item.Id
+        const ids = [dateNow, mainId]
+        let isAdd = true
+        setItems({ ids, isAdd })
+        this.setState({ NewSub: null })
+
         apiInsertSub(sub).then(newId => {
+            isAdd = false
+            setItems({ ids, isAdd })
             if (!newId.includes('invalid')) {
                 sub.Id = newId
                 const lstSub = this.state.ListSub
                 lstSub.push(sub)
                 this.setState({ ListSub: lstSub })
             }
-            this.onCancelAddNewSub()
         })
     }
     pushExpectCost = (expectC, sId) => {
@@ -80,7 +92,11 @@ export class Maingoal extends Component {
         }
     }
     updateDataSubs = (newGoal) => {
-        updateGoalUI.call(this.state.ListSub, newGoal)
+        const lstSub = this.state.ListSub
+        logItem(lstSub)
+        updateGoalUI.call(lstSub, newGoal)
+        this.setState({ ListSub: lstSub })
+        logItem(lstSub)
     }
     onDeleteGoal = () => {
         const { item, onDeleteMain } = this.props
@@ -121,37 +137,50 @@ export class Maingoal extends Component {
     onExpandMain = (isExpand) => {
         this.setState({ IsExpand: isExpand })
     }
+    getButtonAddSub = () => {
+        const { IsExpand } = this.state
+        if(!IsExpand) return <></>
+        return <div className='dnb_add_main'>
+            <span className="bi bi-plus-circle-dotted"
+                onClick={this.handleAddNewSub}
+                style={{ cursor: 'pointer' }} >&nbsp; New &#9670;</span>
+        </div>
+    }
+    getNewSubView = () => {
+        const { NewSub, IsExpand } = this.state
+        if (!IsExpand || !NewSub) return this.getButtonAddSub()
+        const { EditId } = this.props
+        const isAddNew = NewSub && EditId === NewSub
+        if (!isAddNew) return this.getButtonAddSub()
+
+        const { item } = this.props
+        return <div className='dnb_item_view'>
+            <ItemContext.Provider value={{
+                TypeId: 2, Id: NewSub, ParentId: item.Id,
+                Name: `Subgoal ${Date.now()}`, Start: getDateAfterDaysString(0),
+                End: getDateAfterDaysString(1), Budget: 0,
+            }}>
+                <GoalItemEdit onSaveGoal={this.onInsertNewSub} />
+            </ItemContext.Provider>
+        </div>
+    }
     render() {
-        const { NewSub, ListSub, ExpectCost, TrueCost, IsExpand } = this.state
+        const { ListSub, ExpectCost, TrueCost, IsExpand } = this.state
         const { item, onDuplicateMain } = this.props
         const mainCxt = Object.assign({
             IsExpand: IsExpand,
             handleExpand: this.onExpandMain,
             handleDelete: this.onDeleteGoal,
+            handleAddNewChild: this.handleAddNewSub,
             handleDuplicate: onDuplicateMain,
             TypeId: 1, ExpectCost: ExpectCost, TrueCost: TrueCost
         }, item)
         return (
             <div className={`dnb_item_view dnb_main_container${!IsExpand ? ` dnb_main_collapse` : ''}`}>
                 <ItemContext.Provider value={mainCxt}>
-                    <GoalItemView
-                        updateGoalUI={this.updateGoalUI}
-                        insertNewChild={this.handleAddNewSub} />
+                    <GoalItemView updateGoalUI={this.updateGoalUI} />
                 </ItemContext.Provider>
                 <div className='dnb_item_list_sub'>
-                    {
-                        !IsExpand || !NewSub ? <></> : <div className='dnb_item_view'>
-                            <ItemContext.Provider value={{
-                                Name: `Subgoal ${Date.now()}`, Start: getDateAfterDaysString(0),
-                                End: getDateAfterDaysString(1), Budget: 0, ParentId: item.Id
-                            }}>
-                                <GoalItemEdit
-                                    onCloseEditForm={this.onCancelAddNewSub}
-                                    onSaveGoal={this.onInsertNewSub}
-                                />
-                            </ItemContext.Provider>
-                        </div>
-                    }
                     {
                         !Array.isArray(ListSub) ? <div className="dnb_item_list_sub">
                             <div className="dnb_item_view">
@@ -159,7 +188,8 @@ export class Maingoal extends Component {
                                 <div className="dnb_item_list_action"></div>
                             </div>
                         </div> : <>{ListSub.map(sub => {
-                            return <SubgoalConnect key={sub.Id}
+                            const keyUpdate = `${sub.Id}${sub.IsDone}`
+                            return <SubgoalConnect key={keyUpdate}
                                 item={sub} isExpandParent={IsExpand}
                                 updateDataSubs={this.updateDataSubs}
                                 pushExpectCost={this.pushExpectCost}
@@ -169,12 +199,22 @@ export class Maingoal extends Component {
                         })}
                         </>
                     }
+                    {this.getNewSubView()}
                 </div>
             </div>
         )
     }
 }
-
+const mapState = (state) => ({
+    EditId: state.focus.EditId,
+    LoadingItems: state.loading.Items
+})
+const mapDispatch = {
+    showEdit, setItems
+}
+export const MaingoalConnect = connect(
+    mapState, mapDispatch
+)(Maingoal)
 export function updateGoalUI(newGoal) {
     const lstChild = this
     const _goal_ = lstChild.find(g => g.Id === newGoal.Id)

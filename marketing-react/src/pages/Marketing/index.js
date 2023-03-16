@@ -5,8 +5,7 @@ import {
 } from "../../service"
 import { getDateAfterDaysString } from "../../global"
 import { GoalItemEdit } from "./GoalView"
-import { Maingoal, updateGoalUI } from "./Maingoal"
-import { ItemContext } from "./Maingoal"
+import { MaingoalConnect, updateGoalUI, ItemContext } from "./Maingoal"
 import { ProcessingProvider } from "../../global/Context"
 import { LoadingContext } from "../../global/Context"
 import { MReduxProvider } from "../../global/ReduxStore"
@@ -86,7 +85,8 @@ class ListMain extends Component {
             <>
                 {
                     !Array.isArray(ListMain) ? <></> : <>{ListMain.map(main => {
-                        return <Maingoal item={main} key={main.Id}
+                        const keyUpdate = `${main.Id}${main.IsDone}`
+                        return <MaingoalConnect item={main} key={keyUpdate}
                             setLoading={setLoading}
                             onDuplicateMain={this.onDuplicateMain}
                             onDeleteMain={this.onDeleteMain}

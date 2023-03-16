@@ -13,35 +13,22 @@ export function ActionView({ item, isExpandParent,
     const dispatch = useDispatch()
     function onToggleDone(e) {
         const is_done = !item.IsDone
-        const entry = { IsDone: !!is_done }
-        item.IsDone = !!is_done
+        const entry = item
+        entry.IsDone = is_done
+        pushUpdateAction({ entry })
         updateActionWithId(item.Id, entry)      // api put
     }
     function onSaveAction(entry) {
-        const isChangeExpect = typeof entry.ExpectCost === 'number'
-        if (isChangeExpect) {
-            item.ExpectCost = entry.ExpectCost
-        }
-        const isChangeTrue = typeof entry.TrueCost === 'number'
-        if (isChangeTrue) {
-            item.TrueCost = entry.TrueCost
-        }
-        if (typeof entry.Name == 'string' && entry.Name.trim() !== '') {
-            item.Name = entry.Name
-        }
-        if (typeof entry.Description === 'string') {
-            item.Description = entry.Description
-        }
-        entry.IsDone = item.IsDone
-        if (typeof entry.Start === 'string') {
-            item.Start = entry.Start
+        const isChngStart = typeof entry.Start === 'string'
+        const isChngEnd = typeof entry.End === 'string'
+
+        if (isChngStart) {
             entry.Start = getDateString(entry.Start)
         }
-        if (typeof entry.End === 'string') {
-            item.End = entry.End
+        if (isChngEnd) {
             entry.End = getDateString(entry.End)
         }
-        pushUpdateAction({ isChangeExpect, isChangeTrue })
+        pushUpdateAction({ entry: Object.assign(item, entry) })
         dispatch(showEdit(item.Id))
         addLoadingItems(true)
         updateActionWithId(item.Id, entry)  // api put
@@ -104,13 +91,9 @@ export function ActionViewEdit({ onSaveAction, className }) {
         const nExp = +expectCost
         const nTrue = +trueCost
         const isEdit = typeof item.Id === 'string' && item.Id.includes('-')
+        _item.ExpectCost = nExp
+        _item.TrueCost = nTrue
         if (isEdit) {
-            if (item.ExpectCost !== nExp) {
-                _item.ExpectCost = nExp
-            }
-            if (item.TrueCost !== nTrue) {
-                _item.TrueCost = nTrue
-            }
             if (item.Name === _item.Name.trim()) {
                 delete _item.Name
             }
@@ -123,9 +106,6 @@ export function ActionViewEdit({ onSaveAction, className }) {
             if (getDateString(item.End) === getDateString(_item.End)) {
                 delete _item.End
             }
-        } else {    // add new
-            _item.ExpectCost = nExp
-            _item.TrueCost = nTrue
         }
         onSaveAction(_item)
     }

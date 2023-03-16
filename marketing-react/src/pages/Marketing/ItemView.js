@@ -5,8 +5,7 @@ import { ItemContext } from "./Maingoal"
 import { showMenu, showEdit } from "../../global/ReduxStore"
 import { useDialog, ConfirmType } from "../../global/Context"
 
-export function ItemViewExpand({ children, className,
-    addNewChild, onToggleDone }) {
+export function ItemViewExpand({ children, className, onToggleDone }) {
     const item = useContext(ItemContext)
     const LoadingItems = useSelector(state => state.loading.Items)
     const MenuId = useSelector(state => state.focus.MenuId)
@@ -109,7 +108,7 @@ export function ItemViewExpand({ children, className,
         if (item.TypeId > 2) return <></>
         if (item.IsDone) return <span className="bi bi-plus-circle-dotted">&nbsp; New {getIcon(item.TypeId + 1)}</span>
         return <span className="bi bi-plus-circle-dotted" style={{ cursor: 'pointer' }}
-            onClick={() => addNewChild(item.TypeId + 1)}>&nbsp; New {getIcon(item.TypeId + 1)}</span>
+            onClick={() => item.handleAddNewChild(item.Id, item.TypeId + 1)}>&nbsp; New {getIcon(item.TypeId + 1)}</span>
     }
     function getDesTag() {
         const _des = { __html: item.Description }
@@ -198,13 +197,16 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
         const newDes = e.target.value
         setDes(newDes)
     }
+
     function onSaveDataItem() {
         const s = getDateString(start)
         const e = getDateString(end)
         onSaveData({
+            Id: item.Id, ParentId: item.ParentId,
             Name: name, Description: des, Start: s, End: e,
         })
     }
+
     function styleColorDate(dStr) {
         var d = new Date(dStr)
         const now = new Date(new Date().toDateString())

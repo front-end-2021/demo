@@ -6,7 +6,7 @@ import { ItemContext } from "./Maingoal"
 import { useDispatch, useSelector } from "react-redux"
 import { showEdit } from "../../global/ReduxStore"
 
-export function GoalItemView({ updateGoalUI, insertNewChild }) {
+export function GoalItemView({ updateGoalUI }) {
     const item = useContext(ItemContext)
     const EditId = useSelector(state => state.focus.EditId)
     const dispatch = useDispatch()
@@ -15,7 +15,6 @@ export function GoalItemView({ updateGoalUI, insertNewChild }) {
         const entry = { IsDone: is_done }
         if (item.ParentId) entry.ParentId = item.ParentId
         updateNewGoalUI(entry)
-        item.IsDone = is_done
         updateGoalWithId(item.Id, entry)    // api put
     }
     function updateNewGoalUI(p) {
@@ -54,15 +53,9 @@ export function GoalItemView({ updateGoalUI, insertNewChild }) {
         dispatch(showEdit(item.Id)) // false
         updateGoalWithId(item.Id, entry)    // api put
     }
-    function addNewChild(typeid) {
-        if (typeid === 2) insertNewChild(item.Id)
-        if (typeid === 3) insertNewChild(item.Id)
-    }
     return (
         <>{
-            EditId !== item.Id ? <ItemViewExpand
-                addNewChild={addNewChild}
-                onToggleDone={onToggleDone} >
+            EditId !== item.Id ? <ItemViewExpand onToggleDone={onToggleDone} >
                 <span title="Budget Cost"
                     className={`dnb_icost dnb-budget-cost`}>B:
                     <span className={`dnb_icost_value`}>${item.Budget}</span>
@@ -84,8 +77,7 @@ export function GoalItemView({ updateGoalUI, insertNewChild }) {
     )
 }
 export function GoalItemEdit({ onSaveGoal }) {
-    const { ParentId,
-        Budget, ExpectCost, TrueCost, } = useContext(ItemContext)
+    const { ParentId, Budget, ExpectCost, TrueCost, } = useContext(ItemContext)
     const [budget, setBudget] = useState(Budget)
     function onHandleChangeBudget(e) {
         const newB = e.target.value
