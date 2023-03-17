@@ -14,15 +14,18 @@ $bgcolor: white;
 
     .dnb_add_action {
         display: inline-flex;
-        align-items: center;
+        min-height: 45px;
         margin-left: $m3px;
-        min-height: 90px;
+        margin-bottom: $m3px;
+        padding-top: $m3px;
+        align-items: center;
 
         >div {
-            height: 78px;
+            width: $width;
+            height: 54px;
             background-color: $bgcolor;
             border-radius: $round;
-            padding: 27px 33px;
+            padding: 15px 12px;
         }
     }
 }
@@ -55,7 +58,7 @@ $offst: 36px;
     min-width: $width;
     background-color: $bgcolor;
     padding: 6px 6px $m3px 6px;
-    margin: $m3px $m3px 0 $m3px;
+    margin: $m3px;
     box-sizing: border-box;
     border-radius: $round;
 
@@ -141,6 +144,10 @@ $offst: 36px;
             opacity: 0;
         }
     }
+}
+
+.dnb_main_container>.dnb_item_container {
+    margin-bottom: 0;
 }
 
 .dnb_item_container.dnb_item_edit {

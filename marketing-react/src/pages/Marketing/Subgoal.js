@@ -108,6 +108,7 @@ class Subgoal extends Component {
             if (!newId.includes('invalid')) {
                 _item.Id = newId
                 const lstAction = this.state.ListAction
+                _item.IsExpand = true
                 lstAction.push(_item)
                 this.onChangeState(lstAction, _item.ExpectCost > 0, _item.TrueCost > 0)
             }
