@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { ItemContext } from "./Maingoal"
 import { showMenu, showEdit } from "../../global/ReduxStore"
 import { useDialog, ConfirmType } from "../../global/Context"
+import { logItem } from "../../global/GlobalLog"
 
 export function ItemViewExpand({ children, className, onToggleDone }) {
     const item = useContext(ItemContext)
@@ -32,10 +33,6 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
                         className="dnb-d-end">{getDateString(item.End)}</span>
             }
         </>
-    }
-    function getClsDone() {
-        if (item.IsDone) return `bi bi-check-circle-fill`
-        return `bi bi-check-circle`
     }
     function getMenuTag() {
         if (MenuId !== item.Id) return <></>
@@ -128,10 +125,20 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
         return _r
     }
     function toggleViewMenu() { dispatch(showMenu(item.Id)) }
+    function getDoneTag(text) {
+        let clsDone = `dnb_check_done bi`
+        if (item.IsDone) clsDone += ` bi-check-circle-fill`
+        else clsDone += ` bi-check-circle`
+        return <span className={clsDone} style={{ cursor: 'pointer' }}
+            onClick={() => {
+                if (MenuId === item.Id) dispatch(showMenu(item.Id))
+                onToggleDone()
+            }}>&nbsp; {text}</span>
+    }
     function renderBodyExpand() {
         return <>
             {getNameTag()}
-            {getDesTag()}
+            {item.IsExpand && getDesTag()}
             <div className='dnb_item_cost'>
                 {children}
             </div>
@@ -142,11 +149,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
             {
                 !item.IsExpand ? <></> : <div className='dnb_i_options'>
                     <span style={{ cursor: 'initial' }}>
-                        <span className={getClsDone()} style={{ cursor: 'pointer' }}
-                            onClick={() => {
-                                if (MenuId === item.Id) dispatch(showMenu(item.Id))
-                                onToggleDone()
-                            }}>&nbsp; Finish</span>
+                        {getDoneTag('Finish')}
                     </span>
                     {
                         item.IsDone ? <></> :
@@ -165,14 +168,13 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
     return (
         <>{
             item.IsExpand ? <div className={getClassWrap()}>
-                {
-                    item.TypeId > 2 ? <>{renderBodyExpand()}</>
-                        :
-                        <div className="dnb-wrap-2-sticky">
-                            {renderBodyExpand()}
-                        </div>
+                {item.TypeId > 2 ? <>{renderBodyExpand()}</>
+                    :
+                    <div className="dnb-wrap-2-sticky">
+                        {renderBodyExpand()}
+                    </div>
                 }
-            </div> : <ItemViewCollapse>
+            </div> : <ItemViewCollapse getDoneTag={getDoneTag}>
                 {children}
             </ItemViewCollapse>
         }</>
@@ -281,7 +283,7 @@ function getClassOverDate(start_end) {
     }
     return ''
 }
-function ItemViewCollapse({ children }) {
+function ItemViewCollapse({ getDoneTag, children }) {
     const item = useContext(ItemContext)
     function getStartTag() {
         if (!item.Start) return <></>
@@ -320,7 +322,10 @@ function ItemViewCollapse({ children }) {
     }
     return (
         <div className={getClsWrap()}>
-            {getNameTag()}
+            <div className='dnb-head-collapse'>
+                {getDoneTag()}
+                {getNameTag()}
+            </div>
             <div className={`dnb_item_cost`}>
                 {children}
             </div>

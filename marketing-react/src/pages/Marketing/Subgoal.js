@@ -23,6 +23,7 @@ class Subgoal extends Component {
         getDataGoalActionWith('actions', { subid: item.Id }).then(actions => {
             const lstAction = []
             actions.forEach(a => {
+                a.IsExpand = true
                 a.IsDone = !!a.IsDone
                 lstAction.push(a)
             })
@@ -49,24 +50,37 @@ class Subgoal extends Component {
     }
     pushUpdateAction = ({ entry }) => {
         const lstAction = this.state.ListAction
-        if (entry) {
-            const lstId = lstAction.map(a => a.Id)
-            const _i_ = lstId.indexOf(entry.Id)
-            if (_i_ > -1) {
-                lstAction.splice(_i_, entry)
-                this.setState({ ListAction: lstAction })
-            }
+        let action = lstAction.find(a => a.Id === entry.Id)
+        function getCase() {
+            if (!entry) return 0 // default dont do anymore
+            if (typeof entry.IsExpand === 'boolean' &&
+                entry.IsExpand !== action.IsExpand) return 1    // set expand -> Action
+            return 2;
         }
+        if (!action) return
+        const _keyCase = getCase()
+        switch (_keyCase) {
+            case 1:
+                action.IsExpand = entry.IsExpand
+                this.setState({ ListAction: lstAction })
+                break
+            case 2:
+                Object.assign(action, entry)
+                this.setState({ ListAction: lstAction })
+                const exp = getExpC(lstAction.map(s => s.ExpectCost))
+                this.setState({ ExpectCost: exp })
+                const { pushExpectCost, item } = this.props
+                pushExpectCost(exp, item.Id)
 
-        const exp = getExpC(lstAction.map(s => s.ExpectCost))
-        this.setState({ ExpectCost: exp })
-        const { pushExpectCost, item } = this.props
-        pushExpectCost(exp, item.Id)
+                const trueC = getTrueC(lstAction.map(s => s.TrueCost))
+                this.setState({ TrueCost: trueC })
+                const { pushTrueCost } = this.props
+                pushTrueCost(trueC, item.Id)
+                break;
+            default:
 
-        const trueC = getTrueC(lstAction.map(s => s.TrueCost))
-        this.setState({ TrueCost: trueC })
-        const { pushTrueCost } = this.props
-        pushTrueCost(trueC, item.Id)
+                break;
+        }
     }
     onInsertNewAction = (_item) => {
         const { setItems, showEdit, item } = this.props
@@ -101,7 +115,18 @@ class Subgoal extends Component {
     }
     onChangeState = (lstAction, isChangeExpect, isChangeTrue) => {
         this.setState({ ListAction: lstAction })
-        this.pushUpdateAction({ isChangeExpect, isChangeTrue })
+        if (isChangeExpect) {
+            const exp = getExpC(lstAction.map(s => s.ExpectCost))
+            this.setState({ ExpectCost: exp })
+            const { pushExpectCost, item } = this.props
+            pushExpectCost(exp, item.Id)
+        }
+        if (isChangeTrue) {
+            const trueC = getTrueC(lstAction.map(s => s.TrueCost))
+            this.setState({ TrueCost: trueC })
+            const { pushTrueCost, item } = this.props
+            pushTrueCost(trueC, item.Id)
+        }
     }
     onDeleteGoal = () => {
         const { item, onDeleteSub, setItems } = this.props
@@ -141,8 +166,8 @@ class Subgoal extends Component {
         onDuplicateSubgoal(_item)
     }
     getFormActionAddEdit = () => {
-        const { isExpandParent } = this.props
-        if (!isExpandParent) return <></>
+        const { isExpandMain } = this.props
+        if (!isExpandMain) return <></>
         const { NewAction, IsExpand } = this.state
         if (!IsExpand) return <></>
         const { EditId, LoadingItems, item } = this.props
@@ -170,38 +195,45 @@ class Subgoal extends Component {
         }</>
     }
     onExpandSub = (isExpand) => {
-        if (!this.props.isExpandParent) return
+        if (!this.props.isExpandMain) return
         this.setState({ IsExpand: isExpand })
     }
     render() {
-        const { item, isExpandParent } = this.props
+        const { item, isExpandMain } = this.props
         const { ListAction, ExpectCost, TrueCost, IsExpand } = this.state
-        const valContext = Object.assign({
-            IsExpand: isExpandParent && IsExpand,
-            handleExpand: this.onExpandSub,
-            handleDelete: this.onDeleteGoal,
-            handleDuplicate: this.handlerDuplicate,
-            handleAddNewChild: this.addNewAction,
-            TypeId: 2, ExpectCost: ExpectCost, TrueCost: TrueCost
-        }, item)
+        const contextSub = Object.assign(
+            JSON.parse(JSON.stringify(item)),
+            {
+                IsExpand: isExpandMain && IsExpand,
+                handleExpand: this.onExpandSub,
+                handleDelete: this.onDeleteGoal,
+                handleDuplicate: this.handlerDuplicate,
+                handleAddNewChild: this.addNewAction,
+                TypeId: 2,
+                ExpectCost: ExpectCost, TrueCost: TrueCost
+            })
         return (
             <div className={`dnb_item_view${!IsExpand ? ' dnb_sub_collapse' : ''}`}>
-                <ItemContext.Provider value={valContext}>
+                <ItemContext.Provider value={contextSub}>
                     <GoalItemView updateGoalUI={this.updateGoalUI} />
                 </ItemContext.Provider>
                 <div className='dnb_item_list_action'>{
                     !Array.isArray(ListAction) ? <span className="fb-loading"></span>
                         : <>{
-                            ListAction.map(action => {
-                                const keyUpdate = `${action.Id}.${action.IsDone}.${action.ExpectCost}.${action.TrueCost}`
-                                return <ActionView key={keyUpdate}
-                                    item={action} isExpandParent={isExpandParent && IsExpand}
+                            ListAction.map(_a => {
+                                const isExpand = isExpandMain && IsExpand
+                                const _keyUpdate = `${_a.IsDone}.${_a.ExpectCost}.${_a.TrueCost}${_a.IsExpand}`
+                                return <ActionView key={_a.Id}
+                                    keyUpdate={_keyUpdate}
+                                    item={_a}
+                                    isExpandSub={isExpand}
                                     onDeleteAction={this.onDeleteAction}
                                     onDuplicateAction={this.onDuplicateAction}
                                     pushUpdateAction={this.pushUpdateAction} />
                             })
                         }
-                            {this.getFormActionAddEdit()}</>
+                            {this.getFormActionAddEdit()}
+                        </>
                 }
                 </div>
             </div>

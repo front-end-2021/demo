@@ -38,7 +38,7 @@ export function getDataGoalActionWith(apiPath, params) {
             .then(rData => { return rData.data })
     })
 }
-export function updateActionWithId(id, item) {
+export function apiUpdateAction(id, item) {
     const url = `${host}action/${id}`
     return callApiData().then(r => {
         return saveAction(id, item)

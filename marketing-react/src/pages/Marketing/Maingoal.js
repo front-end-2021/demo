@@ -165,14 +165,16 @@ export class Maingoal extends Component {
     render() {
         const { ListSub, ExpectCost, TrueCost, IsExpand } = this.state
         const { item, onDuplicateMain } = this.props
-        const mainCxt = Object.assign({
-            IsExpand: IsExpand,
-            handleExpand: this.onExpandMain,
-            handleDelete: this.onDeleteGoal,
-            handleAddNewChild: this.handleAddNewSub,
-            handleDuplicate: onDuplicateMain,
-            TypeId: 1, ExpectCost: ExpectCost, TrueCost: TrueCost
-        }, item)
+        const mainCxt = Object.assign(
+            JSON.parse(JSON.stringify(item)),
+            {
+                IsExpand: IsExpand,
+                handleExpand: this.onExpandMain,
+                handleDelete: this.onDeleteGoal,
+                handleAddNewChild: this.handleAddNewSub,
+                handleDuplicate: onDuplicateMain,
+                TypeId: 1, ExpectCost: ExpectCost, TrueCost: TrueCost
+            })
         return (
             <div className={`dnb_item_view dnb_main_container${!IsExpand ? ` dnb_main_collapse` : ''}`}>
                 <ItemContext.Provider value={mainCxt}>
@@ -188,7 +190,7 @@ export class Maingoal extends Component {
                         </div> : <>{ListSub.map(sub => {
                             return <SubgoalConnect key={sub.Id}
                                 keyUpdate={sub.IsDone}
-                                item={sub} isExpandParent={IsExpand}
+                                item={sub} isExpandMain={IsExpand}
                                 updateDataSubs={this.updateDataSubs}
                                 pushExpectCost={this.pushExpectCost}
                                 onDeleteSub={this.onDeleteSub}

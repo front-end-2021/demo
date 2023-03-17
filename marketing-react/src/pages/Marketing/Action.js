@@ -1,22 +1,23 @@
 import { useState, useContext } from "react"
 import { getDateString } from "../../global"
 import { ItemViewExpand, ItemViewEdit } from "./ItemView"
-import { updateActionWithId } from "../../service"
+import { apiUpdateAction } from "../../service"
 import { ItemContext } from "./Maingoal"
 import { useDispatch, useSelector } from "react-redux"
 import { setItems, showEdit } from "../../global/ReduxStore"
+import { logItem } from "../../global/GlobalLog"
 
-export function ActionView({ item, isExpandParent,
+export function ActionView({ item, isExpandSub,
     pushUpdateAction, onDeleteAction, onDuplicateAction }) {
-    const [isExpand, setExpand] = useState(true)
     const EditId = useSelector(state => state.focus.EditId)
     const dispatch = useDispatch()
     function onToggleDone(e) {
         const is_done = !item.IsDone
-        const entry = item
+        const entry = JSON.parse(JSON.stringify(item))
         entry.IsDone = is_done
+        delete entry.IsExpand
+        apiUpdateAction(item.Id, entry)      // api put
         pushUpdateAction({ entry })
-        updateActionWithId(item.Id, entry)      // api put
     }
     function onSaveAction(entry) {
         const isChngStart = typeof entry.Start === 'string'
@@ -31,7 +32,7 @@ export function ActionView({ item, isExpandParent,
         pushUpdateAction({ entry: Object.assign(item, entry) })
         dispatch(showEdit(item.Id))
         addLoadingItems(true)
-        updateActionWithId(item.Id, entry)  // api put
+        apiUpdateAction(item.Id, entry)  // api put
             .then(res => { addLoadingItems(false) })
     }
     function addLoadingItems(isAdd) {
@@ -43,22 +44,25 @@ export function ActionView({ item, isExpandParent,
         onDuplicateAction(_item)
         addLoadingItems(true)
     }
-    function onExpand(isExpd) {
-        if (!isExpandParent) return
-        setExpand(isExpd)
+    function onExpandAction(isExpd) {
+        if (!isExpandSub) return
+        const entry = JSON.parse(JSON.stringify(item))
+        entry.IsExpand = isExpd
+        pushUpdateAction({ entry })
     }
     return (
-        <ItemContext.Provider value={Object.assign({
-            IsExpand: isExpandParent && isExpand,
-            TypeId: 3,
-            handleExpand: onExpand,
-            handleDelete: () => onDeleteAction(item),
-            handleDuplicate: handlerDuplicate,
-        }, item)}>
+        <ItemContext.Provider value={Object.assign(
+            JSON.parse(JSON.stringify(item)),
+            {
+                IsExpand: isExpandSub && item.IsExpand,
+                TypeId: 3,
+                handleExpand: onExpandAction,
+                handleDelete: () => onDeleteAction(item),
+                handleDuplicate: handlerDuplicate,
+            })}>
             {
                 EditId !== item.Id ?
-                    <ItemViewExpand
-                        onToggleDone={onToggleDone}>
+                    <ItemViewExpand onToggleDone={onToggleDone}>
                         <span title="Expected Cost"
                             className='dnb_icost dnb-expect-cost'>P:
                             <span className='dnb_icost_value'>${item.ExpectCost}</span>

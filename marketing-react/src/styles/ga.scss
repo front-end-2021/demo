@@ -65,7 +65,8 @@ $offst: 36px;
 
     .dnb_item_title {
         cursor: pointer;
-        margin-bottom: $m3px;
+        margin-top: 1px;
+        margin-bottom: 1px;
     }
 
     $hDes: 288px;
@@ -175,10 +176,12 @@ $offst: 36px;
     }
 }
 
+$colorLine: #eeeeeecf;
+
 .dnb_i_options {
     padding-top: 6px;
     margin: 9px 0 6px 0;
-    border-top: 1px solid #eeeeeecf;
+    border-top: 1px solid $colorLine;
     display: grid;
     grid-template-columns: 50% 50%;
 }
@@ -304,7 +307,7 @@ $wPC: $wCost + 6px;
     }
 }
 
-.dnb_item_view.dnb_main_collapse {
+.dnb_main_collapse {
     display: block;
     width: calc(100vw - $offst + 6px);
     padding-bottom: 5 * $m3px;
@@ -313,7 +316,7 @@ $wPC: $wCost + 6px;
         padding-right: 4 * $m3px;
     }
 
-    &>.dnb_item_container.d_item_collapse {
+    &>.d_item_collapse {
         grid-template-columns: auto 2 * $wCost + 2 * $wPC $wCalendar;
 
         &>.dnb_item_cost {
@@ -372,7 +375,7 @@ $wPC: $wCost + 6px;
         }
     }
 
-    .dnb_item_container.d_item_collapse {
+    .d_item_collapse {
 
         &+.dnb_item_list_sub {
             display: block;
@@ -420,9 +423,9 @@ $wPC: $wCost + 6px;
 
             }
 
-            .dnb_item_view.dnb_sub_collapse {
-                .dnb_item_container.d_item_collapse {
-                    width: calc(100vw - 90px);
+            .dnb_sub_collapse {
+                .d_item_collapse {
+                    width: calc(100vw - 30px);
                 }
             }
         }
@@ -435,6 +438,23 @@ $wPC: $wCost + 6px;
 
 .bi-layout-sidebar::before {
     transform: rotate(-90deg);
+}
+
+.dnb-head-collapse {
+    display: grid;
+    grid-template-columns: 42px auto;
+
+    .dnb_check_done {
+        display: inline-flex;
+        align-items: center;
+        border-right: 1px solid $colorLine;
+        margin-right: 12px;
+    }
+}
+
+.dnb-wrap-2-sticky {
+    position: sticky;
+    top: 0;
 }
 
 @media screen and (max-width: 1449px) {
@@ -497,13 +517,6 @@ $wPC: $wCost + 6px;
 
     .dnb_item_list_action {
         width: 100% !important;
-    }
-}
-
-@media screen and (max-width: 852px) {
-    .dnb-wrap-2-sticky {
-        position: sticky;
-        top: 0;
     }
 }
 
