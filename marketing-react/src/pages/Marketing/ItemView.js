@@ -11,6 +11,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
     const LoadingItems = useSelector(state => state.loading.Items)
     const MenuId = useSelector(state => state.focus.MenuId)
     const dialog = useDialog()
+    const [viewLevel, setViewLevel] = useState(1)
     function getStartTag() {
         return <>
             <span className={`bi bi-calendar2-week${getClassOverDate(item.Start)}`} />
@@ -42,6 +43,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
                 <span>{getDuplicateTag()}</span>
                 <span>{getDeleteTag()}</span>
                 <span>{getAddNewTag()}</span>
+                {item.TypeId < 3 && getExpandTag()}
             </div>
         </>
     }
@@ -97,11 +99,21 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
         return <span className="bi bi-files" style={{ cursor: 'pointer' }}
             onClick={showConfirmDuplicate}>&nbsp; Duplicate</span>
     }
+    function getExpandTag() {
+        return <span onClick={() => {
+            let vLv = viewLevel
+            vLv += 1
+            if (vLv > 2) {
+                vLv = 1
+            }
+            setViewLevel(vLv)
+        }} className='bi bi-arrows-expand'>&nbsp; Expand ({viewLevel-1})</span>
+    }
     function getAddNewTag() {
-        if (item.TypeId > 2) return <></>
-        if (item.IsDone) return <span className="bi bi-plus-circle-dotted">&nbsp; New {getIcon(item.TypeId + 1)}</span>
+        if (item.TypeId > 2) return getExpandTag()
         return <span className="bi bi-plus-circle-dotted" style={{ cursor: 'pointer' }}
-            onClick={() => item.handleAddNewChild(item.Id, item.TypeId + 1)}>&nbsp; New {getIcon(item.TypeId + 1)}</span>
+            onClick={() => item.handleAddNewChild(item.Id, item.TypeId + 1)}
+        >&nbsp; New {getIcon(item.TypeId + 1)}</span>
     }
     function getDesTag() {
         const _des = { __html: item.Description }
@@ -115,7 +127,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
             onClick={() => item.handleExpand(false)}>{getIcon(item.TypeId)} {item.Name}</div>
     }
     function getClassWrap() {
-        let _r = `dnb_item_container`
+        let _r = `dnb_item_container dnb_v_level_${viewLevel}`
         if (typeof className == 'string' && className.trim() !== '')
             _r += ` ${className}`
         if (item.IsDone) _r += ` dnb_item_done`
@@ -152,7 +164,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
                         {getDoneTag('Finish')}
                     </span>
                     {
-                        item.IsDone ? <></> :
+                        item.isDoneSub || item.IsDone ? getExpandTag() :
                             <div>
                                 <span onClick={toggleViewMenu} className="bi bi-layout-sidebar"
                                 >&nbsp; Menu &nbsp;</span>

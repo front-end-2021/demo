@@ -200,12 +200,15 @@ class Subgoal extends Component {
         this.setState({ IsExpand: isExpand })
     }
     render() {
-        const { item, isExpandMain } = this.props
+        const { item, isExpandMain, isDoneMain } = this.props
         const { ListAction, ExpectCost, TrueCost, IsExpand } = this.state
+        const isDoneSub = isDoneMain || item.IsDone;
+        const isExpandSub = isExpandMain && IsExpand
         const contextSub = Object.assign(
             JSON.parse(JSON.stringify(item)),
             {
-                IsExpand: isExpandMain && IsExpand,
+                IsExpand: isExpandSub,
+                isDoneSub: isDoneSub,
                 handleExpand: this.onExpandSub,
                 handleDelete: this.onDeleteGoal,
                 handleDuplicate: this.handlerDuplicate,
@@ -222,12 +225,12 @@ class Subgoal extends Component {
                     !Array.isArray(ListAction) ? <span className="fb-loading"></span>
                         : <>{
                             ListAction.map(_a => {
-                                const isExpand = isExpandMain && IsExpand
                                 const _keyUpdate = `${_a.IsDone}.${_a.ExpectCost}.${_a.TrueCost}${_a.IsExpand}`
                                 return <ActionView key={_a.Id}
                                     keyUpdate={_keyUpdate}
                                     item={_a}
-                                    isExpandSub={isExpand}
+                                    isExpandSub={isExpandSub}
+                                    isDoneSub={isDoneSub}
                                     onDeleteAction={this.onDeleteAction}
                                     onDuplicateAction={this.onDuplicateAction}
                                     pushUpdateAction={this.pushUpdateAction} />

@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { setItems, showEdit } from "../../global/ReduxStore"
 import { logItem } from "../../global/GlobalLog"
 
-export function ActionView({ item, isExpandSub,
+export function ActionView({ item, isExpandSub, isDoneSub,
     pushUpdateAction, onDeleteAction, onDuplicateAction }) {
     const EditId = useSelector(state => state.focus.EditId)
     const dispatch = useDispatch()
@@ -56,6 +56,7 @@ export function ActionView({ item, isExpandSub,
             {
                 IsExpand: isExpandSub && item.IsExpand,
                 TypeId: 3,
+                isDoneSub: isDoneSub,
                 handleExpand: onExpandAction,
                 handleDelete: () => onDeleteAction(item),
                 handleDuplicate: handlerDuplicate,

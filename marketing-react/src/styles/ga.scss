@@ -227,7 +227,7 @@ $fSizeCollp: 14px;
 $wCalendar: 192px;
 $wPC: $wCost + 6px;
 
-.dnb_item_container.d_item_collapse {
+.d_item_collapse {
     width: calc(100vw - 2 * $width - $offst - 6px);
     display: inline-grid;
     grid-template-columns: auto 2 * $wCost $wCalendar;
@@ -259,10 +259,10 @@ $wPC: $wCost + 6px;
     }
 }
 
-.dnb_item_view.dnb_sub_collapse {
+.dnb_sub_collapse {
     flex-direction: column;
 
-    .dnb_item_container.d_item_collapse {
+    .d_item_collapse {
         width: calc(100vw - $width - $offst);
         display: inline-grid;
         grid-template-columns: auto 4 * $wCost $wCalendar;
@@ -439,10 +439,42 @@ $wPC: $wCost + 6px;
     }
 }
 
+.dnb_v_level_2 {
+    width: 2 * ($width + $m3px);
+
+    &+.dnb_item_list_action,
+    &+.dnb_item_list_sub .dnb_item_list_action {
+        width: calc(100vw - 3 * $width - $offst - 2 * $m3px);
+    }
+
+    &+.dnb_item_list_sub {
+        .dnb_item_list_action {
+            width: calc(100vw - 3 * $width - $offst - 4 * $m3px);
+        }
+
+        .dnb_sub_collapse {
+
+            &>.d_item_collapse,
+            &>.dnb_item_list_action,
+            &>.dnb_item_list_action>.d_item_collapse {
+                width: calc(100vw - 2 * $width - $offst - 2 * $m3px);
+            }
+        }
+
+        .dnb_v_level_2 {
+            &+.dnb_item_list_action {
+                width: calc(100vw - 4 * $width - $offst - 4 * $m3px);
+            }
+        }
+    }
+}
+
+.bi-arrows-expand,
 .bi-layout-sidebar {
     cursor: pointer
 }
 
+.bi-arrows-expand::before,
 .bi-layout-sidebar::before {
     transform: rotate(-90deg);
 }

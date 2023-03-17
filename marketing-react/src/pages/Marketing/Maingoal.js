@@ -190,7 +190,9 @@ export class Maingoal extends Component {
                         </div> : <>{ListSub.map(sub => {
                             return <SubgoalConnect key={sub.Id}
                                 keyUpdate={sub.IsDone}
-                                item={sub} isExpandMain={IsExpand}
+                                item={sub} 
+                                isExpandMain={IsExpand}
+                                isDoneMain={item.IsDone}
                                 updateDataSubs={this.updateDataSubs}
                                 pushExpectCost={this.pushExpectCost}
                                 onDeleteSub={this.onDeleteSub}
