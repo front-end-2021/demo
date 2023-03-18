@@ -6,12 +6,12 @@ import { showMenu, showEdit } from "../../global/ReduxStore"
 import { useDialog, ConfirmType } from "../../global/Context"
 import { logItem } from "../../global/GlobalLog"
 
-export function ItemViewExpand({ children, className, onToggleDone }) {
+export function ItemViewExpand({ children, className,
+    onToggleDone, viewLevel, setViewLevel }) {
     const item = useContext(ItemContext)
     const LoadingItems = useSelector(state => state.loading.Items)
     const MenuId = useSelector(state => state.focus.MenuId)
     const dialog = useDialog()
-    const [viewLevel, setViewLevel] = useState(1)
     function getStartTag() {
         return <>
             <span className={`bi bi-calendar2-week${getClassOverDate(item.Start)}`} />
@@ -39,11 +39,11 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
         if (MenuId !== item.Id) return <></>
         return <>
             <div className='dnb_i_menu'>
-                <span>{getEditTag()}</span>
                 <span>{getDuplicateTag()}</span>
+                <span>{getEditTag()}</span>
                 <span>{getDeleteTag()}</span>
+                {getExpandTag()}
                 <span>{getAddNewTag()}</span>
-                {item.TypeId < 3 && getExpandTag()}
             </div>
         </>
     }
@@ -57,13 +57,11 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
         })
     }
     function getDeleteTag() {
-        if (item.IsDone) return <i className="bi bi-trash">&nbsp; Delete</i>
         return <span className="bi bi-trash" style={{ cursor: 'pointer' }}
             onClick={showConfirmDelete}>&nbsp; Delete</span>
     }
     const dispatch = useDispatch()
     function getEditTag() {
-        if (item.IsDone) return <i className="bi bi-pencil-square" >&nbsp; Edit</i>
         return <span className="bi bi-pencil-square" style={{ cursor: 'pointer' }}
             onClick={() => dispatch(showEdit(item.Id))}>&nbsp; Edit</span>
     }
@@ -95,28 +93,31 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
         })
     }
     function getDuplicateTag() {
-        if (item.IsDone) return <i className="bi bi-files">&nbsp; Duplicate</i>
         return <span className="bi bi-files" style={{ cursor: 'pointer' }}
             onClick={showConfirmDuplicate}>&nbsp; Duplicate</span>
     }
     function getExpandTag() {
-        return <span onClick={() => {
-            let vLv = viewLevel
-            vLv += 1
-            if (vLv > 2) {
-                vLv = 1
-            }
-            setViewLevel(vLv)
-        }} className='bi bi-arrows-expand'>&nbsp; Expand ({viewLevel-1})</span>
+        return <>
+            <span onClick={() => {
+                setViewLevel(getView(viewLevel))
+            }} className='bi bi-arrows-expand'>&nbsp; Expand ({viewLevel - 1})</span>
+            {item.TypeId < 3 ? <span></span> : ''}
+        </>
     }
     function getAddNewTag() {
-        if (item.TypeId > 2) return getExpandTag()
+        if (item.TypeId > 2) return <></>
         return <span className="bi bi-plus-circle-dotted" style={{ cursor: 'pointer' }}
             onClick={() => item.handleAddNewChild(item.Id, item.TypeId + 1)}
         >&nbsp; New {getIcon(item.TypeId + 1)}</span>
     }
-    function getDesTag() {
-        const _des = { __html: item.Description }
+    function getDescriptionTag() {
+        if (typeof item.Description !== 'string') return <p>
+            <i className="bi bi-code"></i>Description<i
+                className="bi bi-code-slash"></i>
+        </p>
+        let desText = item.Description
+        desText = desText.replaceAll('\n', '<br/>')
+        const _des = { __html: desText }
         return <p dangerouslySetInnerHTML={_des}
             className='dnb_item_description o_81' />
     }
@@ -127,7 +128,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
             onClick={() => item.handleExpand(false)}>{getIcon(item.TypeId)} {item.Name}</div>
     }
     function getClassWrap() {
-        let _r = `dnb_item_container dnb_v_level_${viewLevel}`
+        let _r = `dnb_item_container dnb_view_${viewLevel}`
         if (typeof className == 'string' && className.trim() !== '')
             _r += ` ${className}`
         if (item.IsDone) _r += ` dnb_item_done`
@@ -150,7 +151,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
     function renderBodyExpand() {
         return <>
             {getNameTag()}
-            {item.IsExpand && getDesTag()}
+            {item.IsExpand && getDescriptionTag()}
             <div className='dnb_item_cost'>
                 {children}
             </div>
@@ -180,7 +181,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
     return (
         <>{
             item.IsExpand ? <div className={getClassWrap()}>
-                {item.TypeId > 2 ? <>{renderBodyExpand()}</>
+                {item.TypeId > 2 ? renderBodyExpand()
                     :
                     <div className="dnb-wrap-2-sticky">
                         {renderBodyExpand()}
@@ -192,7 +193,16 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
         }</>
     )
 }
-export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData }) {
+function getView(level) {
+    let _vLv = level
+    _vLv += 1
+    if (_vLv > 2) {
+        _vLv = 1
+    }
+    return _vLv
+}
+export function ItemViewEdit({ children, className,
+    isExpectLessTrue, onSaveData, viewLevel, setViewLevel }) {
     const item = useContext(ItemContext)
     const [name, setName] = useState(item.Name)
     const [des, setDes] = useState(item.Description)
@@ -244,13 +254,13 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
         return isExpectLessTrue ? ` d_exp_less_true` : ''
     }
     function getClsItem() {
-        let _r = `dnb_item_container dnb_item_edit`
+        let _r = `dnb_item_container dnb_item_edit dnb_view_${viewLevel}`
         if (typeof className === 'string' && className.trim() !== '')
             _r += ` fb-loading`
         return _r
     }
-    return (
-        <div className={getClsItem()}>
+    function renderBodyEdit() {
+        return <>
             <div className={getClsExpLess()}>{getIcon(item.TypeId)} <input
                 value={name} maxLength="150"
                 className={`dnb_edit_name ${getClsExpLess()}`}
@@ -276,16 +286,26 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
             </div>
             <div className='dnb_i_menu'>
                 <span >
-                    <span className="bi bi-database-up"
-                        onClick={onSaveDataItem}
-                        style={{ cursor: 'pointer' }}>&nbsp; Save &nbsp;</span>
-                </span>
-                <span >
                     <span className="bi bi-x-circle"
                         onClick={() => dispatch(showEdit(item.Id))}
                         style={{ cursor: 'pointer' }}>&nbsp; Cancel &nbsp;</span>
                 </span>
+                <span >
+                    <span className="bi bi-database-up"
+                        onClick={onSaveDataItem}
+                        style={{ cursor: 'pointer' }}>&nbsp; Save &nbsp;</span>
+                </span>
+                <span></span>
+                <span onClick={() => { setViewLevel(getView(viewLevel)) }}
+                    className='bi bi-arrows-expand'>&nbsp; Expand ({viewLevel - 1})</span>
             </div>
+        </>
+    }
+    return (
+        <div className={getClsItem()}>
+            {item.TypeId > 2 ? renderBodyEdit()
+                : <div className="dnb-wrap-2-sticky">{renderBodyEdit()}</div>
+            }
         </div>
     )
 }

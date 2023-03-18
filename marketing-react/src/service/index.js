@@ -40,7 +40,7 @@ export function getDataGoalActionWith(apiPath, params) {
 }
 export function apiUpdateAction(id, item) {
     const url = `${host}action/${id}`
-    return callApiData().then(r => {
+    return callApiData(item.ExpectCost).then(r => {
         return saveAction(id, item)
         return axios.put(url, Object.assign({
             params: item,
@@ -49,7 +49,7 @@ export function apiUpdateAction(id, item) {
 }
 export function updateGoalWithId(id, item) {
     const url = `${host}goal/${id}`
-    return callApiData().then(r => {
+    return callApiData(item.Budget).then(r => {
         return saveGoal(id, item)
         return axios.put(url, Object.assign({
             params: item
@@ -57,7 +57,7 @@ export function updateGoalWithId(id, item) {
     })
 }
 export function apiInsertMain(goal) {
-    return callApiData().then(d => {
+    return callApiData(goal.Budget).then(d => {
         return insertMain(goal)
         return axios.post(`${host}main`, Object.assign({
             params: goal
@@ -65,7 +65,7 @@ export function apiInsertMain(goal) {
     })
 }
 export function apiInsertSub(sub) {
-    return callApiData().then(d => {
+    return callApiData(sub.Budget).then(d => {
         return insertSub(sub)
         return axios.post(`${host}sub`, Object.assign({
             params: sub
@@ -74,7 +74,7 @@ export function apiInsertSub(sub) {
 }
 export function apiInsertAction(item) {
     delete item.Id
-    return callApiData().then(d => {
+    return callApiData(item.ExpectCost).then(d => {
         return insertAction(item)
         return axios.post(`${host}action`,
             Object.assign({

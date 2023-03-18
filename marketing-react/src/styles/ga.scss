@@ -467,8 +467,11 @@ $wPC: $wCost + 6px;
 }
 
 @media screen and (min-width: 1182px) {
-    .dnb_v_level_2 {
+    .dnb_view_2 {
         width: 2 * ($width + $m3px);
+        &.fb-loading {
+            width: 2 * ($width + $m3px);
+        }
 
         &+.dnb_item_list_action,
         &+.dnb_item_list_sub .dnb_item_list_action {
@@ -489,11 +492,15 @@ $wPC: $wCost + 6px;
                 }
             }
 
-            .dnb_v_level_2 {
+            .dnb_view_2 {
                 &+.dnb_item_list_action {
                     width: calc(100vw - 4 * $width - $offst - 4 * $m3px);
                 }
             }
+        }
+
+        .dnb_item_container .dnb_item_description>* {
+            max-width: initial;
         }
     }
 }

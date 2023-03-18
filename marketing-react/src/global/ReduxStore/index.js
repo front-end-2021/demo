@@ -1,5 +1,6 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit"
 import { Provider } from "react-redux"
+import { DataList } from "./GoalAction"
 
 const loading = createSlice({
     name: 'loading',
@@ -20,6 +21,7 @@ const loading = createSlice({
     }
 })
 export const { setItems } = loading.actions
+
 const focusitem = createSlice({
     name: 'focusitem',
     initialState: {
@@ -36,17 +38,19 @@ const focusitem = createSlice({
         showEdit: (state, action) => {
             state.MenuId = null
             const id = action.payload
-            
+
             if (state.EditId !== id) state.EditId = id
             else state.EditId = null
         },
     }
 })
 export const { showMenu, showEdit } = focusitem.actions
+
 export const MarketingStore = configureStore({
     reducer: {
         loading: loading.reducer,
-        focus: focusitem.reducer
+        focus: focusitem.reducer,
+        data: DataList.reducer
     }
 })
 

@@ -54,9 +54,12 @@ export function GoalItemView({ updateGoalUI }) {
         dispatch(showEdit(item.Id)) // false
         updateGoalWithId(item.Id, entry)    // api put
     }
+    const [viewLevel, setViewLevel] = useState(1)
     return (
         <>{
-            EditId !== item.Id ? <ItemViewExpand onToggleDone={onToggleDone} >
+            EditId !== item.Id ? <ItemViewExpand
+                viewLevel={viewLevel} setViewLevel={setViewLevel}
+                onToggleDone={onToggleDone} >
                 <span title="Budget Cost"
                     className={`dnb_icost dnb-budget-cost`}>B:
                     <span className={`dnb_icost_value`}>${item.Budget}</span>
@@ -73,11 +76,12 @@ export function GoalItemView({ updateGoalUI }) {
                     className={`dnb_icost dnb-true-cost`}>C:
                     <span className={`dnb_icost_value`}>${item.TrueCost}</span>
                 </span>
-            </ItemViewExpand> : <GoalItemEdit onSaveGoal={onSaveGoal} />
+            </ItemViewExpand> : <GoalItemEdit onSaveGoal={onSaveGoal}
+                viewLevel={viewLevel} setViewLevel={setViewLevel} />
         }</>
     )
 }
-export function GoalItemEdit({ onSaveGoal }) {
+export function GoalItemEdit({ onSaveGoal, viewLevel, setViewLevel }) {
     const { ParentId, Budget, ExpectCost, TrueCost, } = useContext(ItemContext)
     const [budget, setBudget] = useState(Budget)
     function onHandleChangeBudget(e) {
@@ -108,6 +112,7 @@ export function GoalItemEdit({ onSaveGoal }) {
     }
     return (
         <ItemViewEdit
+            viewLevel={viewLevel} setViewLevel={setViewLevel}
             isExpectLessTrue={ExpectCost < TrueCost}
             onSaveData={onSaveData} >
             <span className={`dnb_icost dnb-budget-cost`}>B:

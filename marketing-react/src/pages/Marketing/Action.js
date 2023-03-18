@@ -50,6 +50,7 @@ export function ActionView({ item, isExpandSub, isDoneSub,
         entry.IsExpand = isExpd
         pushUpdateAction({ entry })
     }
+    const [viewLevel, setViewLevel] = useState(1)
     return (
         <ItemContext.Provider value={Object.assign(
             JSON.parse(JSON.stringify(item)),
@@ -63,7 +64,9 @@ export function ActionView({ item, isExpandSub, isDoneSub,
             })}>
             {
                 EditId !== item.Id ?
-                    <ItemViewExpand onToggleDone={onToggleDone}>
+                    <ItemViewExpand
+                        viewLevel={viewLevel} setViewLevel={setViewLevel}
+                        onToggleDone={onToggleDone}>
                         <span title="Expected Cost"
                             className='dnb_icost dnb-expect-cost'>P:
                             <span className='dnb_icost_value'>${item.ExpectCost}</span>
@@ -73,14 +76,15 @@ export function ActionView({ item, isExpandSub, isDoneSub,
                             <span className='dnb_icost_value'>${item.TrueCost}</span>
                         </span>
                     </ItemViewExpand>
-                    :
-                    <ActionViewEdit onSaveAction={onSaveAction} />
+                    : <ActionViewEdit onSaveAction={onSaveAction}
+                        viewLevel={viewLevel} setViewLevel={setViewLevel} />
             }
         </ItemContext.Provider>
     )
 }
 
-export function ActionViewEdit({ onSaveAction, className }) {
+export function ActionViewEdit({ onSaveAction, className,
+    viewLevel, setViewLevel }) {
     const item = useContext(ItemContext)
     const [expectCost, setExpectCost] = useState(item.ExpectCost)
     const [trueCost, setTrueCost] = useState(item.TrueCost)
@@ -116,6 +120,7 @@ export function ActionViewEdit({ onSaveAction, className }) {
     }
     return (
         <ItemViewEdit className={className}
+            viewLevel={viewLevel} setViewLevel={setViewLevel}
             isExpectLessTrue={expectCost < trueCost}
             onSaveData={onSaveData} >
             <span className='dnb_icost dnb-expect-cost'>P:
