@@ -3,7 +3,7 @@ import { getDateCalendarValue } from '.'
 import '../styles/animation.scss'
 
 export const LoadingContext = React.createContext()
-// export const useLoading = () => useContext(LoadingContext)
+export const ViewContext = React.createContext()
 
 export const DialogContext = React.createContext()
 export const useDialog = () => useContext(DialogContext)

@@ -1,6 +1,6 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit"
 import { Provider } from "react-redux"
-import { DataList } from "./GoalAction"
+import { DataList } from "./DataItem"
 
 const loading = createSlice({
     name: 'loading',

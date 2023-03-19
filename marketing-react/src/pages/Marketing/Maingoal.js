@@ -7,6 +7,8 @@ import { GoalItemView, GoalItemEdit } from "./GoalView"
 import { SubgoalConnect } from "./Subgoal"
 import { connect } from "react-redux"
 import { showEdit, setItems } from "../../global/ReduxStore"
+import { setSubs, deleteSubs,
+    setMains } from "../../global/ReduxStore/DataItem"
 import { logItem } from "../../global/GlobalLog"
 
 export const ItemContext = React.createContext()
@@ -14,33 +16,32 @@ export class Maingoal extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            ListSub: null, NewSub: null,
+            NewSub: null,
             IsExpand: true, ExpectCost: 0, TrueCost: 0,
         }
     }
     componentDidMount = () => {
-        const { item } = this.props
+        const { item, setSubs } = this.props
         getDataGoalActionWith('subs', { mainid: item.Id }).then(subs => {
             const lstSub = []
             subs.forEach(s => {
                 s.IsDone = !!s.IsDone
                 lstSub.push(s)
             })
+            setSubs(lstSub)
             this.setState({
-                ListSub: lstSub,
                 ExpectCost: getExpC([0]),
                 TrueCost: getTrueC([0])
             })
         })
     }
     updateGoalUI = (newGoal) => {
-        const { updateDataGoals } = this.props
-        updateDataGoals(newGoal)
+        const { setMains } = this.props
+        setMains(newGoal)
     }
     handleAddNewSub = () => {
         const dateNow = Date.now()
-        const { showEdit } = this.props
-        showEdit(dateNow)
+        this.props.showEdit(dateNow)
         this.setState({ NewSub: dateNow })
     }
     onInsertNewSub = (sub) => {
@@ -50,7 +51,7 @@ export class Maingoal extends Component {
         }
         if (sub.End.trim() === '') delete sub.End
 
-        const { setItems, item } = this.props
+        const { setItems, item, setSubs } = this.props
         const dateNow = this.state.NewSub
         const mainId = item.Id
         const ids = [dateNow, mainId]
@@ -63,38 +64,46 @@ export class Maingoal extends Component {
             setItems({ ids, isAdd })
             if (!newId.includes('invalid')) {
                 sub.Id = newId
-                const lstSub = this.state.ListSub
-                lstSub.push(sub)
-                this.setState({ ListSub: lstSub })
+                setSubs([sub])
             }
         })
     }
     pushExpectCost = (expectC, sId) => {
-        const { ListSub, ExpectCost } = this.state
-        const sub = ListSub.find(s => s.Id === sId)
+        const { item, ListSub, setSubs } = this.props
+        const lstSub = ListSub.filter(s => s.ParentId === item.Id).map(s => {
+            return { ExpectCost: s.ExpectCost, Id: s.Id }
+        })
+        const { ExpectCost } = this.state
+        const sub = lstSub.find(s => s.Id === sId)
         if (sub) {
-            sub.ExpectCost = expectC
-            const exp = getExpC(ListSub.map(s => s.ExpectCost))
+            const exp = getExpC(lstSub.map(s => s.ExpectCost))
             if (exp !== ExpectCost) {
                 this.setState({ ExpectCost: exp })
+
+                sub.ExpectCost = expectC
+                setSubs([sub])
             }
         }
     }
     pushTrueCost = (trueC, sId) => {
-        const { ListSub, TrueCost } = this.state
-        const sub = ListSub.find(s => s.Id === sId)
+        const { item, ListSub, setSubs } = this.props
+        const lstSub = ListSub.filter(s => s.ParentId === item.Id).map(s => {
+            return { TrueCost: s.TrueCost, Id: s.Id }
+        })
+        const { TrueCost } = this.state
+        const sub = lstSub.find(s => s.Id === sId)
         if (sub) {
-            sub.TrueCost = trueC
-            const _true = getTrueC(ListSub.map(s => s.TrueCost))
+            const _true = getTrueC(lstSub.map(s => s.TrueCost))
             if (_true !== TrueCost) {
                 this.setState({ TrueCost: _true })
+
+                sub.TrueCost = trueC
+                setSubs([sub])
             }
         }
     }
     updateDataSubs = (newGoal) => {
-        const lstSub = this.state.ListSub
-        updateGoalUI.call(lstSub, newGoal)
-        this.setState({ ListSub: lstSub })
+        this.props.setSubs(newGoal)
     }
     onDeleteGoal = () => {
         const { item, onDeleteMain } = this.props
@@ -102,12 +111,15 @@ export class Maingoal extends Component {
     }
     onDeleteSub = (item) => {
         const id = item.Id
-        const lstSub = this.state.ListSub
+        const { ListSub, deleteSubs } = this.props
         return apiDeleteSub(id).then(() => {
+            const mainid = this.props.item.Id
+            const lstSub = ListSub(s => s.ParentId === mainid).map(s => {
+                return { Id: s.Id, TrueCost: s.TrueCost, ExpectCost: s.ExpectCost }
+            })
             const _i = lstSub.map(s => s.Id).indexOf(id)
             if (_i > -1) {
                 lstSub.splice(_i, 1)    // remove
-                this.setState({ ListSub: lstSub })
                 const exp = getExpC(lstSub.map(s => s.ExpectCost))
                 if (exp !== this.state.ExpectCost) {
                     this.setState({ ExpectCost: exp })
@@ -116,18 +128,17 @@ export class Maingoal extends Component {
                 if (_true !== this.state.TrueCost) {
                     this.setState({ TrueCost: _true })
                 }
+                deleteSubs([id])
             }
             return [id, item.ParentId]
         })
     }
     onDuplicateSubgoal = (sub) => {
-        const { setLoading } = this.props
+        const { setLoading, setSubs } = this.props
         setLoading(true)
         apiDuplicateSub(sub.Id).then(newSub => {
             if (typeof newSub === 'object') {
-                const lstSub = this.state.ListSub
-                lstSub.push(newSub)
-                this.setState({ ListSub: lstSub })
+                setSubs([newSub])
                 setLoading(false)
             }
         })
@@ -138,10 +149,12 @@ export class Maingoal extends Component {
     getButtonAddSub = () => {
         const { IsExpand } = this.state
         if (!IsExpand) return <></>
-        return <div className='dnb_add_main'>
-            <span className="bi bi-plus-circle-dotted"
-                onClick={this.handleAddNewSub}
-                style={{ cursor: 'pointer' }} >&nbsp; New &#9670;</span>
+        return <div className='dnb_add_sub'>
+            <div>
+                <span className="bi bi-plus-circle-dotted"
+                    onClick={this.handleAddNewSub}
+                    style={{ cursor: 'pointer' }} >&nbsp; New &#9670;</span>
+            </div>
         </div>
     }
     getNewSubView = () => {
@@ -163,8 +176,9 @@ export class Maingoal extends Component {
         </div>
     }
     render() {
-        const { ListSub, ExpectCost, TrueCost, IsExpand } = this.state
-        const { item, onDuplicateMain } = this.props
+        const { ExpectCost, TrueCost, IsExpand } = this.state
+        const { ListSub, item, onDuplicateMain } = this.props
+        const listSub = ListSub.filter(s => s.ParentId === item.Id)
         const mainCxt = Object.assign(
             JSON.parse(JSON.stringify(item)),
             {
@@ -182,15 +196,15 @@ export class Maingoal extends Component {
                 </ItemContext.Provider>
                 <div className='dnb_item_list_sub'>
                     {
-                        !Array.isArray(ListSub) ? <div className="dnb_item_list_sub">
+                        !listSub.length ? <div className="dnb_item_list_sub">
                             <div className="dnb_item_view">
                                 <div className="dnb_item_container fb-loading"></div>
                                 <div className="dnb_item_list_action"></div>
                             </div>
-                        </div> : <>{ListSub.map(sub => {
+                        </div> : <>{listSub.map(sub => {
                             return <SubgoalConnect key={sub.Id}
                                 keyUpdate={sub.IsDone}
-                                item={sub} 
+                                item={sub}
                                 isExpandMain={IsExpand}
                                 isDoneMain={item.IsDone}
                                 updateDataSubs={this.updateDataSubs}
@@ -207,16 +221,21 @@ export class Maingoal extends Component {
         )
     }
 }
+
 const mapState = (state) => ({
     EditId: state.focus.EditId,
-    LoadingItems: state.loading.Items
+    LoadingItems: state.loading.Items,
+    ListSub: state.data.Subs
 })
 const mapDispatch = {
-    showEdit, setItems
+    showEdit, setItems, setMains, 
+    setSubs, deleteSubs
 }
+
 export const MaingoalConnect = connect(
     mapState, mapDispatch
 )(Maingoal)
+
 export function updateGoalUI(newGoal) {
     const lstChild = this
     const _goal_ = lstChild.find(g => g.Id === newGoal.Id)

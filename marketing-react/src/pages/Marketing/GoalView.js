@@ -5,6 +5,7 @@ import { getDateString } from "../../global"
 import { ItemContext } from "./Maingoal"
 import { useDispatch, useSelector } from "react-redux"
 import { showEdit } from "../../global/ReduxStore"
+import { ViewContext } from "../../global/Context"
 
 export function GoalItemView({ updateGoalUI }) {
     const item = useContext(ItemContext)
@@ -56,10 +57,8 @@ export function GoalItemView({ updateGoalUI }) {
     }
     const [viewLevel, setViewLevel] = useState(1)
     return (
-        <>{
-            EditId !== item.Id ? <ItemViewExpand
-                viewLevel={viewLevel} setViewLevel={setViewLevel}
-                onToggleDone={onToggleDone} >
+        <ViewContext.Provider value={{ viewLevel, setViewLevel }}>
+            {EditId !== item.Id ? <ItemViewExpand onToggleDone={onToggleDone} >
                 <span title="Budget Cost"
                     className={`dnb_icost dnb-budget-cost`}>B:
                     <span className={`dnb_icost_value`}>${item.Budget}</span>
@@ -76,12 +75,12 @@ export function GoalItemView({ updateGoalUI }) {
                     className={`dnb_icost dnb-true-cost`}>C:
                     <span className={`dnb_icost_value`}>${item.TrueCost}</span>
                 </span>
-            </ItemViewExpand> : <GoalItemEdit onSaveGoal={onSaveGoal}
-                viewLevel={viewLevel} setViewLevel={setViewLevel} />
-        }</>
+            </ItemViewExpand> : <GoalItemEdit onSaveGoal={onSaveGoal} />
+            }
+        </ViewContext.Provider>
     )
 }
-export function GoalItemEdit({ onSaveGoal, viewLevel, setViewLevel }) {
+export function GoalItemEdit({ onSaveGoal }) {
     const { ParentId, Budget, ExpectCost, TrueCost, } = useContext(ItemContext)
     const [budget, setBudget] = useState(Budget)
     function onHandleChangeBudget(e) {
@@ -112,9 +111,7 @@ export function GoalItemEdit({ onSaveGoal, viewLevel, setViewLevel }) {
     }
     return (
         <ItemViewEdit
-            viewLevel={viewLevel} setViewLevel={setViewLevel}
-            isExpectLessTrue={ExpectCost < TrueCost}
-            onSaveData={onSaveData} >
+            isExpectLessTrue={ExpectCost < TrueCost} onSaveData={onSaveData} >
             <span className={`dnb_icost dnb-budget-cost`}>B:
                 <span className={`dnb_icost_value`}>$
                     <input type="number" value={budget} style={{ width: '80px' }}

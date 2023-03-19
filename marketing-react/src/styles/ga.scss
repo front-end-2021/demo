@@ -25,7 +25,23 @@ $bgcolor: white;
             height: 54px;
             background-color: $bgcolor;
             border-radius: $round;
-            padding: 15px 12px;
+            padding: 15px 6px;
+        }
+    }
+
+    .dnb_add_sub {
+        display: inline-flex;
+        min-height: 45px;
+        align-items: center;
+        max-width: 279px;
+        margin-left: $m3px;
+
+        >div {
+            width: $width;
+            height: 54px;
+            background-color: $bgcolor;
+            border-radius: $round;
+            padding: 15px 6px;
         }
     }
 }
@@ -201,6 +217,10 @@ $colorLine: #eeeeeecf;
 .d_exp_less_true,
 .dnb_past_date {
     color: red;
+}
+
+.o_30 {
+    opacity: 0.3;
 }
 
 .o_50 {
@@ -469,6 +489,7 @@ $wPC: $wCost + 6px;
 @media screen and (min-width: 1182px) {
     .dnb_view_2 {
         width: 2 * ($width + $m3px);
+
         &.fb-loading {
             width: 2 * ($width + $m3px);
         }
@@ -499,8 +520,14 @@ $wPC: $wCost + 6px;
             }
         }
 
-        .dnb_item_container .dnb_item_description>* {
-            max-width: initial;
+        .dnb_item_container .dnb_item_description {
+            &>* {
+                max-width: initial;
+            }
+
+            &>img {
+                max-width: 100%;
+            }
         }
     }
 }

@@ -84,7 +84,7 @@ export function apiInsertAction(item) {
 }
 export function apiDeleteAction(id) {
     return callApiData().then(d => {
-        return deleteAction()
+        return deleteAction(id)
         return axios.delete(`${host}action/${id}`,
             config).then(res => { return res })
     })

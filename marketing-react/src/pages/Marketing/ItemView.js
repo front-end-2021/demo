@@ -3,15 +3,15 @@ import { getDateCalendarValue, getDateString, getIcon, isDateLessNow } from "../
 import { useDispatch, useSelector } from "react-redux"
 import { ItemContext } from "./Maingoal"
 import { showMenu, showEdit } from "../../global/ReduxStore"
-import { useDialog, ConfirmType } from "../../global/Context"
+import { useDialog, ConfirmType, ViewContext } from "../../global/Context"
 import { logItem } from "../../global/GlobalLog"
 
-export function ItemViewExpand({ children, className,
-    onToggleDone, viewLevel, setViewLevel }) {
+export function ItemViewExpand({ children, className, onToggleDone }) {
     const item = useContext(ItemContext)
     const LoadingItems = useSelector(state => state.loading.Items)
     const MenuId = useSelector(state => state.focus.MenuId)
     const dialog = useDialog()
+    const view = useContext(ViewContext)
     function getStartTag() {
         return <>
             <span className={`bi bi-calendar2-week${getClassOverDate(item.Start)}`} />
@@ -99,8 +99,8 @@ export function ItemViewExpand({ children, className,
     function getExpandTag() {
         return <>
             <span onClick={() => {
-                setViewLevel(getView(viewLevel))
-            }} className='bi bi-arrows-expand'>&nbsp; Expand ({viewLevel - 1})</span>
+                view.setViewLevel(getView(view.viewLevel))
+            }} className='bi bi-arrows-expand'>&nbsp; Expand ({view.viewLevel - 1})</span>
             {item.TypeId < 3 ? <span></span> : ''}
         </>
     }
@@ -111,12 +111,17 @@ export function ItemViewExpand({ children, className,
         >&nbsp; New {getIcon(item.TypeId + 1)}</span>
     }
     function getDescriptionTag() {
-        if (typeof item.Description !== 'string') return <p>
-            <i className="bi bi-code"></i>Description<i
-                className="bi bi-code-slash"></i>
-        </p>
         let desText = item.Description
+        if (typeof desText !== 'string') return <p
+            className='dnb_item_description o_30'>
+            <i className="bi bi-code"></i>Description<i className="bi bi-code-slash"></i>
+        </p>
         desText = desText.replaceAll('\n', '<br/>')
+        desText = desText.replaceAll(`<div`, `&#60;div`)
+        desText = desText.replaceAll(`</div`, `&#60;/div`)
+        desText = desText.replaceAll(`<script`, `&#60;script`)
+        desText = desText.replaceAll(`</script`, `&#60;/script`)
+        desText = desText.replaceAll(` `, `&nbsp;`)
         const _des = { __html: desText }
         return <p dangerouslySetInnerHTML={_des}
             className='dnb_item_description o_81' />
@@ -128,7 +133,7 @@ export function ItemViewExpand({ children, className,
             onClick={() => item.handleExpand(false)}>{getIcon(item.TypeId)} {item.Name}</div>
     }
     function getClassWrap() {
-        let _r = `dnb_item_container dnb_view_${viewLevel}`
+        let _r = `dnb_item_container dnb_view_${view.viewLevel}`
         if (typeof className == 'string' && className.trim() !== '')
             _r += ` ${className}`
         if (item.IsDone) _r += ` dnb_item_done`
@@ -201,14 +206,26 @@ function getView(level) {
     }
     return _vLv
 }
-export function ItemViewEdit({ children, className,
-    isExpectLessTrue, onSaveData, viewLevel, setViewLevel }) {
+export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData }) {
     const item = useContext(ItemContext)
     const [name, setName] = useState(item.Name)
-    const [des, setDes] = useState(item.Description)
+    const [des, setDes] = useState(getDesRaw())
     const [start, setStart] = useState(getDateCalendarValue(item.Start))
     const [end, setEnd] = useState(getDateCalendarValue(item.End))
     const dispatch = useDispatch()
+    const view = useContext(ViewContext)
+    const [viewLevel, setViewLevel] = useState(view ? view.viewLevel : 1)
+    function getDesRaw() {
+        let desText = item.Description
+        if (typeof desText !== 'string') return desText
+        desText = desText.replaceAll('<br/>', '\n')
+        desText = desText.replaceAll(`&#60;div`, `<div`)
+        desText = desText.replaceAll(`&#60;/div`, `</div`)
+        desText = desText.replaceAll(`&#60;script`, `<script`)
+        desText = desText.replaceAll(`&#60;/script`, `</script`)
+        desText = desText.replaceAll(`&nbsp;`, ` `)
+        return desText
+    }
     function handleChangeStart(e) {
         const newD = e.target.value
         setStart(newD)
@@ -253,8 +270,13 @@ export function ItemViewEdit({ children, className,
     function getClsExpLess() {
         return isExpectLessTrue ? ` d_exp_less_true` : ''
     }
+    function changeView(level) {
+        setViewLevel(level)
+        view && view.setViewLevel(level)
+    }
     function getClsItem() {
-        let _r = `dnb_item_container dnb_item_edit dnb_view_${viewLevel}`
+        let _r = `dnb_item_container dnb_item_edit`
+        _r += ` dnb_view_${viewLevel}`
         if (typeof className === 'string' && className.trim() !== '')
             _r += ` fb-loading`
         return _r
@@ -296,7 +318,7 @@ export function ItemViewEdit({ children, className,
                         style={{ cursor: 'pointer' }}>&nbsp; Save &nbsp;</span>
                 </span>
                 <span></span>
-                <span onClick={() => { setViewLevel(getView(viewLevel)) }}
+                <span onClick={() => { changeView(getView(viewLevel)) }}
                     className='bi bi-arrows-expand'>&nbsp; Expand ({viewLevel - 1})</span>
             </div>
         </>

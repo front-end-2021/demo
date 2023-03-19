@@ -1,14 +1,16 @@
 import { useState, useContext } from "react"
 import { getDateString } from "../../global"
 import { ItemViewExpand, ItemViewEdit } from "./ItemView"
-import { apiUpdateAction } from "../../service"
+import { apiUpdateAction, apiDeleteAction } from "../../service"
 import { ItemContext } from "./Maingoal"
 import { useDispatch, useSelector } from "react-redux"
 import { setItems, showEdit } from "../../global/ReduxStore"
+import { deleteActions } from "../../global/ReduxStore/DataItem"
+import { ViewContext } from "../../global/Context"
 import { logItem } from "../../global/GlobalLog"
 
 export function ActionView({ item, isExpandSub, isDoneSub,
-    pushUpdateAction, onDeleteAction, onDuplicateAction }) {
+    pushUpdateAction, onDuplicateAction }) {
     const EditId = useSelector(state => state.focus.EditId)
     const dispatch = useDispatch()
     function onToggleDone(e) {
@@ -50,6 +52,10 @@ export function ActionView({ item, isExpandSub, isDoneSub,
         entry.IsExpand = isExpd
         pushUpdateAction({ entry })
     }
+    function onDeleteA() {
+        dispatch(deleteActions([item.Id]))
+        apiDeleteAction(item.Id)
+    }
     const [viewLevel, setViewLevel] = useState(1)
     return (
         <ItemContext.Provider value={Object.assign(
@@ -59,14 +65,12 @@ export function ActionView({ item, isExpandSub, isDoneSub,
                 TypeId: 3,
                 isDoneSub: isDoneSub,
                 handleExpand: onExpandAction,
-                handleDelete: () => onDeleteAction(item),
+                handleDelete: onDeleteA,
                 handleDuplicate: handlerDuplicate,
             })}>
-            {
-                EditId !== item.Id ?
-                    <ItemViewExpand
-                        viewLevel={viewLevel} setViewLevel={setViewLevel}
-                        onToggleDone={onToggleDone}>
+            <ViewContext.Provider value={{ viewLevel, setViewLevel }}>
+                {EditId !== item.Id ?
+                    <ItemViewExpand onToggleDone={onToggleDone}>
                         <span title="Expected Cost"
                             className='dnb_icost dnb-expect-cost'>P:
                             <span className='dnb_icost_value'>${item.ExpectCost}</span>
@@ -76,15 +80,15 @@ export function ActionView({ item, isExpandSub, isDoneSub,
                             <span className='dnb_icost_value'>${item.TrueCost}</span>
                         </span>
                     </ItemViewExpand>
-                    : <ActionViewEdit onSaveAction={onSaveAction}
-                        viewLevel={viewLevel} setViewLevel={setViewLevel} />
-            }
+                    : <ActionViewEdit onSaveAction={onSaveAction} />
+                }
+            </ViewContext.Provider>
+
         </ItemContext.Provider>
     )
 }
 
-export function ActionViewEdit({ onSaveAction, className,
-    viewLevel, setViewLevel }) {
+export function ActionViewEdit({ onSaveAction, className }) {
     const item = useContext(ItemContext)
     const [expectCost, setExpectCost] = useState(item.ExpectCost)
     const [trueCost, setTrueCost] = useState(item.TrueCost)
@@ -120,7 +124,6 @@ export function ActionViewEdit({ onSaveAction, className,
     }
     return (
         <ItemViewEdit className={className}
-            viewLevel={viewLevel} setViewLevel={setViewLevel}
             isExpectLessTrue={expectCost < trueCost}
             onSaveData={onSaveData} >
             <span className='dnb_icost dnb-expect-cost'>P:
