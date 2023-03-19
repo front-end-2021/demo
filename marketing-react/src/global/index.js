@@ -22,9 +22,9 @@ export function getDateAfterDaysString(dayAfter){
     return d.toDateString().slice(4)
 }
 export function getIcon(typeid) {
-    if (typeid === 1) return <>&#9673;</>
-    if (typeid === 2) return <>&#9670;</>
-    return <>&#9632;</>
+    if (typeid < 2) return <>&#9673;</>
+    if (typeid < 3) return <>&#9830;</>
+    return <>&#11205;</>
 }
 export function isDateLessNow(start_end) {
     if (!start_end) return false

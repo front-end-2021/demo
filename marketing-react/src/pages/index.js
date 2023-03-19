@@ -13,11 +13,11 @@ export default function Home() {
                 </main>
                 <article>
                     <h1 className='title'>
-                        Welcome to <a href="void(0)">Marketing</a>
+                        Welcome to <a href="void(0)">Planning</a>
                     </h1>
 
                     <p className='description'>
-                        Get started by editing <code>pages/index.js</code>
+                        Get started by click <code>+ New &#9673;</code>
                     </p>
 
                     <div className='grid'>

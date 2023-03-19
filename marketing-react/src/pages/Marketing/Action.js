@@ -1,16 +1,16 @@
 import { useState, useContext } from "react"
 import { getDateString } from "../../global"
 import { ItemViewExpand, ItemViewEdit } from "./ItemView"
-import { apiUpdateAction, apiDeleteAction } from "../../service"
+import { apiUpdateAction, apiDeleteAction, apiInsertAction } from "../../service"
 import { ItemContext } from "./Maingoal"
 import { useDispatch, useSelector } from "react-redux"
 import { setItems, showEdit } from "../../global/ReduxStore"
-import { deleteActions } from "../../global/ReduxStore/DataItem"
+import { deleteActions, setActions } from "../../global/ReduxStore/DataItem"
 import { ViewContext } from "../../global/Context"
 import { logItem } from "../../global/GlobalLog"
 
 export function ActionView({ item, isExpandSub, isDoneSub,
-    pushUpdateAction, onDuplicateAction }) {
+    pushUpdateAction }) {
     const EditId = useSelector(state => state.focus.EditId)
     const dispatch = useDispatch()
     function onToggleDone(e) {
@@ -31,7 +31,8 @@ export function ActionView({ item, isExpandSub, isDoneSub,
         if (isChngEnd) {
             entry.End = getDateString(entry.End)
         }
-        pushUpdateAction({ entry: Object.assign(item, entry) })
+        const _item = JSON.parse(JSON.stringify(item))
+        pushUpdateAction({ entry: Object.assign(_item, entry) })
         dispatch(showEdit(item.Id))
         addLoadingItems(true)
         apiUpdateAction(item.Id, entry)  // api put
@@ -41,10 +42,20 @@ export function ActionView({ item, isExpandSub, isDoneSub,
         const ids = [item.Id, item.ParentId]
         dispatch(setItems({ ids, isAdd }))
     }
-    function handlerDuplicate(_item) {
-        _item.Name = `COPY ${_item.Name}`
-        onDuplicateAction(_item)
+    function onCopyAction(_item) {
         addLoadingItems(true)
+
+        _item.Name = `COPY ${_item.Name}`
+
+        apiInsertAction(_item).then(newId => {
+            const ids = [_item.Id, _item.ParentId]
+            setItems({ ids, isAdd: false })
+
+            if (!newId.includes('invalid')) {
+                _item.Id = newId
+                setActions([_item])
+            }
+        })
     }
     function onExpandAction(isExpd) {
         if (!isExpandSub) return
@@ -66,7 +77,7 @@ export function ActionView({ item, isExpandSub, isDoneSub,
                 isDoneSub: isDoneSub,
                 handleExpand: onExpandAction,
                 handleDelete: onDeleteA,
-                handleDuplicate: handlerDuplicate,
+                handleDuplicate: onCopyAction,
             })}>
             <ViewContext.Provider value={{ viewLevel, setViewLevel }}>
                 {EditId !== item.Id ?

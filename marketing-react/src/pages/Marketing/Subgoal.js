@@ -141,36 +141,18 @@ class Subgoal extends Component {
             setItems({ ids, isAdd: false })
         })
     }
-    componentDidUpdate = () => {
-        const {ListAction, item} = this.props
+    shouldComponentUpdate = (nxtProps) => {
+        const { item } = this.props
+        const { ListAction } = nxtProps
         const lstAction = ListAction.filter(a => a.ParentId === item.Id)
         const exp = getExpC(lstAction.map(s => s.ExpectCost))
 
-        const {ExpectCost, TrueCost } = this.state
-        if(exp !== ExpectCost) this.setState({ ExpectCost: exp })
+        const { ExpectCost, TrueCost } = this.state
+        if (exp !== ExpectCost) this.setState({ ExpectCost: exp })
 
         const trueC = getTrueC(lstAction.map(s => s.TrueCost))
-        if(trueC !== TrueCost) this.setState({ TrueCost: trueC })
-    }
-    onDuplicateAction = (item) => {
-        const { setItems, ListAction, setActions } = this.props
-        const ids = [item.Id, item.ParentId]
-        const isAdd = false
-        apiInsertAction(item).then(newId => {
-            setItems({ ids, isAdd })
-            if (!newId.includes('invalid')) {
-                item.Id = newId
-                const subid = this.props.item.Id
-                const lstAction = ListAction.filter(a => a.ParentId === subid).map(_a => {
-                    return { Id: _a.Id, ExpectCost: _a.ExpectCost, TrueCost: _a.TrueCost }
-                })
-
-                setActions([item])
-
-                lstAction.push(item)
-                this.onChangeState(lstAction, item.ExpectCost > 0, item.TrueCost > 0)
-            }
-        })
+        if (trueC !== TrueCost) this.setState({ TrueCost: trueC })
+        return true
     }
     handlerDuplicate = () => {
         const { item, onDuplicateSubgoal } = this.props
@@ -244,7 +226,6 @@ class Subgoal extends Component {
                                     item={_a}
                                     isExpandSub={isExpandSub}
                                     isDoneSub={isDoneSub}
-                                    onDuplicateAction={this.onDuplicateAction}
                                     pushUpdateAction={this.pushUpdateAction} />
                             })
                         }
