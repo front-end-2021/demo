@@ -1,5 +1,5 @@
-import React, { useContext, useState, } from 'react'
-import { getDateCalendarValue } from '.'
+import React, { useContext, useState, useEffect } from 'react'
+import { getDateCalendarValue, enableScroll, disableScroll } from '.'
 import '../styles/animation.scss'
 
 export const LoadingContext = React.createContext()
@@ -57,6 +57,10 @@ function BackgroundProcessing({ children }) {
     </div>
 }
 function ConfirmView({ context, children }) {
+    useEffect(() => {
+        disableScroll()
+        return enableScroll
+    }, []);
     const { html_, ok, title } = context
     const dialog = useDialog()
     function confirmOk() {
@@ -83,6 +87,10 @@ function ConfirmView({ context, children }) {
     </BackgroundProcessing>
 }
 function ConfirmViewWithDate({ context }) {
+    useEffect(() => {
+        disableScroll()
+        return enableScroll
+    }, []);
     const dialog = useDialog()
     const { html_, ok, Start, End } = context
     const [start, setStart] = useState(getDateCalendarValue(Start))
