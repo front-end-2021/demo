@@ -1,49 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-export const DataList = createSlice({
-    name: 'datalist',
-    initialState: {
-        Mains: [],
-        Subs: [],
-        Actions: []
-    },
-    reducers: {
-        setMains: (state, action) => {
-            const lstMain = action.payload
-            setItems(state.Mains, lstMain)
-        },
-        deleteMains: (state, action) => {
-            const ids = action.payload
-            removeItems.call(state.Mains, ids)
-            const subDeleteIds = removeSubs.call(state.Subs, ids)
-            removeActions.call(state.Actions, subDeleteIds)
-        },
-        setSubs: (state, action) => {
-            const lstSub = action.payload
-            setItems(state.Subs, lstSub)
-        },
-        deleteSubs: (state, action) => {
-            const ids = action.payload
-            removeItems.call(state.Subs, ids)
-            removeActions.call(state.Actions, ids)
-        },
-        setActions: (state, action) => {
-            const items = action.payload
-            setItems(state.Actions, items)
-        },
-        deleteActions: (state, action) => {
-            const ids = action.payload
-            removeItems.call(state.Actions, ids)
-        },
-    }
-})
-export const { 
-    setActions, deleteActions,
-    setSubs, deleteSubs,
-    setMains, deleteMains } = DataList.actions
-
 function setItems(items, lstItem) {
-    if(!Array.isArray(items)) return []
+    if (!Array.isArray(items)) return []
     lstItem.forEach(item => {
         let _i = -1
         let _item = items.find((x, i) => {
@@ -70,24 +28,116 @@ function removeItems(ids) {     // Mains/Subs/Actions
         }
     }
 }
-function removeSubs(mainIds) {
-    const subs = this
-    const subRemoveIds = []
-    for (let i = subs.length - 1; i > -1; i--) {
-        const item = subs[i]
-        if (mainIds.includes(item.ParentId)) {
-            subs.splice(i, 1)
-            subRemoveIds.push(item.Id)
-        }
+export const DataMap = createSlice({
+    name: 'datamap',
+    initialState: {
+        Mains: [],
+        MapMain: {}, // {mainid: [ListSub]}
+        MapSub: {},  // {subid: [ListAction]}
+    },
+    reducers: {
+        addMains: (state, action) => {
+            const lstMain = action.payload
+            setItems(state.Mains, lstMain)
+        },
+        removeMains: (state, action) => {
+            const ids = action.payload
+            removeItems.call(state.Mains, ids)
+            const mapMain = state.MapMain
+            let subIds = []
+            ids.forEach(id => {
+                const _sIds = deleteChilds.call(mapMain, id)// delete subs
+                subIds = subIds.concat(_sIds)
+            });
+            const mapSub = state.MapSub
+            subIds.forEach(id => {
+                deleteChilds.call(mapSub, id)   // delete actions
+            })
+        },
+        addSubs: (state, action) => {
+            const { mainId, lstSub } = action.payload
+            const mapMain = state.MapMain
+            if (Array.isArray(mapMain[mainId])) {
+                const subs = mapMain[mainId]
+                setChilds.call(subs, lstSub)
+            } else {
+                mapMain[mainId] = lstSub
+            }
+        },
+        removeSubs: (state, action) => {
+            const ids = action.payload
+            const mapMain = state.MapMain
+            deleteItems.call(mapMain, ids)
+            const mapSub = state.MapSub
+            ids.forEach(subid => {
+                deleteChilds.call(mapSub, subid)
+            })
+        },
+        addActions: (state, action) => {
+            const { subId, items } = action.payload
+            const mapSub = state.MapSub
+            if (Array.isArray(mapSub[subId])) {
+                const actions = mapSub[subId]
+                setChilds.call(actions, items)
+            } else {
+                mapSub[subId] = items
+            }
+        },
+        removeActions: (state, action) => {
+            const ids = action.payload
+            const mapSub = state.MapSub
+            deleteItems.call(mapSub, ids)
+        },
     }
-    return subRemoveIds
+})
+export const {
+    addActions, removeActions,
+    addSubs, removeSubs,
+    addMains, removeMains } = DataMap.actions
+function setChilds(lstChild) {
+    const items = this
+    if (!Array.isArray(items)) return
+    lstChild.forEach(item => {
+        let _i = -1
+        let _item = items.find((x, i) => {
+            if (x.Id === item.Id) {
+                _i = i
+                return true
+            }
+            return false
+        })
+        if (!_item) {
+            items.push(item)
+        } else {
+            const newI = Object.assign(_item, item)
+            items.splice(_i, 1, newI)
+        }
+    })
 }
-function removeActions(subIds) {
-    const actions = this
-    for (let i = actions.length - 1; i > -1; i--) {
-        const item = actions[i]
-        if (subIds.includes(item.ParentId)) {
-            actions.splice(i, 1)
+function deleteChilds(key) {
+    const _map = this
+    if (Array.isArray(_map[key])) {
+        const ids = _map[key].map(x => x.Id)
+        delete _map[key]
+        return ids
+    }
+    return []
+}
+function deleteItems(ids) {
+    const mapGoal = this
+    for (const parentId in mapGoal) {
+        const lstChild = mapGoal[parentId]
+        const childIds = lstChild.map(s => s.Id)
+        if (childIds.find(id => ids.includes(id))) {
+            ids.forEach(id => {
+                for (let _i = lstChild.length - 1; _i > -1; _i--) {
+                    const sub = lstChild[_i]
+                    if (sub.Id === id) {
+                        lstChild.splice(_i, 1)    // remove
+                    }
+                }
+            })
+            return parentId
         }
     }
 }

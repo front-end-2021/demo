@@ -7,8 +7,7 @@ import { GoalItemView, GoalItemEdit } from "./GoalView"
 import { SubgoalConnect } from "./Subgoal"
 import { connect } from "react-redux"
 import { showEdit, setItems } from "../../global/ReduxStore"
-import { setSubs, deleteSubs,
-    setMains } from "../../global/ReduxStore/DataItem"
+import { removeSubs, addSubs, addMains } from "../../global/ReduxStore/DataItem"
 import { logItem } from "../../global/GlobalLog"
 
 export const ItemContext = React.createContext()
@@ -21,14 +20,14 @@ export class Maingoal extends Component {
         }
     }
     componentDidMount = () => {
-        const { item, setSubs } = this.props
+        const { item, addSubs } = this.props
         getDataGoalActionWith('subs', { mainid: item.Id }).then(subs => {
             const lstSub = []
             subs.forEach(s => {
                 s.IsDone = !!s.IsDone
                 lstSub.push(s)
             })
-            setSubs(lstSub)
+            addSubs({mainId: item.Id, lstSub})
             this.setState({
                 ExpectCost: getExpC([0]),
                 TrueCost: getTrueC([0])
@@ -36,8 +35,8 @@ export class Maingoal extends Component {
         })
     }
     updateGoalUI = (newGoal) => {
-        const { setMains } = this.props
-        setMains(newGoal)
+        const { addMains } = this.props
+        addMains(newGoal)
     }
     handleAddNewSub = () => {
         const dateNow = Date.now()
@@ -51,7 +50,7 @@ export class Maingoal extends Component {
         }
         if (sub.End.trim() === '') delete sub.End
 
-        const { setItems, item, setSubs } = this.props
+        const { setItems, item, addSubs } = this.props
         const dateNow = this.state.NewSub
         const mainId = item.Id
         const ids = [dateNow, mainId]
@@ -64,13 +63,13 @@ export class Maingoal extends Component {
             setItems({ ids, isAdd })
             if (!newId.includes('invalid')) {
                 sub.Id = newId
-                setSubs([sub])
+                addSubs({mainId: item.Id, lstSub: [sub]})
             }
         })
     }
     pushExpectCost = (expectC, sId) => {
-        const { item, ListSub, setSubs } = this.props
-        const lstSub = ListSub.filter(s => s.ParentId === item.Id).map(s => {
+        const { item, MapMain, addSubs } = this.props
+        const lstSub = MapMain[item.Id].map(s => {
             return { ExpectCost: s.ExpectCost, Id: s.Id }
         })
         const { ExpectCost } = this.state
@@ -81,13 +80,13 @@ export class Maingoal extends Component {
                 this.setState({ ExpectCost: exp })
 
                 sub.ExpectCost = expectC
-                setSubs([sub])
+                addSubs({mainId: item.Id, lstSub: [sub]})
             }
         }
     }
     pushTrueCost = (trueC, sId) => {
-        const { item, ListSub, setSubs } = this.props
-        const lstSub = ListSub.filter(s => s.ParentId === item.Id).map(s => {
+        const { item, MapMain, addSubs } = this.props
+        const lstSub = MapMain[item.Id].map(s => {
             return { TrueCost: s.TrueCost, Id: s.Id }
         })
         const { TrueCost } = this.state
@@ -98,23 +97,23 @@ export class Maingoal extends Component {
                 this.setState({ TrueCost: _true })
 
                 sub.TrueCost = trueC
-                setSubs([sub])
+                addSubs({mainId: item.Id, lstSub: [sub]})
             }
         }
     }
     updateDataSubs = (newGoal) => {
-        this.props.setSubs(newGoal)
+        const { item, addSubs } = this.props
+        addSubs({mainId: item.Id, lstSub: [newGoal]})
     }
     onDeleteGoal = () => {
         const { item, onDeleteMain } = this.props
         onDeleteMain(item.Id)
     }
-    onDeleteSub = (item) => {
-        const id = item.Id
-        const { ListSub, deleteSubs } = this.props
+    onDeleteSub = (sub) => {
+        const id = sub.Id
+        const { MapMain, removeSubs, item } = this.props
         return apiDeleteSub(id).then(() => {
-            const mainid = this.props.item.Id
-            const lstSub = ListSub(s => s.ParentId === mainid).map(s => {
+            const lstSub = MapMain[item.Id].map(s => {
                 return { Id: s.Id, TrueCost: s.TrueCost, ExpectCost: s.ExpectCost }
             })
             const _i = lstSub.map(s => s.Id).indexOf(id)
@@ -128,17 +127,17 @@ export class Maingoal extends Component {
                 if (_true !== this.state.TrueCost) {
                     this.setState({ TrueCost: _true })
                 }
-                deleteSubs([id])
+                removeSubs([id])
             }
-            return [id, item.ParentId]
+            return [id, item.Id]
         })
     }
     onDuplicateSubgoal = (sub) => {
-        const { setLoading, setSubs } = this.props
+        const { item, setLoading, addSubs } = this.props
         setLoading(true)
         apiDuplicateSub(sub.Id).then(newSub => {
             if (typeof newSub === 'object') {
-                setSubs([newSub])
+                addSubs({mainId: item.Id, lstSub: [newSub]})
                 setLoading(false)
             }
         })
@@ -177,8 +176,8 @@ export class Maingoal extends Component {
     }
     render() {
         const { ExpectCost, TrueCost, IsExpand } = this.state
-        const { ListSub, item, onDuplicateMain } = this.props
-        const listSub = ListSub.filter(s => s.ParentId === item.Id)
+        const { MapMain, item, onDuplicateMain } = this.props
+        const listSub = MapMain[item.Id] || []
         const mainCxt = Object.assign(
             JSON.parse(JSON.stringify(item)),
             {
@@ -190,7 +189,7 @@ export class Maingoal extends Component {
                 TypeId: 1, ExpectCost: ExpectCost, TrueCost: TrueCost
             })
         return (
-            <div className={`dnb_item_view dnb_main_container${!IsExpand ? ` dnb_main_collapse` : ''}`}>
+            <section className={`dnb_item_view dnb_main_container${!IsExpand ? ` dnb_main_collapse` : ''}`}>
                 <ItemContext.Provider value={mainCxt}>
                     <GoalItemView updateGoalUI={this.updateGoalUI} />
                 </ItemContext.Provider>
@@ -217,7 +216,7 @@ export class Maingoal extends Component {
                     }
                     {this.getNewSubView()}
                 </div>
-            </div>
+            </section>
         )
     }
 }
@@ -225,11 +224,11 @@ export class Maingoal extends Component {
 const mapState = (state) => ({
     EditId: state.focus.EditId,
     LoadingItems: state.loading.Items,
-    ListSub: state.data.Subs
+    MapMain: state.dmap.MapMain
 })
 const mapDispatch = {
-    showEdit, setItems, setMains, 
-    setSubs, deleteSubs
+    showEdit, setItems, 
+    addMains, addSubs, removeSubs
 }
 
 export const MaingoalConnect = connect(

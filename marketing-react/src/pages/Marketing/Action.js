@@ -5,7 +5,7 @@ import { apiUpdateAction, apiDeleteAction, apiInsertAction } from "../../service
 import { ItemContext } from "./Maingoal"
 import { useDispatch, useSelector } from "react-redux"
 import { setItems, showEdit } from "../../global/ReduxStore"
-import { deleteActions, setActions } from "../../global/ReduxStore/DataItem"
+import { removeActions, addActions } from "../../global/ReduxStore/DataItem"
 import { ViewContext } from "../../global/Context"
 import { logItem } from "../../global/GlobalLog"
 
@@ -48,12 +48,11 @@ export function ActionView({ item, isExpandSub, isDoneSub,
         _item.Name = `COPY ${_item.Name}`
 
         apiInsertAction(_item).then(newId => {
-            const ids = [_item.Id, _item.ParentId]
-            setItems({ ids, isAdd: false })
+            addLoadingItems(false)           
 
             if (!newId.includes('invalid')) {
                 _item.Id = newId
-                setActions([_item])
+                addActions({items: [_item], subId: item.ParentId})
             }
         })
     }
@@ -64,7 +63,7 @@ export function ActionView({ item, isExpandSub, isDoneSub,
         pushUpdateAction({ entry })
     }
     function onDeleteA() {
-        dispatch(deleteActions([item.Id]))
+        dispatch(removeActions([item.Id]))
         apiDeleteAction(item.Id)
     }
     const [viewLevel, setViewLevel] = useState(1)

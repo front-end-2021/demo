@@ -8,7 +8,7 @@ import { ActionView, ActionViewEdit } from "./Action"
 import { ItemContext } from "./Maingoal"
 import { connect } from "react-redux"
 import { showEdit, setItems } from "../../global/ReduxStore"
-import { setActions } from "../../global/ReduxStore/DataItem"
+import { addActions } from "../../global/ReduxStore/DataItem"
 import { logItem } from "../../global/GlobalLog"
 
 class Subgoal extends Component {
@@ -20,7 +20,7 @@ class Subgoal extends Component {
         }
     }
     componentDidMount = () => {
-        const { item, setActions } = this.props
+        const { item, addActions } = this.props
         getDataGoalActionWith('actions', { subid: item.Id }).then(actions => {
             const lstAction = []
             actions.forEach(a => {
@@ -32,9 +32,9 @@ class Subgoal extends Component {
             const trueC = getTrueC(lstAction.map(s => s.TrueCost))
             this.setState({ ExpectCost: expC, TrueCost: trueC })
 
-            setActions(lstAction)
+            addActions({ subId: item.Id, items: lstAction })
 
-            const { pushTrueCost, pushExpectCost, item } = this.props
+            const { pushTrueCost, pushExpectCost } = this.props
             pushExpectCost(expC, item.Id)
             pushTrueCost(trueC, item.Id)
         })
@@ -50,8 +50,8 @@ class Subgoal extends Component {
         this.setState({ NewAction: dateNow })
     }
     pushUpdateAction = ({ entry }) => {
-        const { setActions, ListAction, item } = this.props
-        const lstAction = ListAction.filter(a => a.ParentId === item.Id)
+        const { addActions, MapSub, item } = this.props
+        const lstAction = MapSub[item.Id] || []
         let action = lstAction.find(a => a.Id === entry.Id)
         function getCase() {
             if (!entry) return 0 // default dont do anymore
@@ -60,17 +60,13 @@ class Subgoal extends Component {
             return 2;
         }
         if (!action) return
+        addActions({ subId: item.Id, items: [entry] })
         const _keyCase = getCase()
         switch (_keyCase) {
-            case 1:
-                setActions([entry])
-                break
             case 2:
-                setActions([entry])
-
                 const exp = getExpC(lstAction.map(s => s.ExpectCost))
                 this.setState({ ExpectCost: exp })
-                const { pushExpectCost, item } = this.props
+                const { pushExpectCost } = this.props
                 pushExpectCost(exp, item.Id)
 
                 const trueC = getTrueC(lstAction.map(s => s.TrueCost))
@@ -84,7 +80,7 @@ class Subgoal extends Component {
         }
     }
     onInsertNewAction = (_item) => {
-        const { setItems, showEdit, item, setActions, ListAction } = this.props
+        const { setItems, showEdit, item, addActions, MapSub } = this.props
         const dateNow = this.state.NewAction
         const subId = item.Id
         const ids = [dateNow, subId]
@@ -109,9 +105,10 @@ class Subgoal extends Component {
             if (!newId.includes('invalid')) {
                 _item.Id = newId
                 _item.IsExpand = true
-                setActions([_item])
+                addActions({ subId: item.Id, items: [_item] })
 
-                const lstAction = ListAction.filter(a => a.ParentId === item.Id).map(_a => {
+                let lstAction = MapSub[item.Id] || []
+                lstAction = lstAction.map(_a => {
                     return { Id: _a.Id, ExpectCost: _a.ExpectCost, TrueCost: _a.TrueCost }
                 })
                 lstAction.push(_item)
@@ -143,8 +140,8 @@ class Subgoal extends Component {
     }
     shouldComponentUpdate = (nxtProps) => {
         const { item } = this.props
-        const { ListAction } = nxtProps
-        const lstAction = ListAction.filter(a => a.ParentId === item.Id)
+        const { MapSub } = nxtProps
+        const lstAction = MapSub[item.Id] || []
         const exp = getExpC(lstAction.map(s => s.ExpectCost))
 
         const { ExpectCost, TrueCost } = this.state
@@ -194,9 +191,9 @@ class Subgoal extends Component {
         this.setState({ IsExpand: isExpand })
     }
     render() {
-        const { item, ListAction, isExpandMain, isDoneMain } = this.props
+        const { item, MapSub, isExpandMain, isDoneMain } = this.props
         const { ExpectCost, TrueCost, IsExpand } = this.state
-        const listAction = ListAction.filter(a => a.ParentId === item.Id)
+        const listAction = MapSub[item.Id] || []
         const isDoneSub = isDoneMain || item.IsDone;
         const isExpandSub = isExpandMain && IsExpand
         const contextSub = Object.assign(
@@ -217,7 +214,7 @@ class Subgoal extends Component {
                     <GoalItemView updateGoalUI={this.updateGoalUI} />
                 </ItemContext.Provider>
                 <div className='dnb_item_list_action'>{
-                    !ListAction.length && !listAction.length ? <span className="fb-loading"></span>
+                    !listAction.length && !listAction.length ? <span className="fb-loading"></span>
                         : <>{
                             listAction.map(_a => {
                                 const _keyUpdate = `${_a.IsDone}.${_a.ExpectCost}.${_a.TrueCost}${_a.IsExpand}`
@@ -240,10 +237,10 @@ class Subgoal extends Component {
 const mapState = (state) => ({
     EditId: state.focus.EditId,
     LoadingItems: state.loading.Items,
-    ListAction: state.data.Actions
+    MapSub: state.dmap.MapSub
 })
 const mapDispatch = {
-    showEdit, setItems, setActions
+    showEdit, setItems, addActions
 }
 export const SubgoalConnect = connect(
     mapState, mapDispatch

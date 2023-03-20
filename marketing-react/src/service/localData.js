@@ -79,10 +79,11 @@ export function insertSub(item) {
 }
 export function insertAction(item) {
     const lstAction = getValue(_keyListAction) || []
-    item.Id = uuidv4()
+    const newid = uuidv4()
+    item.Id = newid
     lstAction.push(item)
     setData(_keyListAction, lstAction)
-    return item.Id
+    return newid
 }
 export function deleteAction(id) {
     const lstAction = getValue(_keyListAction) || []

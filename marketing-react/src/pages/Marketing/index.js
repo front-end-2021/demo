@@ -8,7 +8,7 @@ import { GoalItemEdit } from "./GoalView"
 import { MaingoalConnect, ItemContext } from "./Maingoal"
 import { ProcessingProvider, LoadingContext } from "../../global/Context"
 import { MReduxProvider, showEdit } from "../../global/ReduxStore"
-import { setMains, deleteMains } from "../../global/ReduxStore/DataItem"
+import { addMains, removeMains } from "../../global/ReduxStore/DataItem"
 import { connect } from "react-redux"
 import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
 import '../../styles/ga.scss'
@@ -21,23 +21,23 @@ class ListMainView extends Component {
     }
     componentDidMount = () => {
         const { setLoading } = this.context;
-        const { setMains } = this.props
+        const { addMains } = this.props
         getDataGoalAction('mains').then(mains => {
             const lstMain = []
             mains.forEach(m => {
                 m.IsDone = !!m.IsDone
                 lstMain.push(m)
             })
-            setMains(lstMain)
+            addMains(lstMain)
             setLoading(false)
         })
     }
     onDeleteMain = (id) => {
         const { setLoading } = this.context;
         setLoading(true)
-        const { deleteMains } = this.props
+        const { removeMains } = this.props
         apiDeleteMain(id).then(res => {
-            deleteMains([id])
+            removeMains([id])
             setLoading(false)
         })
     }
@@ -60,8 +60,8 @@ class ListMainView extends Component {
         apiInsertMain(goal).then(newId => {
             if (!newId.includes('invalid')) {
                 goal.Id = newId
-                const { setMains } = this.props
-                setMains([goal])
+                const { addMains } = this.props
+                addMains([goal])
             }
             setLoading(false)
         })
@@ -69,10 +69,10 @@ class ListMainView extends Component {
     onDuplicateMain = (main) => {
         const { setLoading } = this.context;
         setLoading(true)
-        const { setMains } = this.props
+        const { addMains } = this.props
         apiDuplicateMain(main.Id).then(newMain => {
             if (typeof newMain === 'object') {
-                setMains([newMain])
+                addMains([newMain])
                 setLoading(false)
             }
         })
@@ -120,9 +120,9 @@ class ListMainView extends Component {
 
 const mapState = (state) => ({
     EditId: state.focus.EditId,
-    ListMain: state.data.Mains
+    ListMain: state.dmap.Mains
 })
-const mapDispatch = { showEdit, setMains, deleteMains }
+const mapDispatch = { showEdit, addMains, removeMains }
 export const ListMainConnect = connect(
     mapState, mapDispatch
 )(ListMainView)
