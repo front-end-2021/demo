@@ -1,26 +1,30 @@
 import React, { Component } from "react"
 import {
-    getDataGoalActionWith, apiInsertAction
+    getDataGoalActionWith, apiInsertAction,
+    apiDeleteSub, apiDuplicateSub
 } from "../../service"
-import { getExpC, getTrueC, getDateAfterDaysString } from "../../global"
+import { getSumCost, getDateAfterDaysString } from "../../global"
+import { ItemProvider, LoadingContext } from "../../global/Context"
+import { addActions, deleteSubs, addSubs } from "../../global/ReduxStore/DataItem"
 import { GoalItemView } from "./GoalView"
 import { ActionView, ActionViewEdit } from "./Action"
-import { ItemContext } from "./Maingoal"
 import { connect } from "react-redux"
 import { showEdit, setItems } from "../../global/ReduxStore"
-import { addActions } from "../../global/ReduxStore/DataItem"
 import { logItem } from "../../global/GlobalLog"
 
 class Subgoal extends Component {
+    static contextType = LoadingContext
     constructor(props) {
         super(props)
         this.state = {
             NewAction: null,
-            IsExpand: true, ExpectCost: 0, TrueCost: 0,
+            IsExpand: true,
         }
     }
     componentDidMount = () => {
+        const { setLoading } = this.context
         const { item, addActions } = this.props
+        setLoading(true)
         getDataGoalActionWith('actions', { subid: item.Id }).then(actions => {
             const lstAction = []
             actions.forEach(a => {
@@ -28,20 +32,9 @@ class Subgoal extends Component {
                 a.IsDone = !!a.IsDone
                 lstAction.push(a)
             })
-            const expC = getExpC(lstAction.map(s => s.ExpectCost))
-            const trueC = getTrueC(lstAction.map(s => s.TrueCost))
-            this.setState({ ExpectCost: expC, TrueCost: trueC })
-
-            addActions({ subId: item.Id, items: lstAction })
-
-            const { pushTrueCost, pushExpectCost } = this.props
-            pushExpectCost(expC, item.Id)
-            pushTrueCost(trueC, item.Id)
+            addActions(lstAction)       // add to ReduxStore
+            setLoading(false)
         })
-    }
-    updateGoalUI = (newGoal) => {
-        const { updateDataSubs } = this.props
-        updateDataSubs(newGoal)
     }
     addNewAction = () => {
         const dateNow = Date.now()
@@ -49,38 +42,8 @@ class Subgoal extends Component {
         showEdit(dateNow)
         this.setState({ NewAction: dateNow })
     }
-    pushUpdateAction = ({ entry }) => {
-        const { addActions, MapSub, item } = this.props
-        const lstAction = MapSub[item.Id] || []
-        let action = lstAction.find(a => a.Id === entry.Id)
-        function getCase() {
-            if (!entry) return 0 // default dont do anymore
-            if (typeof entry.IsExpand === 'boolean' &&
-                entry.IsExpand !== action.IsExpand) return 1    // set expand -> Action
-            return 2;
-        }
-        if (!action) return
-        addActions({ subId: item.Id, items: [entry] })
-        const _keyCase = getCase()
-        switch (_keyCase) {
-            case 2:
-                const exp = getExpC(lstAction.map(s => s.ExpectCost))
-                this.setState({ ExpectCost: exp })
-                const { pushExpectCost } = this.props
-                pushExpectCost(exp, item.Id)
-
-                const trueC = getTrueC(lstAction.map(s => s.TrueCost))
-                this.setState({ TrueCost: trueC })
-                const { pushTrueCost } = this.props
-                pushTrueCost(trueC, item.Id)
-                break;
-            default:
-
-                break;
-        }
-    }
     onInsertNewAction = (_item) => {
-        const { setItems, showEdit, item, addActions, MapSub } = this.props
+        const { setItems, showEdit, item, addActions } = this.props
         const dateNow = this.state.NewAction
         const subId = item.Id
         const ids = [dateNow, subId]
@@ -105,57 +68,33 @@ class Subgoal extends Component {
             if (!newId.includes('invalid')) {
                 _item.Id = newId
                 _item.IsExpand = true
-                addActions({ subId: item.Id, items: [_item] })
-
-                let lstAction = MapSub[item.Id] || []
-                lstAction = lstAction.map(_a => {
-                    return { Id: _a.Id, ExpectCost: _a.ExpectCost, TrueCost: _a.TrueCost }
-                })
-                lstAction.push(_item)
-                this.onChangeState(lstAction, _item.ExpectCost > 0, _item.TrueCost > 0)
+                addActions([_item])
             }
         })
     }
-    onChangeState = (lstAction, isChangeExpect, isChangeTrue) => {
-        if (isChangeExpect) {
-            const exp = getExpC(lstAction.map(s => s.ExpectCost))
-            this.setState({ ExpectCost: exp })
-            const { pushExpectCost, item } = this.props
-            pushExpectCost(exp, item.Id)
-        }
-        if (isChangeTrue) {
-            const trueC = getTrueC(lstAction.map(s => s.TrueCost))
-            this.setState({ TrueCost: trueC })
-            const { pushTrueCost, item } = this.props
-            pushTrueCost(trueC, item.Id)
-        }
-    }
     onDeleteGoal = () => {
-        const { item, onDeleteSub, setItems } = this.props
-        const ids = [item.Id, item.ParentId]
+        const { item, setItems, deleteSubs } = this.props
+        const id = item.Id
+        const ids = [id, item.ParentId]
         setItems({ ids, isAdd: true })
-        onDeleteSub(item).then(() => {
+        apiDeleteSub(id).then(() => {
+            deleteSubs([id])
             setItems({ ids, isAdd: false })
         })
     }
-    shouldComponentUpdate = (nxtProps) => {
+    onCopySub = () => {
         const { item } = this.props
-        const { MapSub } = nxtProps
-        const lstAction = MapSub[item.Id] || []
-        const exp = getExpC(lstAction.map(s => s.ExpectCost))
-
-        const { ExpectCost, TrueCost } = this.state
-        if (exp !== ExpectCost) this.setState({ ExpectCost: exp })
-
-        const trueC = getTrueC(lstAction.map(s => s.TrueCost))
-        if (trueC !== TrueCost) this.setState({ TrueCost: trueC })
-        return true
-    }
-    handlerDuplicate = () => {
-        const { item, onDuplicateSubgoal } = this.props
-        const _item = JSON.parse(JSON.stringify(item))  // copy
-        _item.Name = `${_item.Name} (1)`
-        onDuplicateSubgoal(_item)
+        const sub = JSON.parse(JSON.stringify(item))  // copy
+        sub.Name = `${sub.Name} (1)`
+        const { setLoading } = this.context;
+        const { addSubs } = this.props
+        setLoading(true)
+        apiDuplicateSub(sub.Id).then(newSub => {
+            if (typeof newSub === 'object') {
+                addSubs([newSub])
+                setLoading(false)
+            }
+        })
     }
     getFormActionAddEdit = () => {
         const { isExpandMain } = this.props
@@ -168,14 +107,14 @@ class Subgoal extends Component {
         return <>{
             isAddNew ?
                 <div className='dnb_item_view' >
-                    <ItemContext.Provider value={{
+                    <ItemProvider item={{
                         Id: NewAction, ParentId: item.Id,
                         Name: `Action ${Date.now()}`,
                         Start: getDateAfterDaysString(0), End: getDateAfterDaysString(1),
                         ExpectCost: 0, TrueCost: 0
                     }}>
                         <ActionViewEdit className={clsLoading} onSaveAction={this.onInsertNewAction} />
-                    </ItemContext.Provider>
+                    </ItemProvider>
                 </div>
                 :
                 <div className='dnb_add_action'>
@@ -191,30 +130,33 @@ class Subgoal extends Component {
         this.setState({ IsExpand: isExpand })
     }
     render() {
-        const { item, MapSub, isExpandMain, isDoneMain } = this.props
-        const { ExpectCost, TrueCost, IsExpand } = this.state
-        const listAction = MapSub[item.Id] || []
+        const { item, Actions, isExpandMain, isDoneMain } = this.props
+        const { IsExpand } = this.state
+        const listAction = Actions.filter(x => x.ParentId === item.Id)
         const isDoneSub = isDoneMain || item.IsDone;
         const isExpandSub = isExpandMain && IsExpand
         const contextSub = Object.assign(
             JSON.parse(JSON.stringify(item)),
             {
-                IsExpand: isExpandSub,
+                TypeId: 2, IsExpand: isExpandSub,
                 isDoneSub: isDoneSub,
-                handleExpand: this.onExpandSub,
-                handleDelete: this.onDeleteGoal,
-                handleDuplicate: this.handlerDuplicate,
-                handleAddNewChild: this.addNewAction,
-                TypeId: 2,
-                ExpectCost: ExpectCost, TrueCost: TrueCost
+                ExpectCost: getSumCost(listAction.map(a => a.ExpectCost)),
+                TrueCost: getSumCost(listAction.map(a => a.TrueCost))
             })
+        const handleCxt = {
+            handleExpand: this.onExpandSub,
+            handleDelete: this.onDeleteGoal,
+            handleDuplicate: this.onCopySub,
+            handleAddNewChild: this.addNewAction,
+        }
         return (
             <div className={`dnb_item_view${!IsExpand ? ' dnb_sub_collapse' : ''}`}>
-                <ItemContext.Provider value={contextSub}>
-                    <GoalItemView updateGoalUI={this.updateGoalUI} />
-                </ItemContext.Provider>
+                <ItemProvider item={contextSub} handler={handleCxt}>
+                    <GoalItemView />
+                </ItemProvider>
                 <div className='dnb_item_list_action'>{
-                    !listAction.length && !listAction.length ? <span className="fb-loading"></span>
+                    !listAction.length && !listAction.length ?
+                        <>{this.getFormActionAddEdit()}</>
                         : <>{
                             listAction.map(_a => {
                                 const _keyUpdate = `${_a.IsDone}.${_a.ExpectCost}.${_a.TrueCost}${_a.IsExpand}`
@@ -222,10 +164,8 @@ class Subgoal extends Component {
                                     keyUpdate={_keyUpdate}
                                     item={_a}
                                     isExpandSub={isExpandSub}
-                                    isDoneSub={isDoneSub}
-                                    pushUpdateAction={this.pushUpdateAction} />
-                            })
-                        }
+                                    isDoneSub={isDoneSub} />
+                            })}
                             {this.getFormActionAddEdit()}
                         </>
                 }
@@ -237,10 +177,11 @@ class Subgoal extends Component {
 const mapState = (state) => ({
     EditId: state.focus.EditId,
     LoadingItems: state.loading.Items,
-    MapSub: state.dmap.MapSub
+    Actions: state.dlist.Actions
 })
 const mapDispatch = {
-    showEdit, setItems, addActions
+    showEdit, setItems, addActions,
+    deleteSubs, addSubs
 }
 export const SubgoalConnect = connect(
     mapState, mapDispatch

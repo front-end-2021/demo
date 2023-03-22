@@ -167,6 +167,29 @@ $offst: 36px;
 }
 
 .dnb_item_container.dnb_item_edit {
+    z-index: 0;
+
+    &::before {
+        display: inline-block;
+        content: ' ';
+        background-color: #00000030;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        z-index: -1;
+        left: 0;
+    }
+
+    .dnb_editview {
+        background-color: white;
+        padding: 2 * $m3px;
+        margin: -2 * $m3px;
+        border-radius: $round;
+        position: sticky;
+        top: 0;
+    }
+
     .dnb_edit_start {
         width: $width - 173px;
     }
@@ -196,6 +219,13 @@ $offst: 36px;
 
     >* {
         margin: 3px 0;
+    }
+}
+
+.dnb_editview {
+    .dnb_i_menu {
+        border-top: 1px solid rgba(238, 238, 238, 0.8117647059);
+        padding-top: $m3px;
     }
 }
 

@@ -1,8 +1,35 @@
-export function getExpC(lstExp) {
-    return lstExp.reduce((acu, crt) => acu + crt, 0)
+export function encodeHtml(desText) {
+    if (typeof desText !== 'string') return
+    if (desText.trim() === '') return
+    desText = desText.replaceAll('\n', '<br/>')
+    desText = desText.replaceAll(`<div`, `&#60;div`)
+    desText = desText.replaceAll(`</div`, `&#60;/div`)
+    desText = desText.replaceAll(`<input`, `&#60;input`)
+    desText = desText.replaceAll(`<select`, `&#60;select`)
+    desText = desText.replaceAll(`<script`, `&#60;script`)
+    desText = desText.replaceAll(`</script`, `&#60;/script`)
+    desText = desText.replaceAll(` `, `&nbsp;`)
+    return desText
 }
-export function getTrueC(lstTrue) {
-    return lstTrue.reduce((acu, crt) => acu + crt, 0)
+export function decodeHtml(desText) {
+    desText = desText.replaceAll('<br/>', '\n')
+    desText = desText.replaceAll(`&#60;div`, `<div`)
+    desText = desText.replaceAll(`&#60;/div`, `</div`)
+    desText = desText.replaceAll(`&#60;input`, `<input`)
+    desText = desText.replaceAll(`&#60;select`, `<select`)
+    desText = desText.replaceAll(`&#60;script`, `<script`)
+    desText = desText.replaceAll(`&#60;/script`, `</script`)
+    desText = desText.replaceAll(`&nbsp;`, ` `)
+    return desText
+}
+export function getTextTitle(desText) {
+    if (typeof desText !== 'string') return
+    if (desText.trim() === '') return
+    desText = desText.replaceAll('<br/>', ' ')
+    return desText
+}
+export function getSumCost(lstCost) {
+    return lstCost.reduce((acu, crt) => acu + crt, 0)
 }
 export function getDateString(dateStr) {
     if (!dateStr) return ''

@@ -1,14 +1,14 @@
 import React, { Component } from "react"
 import {
-    getDataGoalAction, apiDuplicateMain,
-    apiInsertMain, apiDeleteMain
+    getDataGoalAction, apiInsertMain
 } from "../../service"
 import { getDateAfterDaysString } from "../../global"
 import { GoalItemEdit } from "./GoalView"
-import { MaingoalConnect, ItemContext } from "./Maingoal"
+import { MaingoalConnect } from "./Maingoal"
 import { ProcessingProvider, LoadingContext } from "../../global/Context"
 import { MReduxProvider, showEdit } from "../../global/ReduxStore"
-import { addMains, removeMains } from "../../global/ReduxStore/DataItem"
+import { ItemProvider } from "../../global/Context"
+import { addMains } from "../../global/ReduxStore/DataItem"
 import { connect } from "react-redux"
 import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
 import '../../styles/ga.scss'
@@ -29,15 +29,6 @@ class ListMainView extends Component {
                 lstMain.push(m)
             })
             addMains(lstMain)
-            setLoading(false)
-        })
-    }
-    onDeleteMain = (id) => {
-        const { setLoading } = this.context;
-        setLoading(true)
-        const { removeMains } = this.props
-        apiDeleteMain(id).then(res => {
-            removeMains([id])
             setLoading(false)
         })
     }
@@ -66,30 +57,16 @@ class ListMainView extends Component {
             setLoading(false)
         })
     }
-    onDuplicateMain = (main) => {
-        const { setLoading } = this.context;
-        setLoading(true)
-        const { addMains } = this.props
-        apiDuplicateMain(main.Id).then(newMain => {
-            if (typeof newMain === 'object') {
-                addMains([newMain])
-                setLoading(false)
-            }
-        })
-    }
     render() {
         const { EditId, showEdit, ListMain } = this.props
         const { NewMain } = this.state
-        const { setLoading } = this.context;
         const isAddNew = NewMain && EditId === NewMain
         return (
             <>{
                 !ListMain.length ? <></> : <>{ListMain.map(main => {
-                    return <MaingoalConnect item={main} key={main.Id}
-                        keyUpdate={main.IsDone}
-                        setLoading={setLoading}
-                        onDuplicateMain={this.onDuplicateMain}
-                        onDeleteMain={this.onDeleteMain} />
+                    return <MaingoalConnect
+                        item={main} key={main.Id}
+                        keyUpdate={main.IsDone} />
                 })}</>
             }
                 {!isAddNew ? <div className='dnb_add_main'>
@@ -102,15 +79,18 @@ class ListMainView extends Component {
                         style={{ cursor: 'pointer' }} >&nbsp; New &#9673;</span>
                 </div>
                     : <div className='dnb_item_view'>
-                        <ItemContext.Provider value={{
-                            Name: `Main goal ${Date.now()}`, Start: getDateAfterDaysString(0),
-                            End: getDateAfterDaysString(1), Budget: 0
-                        }}>
-                            <GoalItemEdit
-                                onCloseEditForm={this.onCancelAddNewMain}
-                                onSaveGoal={this.onInsertNewMain}
-                            />
-                        </ItemContext.Provider>
+                        <ItemProvider
+                            item={{
+                                Name: `Main goal ${Date.now()}`,
+                                Start: getDateAfterDaysString(0),
+                                End: getDateAfterDaysString(1), Budget: 0
+                            }}
+                            handler={{
+                                onSaveGoal: this.onInsertNewMain,
+                                onCloseEditForm: this.onCancelAddNewMain
+                            }}>
+                            <GoalItemEdit />
+                        </ItemProvider>
                     </div>
                 }
             </>
@@ -120,9 +100,9 @@ class ListMainView extends Component {
 
 const mapState = (state) => ({
     EditId: state.focus.EditId,
-    ListMain: state.dmap.Mains
+    ListMain: state.dlist.Mains
 })
-const mapDispatch = { showEdit, addMains, removeMains }
+const mapDispatch = { showEdit, addMains }
 export const ListMainConnect = connect(
     mapState, mapDispatch
 )(ListMainView)

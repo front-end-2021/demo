@@ -2,15 +2,14 @@ import { useState, useContext } from "react"
 import { getDateString } from "../../global"
 import { ItemViewExpand, ItemViewEdit } from "./ItemView"
 import { apiUpdateAction, apiDeleteAction, apiInsertAction } from "../../service"
-import { ItemContext } from "./Maingoal"
+import { ItemContext, ItemProvider } from "../../global/Context"
 import { useDispatch, useSelector } from "react-redux"
 import { setItems, showEdit } from "../../global/ReduxStore"
-import { removeActions, addActions } from "../../global/ReduxStore/DataItem"
+import { deleteActions, addActions } from "../../global/ReduxStore/DataItem"
 import { ViewContext } from "../../global/Context"
 import { logItem } from "../../global/GlobalLog"
 
-export function ActionView({ item, isExpandSub, isDoneSub,
-    pushUpdateAction }) {
+export function ActionView({ item, isExpandSub, isDoneSub }) {
     const EditId = useSelector(state => state.focus.EditId)
     const dispatch = useDispatch()
     function onToggleDone(e) {
@@ -19,7 +18,7 @@ export function ActionView({ item, isExpandSub, isDoneSub,
         entry.IsDone = is_done
         delete entry.IsExpand
         apiUpdateAction(item.Id, entry)      // api put
-        pushUpdateAction({ entry })
+        dispatch(addActions([entry]))
     }
     function onSaveAction(entry) {
         const isChngStart = typeof entry.Start === 'string'
@@ -32,11 +31,13 @@ export function ActionView({ item, isExpandSub, isDoneSub,
             entry.End = getDateString(entry.End)
         }
         const _item = JSON.parse(JSON.stringify(item))
-        pushUpdateAction({ entry: Object.assign(_item, entry) })
         dispatch(showEdit(item.Id))
         addLoadingItems(true)
         apiUpdateAction(item.Id, entry)  // api put
-            .then(res => { addLoadingItems(false) })
+            .then(res => {
+                dispatch(addActions([Object.assign(_item, entry)]))
+                addLoadingItems(false)
+            })
     }
     function addLoadingItems(isAdd) {
         const ids = [item.Id, item.ParentId]
@@ -48,11 +49,11 @@ export function ActionView({ item, isExpandSub, isDoneSub,
         _item.Name = `COPY ${_item.Name}`
 
         apiInsertAction(_item).then(newId => {
-            addLoadingItems(false)           
+            addLoadingItems(false)
 
             if (!newId.includes('invalid')) {
                 _item.Id = newId
-                addActions({items: [_item], subId: item.ParentId})
+                dispatch(addActions([_item]))
             }
         })
     }
@@ -60,24 +61,25 @@ export function ActionView({ item, isExpandSub, isDoneSub,
         if (!isExpandSub) return
         const entry = JSON.parse(JSON.stringify(item))
         entry.IsExpand = isExpd
-        pushUpdateAction({ entry })
+        dispatch(addActions([entry]))
     }
     function onDeleteA() {
-        dispatch(removeActions([item.Id]))
+        dispatch(deleteActions([item.Id]))
         apiDeleteAction(item.Id)
     }
     const [viewLevel, setViewLevel] = useState(1)
     return (
-        <ItemContext.Provider value={Object.assign(
+        <ItemProvider item={Object.assign(
             JSON.parse(JSON.stringify(item)),
             {
                 IsExpand: isExpandSub && item.IsExpand,
-                TypeId: 3,
-                isDoneSub: isDoneSub,
+                TypeId: 3, isDoneSub: isDoneSub,
+            })}
+            handler={{
                 handleExpand: onExpandAction,
                 handleDelete: onDeleteA,
                 handleDuplicate: onCopyAction,
-            })}>
+            }}>
             <ViewContext.Provider value={{ viewLevel, setViewLevel }}>
                 {EditId !== item.Id ?
                     <ItemViewExpand onToggleDone={onToggleDone}>
@@ -94,7 +96,7 @@ export function ActionView({ item, isExpandSub, isDoneSub,
                 }
             </ViewContext.Provider>
 
-        </ItemContext.Provider>
+        </ItemProvider>
     )
 }
 

@@ -140,3 +140,21 @@ function ConfirmViewWithDate({ context }) {
         </BackgroundProcessing>
     )
 }
+
+export const ItemContext = React.createContext()
+export const HandleContext = React.createContext()
+export function ItemProvider({ children, item, handler }) {
+    if (typeof handler === 'object' && typeof item === 'object')
+        return <ItemContext.Provider value={item}>
+            <HandleContext.Provider value={handler}>
+                {children}
+            </HandleContext.Provider>
+        </ItemContext.Provider>
+    if (typeof handler === 'object')
+        return <HandleContext.Provider value={handler}>
+            {children}
+        </HandleContext.Provider>
+    return <ItemContext.Provider value={item}>
+            {children}
+        </ItemContext.Provider>
+}

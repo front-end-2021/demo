@@ -1,17 +1,21 @@
 import { useState, useContext } from "react"
-import { getDateCalendarValue, getDateString, getIcon, isDateLessNow } from "../../global"
+import { getDateCalendarValue, getDateString, 
+    getIcon, isDateLessNow, 
+    encodeHtml, decodeHtml, getTextTitle } from "../../global"
 import { useDispatch, useSelector } from "react-redux"
-import { ItemContext } from "./Maingoal"
+import { HandleContext, ItemContext } from "../../global/Context"
 import { showMenu, showEdit } from "../../global/ReduxStore"
 import { useDialog, ConfirmType, ViewContext } from "../../global/Context"
 import { logItem } from "../../global/GlobalLog"
 
 export function ItemViewExpand({ children, className, onToggleDone }) {
     const item = useContext(ItemContext)
+    const handle = useContext(HandleContext)
     const LoadingItems = useSelector(state => state.loading.Items)
     const MenuId = useSelector(state => state.focus.MenuId)
     const dialog = useDialog()
     const view = useContext(ViewContext)
+    const dispatch = useDispatch()
     function getStartTag() {
         return <>
             <span className={`bi bi-calendar2-week${getClassOverDate(item.Start)}`} />
@@ -53,14 +57,13 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
             html_: <div>Do You want to delete?<br />
                 <i>{item.Name}</i>
             </div>,
-            ok: () => item.handleDelete()
+            ok: () => handle.handleDelete()
         })
     }
     function getDeleteTag() {
         return <span className="bi bi-trash" style={{ cursor: 'pointer' }}
             onClick={showConfirmDelete}>&nbsp; Delete</span>
     }
-    const dispatch = useDispatch()
     function getEditTag() {
         return <span className="bi bi-pencil-square" style={{ cursor: 'pointer' }}
             onClick={() => dispatch(showEdit(item.Id))}>&nbsp; Edit</span>
@@ -74,7 +77,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
                 html_: <i>{item.Name}</i>,
                 ok: () => {
                     dispatch(showMenu(_item.Id))
-                    item.handleDuplicate(_item)
+                    handle.handleDuplicate(_item)
                 }
             })
             return
@@ -88,7 +91,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
                 dispatch(showMenu(_item.Id))
                 _item.Start = getDateString(start)
                 _item.End = getDateString(end)
-                item.handleDuplicate(_item)
+                handle.handleDuplicate(_item)
             }
         })
     }
@@ -107,7 +110,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
     function getAddNewTag() {
         if (item.TypeId > 2) return <></>
         return <span className="bi bi-plus-circle-dotted" style={{ cursor: 'pointer' }}
-            onClick={() => item.handleAddNewChild(item.Id, item.TypeId + 1)}
+            onClick={handle.handleAddNewChild}
         >&nbsp; New {getIcon(item.TypeId + 1)}</span>
     }
     function getDescriptionTag() {
@@ -116,15 +119,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
             className='dnb_item_description o_30'>
             <i className="bi bi-code"></i>Description<i className="bi bi-code-slash"></i>
         </p>
-        desText = desText.replaceAll('\n', '<br/>')
-        desText = desText.replaceAll(`<div`, `&#60;div`)
-        desText = desText.replaceAll(`</div`, `&#60;/div`)
-        desText = desText.replaceAll(`<input`, `&#60;input`)
-        desText = desText.replaceAll(`<select`, `&#60;select`)
-        desText = desText.replaceAll(`<script`, `&#60;script`)
-        desText = desText.replaceAll(`</script`, `&#60;/script`)
-        desText = desText.replaceAll(` `, `&nbsp;`)
-        const _des = { __html: desText }
+        const _des = { __html: encodeHtml(desText) }
         return <p dangerouslySetInnerHTML={_des}
             className='dnb_item_description o_81' />
     }
@@ -132,7 +127,8 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
         const isLess = item.ExpectCost < item.TrueCost
         return <div title={isLess ? 'Expected Cost is less then True Cost' : null}
             className={`dnb_item_title${isLess ? ' d_exp_less_true' : ''}`}
-            onClick={() => item.handleExpand(false)}>{getIcon(item.TypeId)} {item.Name}</div>
+            onClick={() => handle.handleExpand(false)}
+        >{getIcon(item.TypeId)} {item.Name}</div>
     }
     function getClassWrap() {
         let _r = `dnb_item_container dnb_view_${view.viewLevel}`
@@ -220,15 +216,7 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
     function getDesRaw() {
         let desText = item.Description
         if (typeof desText !== 'string') return desText
-        desText = desText.replaceAll('<br/>', '\n')
-        desText = desText.replaceAll(`&#60;div`, `<div`)
-        desText = desText.replaceAll(`&#60;/div`, `</div`)
-        desText = desText.replaceAll(`&#60;input`, `<input`)
-        desText = desText.replaceAll(`&#60;select`, `<select`)
-        desText = desText.replaceAll(`&#60;script`, `<script`)
-        desText = desText.replaceAll(`&#60;/script`, `</script`)
-        desText = desText.replaceAll(`&nbsp;`, ` `)
-        return desText
+        return decodeHtml(desText)
     }
     function handleChangeStart(e) {
         const newD = e.target.value
@@ -329,9 +317,10 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
     }
     return (
         <div className={getClsItem()}>
-            {item.TypeId > 2 ? renderBodyEdit()
-                : <div className="dnb-wrap-2-sticky">{renderBodyEdit()}</div>
-            }
+            <div className="dnb_editview">{
+                item.TypeId > 2 ? renderBodyEdit()
+                    : <div className="dnb-wrap-2-sticky">{renderBodyEdit()}</div>
+            }</div>
         </div>
     )
 }
@@ -343,6 +332,7 @@ function getClassOverDate(start_end) {
 }
 function ItemViewCollapse({ getDoneTag, children }) {
     const item = useContext(ItemContext)
+    const handle = useContext(HandleContext)
     function getStartTag() {
         if (!item.Start) return <></>
         return <>
@@ -361,7 +351,8 @@ function ItemViewCollapse({ getDoneTag, children }) {
         return <>
             <span className={`dnb_d_div`}>&minus;</span>
             {
-                !isDateLessNow(item.End) ? <span className="dnb-d-end">{getDateString(item.End)}</span> :
+                !isDateLessNow(item.End) ? <span className="dnb-d-end"
+                >{getDateString(item.End)}</span> :
                     <span title="End Date is in the past from Current Date"
                         className="dnb-d-end">{getDateString(item.End)}</span>
             }
@@ -369,10 +360,12 @@ function ItemViewCollapse({ getDoneTag, children }) {
     }
     function getNameTag() {
         const isLess = item.ExpectCost < item.TrueCost
-        return <div title={isLess ? 'Expected Cost is less then True Cost' : null}
+        const desText = item.Description
+        let tlt = isLess && !desText ? 'Expected Cost is less then True Cost' : getTextTitle(desText)
+        return <div
             className={`dnb_item_title${isLess ? ' d_exp_less_true' : ''}`} >
-            <span onClick={() => item.handleExpand(true)}
-            >{getIcon(item.TypeId)} {item.Name}</span>
+            <span title={tlt}
+                onClick={() => handle.handleExpand(true)}>{getIcon(item.TypeId)} {item.Name}</span>
         </div>
     }
     function getClsWrap() {

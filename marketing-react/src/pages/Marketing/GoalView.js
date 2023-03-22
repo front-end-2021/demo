@@ -2,12 +2,13 @@ import { useState, useContext } from "react"
 import { updateGoalWithId } from "../../service"
 import { ItemViewExpand, ItemViewEdit } from "./ItemView"
 import { getDateString } from "../../global"
-import { ItemContext } from "./Maingoal"
 import { useDispatch, useSelector } from "react-redux"
 import { showEdit } from "../../global/ReduxStore"
-import { ViewContext } from "../../global/Context"
+import { HandleContext, ItemContext, 
+    ViewContext, ItemProvider } from "../../global/Context"
+import { addSubs, addMains } from "../../global/ReduxStore/DataItem"
 
-export function GoalItemView({ updateGoalUI }) {
+export function GoalItemView() {
     const item = useContext(ItemContext)
     const EditId = useSelector(state => state.focus.EditId)
     const dispatch = useDispatch()
@@ -15,14 +16,20 @@ export function GoalItemView({ updateGoalUI }) {
         const is_done = !item.IsDone
         const entry = item
         entry.IsDone = is_done
-        updateNewGoalUI(entry)
+        onUpdateGoal(entry)
         updateGoalWithId(item.Id, entry)    // api put
         item.IsDone = is_done
     }
-    function updateNewGoalUI(p) {
+    function onUpdateGoal(p) {
         const newGoal = { Id: item.Id }
         if (item.ParentId) newGoal.ParentId = item.ParentId
-        updateGoalUI(Object.assign(newGoal, p))
+        
+        const goal = Object.assign(newGoal, p)
+        if(item.ParentId) { // sub
+            dispatch(addSubs([goal]))
+        } else {            // main
+            dispatch(addMains([goal]))
+        }
     }
     function onSaveGoal(newGoal) {
         const entry = {}
@@ -51,7 +58,7 @@ export function GoalItemView({ updateGoalUI }) {
             item.Budget = newGoal.Budget
             entry.Budget = newGoal.Budget
         }
-        updateNewGoalUI(newGoal)
+        onUpdateGoal(newGoal)
         dispatch(showEdit(item.Id)) // false
         updateGoalWithId(item.Id, entry)    // api put
     }
@@ -75,13 +82,16 @@ export function GoalItemView({ updateGoalUI }) {
                     className={`dnb_icost dnb-true-cost`}>C:
                     <span className={`dnb_icost_value`}>${item.TrueCost}</span>
                 </span>
-            </ItemViewExpand> : <GoalItemEdit onSaveGoal={onSaveGoal} />
+            </ItemViewExpand> : <ItemProvider handler={{ onSaveGoal }}>
+                <GoalItemEdit />
+            </ItemProvider>
             }
         </ViewContext.Provider>
     )
 }
-export function GoalItemEdit({ onSaveGoal }) {
-    const { ParentId, Budget, ExpectCost, TrueCost, } = useContext(ItemContext)
+export function GoalItemEdit() {
+    const { ParentId, Budget, ExpectCost, TrueCost } = useContext(ItemContext)
+    const { onSaveGoal } = useContext(HandleContext)
     const [budget, setBudget] = useState(Budget)
     function onHandleChangeBudget(e) {
         const newB = e.target.value
@@ -95,8 +105,8 @@ export function GoalItemEdit({ onSaveGoal }) {
     function getExpectCostTags() {
         if (!ExpectCost) return <></>
         return <>
-            <span className={`dnb_icost dnb-open-cost ${getClsCostNegative(budget, ExpectCost)}`}>o:
-                <span className={`dnb_icost_value`}>{getValueOpenCost(budget, ExpectCost)}</span>
+            <span className={`dnb_icost dnb-open-cost ${getClsCostNegative(budget, ExpectCost)}`}
+            >o:<span className={`dnb_icost_value`}>{getValueOpenCost(budget, ExpectCost)}</span>
             </span>
             <span className={`dnb_icost dnb-expect-cost o_50`}>P:
                 <span className={`dnb_icost_value`}>${ExpectCost}</span>

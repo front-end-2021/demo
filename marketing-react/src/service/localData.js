@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { logItem } from '../global/GlobalLog';
 
 const _keyListMain = 'ListMain'
 const _keyListSub = 'ListSub'
@@ -38,8 +39,10 @@ export function saveAction(id, item) {
         if (item.Start) action.Start = item.Start
         if (item.End) action.End = item.End
         if (typeof item.IsDone === 'boolean') action.IsDone = item.IsDone
-        if (item.ExpectCost) action.ExpectCost = item.ExpectCost
-        if (item.TrueCost) action.ExpectCost = item.TrueCost
+        if (typeof item.ExpectCost === 'number' && action.ExpectCost !== item.ExpectCost)
+            action.ExpectCost = item.ExpectCost
+        if (typeof item.TrueCost === 'number' && action.TrueCost !== item.TrueCost)
+            action.TrueCost = item.TrueCost
         setData(_keyListAction, lstAction)
         return action
     }
@@ -55,7 +58,8 @@ export function saveGoal(id, item) {
         if (item.Start) goal.Start = item.Start
         if (item.End) goal.End = item.End
         if (typeof item.IsDone === 'boolean') goal.IsDone = item.IsDone
-        if (item.Budget) goal.Budget = item.Budget
+        if (typeof item.Budget === 'number' && goal.Budget !== item.Budget) 
+            goal.Budget = item.Budget
 
         if (!item.ParentId) setData(_keyListMain, lstGoal)
         else setData(_keyListSub, lstGoal)
@@ -164,7 +168,7 @@ export function duplicateSub(id) {
         setData(_keyListSub, lstSub)
 
         const lstA = getValue(_keyListAction) || []
-        for (let j = lstA.length - 1; j > -1; j--) {
+        for (let j = 0, len = lstA.length; j < len; j++) {
             const _a = lstA[j]
             if (_a.ParentId === id) {
                 const newA = JSON.parse(JSON.stringify(_a))
@@ -195,7 +199,7 @@ export function duplicateMain(id) {
         const lstSub = getValue(_keyListSub) || []
         const lstA = getValue(_keyListAction) || []
 
-        for (let i = lstSub.length - 1; i > -1; i--) {
+        for (let i = 0, len = lstSub.length; i < len; i++) {
             const sub = lstSub[i]
             if (sub.ParentId === mainid) {
                 const newSub = JSON.parse(JSON.stringify(sub))
@@ -204,7 +208,7 @@ export function duplicateMain(id) {
                 newSub.Name = `${sub.Name} (1)`
                 lstSub.push(newSub)
 
-                for (let j = lstA.length - 1; j > -1; j--) {
+                for (let j = 0, _l = lstA.length; j < _l; j++) {
                     const _a = lstA[j]
                     if (_a.ParentId === sub.Id) {
                         const newA = JSON.parse(JSON.stringify(_a))
