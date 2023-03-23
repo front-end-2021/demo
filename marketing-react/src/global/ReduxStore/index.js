@@ -1,6 +1,7 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit"
 import { Provider } from "react-redux"
 import { DataList } from "./DataItem"
+import { Filter  } from "./Filter"
 
 const loading = createSlice({
     name: 'loading',
@@ -50,7 +51,8 @@ export const MarketingStore = configureStore({
     reducer: {
         loading: loading.reducer,
         focus: focusitem.reducer,
-        dlist: DataList.reducer
+        dlist: DataList.reducer,
+        filter: Filter.reducer
     }
 })
 

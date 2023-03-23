@@ -9,6 +9,7 @@ import { ProcessingProvider, LoadingContext } from "../../global/Context"
 import { MReduxProvider, showEdit } from "../../global/ReduxStore"
 import { ItemProvider } from "../../global/Context"
 import { addMains } from "../../global/ReduxStore/DataItem"
+import { NavigationView } from "./NavBar"
 import { connect } from "react-redux"
 import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
 import '../../styles/ga.scss'
@@ -111,6 +112,7 @@ export function Marketing() {
     return (
         <ProcessingProvider>
             <MReduxProvider>
+                <NavigationView />
                 <ListMainConnect />
             </MReduxProvider>
         </ProcessingProvider>

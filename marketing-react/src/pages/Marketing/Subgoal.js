@@ -10,7 +10,9 @@ import { GoalItemView } from "./GoalView"
 import { ActionView, ActionViewEdit } from "./Action"
 import { connect } from "react-redux"
 import { showEdit, setItems } from "../../global/ReduxStore"
+import Sortable from "sortablejs"
 import { logItem } from "../../global/GlobalLog"
+import '../../styles/dragdrop.scss'
 
 class Subgoal extends Component {
     static contextType = LoadingContext
@@ -18,8 +20,9 @@ class Subgoal extends Component {
         super(props)
         this.state = {
             NewAction: null,
-            IsExpand: true,
+            IsExpand: true
         }
+        this.rfActions = React.createRef();
     }
     componentDidMount = () => {
         const { setLoading } = this.context
@@ -35,6 +38,42 @@ class Subgoal extends Component {
             addActions(lstAction)       // add to ReduxStore
             setLoading(false)
         })
+
+        const elItems = this.rfActions.current
+        Sortable.create(elItems, {
+            draggable: ".dnb-dnd-item",
+            ghostClass: "dnb-dnd-item-ghost",
+            dragClass: "dnb-dnd-item-drag",
+            onStart: (evt) => {
+                const lstFrom = []
+                evt.from.querySelectorAll(".dnb-dnd-item").forEach((n) => {
+                    lstFrom.push(n.getAttribute("id"));
+                })
+                this.LstDnD = lstFrom
+            },
+            onEnd: (evt) => {
+                document.querySelectorAll(`.dnb-dnditem-relate`).forEach(n => {
+                    n.classList.remove('dnb-dnditem-relate')
+                })
+
+                const lstTo = [];
+                evt.to.querySelectorAll(".dnb-dnd-item").forEach((n) => {
+                    lstTo.push(n.getAttribute("id"));
+                })
+                if (lstTo.join('') !== this.LstDnD.join('')) {
+                    console.log("drag item", evt.item.getAttribute("id"));
+                    console.log(lstTo);
+
+                    delete this.LstDnD
+                }
+            },
+            onMove: (evt, originalEvent) => {
+                const _itRlt = evt.related
+                if (_itRlt.classList.contains('dnb-dnd-item')) {
+                    _itRlt.classList.add('dnb-dnditem-relate')
+                }
+            },
+        });
     }
     addNewAction = () => {
         const dateNow = Date.now()
@@ -154,7 +193,7 @@ class Subgoal extends Component {
                 <ItemProvider item={contextSub} handler={handleCxt}>
                     <GoalItemView />
                 </ItemProvider>
-                <div className='dnb_item_list_action'>{
+                <div className='dnb_item_list_action dnb-dnd-items' ref={this.rfActions}>{
                     !listAction.length && !listAction.length ?
                         <>{this.getFormActionAddEdit()}</>
                         : <>{

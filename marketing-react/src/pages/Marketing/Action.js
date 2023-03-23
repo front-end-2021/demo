@@ -11,6 +11,7 @@ import { logItem } from "../../global/GlobalLog"
 
 export function ActionView({ item, isExpandSub, isDoneSub }) {
     const EditId = useSelector(state => state.focus.EditId)
+    const unit = useSelector(state => state.filter.Unit)
     const dispatch = useDispatch()
     function onToggleDone(e) {
         const is_done = !item.IsDone
@@ -82,15 +83,18 @@ export function ActionView({ item, isExpandSub, isDoneSub }) {
             }}>
             <ViewContext.Provider value={{ viewLevel, setViewLevel }}>
                 {EditId !== item.Id ?
-                    <ItemViewExpand onToggleDone={onToggleDone}>
-                        <span title="Expected Cost"
-                            className='dnb_icost dnb-expect-cost'>P:
-                            <span className='dnb_icost_value'>${item.ExpectCost}</span>
-                        </span>
-                        <span title="True Cost"
-                            className='dnb_icost dnb-true-cost'>C:
-                            <span className='dnb_icost_value'>${item.TrueCost}</span>
-                        </span>
+                    <ItemViewExpand className='dnb-dnd-item' id={item.Id}
+                        onToggleDone={onToggleDone}>
+                        {!!unit.View.length && <>
+                            <span title="Expected Cost"
+                                className='dnb_icost dnb-expect-cost'>P:
+                                <span className='dnb_icost_value'>{unit.View}{item.ExpectCost}</span>
+                            </span>
+                            <span title="True Cost"
+                                className='dnb_icost dnb-true-cost'>C:
+                                <span className='dnb_icost_value'>{unit.View}{item.TrueCost}</span>
+                            </span>
+                        </>}
                     </ItemViewExpand>
                     : <ActionViewEdit onSaveAction={onSaveAction} />
                 }
@@ -101,6 +105,7 @@ export function ActionView({ item, isExpandSub, isDoneSub }) {
 }
 
 export function ActionViewEdit({ onSaveAction, className }) {
+    const unit = useSelector(state => state.filter.Unit)
     const item = useContext(ItemContext)
     const [expectCost, setExpectCost] = useState(item.ExpectCost)
     const [trueCost, setTrueCost] = useState(item.TrueCost)
@@ -136,22 +141,21 @@ export function ActionViewEdit({ onSaveAction, className }) {
     }
     return (
         <ItemViewEdit className={className}
-            isExpectLessTrue={expectCost < trueCost}
-            onSaveData={onSaveData} >
-            <span className='dnb_icost dnb-expect-cost'>P:
-                <span className='dnb_icost_value'>$
-                    <input type="number" value={expectCost}
-                        style={{ width: '80px' }}
-                        onChange={handleChangeExpectCost} />
+            isExpectLessTrue={expectCost < trueCost} onSaveData={onSaveData} >
+            {!!unit.View.length && <>
+                <span className='dnb_icost dnb-expect-cost'>P:
+                    <span className='dnb_icost_value'>{unit.View}
+                        <input type="number" value={expectCost}
+                            style={{ width: '80px' }} onChange={handleChangeExpectCost} />
+                    </span>
                 </span>
-            </span>
-            <span className='dnb_icost dnb-true-cost'>C:
-                <span className='dnb_icost_value'>$
-                    <input type="number" value={trueCost}
-                        style={{ width: '80px' }}
-                        onChange={handleChangeTrueCost} />
+                <span className='dnb_icost dnb-true-cost'>C:
+                    <span className='dnb_icost_value'>{unit.View}
+                        <input type="number" value={trueCost}
+                            style={{ width: '80px' }} onChange={handleChangeTrueCost} />
+                    </span>
                 </span>
-            </span>
+            </>}
         </ItemViewEdit>
     )
 }

@@ -1,12 +1,13 @@
-import { configureStore, createSlice } from "@reduxjs/toolkit"
-import { Provider } from "react-redux"
+import { createSlice } from "@reduxjs/toolkit"
 
 export const TypeUnit = [
-    { Name: 'USD', View: '$' },
-    { Name: 'Hour', View: 'H' },
-    { Name: 'Day', View: 'D' },
+    { Name: 'USD ($)', View: '$' },
+    { Name: 'Hour (H)', View: 'H ' },
+    { Name: 'Day (D)', View: 'D ' },
+    { Name: 'Month (M)', View: 'M ' },
+    { Name: 'Hide', View: '' },
 ]
-export const filter = createSlice({
+export const Filter = createSlice({
     name: 'filter',
     initialState: { Unit: TypeUnit[0] },
     reducers: {
@@ -20,4 +21,4 @@ export const filter = createSlice({
     }
 })
 
-export const { setUnit } = filter.actions
+export const { setUnit } = Filter.actions

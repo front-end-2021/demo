@@ -1,0 +1,40 @@
+$round: 9px;
+$m3px: 3px;
+$bgcolor: white;
+
+.dnb-navbar {
+    display: flex;
+    height: 42px;
+    background-color: $bgcolor;
+    width: calc(100vw - 30px);
+    margin: $m3px auto;
+    border-radius: $round;
+    align-items: center;
+
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    box-shadow: 0 1px 6px 0px rgb(159 159 159 / 24%);
+}
+.dnb-filter_container {
+    min-width: 285px;
+    margin-left: 3 * $m3px;
+}
+.dnb-settings_container {
+
+    select {
+        height: 27px;
+        padding: $m3px $round;
+        outline: none;
+        border-radius: $m3px;
+        line-height: 1.1;
+
+        &:focus {
+            border: 1px solid blue;
+        }
+    }
+
+    .dnb-lbl-unit {
+        margin-right: $round;
+    }
+}

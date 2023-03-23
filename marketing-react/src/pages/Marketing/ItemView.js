@@ -8,7 +8,7 @@ import { showMenu, showEdit } from "../../global/ReduxStore"
 import { useDialog, ConfirmType, ViewContext } from "../../global/Context"
 import { logItem } from "../../global/GlobalLog"
 
-export function ItemViewExpand({ children, className, onToggleDone }) {
+export function ItemViewExpand({ children, className, onToggleDone, id }) {
     const item = useContext(ItemContext)
     const handle = useContext(HandleContext)
     const LoadingItems = useSelector(state => state.loading.Items)
@@ -183,7 +183,7 @@ export function ItemViewExpand({ children, className, onToggleDone }) {
     }
     return (
         <>{
-            item.IsExpand ? <div className={getClassWrap()}>
+            item.IsExpand ? <div className={getClassWrap()} id={id}>
                 {item.TypeId > 2 ? renderBodyExpand()
                     :
                     <div className="dnb-wrap-2-sticky">

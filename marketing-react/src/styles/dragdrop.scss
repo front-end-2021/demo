@@ -1,0 +1,24 @@
+.dnb-dnd-items {
+    display: grid;
+    grid-template-columns: 300px 300px;
+    grid-gap: 5px;
+
+    .dnb-dnd-item,
+    .dnb-dnd-item-ghost,
+    .dnb-dnd-item-drag {
+        cursor: pointer;
+    }
+
+    .dnb-dnd-item-drag {
+        opacity: 1;
+    }
+
+    .dnb-dnd-item-ghost {
+        background-color: #d8d8d891;
+    }
+}
+.dnb-dnditem-relate {
+    min-height: 180px !important;
+    max-height: 180px !important;
+    overflow: hidden !important;
+}
