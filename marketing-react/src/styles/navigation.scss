@@ -1,40 +1,173 @@
 $round: 9px;
 $m3px: 3px;
 $bgcolor: white;
+$navH: 60px;
 
 .dnb-navbar {
     display: flex;
-    height: 42px;
+    height: $navH;
     background-color: $bgcolor;
     width: calc(100vw - 30px);
     margin: $m3px auto;
     border-radius: $round;
     align-items: center;
 
+    box-shadow: 0 1px 6px 0px rgb(159 159 159 / 24%);
+}
+
+@keyframes fadeTopDown {
+    0% {
+        top: -$navH;
+    }
+
+    100% {
+        top: 0;
+    }
+}
+
+@keyframes fadeUp {
+    0% {
+        top: 0;
+    }
+
+    100% {
+        top: -$navH;
+    }
+}
+
+.dnNavFadeDwn {
     position: sticky;
     top: 0;
     z-index: 1;
-    box-shadow: 0 1px 6px 0px rgb(159 159 159 / 24%);
+    animation-name: fadeTopDown;
+    animation-duration: 0.6s;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
+
+.dnNavHideUp {
+    position: sticky;
+    animation-name: fadeUp;
+    animation-duration: 0.36s;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+@keyframes goalFadeDown {
+    0% {
+        top: 0;
+    }
+
+    100% {
+        top: $navH + 6px;
+    }
+}
+
+@keyframes goalFadeUp {
+    0% {
+        top: $navH + 6px;
+    }
+
+    100% {
+        top: 0;
+    }
+}
+
+.dnb_item_container.dnb_item_edit .dnb_editview.dnGoalFadeDwn,
+.dnb_main_container .dnGoalFadeDwn {
+    top: $navH + 6px;
+    animation-name: goalFadeDown;
+    animation-duration: 0.6s;
+}
+
+.dnGoalHideUp {
+    animation-name: goalFadeUp;
+    animation-duration: 0.36s;
+}
+
 .dnb-filter_container {
     min-width: 285px;
     margin-left: 3 * $m3px;
 }
+
 .dnb-settings_container {
+    display: grid;
+    grid-template-columns: 45px 113px;
+    align-items: center;
+}
 
-    select {
-        height: 27px;
-        padding: $m3px $round;
-        outline: none;
-        border-radius: $m3px;
-        line-height: 1.1;
+$priColor: #2086f9;
 
-        &:focus {
-            border: 1px solid blue;
-        }
-    }
+.dnb-settings_container {
 
     .dnb-lbl-unit {
         margin-right: $round;
     }
+}
+
+// Toggle button (Switch)
+.dnb-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+
+.dnb-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.dnb-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.dnb-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 6px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked+.dnb-slider {
+    background-color: $priColor;
+}
+
+input:focus+.dnb-slider {
+    box-shadow: 0 0 1px $priColor;
+}
+
+input:checked+.dnb-slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+.dnb-slider.dn-round {
+    border-radius: 45px;
+}
+
+.dnb-slider.dn-round:before {
+    border-radius: 50%;
+}
+
+// End Toggle button (Switch)
+.dnb-toggle-dnd {
+    display: grid;
+    grid-template-columns: 105px 63px;
+    align-items: center;
 }

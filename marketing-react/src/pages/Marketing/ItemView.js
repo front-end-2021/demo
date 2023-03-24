@@ -1,7 +1,9 @@
 import { useState, useContext } from "react"
-import { getDateCalendarValue, getDateString, 
-    getIcon, isDateLessNow, 
-    encodeHtml, decodeHtml, getTextTitle } from "../../global"
+import {
+    getDateCalendarValue, getDateString,
+    getIcon, isDateLessNow,
+    encodeHtml, decodeHtml, getTextTitle
+} from "../../global"
 import { useDispatch, useSelector } from "react-redux"
 import { HandleContext, ItemContext } from "../../global/Context"
 import { showMenu, showEdit } from "../../global/ReduxStore"
@@ -13,6 +15,7 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
     const handle = useContext(HandleContext)
     const LoadingItems = useSelector(state => state.loading.Items)
     const MenuId = useSelector(state => state.focus.MenuId)
+    const canDnD = useSelector(state => state.filter.CanDrgDrp)
     const dialog = useDialog()
     const view = useContext(ViewContext)
     const dispatch = useDispatch()
@@ -40,7 +43,7 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
         </>
     }
     function getMenuTag() {
-        if (MenuId !== item.Id) return <></>
+        if (MenuId !== item.Id || canDnD) return <></>
         return <>
             <div className='dnb_i_menu'>
                 <span>{getDuplicateTag()}</span>
@@ -163,7 +166,7 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
                 {item.IsExpand ? item.End && getEndTag() : <></>}
             </div>
             {
-                !item.IsExpand ? <></> : <div className='dnb_i_options'>
+                item.IsExpand && !canDnD && <div className='dnb_i_options'>
                     <span style={{ cursor: 'initial' }}>
                         {getDoneTag('Finish')}
                     </span>

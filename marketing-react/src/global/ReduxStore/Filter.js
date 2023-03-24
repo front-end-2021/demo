@@ -9,7 +9,10 @@ export const TypeUnit = [
 ]
 export const Filter = createSlice({
     name: 'filter',
-    initialState: { Unit: TypeUnit[0] },
+    initialState: { 
+        Unit: TypeUnit[0],
+        CanDrgDrp: false
+    },
     reducers: {
         setUnit: (state, action) => {
             const name = action.payload
@@ -17,8 +20,12 @@ export const Filter = createSlice({
             if (_u) {
                 state.Unit = _u
             }
+        },
+        switchDragDrop: (state) => {
+            const isDnD = state.CanDrgDrp
+            state.CanDrgDrp = !isDnD
         }
     }
 })
 
-export const { setUnit } = Filter.actions
+export const { setUnit, switchDragDrop } = Filter.actions

@@ -26,7 +26,7 @@ class Subgoal extends Component {
     }
     componentDidMount = () => {
         const { setLoading } = this.context
-        const { item, addActions } = this.props
+        const { item, addActions, CanDragDrop } = this.props
         setLoading(true)
         getDataGoalActionWith('actions', { subid: item.Id }).then(actions => {
             const lstAction = []
@@ -37,10 +37,15 @@ class Subgoal extends Component {
             })
             addActions(lstAction)       // add to ReduxStore
             setLoading(false)
-        })
 
+            if (lstAction.length && CanDragDrop) {
+                this.createSortAction()
+            }
+        })
+    }
+    createSortAction = () => {
         const elItems = this.rfActions.current
-        Sortable.create(elItems, {
+        this.sortAction = Sortable.create(elItems, {
             draggable: ".dnb-dnd-item",
             ghostClass: "dnb-dnd-item-ghost",
             dragClass: "dnb-dnd-item-drag",
@@ -74,6 +79,17 @@ class Subgoal extends Component {
                 }
             },
         });
+    }
+    destroySortAction = () => {
+        this.sortAction.destroy()
+    }
+    componentDidUpdate = (prevProps) => {
+        if (!prevProps.CanDragDrop && this.props.CanDragDrop) {
+            this.createSortAction()
+        }
+        if (prevProps.CanDragDrop && !this.props.CanDragDrop) {
+            this.destroySortAction()
+        }
     }
     addNewAction = () => {
         const dateNow = Date.now()
@@ -169,7 +185,7 @@ class Subgoal extends Component {
         this.setState({ IsExpand: isExpand })
     }
     render() {
-        const { item, Actions, isExpandMain, isDoneMain } = this.props
+        const { item, Actions, isExpandMain, isDoneMain, CanDragDrop } = this.props
         const { IsExpand } = this.state
         const listAction = Actions.filter(x => x.ParentId === item.Id)
         const isDoneSub = isDoneMain || item.IsDone;
@@ -188,26 +204,28 @@ class Subgoal extends Component {
             handleDuplicate: this.onCopySub,
             handleAddNewChild: this.addNewAction,
         }
+        const clssGrpA = `dnb_item_list_action${CanDragDrop ? ' dnb-dnd-items' : ''}`
         return (
             <div className={`dnb_item_view${!IsExpand ? ' dnb_sub_collapse' : ''}`}>
                 <ItemProvider item={contextSub} handler={handleCxt}>
                     <GoalItemView />
                 </ItemProvider>
-                <div className='dnb_item_list_action dnb-dnd-items' ref={this.rfActions}>{
-                    !listAction.length && !listAction.length ?
-                        <>{this.getFormActionAddEdit()}</>
-                        : <>{
-                            listAction.map(_a => {
-                                const _keyUpdate = `${_a.IsDone}.${_a.ExpectCost}.${_a.TrueCost}${_a.IsExpand}`
-                                return <ActionView key={_a.Id}
-                                    keyUpdate={_keyUpdate}
-                                    item={_a}
-                                    isExpandSub={isExpandSub}
-                                    isDoneSub={isDoneSub} />
-                            })}
-                            {this.getFormActionAddEdit()}
-                        </>
-                }
+                <div idgrpdnd={CanDragDrop ? item.Id : undefined}
+                    className={clssGrpA} ref={this.rfActions}>{
+                        !listAction.length && !listAction.length ?
+                            <>{this.getFormActionAddEdit()}</>
+                            : <>{
+                                listAction.map(_a => {
+                                    const _keyUpdate = `${_a.IsDone}.${_a.ExpectCost}.${_a.TrueCost}${_a.IsExpand}`
+                                    return <ActionView key={_a.Id}
+                                        keyUpdate={_keyUpdate}
+                                        item={_a}
+                                        isExpandSub={isExpandSub}
+                                        isDoneSub={isDoneSub} />
+                                })}
+                                {this.getFormActionAddEdit()}
+                            </>
+                    }
                 </div>
             </div>
         )
@@ -216,7 +234,8 @@ class Subgoal extends Component {
 const mapState = (state) => ({
     EditId: state.focus.EditId,
     LoadingItems: state.loading.Items,
-    Actions: state.dlist.Actions
+    Actions: state.dlist.Actions,
+    CanDragDrop: state.filter.CanDrgDrp
 })
 const mapDispatch = {
     showEdit, setItems, addActions,

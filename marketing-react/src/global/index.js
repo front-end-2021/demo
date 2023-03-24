@@ -9,7 +9,8 @@ export function encodeHtml(desText) {
     desText = desText.replaceAll(`<select`, `&#60;select`)
     desText = desText.replaceAll(`<script`, `&#60;script`)
     desText = desText.replaceAll(`</script`, `&#60;/script`)
-    desText = desText.replaceAll(` `, `&nbsp; `)
+    desText = desText.replaceAll(`  `, `&nbsp; `)
+    desText = desText.replaceAll(`   `, `&nbsp; &nbsp;`)
     return desText
 }
 export function decodeHtml(desText) {    
@@ -21,7 +22,8 @@ export function decodeHtml(desText) {
     desText = desText.replaceAll(`&#60;select`, `<select`)
     desText = desText.replaceAll(`&#60;script`, `<script`)
     desText = desText.replaceAll(`&#60;/script`, `</script`)
-    desText = desText.replaceAll(`&nbsp; `, ` `)
+    desText = desText.replaceAll(`&nbsp; `, `  `)
+    desText = desText.replaceAll(`&nbsp; &nbsp;`, `   `)
     return desText
 }
 export function getTextTitle(desText) {

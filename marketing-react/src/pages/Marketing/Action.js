@@ -12,6 +12,7 @@ import { logItem } from "../../global/GlobalLog"
 export function ActionView({ item, isExpandSub, isDoneSub }) {
     const EditId = useSelector(state => state.focus.EditId)
     const unit = useSelector(state => state.filter.Unit)
+    const canDnD = useSelector(state => state.filter.CanDrgDrp)
     const dispatch = useDispatch()
     function onToggleDone(e) {
         const is_done = !item.IsDone
@@ -83,7 +84,8 @@ export function ActionView({ item, isExpandSub, isDoneSub }) {
             }}>
             <ViewContext.Provider value={{ viewLevel, setViewLevel }}>
                 {EditId !== item.Id ?
-                    <ItemViewExpand className='dnb-dnd-item' id={item.Id}
+                    <ItemViewExpand className={canDnD && 'dnb-dnd-item'}
+                        id={canDnD ? item.Id : undefined}
                         onToggleDone={onToggleDone}>
                         {!!unit.View.length && <>
                             <span title="Expected Cost"

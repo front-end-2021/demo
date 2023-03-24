@@ -111,6 +111,14 @@ $offst: 36px;
         }
     }
 
+    &.dnb_view_2 {
+        .dnb_item_description {
+            >* {
+                max-width: 100%;
+            }
+        }
+    }
+
     .dnb_edit_des {
         width: 100%;
         resize: none;
@@ -513,7 +521,7 @@ $wPC: $wCost + 6px;
 
 .dnb-wrap-2-sticky {
     position: sticky;
-    top: 48px;
+    top: 0;
 }
 
 @media screen and (min-width: 1182px) {
