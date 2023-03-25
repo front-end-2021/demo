@@ -1,8 +1,8 @@
 import React, { Component } from "react"
 import {
-    getDataGoalActionWith,
-    apiDuplicateMain, apiDeleteMain,
-    apiInsertSub
+    getSubsActionsBy,
+    apiCopyMain, apiDeleteMain,
+    apiAddSub
 } from "../../service"
 import { getSumCost, getDateAfterDaysString } from "../../global"
 import { GoalItemView, GoalItemEdit } from "./GoalView"
@@ -24,7 +24,7 @@ export class Maingoal extends Component {
     }
     componentDidMount = () => {
         const { item, addSubs } = this.props
-        getDataGoalActionWith('subs', { mainid: item.Id }).then(subs => {
+        getSubsActionsBy('subs', { mainid: item.Id }).then(subs => {
             const lstSub = []
             subs.forEach(s => {
                 s.IsDone = !!s.IsDone
@@ -53,7 +53,7 @@ export class Maingoal extends Component {
         setItems({ ids, isAdd })
         this.setState({ NewSub: null })
 
-        apiInsertSub(sub).then(newId => {
+        apiAddSub(sub).then(newId => {
             isAdd = false
             setItems({ ids, isAdd })
             if (!newId.includes('invalid')) {
@@ -109,7 +109,7 @@ export class Maingoal extends Component {
         const { setLoading } = this.context;
         setLoading(true)
         const { addMains } = this.props
-        apiDuplicateMain(main.Id).then(newMain => {
+        apiCopyMain(main.Id).then(newMain => {
             if (typeof newMain === 'object') {
                 addMains([newMain])
                 setLoading(false)

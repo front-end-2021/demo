@@ -1,11 +1,13 @@
 import React, { Component } from "react"
 import {
-    getDataGoalActionWith, apiInsertAction,
-    apiDeleteSub, apiDuplicateSub
+    getSubsActionsBy, apiAddAction,
+    apiDeleteSub, apiCopySub, apiSetIndexAction
 } from "../../service"
 import { getSumCost, getDateAfterDaysString } from "../../global"
 import { ItemProvider, LoadingContext } from "../../global/Context"
-import { addActions, deleteSubs, addSubs } from "../../global/ReduxStore/DataItem"
+import {
+    addActions, deleteSubs, addSubs, setIndexActions
+} from "../../global/ReduxStore/DataItem"
 import { GoalItemView } from "./GoalView"
 import { ActionView, ActionViewEdit } from "./Action"
 import { connect } from "react-redux"
@@ -28,10 +30,9 @@ class Subgoal extends Component {
         const { setLoading } = this.context
         const { item, addActions, CanDragDrop } = this.props
         setLoading(true)
-        getDataGoalActionWith('actions', { subid: item.Id }).then(actions => {
+        getSubsActionsBy('actions', { subid: item.Id }).then(actions => {
             const lstAction = []
             actions.forEach(a => {
-                a.IsExpand = true
                 a.IsDone = !!a.IsDone
                 lstAction.push(a)
             })
@@ -46,6 +47,7 @@ class Subgoal extends Component {
     createSortAction = () => {
         const elItems = this.rfActions.current
         this.sortAction = Sortable.create(elItems, {
+            group: 'actions',
             draggable: ".dnb-dnd-item",
             ghostClass: "dnb-dnd-item-ghost",
             dragClass: "dnb-dnd-item-drag",
@@ -55,6 +57,7 @@ class Subgoal extends Component {
                     lstFrom.push(n.getAttribute("id"));
                 })
                 this.LstDnD = lstFrom
+                this.SrcSubId = evt.from.getAttribute('idgrpdnd')
             },
             onEnd: (evt) => {
                 document.querySelectorAll(`.dnb-dnditem-relate`).forEach(n => {
@@ -66,19 +69,54 @@ class Subgoal extends Component {
                     lstTo.push(n.getAttribute("id"));
                 })
                 if (lstTo.join('') !== this.LstDnD.join('')) {
-                    console.log("drag item", evt.item.getAttribute("id"));
-                    console.log(lstTo);
+                    const DesSubId = evt.to.getAttribute('idgrpdnd')
+                    const itemId = evt.item.getAttribute("id")
+
+                    processList.call(this, {
+                        SubId: this.SrcSubId, Ids: this.LstDnD
+                    }, {
+                        SubId: DesSubId, Ids: lstTo
+                    }, {
+                        Id: itemId
+                    })
 
                     delete this.LstDnD
+                    delete this.SrcSubId
                 }
             },
-            onMove: (evt, originalEvent) => {
+            onMove: (evt, originalEvt) => {
                 const _itRlt = evt.related
                 if (_itRlt.classList.contains('dnb-dnd-item')) {
                     _itRlt.classList.add('dnb-dnditem-relate')
                 }
             },
         });
+
+        function processList(src, des, item) {
+            const _this = this
+            const { setIndexActions } = _this.props
+            const { setLoading } = _this.context
+            const SrcSubId = src.SubId
+            const DesSubId = des.SubId
+            const DesIds = des.Ids
+
+            setLoading(true)
+
+            apiSetIndexAction({
+                src: { SubId: SrcSubId },
+                des: { SubId: DesSubId, Ids: DesIds },
+                item
+            }).then(lstAction => {
+                if(SrcSubId !== DesSubId) {
+                  //  _this.destroySortAction()
+                    // remove action in 2 sub
+                    // reload 2 sub
+                } else
+                    setIndexActions(lstAction)
+
+                setLoading(false)
+            })
+        }
     }
     destroySortAction = () => {
         this.sortAction.destroy()
@@ -114,7 +152,7 @@ class Subgoal extends Component {
         }
         if (_item.End && _item.End.trim() === '') delete _item.End
 
-        apiInsertAction(_item).then(newId => {
+        apiAddAction(_item).then(newId => {
             showEdit(dateNow)           // hide form
             this.setState({ NewAction: null })
             isAdd = false
@@ -144,7 +182,7 @@ class Subgoal extends Component {
         const { setLoading } = this.context;
         const { addSubs } = this.props
         setLoading(true)
-        apiDuplicateSub(sub.Id).then(newSub => {
+        apiCopySub(sub.Id).then(newSub => {
             if (typeof newSub === 'object') {
                 addSubs([newSub])
                 setLoading(false)
@@ -238,7 +276,8 @@ const mapState = (state) => ({
     CanDragDrop: state.filter.CanDrgDrp
 })
 const mapDispatch = {
-    showEdit, setItems, addActions,
+    showEdit, setItems,
+    addActions, setIndexActions,
     deleteSubs, addSubs
 }
 export const SubgoalConnect = connect(

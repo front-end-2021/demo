@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import {
-    getDataGoalAction, apiInsertMain
+    apiGetMains, apiAddMain
 } from "../../service"
 import { getDateAfterDaysString } from "../../global"
 import { GoalItemEdit } from "./GoalView"
@@ -23,7 +23,7 @@ class ListMainView extends Component {
     componentDidMount = () => {
         const { setLoading } = this.context;
         const { addMains } = this.props
-        getDataGoalAction('mains').then(mains => {
+        apiGetMains('mains').then(mains => {
             const lstMain = []
             mains.forEach(m => {
                 m.IsDone = !!m.IsDone
@@ -49,7 +49,7 @@ class ListMainView extends Component {
 
         this.onCancelAddNewMain()
 
-        apiInsertMain(goal).then(newId => {
+        apiAddMain(goal).then(newId => {
             if (!newId.includes('invalid')) {
                 goal.Id = newId
                 const { addMains } = this.props

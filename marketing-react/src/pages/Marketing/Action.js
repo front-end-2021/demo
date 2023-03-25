@@ -1,7 +1,7 @@
 import { useState, useContext } from "react"
 import { getDateString } from "../../global"
 import { ItemViewExpand, ItemViewEdit } from "./ItemView"
-import { apiUpdateAction, apiDeleteAction, apiInsertAction } from "../../service"
+import { apiUpdateAction, apiDeleteAction, apiAddAction } from "../../service"
 import { ItemContext, ItemProvider } from "../../global/Context"
 import { useDispatch, useSelector } from "react-redux"
 import { setItems, showEdit } from "../../global/ReduxStore"
@@ -50,7 +50,7 @@ export function ActionView({ item, isExpandSub, isDoneSub }) {
 
         _item.Name = `COPY ${_item.Name}`
 
-        apiInsertAction(_item).then(newId => {
+        apiAddAction(_item).then(newId => {
             addLoadingItems(false)
 
             if (!newId.includes('invalid')) {

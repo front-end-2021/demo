@@ -1,5 +1,5 @@
 import { useState, useContext } from "react"
-import { updateGoalWithId } from "../../service"
+import { updateGoalWith } from "../../service"
 import { ItemViewExpand, ItemViewEdit } from "./ItemView"
 import { getDateString } from "../../global"
 import { useDispatch, useSelector } from "react-redux"
@@ -20,7 +20,7 @@ export function GoalItemView() {
         const entry = item
         entry.IsDone = is_done
         onUpdateGoal(entry)
-        updateGoalWithId(item.Id, entry)    // api put
+        updateGoalWith(item.Id, entry)    // api put
         item.IsDone = is_done
     }
     function onUpdateGoal(p) {
@@ -63,7 +63,7 @@ export function GoalItemView() {
         }
         onUpdateGoal(newGoal)
         dispatch(showEdit(item.Id)) // false
-        updateGoalWithId(item.Id, entry)    // api put
+        updateGoalWith(item.Id, entry)    // api put
     }
     const [viewLevel, setViewLevel] = useState(1)
     return (

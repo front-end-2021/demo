@@ -1,10 +1,10 @@
 import axios from "axios"
 import { logItem } from "../global/GlobalLog"
 import {
-    getListMain, getListSubActionWith, saveAction,
-    saveGoal, insertMain, insertSub,
-    insertAction, deleteAction,
-    deleteSub, deleteMain,
+    getListMain, getListSubActionWith, getListAction,
+    saveAction, saveGoal, saveIndexAction,
+    insertMain, insertSub, insertAction,
+    deleteAction, deleteSub, deleteMain,
     duplicateSub, duplicateMain
 } from "./localData"
 
@@ -20,16 +20,16 @@ function callApiData(testMs) {
         setTimeout(res, testMs)
     })
 }
-export function getDataGoalAction(apiPath) {
+export function apiGetMains(apiPath) {
     const url = `${host}${apiPath}`
-    return callApiData().then(r => {
+    return callApiData(1).then(r => {
         return getListMain()
         return axios.get(url, config)
             .then(res => { return res.data })
             .then(rData => { return rData.data })
     })
 }
-export function getDataGoalActionWith(apiPath, params) {
+export function getSubsActionsBy(apiPath, params) {
     const url = `${host}${apiPath}`
     return callApiData().then(r => {
         return getListSubActionWith(apiPath, params)
@@ -48,7 +48,7 @@ export function apiUpdateAction(id, item) {
         }, config)).then(res => { return res })
     })
 }
-export function updateGoalWithId(id, item) {
+export function updateGoalWith(id, item) {
     const url = `${host}goal/${id}`
     return callApiData(item.Budget).then(r => {
         return saveGoal(id, item)
@@ -57,7 +57,7 @@ export function updateGoalWithId(id, item) {
         }, config)).then(res => { return res })
     })
 }
-export function apiInsertMain(goal) {
+export function apiAddMain(goal) {
     return callApiData(goal.Budget).then(d => {
         return insertMain(goal)
         return axios.post(`${host}main`, Object.assign({
@@ -65,7 +65,7 @@ export function apiInsertMain(goal) {
         }, config)).then(res => { return res.data })
     })
 }
-export function apiInsertSub(sub) {
+export function apiAddSub(sub) {
     return callApiData(sub.Budget).then(d => {
         return insertSub(sub)
         return axios.post(`${host}sub`, Object.assign({
@@ -73,7 +73,7 @@ export function apiInsertSub(sub) {
         }, config)).then(res => { return res.data })
     })
 }
-export function apiInsertAction(item) {
+export function apiAddAction(item) {
     delete item.Id
     return callApiData(item.ExpectCost).then(d => {
         return insertAction(item)
@@ -104,17 +104,36 @@ export function apiDeleteMain(id) {
             config).then(res => { return res })
     })
 }
-export function apiDuplicateSub(subid) {
+export function apiCopySub(subid) {
     return callApiData().then(d => {
         return duplicateSub(subid)
         return axios.put(`${host}copysub/${subid}`, config)
             .then(res => { return res.data })
     })
 }
-export function apiDuplicateMain(mainid) {
+export function apiCopyMain(mainid) {
     return callApiData().then(d => {
         return duplicateMain(mainid)
         return axios.put(`${host}copymain/${mainid}`, config)
             .then(res => { return res.data })
+    })
+}
+export function apiSetIndexAction({ src, des, item }) {
+    const srcSubId = src.SubId
+    const desSubId = des.SubId
+    const desItemIds = des.Ids
+
+    return callApiData(1989).then(d => {
+        const newIndexes = desItemIds.map((id, i) => {
+            return { Id: id, Index: i }
+        })
+        if (srcSubId !== desSubId) {
+            saveIndexAction(newIndexes, { Id: item.Id, ParentId: desSubId })
+        } else {
+            saveIndexAction(newIndexes)
+        }
+        if (srcSubId !== desSubId)
+            return getListAction([srcSubId, desSubId])
+        else return getListAction([desSubId])
     })
 }

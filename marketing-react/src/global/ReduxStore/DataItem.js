@@ -60,6 +60,17 @@ export const DataList = createSlice({
             const lstAction = action.payload
             addItems.call(state.Actions, lstAction)
         },
+        setIndexActions: (state, action) => {
+            const actions = action.payload
+            for(let i = state.Actions.length - 1; i > -1; i--) {
+                const act = state.Actions[i]
+                const action = actions.find(x => x.Id === act.Id)
+                if(action) {
+                    state.Actions.splice(i, 1)      // remove
+                }
+            }
+            addItems.call(state.Actions, actions)
+        },
         deleteMains: (state, action) => {
             const ids = action.payload
             const mains = state.Mains
@@ -84,6 +95,6 @@ export const DataList = createSlice({
     }
 })
 export const {
-    addMains, addSubs, addActions,
+    addMains, addSubs, addActions, setIndexActions,
     deleteMains, deleteSubs, deleteActions
 } = DataList.actions

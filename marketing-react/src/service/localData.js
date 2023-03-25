@@ -4,20 +4,18 @@ import { logItem } from '../global/GlobalLog';
 const _keyListMain = 'ListMain'
 const _keyListSub = 'ListSub'
 const _keyListAction = 'ListAction'
+const _keyListIndex = 'ListIndex'
 
 export function saveListMain(mains) {
+    if (!Array.isArray(mains) || !mains.length) return
+    mains.forEach(item => {
+        delete item.Index
+    })
     setData(_keyListMain, mains)
 }
 export function getListMain() {
-    return getValue(_keyListMain) || [];
-}
-function getListSub(mainid) {
-    const lstSub = getValue(_keyListSub) || []
-    return lstSub.filter(s => s.ParentId === mainid)
-}
-function getListAction(subid) {
-    const lstAction = getValue(_keyListAction) || []
-    return lstAction.filter(a => a.ParentId === subid)
+    const mains = getValue(_keyListMain) || [];
+    return mapIndex(mains)
 }
 export function getListSubActionWith(apiPath, params) {
     const { mainid, subid } = params
@@ -25,13 +23,29 @@ export function getListSubActionWith(apiPath, params) {
         case 'subs':
             return getListSub(mainid)
         case 'actions':
-            return getListAction(subid)
+            return getListAction([subid])
         default:
             return []
-    }
+    }    
+}
+function getListSub(mainid) {
+    const lstSub = getValue(_keyListSub) || []
+    const items = lstSub.filter(s => s.ParentId === mainid)
+    mapExpand.call(items)
+    return mapIndex(items)
+}
+export function getListAction(subids) {
+    const lstAction = getActions()
+    const items = lstAction.filter(a => subids.includes(a.ParentId))
+    mapExpand.call(items)
+    return mapIndex(items)
+}
+function getActions() {
+    return getValue(_keyListAction) || []
 }
 export function saveAction(id, item) {
-    const lstAction = getValue(_keyListAction) || []
+    delete item.Index
+    const lstAction = getActions()
     const action = lstAction.find(a => a.Id === id)
     if (action) {
         if (item.Name) action.Name = item.Name
@@ -49,6 +63,7 @@ export function saveAction(id, item) {
     return null
 }
 export function saveGoal(id, item) {
+    delete item.Index
     const lstGoal = !item.ParentId ? (getValue(_keyListMain) || []) :
         (getValue(_keyListSub) || [])
     const goal = lstGoal.find(a => a.Id === id)
@@ -58,7 +73,7 @@ export function saveGoal(id, item) {
         if (item.Start) goal.Start = item.Start
         if (item.End) goal.End = item.End
         if (typeof item.IsDone === 'boolean') goal.IsDone = item.IsDone
-        if (typeof item.Budget === 'number' && goal.Budget !== item.Budget) 
+        if (typeof item.Budget === 'number' && goal.Budget !== item.Budget)
             goal.Budget = item.Budget
 
         if (!item.ParentId) setData(_keyListMain, lstGoal)
@@ -68,6 +83,7 @@ export function saveGoal(id, item) {
     return null
 }
 export function insertMain(item) {
+    delete item.Index
     const lstMain = getValue(_keyListMain) || []
     item.Id = uuidv4()
     lstMain.push(item)
@@ -75,6 +91,7 @@ export function insertMain(item) {
     return item.Id
 }
 export function insertSub(item) {
+    delete item.Index
     const lstSub = getValue(_keyListSub) || []
     item.Id = uuidv4()
     lstSub.push(item)
@@ -82,7 +99,8 @@ export function insertSub(item) {
     return item.Id
 }
 export function insertAction(item) {
-    const lstAction = getValue(_keyListAction) || []
+    delete item.Index
+    const lstAction = getActions()
     const newid = uuidv4()
     item.Id = newid
     lstAction.push(item)
@@ -90,7 +108,7 @@ export function insertAction(item) {
     return newid
 }
 export function deleteAction(id) {
-    const lstAction = getValue(_keyListAction) || []
+    const lstAction = getActions()
     const _i_ = lstAction.map(a => a.Id).indexOf(id)
     if (_i_ > -1) {
         lstAction.splice(_i_, 1)
@@ -98,22 +116,11 @@ export function deleteAction(id) {
     }
     return id
 }
-function getValue(key) {
-    const dtaText = localStorage.getItem(key)
-    if (dtaText) return JSON.parse(dtaText)
-    return
-}
-function setData(key, data) {
-    if (typeof data === 'undefined') return;
-    if (data === 'undefined') return;
-    const dtaText = JSON.stringify(data)
-    localStorage.setItem(key, dtaText)
-}
 export function deleteSub(id) {
     const lstSub = getValue(_keyListSub) || []
     const _i_ = lstSub.map(s => s.Id).indexOf(id)
     if (_i_ > -1) {
-        const lstAction = getValue(_keyListAction) || []
+        const lstAction = getActions()
         for (let i = lstAction.length - 1; i > -1; i--) {
             if (lstAction[i].ParentId === id) {
                 lstAction.splice(i, 1)
@@ -136,26 +143,27 @@ export function deleteMain(id) {
         setData(_keyListMain, lstMain)
     }
     return id
-}
-function deleteSubFrom(mainid) {
-    const lstSub = getValue(_keyListSub) || []
-    for (let i = lstSub.length - 1; i > -1; i--) {
-        if (lstSub[i].ParentId === mainid) {
-            lstSub.splice(i, 1)
+
+    function deleteSubFrom(mainid) {
+        const lstSub = getValue(_keyListSub) || []
+        for (let i = lstSub.length - 1; i > -1; i--) {
+            if (lstSub[i].ParentId === mainid) {
+                lstSub.splice(i, 1)
+            }
         }
+        setData(_keyListSub, lstSub)
     }
-    setData(_keyListSub, lstSub)
-}
-function deleteActionFrom(mainid) {
-    const lstSub = getValue(_keyListSub) || []
-    const ids = lstSub.filter(s => s.ParentId === mainid).map(s => s.Id)
-    const lstAction = getValue(_keyListAction) || []
-    for (let i = lstAction.length - 1; i > -1; i--) {
-        if (ids.includes(lstAction[i].ParentId)) {
-            lstAction.splice(i, 1)
+    function deleteActionFrom(mainid) {
+        const lstSub = getValue(_keyListSub) || []
+        const ids = lstSub.filter(s => s.ParentId === mainid).map(s => s.Id)
+        const lstAction = getActions()
+        for (let i = lstAction.length - 1; i > -1; i--) {
+            if (ids.includes(lstAction[i].ParentId)) {
+                lstAction.splice(i, 1)
+            }
         }
+        setData(_keyListAction, lstAction)
     }
-    setData(_keyListAction, lstAction)
 }
 export function duplicateSub(id) {
     const lstSub = getValue(_keyListSub) || []
@@ -167,7 +175,7 @@ export function duplicateSub(id) {
         lstSub.push(newSub)
         setData(_keyListSub, lstSub)
 
-        const lstA = getValue(_keyListAction) || []
+        const lstA = getActions()
         for (let j = 0, len = lstA.length; j < len; j++) {
             const _a = lstA[j]
             if (_a.ParentId === id) {
@@ -197,7 +205,7 @@ export function duplicateMain(id) {
         const mainid = id;
         const newMainId = newMain.Id
         const lstSub = getValue(_keyListSub) || []
-        const lstA = getValue(_keyListAction) || []
+        const lstA = getActions()
 
         for (let i = 0, len = lstSub.length; i < len; i++) {
             const sub = lstSub[i]
@@ -225,4 +233,69 @@ export function duplicateMain(id) {
 
         return newMain
     }
+}
+export function saveIndexAction(lstIndex, item) {
+    if(item) {
+        const lstAction = getActions()
+        const action = lstAction.find(a => a.Id === item.Id)
+        if(action) {
+            action.ParentId = item.ParentId
+            setData(_keyListAction, lstAction)
+        }
+    }
+    saveIndexes(lstIndex)
+}
+function saveIndexes(lstIndex) { // [{Id, Index}]
+    if (!Array.isArray(lstIndex) || !lstIndex.length) return
+    const indexes = getListIndex()   // get localStorage
+    lstIndex.forEach(newIdx => {
+        let _i = -1
+        const indx = indexes.find((x, i) => {
+            if (x.Id === newIdx.Id) {
+                _i = i
+                return true
+            }
+            return false
+        })
+        if (indx) {
+            indexes.splice(_i, 1, newIdx)   // replace
+        } else {
+            indexes.push(newIdx)
+        }
+    })
+    setData(_keyListIndex, indexes)     // save localStorage
+}
+export function getListIndex() {
+    return getValue(_keyListIndex) || []    // [{Id, Index}]
+}
+function mapIndex(items) {
+    if (!Array.isArray(items) || !items.length) return items
+    const lstIndex = getListIndex()
+    items.forEach((item, i) => {
+        const idx = lstIndex.find(x => x.Id === item.Id)
+        if (idx) {
+            item.Index = idx.Index
+        } else {
+            item.Index = i
+        }
+    })
+    return items.sort((a, b) => a.Index - b.Index)
+}
+function mapExpand() {
+    const items = this
+    if (!Array.isArray(items) || !items.length) return
+    items.forEach(item => {
+        item.IsExpand = true
+    })
+}
+function getValue(key) {
+    const dtaText = localStorage.getItem(key)
+    if (dtaText) return JSON.parse(dtaText)
+    return
+}
+function setData(key, data) {
+    if (typeof data === 'undefined') return;
+    if (data === 'undefined') return;
+    const dtaText = JSON.stringify(data)
+    localStorage.setItem(key, dtaText)
 }
