@@ -23,10 +23,10 @@ export function getListSubActionWith(apiPath, params) {
         case 'subs':
             return getListSub(mainid)
         case 'actions':
-            return getListAction([subid])
+            return getListAction(subid)
         default:
             return []
-    }    
+    }
 }
 function getListSub(mainid) {
     const lstSub = getValue(_keyListSub) || []
@@ -34,9 +34,21 @@ function getListSub(mainid) {
     mapExpand.call(items)
     return mapIndex(items)
 }
-export function getListAction(subids) {
+export function getSubsBy(ids) {
+    const lstSub = getValue(_keyListSub) || []
+    const subs = lstSub.filter(x => ids.includes(x.Id))
+    subs.forEach(sub => {
+        const lstAction = getActions()
+        const items = lstAction.filter(a => sub.Id === a.ParentId)
+        mapExpand.call(items)
+        sub.Actions = mapIndex(items)
+    })
+    mapExpand.call(subs)
+    return mapIndex(subs)
+}
+function getListAction(subid) {
     const lstAction = getActions()
-    const items = lstAction.filter(a => subids.includes(a.ParentId))
+    const items = lstAction.filter(a => subid === a.ParentId)
     mapExpand.call(items)
     return mapIndex(items)
 }
@@ -235,10 +247,10 @@ export function duplicateMain(id) {
     }
 }
 export function saveIndexAction(lstIndex, item) {
-    if(item) {
+    if (item) {
         const lstAction = getActions()
         const action = lstAction.find(a => a.Id === item.Id)
-        if(action) {
+        if (action) {
             action.ParentId = item.ParentId
             setData(_keyListAction, lstAction)
         }

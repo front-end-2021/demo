@@ -20,7 +20,10 @@ export function ActionView({ item, isExpandSub, isDoneSub }) {
         entry.IsDone = is_done
         delete entry.IsExpand
         apiUpdateAction(item.Id, entry)      // api put
-        dispatch(addActions([entry]))
+        dispatch(addActions({
+            subid: item.ParentId,
+            actions: [entry]
+        }))
     }
     function onSaveAction(entry) {
         const isChngStart = typeof entry.Start === 'string'
@@ -37,7 +40,11 @@ export function ActionView({ item, isExpandSub, isDoneSub }) {
         addLoadingItems(true)
         apiUpdateAction(item.Id, entry)  // api put
             .then(res => {
-                dispatch(addActions([Object.assign(_item, entry)]))
+                Object.assign(_item, entry)
+                dispatch(addActions({
+                    subid: item.ParentId,
+                    actions: [_item]
+                }))
                 addLoadingItems(false)
             })
     }
@@ -55,7 +62,10 @@ export function ActionView({ item, isExpandSub, isDoneSub }) {
 
             if (!newId.includes('invalid')) {
                 _item.Id = newId
-                dispatch(addActions([_item]))
+                dispatch(addActions({
+                    subid: item.ParentId,
+                    actions: [_item]
+                }))
             }
         })
     }
@@ -63,10 +73,16 @@ export function ActionView({ item, isExpandSub, isDoneSub }) {
         if (!isExpandSub) return
         const entry = JSON.parse(JSON.stringify(item))
         entry.IsExpand = isExpd
-        dispatch(addActions([entry]))
+        dispatch(addActions({
+            subid: item.ParentId,    
+            actions: [entry]
+        }))
     }
     function onDeleteA() {
-        dispatch(deleteActions([item.Id]))
+        dispatch(deleteActions({
+            subid: item.ParentId,
+            ids: [item.Id]
+        }))
         apiDeleteAction(item.Id)
     }
     const [viewLevel, setViewLevel] = useState(1)

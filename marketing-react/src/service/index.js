@@ -1,7 +1,7 @@
 import axios from "axios"
 import { logItem } from "../global/GlobalLog"
 import {
-    getListMain, getListSubActionWith, getListAction,
+    getListMain, getListSubActionWith, getSubsBy,
     saveAction, saveGoal, saveIndexAction,
     insertMain, insertSub, insertAction,
     deleteAction, deleteSub, deleteMain,
@@ -15,7 +15,7 @@ const config = {
 }
 const host = `http://localhost:8001/api/`
 function callApiData(testMs) {
-    testMs = testMs || 555
+    testMs = typeof testMs === 'number' ? testMs : 555
     return new Promise(res => {
         setTimeout(res, testMs)
     })
@@ -123,7 +123,7 @@ export function apiSetIndexAction({ src, des, item }) {
     const desSubId = des.SubId
     const desItemIds = des.Ids
 
-    return callApiData(1989).then(d => {
+    return callApiData(123).then(d => {
         const newIndexes = desItemIds.map((id, i) => {
             return { Id: id, Index: i }
         })
@@ -132,8 +132,12 @@ export function apiSetIndexAction({ src, des, item }) {
         } else {
             saveIndexAction(newIndexes)
         }
-        if (srcSubId !== desSubId)
-            return getListAction([srcSubId, desSubId])
-        else return getListAction([desSubId])
+        if (srcSubId !== desSubId)      // khac sub
+            return {
+                desSubs: getSubsBy([srcSubId, desSubId]),
+            }
+        else return {
+            desSubs: getSubsBy([desSubId])
+        }
     })
 }

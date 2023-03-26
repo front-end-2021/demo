@@ -29,23 +29,19 @@ function addItems(lstItem) {
 function deleteItemsBy(parentIds) {
     if (!Array.isArray(parentIds) || !parentIds.length) return
     const goals = this
-    const ids = []
     for (let i = goals.length - 1; i > -1; i--) {
         const goal = goals[i]
         const parentId = goal.ParentId
         if (parentIds.includes(parentId)) {
             goals.splice(i, 1)  // remove
-            ids.includes(goal.Id) && ids.push(goal.Id)
         }
     }
-    return ids
 }
 export const DataList = createSlice({
     name: 'datalist',
     initialState: {
         Mains: [],
-        Subs: [],
-        Actions: []
+        Subs: [],           // [{ParentId, Id, ..., Actions: [{ParentId, Id, ...}]}]
     },
     reducers: {
         addMains: (state, action) => {
@@ -57,44 +53,53 @@ export const DataList = createSlice({
             addItems.call(state.Subs, lstSub)
         },
         addActions: (state, action) => {
-            const lstAction = action.payload
-            addItems.call(state.Actions, lstAction)
-        },
-        setIndexActions: (state, action) => {
-            const actions = action.payload
-            for(let i = state.Actions.length - 1; i > -1; i--) {
-                const act = state.Actions[i]
-                const action = actions.find(x => x.Id === act.Id)
-                if(action) {
-                    state.Actions.splice(i, 1)      // remove
+            const { subid, actions } = action.payload
+            const sub = state.Subs.find(x => x.Id === subid)
+            if (sub) {
+                const lstA = sub.Actions || []
+                actions.forEach(_a => {
+                    let i_ = -1
+                    const a_ = lstA.find((x, i) => {
+                        if (x.Id === _a.Id) {
+                            i_ = i
+                            return true
+                        }
+                        return false
+                    })
+                    if (a_) {
+                        const act = Object.assign(a_, _a)
+                        lstA.splice(i_, 1, act)
+                    } else {
+                        lstA.push(_a)
+                    }
+                })
+                if (!Array.isArray(sub.Actions)) {
+                    sub.Actions = lstA
                 }
             }
-            addItems.call(state.Actions, actions)
         },
         deleteMains: (state, action) => {
             const ids = action.payload
             const mains = state.Mains
             const subs = state.Subs
-            const actions = state.Actions
             removeItems.call(mains, ids)
-            const subIds = deleteItemsBy.call(subs, ids)
-            deleteItemsBy.call(actions, subIds)
+            deleteItemsBy.call(subs, ids)
         },
         deleteSubs: (state, action) => {
             const ids = action.payload
             const subs = state.Subs
-            const actions = state.Actions
             removeItems.call(subs, ids)
-            deleteItemsBy.call(actions, ids)
         },
         deleteActions: (state, action) => {
-            const ids = action.payload
-            const actions = state.Actions
-            removeItems.call(actions, ids)
+            const { subid, ids } = action.payload
+            const sub = state.Subs.find(x => x.Id === subid)
+            if (sub) {
+                removeItems.call(sub.Actions, ids)
+            }
         },
     }
 })
 export const {
-    addMains, addSubs, addActions, setIndexActions,
+    addMains, addSubs, addActions,
     deleteMains, deleteSubs, deleteActions
 } = DataList.actions

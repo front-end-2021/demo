@@ -33,6 +33,15 @@ export class Maingoal extends Component {
             addSubs(lstSub) // add to ReduxStore
         })
     }
+    componentDidUpdate = () => {
+        // #region dragdrop Actions in subs
+        const { cbDnDActionSubs } = this.context
+        if (typeof cbDnDActionSubs === 'function') {
+            cbDnDActionSubs()
+            delete this.context.cbDnDActionSubs
+        }
+        // #endregion
+    }
     handleAddNewSub = () => {
         const dateNow = Date.now()
         this.props.showEdit(dateNow)
@@ -117,21 +126,24 @@ export class Maingoal extends Component {
         })
     }
     getExpectCost = (listSub) => {
-        const { Actions } = this.props
-        const subIds = listSub.map(s => s.Id)
-        const lstA = Actions.filter(a => subIds.includes(a.ParentId));
+        let lstA = []
+        listSub.forEach(s => {
+            if (Array.isArray(s.Actions)) lstA = lstA.concat(s.Actions)
+        })
         return getSumCost(lstA.map(a => a.ExpectCost));
     }
     getTrueCost = (listSub) => {
-        const { Actions } = this.props
-        const subIds = listSub.map(s => s.Id)
-        const lstA = Actions.filter(a => subIds.includes(a.ParentId));
-        return getSumCost(lstA.map(a => a.TrueCost));
+        let lstA = []
+        listSub.forEach(s => {
+            if (Array.isArray(s.Actions)) lstA = lstA.concat(s.Actions)
+        })
+        return getSumCost(lstA.map(a => a.TrueCost || 0));
     }
     isLoadingSub = (listSub) => {
-        const { Actions } = this.props
-        const subIds = listSub.map(s => s.Id)
-        const lstA = Actions.filter(a => subIds.includes(a.ParentId));
+        let lstA = []
+        listSub.forEach(s => {
+            if (Array.isArray(s.Actions)) lstA = lstA.concat(s.Actions)
+        })
         if (!listSub.length && !lstA.length) return true
         return false
     }
@@ -184,7 +196,6 @@ const mapState = (state) => ({
     EditId: state.focus.EditId,
     LoadingItems: state.loading.Items,
     ListSub: state.dlist.Subs,
-    Actions: state.dlist.Actions,
 })
 const mapDispatch = {
     showEdit, setItems,
