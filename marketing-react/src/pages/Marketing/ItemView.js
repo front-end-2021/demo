@@ -376,7 +376,7 @@ function ItemViewCollapse({ getDoneTag, children }) {
         let cls = `dnb_item_container d_item_collapse`
         if (item.IsDone) {
             cls += ` dnb_item_done`
-        } else cls += canDnD ? ` dnb-dnd-item` : ''
+        } else cls += canDnD ? ` dnb-dnd-item dnbDndItem` : ''
         return cls
     }
     return (

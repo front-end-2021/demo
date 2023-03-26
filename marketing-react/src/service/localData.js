@@ -16,6 +16,7 @@ export function saveListMain(mains) {
 }
 export function getListMain() {
     const mains = getValue(_keyListMain) || [];
+    mapExpand.call(mains)
     return mapIndex(mains)
 }
 export function getListSubActionWith(apiPath, params) {
@@ -31,15 +32,23 @@ export function getListSubActionWith(apiPath, params) {
 }
 export function getSubsBy(ids) {
     const lstSub = getValue(_keyListSub) || []
-    const subs = lstSub.filter(x => ids.includes(x.Id))
-    subs.forEach(sub => {
-        const lstAction = getActions()
-        const items = lstAction.filter(a => sub.Id === a.ParentId)
-        mapExpand.call(items)
-        sub.Actions = mapIndex(items)
-    })
-    mapExpand.call(subs)
-    return mapIndex(subs)
+    let subs = lstSub.filter(x => ids.includes(x.Id))
+    if(subs.length) {
+        const mainId = subs[0].ParentId
+        let allSubs = lstSub.filter(x => x.ParentId === mainId)
+        allSubs = mapIndex(allSubs)
+        subs = allSubs.filter(x => ids.includes(x.Id))
+
+        subs.forEach(sub => {
+            const lstAction = getActions()
+            const items = lstAction.filter(a => sub.Id === a.ParentId)
+            mapExpand.call(items)
+            sub.Actions = mapIndex(items)
+        })
+        mapExpand.call(subs)
+        return subs
+    }
+    return []
 }
 export function saveAction(id, item) {
     delete item.Index

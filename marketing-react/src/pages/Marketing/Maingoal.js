@@ -152,7 +152,14 @@ export class Maingoal extends Component {
     render() {
         const { IsExpand } = this.state
         const { ListSub, item } = this.props
-        const listSub = ListSub.filter(x => x.ParentId === item.Id)
+        let idx = -1
+        const listSub = ListSub.filter((x, i) => {
+            if(x.ParentId === item.Id){
+                if(idx < 0) idx = i
+                return true
+            }
+            return false
+        })
         const mainCxt = Object.assign(JSON.parse(JSON.stringify(item)),
             {
                 TypeId: 1, IsExpand: IsExpand,
@@ -180,6 +187,7 @@ export class Maingoal extends Component {
                             listSub.map(sub => {
                                 return <SubgoalConnect
                                     key={sub.Id}
+                                    index={idx++}
                                     keyUpdate={sub.IsDone}
                                     item={sub}
                                     isExpandMain={IsExpand}

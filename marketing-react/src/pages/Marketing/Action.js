@@ -102,7 +102,7 @@ export function ActionView({ item, isExpandSub, isDoneSub }) {
             }}>
             <ViewContext.Provider value={{ viewLevel, setViewLevel }}>
                 {EditId !== item.Id ?
-                    <ItemViewExpand className={canDnD && 'dnb-dnd-item'}
+                    <ItemViewExpand className={canDnD && 'dnb-dnd-item dnbDndItem'}
                         id={canDnD ? item.Id : undefined}
                         onToggleDone={onToggleDone}>
                         {!!unit.View.length && <>

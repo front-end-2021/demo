@@ -6,7 +6,7 @@ import {
 import { getSumCost, getDateAfterDaysString } from "../../global"
 import { ItemProvider, LoadingContext } from "../../global/Context"
 import {
-    addActions, deleteSubs, addSubs,
+    addActions, deleteSubs, addSubs, setSubsAfter,
 } from "../../global/ReduxStore/DataItem"
 import { GoalItemView } from "./GoalView"
 import { ActionView, ActionViewEdit } from "./Action"
@@ -31,16 +31,14 @@ class Subgoal extends Component {
         this.sortAction = Sortable.create(elItems, {
             group: {
                 name: 'actions',
-            //    pull: 'clone', // To clone: set pull to 'clone'
                 revertClone: true,
             },
-            draggable: ".dnb-dnd-item",
+            draggable: ".dnbDndItem",
             ghostClass: "dnb-dnd-item-ghost",
             dragClass: "dnb-dnd-item-drag",
-            //removeCloneOnHide: false,
             onStart: (evt) => {
                 const lstFrom = []
-                evt.from.querySelectorAll(".dnb-dnd-item").forEach((n) => {
+                evt.from.querySelectorAll(".dnbDndItem").forEach((n) => {
                     lstFrom.push(n.getAttribute("id"));
                 })
                 this.LstDnD = lstFrom
@@ -52,20 +50,22 @@ class Subgoal extends Component {
                 })
 
                 const lstTo = [];
-                evt.to.querySelectorAll(".dnb-dnd-item").forEach((n) => {
+                evt.to.querySelectorAll(".dnbDndItem").forEach((n) => {
                     lstTo.push(n.getAttribute("id"));
                 })
                 if (lstTo.join('') !== this.LstDnD.join('')) {
                     const DesSubId = evt.to.getAttribute('idgrpdnd')
                     const itemId = evt.item.getAttribute("id")
+                    let SrcIndex = evt.from.getAttribute('idxdnd')
+                    SrcIndex = parseInt(SrcIndex)
+                    let DesIndex = evt.to.getAttribute('idxdnd')
+                    DesIndex = parseInt(DesIndex)
 
                     processList.call(this, {
-                        SubId: this.SrcSubId
-                    }, {
-                        SubId: DesSubId, Ids: lstTo
-                    }, {
-                        Id: itemId
-                    })
+                        SubId: this.SrcSubId, Index: SrcIndex
+                    },
+                        { SubId: DesSubId, Ids: lstTo, Index: DesIndex },
+                        { Id: itemId })
 
                     delete this.LstDnD
                     delete this.SrcSubId
@@ -73,7 +73,7 @@ class Subgoal extends Component {
             },
             onMove: (evt, originalEvt) => {
                 const _itRlt = evt.related
-                if (_itRlt.classList.contains('dnb-dnd-item')) {
+                if (_itRlt.classList.contains('dnbDndItem')) {
                     _itRlt.classList.add('dnb-dnditem-relate')
                 }
             },
@@ -81,7 +81,7 @@ class Subgoal extends Component {
 
         function processList(src, des, dragSub) {
             const this_ = this
-            const { deleteSubs, addSubs } = this_.props
+            const { deleteSubs, addSubs, setSubsAfter } = this_.props
             const { setLoading } = this_.context
             const SrcSubId = src.SubId
             const DesSubId = des.SubId
@@ -98,13 +98,22 @@ class Subgoal extends Component {
                 if (SrcSubId !== DesSubId) {    // khac sub
                     this_.destroySortAction()
 
-                    document.querySelectorAll(`.dnb-dnd-item[id="${dragSub.Id}"]`).forEach(n => {
+                    document.querySelectorAll(`.dnbDndItem[id="${dragSub.Id}"]`).forEach(n => {
                         n.remove()
                     })
 
                     deleteSubs([SrcSubId, DesSubId])
+                    const SrcIndex = src.Index
+                    const DesIndex = des.Index
+                    const lstSub = SrcIndex < DesIndex ? [
+                        { Index: SrcIndex, Sub: desSubs.find(x => x.Id === SrcSubId) },
+                        { Index: DesIndex, Sub: desSubs.find(x => x.Id === DesSubId) }
+                    ] : [
+                        { Index: DesIndex, Sub: desSubs.find(x => x.Id === DesSubId) },
+                        { Index: SrcIndex, Sub: desSubs.find(x => x.Id === SrcSubId) }
+                    ]
                     this_.context.cbDnDActionSubs = function () {
-                        addSubs(desSubs);
+                        setSubsAfter(lstSub)
                     }
                 } else addSubs(desSubs)
 
@@ -113,7 +122,7 @@ class Subgoal extends Component {
         }
     }
     destroySortAction = () => {
-        if(typeof this.sortAction === 'object') {
+        if (typeof this.sortAction === 'object') {
             this.sortAction.destroy()
             delete this.sortAction;
         }
@@ -248,13 +257,13 @@ class Subgoal extends Component {
         }</>
     }
     onExpandSub = (isExpand) => {
-        const {item, isExpandMain} = this.props
+        const { item, isExpandMain } = this.props
         if (!isExpandMain) return
         this.setState({ IsExpand: isExpand })
         apiSetCollapse([item.Id], isExpand)
     }
     render() {
-        const { item, isExpandMain, isDoneMain, CanDragDrop } = this.props
+        const { item, isExpandMain, isDoneMain, CanDragDrop, index } = this.props
         const { IsExpand } = this.state
         const listAction = Array.isArray(item.Actions) ? item.Actions : []
         const isDoneSub = isDoneMain || item.IsDone;
@@ -280,6 +289,7 @@ class Subgoal extends Component {
                     <GoalItemView />
                 </ItemProvider>
                 <div idgrpdnd={CanDragDrop ? item.Id : undefined}
+                    idxdnd={CanDragDrop ? index : undefined}
                     className={clssGrpA} ref={this.rfActions}>{
                         !listAction.length && !listAction.length ?
                             <>{this.getFormActionAddEdit()}</>
@@ -307,7 +317,7 @@ const mapState = (state) => ({
 })
 const mapDispatch = {
     showEdit, setItems,
-    addActions,
+    addActions, setSubsAfter,
     deleteSubs, addSubs
 }
 export const SubgoalConnect = connect(

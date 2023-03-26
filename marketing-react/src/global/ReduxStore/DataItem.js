@@ -5,7 +5,7 @@ function removeItems(ids) {     // Mains/Subs/Actions
     for (let i = items.length - 1; i > -1; i--) {
         const item = items[i]
         if (ids.includes(item.Id)) {
-            items.splice(i, 1)
+            items.splice(i, 1) // remove at i
         }
     }
 }
@@ -51,6 +51,14 @@ export const DataList = createSlice({
         addSubs: (state, action) => {
             const lstSub = action.payload
             addItems.call(state.Subs, lstSub)
+        },
+        setSubsAfter: (state, action) => {
+            const lstSub = action.payload
+            lstSub.filter(x => x !== undefined).forEach(x => {
+                const sub = x.Sub
+                let idx = x.Index
+                state.Subs.splice(idx, 0, sub)
+            })
         },
         addActions: (state, action) => {
             const { subid, actions } = action.payload
@@ -100,6 +108,6 @@ export const DataList = createSlice({
     }
 })
 export const {
-    addMains, addSubs, addActions,
+    addMains, addSubs, addActions, setSubsAfter,
     deleteMains, deleteSubs, deleteActions
 } = DataList.actions
