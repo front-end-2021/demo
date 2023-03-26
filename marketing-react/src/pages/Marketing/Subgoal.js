@@ -28,9 +28,10 @@ class Subgoal extends Component {
     }
     createSortAction = () => {
         const elItems = this.rfActions.current
+        const { item } = this.props
         this.sortAction = Sortable.create(elItems, {
             group: {
-                name: 'actions',
+                name: `DnDActionIn${item.ParentId}`,
                 revertClone: true,
             },
             draggable: ".dnbDndItem",
