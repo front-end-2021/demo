@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import {
     getSubsActionsBy,
     apiCopyMain, apiDeleteMain,
-    apiAddSub
+    apiAddSub, apiSetCollapse
 } from "../../service"
 import { getSumCost, getDateAfterDaysString } from "../../global"
 import { GoalItemView, GoalItemEdit } from "./GoalView"
@@ -82,7 +82,9 @@ export class Maingoal extends Component {
         })
     }
     onExpandMain = (isExpand) => {
+        const {item} = this.props
         this.setState({ IsExpand: isExpand })
+        apiSetCollapse([item.Id], isExpand)
     }
     getButtonAddSub = () => {
         const { IsExpand } = this.state

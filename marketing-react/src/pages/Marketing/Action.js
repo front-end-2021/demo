@@ -1,7 +1,8 @@
 import { useState, useContext } from "react"
 import { getDateString } from "../../global"
 import { ItemViewExpand, ItemViewEdit } from "./ItemView"
-import { apiUpdateAction, apiDeleteAction, apiAddAction } from "../../service"
+import { apiUpdateAction, apiDeleteAction, 
+    apiAddAction, apiSetCollapse } from "../../service"
 import { ItemContext, ItemProvider } from "../../global/Context"
 import { useDispatch, useSelector } from "react-redux"
 import { setItems, showEdit } from "../../global/ReduxStore"
@@ -77,6 +78,7 @@ export function ActionView({ item, isExpandSub, isDoneSub }) {
             subid: item.ParentId,    
             actions: [entry]
         }))
+        apiSetCollapse([item.Id], isExpd)
     }
     function onDeleteA() {
         dispatch(deleteActions({

@@ -69,7 +69,7 @@ $gayColor: #eee;
 .title {
     margin: 0 0 1rem;
     line-height: 1.15;
-    font-size: 3.6rem;
+    font-size: 3rem;
     text-align: center;
 
     a {
@@ -91,20 +91,19 @@ $gayColor: #eee;
 }
 
 .grid {
-    display: flex;
+    display: grid;
     align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
+    grid-template-columns: 25% 25% 25% 25%;
     margin-top: 3rem;
 }
 
 .card {
-    margin: 1rem;
-    flex-basis: 45%;
-    padding: 1.5rem;
+    margin: 6px;
+    padding: 6px;
     text-align: left;
     color: inherit;
     text-decoration: none;
+    min-height: 110px;
     border: 1px solid #eaeaea;
     border-radius: 10px;
     transition: color 0.15s ease, border-color 0.15s ease;
@@ -118,13 +117,13 @@ $gayColor: #eee;
 
     p {
         margin: 0;
-        font-size: 1.25rem;
+        font-size: 1.12rem;
         line-height: 1.5;
     }
 
     h3 {
         margin: 0 0 1rem 0;
-        font-size: 1.5rem;
+        font-size: 1.3rem;
     }
 }
 

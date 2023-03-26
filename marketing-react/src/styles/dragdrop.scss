@@ -30,4 +30,9 @@
     min-height: 180px !important;
     max-height: 180px !important;
     overflow: hidden !important;
+
+    &.d_item_collapse {
+        min-height: initial !important;
+        max-height: initial !important;
+    }
 }

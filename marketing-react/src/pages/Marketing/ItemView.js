@@ -335,6 +335,7 @@ function getClassOverDate(start_end) {
 }
 function ItemViewCollapse({ getDoneTag, children }) {
     const item = useContext(ItemContext)
+    const canDnD = useSelector(state => state.filter.CanDrgDrp)
     const handle = useContext(HandleContext)
     function getStartTag() {
         if (!item.Start) return <></>
@@ -372,10 +373,14 @@ function ItemViewCollapse({ getDoneTag, children }) {
         </div>
     }
     function getClsWrap() {
-        return `dnb_item_container d_item_collapse${item.IsDone ? ` dnb_item_done` : ''}`
+        let cls = `dnb_item_container d_item_collapse`
+        if (item.IsDone) {
+            cls += ` dnb_item_done`
+        } else cls += canDnD ? ` dnb-dnd-item` : ''
+        return cls
     }
     return (
-        <div className={getClsWrap()}>
+        <div className={getClsWrap()} id={!item.IsDone && canDnD ? item.Id : undefined}>
             <div className='dnb-head-collapse'>
                 {getDoneTag()}
                 {getNameTag()}

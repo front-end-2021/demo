@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import {
-    getSubsActionsBy, apiAddAction,
+    getSubsActionsBy, apiAddAction, apiSetCollapse,
     apiDeleteSub, apiCopySub, apiSetIndexAction
 } from "../../service"
 import { getSumCost, getDateAfterDaysString } from "../../global"
@@ -248,8 +248,10 @@ class Subgoal extends Component {
         }</>
     }
     onExpandSub = (isExpand) => {
-        if (!this.props.isExpandMain) return
+        const {item, isExpandMain} = this.props
+        if (!isExpandMain) return
         this.setState({ IsExpand: isExpand })
+        apiSetCollapse([item.Id], isExpand)
     }
     render() {
         const { item, isExpandMain, isDoneMain, CanDragDrop } = this.props

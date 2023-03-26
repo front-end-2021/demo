@@ -5,7 +5,7 @@ import {
     saveAction, saveGoal, saveIndexAction,
     insertMain, insertSub, insertAction,
     deleteAction, deleteSub, deleteMain,
-    duplicateSub, duplicateMain
+    duplicateSub, duplicateMain, saveCollapse,
 } from "./localData"
 
 const config = {
@@ -139,5 +139,11 @@ export function apiSetIndexAction({ src, des, item }) {
         else return {
             desSubs: getSubsBy([desSubId])
         }
+    })
+}
+export function apiSetCollapse(ids, isExpand) {
+
+    return callApiData(1).then(d => {
+        return saveCollapse(ids, isExpand)
     })
 }

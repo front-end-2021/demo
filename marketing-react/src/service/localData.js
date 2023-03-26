@@ -5,6 +5,7 @@ const _keyListMain = 'ListMain'
 const _keyListSub = 'ListSub'
 const _keyListAction = 'ListAction'
 const _keyListIndex = 'ListIndex'
+const _keyListCollapse = 'ListCollapse'
 
 export function saveListMain(mains) {
     if (!Array.isArray(mains) || !mains.length) return
@@ -28,12 +29,6 @@ export function getListSubActionWith(apiPath, params) {
             return []
     }
 }
-function getListSub(mainid) {
-    const lstSub = getValue(_keyListSub) || []
-    const items = lstSub.filter(s => s.ParentId === mainid)
-    mapExpand.call(items)
-    return mapIndex(items)
-}
 export function getSubsBy(ids) {
     const lstSub = getValue(_keyListSub) || []
     const subs = lstSub.filter(x => ids.includes(x.Id))
@@ -46,17 +41,9 @@ export function getSubsBy(ids) {
     mapExpand.call(subs)
     return mapIndex(subs)
 }
-function getListAction(subid) {
-    const lstAction = getActions()
-    const items = lstAction.filter(a => subid === a.ParentId)
-    mapExpand.call(items)
-    return mapIndex(items)
-}
-function getActions() {
-    return getValue(_keyListAction) || []
-}
 export function saveAction(id, item) {
     delete item.Index
+    delete item.IsExpand
     const lstAction = getActions()
     const action = lstAction.find(a => a.Id === id)
     if (action) {
@@ -76,6 +63,7 @@ export function saveAction(id, item) {
 }
 export function saveGoal(id, item) {
     delete item.Index
+    delete item.IsExpand
     const lstGoal = !item.ParentId ? (getValue(_keyListMain) || []) :
         (getValue(_keyListSub) || [])
     const goal = lstGoal.find(a => a.Id === id)
@@ -96,6 +84,7 @@ export function saveGoal(id, item) {
 }
 export function insertMain(item) {
     delete item.Index
+    delete item.IsExpand
     const lstMain = getValue(_keyListMain) || []
     item.Id = uuidv4()
     lstMain.push(item)
@@ -104,6 +93,7 @@ export function insertMain(item) {
 }
 export function insertSub(item) {
     delete item.Index
+    delete item.IsExpand
     const lstSub = getValue(_keyListSub) || []
     item.Id = uuidv4()
     lstSub.push(item)
@@ -112,6 +102,7 @@ export function insertSub(item) {
 }
 export function insertAction(item) {
     delete item.Index
+    delete item.IsExpand
     const lstAction = getActions()
     const newid = uuidv4()
     item.Id = newid
@@ -125,16 +116,20 @@ export function deleteAction(id) {
     if (_i_ > -1) {
         lstAction.splice(_i_, 1)
         setData(_keyListAction, lstAction)
+        deleteIndex([id])
     }
     return id
 }
 export function deleteSub(id) {
     const lstSub = getValue(_keyListSub) || []
     const _i_ = lstSub.map(s => s.Id).indexOf(id)
+    const delIds = [id]
     if (_i_ > -1) {
         const lstAction = getActions()
         for (let i = lstAction.length - 1; i > -1; i--) {
-            if (lstAction[i].ParentId === id) {
+            const action = lstAction[i]
+            if (action.ParentId === id) {
+                delIds.push(action.Id)
                 lstAction.splice(i, 1)
             }
         }
@@ -142,24 +137,29 @@ export function deleteSub(id) {
 
         lstSub.splice(_i_, 1)
         setData(_keyListSub, lstSub)
+        deleteIndex(delIds)
     }
     return id
 }
 export function deleteMain(id) {
     const lstMain = getValue(_keyListMain) || []
     const _i_ = lstMain.map(m => m.Id).indexOf(id)
+    const delIds = [id]
     if (_i_ > -1) {
         deleteActionFrom(id)
         deleteSubFrom(id)
         lstMain.splice(_i_, 1)
         setData(_keyListMain, lstMain)
+        deleteIndex(delIds)
     }
     return id
 
     function deleteSubFrom(mainid) {
         const lstSub = getValue(_keyListSub) || []
         for (let i = lstSub.length - 1; i > -1; i--) {
-            if (lstSub[i].ParentId === mainid) {
+            const sub = lstSub[i]
+            if (sub.ParentId === mainid) {
+                delIds.push(sub.Id)
                 lstSub.splice(i, 1)
             }
         }
@@ -170,7 +170,9 @@ export function deleteMain(id) {
         const ids = lstSub.filter(s => s.ParentId === mainid).map(s => s.Id)
         const lstAction = getActions()
         for (let i = lstAction.length - 1; i > -1; i--) {
-            if (ids.includes(lstAction[i].ParentId)) {
+            const action = lstAction[i]
+            if (ids.includes(action.ParentId)) {
+                delIds.push(action.Id)
                 lstAction.splice(i, 1)
             }
         }
@@ -181,11 +183,16 @@ export function duplicateSub(id) {
     const lstSub = getValue(_keyListSub) || []
     const sub = lstSub.find(s => s.Id === id)
     if (sub) {
+        const lstId = []
+        const lstNewId = []
         const newSub = JSON.parse(JSON.stringify(sub))
         newSub.Id = uuidv4()
         newSub.Name = `COPY ${sub.Name}`
         lstSub.push(newSub)
         setData(_keyListSub, lstSub)
+
+        lstId.push(id)
+        lstNewId.push(newSub.Id)
 
         const lstA = getActions()
         for (let j = 0, len = lstA.length; j < len; j++) {
@@ -196,10 +203,13 @@ export function duplicateSub(id) {
                 newA.ParentId = newSub.Id
                 newA.Name = `${_a.Name} (1)`
                 lstA.push(newA)
+
+                lstId.push(_a.Id)
+                lstNewId.push(newA.Id)
             }
         }
         setData(_keyListAction, lstA)
-
+        copyIndex(lstId, lstNewId)
         return newSub
     }
     return null
@@ -208,11 +218,16 @@ export function duplicateMain(id) {
     const lstMain = getValue(_keyListMain) || []
     const item = lstMain.find(s => s.Id === id)
     if (item) {
+        const lstId = []
+        const lstNewId = []
         const newMain = JSON.parse(JSON.stringify(item))
         newMain.Id = uuidv4()
         newMain.Name = `COPY ${item.Name}`
         lstMain.push(newMain)
         setData(_keyListMain, lstMain)
+
+        lstId.push(id)
+        lstNewId.push(newMain.Id)
 
         const mainid = id;
         const newMainId = newMain.Id
@@ -228,6 +243,9 @@ export function duplicateMain(id) {
                 newSub.Name = `${sub.Name} (1)`
                 lstSub.push(newSub)
 
+                lstId.push(sub.Id)
+                lstNewId.push(newSub.Id)
+
                 for (let j = 0, _l = lstA.length; j < _l; j++) {
                     const _a = lstA[j]
                     if (_a.ParentId === sub.Id) {
@@ -236,13 +254,16 @@ export function duplicateMain(id) {
                         newA.ParentId = newSub.Id
                         newA.Name = `${_a.Name} (1)`
                         lstA.push(newA)
+
+                        lstId.push(_a.Id)
+                        lstNewId.push(newA.Id)
                     }
                 }
             }
         }
         setData(_keyListSub, lstSub)
         setData(_keyListAction, lstA)
-
+        copyIndex(lstId, lstNewId)
         return newMain
     }
 }
@@ -280,6 +301,59 @@ function saveIndexes(lstIndex) { // [{Id, Index}]
 export function getListIndex() {
     return getValue(_keyListIndex) || []    // [{Id, Index}]
 }
+export function getListCollapse() {
+    return getValue(_keyListCollapse) || []    // [Id]
+}
+export function saveCollapse(ids, isExpand) {
+    if (!Array.isArray(ids) || !ids.length) return
+    const lstCollapse = getListCollapse()
+    if (isExpand) {
+        ids.forEach(id => {
+            const _i = lstCollapse.indexOf(id)
+            if (_i > -1) {
+                lstCollapse.splice(_i, 1)
+            }
+        })
+    } else {
+        ids.forEach(id => {
+            if (!lstCollapse.includes(id)) {
+                lstCollapse.push(id)
+            }
+        })
+    }
+    setData(_keyListCollapse, lstCollapse)
+    return lstCollapse
+}
+function copyIndex(ids, newIds) {
+    if (!Array.isArray(ids) || !ids.length) return
+    if (!Array.isArray(newIds) || !newIds.length) return
+    if (ids.length !== newIds.length) return
+    const lstIndex = getListIndex()
+    const oldLen = lstIndex.length
+    for (let i = 0; i < ids.length; i++) {
+        const indx = lstIndex.find(x => x.Id === ids[i])
+        if (indx) {
+            const newInx = {
+                Id: newIds[i], Index: indx.Index
+            }
+            lstIndex.push(newInx)
+        }
+    }
+    if (oldLen < lstIndex.length) {
+        setData(_keyListIndex, lstIndex)
+    }
+}
+function deleteIndex(ids) {
+    if (!Array.isArray(ids) || !ids.length) return
+    const lstIndex = getListIndex()
+    for (let i = lstIndex.length - 1; i > -1; i--) {
+        const item = lstIndex[i]
+        if (ids.includes(item.Id)) {
+            lstIndex.splice(i, 1)
+        }
+    }
+    setData(_keyListIndex, lstIndex)
+}
 function mapIndex(items) {
     if (!Array.isArray(items) || !items.length) return items
     const lstIndex = getListIndex()
@@ -296,9 +370,25 @@ function mapIndex(items) {
 function mapExpand() {
     const items = this
     if (!Array.isArray(items) || !items.length) return
+    const lstCollps = getListCollapse()
     items.forEach(item => {
-        item.IsExpand = true
+        item.IsExpand = !lstCollps.includes(item.Id)
     })
+}
+function getListSub(mainid) {
+    const lstSub = getValue(_keyListSub) || []
+    const items = lstSub.filter(s => s.ParentId === mainid)
+    mapExpand.call(items)
+    return mapIndex(items)
+}
+function getListAction(subid) {
+    const lstAction = getActions()
+    const items = lstAction.filter(a => subid === a.ParentId)
+    mapExpand.call(items)
+    return mapIndex(items)
+}
+function getActions() {
+    return getValue(_keyListAction) || []
 }
 function getValue(key) {
     const dtaText = localStorage.getItem(key)
