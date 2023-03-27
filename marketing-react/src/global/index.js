@@ -118,3 +118,29 @@ export function enableScroll() {
     window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
 }
 // #endregion
+export const editorOpts = {
+    toolbar: {
+      buttons: [
+        "bold",
+        "italic",
+        "underline",
+        "strikethrough",
+        "subscript",
+        "superscript",
+        "anchor",
+        "orderedlist",
+        "unorderedlist",
+        "justifyLeft",
+        "justifyCenter",
+        "justifyRight",
+        "justifyFull",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "removeFormat"
+      ]
+    }
+  }

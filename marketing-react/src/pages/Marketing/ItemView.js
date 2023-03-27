@@ -1,13 +1,16 @@
 import { useState, useContext, useEffect } from "react"
 import {
     getDateCalendarValue, getDateString,
-    getIcon, isDateLessNow,
+    getIcon, isDateLessNow, editorOpts,
     encodeHtml, decodeHtml, getTextTitle
 } from "../../global"
 import { useDispatch, useSelector } from "react-redux"
 import { HandleContext, ItemContext } from "../../global/Context"
 import { showMenu, showEdit } from "../../global/ReduxStore"
 import { useDialog, ConfirmType, ViewContext } from "../../global/Context"
+import MediumEditor from "medium-editor"
+import '../../../node_modules/medium-editor/dist/css/medium-editor.css'
+import '../../../node_modules/medium-editor/dist/css/themes/default.css'
 import { logItem } from "../../global/GlobalLog"
 
 export function ItemViewExpand({ children, className, onToggleDone, id }) {
@@ -237,20 +240,17 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
         const newName = e.target.value
         if (newName.trim() === '') setName(item.Name)
     }
-    function handleChangeDes(e) {
-        const newDes = e.target.value
-        setDes(newDes)
-    }
-
     function onSaveDataItem() {
         const s = getDateString(start)
         const e = getDateString(end)
+        let _des = des
+        if(des === '<p><br></p>') _des = undefined
+        if(des === '<p>&nbsp;</p>') _des = undefined
         onSaveData({
             Id: item.Id, ParentId: item.ParentId,
-            Name: name, Description: des, Start: s, End: e,
+            Name: name, Description: _des, Start: s, End: e,
         })
     }
-
     function styleColorDate(dStr) {
         var d = new Date(dStr)
         const now = new Date(new Date().toDateString())
@@ -284,8 +284,8 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
                 type="text" onChange={handleChangeName}
                 onMouseOut={handleMouseOutChangeName} />
             </div>
-            <textarea className='dnb_edit_des' style={{ height: getHeightDesArea() }}
-                onChange={handleChangeDes} defaultValue={des} />
+            <textarea className='dnb_edit_des dEditable'
+                style={{ height: getHeightDesArea() }} defaultValue={des} />
             <div className='dnb_item_cost'>
                 {children}
             </div>
@@ -321,19 +321,36 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
     useEffect(() => {
         const vCont = document.querySelector('.dItemEdt')
         const html = document.querySelector('html')
-        if(vCont && html) {
+        if (vCont && html) {
             const offTop = vCont.offsetTop
             const cH = vCont.querySelector('.dEdtView')
             const offHeih = cH ? cH.offsetHeight : vCont.offsetHeight
             const sclTop = html.scrollTop
-            if(offTop - sclTop > offHeih) {
+            if (offTop - sclTop > offHeih) {
                 html.scrollTo({
                     top: offTop - offHeih,
                     behavior: "smooth",
                 })
             }
         }
-      }, []);
+        let targetNode = document.querySelector('.dEditable');
+        const editor = new MediumEditor(targetNode, editorOpts);
+        targetNode = document.querySelector('.dEditable');
+        const config = { attributes: true, childList: true, subtree: true };
+
+        const callback = (mutationList, observer) => {
+            const mutation = mutationList[0]
+            const txt = mutation.target.innerHTML
+            setDes(txt)
+        };
+        const observer = new MutationObserver(callback);
+        observer.observe(targetNode, config);
+        return function onUnmount() {
+            observer.disconnect();
+            editor.destroy();
+        };
+    }, []);
+
     return (
         <div className={getClsItem()}>
             <div className="dnb_editview dEdtView">{

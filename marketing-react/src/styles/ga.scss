@@ -109,6 +109,11 @@ $offst: 36px;
             display: -webkit-box;
             margin: 0 auto;
         }
+
+        &>a {
+            text-decoration: underline;
+            color: #0055ff
+        }
     }
 
     &.dnb_view_2 {
@@ -125,7 +130,14 @@ $offst: 36px;
         min-height: 159px;
         margin-left: 0px;
         margin-top: 2 * $m3px;
+        margin-bottom: 2 * $m3px;
         max-height: $hDes + 120px;
+        border: 1px solid #8f8f8f;
+        padding: $m3px;
+        &>a {
+            text-decoration: underline;
+            color: #0055ff
+        }
     }
 
     .dnb_item_cost {
