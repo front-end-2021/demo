@@ -1,4 +1,4 @@
-import { useState, useContext } from "react"
+import { useState, useContext, useEffect } from "react"
 import {
     getDateCalendarValue, getDateString,
     getIcon, isDateLessNow,
@@ -270,7 +270,7 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
         view && view.setViewLevel(level)
     }
     function getClsItem() {
-        let _r = `dnb_item_container dnb_item_edit`
+        let _r = `dnb_item_container dnb_item_edit dItemEdt`
         _r += ` dnb_view_${viewLevel}`
         if (typeof className === 'string' && className.trim() !== '')
             _r += ` fb-loading`
@@ -318,9 +318,25 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
             </div>
         </>
     }
+    useEffect(() => {
+        const vCont = document.querySelector('.dItemEdt')
+        const html = document.querySelector('html')
+        if(vCont && html) {
+            const offTop = vCont.offsetTop
+            const cH = vCont.querySelector('.dEdtView')
+            const offHeih = cH ? cH.offsetHeight : vCont.offsetHeight
+            const sclTop = html.scrollTop
+            if(offTop - sclTop > offHeih) {
+                html.scrollTo({
+                    top: offTop - offHeih,
+                    behavior: "smooth",
+                })
+            }
+        }
+      }, []);
     return (
         <div className={getClsItem()}>
-            <div className="dnb_editview">{
+            <div className="dnb_editview dEdtView">{
                 item.TypeId > 2 ? renderBodyEdit()
                     : <div className="dnb-wrap-2-sticky">{renderBodyEdit()}</div>
             }</div>

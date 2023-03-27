@@ -106,12 +106,9 @@ class Subgoal extends Component {
                     deleteSubs([SrcSubId, DesSubId])
                     const SrcIndex = src.Index
                     const DesIndex = des.Index
-                    const lstSub = SrcIndex < DesIndex ? [
+                    const lstSub = [
                         { Index: SrcIndex, Sub: desSubs.find(x => x.Id === SrcSubId) },
                         { Index: DesIndex, Sub: desSubs.find(x => x.Id === DesSubId) }
-                    ] : [
-                        { Index: DesIndex, Sub: desSubs.find(x => x.Id === DesSubId) },
-                        { Index: SrcIndex, Sub: desSubs.find(x => x.Id === SrcSubId) }
                     ]
                     this_.context.cbDnDActionSubs = function () {
                         setSubsAfter(lstSub)
@@ -126,7 +123,7 @@ class Subgoal extends Component {
         if (typeof this.sortAction === 'object') {
             this.sortAction.destroy()
             delete this.sortAction;
-        }
+        } else delete this.sortAction;
     }
     componentDidMount = () => {
         const { setLoading } = this.context

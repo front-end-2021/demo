@@ -54,7 +54,8 @@ export const DataList = createSlice({
         },
         setSubsAfter: (state, action) => {
             const lstSub = action.payload
-            lstSub.filter(x => x !== undefined).forEach(x => {
+            lstSub.sort((a, b) => a.Index - b.Index)
+            lstSub.forEach(x => {
                 const sub = x.Sub
                 let idx = x.Index
                 state.Subs.splice(idx, 0, sub)
