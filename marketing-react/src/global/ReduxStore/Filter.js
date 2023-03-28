@@ -9,9 +9,10 @@ export const TypeUnit = [
 ]
 export const Filter = createSlice({
     name: 'filter',
-    initialState: { 
+    initialState: {
         Unit: TypeUnit[0],
-        CanDrgDrp: false
+        CanDrgDrp: false,
+        TextSearch: '',
     },
     reducers: {
         setUnit: (state, action) => {
@@ -21,11 +22,16 @@ export const Filter = createSlice({
                 state.Unit = _u
             }
         },
-        switchDragDrop: (state) => {
+        toggleDragDrop: (state) => {
             const isDnD = state.CanDrgDrp
             state.CanDrgDrp = !isDnD
-        }
+        },
+        setTextSearch: (state, action) => {
+            const txt = action.payload
+            state.TextSearch = txt
+            if (txt.trim() !== '') state.CanDrgDrp = false
+        },
     }
 })
 
-export const { setUnit, switchDragDrop } = Filter.actions
+export const { setUnit, toggleDragDrop, setTextSearch } = Filter.actions

@@ -19,6 +19,7 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
     const LoadingItems = useSelector(state => state.loading.Items)
     const MenuId = useSelector(state => state.focus.MenuId)
     const canDnD = useSelector(state => state.filter.CanDrgDrp)
+    let textS = useSelector(state => state.filter.TextSearch)
     const dialog = useDialog()
     const view = useContext(ViewContext)
     const dispatch = useDispatch()
@@ -187,16 +188,53 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
             {getMenuTag()}
         </>
     }
+    useEffect(() => {
+        document.querySelectorAll('.dnb_add_action').forEach(btn => {
+            if (textS !== '' && !isShowMapSearch())
+                btn.style.visibility = 'hidden'
+            else btn.style.visibility = ''
+        })
+        document.querySelectorAll('.dnb_add_sub').forEach(btn => {
+            if (textS !== '' && !isShowMapSearch())
+                btn.style.visibility = 'hidden'
+            else btn.style.visibility = ''
+        })
+        document.querySelectorAll('.dnb_add_main').forEach(btn => {
+            if (textS !== '' && !isShowMapSearch())
+                btn.style.visibility = 'hidden'
+            else btn.style.visibility = ''
+        })
+    }, [textS])
+    function isShowMapSearch() {
+        if (textS.trim() === '') return true
+        let name = item.Name
+        name = name.toLowerCase()
+        const txtS = textS.toLowerCase()
+        if (name.includes(txtS)) return true
+        if (typeof item.Description === 'string') {
+            let des = item.Description
+            des = des.toLowerCase()
+            if (des.trim() === '') return true
+            if (des.includes(txtS)) return true
+        }
+        return false
+    }
+    function styleMapSearch() {
+        if (isShowMapSearch()) return
+        return { 'opacity': '0.069', 'pointer-events': 'none' }
+    }
     return (
         <>{
-            item.IsExpand ? <div className={getClassWrap()} id={id}>
+            item.IsExpand ? <div className={getClassWrap()} id={id}
+                style={styleMapSearch()}>
                 {item.TypeId > 2 ? renderBodyExpand()
                     :
                     <div className="dnb-wrap-2-sticky">
                         {renderBodyExpand()}
                     </div>
                 }
-            </div> : <ItemViewCollapse getDoneTag={getDoneTag}>
+            </div> : <ItemViewCollapse getDoneTag={getDoneTag}
+                isShowMapSearch={isShowMapSearch()}>
                 {children}
             </ItemViewCollapse>
         }</>
@@ -244,8 +282,8 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
         const s = getDateString(start)
         const e = getDateString(end)
         let _des = des
-        if(des === '<p><br></p>') _des = undefined
-        if(des === '<p>&nbsp;</p>') _des = undefined
+        if (des === '<p><br></p>') _des = undefined
+        if (des === '<p>&nbsp;</p>') _des = undefined
         onSaveData({
             Id: item.Id, ParentId: item.ParentId,
             Name: name, Description: _des, Start: s, End: e,
@@ -366,7 +404,7 @@ function getClassOverDate(start_end) {
     }
     return ''
 }
-function ItemViewCollapse({ getDoneTag, children }) {
+function ItemViewCollapse({ getDoneTag, children, isShowMapSearch }) {
     const item = useContext(ItemContext)
     const canDnD = useSelector(state => state.filter.CanDrgDrp)
     const handle = useContext(HandleContext)
@@ -413,7 +451,7 @@ function ItemViewCollapse({ getDoneTag, children }) {
         return cls
     }
     return (
-        <div className={getClsWrap()} id={!item.IsDone && canDnD ? item.Id : undefined}>
+        isShowMapSearch ? <div className={getClsWrap()} id={!item.IsDone && canDnD ? item.Id : undefined}>
             <div className='dnb-head-collapse'>
                 {getDoneTag()}
                 {getNameTag()}
@@ -425,6 +463,6 @@ function ItemViewCollapse({ getDoneTag, children }) {
                 {getStartTag()}
                 {getEndTag()}
             </div>
-        </div>
+        </div> : <></>
     )
 }
