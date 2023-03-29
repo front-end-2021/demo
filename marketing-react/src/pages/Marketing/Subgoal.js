@@ -3,7 +3,7 @@ import {
     getSubsActionsBy, apiAddAction, apiSetCollapse,
     apiDeleteSub, apiCopySub, apiSetIndexAction
 } from "../../service"
-import { getSumCost, getDateAfterDaysString } from "../../global"
+import { getSumCost, getDateAfterDaysString, getIcon } from "../../global"
 import { ItemProvider, LoadingContext } from "../../global/Context"
 import {
     addActions, deleteSubs, addSubs, setSubsAfter,
@@ -246,10 +246,10 @@ class Subgoal extends Component {
                     </ItemProvider>
                 </div>
                 :
-                <div className='dnb_add_action'>
+                <div className='dnb_add_action dnb-btnadd'>
                     <div onClick={() => this.addNewAction()}>
                         <span className="bi bi-plus-circle-dotted"
-                            style={{ cursor: 'pointer' }}>&nbsp; New &#9632;</span>
+                            style={{ cursor: 'pointer' }}>&nbsp; New {getIcon(3)}</span>
                     </div>
                 </div>
         }</>

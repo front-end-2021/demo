@@ -193,6 +193,9 @@ $drpdwnH: 30px;
     &__indicators {
         height: $drpdwnH;
     }
+    &__input-container {
+        padding-top: 0 !important;
+    }
 }
 
 .dform-search {

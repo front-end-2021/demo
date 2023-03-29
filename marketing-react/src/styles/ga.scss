@@ -134,6 +134,7 @@ $offst: 36px;
         max-height: $hDes + 120px;
         border: 1px solid #8f8f8f;
         padding: $m3px;
+
         &>a {
             text-decoration: underline;
             color: #0055ff
@@ -534,6 +535,15 @@ $wPC: $wCost + 6px;
 .dnb-wrap-2-sticky {
     position: sticky;
     top: 0;
+}
+
+.dnbi-action {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 9px solid #000;
 }
 
 @media screen and (min-width: 1182px) {

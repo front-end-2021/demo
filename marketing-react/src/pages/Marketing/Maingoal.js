@@ -4,7 +4,7 @@ import {
     apiCopyMain, apiDeleteMain,
     apiAddSub, apiSetCollapse
 } from "../../service"
-import { getSumCost, getDateAfterDaysString } from "../../global"
+import { getSumCost, getDateAfterDaysString, getIcon } from "../../global"
 import { GoalItemView, GoalItemEdit } from "./GoalView"
 import { SubgoalConnect } from "./Subgoal"
 import { connect } from "react-redux"
@@ -82,18 +82,19 @@ export class Maingoal extends Component {
         })
     }
     onExpandMain = (isExpand) => {
-        const {item} = this.props
+        const { item } = this.props
         this.setState({ IsExpand: isExpand })
         apiSetCollapse([item.Id], isExpand)
     }
     getButtonAddSub = () => {
         const { IsExpand } = this.state
         if (!IsExpand) return <></>
-        return <div className='dnb_add_sub' style={{ alignItems: 'initial' }}>
+        return <div className='dnb_add_sub dnb-btnadd'
+            style={{ alignItems: 'initial' }}>
             <div>
                 <span className="bi bi-plus-circle-dotted"
                     onClick={this.handleAddNewSub}
-                    style={{ cursor: 'pointer' }} >&nbsp; New &#9670;</span>
+                    style={{ cursor: 'pointer' }} >&nbsp; New {getIcon(2)}</span>
             </div>
         </div>
     }
@@ -154,8 +155,8 @@ export class Maingoal extends Component {
         const { ListSub, item } = this.props
         let idx = -1
         const listSub = ListSub.filter((x, i) => {
-            if(x.ParentId === item.Id){
-                if(idx < 0) idx = i
+            if (x.ParentId === item.Id) {
+                if (idx < 0) idx = i
                 return true
             }
             return false

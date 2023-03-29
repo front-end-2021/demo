@@ -1,7 +1,7 @@
 export function encodeHtml(desText) {
     if (typeof desText !== 'string') return desText
     if (desText.trim() === '') return desText
-    if(desText.substring(0, 8) === `<iframe `) return desText
+    if (desText.substring(0, 8) === `<iframe `) return desText
     desText = desText.replaceAll('\n', '<br/>')
     desText = desText.replaceAll(`<div`, `&#60;div`)
     desText = desText.replaceAll(`</div`, `&#60;/div`)
@@ -13,7 +13,7 @@ export function encodeHtml(desText) {
     desText = desText.replaceAll(`   `, `&nbsp; &nbsp;`)
     return desText
 }
-export function decodeHtml(desText) {    
+export function decodeHtml(desText) {
     if (typeof desText !== 'string') return desText
     desText = desText.replaceAll('<br/>', '\n')
     desText = desText.replaceAll(`&#60;div`, `<div`)
@@ -55,7 +55,9 @@ export function getDateAfterDaysString(dayAfter) {
 export function getIcon(typeid) {
     if (typeid < 2) return <>&#9673;</>
     if (typeid < 3) return <>&#9830;</>
-    return <>&#11205;</>
+    return <span className="dnbi-action" />
+    // if(typeid == 2) return &#9670;
+    // if(typeid == 3) return &#9632;
 }
 export function isDateLessNow(start_end) {
     if (!start_end) return false
@@ -120,27 +122,27 @@ export function enableScroll() {
 // #endregion
 export const editorOpts = {
     toolbar: {
-      buttons: [
-        "bold",
-        "italic",
-        "underline",
-        "strikethrough",
-        "subscript",
-        "superscript",
-        "anchor",
-        "orderedlist",
-        "unorderedlist",
-        "justifyLeft",
-        "justifyCenter",
-        "justifyRight",
-        "justifyFull",
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "h5",
-        "h6",
-        "removeFormat"
-      ]
+        buttons: [
+            "bold",
+            "italic",
+            "underline",
+            "strikethrough",
+            "subscript",
+            "superscript",
+            "anchor",
+            "orderedlist",
+            "unorderedlist",
+            "justifyLeft",
+            "justifyCenter",
+            "justifyRight",
+            "justifyFull",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "removeFormat"
+        ]
     }
-  }
+}

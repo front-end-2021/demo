@@ -54,7 +54,7 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
                 <span>{getEditTag()}</span>
                 <span>{getDeleteTag()}</span>
                 {getExpandTag()}
-                <span>{getAddNewTag()}</span>
+                <span className="dnb-btnadd">{getAddNewTag()}</span>
             </div>
         </>
     }
@@ -116,7 +116,8 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
     }
     function getAddNewTag() {
         if (item.TypeId > 2) return <></>
-        return <span className="bi bi-plus-circle-dotted" style={{ cursor: 'pointer' }}
+        return <span className="bi bi-plus-circle-dotted"
+            style={{ cursor: 'pointer' }}
             onClick={handle.handleAddNewChild}
         >&nbsp; New {getIcon(item.TypeId + 1)}</span>
     }
@@ -188,40 +189,14 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
             {getMenuTag()}
         </>
     }
-    useEffect(() => {
-        document.querySelectorAll('.dnb_add_action').forEach(btn => {
-            if (textS !== '' && !isShowMapSearch())
-                btn.style.visibility = 'hidden'
-            else btn.style.visibility = ''
-        })
-        document.querySelectorAll('.dnb_add_sub').forEach(btn => {
-            if (textS !== '' && !isShowMapSearch())
-                btn.style.visibility = 'hidden'
-            else btn.style.visibility = ''
-        })
-        document.querySelectorAll('.dnb_add_main').forEach(btn => {
-            if (textS !== '' && !isShowMapSearch())
-                btn.style.visibility = 'hidden'
-            else btn.style.visibility = ''
-        })
-    }, [textS])
-    function isShowMapSearch() {
-        if (textS.trim() === '') return true
-        let name = item.Name
-        name = name.toLowerCase()
-        const txtS = textS.toLowerCase()
-        if (name.includes(txtS)) return true
-        if (typeof item.Description === 'string') {
-            let des = item.Description
-            des = des.toLowerCase()
-            if (des.trim() === '') return true
-            if (des.includes(txtS)) return true
-        }
-        return false
-    }
+    
     function styleMapSearch() {
-        if (isShowMapSearch()) return
-        return { 'opacity': '0.069', 'pointer-events': 'none' }
+        const isShow = isShowMapSearch.call(item, textS)
+        if(item.TypeId !== 2)  return getStyleMapSearch.call(item, isShow)
+        if (!isShow && !hasChildShowInSearch.call(item, textS)) {
+            return { 'display': 'none' }
+        }
+        return getStyleMapSearch.call(item, isShow)
     }
     return (
         <>{
@@ -233,8 +208,7 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
                         {renderBodyExpand()}
                     </div>
                 }
-            </div> : <ItemViewCollapse getDoneTag={getDoneTag}
-                isShowMapSearch={isShowMapSearch()}>
+            </div> : <ItemViewCollapse getDoneTag={getDoneTag}>
                 {children}
             </ItemViewCollapse>
         }</>
@@ -404,9 +378,50 @@ function getClassOverDate(start_end) {
     }
     return ''
 }
-function ItemViewCollapse({ getDoneTag, children, isShowMapSearch }) {
+function hasChildShowInSearch(textS) {
+    const item = this
+    const txtS = textS.toLowerCase()
+    if (item.TypeId === 2) {
+        const lstA = item.Actions || []
+        const lstFilterA = lstA.filter(a => {
+            if (a.Name.toLowerCase().includes(txtS)) return true
+            let _des = a.Description
+            if (typeof _des === 'string') {
+                if (_des === '') return true
+                _des = _des.toLowerCase()
+                if (_des.includes(txtS)) return true
+            }
+            return false
+        })
+        if (lstFilterA.length) return true
+        return false
+    }
+}
+function isShowMapSearch(textS) {
+    const item = this
+    if (textS.trim() === '') return true
+    let name = item.Name
+    name = name.toLowerCase()
+    const txtS = textS.toLowerCase()
+    if (name.includes(txtS)) return true
+    if (typeof item.Description === 'string') {
+        let des = item.Description
+        des = des.toLowerCase()
+        if (des.trim() === '') return true
+        if (des.includes(txtS)) return true
+    }
+    return false
+}
+function getStyleMapSearch(isShow) {
+    if (isShow) return
+    const item = this
+    if (item.TypeId > 2) return { 'display': 'none' }
+    return { 'opacity': '0.069', pointerEvents: 'none' }
+}
+function ItemViewCollapse({ getDoneTag, children }) {
     const item = useContext(ItemContext)
-    const canDnD = useSelector(state => state.filter.CanDrgDrp)
+    const canDnD = useSelector(state => state.filter.CanDrgDrp)    
+    let textS = useSelector(state => state.filter.TextSearch)
     const handle = useContext(HandleContext)
     function getStartTag() {
         if (!item.Start) return <></>
@@ -450,8 +465,12 @@ function ItemViewCollapse({ getDoneTag, children, isShowMapSearch }) {
         } else cls += canDnD ? ` dnb-dnd-item dnbDndItem` : ''
         return cls
     }
+    function getStyle() {
+        return getStyleMapSearch.call(item, isShowMapSearch.call(item, textS))
+    }
     return (
-        isShowMapSearch ? <div className={getClsWrap()} id={!item.IsDone && canDnD ? item.Id : undefined}>
+        <div className={getClsWrap()} id={!item.IsDone && canDnD ? item.Id : undefined}
+            style={getStyle()}>
             <div className='dnb-head-collapse'>
                 {getDoneTag()}
                 {getNameTag()}
@@ -463,6 +482,6 @@ function ItemViewCollapse({ getDoneTag, children, isShowMapSearch }) {
                 {getStartTag()}
                 {getEndTag()}
             </div>
-        </div> : <></>
+        </div>
     )
 }

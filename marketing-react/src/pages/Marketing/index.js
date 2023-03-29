@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import {
     apiGetMains, apiAddMain
 } from "../../service"
-import { getDateAfterDaysString } from "../../global"
+import { getDateAfterDaysString, getIcon } from "../../global"
 import { GoalItemEdit } from "./GoalView"
 import { MaingoalConnect } from "./Maingoal"
 import { ProcessingProvider, LoadingContext } from "../../global/Context"
@@ -70,14 +70,14 @@ class ListMainView extends Component {
                         keyUpdate={main.IsDone} />
                 })}</>
             }
-                {!isAddNew ? <div className='dnb_add_main'>
+                {!isAddNew ? <div className='dnb_add_main dnb-btnadd'>
                     <span className="bi bi-plus-circle-dotted"
                         onClick={() => {
                             const dateNow = Date.now()
                             showEdit(dateNow)
                             this.setState({ NewMain: dateNow })
                         }}
-                        style={{ cursor: 'pointer' }} >&nbsp; New &#9673;</span>
+                        style={{ cursor: 'pointer' }} >&nbsp; New {getIcon(1)}</span>
                 </div>
                     : <div className='dnb_item_view'>
                         <ItemProvider

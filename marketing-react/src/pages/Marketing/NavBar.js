@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component, useEffect } from "react"
 import {
     setUnit, TypeUnit, toggleDragDrop,
     setTextSearch
@@ -135,6 +135,13 @@ function Search() {
         const txt = e.target.value
         dispatch(setTextSearch(txt))
     }
+    useEffect(() => {
+        document.querySelectorAll('.dnb-btnadd').forEach(btn => {
+            if (textS !== '')
+                btn.style.visibility = 'hidden'
+            else btn.style.visibility = ''
+        })
+    }, [textS])
     return (
         <form className="dform-search">
             <input className="din_search" placeholder="Search" type="search"
