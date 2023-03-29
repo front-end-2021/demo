@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from "react"
 import {
     getDateCalendarValue, getDateString,
     getIcon, isDateLessNow, editorOpts,
-    encodeHtml, decodeHtml, getTextTitle
+    encodeHtml, decodeHtml, getTextTitle, verifyHtml
 } from "../../global"
 import { useDispatch, useSelector } from "react-redux"
 import { HandleContext, ItemContext } from "../../global/Context"
@@ -257,10 +257,11 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
         const e = getDateString(end)
         let _des = des
         if (des === '<p><br></p>') _des = undefined
+        if (des === '<br>') _des = undefined
         if (des === '<p>&nbsp;</p>') _des = undefined
         onSaveData({
             Id: item.Id, ParentId: item.ParentId,
-            Name: name, Description: _des, Start: s, End: e,
+            Name: name, Description: verifyHtml(_des), Start: s, End: e,
         })
     }
     function styleColorDate(dStr) {
