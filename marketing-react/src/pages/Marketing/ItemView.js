@@ -273,7 +273,7 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
         const t = des || ''
         const l = t.length
         if (l < 141) return
-        return `${Math.ceil(l * 30 / 51)}px`
+        return `${Math.ceil(l * 33 / 42)}px`
     }
     function getClsExpLess() {
         return isExpectLessTrue ? ` d_exp_less_true` : ''

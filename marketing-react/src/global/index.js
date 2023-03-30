@@ -15,7 +15,7 @@ export function encodeHtml(desText) {       // render
 }
 export function decodeHtml(desText) {       // edit
     if (typeof desText !== 'string') return desText
-    desText = desText.replaceAll('<br/>', '\n')
+    desText = desText.replaceAll('\n', '<br>')
     desText = desText.replaceAll(`&#60;div`, `<div`)
     desText = desText.replaceAll(`&#60;/div`, `</div`)
     desText = desText.replaceAll(`&#60;input`, `<input`)
@@ -31,9 +31,18 @@ export function decodeHtml(desText) {       // edit
 }
 export function verifyHtml(desText) {
     if(typeof desText !== 'string') return desText
+    desText = desText.replaceAll(`&#60;`, `<`)
     desText = desText.replaceAll(`<br>`, `\n`)
     desText = desText.replaceAll(`<br/>`, `\n`)
-    let i = desText.indexOf(`<iframe `)
+    desText = desText.replaceAll(`<div>`, ``)
+    desText = desText.replaceAll(`</div>`, `\n`)
+    let i = desText.indexOf(`<p>`)
+    if(i > 0) {
+        desText = desText.replace(`<p>`, `\n`)
+    }
+    desText = desText.replaceAll(`<p>`, ``)
+    desText = desText.replaceAll(`</p>`, `\n`)
+    i = desText.indexOf(`<iframe `)
     let j = desText.indexOf(`&lt;iframe `)
     if(j > -1 || i > -1) {
         desText = desText.replace(`&lt;iframe `, `<iframe `)
@@ -48,7 +57,21 @@ export function verifyHtml(desText) {
 export function getTextTitle(desText) {
     if (typeof desText !== 'string') return
     if (desText.trim() === '') return
-    desText = desText.replaceAll('<br/>', ' ')
+    const iIfm = desText.indexOf(`<iframe `)
+    if(-1 < iIfm && iIfm < 1) return
+    desText = desText.replaceAll('<br/>', `\n`)
+    desText = desText.replaceAll('<br>', `\n`)
+    desText = desText.replaceAll('<p>', ``)
+    desText = desText.replaceAll('</p>', `\n`)
+    desText = desText.replaceAll('&nbsp;', ` `)
+    desText = desText.replaceAll('<strike>', ``)
+    desText = desText.replaceAll('</strike>', ``)
+    desText = desText.replaceAll('<sup>', ``)
+    desText = desText.replaceAll('</sup>', ``)
+    desText = desText.replaceAll('<sub>', ``)
+    desText = desText.replaceAll('</sub>', ``)
+    desText = desText.replaceAll('<b>', ``)
+    desText = desText.replaceAll('</b>', ``)
     return desText
 }
 export function getSumCost(lstCost) {

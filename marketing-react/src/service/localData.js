@@ -362,6 +362,18 @@ function deleteIndex(ids) {
         }
     }
     setData(_keyListIndex, lstIndex)
+    deleteCollapse(ids)
+}
+function deleteCollapse(ids) {
+    if (!Array.isArray(ids) || !ids.length) return
+    const lstCllp = getListCollapse()
+    for (let i = lstCllp.length - 1; i > -1; i--) {
+        const id = lstCllp[i]
+        if (ids.includes(id)) {
+            lstCllp.splice(i, 1)
+        }
+    }
+    setData(_keyListCollapse, lstCllp)
 }
 function mapIndex(items) {
     if (!Array.isArray(items) || !items.length) return items

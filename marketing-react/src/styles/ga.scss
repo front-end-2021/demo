@@ -134,6 +134,7 @@ $offst: 36px;
         max-height: $hDes + 120px;
         border: 1px solid #8f8f8f;
         padding: $m3px;
+        overflow: hidden;
 
         &>a {
             text-decoration: underline;
