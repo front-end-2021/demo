@@ -545,6 +545,10 @@ $wPC: $wCost + 6px;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
     border-bottom: 9px solid #000;
+
+    .d_exp_less_true & {
+        border-bottom-color: red;
+    }
 }
 
 @media screen and (min-width: 1182px) {

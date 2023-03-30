@@ -63,6 +63,7 @@ export function ActionView({ item, isExpandSub, isDoneSub }) {
 
             if (!newId.includes('invalid')) {
                 _item.Id = newId
+                _item.IsExpand = true
                 dispatch(addActions({
                     subid: item.ParentId,
                     actions: [_item]
