@@ -13,7 +13,7 @@ import { addSubs, addMains } from "../../global/ReduxStore/DataItem"
 export function GoalItemView() {
     const item = useContext(ItemContext)
     const EditId = useSelector(state => state.focus.EditId)
-    const unit = useSelector(state => state.filter.Unit)
+    const unit = useSelector(state => state.navbar.Unit)
     const dispatch = useDispatch()
     function onToggleDone(e) {
         const is_done = !item.IsDone
@@ -97,7 +97,7 @@ export function GoalItemView() {
     )
 }
 export function GoalItemEdit() {
-    const unit = useSelector(state => state.filter.Unit)
+    const unit = useSelector(state => state.navbar.Unit)
     const { ParentId, Budget, ExpectCost, TrueCost } = useContext(ItemContext)
     const { onSaveGoal } = useContext(HandleContext)
     const [budget, setBudget] = useState(Budget)

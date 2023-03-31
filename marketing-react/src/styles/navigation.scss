@@ -11,8 +11,32 @@ $navH: 48px;
     margin: $m3px auto;
     border-radius: $round;
     align-items: center;
-
     box-shadow: 0 1px 6px 0px rgb(159 159 159 / 24%);
+}
+
+.page_inline {
+    display: grid;
+    margin-left: 12px;
+    margin-right: 27px;
+    grid-template-columns: 58px 66px 77px 85px 92px;
+    column-gap: 18px;
+
+    >* {
+        cursor: pointer;
+        padding: 6px;
+        color: #555;
+
+        &:hover {
+            background: #e1e1e1;
+            border-radius: 6px;
+        }
+    }
+
+    .current-tab {
+        background: #e1e1e1;
+        border-radius: 6px;
+        color: black;
+    }
 }
 
 @keyframes fadeTopDown {

@@ -18,14 +18,15 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
     const handle = useContext(HandleContext)
     const LoadingItems = useSelector(state => state.loading.Items)
     const MenuId = useSelector(state => state.focus.MenuId)
-    const canDnD = useSelector(state => state.filter.CanDrgDrp)
-    let textS = useSelector(state => state.filter.TextSearch)
+    const canDnD = useSelector(state => state.navbar.CanDrgDrp)
+    let textS = useSelector(state => state.navbar.TextSearch)
+    let viewType = useSelector(state => state.navbar.ViewType)
     const dialog = useDialog()
     const view = useContext(ViewContext)
     const dispatch = useDispatch()
     function getStartTag() {
         return <>
-            <span className={`bi bi-calendar2-week${getClassOverDate(item.Start)}`} />
+            <span className={`bi bi-clock${getClassOverDate(item.Start)}`} />
             {
                 !isDateLessNow(item.Start) ? <span className={`dnb-d-start`}
                 >&nbsp;{getDateString(item.Start)}</span> :
@@ -47,14 +48,15 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
         </>
     }
     function getMenuTag() {
+        if (viewType === 2) return <></>
         if (MenuId !== item.Id || canDnD) return <></>
         return <>
             <div className='dnb_i_menu'>
-                <span>{getDuplicateTag()}</span>
-                <span>{getEditTag()}</span>
-                <span>{getDeleteTag()}</span>
+                <span className="di_btn">{getDuplicateTag()}</span>
+                <span className="di_btn">{getEditTag()}</span>
+                <span className="di_btn">{getDeleteTag()}</span>
                 {getExpandTag()}
-                <span className="dnb-btnadd">{getAddNewTag()}</span>
+                <span className="dnb-btnadd di_btn">{getAddNewTag()}</span>
             </div>
         </>
     }
@@ -110,7 +112,7 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
         return <>
             <span onClick={() => {
                 view.setViewLevel(getView(view.viewLevel))
-            }} className='bi bi-arrows-expand'>&nbsp; Expand ({view.viewLevel - 1})</span>
+            }} className='bi bi-arrows-expand di_btn'>&nbsp; Expand ({view.viewLevel - 1})</span>
             {item.TypeId < 3 ? <span></span> : ''}
         </>
     }
@@ -122,6 +124,7 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
         >&nbsp; New {getIcon(item.TypeId + 1)}</span>
     }
     function getDescriptionTag() {
+        if (viewType > 0) return
         let desText = item.Description
         if (typeof desText !== 'string') return <p
             className='dnb_item_description o_30'>
@@ -140,6 +143,7 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
     }
     function getClassWrap() {
         let _r = `dnb_item_container dnb_view_${view.viewLevel}`
+        if (viewType === 2) _r += ' d_item_collapse'
         if (typeof className == 'string' && className.trim() !== '')
             _r += ` ${className}`
         if (item.IsDone) _r += ` dnb_item_done`
@@ -170,29 +174,25 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
                 {item.Start && getStartTag()}
                 {item.IsExpand ? item.End && getEndTag() : <></>}
             </div>
-            {
-                item.IsExpand && !canDnD && <div className='dnb_i_options'>
-                    <span style={{ cursor: 'initial' }}>
-                        {getDoneTag('Finish')}
-                    </span>
-                    {
-                        item.isDoneSub || item.IsDone ? getExpandTag() :
-                            <div>
-                                <span onClick={toggleViewMenu} className="bi bi-layout-sidebar"
-                                >&nbsp; Menu &nbsp;</span>
-                                <span onClick={toggleViewMenu}
-                                    className={`bi bi-chevron-${MenuId === item.Id ? 'down' : 'right'}`} />
-                            </div>
-                    }
-                </div>
-            }
+            {item.IsExpand && !canDnD && <div className='dnb_i_options'>
+                <span style={{ cursor: 'initial' }}>
+                    {getDoneTag('Finish')}
+                </span>
+                {item.isDoneSub || item.IsDone ? getExpandTag() :
+                    <div>
+                        <span onClick={toggleViewMenu} className="bi bi-layout-sidebar"
+                        >&nbsp; Menu &nbsp;</span>
+                        <span onClick={toggleViewMenu}
+                            className={`bi bi-chevron-${MenuId === item.Id ? 'down' : 'right'}`} />
+                    </div>}
+            </div>}
             {getMenuTag()}
         </>
     }
-    
+
     function styleMapSearch() {
         const isShow = isShowMapSearch.call(item, textS)
-        if(item.TypeId !== 2)  return getStyleMapSearch.call(item, isShow)
+        if (item.TypeId !== 2) return getStyleMapSearch.call(item, isShow)
         if (!isShow && !hasChildShowInSearch.call(item, textS)) {
             return { 'display': 'none' }
         }
@@ -200,7 +200,7 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
     }
     return (
         <>{
-            item.IsExpand ? <div className={getClassWrap()} id={id}
+            item.IsExpand && viewType !== 2 ? <div className={getClassWrap()} id={id}
                 style={styleMapSearch()}>
                 {item.TypeId > 2 ? renderBodyExpand()
                     :
@@ -303,7 +303,7 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
                 {children}
             </div>
             <div className='dnb_item_date'>
-                <span className="bi bi-calendar2-week" style={{ marginRight: '3px' }}></span>
+                <span className="bi bi-clock" style={{ marginRight: '3px' }}></span>
                 <span className='dnb_past_date dnb-d-start'>
                     <input type="date" value={start} max={end} className='dnb_edit_start'
                         style={styleColorDate(start)} onChange={handleChangeStart} />
@@ -315,19 +315,19 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
                 </span>
             </div>
             <div className='dnb_i_menu'>
-                <span >
+                <span className="di_btn">
                     <span className="bi bi-x-circle"
                         onClick={() => dispatch(showEdit(item.Id))}
                         style={{ cursor: 'pointer' }}>&nbsp; Cancel &nbsp;</span>
                 </span>
-                <span >
+                <span className="di_btn">
                     <span className="bi bi-database-up"
                         onClick={onSaveDataItem}
                         style={{ cursor: 'pointer' }}>&nbsp; Save &nbsp;</span>
                 </span>
                 <span></span>
                 <span onClick={() => { changeView(getView(viewLevel)) }}
-                    className='bi bi-arrows-expand'>&nbsp; Expand ({viewLevel - 1})</span>
+                    className='bi bi-arrows-expand di_btn'>&nbsp; Expand ({viewLevel - 1})</span>
             </div>
         </>
     }
@@ -421,13 +421,14 @@ function getStyleMapSearch(isShow) {
 }
 function ItemViewCollapse({ getDoneTag, children }) {
     const item = useContext(ItemContext)
-    const canDnD = useSelector(state => state.filter.CanDrgDrp)    
-    let textS = useSelector(state => state.filter.TextSearch)
+    const canDnD = useSelector(state => state.navbar.CanDrgDrp)
+    const unit = useSelector(state => state.navbar.Unit)
+    let textS = useSelector(state => state.navbar.TextSearch)
     const handle = useContext(HandleContext)
     function getStartTag() {
         if (!item.Start) return <></>
         return <>
-            <span className={`bi bi-calendar2-week${getClassOverDate(item.Start)}`} />
+            <span className={`bi bi-clock${getClassOverDate(item.Start)}`} />
             {
                 !isDateLessNow(item.Start) ? <span
                     className={`dnb-d-start`}>&nbsp;{getDateString(item.Start)}</span> :
@@ -476,9 +477,9 @@ function ItemViewCollapse({ getDoneTag, children }) {
                 {getDoneTag()}
                 {getNameTag()}
             </div>
-            <div className={`dnb_item_cost`}>
+            {!!unit.View.length && <div className={`dnb_item_cost`}>
                 {children}
-            </div>
+            </div>}
             <div className={`dnb_item_date ${getClassOverDate(item.End)}`}>
                 {getStartTag()}
                 {getEndTag()}

@@ -12,8 +12,8 @@ import { logItem } from "../../global/GlobalLog"
 
 export function ActionView({ item, isExpandSub, isDoneSub }) {
     const EditId = useSelector(state => state.focus.EditId)
-    const unit = useSelector(state => state.filter.Unit)
-    const canDnD = useSelector(state => state.filter.CanDrgDrp)
+    const unit = useSelector(state => state.navbar.Unit)
+    const canDnD = useSelector(state => state.navbar.CanDrgDrp)
     const dispatch = useDispatch()
     function onToggleDone(e) {
         const is_done = !item.IsDone
@@ -126,7 +126,7 @@ export function ActionView({ item, isExpandSub, isDoneSub }) {
 }
 
 export function ActionViewEdit({ onSaveAction, className }) {
-    const unit = useSelector(state => state.filter.Unit)
+    const unit = useSelector(state => state.navbar.Unit)
     const item = useContext(ItemContext)
     const [expectCost, setExpectCost] = useState(item.ExpectCost)
     const [trueCost, setTrueCost] = useState(item.TrueCost)

@@ -1,9 +1,9 @@
 import React, { Component, useEffect } from "react"
 import {
     setUnit, TypeUnit, toggleDragDrop,
-    setTextSearch
-} from "../../global/ReduxStore/Filter"
-import { useDispatch, useSelector } from "react-redux"
+    setTextSearch, NavView, setView
+} from "../../global/ReduxStore/Navigator"
+import { useDispatch, useSelector, connect } from "react-redux"
 import Select from 'react-select'
 import '../../styles/navigation.scss'
 export class NavigationView extends Component {
@@ -58,20 +58,38 @@ export class NavigationView extends Component {
         }
         this.setState({ LastScrollY: scrlTop })
     }
-
+    onSelectTab = (index) => {
+        this.props.setView(index)
+    }
     render() {
+        const { ViewIndex } = this.props
         return (
             <nav className='dnb-navbar' ref={this.navRef}>
-                <ViewFilter />
-                <ViewSettings />
-                <Search />
+                <div className="page_inline" >
+                    {NavView.map((lbl, i) => {
+                        const currentI = i === ViewIndex ? `current-tab` : ''
+                        return <strong className={currentI} key={`nav-tab_${i}`}
+                            onClick={() => this.onSelectTab(i)}>{lbl}</strong>
+                    }
+                    )}
+                </div>
+                {ViewIndex < 4 && <Search />}
+                {ViewIndex < 4 && <ViewFilter />}
+                {ViewIndex < 4 && <ViewSettings />}
             </nav>
         )
     }
 }
+const mapState = (state) => ({
+    ViewIndex: state.navbar.ViewType
+})
+const mapDispatch = {
+    setView,
+}
+export const NavigationConn = connect(mapState, mapDispatch)(NavigationView)
 function ViewFilter() {
-    let canDnD = useSelector(state => state.filter.CanDrgDrp)
-    let textS = useSelector(state => state.filter.TextSearch)
+    let canDnD = useSelector(state => state.navbar.CanDrgDrp)
+    let textS = useSelector(state => state.navbar.TextSearch)
     const dispatch = useDispatch()
     function canSetDnD() {
         if (textS.trim() !== '') return false
@@ -111,7 +129,7 @@ const options = TypeUnit.map(x => {
     }
 })
 function ViewSettings() {
-    let unit = useSelector(state => state.filter.Unit)
+    let unit = useSelector(state => state.navbar.Unit)
     const dispatch = useDispatch()
     const setSelectedOption = (option) => {
         dispatch(setUnit(option.label))
@@ -129,7 +147,7 @@ function ViewSettings() {
     )
 }
 function Search() {
-    let textS = useSelector(state => state.filter.TextSearch)
+    let textS = useSelector(state => state.navbar.TextSearch)
     const dispatch = useDispatch()
     function setText(e) {
         const txt = e.target.value

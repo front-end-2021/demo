@@ -14,7 +14,7 @@ $bgcolor: white;
 
     .dnb_add_action {
         display: inline-flex;
-        min-height: 45px;
+        min-height: 39px;
         margin-left: $m3px;
         margin-bottom: $m3px;
         padding-top: $m3px;
@@ -22,26 +22,26 @@ $bgcolor: white;
 
         >div {
             width: $width;
-            height: 54px;
+            height: 39px;
             background-color: $bgcolor;
             border-radius: $round;
-            padding: 15px 6px;
+            padding: 9px 6px;
         }
     }
 
     .dnb_add_sub {
         display: inline-flex;
-        min-height: 45px;
+        min-height: 39px;
         align-items: center;
         max-width: 279px;
         margin-left: $m3px;
 
         >div {
             width: $width;
-            height: 54px;
+            height: 39px;
             background-color: $bgcolor;
             border-radius: $round;
-            padding: 15px 6px;
+            padding: 9px 6px;
         }
     }
 }
@@ -68,6 +68,9 @@ $offst: 36px;
     flex-wrap: wrap;
 }
 
+$bgBtn: #f3f3f3;
+$rndBtn: 4px;
+
 .dnb_item_container {
     display: inline-block;
     width: $width;
@@ -80,6 +83,8 @@ $offst: 36px;
 
     .dnb_edit_name {
         width: calc(100% - 21px);
+        border-width: 0;
+        padding: $m3px 0;
     }
 
     .dnb_item_title {
@@ -132,7 +137,8 @@ $offst: 36px;
         margin-top: 2 * $m3px;
         margin-bottom: 2 * $m3px;
         max-height: $hDes + 120px;
-        border: 1px solid #8f8f8f;
+        border-radius: $rndBtn;
+        background-color: $bgBtn;
         padding: $m3px;
         overflow: hidden;
 
@@ -152,6 +158,14 @@ $offst: 36px;
             .dnb_icost_value {
                 font-weight: 400;
                 margin-left: 9px;
+
+                input {
+                    background-color: $bgBtn;
+                    border-width: 0;
+                    padding: $m3px;
+                    margin: $m3px;
+                    border-radius: $m3px;
+                }
             }
         }
     }
@@ -214,10 +228,16 @@ $offst: 36px;
 
     .dnb_edit_start {
         width: $width - 173px;
+        border-color: transparent;
+        background-color: $bgBtn;
+        border-radius: $rndBtn;
     }
 
     .dnb_edit_end {
         width: $width - 174px;
+        border-color: transparent;
+        background-color: $bgBtn;
+        border-radius: $rndBtn;
     }
 }
 
@@ -237,10 +257,18 @@ $offst: 36px;
 .dnb_i_menu {
     display: grid;
     grid-template-columns: 50% 50%;
-    margin-top: 9px;
+    margin-top: 3 * $m3px;
+    margin-left: -$m3px;
+    margin-right: -$m3px;
 
-    >* {
-        margin: 3px 0;
+    >.di_btn {
+        padding: $m3px;
+        margin: 0;
+
+        &:hover {
+            background-color: $bgBtn;
+            border-radius: $rndBtn;
+        }
     }
 }
 
@@ -259,6 +287,18 @@ $colorLine: #eeeeeecf;
     border-top: 1px solid $colorLine;
     display: grid;
     grid-template-columns: 50% 50%;
+    margin-left: -$m3px;
+    margin-right: -$m3px;
+
+    >* {
+        padding: $m3px;
+        margin: 0;
+
+        &:hover {
+            background-color: $bgBtn;
+            border-radius: $rndBtn;
+        }
+    }
 }
 
 .bi-layout-sidebar::before {
@@ -289,7 +329,7 @@ $colorLine: #eeeeeecf;
     width: $width;
     margin-left: $m3px;
     margin-top: $m3px;
-    padding: 12px 2 * $m3px;
+    padding: 9px 2 * $m3px;
     border-radius: $round;
 }
 
@@ -608,6 +648,7 @@ $wPC: $wCost + 6px;
 
         .dnb_item_date {
             display: inline-block;
+            margin-left: calc(100% - 192px);
         }
     }
 
@@ -671,6 +712,16 @@ $wPC: $wCost + 6px;
     }
 }
 
+@media screen and (max-width: 669px) {
+    .page_inline {
+        display: none;
+    }
+
+    .dnb-navbar {
+        padding-left: 6px;
+    }
+}
+
 @media screen and (max-width: 642px) {
     .dnb_item_view {
         flex-direction: column;
@@ -715,6 +766,14 @@ $wPC: $wCost + 6px;
 
     .dnb_item_list_sub>.dnb_item_view>.dnb_item_container {
         width: calc(100% - 3px);
+    }
+
+    .dnb-filter_container {
+        margin-right: 9px;
+    }
+
+    .dform-search {
+        margin-bottom: 6px;
     }
 }
 

@@ -62,8 +62,10 @@ $gayColor: #eee;
     padding: 0 0.5rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    main {
+        flex-grow: 1;
+    }
 }
 
 .title {

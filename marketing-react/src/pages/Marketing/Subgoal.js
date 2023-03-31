@@ -127,7 +127,7 @@ class Subgoal extends Component {
     }
     componentDidMount = () => {
         const { setLoading } = this.context
-        const { item, addActions, CanDragDrop } = this.props
+        const { item, addActions, IsDnD } = this.props
         setLoading(true)
         if (!Array.isArray(item.Actions)) {
             getSubsActionsBy('actions', { subid: item.Id }).then(actions => {
@@ -142,22 +142,22 @@ class Subgoal extends Component {
                 })
                 setLoading(false)
 
-                if (lstAction.length && CanDragDrop) {
+                if (lstAction.length && IsDnD) {
                     this.createSortAction()
                 }
             })
         } else {
-            if (item.Actions.length && CanDragDrop) {
+            if (item.Actions.length && IsDnD) {
                 this.createSortAction()
             }
             setLoading(false)
         }
     }
     componentDidUpdate = (prevProps) => {
-        if (!prevProps.CanDragDrop && this.props.CanDragDrop) {
+        if (!prevProps.IsDnD && this.props.IsDnD) {
             this.createSortAction()
         }
-        if (prevProps.CanDragDrop && !this.props.CanDragDrop) {
+        if (prevProps.IsDnD && !this.props.IsDnD) {
             this.destroySortAction()
         }
     }
@@ -261,7 +261,7 @@ class Subgoal extends Component {
         apiSetCollapse([item.Id], isExpand)
     }
     render() {
-        const { item, isExpandMain, isDoneMain, CanDragDrop, index } = this.props
+        const { item, isExpandMain, isDoneMain, IsDnD, index } = this.props
         const { IsExpand } = this.state
         const listAction = Array.isArray(item.Actions) ? item.Actions : []
         const isDoneSub = isDoneMain || item.IsDone;
@@ -280,14 +280,14 @@ class Subgoal extends Component {
             handleDuplicate: this.onCopySub,
             handleAddNewChild: this.addNewAction,
         }
-        const clssGrpA = `dnb_item_list_action${CanDragDrop ? ' dnb-dnd-items' : ''}`
+        const clssGrpA = `dnb_item_list_action${IsDnD ? ' dnb-dnd-items' : ''}`
         return (
             <div className={`dnb_item_view${!IsExpand ? ' dnb_sub_collapse' : ''}`}>
                 <ItemProvider item={contextSub} handler={handleCxt}>
                     <GoalItemView />
                 </ItemProvider>
-                <div idgrpdnd={CanDragDrop ? item.Id : undefined}
-                    idxdnd={CanDragDrop ? index : undefined}
+                <div idgrpdnd={IsDnD ? item.Id : undefined}
+                    idxdnd={IsDnD ? index : undefined}
                     className={clssGrpA} ref={this.rfActions}>{
                         !listAction.length && !listAction.length ?
                             <>{this.getFormActionAddEdit()}</>
@@ -311,7 +311,7 @@ class Subgoal extends Component {
 const mapState = (state) => ({
     EditId: state.focus.EditId,
     LoadingItems: state.loading.Items,
-    CanDragDrop: state.filter.CanDrgDrp
+    IsDnD: state.navbar.CanDrgDrp
 })
 const mapDispatch = {
     showEdit, setItems,

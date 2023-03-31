@@ -88,7 +88,8 @@ export class Maingoal extends Component {
     }
     getButtonAddSub = () => {
         const { IsExpand } = this.state
-        if (!IsExpand) return <></>
+        const { IsDnD, ViewIndex } = this.props
+        if (!IsExpand || (IsDnD && ViewIndex === 1)) return <></>
         return <div className='dnb_add_sub dnb-btnadd'
             style={{ alignItems: 'initial' }}>
             <div>
@@ -152,7 +153,7 @@ export class Maingoal extends Component {
     }
     render() {
         const { IsExpand } = this.state
-        const { ListSub, item } = this.props
+        const { ListSub, item, ViewIndex } = this.props
         let idx = -1
         const listSub = ListSub.filter((x, i) => {
             if (x.ParentId === item.Id) {
@@ -173,8 +174,9 @@ export class Maingoal extends Component {
             handleAddNewChild: this.handleAddNewSub,
             handleDuplicate: this.onCopyMain,
         }
+        const clsCollp = !IsExpand || ViewIndex === 2 ? ` dnb_main_collapse` : ''
         return (
-            <section className={`dnb_item_view dnb_main_container${!IsExpand ? ` dnb_main_collapse` : ''}`}>
+            <section className={`dnb_item_view dnb_main_container${clsCollp}`}>
                 <ItemProvider item={mainCxt} handler={handleCxt}>
                     <GoalItemView />
                 </ItemProvider>
@@ -196,7 +198,7 @@ export class Maingoal extends Component {
                             })
                         }</>
                     }
-                    {this.getViewNewSub()}
+                    {ViewIndex !== 2 && this.getViewNewSub()}
                 </div>
             </section>
         )
@@ -207,6 +209,8 @@ const mapState = (state) => ({
     EditId: state.focus.EditId,
     LoadingItems: state.loading.Items,
     ListSub: state.dlist.Subs,
+    ViewIndex: state.navbar.ViewType,
+    IsDnD: state.navbar.CanDrgDrp
 })
 const mapDispatch = {
     showEdit, setItems,

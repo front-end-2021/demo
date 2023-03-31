@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component, useEffect } from "react"
 import {
     apiGetMains, apiAddMain
 } from "../../service"
@@ -7,10 +7,11 @@ import { GoalItemEdit } from "./GoalView"
 import { MaingoalConnect } from "./Maingoal"
 import { ProcessingProvider, LoadingContext } from "../../global/Context"
 import { MReduxProvider, showEdit } from "../../global/ReduxStore"
+import { setView } from "../../global/ReduxStore/Navigator"
 import { ItemProvider } from "../../global/Context"
 import { addMains } from "../../global/ReduxStore/DataItem"
-import { NavigationView } from "./NavBar"
-import { connect } from "react-redux"
+import { NavigationConn } from "./NavBar"
+import { connect, useSelector, useDispatch } from "react-redux"
 import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
 import '../../styles/ga.scss'
 
@@ -58,8 +59,22 @@ class ListMainView extends Component {
             setLoading(false)
         })
     }
+    getBtnNewMain = () => {
+        const { showEdit, ViewIndex, IsDnD } = this.props
+        if (ViewIndex === 2) return <></>
+        if (IsDnD && ViewIndex === 1) return <></>
+        return <div className='dnb_add_main dnb-btnadd'>
+            <span className="bi bi-plus-circle-dotted"
+                onClick={() => {
+                    const dateNow = Date.now()
+                    showEdit(dateNow)
+                    this.setState({ NewMain: dateNow })
+                }}
+                style={{ cursor: 'pointer' }} >&nbsp; New {getIcon(1)}</span>
+        </div>
+    }
     render() {
-        const { EditId, showEdit, ListMain } = this.props
+        const { EditId, ListMain } = this.props
         const { NewMain } = this.state
         const isAddNew = NewMain && EditId === NewMain
         return (
@@ -70,15 +85,7 @@ class ListMainView extends Component {
                         keyUpdate={main.IsDone} />
                 })}</>
             }
-                {!isAddNew ? <div className='dnb_add_main dnb-btnadd'>
-                    <span className="bi bi-plus-circle-dotted"
-                        onClick={() => {
-                            const dateNow = Date.now()
-                            showEdit(dateNow)
-                            this.setState({ NewMain: dateNow })
-                        }}
-                        style={{ cursor: 'pointer' }} >&nbsp; New {getIcon(1)}</span>
-                </div>
+                {!isAddNew ? this.getBtnNewMain()
                     : <div className='dnb_item_view'>
                         <ItemProvider
                             item={{
@@ -101,19 +108,70 @@ class ListMainView extends Component {
 
 const mapState = (state) => ({
     EditId: state.focus.EditId,
-    ListMain: state.dlist.Mains
+    ListMain: state.dlist.Mains,
+    ViewIndex: state.navbar.ViewType,
+    IsDnD: state.navbar.CanDrgDrp,
 })
 const mapDispatch = { showEdit, addMains }
-export const ListMainConnect = connect(
+const ListMainConnect = connect(
     mapState, mapDispatch
 )(ListMainView)
 
+function TabView() {
+    let viewType = useSelector(state => state.navbar.ViewType)
+    const dispatch = useDispatch()
+    useEffect(() => {
+        if (window.outerWidth < 669) {
+            dispatch(setView(2))
+        }
+    }, [])
+    return (<div>
+        {viewType < 4 ? <ListMainConnect /> :
+            <article>
+                <h1 className='title'>
+                    Welcome to <a href="void(0)">Planning</a>
+                </h1>
+
+                <p className='description'>
+                    Get started by click <code>+ New &#9673;</code>
+                </p>
+
+                <div className='grid'>
+                    <a href="https://nextjs.org/docs" className='card'>
+                        <h3>Documentation &rarr;</h3>
+                        <p>Find in-depth information about Next.js features and API.</p>
+                    </a>
+
+                    <a href="https://nextjs.org/learn" className='card'>
+                        <h3>Learn &rarr;</h3>
+                        <p>Learn about Next.js in an interactive course with quizzes!</p>
+                    </a>
+
+                    <a
+                        href="https://github.com/vercel/next.js/tree/master/examples"
+                        className='card' >
+                        <h3>Examples &rarr;</h3>
+                        <p>Discover and deploy boilerplate example Next.js projects.</p>
+                    </a>
+
+                    <a
+                        href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+                        className='card' >
+                        <h3>Deploy &rarr;</h3>
+                        <p>
+                            Instantly deploy your Next.js site to a public URL with Vercel.
+                        </p>
+                    </a>
+                </div>
+            </article>}
+    </div>)
+}
 export function Marketing() {
     return (
         <ProcessingProvider>
             <MReduxProvider>
-                <NavigationView />
-                <ListMainConnect />
+                <NavigationConn />
+                <TabView />
             </MReduxProvider>
         </ProcessingProvider>
     )
