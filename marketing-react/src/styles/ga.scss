@@ -648,7 +648,7 @@ $wPC: $wCost + 6px;
 
         .dnb_item_date {
             display: inline-block;
-            margin-left: calc(100% - 192px);
+            margin-left: calc(100% - 222px);
         }
     }
 
@@ -740,6 +740,16 @@ $wPC: $wCost + 6px;
                 }
             }
         }
+
+        .dnb_item_list_sub>& {
+            flex-direction: row;
+            width: calc(100vw - 6px);
+            overflow-x: scroll;
+        }
+    }
+
+    .dnb_item_list_action {
+        flex-wrap: initial;
     }
 
     .dnb_item_container .dnb_item_description>* {
@@ -747,9 +757,24 @@ $wPC: $wCost + 6px;
         width: 100%;
     }
 
+    .dnb_item_list_sub {
+        .dnb_add_sub {
+            margin-left: 9px;
+        }
+    }
+
     .dnb-wrap-2-sticky {
         position: sticky;
         top: 0;
+    }
+
+    .dnb_item_view .dnb_add_action>div {
+        width: 105px;
+    }
+
+    .dnb_main_container>.dnb_item_container {
+        margin-left: 3px;
+        width: 100vw;
     }
 }
 

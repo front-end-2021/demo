@@ -119,12 +119,12 @@ const ListMainConnect = connect(
 
 function TabView() {
     let viewType = useSelector(state => state.navbar.ViewType)
-    const dispatch = useDispatch()
-    useEffect(() => {
-        if (window.outerWidth < 669) {
-            dispatch(setView(2))
-        }
-    }, [])
+    // const dispatch = useDispatch()
+    // useEffect(() => {
+    //     if (window.outerWidth < 669) {
+    //         dispatch(setView(2))
+    //     }
+    // }, [])
     return (<div>
         {viewType < 4 ? <ListMainConnect /> :
             <article>
