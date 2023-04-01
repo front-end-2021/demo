@@ -81,11 +81,9 @@ export class NavigationView extends Component {
     }
 }
 const mapState = (state) => ({
-    ViewIndex: state.navbar.ViewType
+    ViewIndex: state.navbar.ViewType,
 })
-const mapDispatch = {
-    setView,
-}
+const mapDispatch = { setView }
 export const NavigationConn = connect(mapState, mapDispatch)(NavigationView)
 function ViewFilter() {
     let canDnD = useSelector(state => state.navbar.CanDrgDrp)
@@ -96,9 +94,7 @@ function ViewFilter() {
         return true
     }
     const toggleDnD = () => {
-        if (!canSetDnD()) {
-            return
-        }
+        if (!canSetDnD()) return
         dispatch(toggleDragDrop())
     }
     const getLabel = () => {
@@ -108,20 +104,22 @@ function ViewFilter() {
             color: `#6c6c6c`
         }} >Drag & Drop</strong>
     }
+    function getSwitch() {
+        if (!canSetDnD()) return
+        return <input type='checkbox' checked={canDnD} onClick={toggleDnD} />
+    }
     return (
         <div className='dnb-filter_container'>
             <div className="dnb-toggle-dnd">
                 {getLabel()}
                 <label className="dnb-switch">
-                    {canSetDnD() && <input type='checkbox'
-                        defaultChecked={canDnD} onClick={toggleDnD} />}
+                    {getSwitch()}
                     {!canSetDnD() && <input type='checkbox' disabled />}
                     <span className="dnb-slider dn-round"></span>
                 </label>
             </div>
         </div>
     )
-
 }
 const options = TypeUnit.map(x => {
     return {

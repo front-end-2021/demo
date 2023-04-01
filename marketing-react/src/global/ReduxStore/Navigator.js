@@ -34,11 +34,15 @@ export const Navbar = createSlice({
         setTextSearch: (state, action) => {
             const txt = action.payload
             state.TextSearch = txt
-            if (txt.trim() !== '') state.CanDrgDrp = false
+            if (txt.trim() !== '') {
+                state.CanDrgDrp = false
+                state.ViewType = 0
+            }
         },
         setView: (state, action) => {
             const index = action.payload
             state.ViewType = index
+            if(index !== 1) state.CanDrgDrp = false
         },
     }
 })

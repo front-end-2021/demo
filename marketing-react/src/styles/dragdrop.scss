@@ -16,19 +16,12 @@
 }
 
 .dnb-dnd-item {
-    .dnb_item_description {
-        height: 84px !important;
-        max-height: 84px !important;
-    }
-
     &+.dnb_add_action {
         display: none !important;
     }
 }
 
 .dnb-dnditem-relate {
-    min-height: 180px !important;
-    max-height: 180px !important;
     overflow: hidden !important;
 
     &.d_item_collapse {

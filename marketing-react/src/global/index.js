@@ -31,6 +31,10 @@ export function decodeHtml(desText) {       // edit
 }
 export function verifyHtml(desText) {
     if(typeof desText !== 'string') return desText
+    desText = desText.replaceAll(`&nbsp;`, ` `)
+    desText = desText.trim()
+    desText = desText.replaceAll(`&gt;`, `>`)
+    desText = desText.replaceAll(`&lt;`, `<`)
     desText = desText.replaceAll(`&#60;`, `<`)
     desText = desText.replaceAll(`<br>`, `\n`)
     desText = desText.replaceAll(`<br/>`, `\n`)
@@ -43,12 +47,7 @@ export function verifyHtml(desText) {
     desText = desText.replaceAll(`<p>`, ``)
     desText = desText.replaceAll(`</p>`, `\n`)
     i = desText.indexOf(`<iframe `)
-    let j = desText.indexOf(`&lt;iframe `)
-    if(j > -1 || i > -1) {
-        desText = desText.replace(`&lt;iframe `, `<iframe `)
-        desText = desText.replace(`/&gt;`, `/>`)
-        if(i === 0 || j === 0) return desText
-    }
+    if(i === 0) return desText
     i = desText.indexOf(`<p>`)
     if(i === 0)
         return desText.slice(3, -4)
