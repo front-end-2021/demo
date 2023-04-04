@@ -8,7 +8,7 @@ export const TypeUnit = [
     { Name: 'Hide', View: '' },
 ]
 export const NavView = [
-    'Detail', 'Simple', 'Collapse', 'Roadmap', 'Document'
+    'Detail', 'Simple', 'Collapse', 'Document', 'Tutorial',
 ]
 export const Navbar = createSlice({
     name: 'navbar',

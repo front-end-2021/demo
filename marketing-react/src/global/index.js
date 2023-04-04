@@ -40,13 +40,9 @@ export function verifyHtml(desText) {
     desText = desText.replaceAll(`<br/>`, `\n`)
     desText = desText.replaceAll(`<div>`, ``)
     desText = desText.replaceAll(`</div>`, `\n`)
-    let i = desText.indexOf(`<p>`)
-    if(i > 0) {
-        desText = desText.replace(`<p>`, `\n`)
-    }
     desText = desText.replaceAll(`<p>`, ``)
     desText = desText.replaceAll(`</p>`, `\n`)
-    i = desText.indexOf(`<iframe `)
+    let i = desText.indexOf(`<iframe `)
     if(i === 0) return desText
     i = desText.indexOf(`<p>`)
     if(i === 0)
@@ -118,9 +114,8 @@ export function isEqualObject(item1, item2) {
     arr1.sort((a, b) => a.key - b.key)
     arr2.sort((a, b) => a.key - b.key)
 
-    const ar1 = arr1.map(x => x.key + x.value)
-    const ar2 = arr2.map(x => x.key + x.value)
-
+    const ar1 = arr1.map(x => `${x.key}${x.value}`) // convert to array of string
+    const ar2 = arr2.map(x => `${x.key}${x.value}`)
     return ar1.join('') === ar2.join('')
 }
 // #region //https://stackoverflow.com/questions/4770025/how-to-disable-scrolling-temporarily

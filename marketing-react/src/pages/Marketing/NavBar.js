@@ -73,9 +73,11 @@ export class NavigationView extends Component {
                     }
                     )}
                 </div>
-                {ViewIndex < 4 && <Search />}
-                {ViewIndex < 4 && <ViewFilter />}
-                {ViewIndex < 4 && <ViewSettings />}
+                <div className="dinput-grp">
+                    {ViewIndex < 4 && <Search />}
+                    {ViewIndex < 4 && <ViewFilter />}
+                    {ViewIndex < 4 && <ViewSettings />}
+                </div>
             </nav>
         )
     }

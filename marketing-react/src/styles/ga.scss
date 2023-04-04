@@ -119,6 +119,11 @@ $rndBtn: 4px;
             text-decoration: underline;
             color: #0055ff
         }
+
+        ol,
+        ul {
+            padding-left: 21px;
+        }
     }
 
     &.dnb_view_2 {
@@ -684,6 +689,12 @@ $wPC: $wCost + 6px;
     }
 }
 
+@media screen and (max-width: 1095px) {
+    .page_inline {
+        margin-left: 6px;
+    }
+}
+
 @media screen and (max-width: 918px) {
     .dnb_item_view.dnb_main_collapse {
         width: 100vw !important;
@@ -700,9 +711,34 @@ $wPC: $wCost + 6px;
     }
 }
 
+@media screen and (max-width: 854px) {
+    .dnb_item_view {
+
+        .dnb_item_list_sub>& {
+            flex-direction: row;
+            width: calc(100vw - $width - 12px);
+            overflow-x: scroll;
+            border-radius: $round;
+        }
+    }
+
+    .dnb_item_list_action {
+        flex-wrap: initial;
+    }
+
+    .dnb_item_view .dnb_add_action>div {
+        width: 105px;
+    }
+}
+
 @media screen and (max-width: 675px) {
     .dnb_main_container {
         flex-direction: column;
+
+        .dnb_item_container,
+        .dnb_item_view {
+            width: calc(100vw - 9px);
+        }
     }
 
     .dnb_item_list_sub,
@@ -711,19 +747,13 @@ $wPC: $wCost + 6px;
     }
 }
 
-@media screen and (max-width: 669px) {
-    .page_inline {
-        display: none;
-    }
-
-    .dnb-navbar {
-        padding-left: 6px;
-    }
-}
-
 @media screen and (max-width: 642px) {
     .dnb_item_view {
         flex-direction: column;
+
+        .dnb_item_list_sub>& {
+            width: calc(100vw - 6px);
+        }
 
         .dnb_item_view {
             margin-left: 6px;
@@ -740,16 +770,6 @@ $wPC: $wCost + 6px;
                 }
             }
         }
-
-        .dnb_item_list_sub>& {
-            flex-direction: row;
-            width: calc(100vw - 6px);
-            overflow-x: scroll;
-        }
-    }
-
-    .dnb_item_list_action {
-        flex-wrap: initial;
     }
 
     .dnb_item_container .dnb_item_description>* {
@@ -763,18 +783,15 @@ $wPC: $wCost + 6px;
         }
     }
 
-    .dnb-wrap-2-sticky {
-        position: sticky;
-        top: 0;
-    }
-
-    .dnb_item_view .dnb_add_action>div {
-        width: 105px;
-    }
 
     .dnb_main_container>.dnb_item_container {
         margin-left: 3px;
         width: 100vw;
+    }
+
+    .dnb-wrap-2-sticky {
+        position: sticky;
+        top: 0;
     }
 }
 
@@ -792,13 +809,6 @@ $wPC: $wCost + 6px;
         width: calc(100% - 3px);
     }
 
-    .dnb-filter_container {
-        margin-right: 9px;
-    }
-
-    .dform-search {
-        margin-bottom: 6px;
-    }
 }
 
 @media screen and (max-width: 480px) {
