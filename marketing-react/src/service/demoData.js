@@ -1,5 +1,6 @@
 import { _keyListMain, getValue } from "./localData";
 import { getListMain, getListSubActionWith } from "./localData";
+import { getDateAfterDaysString } from "../global";
 import { v4 as uuidv4 } from 'uuid';
 
 const idMs = [uuidv4(), uuidv4()];
@@ -50,14 +51,22 @@ const dataA = [
     {
         ParentId: idSs[0],
         Id: uuidv4(),
-        Name: 'Update Performance',
+        Name: 'Update Performance', 
+        Start: getDateAfterDaysString(-1),
+        End: getDateAfterDaysString(1),
         Description: `How fast the application updates in response to user input. For example, how fast a list updates when the user types in a search box, or how fast the page switches when the user clicks a navigation link in a <b>Single-Page Application (SPA)</b>.`
     },
     {
         ParentId: idSs[0],
         Id: uuidv4(),
-        Name: 'Promotion Picture',
+        Name: 'Promotion Picture', Start: getDateAfterDaysString(0),
         Description: `<img src="https://raw.githubusercontent.com/front-end-2021/demo/main/marketing-react/present.jpg" alt="promotion"/>`
+    },
+    {
+        ParentId: idSs[0],
+        Id: uuidv4(),
+        Name: 'Demo Img Picture', End: "Apr 09 2023",
+        Description: `<img src="https://i.pinimg.com/236x/e5/a3/6e/e5a36ef565d8c5a3c8ffcbb600c59c61.jpg" alt="demo picture"/>`
     },
     {
         ParentId: idSs[0],

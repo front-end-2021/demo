@@ -181,6 +181,7 @@ $rndBtn: 4px;
         align-items: baseline;
         margin-top: 3px;
         cursor: default;
+        font-size: 12px;
 
         .dnb_d_div {
             padding: 0 3px;
@@ -361,6 +362,10 @@ $wPC: $wCost + 6px;
 
     .dnb_item_cost {
         font-size: $fSizeCollp;
+    }
+
+    .dnb-d-start {
+        min-width: 78px;
     }
 
     .dnb_item_date {

@@ -76,18 +76,18 @@ export function getDateString(dateStr) {
     if (!dateStr) return ''
     const d = new Date(dateStr)
     if (!(d instanceof Date)) return ''
-    return d.toDateString().slice(4)
+    return d.toDateString().slice(4);    // 'Apr 11 2023'
 }
-export function getDateCalendarValue(dateStr) {
+export function getDateCalendarValue(dateStr) { // 'Apr 11 2023'
     if (!dateStr) return ''
     const d0 = new Date(dateStr)
     const d = new Date(d0.getTime() + 24000 * 3600)
-    return d.toISOString().split('T')[0]
+    return d.toISOString().split('T')[0];      // '2023-04-11'
 }
 export function getDateAfterDaysString(dayAfter) {
     const dN = Date.now() + dayAfter * 24000 * 3600
     const d = new Date(dN)
-    return d.toDateString().slice(4)
+    return d.toDateString().slice(4);       // 'Apr 12 2023'
 }
 export function getIcon(typeid) {
     if (typeid < 2) return <>&#9673;</>

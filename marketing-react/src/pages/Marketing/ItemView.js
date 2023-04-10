@@ -25,16 +25,8 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
     const view = useContext(ViewContext)
     const dispatch = useDispatch()
     function getStartTag() {
-        return <>
-            <span className={`bi bi-clock${getClassOverDate(item.Start)}`} />
-            {
-                !isDateLessNow(item.Start) ? <span className={`dnb-d-start`}
-                >&nbsp;{getDateString(item.Start)}</span> :
-                    <span title="Start Date is in the past from Current Date"
-                        className={`dnb-d-start${getClassOverDate(item.Start)}`}
-                    >&nbsp;{getDateString(item.Start)}</span>
-            }
-        </>
+        return <span title={isDateLessNow(item.Start) ? 'Start Date is in the past from Current Date' : null}
+            className={`dnb-d-start${getClassOverDate(item.Start)}`} >&nbsp;{getDateString(item.Start)}</span>
     }
     function getEndTag() {
         return <>
@@ -171,6 +163,7 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
                 {children}
             </div>
             <div className={`dnb_item_date${getClassOverDate(item.End)}`}>
+                {(item.Start || item.End) && <span className={`bi bi-clock${getClassOverDate(item.Start)}`} />}
                 {item.Start && getStartTag()}
                 {item.IsExpand ? item.End && getEndTag() : <></>}
             </div>
@@ -426,17 +419,8 @@ function ItemViewCollapse({ getDoneTag, children }) {
     let textS = useSelector(state => state.navbar.TextSearch)
     const handle = useContext(HandleContext)
     function getStartTag() {
-        if (!item.Start) return <></>
-        return <>
-            <span className={`bi bi-clock${getClassOverDate(item.Start)}`} />
-            {
-                !isDateLessNow(item.Start) ? <span
-                    className={`dnb-d-start`}>&nbsp;{getDateString(item.Start)}</span> :
-                    <span title="Start Date is in the past from Current Date"
-                        className={`dnb-d-start${getClassOverDate(item.Start)}`}
-                    >&nbsp;{getDateString(item.Start)}</span>
-            }
-        </>
+        return <span title={isDateLessNow(item.Start) ? 'Start Date is in the past from Current Date' : null}
+            className={`dnb-d-start${getClassOverDate(item.Start)}`} >&nbsp;{getDateString(item.Start)}</span>
     }
     function getEndTag() {
         if (!item.End) return <></>
@@ -480,7 +464,8 @@ function ItemViewCollapse({ getDoneTag, children }) {
             {!!unit.View.length && <div className={`dnb_item_cost`}>
                 {children}
             </div>}
-            <div className={`dnb_item_date ${getClassOverDate(item.End)}`}>
+            <div className={`dnb_item_date${getClassOverDate(item.End)}`}>
+                {(item.Start || item.End) && <span className={`bi bi-clock${getClassOverDate(item.Start)}`} />}
                 {getStartTag()}
                 {getEndTag()}
             </div>
