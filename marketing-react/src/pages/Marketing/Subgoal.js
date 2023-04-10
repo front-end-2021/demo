@@ -13,6 +13,7 @@ import { ActionView, ActionViewEdit } from "./Action"
 import { connect } from "react-redux"
 import { showEdit, setItems } from "../../global/ReduxStore"
 import Sortable from "sortablejs"
+import { IsView } from "../../service/demoData"
 import { logItem } from "../../global/GlobalLog"
 import '../../styles/dragdrop.scss'
 
@@ -162,6 +163,7 @@ class Subgoal extends Component {
         }
     }
     addNewAction = () => {
+        if(IsView) return
         const dateNow = Date.now()
         const { showEdit } = this.props
         showEdit(dateNow)
@@ -246,7 +248,7 @@ class Subgoal extends Component {
                     </ItemProvider>
                 </div>
                 :
-                <div className='dnb_add_action dnb-btnadd'>
+                <div className='dnb_add_action dnb-btnadd' style={{opacity : IsView ? '0.36' : undefined}}>
                     <div onClick={() => this.addNewAction()}>
                         <span className="bi bi-plus-circle-dotted"
                             style={{ cursor: 'pointer' }}>&nbsp; New {getIcon(3)}</span>

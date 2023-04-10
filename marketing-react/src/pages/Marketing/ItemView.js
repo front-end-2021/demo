@@ -138,7 +138,7 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
         const isLess = item.ExpectCost < item.TrueCost
         return <div title={isLess ? 'Expected Cost is less then True Cost' : null}
             className={`dnb_item_title${isLess ? ' d_exp_less_true' : ''}`}
-            onClick={() => handle.handleExpand(false)}
+            onClick={() => { handle.handleExpand(false) }}
         >{getIcon(item.TypeId)} {item.Name}</div>
     }
     function getClassWrap() {

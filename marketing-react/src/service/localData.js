@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { logItem } from '../global/GlobalLog';
 
-const _keyListMain = 'ListMain'
+export const _keyListMain = 'ListMain'
 const _keyListSub = 'ListSub'
 const _keyListAction = 'ListAction'
 const _keyListIndex = 'ListIndex'
@@ -411,7 +411,7 @@ function getListAction(subid) {
 function getActions() {
     return getValue(_keyListAction) || []
 }
-function getValue(key) {
+export function getValue(key) {
     const dtaText = localStorage.getItem(key)
     if (dtaText) return JSON.parse(dtaText)
     return

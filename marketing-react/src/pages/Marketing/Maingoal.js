@@ -11,6 +11,7 @@ import { connect } from "react-redux"
 import { showEdit, setItems } from "../../global/ReduxStore"
 import { addSubs, addMains, deleteMains } from "../../global/ReduxStore/DataItem"
 import { ItemProvider, LoadingContext } from "../../global/Context"
+import { IsView } from "../../service/demoData"
 import { logItem } from "../../global/GlobalLog"
 
 export class Maingoal extends Component {
@@ -43,6 +44,7 @@ export class Maingoal extends Component {
         // #endregion
     }
     handleAddNewSub = () => {
+        if (IsView) return;
         const dateNow = Date.now()
         this.props.showEdit(dateNow)
         this.setState({ NewSub: dateNow })
@@ -92,7 +94,7 @@ export class Maingoal extends Component {
         if (!IsExpand || (IsDnD && ViewIndex === 1)) return <></>
         return <div className='dnb_add_sub dnb-btnadd'
             style={{ alignItems: 'initial' }}>
-            <div>
+            <div style={{ opacity: IsView ? '0.69' : undefined }}>
                 <span className="bi bi-plus-circle-dotted"
                     onClick={this.handleAddNewSub}
                     style={{ cursor: 'pointer' }} >&nbsp; New {getIcon(2)}</span>

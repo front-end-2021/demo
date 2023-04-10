@@ -1,12 +1,13 @@
 import axios from "axios"
 import { logItem } from "../global/GlobalLog"
 import {
-    getListMain, getListSubActionWith, getSubsBy,
+    getSubsBy,
     saveAction, saveGoal, saveIndexAction,
     insertMain, insertSub, insertAction,
     deleteAction, deleteSub, deleteMain,
     duplicateSub, duplicateMain, saveCollapse,
 } from "./localData"
+import { getDemoData } from "./demoData"
 
 const config = {
     headers: {
@@ -20,10 +21,11 @@ function callApiData(testMs) {
         setTimeout(res, testMs)
     })
 }
+const demoData = getDemoData()
 export function apiGetMains(apiPath) {
     const url = `${host}${apiPath}`
     return callApiData(1).then(r => {
-        return getListMain()
+        return demoData.getListMain()
         return axios.get(url, config)
             .then(res => { return res.data })
             .then(rData => { return rData.data })
@@ -32,7 +34,7 @@ export function apiGetMains(apiPath) {
 export function getSubsActionsBy(apiPath, params) {
     const url = `${host}${apiPath}`
     return callApiData().then(r => {
-        return getListSubActionWith(apiPath, params)
+        return demoData.getListSubActionWith(apiPath, params)
         return axios.get(url, Object.assign({
             params: params
         }, config)).then(res => { return res.data })
@@ -142,7 +144,7 @@ export function apiSetIndexAction({ src, des, item }) {
     })
 }
 export function apiSetCollapse(ids, isExpand) {
-
+    if(demoData.IsView) return
     return callApiData(1).then(d => {
         return saveCollapse(ids, isExpand)
     })

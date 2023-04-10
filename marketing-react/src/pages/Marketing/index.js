@@ -57,6 +57,7 @@ class ListMainView extends Component {
                 addMains([goal])
             }
             setLoading(false)
+            window.location.reload();
         })
     }
     getBtnNewMain = () => {
