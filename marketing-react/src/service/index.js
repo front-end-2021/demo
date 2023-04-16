@@ -41,12 +41,6 @@ export function getSubsActionsBy(apiPath, params) {
             .then(rData => { return rData.data })
     })
 }
-export function getActionsFromSubIds(params, apiPath) {
-    //const url = `${host}${apiPath}`
-    return callApiData(1).then(r => {
-        return getActionsFrom(params)
-    })
-}
 export function apiUpdateAction(id, item) {
     const url = `${host}action/${id}`
     return callApiData(item.ExpectCost).then(r => {
@@ -140,6 +134,8 @@ export function apiSetIndexAction({ src, des, item }) {
         } else {
             saveIndexAction(newIndexes)
         }
+        const subids = srcSubId !== desSubId ? [srcSubId, desSubId] : [srcSubId]
+        return getActionsFrom(subids)
     })
 }
 export function apiSetCollapse(ids, isExpand) {

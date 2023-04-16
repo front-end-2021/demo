@@ -34,9 +34,7 @@
     ]
   },
   "eslintIgnore": [
-    "DragDropSub.js",
-    "DragDropAction.js",
-    "Subgoal.js"
+    "DnDAction.js", "DragDropSub.js"
   ],
   "browserslist": {
     "production": [

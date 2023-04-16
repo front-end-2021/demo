@@ -1,8 +1,8 @@
-import { useState, useContext, useEffect } from "react"
+import React, { useState, useContext, useEffect, useMemo } from "react"
 import {
     getDateCalendarValue, getDateString,
     getIcon, isDateLessNow, editorOpts,
-    encodeHtml, decodeHtml, getTextTitle, verifyHtml
+    encodeHtml, getTextTitle
 } from "../../global"
 import { useDispatch, useSelector } from "react-redux"
 import { HandleContext, ItemContext } from "../../global/Context"
@@ -122,6 +122,8 @@ export function ItemViewExpand({ children, className, onToggleDone, id }) {
             className='dnb_item_description o_30'>
             <i className="bi bi-code"></i>Description<i className="bi bi-code-slash"></i>
         </p>
+        const txtLink = `<a href="`
+        desText = desText.replaceAll(txtLink, `<a target="_blank" href="`)
         const _des = { __html: encodeHtml(desText) }
         return <p dangerouslySetInnerHTML={_des}
             className='dnb_item_description o_81' />
@@ -216,27 +218,45 @@ function getView(level) {
     return _vLv
 }
 export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData }) {
-    const item = useContext(ItemContext)
-    const [name, setName] = useState(item.Name)
-    const [des, setDes] = useState(getDesRaw())
-    const [start, setStart] = useState(getDateCalendarValue(item.Start))
-    const [end, setEnd] = useState(getDateCalendarValue(item.End))
-    const dispatch = useDispatch()
+    const rfDescription = React.createRef();
+    useEffect(() => {
+        const targetNode = rfDescription.current
+        if(window.dnbEditor === undefined) {
+            window.dnbEditor = new MediumEditor(targetNode, editorOpts)
+        } else {
+            window.dnbEditor.setup()
+            window.dnbEditor.init(targetNode)
+        }
+        
+        autoScrollY()
+
+        return function onUnmount() {
+            window.dnbEditor.removeElements(targetNode);
+            window.dnbEditor.destroy();
+        };
+        function autoScrollY() {
+            const vCont = document.querySelector('.dItemEdt')
+            const html = document.querySelector('html')
+            if (vCont && html) {
+                const offTop = vCont.offsetTop
+                const cH = vCont.querySelector('.dEdtView')
+                const offHeih = cH ? cH.offsetHeight : vCont.offsetHeight
+                const sclTop = html.scrollTop
+                if (offTop - sclTop > offHeih) {
+                    html.scrollTo({
+                        top: offTop - offHeih,
+                        behavior: "smooth",
+                    })
+                }
+            }
+        }
+    });
     const view = useContext(ViewContext)
     const [viewLevel, setViewLevel] = useState(view ? view.viewLevel : 1)
-    function getDesRaw() {
-        let desText = item.Description
-        if (typeof desText !== 'string') return desText
-        return decodeHtml(desText)
-    }
-    function handleChangeStart(e) {
-        const newD = e.target.value
-        setStart(newD)
-    }
-    function handleChangeEnd(e) {
-        const newD = e.target.value
-        setEnd(newD)
-    }
+    const dispatch = useDispatch()
+
+    const item = useContext(ItemContext)
+    const [name, setName] = useState(item.Name)
     function handleChangeName(e) {
         const newName = e.target.value
         setName(newName)
@@ -245,16 +265,30 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
         const newName = e.target.value
         if (newName.trim() === '') setName(item.Name)
     }
+
+    const [desDisplay] = useState(item.Description)
+
+    const [start, setStart] = useState(getDateCalendarValue(item.Start))
+    const [end, setEnd] = useState(getDateCalendarValue(item.End))
+    function handleChangeStart(e) {
+        const newD = e.target.value
+        setStart(newD)
+    }
+    function handleChangeEnd(e) {
+        const newD = e.target.value
+        setEnd(newD)
+    }
     function onSaveDataItem() {
         const s = getDateString(start)
         const e = getDateString(end)
-        let _des = des
-        if (des === '<p><br></p>') _des = undefined
-        if (des === '<br>') _des = undefined
-        if (des === '<p>&nbsp;</p>') _des = undefined
+        const newDes = window.dnbEditor.origElements.innerHTML
+        let _des = newDes
+        if (_des === '<p><br></p>') _des = undefined
+        if (_des === '<br>') _des = undefined
+        if (_des === '<p>&nbsp;</p>') _des = undefined
         onSaveData({
             Id: item.Id, ParentId: item.ParentId,
-            Name: name, Description: verifyHtml(_des), Start: s, End: e,
+            Name: name, Description: _des, Start: s, End: e,
         })
     }
     function styleColorDate(dStr) {
@@ -262,36 +296,36 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
         const now = new Date(new Date().toDateString())
         if (d.getTime() < now.getTime()) return { color: 'red' }
     }
-    function getHeightDesArea() {
-        const t = des || ''
+    const heightDes = () => {
+        const t = desDisplay || ''
         const l = t.length
         if (l < 141) return
         return `${Math.ceil(l * 33 / 42)}px`
     }
-    function getClsExpLess() {
-        return isExpectLessTrue ? ` d_exp_less_true` : ''
-    }
-    function changeView(level) {
-        setViewLevel(level)
-        view && view.setViewLevel(level)
-    }
-    function getClsItem() {
-        let _r = `dnb_item_container dnb_item_edit dItemEdt`
-        _r += ` dnb_view_${viewLevel}`
-        if (typeof className === 'string' && className.trim() !== '')
-            _r += ` fb-loading`
-        return _r
-    }
+    const clsExpLess = useMemo(
+        () => isExpectLessTrue ? ` d_exp_less_true` : '',
+        [isExpectLessTrue]
+    )
+    const clsItem = useMemo(
+        () => {
+            let _r = `dnb_item_container dnb_item_edit dItemEdt`
+            _r += ` dnb_view_${viewLevel}`
+            if (typeof className === 'string' && className.trim() !== '')
+                _r += ` fb-loading`
+            return _r
+        },
+        [viewLevel, className]
+    )
     function renderBodyEdit() {
         return <>
-            <div className={getClsExpLess()}>{getIcon(item.TypeId)} <input
+            <div className={clsExpLess}>{getIcon(item.TypeId)} <input
                 value={name} maxLength="150"
-                className={`dnb_edit_name ${getClsExpLess()}`}
+                className={`dnb_edit_name ${clsExpLess}`}
                 type="text" onChange={handleChangeName}
                 onMouseOut={handleMouseOutChangeName} />
             </div>
-            <textarea className='dnb_edit_des dEditable'
-                style={{ height: getHeightDesArea() }} defaultValue={des} />
+            <div className='dnb_edit_des' ref={rfDescription}
+                style={{ height: heightDes() }} dangerouslySetInnerHTML={{ __html: desDisplay }} />
             <div className='dnb_item_cost'>
                 {children}
             </div>
@@ -324,41 +358,13 @@ export function ItemViewEdit({ children, className, isExpectLessTrue, onSaveData
             </div>
         </>
     }
-    useEffect(() => {
-        const vCont = document.querySelector('.dItemEdt')
-        const html = document.querySelector('html')
-        if (vCont && html) {
-            const offTop = vCont.offsetTop
-            const cH = vCont.querySelector('.dEdtView')
-            const offHeih = cH ? cH.offsetHeight : vCont.offsetHeight
-            const sclTop = html.scrollTop
-            if (offTop - sclTop > offHeih) {
-                html.scrollTo({
-                    top: offTop - offHeih,
-                    behavior: "smooth",
-                })
-            }
-        }
-        let targetNode = document.querySelector('.dEditable');
-        const editor = new MediumEditor(targetNode, editorOpts);
-        targetNode = document.querySelector('.dEditable');
-        const config = { attributes: true, childList: true, subtree: true };
-
-        const callback = (mutationList, observer) => {
-            const mutation = mutationList[0]
-            const txt = mutation.target.innerHTML
-            setDes(txt)
-        };
-        const observer = new MutationObserver(callback);
-        observer.observe(targetNode, config);
-        return function onUnmount() {
-            observer.disconnect();
-            editor.destroy();
-        };
-    }, []);
+    function changeView(level) {
+        setViewLevel(level)
+        view && view.setViewLevel(level)
+    }
 
     return (
-        <div className={getClsItem()}>
+        <div className={clsItem}>
             <div className="dnb_editview dEdtView">{
                 item.TypeId > 2 ? renderBodyEdit()
                     : <div className="dnb-wrap-2-sticky">{renderBodyEdit()}</div>

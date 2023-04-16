@@ -6,15 +6,14 @@ import {
 import { getSumCost, getDateAfterDaysString, getIcon } from "../../global"
 import { ItemProvider, LoadingContext } from "../../global/Context"
 import {
-    addActions, getActionsFrom,
-    deleteSubs, addSubs,
+    addActions, deleteSubs, addSubs,
 } from "../../global/ReduxStore/DataItem"
 import { GoalItemView } from "./GoalView"
-import { ActionView, ActionViewEdit } from "./Action"
+import { ActionViewEdit } from "./Action"
 import { connect } from "react-redux"
 import { showEdit, setItems } from "../../global/ReduxStore"
 import { IsView } from "../../service/demoData"
-import { setSortable, destroySortable } from "../common/DragDropAction"
+import { DnDAction } from "../common/DnDAction"
 import { logItem } from "../../global/GlobalLog"
 import '../../styles/dragdrop.scss'
 
@@ -26,7 +25,6 @@ class Subgoal extends Component {
             NewAction: null,
             IsExpand: true
         }
-        this.rfActions = React.createRef();
     }
     componentDidMount = () => {
         const { setLoading } = this.context
@@ -49,16 +47,7 @@ class Subgoal extends Component {
             setLoading(false)
         }
     }
-    componentDidUpdate = (prvProps) => {
-        const { IsDnD } = this.props
-        if (IsDnD) {
-            console.log('update', this.props.item.Name, $(`.dnb_item_list_action`))
-            setSortable.call(this, $)
-        }
-        if (prvProps.IsDnD && !IsDnD) {
-            destroySortable.call(this, $)
-        }
-    }
+
     addNewAction = () => {
         if (IsView) return
         const dateNow = Date.now()
@@ -160,7 +149,7 @@ class Subgoal extends Component {
         apiSetCollapse([item.Id], isExpand)
     }
     render() {
-        const { item, isExpandMain, isDoneMain, IsDnD, index } = this.props
+        const { item, isExpandMain, isDoneMain, index } = this.props
         const { IsExpand } = this.state
         const listAction = Array.isArray(item.Actions) ? item.Actions : []
         const isDoneSub = isDoneMain || item.IsDone;
@@ -179,30 +168,16 @@ class Subgoal extends Component {
             handleDuplicate: this.onCopySub,
             handleAddNewChild: this.addNewAction,
         }
-        const clssGrpA = `dnb_item_list_action${IsDnD ? ' dnb-dnd-items' : ''}`
         return (
             <div className={`dnb_item_view${!IsExpand ? ' dnb_sub_collapse' : ''}`}>
                 <ItemProvider item={contextSub} handler={handleCxt}>
                     <GoalItemView />
+                    <DnDAction index={index}
+                        isExpand={isExpandSub}
+                        isDoneMain={isDoneMain}>
+                        {this.getFormActionAddEdit()}
+                    </DnDAction>
                 </ItemProvider>
-                <div idgrpdnd={IsDnD ? item.Id : undefined}
-                    idxdnd={IsDnD ? index : undefined}
-                    className={clssGrpA} ref={this.rfActions}>{
-                        !listAction.length && !listAction.length ?
-                            <>{this.getFormActionAddEdit()}</>
-                            : <>{
-                                listAction.map(_a => {
-                                    const _keyUpdate = `${_a.IsDone}.${_a.ExpectCost}.${_a.TrueCost}${_a.IsExpand}`
-                                    return <ActionView key={_a.Id}
-                                        keyUpdate={_keyUpdate}
-                                        item={_a}
-                                        isExpandSub={isExpandSub}
-                                        isDoneSub={isDoneSub} />
-                                })}
-                                {this.getFormActionAddEdit()}
-                            </>
-                    }
-                </div>
             </div>
         )
     }
@@ -210,11 +185,10 @@ class Subgoal extends Component {
 const mapState = (state) => ({
     EditId: state.focus.EditId,
     LoadingItems: state.loading.Items,
-    IsDnD: state.navbar.CanDrgDrp,
 })
 const mapDispatch = {
     showEdit, setItems,
-    addActions, getActionsFrom,
+    addActions,
     deleteSubs, addSubs
 }
 export const SubgoalConnect = connect(

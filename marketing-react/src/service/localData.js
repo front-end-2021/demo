@@ -30,13 +30,6 @@ export function getListSubActionWith(apiPath, params) {
             return []
     }
 }
-export function getActionsFrom(subids){
-    let lstA = []
-    subids.forEach(sid => {
-        lstA = lstA.concat(getListAction(sid))
-    })
-    return lstA
-}
 export function saveAction(id, item) {
     delete item.Index
     delete item.IsExpand
@@ -262,6 +255,13 @@ export function duplicateMain(id) {
         copyIndex(lstId, lstNewId)
         return newMain
     }
+}
+export function getActionsFrom(subids){
+    let lstA = []
+    subids.forEach(sid => {
+        lstA = lstA.concat(getListAction(sid))
+    })
+    return lstA
 }
 export function saveIndexAction(lstIndex, item) {
     if (item) {

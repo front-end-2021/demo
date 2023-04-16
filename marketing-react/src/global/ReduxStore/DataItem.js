@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import { getActionsFromSubIds } from "../../service"
+import { apiSetIndexAction } from "../../service"
 
 function removeItems(ids) {     // Mains/Subs/Actions
     const items = this
@@ -38,10 +38,14 @@ function deleteItemsBy(parentIds) {
         }
     }
 }
-export const getActionsFrom = createAsyncThunk(
-    'sub/actions',
-    async (subids, thunkAPI) => {
-        const actions = await getActionsFromSubIds(subids)
+
+export const setIndexActions = createAsyncThunk(
+    'post/setIndexActions',
+    async ({ src, des, item }, thunkAPI) => {
+        const actions = await apiSetIndexAction({ src, des, item })
+        const srcSubId = src.SubId
+        const desSubId = des.SubId
+        const subids = srcSubId !== desSubId ? [srcSubId, desSubId] : [srcSubId]
         return { subids, actions }
     }
 )
@@ -107,8 +111,7 @@ export const DataList = createSlice({
         },
     },
     extraReducers: (builder) => {
-        // Add reducers for additional action types here, and handle loading state as needed
-        builder.addCase(getActionsFrom.fulfilled, (state, action) => {
+        builder.addCase(setIndexActions.fulfilled, (state, action) => {
             const { subids, actions } = action.payload
             state.Subs.forEach(sub => {
                 if (subids.includes(sub.Id)) {

@@ -13,42 +13,6 @@ export function encodeHtml(desText) {       // render
     desText = desText.replaceAll(`   `, `&nbsp; &nbsp;`)
     return desText
 }
-export function decodeHtml(desText) {       // edit
-    if (typeof desText !== 'string') return desText
-    desText = desText.replaceAll('\n', '<br>')
-    desText = desText.replaceAll(`&#60;div`, `<div`)
-    desText = desText.replaceAll(`&#60;/div`, `</div`)
-    desText = desText.replaceAll(`&#60;input`, `<input`)
-    desText = desText.replaceAll(`&#60;select`, `<select`)
-    desText = desText.replaceAll(`&#60;script`, `<script`)
-    desText = desText.replaceAll(`&#60;/script`, `</script`)
-    desText = desText.replaceAll(`&nbsp; `, `  `)
-    desText = desText.replaceAll(`&nbsp; &nbsp;`, `   `)
-    if(desText.includes(`<iframe `)) {
-        desText = desText.replace(`<iframe `, `&lt;iframe `)
-    }
-    return desText
-}
-export function verifyHtml(desText) {
-    if(typeof desText !== 'string') return desText
-    desText = desText.replaceAll(`&nbsp;`, ` `)
-    desText = desText.trim()
-    desText = desText.replaceAll(`&gt;`, `>`)
-    desText = desText.replaceAll(`&lt;`, `<`)
-    desText = desText.replaceAll(`&#60;`, `<`)
-    desText = desText.replaceAll(`<br>`, `\n`)
-    desText = desText.replaceAll(`<br/>`, `\n`)
-    desText = desText.replaceAll(`<div>`, ``)
-    desText = desText.replaceAll(`</div>`, `\n`)
-    desText = desText.replaceAll(`<p>`, ``)
-    desText = desText.replaceAll(`</p>`, `\n`)
-    let i = desText.indexOf(`<iframe `)
-    if(i === 0) return desText
-    i = desText.indexOf(`<p>`)
-    if(i === 0)
-        return desText.slice(3, -4)
-    return desText
-}
 export function getTextTitle(desText) {
     if (typeof desText !== 'string') return
     if (desText.trim() === '') return

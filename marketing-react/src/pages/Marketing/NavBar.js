@@ -83,7 +83,7 @@ export class NavigationView extends Component {
     }
 }
 const mapState = (state) => ({
-    ViewIndex: state.navbar.ViewType,
+    ViewIndex: state.navbar.ViewType
 })
 const mapDispatch = { setView }
 export const NavigationConn = connect(mapState, mapDispatch)(NavigationView)
