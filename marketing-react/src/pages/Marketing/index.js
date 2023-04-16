@@ -1,19 +1,17 @@
-import React, { Component, useEffect } from "react"
-import {
-    apiGetMains, apiAddMain
-} from "../../service"
+import React, { Component } from "react"
+import { apiGetMains, apiAddMain } from "../../service"
 import { getDateAfterDaysString, getIcon } from "../../global"
 import { GoalItemEdit } from "./GoalView"
 import { MaingoalConnect } from "./Maingoal"
 import { ProcessingProvider, LoadingContext } from "../../global/Context"
 import { MReduxProvider, showEdit } from "../../global/ReduxStore"
-import { setView } from "../../global/ReduxStore/Navigator"
 import { ItemProvider } from "../../global/Context"
 import { addMains } from "../../global/ReduxStore/DataItem"
 import { NavigationConn } from "./NavBar"
-import { connect, useSelector, useDispatch } from "react-redux"
+import { connect, useSelector } from "react-redux"
 import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.css'
 import '../../styles/ga.scss'
+import { _keyListMain } from "../../service/localData"
 
 class ListMainView extends Component {
     static contextType = LoadingContext
@@ -57,7 +55,9 @@ class ListMainView extends Component {
                 addMains([goal])
             }
             setLoading(false)
-            window.location.reload();
+
+            const mains = localStorage.getItem(_keyListMain)    // jsonString || undefined
+            if(!mains) window.location.reload();
         })
     }
     getBtnNewMain = () => {

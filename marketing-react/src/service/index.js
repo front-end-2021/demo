@@ -1,7 +1,7 @@
 import axios from "axios"
 import { logItem } from "../global/GlobalLog"
 import {
-    getSubsBy,
+    getActionsFrom,
     saveAction, saveGoal, saveIndexAction,
     insertMain, insertSub, insertAction,
     deleteAction, deleteSub, deleteMain,
@@ -33,12 +33,18 @@ export function apiGetMains(apiPath) {
 }
 export function getSubsActionsBy(apiPath, params) {
     const url = `${host}${apiPath}`
-    return callApiData().then(r => {
+    return callApiData(1).then(r => {
         return demoData.getListSubActionWith(apiPath, params)
         return axios.get(url, Object.assign({
             params: params
         }, config)).then(res => { return res.data })
             .then(rData => { return rData.data })
+    })
+}
+export function getActionsFromSubIds(params, apiPath) {
+    //const url = `${host}${apiPath}`
+    return callApiData(1).then(r => {
+        return getActionsFrom(params)
     })
 }
 export function apiUpdateAction(id, item) {
@@ -86,7 +92,7 @@ export function apiAddAction(item) {
     })
 }
 export function apiDeleteAction(id) {
-    return callApiData().then(d => {
+    return callApiData(1).then(d => {
         return deleteAction(id)
         return axios.delete(`${host}action/${id}`,
             config).then(res => { return res })
@@ -133,13 +139,6 @@ export function apiSetIndexAction({ src, des, item }) {
             saveIndexAction(newIndexes, { Id: item.Id, ParentId: desSubId })
         } else {
             saveIndexAction(newIndexes)
-        }
-        if (srcSubId !== desSubId)      // khac sub
-            return {
-                desSubs: getSubsBy([srcSubId, desSubId]),
-            }
-        else return {
-            desSubs: getSubsBy([desSubId])
         }
     })
 }

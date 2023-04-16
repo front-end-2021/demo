@@ -34,15 +34,7 @@ export class Maingoal extends Component {
             addSubs(lstSub) // add to ReduxStore
         })
     }
-    componentDidUpdate = () => {
-        // #region dragdrop Actions in subs
-        const { cbDnDActionSubs } = this.context
-        if (typeof cbDnDActionSubs === 'function') {
-            cbDnDActionSubs()
-            delete this.context.cbDnDActionSubs
-        }
-        // #endregion
-    }
+    
     handleAddNewSub = () => {
         if (IsView) return;
         const dateNow = Date.now()
@@ -158,6 +150,8 @@ export class Maingoal extends Component {
         const { ListSub, item, ViewIndex } = this.props
         let idx = -1
         const listSub = ListSub.filter((x, i) => {
+            if(!x) return false
+            if(!x.ParentId) return false
             if (x.ParentId === item.Id) {
                 if (idx < 0) idx = i
                 return true

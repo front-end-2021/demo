@@ -30,25 +30,12 @@ export function getListSubActionWith(apiPath, params) {
             return []
     }
 }
-export function getSubsBy(ids) {
-    const lstSub = getValue(_keyListSub) || []
-    let subs = lstSub.filter(x => ids.includes(x.Id))
-    if(subs.length) {
-        const mainId = subs[0].ParentId
-        let allSubs = lstSub.filter(x => x.ParentId === mainId)
-        allSubs = mapIndex(allSubs)
-        subs = allSubs.filter(x => ids.includes(x.Id))
-
-        subs.forEach(sub => {
-            const lstAction = getActions()
-            const items = lstAction.filter(a => sub.Id === a.ParentId)
-            mapExpand.call(items)
-            sub.Actions = mapIndex(items)
-        })
-        mapExpand.call(subs)
-        return subs
-    }
-    return []
+export function getActionsFrom(subids){
+    let lstA = []
+    subids.forEach(sid => {
+        lstA = lstA.concat(getListAction(sid))
+    })
+    return lstA
 }
 export function saveAction(id, item) {
     delete item.Index

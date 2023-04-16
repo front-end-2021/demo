@@ -1,13 +1,8 @@
 .dnb-dnd-items {
 
     .dnb-dnd-item,
-    .dnb-dnd-item-ghost,
-    .dnb-dnd-item-drag {
+    .dnb-dnd-item-ghost {
         cursor: pointer;
-    }
-
-    .dnb-dnd-item-drag {
-        opacity: 1;
     }
 
     .dnb-dnd-item-ghost {
@@ -21,11 +16,16 @@
     }
 }
 
-.dnb-dnditem-relate {
-    overflow: hidden !important;
+.dnb_item_list_action.ui-sortable {
+    .dnb_item_title {
+        cursor: pointer !important;
 
-    &.d_item_collapse {
-        min-height: initial !important;
-        max-height: initial !important;
+        &>span {
+            cursor: pointer !important;
+        }
     }
+}
+
+.dnb_item_list_action {
+    min-height: 27px;
 }

@@ -99,6 +99,11 @@ function ViewFilter() {
         if (!canSetDnD()) return
         dispatch(toggleDragDrop())
     }
+    useEffect(() => {
+        if(canDnD){
+
+        }
+    }, [canDnD])
     const getLabel = () => {
         if (canDnD) return <strong>Drag & Drop</strong>
         return <strong style={{

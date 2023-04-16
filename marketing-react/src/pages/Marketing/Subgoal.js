@@ -1,19 +1,20 @@
 import React, { Component } from "react"
 import {
     getSubsActionsBy, apiAddAction, apiSetCollapse,
-    apiDeleteSub, apiCopySub, apiSetIndexAction
+    apiDeleteSub, apiCopySub
 } from "../../service"
 import { getSumCost, getDateAfterDaysString, getIcon } from "../../global"
 import { ItemProvider, LoadingContext } from "../../global/Context"
 import {
-    addActions, deleteSubs, addSubs, setSubsAfter,
+    addActions, getActionsFrom,
+    deleteSubs, addSubs,
 } from "../../global/ReduxStore/DataItem"
 import { GoalItemView } from "./GoalView"
 import { ActionView, ActionViewEdit } from "./Action"
 import { connect } from "react-redux"
 import { showEdit, setItems } from "../../global/ReduxStore"
-import Sortable from "sortablejs"
 import { IsView } from "../../service/demoData"
+import { setSortable, destroySortable } from "../common/DragDropAction"
 import { logItem } from "../../global/GlobalLog"
 import '../../styles/dragdrop.scss'
 
@@ -27,108 +28,9 @@ class Subgoal extends Component {
         }
         this.rfActions = React.createRef();
     }
-    createSortAction = () => {
-        const elItems = this.rfActions.current
-        const { item } = this.props
-        this.sortAction = Sortable.create(elItems, {
-            group: {
-                name: `DnDActionIn${item.ParentId}`,
-                revertClone: true,
-            },
-            draggable: ".dnbDndItem",
-            ghostClass: "dnb-dnd-item-ghost",
-            dragClass: "dnb-dnd-item-drag",
-            onStart: (evt) => {
-                const lstFrom = []
-                evt.from.querySelectorAll(".dnbDndItem").forEach((n) => {
-                    lstFrom.push(n.getAttribute("id"));
-                })
-                this.LstDnD = lstFrom
-                this.SrcSubId = evt.from.getAttribute('idgrpdnd')
-            },
-            onEnd: (evt) => {
-                document.querySelectorAll(`.dnb-dnditem-relate`).forEach(n => {
-                    n.classList.remove('dnb-dnditem-relate')
-                })
-
-                const lstTo = [];
-                evt.to.querySelectorAll(".dnbDndItem").forEach((n) => {
-                    lstTo.push(n.getAttribute("id"));
-                })
-                if (lstTo.join('') !== this.LstDnD.join('')) {
-                    const DesSubId = evt.to.getAttribute('idgrpdnd')
-                    const itemId = evt.item.getAttribute("id")
-                    let SrcIndex = evt.from.getAttribute('idxdnd')
-                    SrcIndex = parseInt(SrcIndex)
-                    let DesIndex = evt.to.getAttribute('idxdnd')
-                    DesIndex = parseInt(DesIndex)
-
-                    processList.call(this, {
-                        SubId: this.SrcSubId, Index: SrcIndex
-                    },
-                        { SubId: DesSubId, Ids: lstTo, Index: DesIndex },
-                        { Id: itemId })
-
-                    delete this.LstDnD
-                    delete this.SrcSubId
-                }
-            },
-            onMove: (evt, originalEvt) => {
-                const _itRlt = evt.related
-                if (_itRlt.classList.contains('dnbDndItem')) {
-                    _itRlt.classList.add('dnb-dnditem-relate')
-                }
-            },
-        });
-
-        function processList(src, des, dragSub) {
-            const this_ = this
-            const { deleteSubs, addSubs, setSubsAfter } = this_.props
-            const { setLoading } = this_.context
-            const SrcSubId = src.SubId
-            const DesSubId = des.SubId
-            const DesIds = des.Ids
-
-            setLoading(true)
-
-            apiSetIndexAction({
-                src: { SubId: SrcSubId },
-                des: { SubId: DesSubId, Ids: DesIds },
-                item: dragSub
-            }).then(res => {
-                const { desSubs } = res
-                if (SrcSubId !== DesSubId) {    // khac sub
-                    this_.destroySortAction()
-
-                    document.querySelectorAll(`.dnbDndItem[id="${dragSub.Id}"]`).forEach(n => {
-                        n.remove()
-                    })
-
-                    deleteSubs([SrcSubId, DesSubId])
-                    const SrcIndex = src.Index
-                    const DesIndex = des.Index
-                    const lstSub = [
-                        { Index: SrcIndex, Sub: desSubs.find(x => x.Id === SrcSubId) },
-                        { Index: DesIndex, Sub: desSubs.find(x => x.Id === DesSubId) }
-                    ]
-                    this_.context.cbDnDActionSubs = function () {
-                        setSubsAfter(lstSub)
-                    }
-                } else addSubs(desSubs)
-
-                setLoading(false)
-            })
-        }
-    }
-    destroySortAction = () => {
-        if (typeof this.sortAction === 'object') {
-            this.sortAction.destroy()
-            delete this.sortAction;
-        } else delete this.sortAction;
-    }
     componentDidMount = () => {
         const { setLoading } = this.context
-        const { item, addActions, IsDnD } = this.props
+        const { item, addActions } = this.props
         setLoading(true)
         if (!Array.isArray(item.Actions)) {
             getSubsActionsBy('actions', { subid: item.Id }).then(actions => {
@@ -142,28 +44,23 @@ class Subgoal extends Component {
                     actions: lstAction
                 })
                 setLoading(false)
-
-                if (lstAction.length && IsDnD) {
-                    this.createSortAction()
-                }
             })
         } else {
-            if (item.Actions.length && IsDnD) {
-                this.createSortAction()
-            }
             setLoading(false)
         }
     }
-    componentDidUpdate = (prevProps) => {
-        if (!prevProps.IsDnD && this.props.IsDnD) {
-            this.createSortAction()
+    componentDidUpdate = (prvProps) => {
+        const { IsDnD } = this.props
+        if (IsDnD) {
+            console.log('update', this.props.item.Name, $(`.dnb_item_list_action`))
+            setSortable.call(this, $)
         }
-        if (prevProps.IsDnD && !this.props.IsDnD) {
-            this.destroySortAction()
+        if (prvProps.IsDnD && !IsDnD) {
+            destroySortable.call(this, $)
         }
     }
     addNewAction = () => {
-        if(IsView) return
+        if (IsView) return
         const dateNow = Date.now()
         const { showEdit } = this.props
         showEdit(dateNow)
@@ -248,7 +145,7 @@ class Subgoal extends Component {
                     </ItemProvider>
                 </div>
                 :
-                <div className='dnb_add_action dnb-btnadd' style={{opacity : IsView ? '0.36' : undefined}}>
+                <div className='dnb_add_action dnb-btnadd' style={{ opacity: IsView ? '0.36' : undefined }}>
                     <div onClick={() => this.addNewAction()}>
                         <span className="bi bi-plus-circle-dotted"
                             style={{ cursor: 'pointer' }}>&nbsp; New {getIcon(3)}</span>
@@ -313,11 +210,11 @@ class Subgoal extends Component {
 const mapState = (state) => ({
     EditId: state.focus.EditId,
     LoadingItems: state.loading.Items,
-    IsDnD: state.navbar.CanDrgDrp
+    IsDnD: state.navbar.CanDrgDrp,
 })
 const mapDispatch = {
     showEdit, setItems,
-    addActions, setSubsAfter,
+    addActions, getActionsFrom,
     deleteSubs, addSubs
 }
 export const SubgoalConnect = connect(

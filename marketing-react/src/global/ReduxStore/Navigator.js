@@ -29,7 +29,7 @@ export const Navbar = createSlice({
         toggleDragDrop: (state) => {
             const isDnD = state.CanDrgDrp
             state.CanDrgDrp = !isDnD
-            if(!isDnD) state.ViewType = 1
+            if(!isDnD) state.ViewType = 2   // Collapse
         },
         setTextSearch: (state, action) => {
             const txt = action.payload

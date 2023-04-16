@@ -1,4 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { getActionsFromSubIds } from "../../service"
 
 function removeItems(ids) {     // Mains/Subs/Actions
     const items = this
@@ -37,6 +38,13 @@ function deleteItemsBy(parentIds) {
         }
     }
 }
+export const getActionsFrom = createAsyncThunk(
+    'sub/actions',
+    async (subids, thunkAPI) => {
+        const actions = await getActionsFromSubIds(subids)
+        return { subids, actions }
+    }
+)
 export const DataList = createSlice({
     name: 'datalist',
     initialState: {
@@ -51,15 +59,6 @@ export const DataList = createSlice({
         addSubs: (state, action) => {
             const lstSub = action.payload
             addItems.call(state.Subs, lstSub)
-        },
-        setSubsAfter: (state, action) => {
-            const lstSub = action.payload
-            lstSub.sort((a, b) => a.Index - b.Index)
-            lstSub.forEach(x => {
-                const sub = x.Sub
-                let idx = x.Index
-                state.Subs.splice(idx, 0, sub)
-            })
         },
         addActions: (state, action) => {
             const { subid, actions } = action.payload
@@ -106,9 +105,24 @@ export const DataList = createSlice({
                 removeItems.call(sub.Actions, ids)
             }
         },
-    }
+    },
+    extraReducers: (builder) => {
+        // Add reducers for additional action types here, and handle loading state as needed
+        builder.addCase(getActionsFrom.fulfilled, (state, action) => {
+            const { subids, actions } = action.payload
+            state.Subs.forEach(sub => {
+                if (subids.includes(sub.Id)) {
+                    const acts = actions.filter(a => a.ParentId === sub.Id)
+                    const lstA = sub.Actions || []
+                    lstA.splice(0)  // remore all
+                    sub.Actions = acts
+                }
+            })
+        })
+    },
 })
 export const {
-    addMains, addSubs, addActions, setSubsAfter,
+    addMains, addSubs,
+    addActions,
     deleteMains, deleteSubs, deleteActions
 } = DataList.actions
