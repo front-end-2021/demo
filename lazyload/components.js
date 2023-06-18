@@ -66,108 +66,105 @@ let observer = new IntersectionObserver(callback, options)
 
 const fields = ['Id', 'Name', 'IsDone', 'Responsibilities',
     'Regions', 'Index', 'Note', 'Start', 'End']
-window.addEventListener("load", (event) => {
-    customElements.define(
-        "grp-table-view",
-        class extends HTMLElement {
-            // Specify observed attributes so that
-            // attributeChangedCallback will work
-            static get observedAttributes() {
-                return ['t-active', 't-hide'];
-            }
-            constructor() {
-                super();
-                let template = document.querySelector(`#dnb-table-view`);
-                let templateContent = template.content.cloneNode(true);
+customElements.define(
+    "grp-table-view",
+    class extends HTMLElement {
+        // Specify observed attributes so that attributeChangedCallback will work
+        static get observedAttributes() {
+            return ['t-active', 't-hide'];
+        }
+        constructor() {
+            super();
+            let template = document.querySelector(`#dnb-table-view`);
+            let templateContent = template.content.cloneNode(true);
 
-                const shadowRoot = this.attachShadow({ mode: "open" });
-                shadowRoot.appendChild(document.importNode(templateContent, true));
-            }
+            const shadowRoot = this.attachShadow({ mode: "open" });
+            shadowRoot.appendChild(document.importNode(templateContent, true));
+        }
 
-            // fires after the element has been attached to the DOM
-            connectedCallback() {
-                const shadowRoot = this.shadowRoot
+        // fires after the element has been attached to the DOM
+        connectedCallback() {
+            const shadowRoot = this.shadowRoot
 
-                const _table = shadowRoot.querySelector('table')
-                const _thead = _table.querySelector('thead')
+            const _table = shadowRoot.querySelector('table')
+            const _thead = _table.querySelector('thead')
 
-                const pos = this.pos
-                if (pos == glbApp.viewIndex) {
-                    document.querySelectorAll(`[t-active]`).forEach(vActive => {
-                        vActive.removeAttribute('t-active')
-                    })
-                    this.setAttribute('t-active', pos)
-                }
-
-                const _tbody = this.getBodyElement(fields, pos)
-                if (_tbody != undefined) {
-                    _table.appendChild(_tbody)
-                    if (pos != 0) {
-                        _thead.style.visibility = 'hidden'
-                        _table.style.marginTop = '-34px'
-                    }
-
-                    observer.observe(this);
-                }
-            }
-            disconnectedCallback() {
-                console.log('Custom square element removed from page.');
-            }
-            adoptedCallback() {
-                console.log('Custom square element moved to new page.');
-            }
-            attributeChangedCallback(name, oldValue, newValue) {
-                console.log('Custom square element attributes changed.', name, oldValue, newValue);
-                const shadowRoot = this.shadowRoot
-                switch (name) {
-                    case 't-hide':
-                        const isNullToTrue = oldValue == null && newValue != null
-                        if (isNullToTrue) {
-                            const _table = shadowRoot.querySelector('table')
-                            const _h = _table.offsetHeight
-                            _table.style.height = `${_h}px`
-                            const _tbody = _table.querySelector('tbody')
-                            if(_tbody) _tbody.remove()
-                        }
-
-                        const isTrueToNull = oldValue != null && newValue == null
-                        if (isTrueToNull) {
-                            const _table = shadowRoot.querySelector('table')
-                            const pos = this.pos
-                            const _tbody = this.getBodyElement(fields, pos)
-                            if (_tbody != undefined) {
-                                _table.appendChild(_tbody)
-                                _table.style.height = ''
-                            }
-                        }
-                        break;
-                    case 't-active':
-
-                        break;
-                }
-            }
-
-            getBodyElement(fields, pos) {
-                const rows = glbApp.getMains(pos)
-                if (!rows.length) return
-                const _tbody = document.createElement('tbody')
-
-                rows.forEach(item => {
-                    const _tr = document.createElement('tr')
-                    _tr.innerHTML = getStrTds(item, fields)
-                    _tbody.appendChild(_tr)
+            const pos = this.pos
+            if (pos == glbApp.viewIndex) {
+                document.querySelectorAll(`[t-active]`).forEach(vActive => {
+                    vActive.removeAttribute('t-active')
                 })
-                return _tbody
+                this.setAttribute('t-active', pos)
             }
 
-            // gathering data from element attributes
-            get pos() {
-                let pos = this.getAttribute('t-pos')
-                return parseInt(pos)
+            const _tbody = this.getBodyElement(fields, pos)
+            if (_tbody != undefined) {
+                _table.appendChild(_tbody)
+                if (pos != 0) {
+                    _thead.style.visibility = 'hidden'
+                    _table.style.marginTop = '-34px'
+                }
+
+                observer.observe(this);
             }
         }
-    );
-});
+        disconnectedCallback() {
+            console.log('Custom square element removed from page.');
+        }
+        adoptedCallback() {
+            console.log('Custom square element moved to new page.');
+        }
+        attributeChangedCallback(name, oldValue, newValue) {
+            console.log('Custom square element attributes changed.', name, oldValue, newValue);
+            const shadowRoot = this.shadowRoot
+            switch (name) {
+                case 't-hide':
+                    const isNullToTrue = oldValue == null && newValue != null
+                    if (isNullToTrue) {
+                        const _table = shadowRoot.querySelector('table')
+                        const _h = _table.offsetHeight
+                        _table.style.height = `${_h}px`
+                        const _tbody = _table.querySelector('tbody')
+                        if (_tbody) _tbody.remove()
+                    }
+
+                    const isTrueToNull = oldValue != null && newValue == null
+                    if (isTrueToNull) {
+                        const _table = shadowRoot.querySelector('table')
+                        const pos = this.pos
+                        const _tbody = this.getBodyElement(fields, pos)
+                        if (_tbody != undefined) {
+                            _table.appendChild(_tbody)
+                            _table.style.height = ''
+                        }
+                    }
+                    break;
+                case 't-active':
+
+                    break;
+            }
+        }
+
+        getBodyElement(fields, pos) {
+            const rows = glbApp.getMains(pos)
+            if (!rows.length) return
+            const _tbody = document.createElement('tbody')
+
+            rows.forEach(item => {
+                const _tr = document.createElement('tr')
+                _tr.innerHTML = getStrTds(item, fields)
+                _tbody.appendChild(_tr)
+            })
+            return _tbody
+        }
+
+        // gathering data from element attributes
+        get pos() {
+            let pos = this.getAttribute('t-pos')
+            return parseInt(pos)
+        }
+    }
+);
 
 function getStrTds(object, fields) {
     //console.log(object)
