@@ -1,4 +1,4 @@
-loadHTML('#grp-templates', `/template.html`)
+loadHTML('#grp-templates', `/demo/template.html`)
 
 function loadHTML(selector, path) {
     fetch(path).then(response => response.text())
