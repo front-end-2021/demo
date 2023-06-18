@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
 <head>
-    <title> front-end-2021 </title>
+    <title> Demo lazy load</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow" />
     <meta http-equiv='cache-control' content='no-cache' />
@@ -10,169 +10,27 @@
     <meta http-equiv='pragma' content='no-cache' />
     <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@100&display=swap" rel="stylesheet">
     <style>
-        body {font-family: Manjari;}
-        .dnba-text-typing {
-            display: inline-block; 
-            max-width: initial !important;
-            width: initial !important;
-            margin-bottom: 3px;
+        body {
+            font-family: Manjari;
         }
-        h1.dnba-text-typing {font-size: 90px;height: 126px;}
-        .dnba-check-width_1line {white-space: nowrap !important;}
-        .dnba-text-typing * {
-            display: inline-block;
-            border-right-style: solid;
-            white-space: nowrap;
-            overflow: hidden;
-            margin-top: 3px;
-        }
-        .dnba-text-typing > p {
-            padding: 0 !important; 
-            margin: 0 !important; 
-            border-left: none !important; border-top: none !important; border-bottom: none !important; 
-            position: initial !important; 
-            float: initial !important;
-        }
-        
-        .dnba-text-typing.text-typing-2 * {
-            animation: typewriter 3s steps(33) 0.3s 1 normal both,
-                endtyping 3.9s steps(33) 0.3s 1 normal both,
-                blinkTextCursor 666ms steps(66) 0.3s infinite normal;
-        }
-        
-        @keyframes typewriter {
-            from { width: 0 } to { width: 100% }
-        }
-        @keyframes endtyping {
-            0% { border-right-width: 2px } 99% { border-right-width: 2px }
-            100% { border-right-width: 0 }
-        }
-        @keyframes blinkTextCursor {
-            from { border-right-color: black } to { border-right-color: transparent }
-        }
-
-    </style>
-    <style id="dnba-style-texting">
-        .dnba-texting_9 { 
-            animation: typewriter 0.72s steps(9) 0.6s 1 normal both, 
-                        endtyping 1.8s steps(9) 0.6s 1 normal both, 
-                        blinkTextCursor 0.6s steps(66) infinite normal; 
-                    }
     </style>
 </head>
 
 <body>
-    <main id="dainb-app" style="font-size: 3rem;">
-        <section class="dnb-title" style="display:flex;justify-content: center;align-items: center;flex-direction:column">
-            <h1 class="dnba-text-typing">
-                <p class="dnba-texting_9">Hello!</p>
-            </h1>
-            
-            <div class="dnba-text-typing text-typing-2">
-                <h2>front-end-2021</h2>
-            </div>
-          </section>
+    <div id="grp-templates"></div>
+    <main id="dainb-app">
+        <div class="content-view">
+            <!-- <div t-id="0" t-name="nguyen.ba.dai" t-done="false" t-note=""></div>
+            <div t-id="2" t-name="beat.vn" t-done="true" t-note="social"></div> -->
+        </div>
     </main>
-    <script>
-        const list = document.querySelectorAll('.dnba-text-typing');
-        Array.prototype.forEach.call(list, function (item) {
-            //addAnimation(item);
-            addOrserver(item, function(mutation){            
-                const target = mutation.target;      console.log(mutation);
-                if(target.className.includes('dnba-type-running') && mutation.addedNodes.length == 1 && mutation.removedNodes.length) {
-                    target.classList.remove('dnba-type-running');
-                    return;
-                }
-
-                addAnimation(target);
-            });
-        });
-        
-        function isWidthOverView(node, maxWidth){
-            node.classList.add('dnba-check-width_1line');
-            const isOver = node.scrollWidth > maxWidth;
-            node.classList.remove('dnba-check-width_1line');
-            if(isOver) return true;
-            return false;
-        }
-        function addOrserver(node, callback){
-            // Create an observer instance linked to the callback function
-            const observer = new MutationObserver(function(mutationsList, observer) { // Callback function to execute when mutations are observed
-                for(const mutation of mutationsList) {          // Use traditional 'for loops' for IE 11
-                    if (mutation.type === 'childList') {
-                        callback(mutation);
-                    }
-                }
-            });
-            // Start observing the target node for configured mutations
-            observer.observe(node, { childList: true, subtree: true });
-        }
-
-        function addAnimation(node){
-            if(isWidthOverView(node, window.outerWidth)) return;
-            if(node.className.includes('dnba-type-running')) return;
-            
-            const text = node.innerText;
-            node.innerHTML = '';
-            
-            const className = updateStyle(text, callBackEnd);
-            
-            addChildTag(node, text, className);
-            
-            node.classList.add('dnba-type-running');
-            function callBackEnd() {
-                node.innerHTML = text;
-            }
-        }
-
-        function addChildTag(node, text, className){
-            const p = document.createElement('p');
-            const textnode = document.createTextNode(text);
-            p.appendChild(textnode);
-            p.classList.add(className);
-            node.appendChild(p);
-        }
-
-        function roundeFloat(num){
-            return +(num.toFixed(3));
-        }
-
-        function updateStyle(text, callBackEnd){
-            const styleAnim = document.getElementById('dnba-style-texting');
-            var className, durationEnd;
-
-            styleAnim.innerHTML = getAnimTyping(text);
-
-            setTimeout(callBackEnd, durationEnd * 1000 + 666);
-            console.log(durationEnd * 1000 + 666)
-
-            return className;
-
-            function getAnimTyping(text){
-                const steps = parseInt(text.length * 1.5);
-                const durationTexting = steps / 11;
-                durationEnd = roundeFloat(durationTexting * 1.32);
-                const durationBlind = durationTexting / 4.5;
-                const typewriter = `typewriter ${roundeFloat(durationTexting)}s steps(${steps}) 0.6s 1 normal both`;
-                const endtyping = `endtyping ${durationEnd}s steps(${steps}) 0.6s 1 normal both`;
-                const blinkTextCursor = `blinkTextCursor ${roundeFloat(durationBlind)}s steps(${steps * 2}) infinite normal`;
-                className = `dnba-texting_${steps.toString().replace('.', '_')}`;
-                return `.${className} { animation: ${typewriter}, ${endtyping}, ${blinkTextCursor};}`;
-            }
-        }
-        
-        setTimeout(function(){
-            changeText('My name is Dainb');
-            setTimeout(function(){
-                changeText('This is demo  change');
-            }, 6000);
-        }, 3000);
-
-        function changeText(text){
-            const h1Typing = document.querySelector('h1.dnba-text-typing'); 
-            h1Typing.innerHTML = text;
-        }
-    </script>
+    <footer style="font-size: 3rem;">
+        DaiNB
+    </footer>
+    <script src="predefine.js"></script>
+    <script src="data.js"></script>
+    <script src="components.js"></script>
+    <script src="main.js"></script>
 </body>
 
 </html>
