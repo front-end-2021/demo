@@ -27,6 +27,49 @@
     <footer style="font-size: 3rem;">
         DaiNB
     </footer>
+    <template id="dnb-table-view">
+        <style>
+            table {
+                font-size: 18px;
+            }
+
+            colgroup col {
+                background-color: #D6EEEE;
+            }
+
+            th {
+                height: 30px;
+                padding: 0 12px;
+            }
+
+            td {
+                height: 24px;
+                padding: 0 12px;
+            }
+
+            td:first-child {
+                width: 36px;
+            }
+        </style>
+        <table>
+            <colgroup>
+                <col span="2">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Finish</th>
+                    <th>Responsibilities</th>
+                    <th>Regions</th>
+                    <th>Index</th>
+                    <th>Note</th>
+                    <th>Start</th>
+                    <th>End</th>
+                </tr>
+            </thead>
+        </table>
+    </template>
     <script src="/demo/lazyload/predefine.js"></script>
     <script src="/demo/lazyload/data.js"></script>
     <script src="/demo/lazyload/components.js"></script>
