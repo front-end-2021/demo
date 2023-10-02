@@ -48,7 +48,7 @@ function hideTbodyContent(pos) {
     }
 }
 function getCountItem() {
-    const headHeight = 30
+    const headHeight = 120
     const rowHeight = 24
 
     const maxHeight = window.outerHeight / 2

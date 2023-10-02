@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Exercise 5</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style/5.3.2_dist_css_bootstrap.min.css" />
+    <link rel="stylesheet" href="style/app_style.css" />
+
+    <script src="script/boots/jquery-3.7.1.min.js"></script>
+    <script src="script/boots/5.3.2_dist_js_bootstrap.bundle.min.js"></script>
+    <script src="script/vuejs/dev_vue@2_7_14.js"></script>
+    <script src="script/vuejs/vue-observe-visibility.min.js"></script>
+    <!-- <script src="script/vuejs/prod_vue@2_7_14.js"></script> -->
+</head>
+
+<body>
+    <main id="cv-app">
+        <nav-bar inline-template :view-index="NavBar.Index">
+            <header class="p-1 border-bottom">
+                <div class="container">
+                    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                        <a href="/"
+                            class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                viewBox="0 0 48 48" width="40" height="32">
+                                <defs>
+                                    <linearGradient id="a" x1="3.2173" y1="15" x2="44.7812" y2="15"
+                                        gradientUnits="userSpaceOnUse">
+                                        <stop offset="0" stop-color="#d93025" />
+                                        <stop offset="1" stop-color="#ea4335" />
+                                    </linearGradient>
+                                    <linearGradient id="b" x1="20.7219" y1="47.6791" x2="41.5039" y2="11.6837"
+                                        gradientUnits="userSpaceOnUse">
+                                        <stop offset="0" stop-color="#fcc934" />
+                                        <stop offset="1" stop-color="#fbbc04" />
+                                    </linearGradient>
+                                    <linearGradient id="c" x1="26.5981" y1="46.5015" x2="5.8161" y2="10.506"
+                                        gradientUnits="userSpaceOnUse">
+                                        <stop offset="0" stop-color="#1e8e3e" />
+                                        <stop offset="1" stop-color="#34a853" />
+                                    </linearGradient>
+
+                                    <path id="p"
+                                        d="M13.6086 30.0031 3.218 12.006A23.994 23.994 0 0 0 24.0025 48l10.3906-17.9971-.0067-.0068a11.9852 11.9852 0 0 1-20.7778.007Z" />
+                                </defs>
+
+                                <use xlink:href="#p" fill="url(#a)" transform="rotate(120 24 24)" />
+                                <use xlink:href="#p" fill="url(#b)" transform="rotate(-120 24 24)" />
+                                <use xlink:href="#p" fill="url(#c)" />
+
+                                <circle cx="24" cy="24" r="12" style="fill:#fff" />
+                                <circle cx="24" cy="24" r="9.5" style="fill:#1a73e8" />
+                            </svg>
+                        </a>
+                        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                            <li v-for="(mName, i) in NavMenus" @click="(e) => {setNavIndex(i)}">
+                                <a href="#" class="nav-link px-2"
+                                    :class="[i == viewIndex ? 'active' : 'link-body-emphasis']">{{mName}}</a>
+                            </li>
+                        </ul>
+                        <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" action="#">
+                            <input type="search" class="form-control" placeholder="Search..." aria-label="Search"
+                                v-model="TextSearch" v-on:keyup.enter="onSearch">
+                        </form>
+
+                        <div class="dropdown text-end">
+                            <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32"
+                                    class="rounded-circle">
+                            </a>
+                            <ul class="dropdown-menu text-small border-0 shadow-sm bg-secondary pt-0 pb-0">
+                                <li v-for="(menu, i) in UserMenus" @click="(e) => {openModal(menu, i)}">
+                                    <a class="dropdown-item pt-2 pb-2" v-bind:href="menu.url" data-bs-toggle="modal"
+                                        data-bs-target="#modal-pop">{{menu.title}}</a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider m-0">
+                                </li>
+                                <li><a class="dropdown-item pt-2 pb-2" data-bs-toggle="modal"
+                                        data-bs-target="#modal-pop" href="#" @click="(e) => signOut(User)">Sign out</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </header>
+        </nav-bar>
+
+        <vw-inventory inline-template v-if="NavBar.Index == 1" :mains="Mains">
+            <section class="container-fluid" v-bind:style="[
+                { width: WidthCtx }    
+            ]">
+                <div class="list-main">
+                    <item-mgoal v-for="main in ListMain" :item="main" :type="1" :key="getKey(1, main.Id)">
+                        <div class="list-sub">
+                            <item-subgoal v-for="sub in main.Subs" :key="getKey(2, sub.Id, main.Id)" :item="sub"
+                                :mid="main.Id" :type="2">
+                                <div class="list-action">
+                                    <item-action inline-template v-for="(act, ia) in sub.Actions"
+                                        :key="getKey(3, act.Id, sub.Id, main.Id)" :index="ia" :actions="sub.Actions"
+                                        :item="act" :sid="sub.Id" :mid="main.Id">
+                                        <div :id="domId" class="item-wrap"
+                                            v-bind:style="[ styleWidth(), styleInline(), styleMrgLeft() ]"
+                                            v-observe-visibility="{
+                                                callback: onObsVisible, throttle: 0, intersection: { threshold: 0 },
+                                            }">
+                                            <h6 v-if=IsInView class="fs-6" v-show="!IsEditName"
+                                                @dblclick.stop="ondblclickName">{{item.Name}}</h6>
+                                            <input v-if="IsEditName" v-model="Name" type="text"
+                                                class="form-control ieName" aria-describedby="inputGroup-sizing-sm"
+                                                @keyup.esc="onCancelSetName" @keyup.enter="onSaveName" />
+                                            <div v-if="IsInView && ShowDate" class="fw-lighter">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill="currentColor"
+                                                        d="M8 9C7.44772 9 7 9.44771 7 10C7 10.5523 7.44772 11 8 11H16C16.5523 11 17 10.5523 17 10C17 9.44771 16.5523 9 16 9H8Z" />
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"
+                                                        d="M6 3C4.34315 3 3 4.34315 3 6V18C3 19.6569 4.34315 21 6 21H18C19.6569 21 21 19.6569 21 18V6C21 4.34315 19.6569 3 18 3H6ZM5 18V7H19V18C19 18.5523 18.5523 19 18 19H6C5.44772 19 5 18.5523 5 18Z" />
+                                                </svg>
+                                                <span v-if="item.Start" class="small">{{ToStart}}</span>
+                                                <span v-if="item.End" class="small"> - {{ToEnd}}</span>
+                                            </div>
+                                        </div>
+                                    </item-action>
+                                </div>
+                            </item-subgoal>
+                        </div>
+                    </item-mgoal>
+                </div>
+            </section>
+        </vw-inventory>
+        <vw-overview inline-template v-if="NavBar.Index == 0" :subs="Subs">
+            <section class="dnb-overview dnbOverview" @scroll.passive="onScroll">
+                <div class="dnb-content d-grid">
+                    <div class="list-left d-inline-block border-end pt-2">
+                        <div class="d-inline-grid align-items-center pb-2"
+                            style="grid-template-columns: 286px 45px 45px 45px;">
+                            <button type="button" class="btn btn-primary ms-3 me-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-plus-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path
+                                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                                </svg>
+                                New goal
+                            </button>
+                            <span class="text-center text-secondary border-start">Start</span>
+                            <span class="text-center text-secondary">Last</span>
+                            <span class="text-center text-secondary">End</span>
+                        </div>
+                        <sub-view inline-template v-for="sub in subs" :item="sub"
+                            :key="newGuid()">
+                            <div class="view-sub">
+                                <div class="d-inline-grid align-items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                                        <path
+                                            d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                                    </svg>
+                                    <h5>{{item.Name}}</h5>
+                                </div>
+                                <div class="list-action d-flex flex-column">
+                                    <action-view inline-template v-for="act in item.Actions" 
+                                        :item="act" :key="getKeyAction(act.Id)">
+                                        <div class="d-inline-grid align-items-center">
+                                            <input class="form-check-input mt-0" type="checkbox">
+                                            <p class="a-name mb-0 ms-2"
+                                                @click.stop="onClickScrollTo">{{item.Name}}</p>
+                                            <span class="text-center" 
+                                                :data-title="YearStart || null">{{Start}}</span>
+                                            <span class="text-center"
+                                                :class="[ End == '-' ? 'text-black-50' : '' ]">{{End}}</span>
+                                            <span class="text-center" :data-title="YearEnd || null"
+                                                :class="[ End == '-' ? 'text-black-50' : '' ]">{{End}}</span>
+                                            <span
+                                                class="a-status text-center text-uppercase fw-bold text-white rounded-1"
+                                                :class="[ClssStatus]">{{Status}}</span>
+                                        </div>
+                                    </action-view>
+                                </div>
+                            </div>
+                        </sub-view>
+                    </div>
+                    <div class="view-right">
+                        <table class="vwCalendar" style="height: 52px;">
+                            <thead>
+                                <tr>
+                                    <th v-for="month in ListMonth" :colspan="month.colspan" class="text-center" :class="[
+                                            month.IsNow ? 'text-primary' : ''
+                                        ]">{{month.MM}}-{{month.YYYY}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td v-for="dd in ListDay">
+                                        <span class="d-inline-block" :class="[
+                                                dd.IsNow ? 'text-primary' : ''
+                                            ]">{{dd.day}}</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="group-sub" v-for="sub in subs">
+                            <action-time inline-template v-for="act in sub.Actions" 
+                                :item="act" :key="getKeyAction(act.Id)">
+                                <div class="dnb-act-time d-inline-block">
+                                    <span class="d-inline-block"
+                                        :atime-id="item.Id" 
+                                        :class="[ClssStatus]" 
+                                        :style="[{
+                                            width: Width, marginLeft: Left
+                                        }, Border]" />
+                                </div>
+                            </action-time>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </vw-overview>
+
+        <!-- Scrollable modal -->
+        <modal-pop v-show="ListModal.length"></modal-pop>
+    </main>
+
+    <script type="text/x-template" id="goal-item-temp">
+        <div :id="domId" class="goal-item-wrap"
+            v-observe-visibility="{
+                callback: onObsVisible,
+                throttle: 0, intersection: { threshold: 0 },
+            }">
+            <h4 v-if="IsInView && type == 1" v-show="!IsEditName"
+                @dblclick.stop="ondblclickName">{{item.Name}}</h4>
+            <h5 v-if="IsInView && type == 2" v-show="!IsEditName"
+                @dblclick.stop="ondblclickName">{{item.Name}}</h5>
+            <input v-if="IsEditName" v-model="Name" 
+                type="text" class="form-control ieName" 
+                aria-describedby="inputGroup-sizing-sm" 
+                @keyup.esc="onCancelSetName"
+                @keyup.enter="onSaveName"/>
+            <div v-if="ShowDate">
+                <span v-if="item.Start" class="small"><b>Start:</b> {{ToStart}}</span>
+                <span v-if="item.End" class="small"><b> - End:</b> {{ToEnd}}</span>
+            </div>
+            <slot v-if="IsInView"></slot>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="modal-pop-temp">
+        <div class="modal fade" id="modal-pop" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+                aria-labelledby="modal-pop-tlt" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div v-if="title != null" class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modal-pop-tlt">{{title}}</h5>
+                            <button type="button" class="btn-close" @click="closeModal" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form v-if="data.Type == 'UserInfo'">
+                                <div class="mb-3">
+                                    <label class="col-form-label">Name:</label>
+                                    <input type="text" class="form-control" v-model="data.title">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="col-form-label">Link:</label>
+                                    <textarea class="form-control" v-model="data.url"></textarea>
+                                </div>
+                            </form>
+                            <form v-if="data.Type == 'SignOut'">
+                                <div class="form-outline mb-4 mt-2">
+                                    <input type="email" class="form-control" v-model="data.email"
+                                        placeholder="Email address" />
+                                    <label class="form-label">Email address</label>
+                                </div>
+
+                                <div class="form-outline mb-4 mt-2">
+                                    <input type="password" class="form-control" placeholder="Password" />
+                                    <label class="form-label">Password</label>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col d-flex justify-content-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value=""
+                                                id="modal-pop-remem" checked />
+                                            <label class="form-check-label" for="modal-pop-remem"> Remember me </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col">
+                                        <a href="#!">Forgot password?</a>
+                                    </div>
+                                </div>
+
+                                <div class="text-center">
+                                    <p>Not a member? <a href="#!">Register</a></p>
+                                    <p>or sign up with:</p>
+                                    <button type="button" class="btn btn-link btn-floating mx-1">
+                                        <span class="fab fa-facebook-f">face</span>
+                                    </button>
+
+                                    <button type="button" class="btn btn-link btn-floating mx-1">
+                                        <span class="fab fa-google">goog</span>
+                                    </button>
+
+                                    <button type="button" class="btn btn-link btn-floating mx-1">
+                                        <span class="fab fa-twitter">twitt</span>
+                                    </button>
+
+                                    <button type="button" class="btn btn-link btn-floating mx-1">
+                                        <span class="fab fa-github">git</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                                @click="() => { saveAndClose(data) }">{{message}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </script>
+    <script>
+        HTMLElement.prototype.offset = function () {
+            const el = this
+            const rect = el.getBoundingClientRect(),
+                scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+                scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+        }
+    </script>
+    <script src="script/components.js"></script>
+    <script src="script/vw-component.js"></script>
+    <script src="script/cv-app.js"></script>
+</body>
+
+
+</html>
