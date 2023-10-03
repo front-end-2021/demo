@@ -83,6 +83,7 @@
     font-size: 14px;
     padding-top: 3px;
     padding-bottom: 3px;
+    margin-bottom: 3px;
 }
 
 .view-sub>.d-inline-grid {
@@ -161,11 +162,11 @@
 .view-right table thead th {
     border-right: 1px solid #dee2e6;
     font-size: 14px;
+    white-space: nowrap;
 }
 
 .view-right table thead th:last-child {
     border-right: none;
-    white-space: nowrap;
 }
 
 span[data-title] {

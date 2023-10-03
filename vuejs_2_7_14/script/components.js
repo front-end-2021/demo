@@ -63,7 +63,7 @@ const itemGA = {
     },
     mounted() {
 
-        window.addEventListener('scroll', this.onCancelSetName)
+        window.addEventListener('scroll', this.onWindowScroll)
     },
     beforeUpdate() {
         heightWrapInVisible.call(this)
@@ -84,7 +84,10 @@ const itemGA = {
             if (!this.IsEditName) return
             this.$el.querySelector('input.ieName').focus()
 
-            const html = document.getElementsByTagName('html')[0]
+            const html = document.querySelector('html')
+            if(html.scrollLeft !== window.DainbCacheScrollLeft) {
+                window.DnbIsChangeScrollLeft = true
+            }
             html.scrollLeft = window.DainbCacheScrollLeft
             delete window.DainbCacheScrollLeft
         }
@@ -94,17 +97,22 @@ const itemGA = {
             this.IsInView = isVisible
         },
         ondblclickName() {
-            window.DainbCacheScrollLeft = document.getElementsByTagName('html')[0].scrollLeft
+            window.DainbCacheScrollLeft = document.querySelector('html').scrollLeft
             this.IsEditName = true
         },
         onCancelSetName() {
             this.IsEditName = false
             this.Name = this.item.Name
         },
+        onWindowScroll(e) {
+            if(typeof window.DnbIsChangeScrollLeft == 'undefined') {
+                this.onCancelSetName()
+            } else delete window.DnbIsChangeScrollLeft
+        },
     },
     beforeDestroy() {
 
-        window.removeEventListener('scroll', this.onCancelSetName)
+        window.removeEventListener('scroll', this.onWindowScroll)
     },
 }
 Vue.component('item-action', {
@@ -375,14 +383,22 @@ Vue.component('action-time', {
             const item = this.item
             let dTime = 86400000
             if (!item.Start) {
-                const maxE = this.getMaxEnd()
                 const minS = this.getMinStart()
+                const maxE = this.getMaxEnd()
+                if (maxE < 1) {
+                    dTime = minS + 69 * 24000 * 3600 + 24000 * 3600
+                    return `${DayPxUnit * dTime / 24000 / 3600}px`
+                }
                 dTime = maxE - minS + 24000 * 3600
                 return `${DayPxUnit * dTime / 24000 / 3600}px`
             }
             const start = item.Start.getTime()
             if (!item.End) {
                 const maxE = this.getMaxEnd()
+                if (maxE < 1) {
+                    dTime = start + 69 * 24000 * 3600 + 24000 * 3600
+                    return `${DayPxUnit * dTime / 24000 / 3600}px`
+                }
                 dTime = maxE - start + 24000 * 3600
                 return `${DayPxUnit * dTime / 24000 / 3600}px`
             }

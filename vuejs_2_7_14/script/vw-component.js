@@ -34,7 +34,7 @@ Vue.component('vw-overview', {
             if (minY == maxY) {
                 const days = this.daysInMonth(minM, minY)
                 const lenDay = days - minDay
-                mthTxt = minM < 10 ? `0${minM}` : mth
+                mthTxt = minM < 10 ? `0${minM}` : minM
                 if (minM == mNow && minY == yNow) {
                     lstMMYYY.push({
                         colspan: lenDay, MM: mthTxt, YYYY: minY,
@@ -227,6 +227,12 @@ Vue.component('vw-overview', {
                     setMinS(act.Start)
                 }
             }
+            if (minS === Number.MAX_SAFE_INTEGER) {
+                const dNow = new Date()
+                const yy = dNow.getFullYear()
+                const mth = dNow.getMonth()
+                return new Date(yy, mth, 1)
+            }
             return minS
             function setMinS(start) {
                 if (!start) return
@@ -243,11 +249,33 @@ Vue.component('vw-overview', {
                     setMaxE(act.End)
                 }
             }
+            if (maxE < 1) {
+                const maxS = this.getMaxS(subs)
+                const minS = this.getMinS(subs)
+                if (minS < maxS) return maxS + 7 * 24000 * 3600
+                return minS + 69 * 24000 * 3600
+            }
             return maxE
             function setMaxE(end) {
                 if (!end) return
                 const eStart = end.getTime()
                 if (maxE < eStart) maxE = eStart
+            }
+        },
+        getMaxS(subs) {
+            let maxS = 0
+            for (let isb = 0; isb < subs.length; isb++) {
+                const sub = subs[isb]
+                for (let ia = 0; ia < sub.Actions.length; ia++) {
+                    const act = sub.Actions[ia]
+                    setMaxS(act.Start)
+                }
+            }
+            return maxS
+            function setMaxS(start) {
+                if (!start) return
+                const eStart = start.getTime()
+                if (maxS < eStart) maxS = eStart
             }
         },
         daysInMonth(month, year) {  // month: 1-12

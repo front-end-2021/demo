@@ -151,8 +151,7 @@
                             <span class="text-center text-secondary">Last</span>
                             <span class="text-center text-secondary">End</span>
                         </div>
-                        <sub-view inline-template v-for="sub in subs" :item="sub"
-                            :key="newGuid()">
+                        <sub-view inline-template v-for="sub in subs" :item="sub" :key="newGuid()">
                             <div class="view-sub">
                                 <div class="d-inline-grid align-items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -163,14 +162,12 @@
                                     <h5>{{item.Name}}</h5>
                                 </div>
                                 <div class="list-action d-flex flex-column">
-                                    <action-view inline-template v-for="act in item.Actions" 
-                                        :item="act" :key="getKeyAction(act.Id)">
+                                    <action-view inline-template v-for="act in item.Actions" :item="act"
+                                        :key="getKeyAction(act.Id)">
                                         <div class="d-inline-grid align-items-center">
                                             <input class="form-check-input mt-0" type="checkbox">
-                                            <p class="a-name mb-0 ms-2"
-                                                @click.stop="onClickScrollTo">{{item.Name}}</p>
-                                            <span class="text-center" 
-                                                :data-title="YearStart || null">{{Start}}</span>
+                                            <p class="a-name mb-0 ms-2" @click.stop="onClickScrollTo">{{item.Name}}</p>
+                                            <span class="text-center" :data-title="YearStart || null">{{Start}}</span>
                                             <span class="text-center"
                                                 :class="[ End == '-' ? 'text-black-50' : '' ]">{{End}}</span>
                                             <span class="text-center" :data-title="YearEnd || null"
@@ -188,9 +185,11 @@
                         <table class="vwCalendar" style="height: 52px;">
                             <thead>
                                 <tr>
-                                    <th v-for="month in ListMonth" :colspan="month.colspan" class="text-center" :class="[
+                                    <th v-for="month in ListMonth" 
+                                        :colspan="month.colspan" class="text-center" 
+                                        :class="[
                                             month.IsNow ? 'text-primary' : ''
-                                        ]">{{month.MM}}-{{month.YYYY}}</th>
+                                        ]">{{month.MM}}{{month.colspan > 2 ? '/' + month.YYYY : ''}}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -204,13 +203,10 @@
                             </tbody>
                         </table>
                         <div class="group-sub" v-for="sub in subs">
-                            <action-time inline-template v-for="act in sub.Actions" 
-                                :item="act" :key="getKeyAction(act.Id)">
+                            <action-time inline-template v-for="act in sub.Actions" :item="act"
+                                :key="getKeyAction(act.Id)">
                                 <div class="dnb-act-time d-inline-block">
-                                    <span class="d-inline-block"
-                                        :atime-id="item.Id" 
-                                        :class="[ClssStatus]" 
-                                        :style="[{
+                                    <span class="d-inline-block" :atime-id="item.Id" :class="[ClssStatus]" :style="[{
                                             width: Width, marginLeft: Left
                                         }, Border]" />
                                 </div>
