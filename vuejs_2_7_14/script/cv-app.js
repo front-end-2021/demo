@@ -19,9 +19,9 @@ new Vue({
     computed: {
         Subs() {
             const subs = []
-            for(let mi = 0; mi < this.Mains.length; mi++) {
+            for (let mi = 0; mi < this.Mains.length; mi++) {
                 const main = this.Mains[mi]
-                for(let si = 0; si < main.Subs.length; si++) {
+                for (let si = 0; si < main.Subs.length; si++) {
                     const sub = main.Subs[si]
                     subs.push(sub)
                 }
@@ -128,8 +128,8 @@ function getDataMains() {
     return Mains
 }
 function sortDate(d1, d2) {
-    if(!d1.Start) return 1
-    if(!d2.Start) return -1
+    if (!d1.Start) return 1
+    if (!d2.Start) return -1
     return d1.Start.getTime() - d2.Start.getTime()
 }
 function getRandomInt(min, max) {   // min <= x < max
@@ -138,7 +138,7 @@ function getRandomInt(min, max) {   // min <= x < max
     return Math.floor(Math.random() * (max - min) + min)
 }
 function getRandStart(bStart) {
-    if(bStart) {
+    if (bStart) {
         const dayPlus = getRandomInt(0, 15)
         const dTime = dayPlus * 3600 * 24000    // milisec
         return new Date(bStart.getTime() + dTime)

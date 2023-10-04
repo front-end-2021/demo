@@ -4,7 +4,8 @@ Vue.component('vw-overview', {
     inject: ['newGuid'],
     data() {
         return {
-            ListActionId: []
+            ListActionId: [],
+            IdActionsDone: [],
         }
     },
     computed: {
@@ -215,6 +216,14 @@ Vue.component('vw-overview', {
             getMinStart: () => { return this.getMinS(this.subs) },
             getMaxEnd: () => { return this.getMaxE(this.subs) },
             getKeyAction: this.getKeyAction,
+            toggleDone: (aId, isDone) => {
+                const ids = this.IdActionsDone
+                const i = ids.indexOf(aId)
+                if (i > -1) {
+                    if (!isDone) ids.splice(i, 1)
+                } else if (isDone) ids.push(aId)
+            },
+            aIsDone: this.aIsDone,
         }
     },
     methods: {
@@ -228,10 +237,7 @@ Vue.component('vw-overview', {
                 }
             }
             if (minS === Number.MAX_SAFE_INTEGER) {
-                const dNow = new Date()
-                const yy = dNow.getFullYear()
-                const mth = dNow.getMonth()
-                return new Date(yy, mth, 1)
+                return this.get1stDateNow()
             }
             return minS
             function setMinS(start) {
@@ -252,10 +258,10 @@ Vue.component('vw-overview', {
             if (maxE < 1) {
                 const maxS = this.getMaxS(subs)
                 const minS = this.getMinS(subs)
-                if (minS < maxS) return maxS + 7 * 24000 * 3600
+                if (minS < maxS) return maxS + 6 * 24000 * 3600
                 return minS + 69 * 24000 * 3600
             }
-            return maxE
+            return maxE + 6 * 24000 * 3600
             function setMaxE(end) {
                 if (!end) return
                 const eStart = end.getTime()
@@ -324,6 +330,14 @@ Vue.component('vw-overview', {
             lstActId.push({ Id: id, Guid: guid })
             return guid
         },
+        get1stDateNow() {
+            const dNow = new Date()
+            const yy = dNow.getFullYear()
+            const mth = dNow.getMonth()
+            return new Date(yy, mth, 1)
+        },
+        aIsDone(aId) { return this.IdActionsDone.includes(aId) },
+        
     },
     mounted() {
         this.stlWidthVwRight()
@@ -407,7 +421,6 @@ Vue.component('vw-inventory', {
 
         },
     },
-    //watch: { },
     provide() {
         return {
             getMinStart: () => {

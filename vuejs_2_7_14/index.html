@@ -162,15 +162,25 @@
                                     <h5>{{item.Name}}</h5>
                                 </div>
                                 <div class="list-action d-flex flex-column">
-                                    <action-view inline-template v-for="act in item.Actions" :item="act"
+                                    <action-view inline-template v-for="act in item.Actions" 
+                                        :item="act"
                                         :key="getKeyAction(act.Id)">
                                         <div class="d-inline-grid align-items-center">
-                                            <input class="form-check-input mt-0" type="checkbox">
+                                            <input v-if="IsDoneDisable" class="form-check-input mt-0" 
+                                                type="checkbox" checked disabled />
+                                            <input v-else-if="aIsDone(item.Id)"
+                                                class="form-check-input mt-0" type="checkbox"
+                                                checked @click.stop="() => checkToggleDone(false)" />
+                                            <input v-else
+                                                class="form-check-input mt-0" type="checkbox"
+                                                @click.stop="() => checkToggleDone(true)" />
                                             <p class="a-name mb-0 ms-2" @click.stop="onClickScrollTo">{{item.Name}}</p>
-                                            <span class="text-center" :data-title="YearStart || null">{{Start}}</span>
+                                            <span class="text-center" :data-title="YearStart || null"
+                                                @click.stop="onClickScrollToStart">{{Start}}</span>
                                             <span class="text-center"
                                                 :class="[ End == '-' ? 'text-black-50' : '' ]">{{End}}</span>
                                             <span class="text-center" :data-title="YearEnd || null"
+                                                @click.stop="onClickScrollToEnd"
                                                 :class="[ End == '-' ? 'text-black-50' : '' ]">{{End}}</span>
                                             <span
                                                 class="a-status text-center text-uppercase fw-bold text-white rounded-1"
@@ -206,7 +216,8 @@
                             <action-time inline-template v-for="act in sub.Actions" :item="act"
                                 :key="getKeyAction(act.Id)">
                                 <div class="dnb-act-time d-inline-block">
-                                    <span class="d-inline-block" :atime-id="item.Id" :class="[ClssStatus]" :style="[{
+                                    <span class="d-inline-block" :atime-id="item.Id" :class="[ClssStatus]" 
+                                        :style="[{
                                             width: Width, marginLeft: Left
                                         }, Border]" />
                                 </div>
@@ -218,7 +229,77 @@
         </vw-overview>
 
         <!-- Scrollable modal -->
-        <modal-pop v-show="ListModal.length"></modal-pop>
+        <modal-pop inline-template v-show="ListModal.length">
+            <div class="modal fade" id="modal-pop" tabindex="-1" 
+                data-bs-backdrop="static" data-bs-keyboard="false"
+                aria-labelledby="modal-pop-tlt" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div v-if="title != null" class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modal-pop-tlt">{{title}}</h5>
+                            <button type="button" class="btn-close" @click="closeModal" 
+                                data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form v-if="data.Type == 'UserInfo'">
+                                <div class="mb-3">
+                                    <label class="col-form-label">Name:</label>
+                                    <input type="text" class="form-control" v-model="data.title">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="col-form-label">Link:</label>
+                                    <textarea class="form-control" v-model="data.url"></textarea>
+                                </div>
+                            </form>
+                            <form v-if="data.Type == 'SignOut'">
+                                <div class="form-outline mb-4 mt-2">
+                                    <input type="email" class="form-control" v-model="data.email"
+                                        placeholder="Email address" />
+                                    <label class="form-label">Email address</label>
+                                </div>
+                                <div class="form-outline mb-4 mt-2">
+                                    <input type="password" class="form-control" placeholder="Password" />
+                                    <label class="form-label">Password</label>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col d-flex justify-content-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value=""
+                                                id="modal-pop-remem" checked />
+                                            <label class="form-check-label" 
+                                                for="modal-pop-remem"> Remember me </label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <a href="#!">Forgot password?</a>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <p>Not a member? <a href="#!">Register</a></p>
+                                    <p>or sign up with:</p>
+                                    <button type="button" class="btn btn-link btn-floating mx-1">
+                                        <span class="fab fa-facebook-f">face</span>
+                                    </button>
+                                    <button type="button" class="btn btn-link btn-floating mx-1">
+                                        <span class="fab fa-google">goog</span>
+                                    </button>
+                                    <button type="button" class="btn btn-link btn-floating mx-1">
+                                        <span class="fab fa-twitter">twitt</span>
+                                    </button>
+                                    <button type="button" class="btn btn-link btn-floating mx-1">
+                                        <span class="fab fa-github">git</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                                @click="() => { saveAndClose(data) }">{{message}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </modal-pop>
     </main>
 
     <script type="text/x-template" id="goal-item-temp">
@@ -244,82 +325,6 @@
         </div>
     </script>
 
-    <script type="text/x-template" id="modal-pop-temp">
-        <div class="modal fade" id="modal-pop" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
-                aria-labelledby="modal-pop-tlt" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div v-if="title != null" class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modal-pop-tlt">{{title}}</h5>
-                            <button type="button" class="btn-close" @click="closeModal" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form v-if="data.Type == 'UserInfo'">
-                                <div class="mb-3">
-                                    <label class="col-form-label">Name:</label>
-                                    <input type="text" class="form-control" v-model="data.title">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="col-form-label">Link:</label>
-                                    <textarea class="form-control" v-model="data.url"></textarea>
-                                </div>
-                            </form>
-                            <form v-if="data.Type == 'SignOut'">
-                                <div class="form-outline mb-4 mt-2">
-                                    <input type="email" class="form-control" v-model="data.email"
-                                        placeholder="Email address" />
-                                    <label class="form-label">Email address</label>
-                                </div>
-
-                                <div class="form-outline mb-4 mt-2">
-                                    <input type="password" class="form-control" placeholder="Password" />
-                                    <label class="form-label">Password</label>
-                                </div>
-
-                                <div class="row mb-4">
-                                    <div class="col d-flex justify-content-center">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value=""
-                                                id="modal-pop-remem" checked />
-                                            <label class="form-check-label" for="modal-pop-remem"> Remember me </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="col">
-                                        <a href="#!">Forgot password?</a>
-                                    </div>
-                                </div>
-
-                                <div class="text-center">
-                                    <p>Not a member? <a href="#!">Register</a></p>
-                                    <p>or sign up with:</p>
-                                    <button type="button" class="btn btn-link btn-floating mx-1">
-                                        <span class="fab fa-facebook-f">face</span>
-                                    </button>
-
-                                    <button type="button" class="btn btn-link btn-floating mx-1">
-                                        <span class="fab fa-google">goog</span>
-                                    </button>
-
-                                    <button type="button" class="btn btn-link btn-floating mx-1">
-                                        <span class="fab fa-twitter">twitt</span>
-                                    </button>
-
-                                    <button type="button" class="btn btn-link btn-floating mx-1">
-                                        <span class="fab fa-github">git</span>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                                @click="() => { saveAndClose(data) }">{{message}}</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </script>
     <script>
         HTMLElement.prototype.offset = function () {
             const el = this
