@@ -6,6 +6,7 @@ Vue.component('vw-overview', {
         return {
             ListActionId: [],
             IdActionsDone: [],
+            IdSubsCollapse: [],
         }
     },
     computed: {
@@ -224,6 +225,12 @@ Vue.component('vw-overview', {
                 } else if (isDone) ids.push(aId)
             },
             aIsDone: this.aIsDone,
+            toggleExpand: (sId) => {
+                const ii = this.IdSubsCollapse.indexOf(sId)
+                if (ii > -1) this.IdSubsCollapse.splice(ii, 1)
+                else this.IdSubsCollapse.push(sId)
+            },
+            isExpand: this.isExpand,
         }
     },
     methods: {
@@ -238,6 +245,12 @@ Vue.component('vw-overview', {
             }
             if (minS === Number.MAX_SAFE_INTEGER) {
                 return this.get1stDateNow()
+            }
+            const dNow = new Date()
+            dNow.setHours(0, 0, 0, 0)
+            const tNow = dNow.getTime()
+            if(tNow < minS) {
+                return tNow - 3 * 24000 * 3600
             }
             return minS
             function setMinS(start) {
@@ -260,6 +273,12 @@ Vue.component('vw-overview', {
                 const minS = this.getMinS(subs)
                 if (minS < maxS) return maxS + 6 * 24000 * 3600
                 return minS + 69 * 24000 * 3600
+            }
+            const dNow = new Date()
+            dNow.setHours(0, 0, 0, 0)
+            const tNow = dNow.getTime()
+            if(maxE < tNow) {
+                return tNow + 3 * 24000 * 3600
             }
             return maxE + 6 * 24000 * 3600
             function setMaxE(end) {
@@ -337,7 +356,7 @@ Vue.component('vw-overview', {
             return new Date(yy, mth, 1)
         },
         aIsDone(aId) { return this.IdActionsDone.includes(aId) },
-        
+        isExpand(sId){ return !this.IdSubsCollapse.includes(sId) },
     },
     mounted() {
         this.stlWidthVwRight()

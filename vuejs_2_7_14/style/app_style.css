@@ -140,7 +140,7 @@
     text-align: center;
     font-size: 14px;
 }
-
+.bi { cursor: pointer; }
 .list-left {
     background-color: white;
     padding-left: 12px;

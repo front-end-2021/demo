@@ -45,11 +45,9 @@
                                     <path id="p"
                                         d="M13.6086 30.0031 3.218 12.006A23.994 23.994 0 0 0 24.0025 48l10.3906-17.9971-.0067-.0068a11.9852 11.9852 0 0 1-20.7778.007Z" />
                                 </defs>
-
                                 <use xlink:href="#p" fill="url(#a)" transform="rotate(120 24 24)" />
                                 <use xlink:href="#p" fill="url(#b)" transform="rotate(-120 24 24)" />
                                 <use xlink:href="#p" fill="url(#c)" />
-
                                 <circle cx="24" cy="24" r="12" style="fill:#fff" />
                                 <circle cx="24" cy="24" r="9.5" style="fill:#1a73e8" />
                             </svg>
@@ -60,7 +58,7 @@
                                     :class="[i == viewIndex ? 'active' : 'link-body-emphasis']">{{mName}}</a>
                             </li>
                         </ul>
-                        <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" action="#">
+                        <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" name="dnbfctrl" role="search" action="#">
                             <input type="search" class="form-control" placeholder="Search..." aria-label="Search"
                                 v-model="TextSearch" v-on:keyup.enter="onSearch">
                         </form>
@@ -90,9 +88,7 @@
         </nav-bar>
 
         <vw-inventory inline-template v-if="NavBar.Index == 1" :mains="Mains">
-            <section class="container-fluid" v-bind:style="[
-                { width: WidthCtx }    
-            ]">
+            <section class="container-fluid" v-bind:style="[ { width: WidthCtx } ]">
                 <div class="list-main">
                     <item-mgoal v-for="main in ListMain" :item="main" :type="1" :key="getKey(1, main.Id)">
                         <div class="list-sub">
@@ -155,13 +151,16 @@
                             <div class="view-sub">
                                 <div class="d-inline-grid align-items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-caret-down-fill" viewBox="0 0 16 16">
-                                        <path
+                                        class="bi" :class="[ IsExpand ? 'bi-caret-down-fill' : 'bi-caret-right-fill' ]"
+                                        viewBox="0 0 16 16" @click.stop="onToggleExpand">
+                                        <path v-if="IsExpand"
                                             d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                                        <path v-else
+                                            d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
                                     </svg>
                                     <h5>{{item.Name}}</h5>
                                 </div>
-                                <div class="list-action d-flex flex-column">
+                                <div v-if="IsExpand" class="list-action d-flex flex-column">
                                     <action-view inline-template v-for="act in item.Actions" 
                                         :item="act"
                                         :key="getKeyAction(act.Id)">
@@ -213,7 +212,8 @@
                             </tbody>
                         </table>
                         <div class="group-sub" v-for="sub in subs">
-                            <action-time inline-template v-for="act in sub.Actions" :item="act"
+                            <action-time inline-template v-if="isExpand(sub.Id)"
+                                v-for="act in sub.Actions" :item="act"
                                 :key="getKeyAction(act.Id)">
                                 <div class="dnb-act-time d-inline-block">
                                     <span class="d-inline-block" :atime-id="item.Id" :class="[ClssStatus]" 

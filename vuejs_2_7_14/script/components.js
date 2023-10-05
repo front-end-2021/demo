@@ -375,14 +375,14 @@ Vue.component('action-view', {
                     return 'Cong';
             }
         },
-        IsDoneDisable(){
+        IsDoneDisable() {
             const item = this.item
-            if(item.End) {
+            if (item.End) {
                 const dNow = new Date()
                 dNow.setHours(0, 0, 0, 0)
                 const tNow = dNow.getTime()
                 const tEnd = item.End.getTime()
-                if(tEnd < tNow) {
+                if (tEnd < tNow) {
                     return true
                 }
             }
@@ -418,8 +418,12 @@ Vue.component('action-view', {
         },
         onClickScrollToEnd() {
             const item = this.item
-            if (!item.End) return
-
+            if (!item.End) {
+                if (this.End != '-') {
+                    this.scrollToX(-513, true)
+                }
+                return
+            }
             this.scrollToX(-513, true)
         },
         checkToggleDone(isDone) {
@@ -431,7 +435,16 @@ Vue.component('action-view', {
 
 Vue.component('sub-view', {
     props: ['item'],
-    inject: ['getKeyAction'],
+    inject: ['getKeyAction', 'toggleExpand', 'isExpand'],
+    computed: {
+        IsExpand() { return this.isExpand(this.item.Id) },
+    },
+    methods: {
+        onToggleExpand() {
+            const sId = this.item.Id
+            this.toggleExpand(sId)
+        },
+    },
 });
 const DayPxUnit = 20       // 1day = 20px
 Vue.component('action-time', {
