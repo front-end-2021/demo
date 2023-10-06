@@ -138,7 +138,6 @@
 .view-right td>span {
     width: 18px;
     text-align: center;
-    font-size: 14px;
 }
 .bi { cursor: pointer; }
 .list-left {
@@ -161,19 +160,19 @@
 
 .view-right table thead th {
     border-right: 1px solid #dee2e6;
-    font-size: 14px;
     white-space: nowrap;
 }
 
 .view-right table thead th:last-child {
     border-right: none;
 }
-
+.font14 {
+    font-size: 14px;
+}
 span[data-title] {
     position: relative;
     cursor: default;
 }
-
 span[data-title]::after {
     display: none;
 }
@@ -203,4 +202,23 @@ span[data-title]:hover::after {
 
 .dnb-act-time>* {
     height: 21px;
+}
+.sortable-swap-highlight,
+.sortable-chosen.sortable-ghost {
+    border-radius: 3px;
+}
+.sortable-chosen.sortable-ghost{
+    background-color: #dc3545;
+    color: #ffffff96 !important;
+}
+.sortable-chosen.sortable-ghost>*{
+    font-weight: normal !important;
+}
+.sortable-swap-highlight {
+    background-color: #0dcaf0;
+    font-weight: bold !important;
+}
+.sortable-swap-highlight input,
+.sortable-chosen.sortable-ghost input {
+    opacity: 0 !important;
 }

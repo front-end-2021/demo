@@ -347,8 +347,8 @@ Vue.component('action-view', {
                 const tNow = dNow.getTime()
                 const tStart = item.Start.getTime()
                 if (tStart < tNow) return this.getDDMM(dNow)
-
-                return this.getDDMM(new Date(tStart + 24000 * 3600))
+                return this.getDDMM(item.Start)
+                //return this.getDDMM(new Date(tStart + 24000 * 3600))
             }
             return this.getDDMM(item.End)
         },
@@ -438,11 +438,24 @@ Vue.component('sub-view', {
     inject: ['getKeyAction', 'toggleExpand', 'isExpand'],
     computed: {
         IsExpand() { return this.isExpand(this.item.Id) },
+        DragOptions(){
+            return {
+                group: 'action',
+                swap: true,
+                handle: "p.a-name",
+            }
+        },
     },
     methods: {
         onToggleExpand() {
             const sId = this.item.Id
             this.toggleExpand(sId)
+        },
+        onDragStart(evt) {
+
+        },
+        onDragEnd(evt) {
+
         },
     },
 });

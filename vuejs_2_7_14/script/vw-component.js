@@ -268,11 +268,14 @@ Vue.component('vw-overview', {
                     setMaxE(act.End)
                 }
             }
+            const maxS = this.getMaxS(subs)
             if (maxE < 1) {
-                const maxS = this.getMaxS(subs)
                 const minS = this.getMinS(subs)
                 if (minS < maxS) return maxS + 6 * 24000 * 3600
                 return minS + 69 * 24000 * 3600
+            }
+            if(maxE < maxS) {
+                maxE = maxS + 24000 * 3600
             }
             const dNow = new Date()
             dNow.setHours(0, 0, 0, 0)

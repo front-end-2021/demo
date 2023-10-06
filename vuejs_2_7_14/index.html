@@ -11,6 +11,8 @@
     <script src="script/boots/jquery-3.7.1.min.js"></script>
     <script src="script/boots/5.3.2_dist_js_bootstrap.bundle.min.js"></script>
     <script src="script/vuejs/dev_vue@2_7_14.js"></script>
+    <script src="script/vuejs/sortable1.13.0.min.js"></script>
+    <script src="script/vuejs/vuedraggable.umd.min.js"></script>
     <script src="script/vuejs/vue-observe-visibility.min.js"></script>
     <!-- <script src="script/vuejs/prod_vue@2_7_14.js"></script> -->
 </head>
@@ -160,10 +162,13 @@
                                     </svg>
                                     <h5>{{item.Name}}</h5>
                                 </div>
-                                <div v-if="IsExpand" class="list-action d-flex flex-column">
+                                <draggable v-if="IsExpand" class="list-action d-flex flex-column"
+                                        v-bind="DragOptions"
+                                        v-model="item.Actions"
+                                        @start="onDragStart" 
+                                        @end="onDragEnd" >
                                     <action-view inline-template v-for="act in item.Actions" 
-                                        :item="act"
-                                        :key="getKeyAction(act.Id)">
+                                        :item="act" :key="getKeyAction(act.Id)">
                                         <div class="d-inline-grid align-items-center">
                                             <input v-if="IsDoneDisable" class="form-check-input mt-0" 
                                                 type="checkbox" checked disabled />
@@ -174,11 +179,11 @@
                                                 class="form-check-input mt-0" type="checkbox"
                                                 @click.stop="() => checkToggleDone(true)" />
                                             <p class="a-name mb-0 ms-2" @click.stop="onClickScrollTo">{{item.Name}}</p>
-                                            <span class="text-center" :data-title="YearStart || null"
+                                            <span class="text-center font14" :data-title="YearStart || null"
                                                 @click.stop="onClickScrollToStart">{{Start}}</span>
-                                            <span class="text-center"
+                                            <span class="text-center font14"
                                                 :class="[ End == '-' ? 'text-black-50' : '' ]">{{End}}</span>
-                                            <span class="text-center" :data-title="YearEnd || null"
+                                            <span class="text-center font14" :data-title="YearEnd || null"
                                                 @click.stop="onClickScrollToEnd"
                                                 :class="[ End == '-' ? 'text-black-50' : '' ]">{{End}}</span>
                                             <span
@@ -186,7 +191,7 @@
                                                 :class="[ClssStatus]">{{Status}}</span>
                                         </div>
                                     </action-view>
-                                </div>
+                                </draggable>
                             </div>
                         </sub-view>
                     </div>
@@ -195,7 +200,7 @@
                             <thead>
                                 <tr>
                                     <th v-for="month in ListMonth" 
-                                        :colspan="month.colspan" class="text-center" 
+                                        :colspan="month.colspan" class="text-center font14" 
                                         :class="[
                                             month.IsNow ? 'text-primary' : ''
                                         ]">{{month.MM}}{{month.colspan > 2 ? '/' + month.YYYY : ''}}</th>
@@ -204,7 +209,7 @@
                             <tbody>
                                 <tr>
                                     <td v-for="dd in ListDay">
-                                        <span class="d-inline-block" :class="[
+                                        <span class="d-inline-block font14" :class="[
                                                 dd.IsNow ? 'text-primary' : ''
                                             ]">{{dd.day}}</span>
                                     </td>
