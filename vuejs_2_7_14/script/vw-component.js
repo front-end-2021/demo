@@ -1,4 +1,3 @@
-
 Vue.component('vw-overview', {
     props: ['subs'],
     inject: ['newGuid'],
@@ -7,6 +6,7 @@ Vue.component('vw-overview', {
             ListActionId: [],
             IdActionsDone: [],
             IdSubsCollapse: [],
+            IdSubsSync: [],
         }
     },
     computed: {
@@ -231,6 +231,16 @@ Vue.component('vw-overview', {
                 else this.IdSubsCollapse.push(sId)
             },
             isExpand: this.isExpand,
+            sIsSync: this.sIsSync,
+            syncSubToCloud: (sId) => {
+                const ii = this.IdSubsSync.indexOf(sId)
+                if(ii > -1) {
+                    const sub = this.subs.find(x => x.Id == sId)
+                    const subCopy = JSON.parse(JSON.stringify(sub))
+                    console.log('sync sub to server', subCopy)
+                    this.IdSubsSync.splice(ii, 1)
+                }
+            },
         }
     },
     methods: {
@@ -249,7 +259,7 @@ Vue.component('vw-overview', {
             const dNow = new Date()
             dNow.setHours(0, 0, 0, 0)
             const tNow = dNow.getTime()
-            if(tNow < minS) {
+            if (tNow < minS) {
                 return tNow - 3 * 24000 * 3600
             }
             return minS
@@ -274,13 +284,13 @@ Vue.component('vw-overview', {
                 if (minS < maxS) return maxS + 6 * 24000 * 3600
                 return minS + 69 * 24000 * 3600
             }
-            if(maxE < maxS) {
+            if (maxE < maxS) {
                 maxE = maxS + 24000 * 3600
             }
             const dNow = new Date()
             dNow.setHours(0, 0, 0, 0)
             const tNow = dNow.getTime()
-            if(maxE < tNow) {
+            if (maxE < tNow) {
                 return tNow + 3 * 24000 * 3600
             }
             return maxE + 6 * 24000 * 3600
@@ -359,7 +369,8 @@ Vue.component('vw-overview', {
             return new Date(yy, mth, 1)
         },
         aIsDone(aId) { return this.IdActionsDone.includes(aId) },
-        isExpand(sId){ return !this.IdSubsCollapse.includes(sId) },
+        isExpand(sId) { return !this.IdSubsCollapse.includes(sId) },
+        sIsSync(sId) { return this.IdSubsSync.includes(sId) },
     },
     mounted() {
         this.stlWidthVwRight()
@@ -382,10 +393,32 @@ Vue.component('vw-overview', {
     updated() {
         this.stlWidthVwRight()
 
-        if (typeof window.fncQueuScrollToDateNow == 'function') {
-            window.fncQueuScrollToDateNow()
+        processScroll()
+        processDnd.call(this)
+
+        function processScroll() {
+            if (typeof window.fncQueuScrollToDateNow == 'function') {
+                window.fncQueuScrollToDateNow()
+            }
+            delete window.fncQueuScrollToDateNow
         }
-        delete window.fncQueuScrollToDateNow
+        function processDnd() {
+            const srcSubId = window.SrcSubId
+            const desSubId = window.DesSubId
+            if (typeof srcSubId != 'number' || typeof desSubId != 'number') {
+                delete window.SrcSubId
+                delete window.DesSubId
+                return
+            }
+            if (srcSubId === desSubId) {
+                if (!this.IdSubsSync.includes(srcSubId)) this.IdSubsSync.push(srcSubId)
+            } else {
+                if (!this.IdSubsSync.includes(srcSubId)) this.IdSubsSync.push(srcSubId)
+                if (!this.IdSubsSync.includes(desSubId)) this.IdSubsSync.push(desSubId)
+            }
+            delete window.SrcSubId
+            delete window.DesSubId
+        }
     },
 });
 

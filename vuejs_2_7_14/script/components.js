@@ -435,7 +435,7 @@ Vue.component('action-view', {
 
 Vue.component('sub-view', {
     props: ['item'],
-    inject: ['getKeyAction', 'toggleExpand', 'isExpand'],
+    inject: ['getKeyAction', 'toggleExpand', 'isExpand', 'sIsSync', 'syncSubToCloud'],
     computed: {
         IsExpand() { return this.isExpand(this.item.Id) },
         DragOptions(){
@@ -445,18 +445,30 @@ Vue.component('sub-view', {
                 handle: "p.a-name",
             }
         },
+        NeedSync(){ return this.sIsSync(this.item.Id) },
     },
     methods: {
-        onToggleExpand() {
-            const sId = this.item.Id
-            this.toggleExpand(sId)
-        },
-        onDragStart(evt) {
+        onToggleExpand() { this.toggleExpand(this.item.Id) },
+        syncToCloud(){ this.syncSubToCloud(this.item.Id) },
+        onDndStart(evt) { },
+        checkMove(evt) {
+            const srcTarget = evt.dragged
+            let srcE = evt.draggedContext
+            srcE = srcE ? srcE.element : {}
 
-        },
-        onDragEnd(evt) {
+            const desTarget = evt.related
+            let desE = evt.relatedContext
+            desE = desE ? desE.element : {}
 
+            const srcSubId = parseInt(srcTarget.getAttribute('subid'))
+            const desSubId = parseInt(desTarget.getAttribute('subid'))
+            window.SrcSubId = srcSubId
+            window.DesSubId = desSubId
         },
+        onDndEnd(evt) {
+            delete window.SrcSubId
+            delete window.DesSubId
+        }
     },
 });
 const DayPxUnit = 20       // 1day = 20px
