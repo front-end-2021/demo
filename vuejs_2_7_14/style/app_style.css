@@ -152,7 +152,11 @@
 .bi {
     cursor: pointer;
 }
-.bi-cloud-check {cursor: default;}
+
+.bi-cloud-check {
+    cursor: default;
+}
+
 .list-left {
     background-color: white;
     padding-left: 12px;
@@ -244,4 +248,39 @@ span[data-title]:hover::after {
 .sortable-swap-highlight input,
 .sortable-chosen.sortable-ghost input {
     opacity: 0 !important;
+}
+
+/* vw-overview */
+.sub-viewaction .item-wrap {
+    margin-bottom: 12px;
+}
+.item-wrap {
+    width: 288px;
+}
+.item-wrap>h6.item-name {
+    display: block;
+}
+.list-main-goal, .list-sub-goal {
+    margin-bottom: 12px;
+}
+.list-main-goal,
+.list-sub-goal {
+    grid-template-columns: 288px auto;
+    grid-column-gap: 12px;
+}
+.main-wrap,
+.sub-wrap {
+    position: sticky;
+    top: 0;
+}
+.item-start-end>.bi-clock {
+    width: 12px;
+    height: 12px;
+}
+
+.vlist-action {
+    width: calc(100vw - 2 * 288px - 53px);
+}
+.vlist-action > .vcol-action {
+    padding-right: 12px;
 }

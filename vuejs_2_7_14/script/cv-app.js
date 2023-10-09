@@ -3,7 +3,7 @@ new Vue({
     name: 'cv-app',
     data: {
         NavBar: {
-            Index: 0,
+            Index: 2,
             NavPages: ['Overview', 'Inventory', 'Customers', 'Products'],
             UserMenus: [
                 { id: 1, url: '#new-project', title: 'New project...' },
@@ -15,6 +15,9 @@ new Vue({
         },
         Mains: [],
         ListModal: [],  // [{Type, Title, Body}]
+        IdsGoalMap: [],
+        IdsSubMap: [],
+        IdsActionMap: [],
     },
     computed: {
         Subs() {
@@ -70,7 +73,36 @@ new Vue({
                 this.closeModal()
             },
             setSearchText: (txt) => { this.SearchText = txt },
-            newGuid: this.newGuid,
+            getKey: (type, id) => {
+                let item
+                switch (type) {
+                    case 3:
+                        item = this.IdsActionMap.find(x => x.Id == id)
+                        break;
+                    case 2:
+                        item = this.IdsSubMap.find(x => x.Id == id)
+                        break;
+                    case 1:
+                        item = this.IdsGoalMap.find(x => x.Id == id)
+                        break;
+                }
+                if (item) {
+                    return item.Guid
+                }
+                const guid = this.newGuid()
+                switch (type) {
+                    case 3:
+                        this.IdsActionMap.push({ Id: id, Guid: guid })
+                        break;
+                    case 2:
+                        this.IdsSubMap.push({ Id: id, Guid: guid })
+                        break;
+                    case 1:
+                        this.IdsGoalMap.push({ Id: id, Guid: guid })
+                        break;
+                }
+                return guid
+            },
         }
     },
     methods: {

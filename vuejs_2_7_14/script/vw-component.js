@@ -1,9 +1,8 @@
 Vue.component('vw-overview', {
     props: ['subs'],
-    inject: ['newGuid'],
+    inject: ['getKey'],
     data() {
         return {
-            ListActionId: [],
             IdActionsDone: [],
             IdSubsCollapse: [],
             IdSubsSync: [],
@@ -216,7 +215,6 @@ Vue.component('vw-overview', {
         return {
             getMinStart: () => { return this.getMinS(this.subs) },
             getMaxEnd: () => { return this.getMaxE(this.subs) },
-            getKeyAction: this.getKeyAction,
             toggleDone: (aId, isDone) => {
                 const ids = this.IdActionsDone
                 const i = ids.indexOf(aId)
@@ -352,16 +350,6 @@ Vue.component('vw-overview', {
             if (!table) return
             vwRight.style.width = `${table.offsetWidth}px`
         },
-        getKeyAction(id) {
-            const lstActId = this.ListActionId
-            const act = lstActId.find(x => x.Id === id)
-            if (act) {
-                return act.Guid
-            }
-            const guid = this.newGuid()
-            lstActId.push({ Id: id, Guid: guid })
-            return guid
-        },
         get1stDateNow() {
             const dNow = new Date()
             const yy = dNow.getFullYear()
@@ -423,7 +411,7 @@ Vue.component('vw-overview', {
 });
 
 Vue.component('vw-inventory', {
-    inject: ['getNavIndex', 'newGuid'],
+    inject: ['getNavIndex', 'getKey'],
     props: ['mains'],
     data() {
         return {
@@ -488,44 +476,10 @@ Vue.component('vw-inventory', {
             },
         }
     },
-    methods: {
-        getKey(type, id, pId, mId) {
-            let item
-            switch (type) {
-                case 3:
-                    item = this.IdsActionMap.find(x => x.Id == id && x.SubId == pId && x.MainId == mId)
-                    break;
-                case 2:
-                    item = this.IdsGoalMap.find(x => x.MainId == pId && x.Id == id)
-                    break;
-                case 1:
-                    item = this.IdsGoalMap.find(x => x.Id == id)
-                    break;
-            }
-            if (item) {
-                return item.Guid
-            }
-            const guid = this.newGuid()
-            switch (type) {
-                case 3:
-                    this.IdsActionMap.push({
-                        Id: id, Guid: guid,
-                        MainId: mId, SubId: pId
-                    })
-                    break;
-                case 2:
-                    this.IdsGoalMap.push({
-                        Id: id, Guid: guid, MainId: pId
-                    })
-                    break;
-                case 1:
-                    this.IdsGoalMap.push({
-                        Id: id, Guid: guid
-                    })
-                    break;
-            }
-            return guid
-        },
-
-    },
+    
 });
+Vue.component('vw-customer', {
+    inject: ['getKey'],
+    props: ['mains'],
+
+})

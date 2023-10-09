@@ -39,8 +39,6 @@ const itemGA = {
     data() {
         return {
             IsInView: true,
-            IsEditName: false,
-            Name: this.item.Name,
         }
     },
     computed: {
@@ -62,7 +60,6 @@ const itemGA = {
         },
     },
     mounted() {
-
         window.addEventListener('scroll', this.onWindowScroll)
     },
     beforeUpdate() {
@@ -76,6 +73,34 @@ const itemGA = {
             const height = this.$el.offsetHeight
             this.$el.style.height = `${height}px`
         }
+    },
+    methods: {
+        onObsVisible(isVisible, entry) {
+            this.IsInView = isVisible
+        },
+    },
+}
+const itemEditable = {    
+    data() {
+        return {
+            IsEditName: false,
+            Name: this.item.Name,
+        }
+    },
+    methods: {
+        ondblclickName() {
+            window.DainbCacheScrollLeft = document.querySelector('html').scrollLeft
+            this.IsEditName = true
+        },
+        onCancelSetName() {
+            this.IsEditName = false
+            this.Name = this.item.Name
+        },
+        onWindowScroll(e) {
+            if (typeof window.DnbIsChangeScrollLeft == 'undefined') {
+                this.onCancelSetName()
+            } else delete window.DnbIsChangeScrollLeft
+        },
     },
     updated() {
         focusEditName.call(this)
@@ -92,31 +117,13 @@ const itemGA = {
             delete window.DainbCacheScrollLeft
         }
     },
-    methods: {
-        onObsVisible(isVisible, entry) {
-            this.IsInView = isVisible
-        },
-        ondblclickName() {
-            window.DainbCacheScrollLeft = document.querySelector('html').scrollLeft
-            this.IsEditName = true
-        },
-        onCancelSetName() {
-            this.IsEditName = false
-            this.Name = this.item.Name
-        },
-        onWindowScroll(e) {
-            if (typeof window.DnbIsChangeScrollLeft == 'undefined') {
-                this.onCancelSetName()
-            } else delete window.DnbIsChangeScrollLeft
-        },
-    },
     beforeDestroy() {
 
         window.removeEventListener('scroll', this.onWindowScroll)
     },
 }
 Vue.component('item-action', {
-    mixins: [itemGA],
+    mixins: [itemGA, itemEditable],
     props: ['mid', 'sid', 'index', 'actions'],
     inject: ['getMinStart', 'getMaxEnd'],
     computed: {
@@ -253,7 +260,7 @@ const itemGoal = {
 }
 Vue.component('item-subgoal', {
     template: '#goal-item-temp',
-    mixins: [itemGA, itemGoal],
+    mixins: [itemGA, itemEditable, itemGoal],
     props: ['mid'],
     inject: ['getMinStart'],
     computed: {
@@ -273,7 +280,7 @@ Vue.component('item-subgoal', {
 
 Vue.component('item-mgoal', {
     template: '#goal-item-temp',
-    mixins: [itemGA, itemGoal],
+    mixins: [itemGA, itemEditable, itemGoal],
     computed: {
         domId() { return `m_${this.item.Id}` },
     },
@@ -435,21 +442,21 @@ Vue.component('action-view', {
 
 Vue.component('sub-view', {
     props: ['item'],
-    inject: ['getKeyAction', 'toggleExpand', 'isExpand', 'sIsSync', 'syncSubToCloud'],
+    inject: ['toggleExpand', 'isExpand', 'sIsSync', 'syncSubToCloud', 'getKey'],
     computed: {
         IsExpand() { return this.isExpand(this.item.Id) },
-        DragOptions(){
+        DragOptions() {
             return {
                 group: 'action',
                 swap: true,
                 handle: "p.a-name",
             }
         },
-        NeedSync(){ return this.sIsSync(this.item.Id) },
+        NeedSync() { return this.sIsSync(this.item.Id) },
     },
     methods: {
         onToggleExpand() { this.toggleExpand(this.item.Id) },
-        syncToCloud(){ this.syncSubToCloud(this.item.Id) },
+        syncToCloud() { this.syncSubToCloud(this.item.Id) },
         onDndStart(evt) { },
         checkMove(evt) {
             const srcTarget = evt.dragged
@@ -547,6 +554,79 @@ Vue.component('action-time', {
             }
             return item.End.getTime()
         },
+    },
+})
+
+Vue.component('vitem-wrap', {
+    template: '#vitem-wrap-temp',
+    mixins: [itemGA],
+    methods: {
+        styleHeight() {
+            const thisEl = this.$el
+            const children = thisEl.children
+            let height = 0
+            for (let i = 0; i < children.length; i++) {
+                const child = children[i]
+                height += child.offsetHeight
+            }
+            thisEl.style.height = `${height + 60}px`
+        },
+    },
+    mounted() {
+        this.styleHeight()
+    },
+    updated() {
+        this.styleHeight()
+    }
+})
+Vue.component('group-action', {
+    props: ['actions'],
+    inject: ['getKey'],
+    data() {
+        return {
+            MCount: 2
+        }
+    },
+    computed: {
+        VColumn() {
+            const lstA = this.actions
+            const lenA = lstA.length
+            const vCol = []
+            for (let cl = 0; cl < this.MCount; cl++) {
+                vCol.push([])
+            }
+            for (let i = 0; i < lenA; i++) {
+                const cl = i % this.MCount
+                if (!vCol[cl]) vCol[cl] = []
+                vCol[cl].push(lstA[i])
+            }
+            return vCol
+        },        
+        DragOptions() {
+            return {
+                group: 'action',
+                swap: true,
+                handle: ".item-name",
+            }
+        },
+    },
+    mounted() {
+        const thisEl = this.$el
+        this.setMCount(thisEl.offsetWidth)
+        window.addEventListener('resize', this.onResize)
+    },
+    methods: {
+        setMCount(width) {
+            const itemWidth = 288
+            this.MCount = Math.floor(width / itemWidth)
+        },
+        onResize() {
+            const thisEl = this.$el
+            this.setMCount(thisEl.offsetWidth)
+        },
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.onResize)
     },
 })
 
