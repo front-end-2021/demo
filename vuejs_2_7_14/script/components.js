@@ -80,7 +80,7 @@ const itemGA = {
         },
     },
 }
-const itemEditable = {    
+const itemEditable = {
     data() {
         return {
             IsEditName: false,
@@ -581,27 +581,23 @@ Vue.component('vitem-wrap', {
 })
 Vue.component('group-action', {
     props: ['actions'],
-    inject: ['getKey'],
-    data() {
-        return {
-            MCount: 2
-        }
-    },
+    inject: ['getKey', 'getMCount'],
     computed: {
         VColumn() {
             const lstA = this.actions
             const lenA = lstA.length
             const vCol = []
-            for (let cl = 0; cl < this.MCount; cl++) {
+            const mCount = this.getMCount()
+            for (let cl = 0; cl < mCount; cl++) {
                 vCol.push([])
             }
             for (let i = 0; i < lenA; i++) {
-                const cl = i % this.MCount
+                const cl = i % mCount
                 if (!vCol[cl]) vCol[cl] = []
                 vCol[cl].push(lstA[i])
             }
             return vCol
-        },        
+        },
         DragOptions() {
             return {
                 group: 'action',
@@ -610,23 +606,11 @@ Vue.component('group-action', {
             }
         },
     },
-    mounted() {
-        const thisEl = this.$el
-        this.setMCount(thisEl.offsetWidth)
-        window.addEventListener('resize', this.onResize)
-    },
     methods: {
-        setMCount(width) {
-            const itemWidth = 288
-            this.MCount = Math.floor(width / itemWidth)
+        checkMove(evt) { },
+        onDndEnd(evt) {
+
         },
-        onResize() {
-            const thisEl = this.$el
-            this.setMCount(thisEl.offsetWidth)
-        },
-    },
-    beforeDestroy() {
-        window.removeEventListener('resize', this.onResize)
     },
 })
 

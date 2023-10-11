@@ -232,7 +232,7 @@ Vue.component('vw-overview', {
             sIsSync: this.sIsSync,
             syncSubToCloud: (sId) => {
                 const ii = this.IdSubsSync.indexOf(sId)
-                if(ii > -1) {
+                if (ii > -1) {
                     const sub = this.subs.find(x => x.Id == sId)
                     const subCopy = JSON.parse(JSON.stringify(sub))
                     console.log('sync sub to server', subCopy)
@@ -476,10 +476,41 @@ Vue.component('vw-inventory', {
             },
         }
     },
-    
+
 });
 Vue.component('vw-customer', {
     inject: ['getKey'],
     props: ['mains'],
+    data() {
+        return {
+            MCount: 2
+        }
+    },
+    provide() {
+        return {
+            getMCount: () => { return this.MCount },
+        }
+    },
+    methods: {
+        setMCount() {
+            const sViewA = this.$el.querySelector('.sub-viewaction')
+            if (!sViewA) return
 
+            const itemWidth = 288
+            this.MCount = Math.floor(sViewA.offsetWidth / itemWidth)
+        },
+        onResize() {
+            this.setMCount()
+        },
+    },
+    mounted() {
+        this.setMCount()
+        window.addEventListener('resize', this.onResize)
+    },
+    updated() {
+        this.setMCount()
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.onResize)
+    },
 })

@@ -262,9 +262,10 @@
                                     <div class="vlist-action d-flex">
                                         <div v-for="vcol in VColumn" 
                                             class="vcol-action">
-                                            <draggable 
+                                            <draggable class="dnd-wrap"
                                                 v-bind="DragOptions"
-                                                :list="vcol">
+                                                :list="vcol"
+                                                @end="onDndEnd" :move="checkMove">
                                                 <vitem-wrap v-for="action in vcol" :key="getKey(3, action.Id)"
                                                     :class="['action-wrap']" :item="action">
 
