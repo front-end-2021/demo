@@ -232,12 +232,14 @@ span[data-title]:hover::after {
 }
 
 .sortable-chosen.sortable-ghost {
-    background-color: #dc3545;
+    background-color: #f3f3f3;
     color: #ffffff96 !important;
 }
 
 .sortable-chosen.sortable-ghost>* {
     font-weight: normal !important;
+    color: transparent !important;
+    background-color: #f3f3f3 !important;
 }
 
 .sortable-swap-highlight {

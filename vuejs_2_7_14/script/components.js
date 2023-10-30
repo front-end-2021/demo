@@ -399,6 +399,9 @@ Vue.component('action-view', {
     methods: {
         getDDMM(date) {
             if (!date) return '-'
+            if(typeof date == 'number') {
+                date = new Date(date)
+            }
             const dd = date.getDate()
             const mm = date.getMonth()
             return `${dd}/${mm + 1}`
@@ -581,7 +584,7 @@ Vue.component('vitem-wrap', {
 })
 Vue.component('group-action', {
     props: ['actions'],
-    inject: ['getKey', 'getMCount'],
+    inject: ['getKey', 'getMCount', 'getDndOptions'],
     computed: {
         VColumn() {
             const lstA = this.actions
@@ -597,13 +600,6 @@ Vue.component('group-action', {
                 vCol[cl].push(lstA[i])
             }
             return vCol
-        },
-        DragOptions() {
-            return {
-                group: 'action',
-                swap: true,
-                handle: ".item-name",
-            }
         },
     },
     methods: {

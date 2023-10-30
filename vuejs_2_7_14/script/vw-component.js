@@ -489,9 +489,29 @@ Vue.component('vw-customer', {
     provide() {
         return {
             getMCount: () => { return this.MCount },
+            getDndOptions: this.getDndOptions,
         }
     },
     methods: {
+        getDndOptions(type) {
+            const option = {
+                swap: true,
+                handle: ".item-name",
+            }
+            switch(type) {
+                case 1: // main
+                    option.group = 'main'
+                break;
+                case 2: // sub
+                    option.group = 'sub'
+                    option.handle = '.sub-wrap .item-name'
+                break;
+                case 3: // action
+                    option.group = 'action'
+                break;
+            }
+            return option
+        },
         setMCount() {
             const sViewA = this.$el.querySelector('.sub-viewaction')
             if (!sViewA) return

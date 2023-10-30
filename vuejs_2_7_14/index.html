@@ -251,31 +251,42 @@
                     </vitem-wrap>
                     <div class="goal-viewsub">
                         <h6>List Sub-goal</h6>
-                        <div v-for="sub in main.Subs" :key="getKey(2, sub.Id)"
-                            class="list-sub-goal d-grid">
-                            <vitem-wrap :class="['sub-wrap']" :item="sub">
+                        <draggable :list="main.Subs"
+                            class="dnd-subs"
+                            v-bind="getDndOptions(2)" >
+                            <div v-for="sub in main.Subs" 
+                                class="list-sub-goal d-grid">
+                                <vitem-wrap :item="sub"
+                                    :key="getKey(2, sub.Id)"
+                                    :class="['sub-wrap']" >
 
-                            </vitem-wrap>
-                            <div class="sub-viewaction">
-                                <h6>List Action</h6>
-                                <group-action inline-template :actions="sub.Actions">
-                                    <div class="vlist-action d-flex">
-                                        <div v-for="vcol in VColumn" 
-                                            class="vcol-action">
-                                            <draggable class="dnd-wrap"
-                                                v-bind="DragOptions"
-                                                :list="vcol"
-                                                @end="onDndEnd" :move="checkMove">
-                                                <vitem-wrap v-for="action in vcol" :key="getKey(3, action.Id)"
-                                                    :class="['action-wrap']" :item="action">
+                                </vitem-wrap>
+                                
+                                <div class="sub-viewaction">
+                                    <h6>List Action</h6>
+                                    <group-action inline-template :actions="sub.Actions">
+                                        <div class="vlist-action d-flex">
+                                            <div v-for="(vcol, clm) in VColumn" 
+                                                class="vcol-action">
+                                                <draggable class="dnd-wrap"
+                                                    v-bind="getDndOptions(3)"
+                                                    :list="vcol"
+                                                    @end="onDndEnd" :move="checkMove">
+                                                    <vitem-wrap v-for="(action, row) in vcol" 
+                                                        :key="getKey(3, action.Id)"
+                                                        :class="['action-wrap']" 
+                                                        :pos-x="clm"
+                                                        :pos-y="row"
+                                                        :item="action">
 
-                                                </vitem-wrap>
-                                            </draggable>
+                                                    </vitem-wrap>
+                                                </draggable>
+                                            </div>
                                         </div>
-                                    </div>
-                                </group-action>
+                                    </group-action>
+                                </div>
                             </div>
-                        </div>
+                        </draggable>
                     </div>
                 </div>
             </section>
