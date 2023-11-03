@@ -89,16 +89,16 @@
             </header>
         </nav-bar>
 
-        <vw-inventory inline-template v-if="NavBar.Index == 1" :mains="Mains">
+        <vw-inventory inline-template v-if="NavBar.Index == 1" :mains="ListMains">
             <section class="container-fluid" v-bind:style="[ { width: WidthCtx } ]">
                 <div class="list-main">
-                    <item-mgoal v-for="main in ListMain" :item="main" :type="1" :key="getKey(1, main.Id)">
+                    <item-mgoal v-for="main in ListMain" :item="main" :type="1" :key="main.Guid">
                         <div class="list-sub">
-                            <item-subgoal v-for="sub in main.Subs" :key="getKey(2, sub.Id)" :item="sub"
+                            <item-subgoal v-for="sub in main.Subs" :key="sub.Guid" :item="sub"
                                 :mid="main.Id" :type="2">
                                 <div class="list-action">
                                     <item-action inline-template v-for="(act, ia) in sub.Actions"
-                                        :key="getKey(3, act.Id)" :index="ia" :actions="sub.Actions"
+                                        :key="act.Guid" :index="ia" :actions="sub.Actions"
                                         :item="act" :sid="sub.Id" :mid="main.Id">
                                         <div :id="domId" class="item-wrap"
                                             v-bind:style="[ styleWidth(), styleInline(), styleMrgLeft() ]"
@@ -149,7 +149,7 @@
                             <span class="text-center text-secondary">Last</span>
                             <span class="text-center text-secondary">End</span>
                         </div>
-                        <sub-view inline-template v-for="sub in subs" :item="sub" :key="getKey(2, sub.Id)">
+                        <sub-view inline-template v-for="sub in subs" :item="sub" :key="sub.Guid">
                             <div class="view-sub">
                                 <div class="d-inline-grid align-items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" @click.stop="onToggleExpand"
@@ -178,7 +178,7 @@
                                         @start="onDndStart" @end="onDndEnd" :move="checkMove">
                                     <action-view inline-template v-for="act in item.Actions"
                                         :subid="item.Id"
-                                        :item="act" :key="getKey(3, act.Id)">
+                                        :item="act" :key="act.Guid">
                                         <div class="d-inline-grid align-items-center">
                                             <input v-if="IsDoneDisable" class="form-check-input mt-0" 
                                                 type="checkbox" checked disabled />
@@ -229,7 +229,7 @@
                         <div class="group-sub" v-for="sub in subs">
                             <action-time inline-template v-if="isExpand(sub.Id)"
                                 v-for="act in sub.Actions" :item="act"
-                                :key="getKey(3, act.Id)">
+                                :key="act.Guid">
                                 <div class="dnb-act-time d-inline-block">
                                     <span class="d-inline-block" :atime-id="item.Id" :class="[ClssStatus]" 
                                         :style="[{
@@ -242,9 +242,9 @@
                 </div>
             </section>
         </vw-overview>
-        <vw-customer inline-template v-if="NavBar.Index == 2" :mains="Mains">
+        <vw-customer inline-template v-if="NavBar.Index == 2" :mains="ListMains">
             <section id="view-customer" style="padding: 12px;">
-                <div v-for="main in mains" :key="getKey(1, main.Id)"
+                <div v-for="main in mains" :key="main.Guid"
                     class="list-main-goal d-grid">
                     <vitem-wrap :class="['main-wrap']" :item="main">
 
@@ -255,9 +255,10 @@
                             class="dnd-subs"
                             v-bind="getDndOptions(2)" >
                             <div v-for="sub in main.Subs" 
+                                v-if="isShowSub(sub)"
                                 class="list-sub-goal d-grid">
                                 <vitem-wrap :item="sub"
-                                    :key="getKey(2, sub.Id)"
+                                    :key="sub.Guid"
                                     :class="['sub-wrap']" >
 
                                 </vitem-wrap>
@@ -273,7 +274,7 @@
                                                     :list="vcol"
                                                     @end="onDndEnd" :move="checkMove">
                                                     <vitem-wrap v-for="(action, row) in vcol" 
-                                                        :key="getKey(3, action.Id)"
+                                                        :key="action.Guid"
                                                         :class="['action-wrap']" 
                                                         :pos-x="clm"
                                                         :pos-y="row"

@@ -1,6 +1,5 @@
 Vue.component('vw-overview', {
     props: ['subs'],
-    inject: ['getKey'],
     data() {
         return {
             IdActionsDone: [],
@@ -411,14 +410,8 @@ Vue.component('vw-overview', {
 });
 
 Vue.component('vw-inventory', {
-    inject: ['getNavIndex', 'getKey'],
+    inject: ['getNavIndex' ],
     props: ['mains'],
-    data() {
-        return {
-            IdsGoalMap: [],
-            IdsActionMap: [],
-        }
-    },
     computed: {
         Index() { return this.getNavIndex() },
         ListMain() { return this.mains },
@@ -479,7 +472,6 @@ Vue.component('vw-inventory', {
 
 });
 Vue.component('vw-customer', {
-    inject: ['getKey'],
     props: ['mains'],
     data() {
         return {
@@ -521,6 +513,16 @@ Vue.component('vw-customer', {
         },
         onResize() {
             this.setMCount()
+        },
+        isShowSub(sub){
+            let isShow = this.$root.isInSearch(sub)
+            if(isShow) return true
+            for(let aa = 0; aa < sub.Actions.length; aa++) {
+                const action = sub.Actions[aa]
+                isShow = this.$root.isInSearch(action)
+                if(isShow) return true
+            }
+            return false
         },
     },
     mounted() {

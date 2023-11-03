@@ -15,18 +15,65 @@ new Vue({
         },
         Mains: [],
         ListModal: [],  // [{Type, Title, Body}]
-        IdsGoalMap: [],
-        IdsSubMap: [],
-        IdsActionMap: [],
     },
     computed: {
+        ListMains(){
+            const txtSearch = this.NavBar.SearchText
+            if(txtSearch == '') return this.Mains
+            const lstMain = []
+            for(let mm = 0; mm < this.Mains.length; mm++) {
+                const main = this.Mains[mm]
+                if(main.Name.includes(txtSearch)) {
+                    lstMain.push(main)
+                    continue
+                }
+                for(let ss = 0; ss < main.Subs.length; ss++) {
+                    const sub = main.Subs[ss]
+                    if(sub.Name.includes(txtSearch)) {
+                        lstMain.push(main)
+                        break
+                    }
+                    let isInSearch = false
+                    for(let aa = 0; aa < sub.Actions.length; aa++) {
+                        const action = sub.Actions[aa]
+                        if(action.Name.includes(txtSearch)) {
+                            lstMain.push(main)
+                            isInSearch = true
+                            break
+                        }
+                    }
+                    if(isInSearch) break
+                }
+            }
+            return lstMain
+        },
         Subs() {
             const subs = []
-            for (let mi = 0; mi < this.Mains.length; mi++) {
-                const main = this.Mains[mi]
+            for (let mi = 0; mi < this.ListMains.length; mi++) {
+                const main = this.ListMains[mi]
                 for (let si = 0; si < main.Subs.length; si++) {
                     const sub = main.Subs[si]
                     subs.push(sub)
+                }
+            }
+            
+            const txtSearch = this.NavBar.SearchText
+            if(txtSearch == '') return subs
+
+            for(let ss = subs.length - 1; ss > -1; ss--) {
+                const sub = subs[ss]
+                if(sub.Name.includes(txtSearch)) continue
+
+                let hasAction = false
+                for(let aa = 0; aa < sub.Actions.length; aa++) {
+                    const action = sub.Actions[aa]
+                    if(action.Name.includes(txtSearch)) {
+                        hasAction = true    
+                        break
+                    }
+                }
+                if(!hasAction) {
+                    subs.splice(ss, 1)
                 }
             }
             return subs
@@ -72,37 +119,6 @@ new Vue({
                 }
                 this.closeModal()
             },
-            setSearchText: (txt) => { this.SearchText = txt },
-            getKey: (type, id) => {
-                let item
-                switch (type) {
-                    case 3:
-                        item = this.IdsActionMap.find(x => x.Id == id)
-                        break;
-                    case 2:
-                        item = this.IdsSubMap.find(x => x.Id == id)
-                        break;
-                    case 1:
-                        item = this.IdsGoalMap.find(x => x.Id == id)
-                        break;
-                }
-                if (item) {
-                    return item.Guid
-                }
-                const guid = this.newGuid()
-                switch (type) {
-                    case 3:
-                        this.IdsActionMap.push({ Id: id, Guid: guid })
-                        break;
-                    case 2:
-                        this.IdsSubMap.push({ Id: id, Guid: guid })
-                        break;
-                    case 1:
-                        this.IdsGoalMap.push({ Id: id, Guid: guid })
-                        break;
-                }
-                return guid
-            },
         }
     },
     methods: {
@@ -113,9 +129,28 @@ new Vue({
                 (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
             )
         },
+        setSearchText(txt) { this.NavBar.SearchText = txt.trim() },        
+        isInSearch(item) {
+            const txtSearch = this.NavBar.SearchText
+            if(txtSearch == '') return true
+            if(item.Name.includes(txtSearch)) return true
+            return false
+        }
     },
     mounted() {
         this.Mains = getDataMains()
+        for(let mm = 0; mm < this.Mains.length; mm++) {
+            const main = this.Mains[mm]
+            main.Guid = this.newGuid()
+            for(let ss = 0; ss < main.Subs.length; ss++) {
+                const sub = main.Subs[ss]
+                sub.Guid = this.newGuid()
+                for(let aa = 0; aa < sub.Actions.length; aa++) {
+                    const action = sub.Actions[aa]
+                    action.Guid = this.newGuid()
+                }
+            }
+        }
     },
 })
 function getDataMains() {

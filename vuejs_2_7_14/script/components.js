@@ -6,10 +6,10 @@ function dateToString(date1) {
 }
 Vue.component('nav-bar', {
     props: ['view-index'],
-    inject: ['setNavIndex', 'pushModal', 'setSearchText'],
+    inject: [ 'setNavIndex', 'pushModal' ],
     data() {
         return {
-            TextSearch: this.$root.SearchText,
+            TextSearch: this.$root.NavBar.SearchText,
         }
     },
     computed: {
@@ -18,7 +18,7 @@ Vue.component('nav-bar', {
         User() { return this.$root.NavBar.User },
     },
     watch: {
-        TextSearch(txt) { this.setSearchText(txt) },
+        TextSearch(txt) { this.$root.setSearchText(txt) },
     },
     methods: {
         onSearch() {
@@ -445,7 +445,7 @@ Vue.component('action-view', {
 
 Vue.component('sub-view', {
     props: ['item'],
-    inject: ['toggleExpand', 'isExpand', 'sIsSync', 'syncSubToCloud', 'getKey'],
+    inject: ['toggleExpand', 'isExpand', 'sIsSync', 'syncSubToCloud' ],
     computed: {
         IsExpand() { return this.isExpand(this.item.Id) },
         DragOptions() {
@@ -584,7 +584,7 @@ Vue.component('vitem-wrap', {
 })
 Vue.component('group-action', {
     props: ['actions'],
-    inject: ['getKey', 'getMCount', 'getDndOptions'],
+    inject: [ 'getMCount', 'getDndOptions'],
     computed: {
         VColumn() {
             const lstA = this.actions
