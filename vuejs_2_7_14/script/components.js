@@ -76,6 +76,8 @@ const itemGA = {
     },
     methods: {
         onObsVisible(isVisible, entry) {
+            if(window.CustomerDndSrcId) return
+
             this.IsInView = isVisible
         },
     },
@@ -585,6 +587,11 @@ Vue.component('vitem-wrap', {
 Vue.component('group-action', {
     props: ['actions'],
     inject: [ 'getMCount', 'getDndOptions'],
+    data(){
+        return {
+            ListSortable: [],
+        }
+    },
     computed: {
         VColumn() {
             const lstA = this.actions
@@ -603,10 +610,57 @@ Vue.component('group-action', {
         },
     },
     methods: {
-        checkMove(evt) { },
-        onDndEnd(evt) {
-
+        bindDndAction(){
+            const options = this.getDndOptions(3)
+            options.onStart = this.onDndStart
+            options.onEnd = this.onDndEnd
+            options.onMove = this.checkMove
+            const lstSortable = this.ListSortable
+            this.$el.querySelectorAll('.dnd-wrap').forEach(elDnd => {
+                const sortable = new Sortable(elDnd, options)
+                lstSortable.push(sortable)
+            })
         },
+        destroyDndAction(){
+            for(let ii = this.ListSortable.length - 1; ii > -1; ii--) {
+                const sortable = this.ListSortable[ii]
+                sortable.destroy()
+                this.ListSortable.splice(ii, 1)
+            }
+        },
+        onDndStart(evt){
+            const dndItem = evt.item
+            window.CustomerDndSrcId = dndItem.getAttribute('item-id')
+            console.log('onDndStart', window.CustomerDndSrcId, evt)
+        },
+        checkMove(evt) {
+            //const dndItem = evt.related
+            //console.log('checkMove', dndItem.getAttribute('item-id'), evt)
+         },
+        onDndEnd(evt) {
+            const vColDes = evt.to
+            this.destroyDndAction()
+
+            const newIdsDes = []
+            vColDes.querySelectorAll(`[item-id]`).forEach(item => {
+                newIdsDes.push(item.getAttribute('item-id'))
+            })
+            
+            console.log('onDndEnd', window.CustomerDndDesId, evt)
+            
+            delete window.CustomerDndSrcId
+        },
+    },
+    mounted(){
+        console.log('group action mounted')
+        this.bindDndAction()
+    },
+    beforeUpdate(){
+        this.destroyDndAction()
+    },
+    updated(){
+        console.log('group action updated')
+        this.bindDndAction()
     },
 })
 

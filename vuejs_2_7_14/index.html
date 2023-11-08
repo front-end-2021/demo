@@ -269,10 +269,7 @@
                                         <div class="vlist-action d-flex">
                                             <div v-for="(vcol, clm) in VColumn" 
                                                 class="vcol-action">
-                                                <draggable class="dnd-wrap"
-                                                    v-bind="getDndOptions(3)"
-                                                    :list="vcol"
-                                                    @end="onDndEnd" :move="checkMove">
+                                                <div class="dnd-wrap">
                                                     <vitem-wrap v-for="(action, row) in vcol" 
                                                         :key="action.Guid"
                                                         :class="['action-wrap']" 
@@ -281,7 +278,7 @@
                                                         :item="action">
 
                                                     </vitem-wrap>
-                                                </draggable>
+                                                </div>
                                             </div>
                                         </div>
                                     </group-action>
@@ -372,7 +369,8 @@
             v-observe-visibility="{
                 callback: onObsVisible,
                 throttle: 0, intersection: { threshold: 0 },
-            }">
+            }"
+            :item-id="item.Guid">
             <h6 v-if="IsInView" class="item-name">{{item.Name}}</h6>
             <div v-if="IsInView && ShowDate" class="item-start-end font14">
                 <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-clock font14"
