@@ -265,11 +265,12 @@
                                 
                                 <div class="sub-viewaction">
                                     <h6>List Action</h6>
-                                    <group-action inline-template :actions="sub.Actions">
+                                    <group-action inline-template :actions="sub.Actions"
+                                        :sub-guid="sub.Guid">
                                         <div class="vlist-action d-flex">
                                             <div v-for="(vcol, clm) in VColumn" 
                                                 class="vcol-action">
-                                                <div class="dnd-wrap">
+                                                <div class="dnd-wrap dndWrap">
                                                     <vitem-wrap v-for="(action, row) in vcol" 
                                                         :key="action.Guid"
                                                         :class="['action-wrap']" 
@@ -370,7 +371,7 @@
                 callback: onObsVisible,
                 throttle: 0, intersection: { threshold: 0 },
             }"
-            :item-id="item.Guid">
+            :item-guid="item.Guid">
             <h6 v-if="IsInView" class="item-name">{{item.Name}}</h6>
             <div v-if="IsInView && ShowDate" class="item-start-end font14">
                 <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-clock font14"

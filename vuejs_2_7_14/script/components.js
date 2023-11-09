@@ -6,7 +6,7 @@ function dateToString(date1) {
 }
 Vue.component('nav-bar', {
     props: ['view-index'],
-    inject: [ 'setNavIndex', 'pushModal' ],
+    inject: ['setNavIndex', 'pushModal'],
     data() {
         return {
             TextSearch: this.$root.NavBar.SearchText,
@@ -76,7 +76,7 @@ const itemGA = {
     },
     methods: {
         onObsVisible(isVisible, entry) {
-            if(window.CustomerDndSrcId) return
+            if (window.CustomerDndSrcId) return
 
             this.IsInView = isVisible
         },
@@ -401,7 +401,7 @@ Vue.component('action-view', {
     methods: {
         getDDMM(date) {
             if (!date) return '-'
-            if(typeof date == 'number') {
+            if (typeof date == 'number') {
                 date = new Date(date)
             }
             const dd = date.getDate()
@@ -447,7 +447,7 @@ Vue.component('action-view', {
 
 Vue.component('sub-view', {
     props: ['item'],
-    inject: ['toggleExpand', 'isExpand', 'sIsSync', 'syncSubToCloud' ],
+    inject: ['toggleExpand', 'isExpand', 'sIsSync', 'syncSubToCloud'],
     computed: {
         IsExpand() { return this.isExpand(this.item.Id) },
         DragOptions() {
@@ -586,8 +586,8 @@ Vue.component('vitem-wrap', {
 })
 Vue.component('group-action', {
     props: ['actions'],
-    inject: [ 'getMCount', 'getDndOptions'],
-    data(){
+    inject: ['getMCount', 'getDndOptions'],
+    data() {
         return {
             ListSortable: [],
         }
@@ -610,7 +610,7 @@ Vue.component('group-action', {
         },
     },
     methods: {
-        bindDndAction(){
+        bindDndAction() {
             const options = this.getDndOptions(3)
             options.onStart = this.onDndStart
             options.onEnd = this.onDndEnd
@@ -621,44 +621,82 @@ Vue.component('group-action', {
                 lstSortable.push(sortable)
             })
         },
-        destroyDndAction(){
-            for(let ii = this.ListSortable.length - 1; ii > -1; ii--) {
+        destroyDndAction() {
+            for (let ii = this.ListSortable.length - 1; ii > -1; ii--) {
                 const sortable = this.ListSortable[ii]
                 sortable.destroy()
                 this.ListSortable.splice(ii, 1)
             }
         },
-        onDndStart(evt){
+        onDndStart(evt) {
             const dndItem = evt.item
-            window.CustomerDndSrcId = dndItem.getAttribute('item-id')
+            window.CustomerDndSrcId = dndItem.getAttribute('item-guid')
             console.log('onDndStart', window.CustomerDndSrcId, evt)
         },
         checkMove(evt) {
             //const dndItem = evt.related
-            //console.log('checkMove', dndItem.getAttribute('item-id'), evt)
-         },
+            //console.log('checkMove', dndItem.getAttribute('item-guid'), evt)
+        },
         onDndEnd(evt) {
-            const vColDes = evt.to
+            const wrapSrc = evt.from
+            const wrapDes = evt.to
+
+            const grpAsrc = wrapSrc.closest(`[sub-guid]`)
+            if (!grpAsrc) return
+
+            const grpAdes = wrapDes.closest(`[sub-guid]`)
+            if (!grpAdes) return
+
+            const subSrcGuid = grpAsrc.getAttribute('sub-guid');
+            const subDesGuid = grpAdes.getAttribute('sub-guid');
+
             this.destroyDndAction()
 
-            const newIdsDes = []
-            vColDes.querySelectorAll(`[item-id]`).forEach(item => {
-                newIdsDes.push(item.getAttribute('item-id'))
-            })
-            
+            const newIdsDes = getNewIds.call(this, grpAdes)
+            const newIdsSrc = getNewIds.call(this, grpAsrc)
+
             console.log('onDndEnd', window.CustomerDndDesId, evt)
-            
+            console.log(newIdsSrc, newIdsDes)
+
             delete window.CustomerDndSrcId
+
+            function getNewIds(grpAction) {
+                const virtualCol = []
+
+                grpAction.querySelectorAll('.dndWrap').forEach(vCol => {
+                    const vColitems = []
+
+                    vCol.querySelectorAll(`[item-guid]`).forEach(itemY => {
+                        vColitems.push(itemY.getAttribute('item-guid'))
+                    })
+                    virtualCol.push(vColitems)
+                })
+
+                const guids = []
+                let guid
+                do {
+                    for (let clm = 0; clm < virtualCol.length; clm++) {
+                        const vCols = virtualCol[clm]
+
+                        guid = vCols.shift()
+                        if (!guid) continue
+
+                        guids.push(guid)
+                    }
+                } while (guid)
+
+                return guids
+            }
         },
     },
-    mounted(){
+    mounted() {
         console.log('group action mounted')
         this.bindDndAction()
     },
-    beforeUpdate(){
+    beforeUpdate() {
         this.destroyDndAction()
     },
-    updated(){
+    updated() {
         console.log('group action updated')
         this.bindDndAction()
     },
