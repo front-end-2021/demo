@@ -654,7 +654,7 @@ Vue.component('group-action', {
 
             const newIdsSrc = getNewIds.call(this, grpAsrc)
 
-            if(subGuidSrc == subGuidDes) {
+            if (subGuidSrc == subGuidDes) {
                 processDndInSub.call(this)
             } else {
                 processDndDiffSub.call(this)
@@ -665,27 +665,27 @@ Vue.component('group-action', {
 
             delete window.CustomerDndSrcId
 
-            function processDndDiffSub(){
+            function processDndDiffSub() {
                 const newIdsDes = getNewIds.call(this, grpAdes)
 
                 console.log(newIdsDes)
             }
-            function processDndInSub(){
+            function processDndInSub() {
                 let subSrc
                 this.$root.queryData(2,
-                    (s) => { 
-                        if(subGuidSrc == s.Guid) return true 
+                    (s) => {
+                        if (subGuidSrc == s.Guid) return true
                         return false
                     },
                     (s) => { subSrc = s }
                 )
-                if(!subSrc) return
+                if (!subSrc) return
 
-                for(let ii = 0; ii < newIdsSrc.length; ii++) {
+                for (let ii = 0; ii < newIdsSrc.length; ii++) {
                     const aGuid = newIdsSrc[ii]
 
                     const aa = subSrc.Actions.findIndex(a => aGuid == a.Guid)
-                    if(aa == ii) continue
+                    if (aa == ii) continue
 
                     const action = subSrc.Actions[aa]
                     subSrc.Actions.splice(aa, 1)        // remove at old pos
@@ -718,6 +718,9 @@ Vue.component('group-action', {
                 } while (guid)
 
                 return guids
+            }
+            function finishProcess() {
+                this.bindDndAction()
             }
         },
     },
