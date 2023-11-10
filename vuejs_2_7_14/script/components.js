@@ -647,19 +647,42 @@ Vue.component('group-action', {
             const grpAdes = wrapDes.closest(`[sub-guid]`)
             if (!grpAdes) return
 
-            const subSrcGuid = grpAsrc.getAttribute('sub-guid');
-            const subDesGuid = grpAdes.getAttribute('sub-guid');
-
             this.destroyDndAction()
 
-            const newIdsDes = getNewIds.call(this, grpAdes)
+            const subGuidSrc = grpAsrc.getAttribute('sub-guid');
+            const subGuidDes = grpAdes.getAttribute('sub-guid');
+
             const newIdsSrc = getNewIds.call(this, grpAsrc)
 
+            if(subGuidSrc == subGuidDes) {
+                processDndInSub.call(this)
+            } else {
+                processDndDiffSub.call(this)
+            }
+
             console.log('onDndEnd', window.CustomerDndDesId, evt)
-            console.log(newIdsSrc, newIdsDes)
+            console.log(newIdsSrc)
 
             delete window.CustomerDndSrcId
 
+            function processDndDiffSub(){
+                const newIdsDes = getNewIds.call(this, grpAdes)
+
+                console.log(newIdsDes)
+            }
+            function processDndInSub(){
+                
+                const oldIdsSrc = []
+                this.$root.queryData(3,
+                    (a, s) => { 
+                        if(subGuidSrc == s.Guid) return true 
+                        return false
+                    },
+                    (a) => { oldIdsSrc.push(a.Guid) }
+                )
+                
+                console.log('oldIdsSrc', oldIdsSrc)
+            }
             function getNewIds(grpAction) {
                 const virtualCol = []
 

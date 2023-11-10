@@ -1,4 +1,4 @@
-new Vue({
+const cvApp = new Vue({
     el: '#cv-app',
     name: 'cv-app',
     data: {
@@ -17,32 +17,32 @@ new Vue({
         ListModal: [],  // [{Type, Title, Body}]
     },
     computed: {
-        ListMains(){
+        ListMains() {
             const txtSearch = this.NavBar.SearchText
-            if(txtSearch == '') return this.Mains
+            if (txtSearch == '') return this.Mains
             const lstMain = []
-            for(let mm = 0; mm < this.Mains.length; mm++) {
+            for (let mm = 0; mm < this.Mains.length; mm++) {
                 const main = this.Mains[mm]
-                if(main.Name.includes(txtSearch)) {
+                if (main.Name.includes(txtSearch)) {
                     lstMain.push(main)
                     continue
                 }
-                for(let ss = 0; ss < main.Subs.length; ss++) {
+                for (let ss = 0; ss < main.Subs.length; ss++) {
                     const sub = main.Subs[ss]
-                    if(sub.Name.includes(txtSearch)) {
+                    if (sub.Name.includes(txtSearch)) {
                         lstMain.push(main)
                         break
                     }
                     let isInSearch = false
-                    for(let aa = 0; aa < sub.Actions.length; aa++) {
+                    for (let aa = 0; aa < sub.Actions.length; aa++) {
                         const action = sub.Actions[aa]
-                        if(action.Name.includes(txtSearch)) {
+                        if (action.Name.includes(txtSearch)) {
                             lstMain.push(main)
                             isInSearch = true
                             break
                         }
                     }
-                    if(isInSearch) break
+                    if (isInSearch) break
                 }
             }
             return lstMain
@@ -56,23 +56,23 @@ new Vue({
                     subs.push(sub)
                 }
             }
-            
-            const txtSearch = this.NavBar.SearchText
-            if(txtSearch == '') return subs
 
-            for(let ss = subs.length - 1; ss > -1; ss--) {
+            const txtSearch = this.NavBar.SearchText
+            if (txtSearch == '') return subs
+
+            for (let ss = subs.length - 1; ss > -1; ss--) {
                 const sub = subs[ss]
-                if(sub.Name.includes(txtSearch)) continue
+                if (sub.Name.includes(txtSearch)) continue
 
                 let hasAction = false
-                for(let aa = 0; aa < sub.Actions.length; aa++) {
+                for (let aa = 0; aa < sub.Actions.length; aa++) {
                     const action = sub.Actions[aa]
-                    if(action.Name.includes(txtSearch)) {
-                        hasAction = true    
+                    if (action.Name.includes(txtSearch)) {
+                        hasAction = true
                         break
                     }
                 }
-                if(!hasAction) {
+                if (!hasAction) {
                     subs.splice(ss, 1)
                 }
             }
@@ -129,23 +129,52 @@ new Vue({
                 (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
             )
         },
-        setSearchText(txt) { this.NavBar.SearchText = txt.trim() },        
+        setSearchText(txt) { this.NavBar.SearchText = txt.trim() },
         isInSearch(item) {
             const txtSearch = this.NavBar.SearchText
-            if(txtSearch == '') return true
-            if(item.Name.includes(txtSearch)) return true
+            if (txtSearch == '') return true
+            if (item.Name.includes(txtSearch)) return true
             return false
-        }
+        },
+        queryData(type, fnCondition, fnProcess, isAll) {
+            const listMain = isAll ? this.Mains : this.ListMains
+            for (let mm = 0; mm < listMain.length; mm++) {
+                const main = listMain[mm]
+
+                switch (type) {
+                    case 1:     // Main
+                        if (fnCondition(main)) fnProcess(main)
+                        continue;       // for mm
+                    case 2:     // Sub
+                    case 3:     // Action
+                        for (let ss = 0; ss < main.Subs.length; ss++) {
+                            const sub = main.Subs[ss]
+                            if (type == 2) {
+                                if (fnCondition(sub, main)) fnProcess(sub, main)
+                                continue        // for ss
+                            }
+                            for (let aa = 0; aa < sub.Actions.length; aa++) {
+                                const action = sub.Actions[aa]
+                                if (fnCondition(action, sub, main))
+                                    fnProcess(action, sub, main)
+                            }
+                            continue;        // for ss
+                        }
+                        continue;        // for mm
+                    default: continue;   // for mm
+                }
+            }
+        },
     },
     mounted() {
         this.Mains = getDataMains()
-        for(let mm = 0; mm < this.Mains.length; mm++) {
+        for (let mm = 0; mm < this.Mains.length; mm++) {
             const main = this.Mains[mm]
             main.Guid = this.newGuid()
-            for(let ss = 0; ss < main.Subs.length; ss++) {
+            for (let ss = 0; ss < main.Subs.length; ss++) {
                 const sub = main.Subs[ss]
                 sub.Guid = this.newGuid()
-                for(let aa = 0; aa < sub.Actions.length; aa++) {
+                for (let aa = 0; aa < sub.Actions.length; aa++) {
                     const action = sub.Actions[aa]
                     action.Guid = this.newGuid()
                 }
