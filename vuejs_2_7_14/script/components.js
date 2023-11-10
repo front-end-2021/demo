@@ -671,17 +671,26 @@ Vue.component('group-action', {
                 console.log(newIdsDes)
             }
             function processDndInSub(){
-                
-                const oldIdsSrc = []
-                this.$root.queryData(3,
-                    (a, s) => { 
+                let subSrc
+                this.$root.queryData(2,
+                    (s) => { 
                         if(subGuidSrc == s.Guid) return true 
                         return false
                     },
-                    (a) => { oldIdsSrc.push(a.Guid) }
+                    (s) => { subSrc = s }
                 )
-                
-                console.log('oldIdsSrc', oldIdsSrc)
+                if(!subSrc) return
+
+                for(let ii = 0; ii < newIdsSrc.length; ii++) {
+                    const aGuid = newIdsSrc[ii]
+
+                    const aa = subSrc.Actions.findIndex(a => aGuid == a.Guid)
+                    if(aa == ii) continue
+
+                    const action = subSrc.Actions[aa]
+                    subSrc.Actions.splice(aa, 1)        // remove at old pos
+                    subSrc.Actions.splice(ii, 0, action)    // insert before new pos
+                }
             }
             function getNewIds(grpAction) {
                 const virtualCol = []
