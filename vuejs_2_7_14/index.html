@@ -90,7 +90,7 @@
         </nav-bar>
 
         <vw-inventory inline-template v-if="NavBar.Index == 1" :mains="ListMains">
-            <section class="container-fluid" v-bind:style="[ { width: WidthCtx } ]">
+            <section id="view-inventory" class="container-fluid" v-bind:style="[ { width: WidthCtx } ]">
                 <div class="list-main">
                     <item-mgoal v-for="main in ListMain" :item="main" :type="1" :key="main.Guid">
                         <div class="list-sub">
@@ -265,23 +265,18 @@
                                 
                                 <div class="sub-viewaction">
                                     <h6>List Action</h6>
-                                    <group-action inline-template :actions="sub.Actions"
-                                        :sub-guid="sub.Guid">
-                                        <div class="vlist-action d-flex">
-                                            <div v-for="(vcol, clm) in VColumn" 
-                                                class="vcol-action">
-                                                <div class="dnd-wrap dndWrap">
-                                                    <vitem-wrap v-for="(action, row) in vcol" 
-                                                        :key="action.Guid"
-                                                        :class="['action-wrap']" 
-                                                        :pos-x="clm"
-                                                        :pos-y="row"
-                                                        :item="action">
+                                    <group-action inline-template 
+                                        :actions="sub.Actions">
+                                        <draggable :list="actions"
+                                            class="vlist-action d-flex flex-wrap"
+                                            v-bind="getDndOptions(3)">
+                                            <vitem-wrap v-for="action in actions" 
+                                                :key="action.Guid"
+                                                :class="['action-wrap']" 
+                                                :item="action">
 
-                                                    </vitem-wrap>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            </vitem-wrap>
+                                        </draggable>
                                     </group-action>
                                 </div>
                             </div>
@@ -366,14 +361,9 @@
     </main>
 
     <script type="text/x-template" id="vitem-wrap-temp">
-        <div class="item-wrap"
-            v-observe-visibility="{
-                callback: onObsVisible,
-                throttle: 0, intersection: { threshold: 0 },
-            }"
-            :item-guid="item.Guid">
-            <h6 v-if="IsInView" class="item-name">{{item.Name}}</h6>
-            <div v-if="IsInView && ShowDate" class="item-start-end font14">
+        <div class="item-wrap ms-2" :expand="IsExpand" :guid="item.Guid">
+            <h6 class="item-name">{{item.Name}}</h6>
+            <div v-if="ShowDate" class="item-start-end font14">
                 <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-clock font14"
                     width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
@@ -381,6 +371,13 @@
                   </svg>
                 <span>{{ToStart}}</span>
                 <span v-if="item.End">- {{ToEnd}}</span>
+            </div>
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-chevron-down" 
+                    @click.stop="onToggleExpand"
+                    width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                  </svg>
             </div>
         </div>
     </script>

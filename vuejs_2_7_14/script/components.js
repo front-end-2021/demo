@@ -34,33 +34,11 @@ Vue.component('nav-bar', {
         },
     },
 });
-const itemGA = {
-    props: ['item'],
+const itemObsev = {
     data() {
         return {
             IsInView: true,
         }
-    },
-    computed: {
-        ShowDate() {
-            if (!this.IsInView) return false
-            if (this.item.Start) return true
-            if (this.item.End) return true
-            return false
-        },
-        ToStart() {
-            const s = this.item.Start
-            if (!s) return
-            return dateToString(s)
-        },
-        ToEnd() {
-            const e = this.item.End
-            if (!e) return
-            return dateToString(e)
-        },
-    },
-    mounted() {
-        window.addEventListener('scroll', this.onWindowScroll)
     },
     beforeUpdate() {
         heightWrapInVisible.call(this)
@@ -82,12 +60,35 @@ const itemGA = {
         },
     },
 }
+const itemGA = {
+    props: ['item'],
+    computed: {
+        ShowDate() {
+            if (this.item.Start) return true
+            if (this.item.End) return true
+            return false
+        },
+        ToStart() {
+            const s = this.item.Start
+            if (!s) return
+            return dateToString(s)
+        },
+        ToEnd() {
+            const e = this.item.End
+            if (!e) return
+            return dateToString(e)
+        },
+    },
+}
 const itemEditable = {
     data() {
         return {
             IsEditName: false,
             Name: this.item.Name,
         }
+    },
+    mounted() {
+        window.addEventListener('scroll', this.onWindowScroll)
     },
     methods: {
         ondblclickName() {
@@ -125,7 +126,7 @@ const itemEditable = {
     },
 }
 Vue.component('item-action', {
-    mixins: [itemGA, itemEditable],
+    mixins: [itemObsev, itemGA, itemEditable],
     props: ['mid', 'sid', 'index', 'actions'],
     inject: ['getMinStart', 'getMaxEnd'],
     computed: {
@@ -262,7 +263,7 @@ const itemGoal = {
 }
 Vue.component('item-subgoal', {
     template: '#goal-item-temp',
-    mixins: [itemGA, itemEditable, itemGoal],
+    mixins: [itemObsev, itemGA, itemEditable, itemGoal],
     props: ['mid'],
     inject: ['getMinStart'],
     computed: {
@@ -282,7 +283,7 @@ Vue.component('item-subgoal', {
 
 Vue.component('item-mgoal', {
     template: '#goal-item-temp',
-    mixins: [itemGA, itemEditable, itemGoal],
+    mixins: [itemObsev, itemGA, itemEditable, itemGoal],
     computed: {
         domId() { return `m_${this.item.Id}` },
     },
@@ -565,8 +566,13 @@ Vue.component('action-time', {
 Vue.component('vitem-wrap', {
     template: '#vitem-wrap-temp',
     mixins: [itemGA],
+    data() {
+        return {
+            IsExpand: false
+        }
+    },
     methods: {
-        styleHeight() {
+        styleHeight(offset) {
             const thisEl = this.$el
             const children = thisEl.children
             let height = 0
@@ -574,15 +580,83 @@ Vue.component('vitem-wrap', {
                 const child = children[i]
                 height += child.offsetHeight
             }
-            thisEl.style.height = `${height + 60}px`
+            offset = offset ? offset : 0
+            thisEl.style.height = `${height + offset + 21}px`
         },
+        onToggleExpand() {
+            this.IsExpand = !this.IsExpand
+        },
+        styleMarginTopActions() {
+            const item = this.$el
+
+            const lstItem = []
+            const lstLeft = []
+            let sItem = item.previousElementSibling
+            let sOffset
+            while (sItem) {
+                lstItem.push(sItem)
+
+                sOffset = sItem.offset()
+                if (!lstLeft.includes(sOffset.left)) {
+                    lstLeft.push(sOffset.left)
+                }
+                sItem = sItem.previousElementSibling
+            }
+            lstItem.push(item)
+            sItem = item.nextElementSibling
+            while (sItem) {
+                lstItem.push(sItem)
+
+                sOffset = sItem.offset()
+                if (!lstLeft.includes(sOffset.left)) {
+                    lstLeft.push(sOffset.left)
+                }
+                sItem = sItem.nextElementSibling
+            }
+            lstLeft.sort((a, b) => a - b)
+
+            const lstColumn = []
+            for (let ii = 0; ii < lstLeft.length; ii++) {
+                lstColumn.push([])
+            }
+            for (let ii = 0; ii < lstItem.length; ii++) {
+                sItem = lstItem[ii]
+                sOffset = sItem.offset()
+                const col = lstLeft.indexOf(sOffset.left)
+                lstColumn[col].push(sItem)
+            }
+
+            for (let cl = 0; cl < lstColumn.length; cl++) {
+                const items = lstColumn[cl]
+                for (let rw = 0; rw < items.length - 1; rw++) {
+                    sItem = items[rw]
+
+                    const nextItem = items[rw + 1]
+                    sOffset = sItem.offset()
+                    const nextOffset = nextItem.offset()
+                    const dY = nextOffset.top - (sOffset.top + sItem.offsetHeight)
+                    if (15 < dY) {
+                        nextItem.style.marginTop = `-60px`
+                    } else if (dY < 0) {
+                        nextItem.style.marginTop = ''
+                    }
+                }
+            }
+        }
     },
     mounted() {
         this.styleHeight()
     },
     updated() {
-        this.styleHeight()
-    }
+
+        if (this.IsExpand) {
+            this.styleHeight(60)
+        } else {
+            this.styleHeight()
+        }
+
+        this.styleMarginTopActions()
+    },
 })
 Vue.component('group-action', {
     props: ['actions'],
@@ -590,151 +664,15 @@ Vue.component('group-action', {
     data() {
         return {
             ListSortable: [],
+            VColumn: [],
         }
     },
-    computed: {
-        VColumn() {
-            const lstA = this.actions
-            const lenA = lstA.length
-            const vCol = []
-            const mCount = this.getMCount()
-            for (let cl = 0; cl < mCount; cl++) {
-                vCol.push([])
-            }
-            for (let i = 0; i < lenA; i++) {
-                const cl = i % mCount
-                if (!vCol[cl]) vCol[cl] = []
-                vCol[cl].push(lstA[i])
-            }
-            return vCol
-        },
-    },
-    methods: {
-        bindDndAction() {
-            const options = this.getDndOptions(3)
-            options.onStart = this.onDndStart
-            options.onEnd = this.onDndEnd
-            options.onMove = this.checkMove
-            const lstSortable = this.ListSortable
-            this.$el.querySelectorAll('.dnd-wrap').forEach(elDnd => {
-                const sortable = new Sortable(elDnd, options)
-                lstSortable.push(sortable)
-            })
-        },
-        destroyDndAction() {
-            for (let ii = this.ListSortable.length - 1; ii > -1; ii--) {
-                const sortable = this.ListSortable[ii]
-                sortable.destroy()
-                this.ListSortable.splice(ii, 1)
-            }
-        },
-        onDndStart(evt) {
-            const dndItem = evt.item
-            window.CustomerDndSrcId = dndItem.getAttribute('item-guid')
-            console.log('onDndStart', window.CustomerDndSrcId, evt)
-        },
-        checkMove(evt) {
-            //const dndItem = evt.related
-            //console.log('checkMove', dndItem.getAttribute('item-guid'), evt)
-        },
-        onDndEnd(evt) {
-            const wrapSrc = evt.from
-            const wrapDes = evt.to
+    // watch: {
+    //     actions(lstA) { },
+    // },
+    // methods: {
 
-            const grpAsrc = wrapSrc.closest(`[sub-guid]`)
-            if (!grpAsrc) return
-
-            const grpAdes = wrapDes.closest(`[sub-guid]`)
-            if (!grpAdes) return
-
-            this.destroyDndAction()
-
-            const subGuidSrc = grpAsrc.getAttribute('sub-guid');
-            const subGuidDes = grpAdes.getAttribute('sub-guid');
-
-            const newIdsSrc = getNewIds.call(this, grpAsrc)
-
-            if (subGuidSrc == subGuidDes) {
-                processDndInSub.call(this)
-            } else {
-                processDndDiffSub.call(this)
-            }
-
-            console.log('onDndEnd', window.CustomerDndDesId, evt)
-            console.log(newIdsSrc)
-
-            delete window.CustomerDndSrcId
-
-            function processDndDiffSub() {
-                const newIdsDes = getNewIds.call(this, grpAdes)
-
-                console.log(newIdsDes)
-            }
-            function processDndInSub() {
-                let subSrc
-                this.$root.queryData(2,
-                    (s) => {
-                        if (subGuidSrc == s.Guid) return true
-                        return false
-                    },
-                    (s) => { subSrc = s }
-                )
-                if (!subSrc) return
-
-                for (let ii = 0; ii < newIdsSrc.length; ii++) {
-                    const aGuid = newIdsSrc[ii]
-
-                    const aa = subSrc.Actions.findIndex(a => aGuid == a.Guid)
-                    if (aa == ii) continue
-
-                    const action = subSrc.Actions[aa]
-                    subSrc.Actions.splice(aa, 1)        // remove at old pos
-                    subSrc.Actions.splice(ii, 0, action)    // insert before new pos
-                }
-            }
-            function getNewIds(grpAction) {
-                const virtualCol = []
-
-                grpAction.querySelectorAll('.dndWrap').forEach(vCol => {
-                    const vColitems = []
-
-                    vCol.querySelectorAll(`[item-guid]`).forEach(itemY => {
-                        vColitems.push(itemY.getAttribute('item-guid'))
-                    })
-                    virtualCol.push(vColitems)
-                })
-
-                const guids = []
-                let guid
-                do {
-                    for (let clm = 0; clm < virtualCol.length; clm++) {
-                        const vCols = virtualCol[clm]
-
-                        guid = vCols.shift()
-                        if (!guid) continue
-
-                        guids.push(guid)
-                    }
-                } while (guid)
-
-                return guids
-            }
-            function finishProcess() {
-                this.bindDndAction()
-            }
-        },
-    },
-    mounted() {
-        console.log('group action mounted')
-        this.bindDndAction()
-    },
-    beforeUpdate() {
-        this.destroyDndAction()
-    },
-    updated() {
-        console.log('group action updated')
-        this.bindDndAction()
-    },
+    // },
 })
 
 Vue.component('modal-pop', {

@@ -487,7 +487,6 @@ Vue.component('vw-customer', {
     methods: {
         getDndOptions(type) {
             const option = {
-                swap: true,
                 handle: ".item-name",
             }
             switch(type) {
