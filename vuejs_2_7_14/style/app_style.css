@@ -61,6 +61,7 @@
     border-radius: 8px;
     padding: 6px;
     margin-bottom: 3px;
+    min-width: 90px;
 }
 
 .item-wrap>h6 {

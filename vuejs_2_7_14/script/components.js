@@ -585,6 +585,7 @@ Vue.component('vitem-wrap', {
         },
         onToggleExpand() {
             this.IsExpand = !this.IsExpand
+
         },
         styleMarginTopActions() {
             const item = this.$el
@@ -621,6 +622,8 @@ Vue.component('vitem-wrap', {
             }
             for (let ii = 0; ii < lstItem.length; ii++) {
                 sItem = lstItem[ii]
+                sItem.style.marginTop = ''
+
                 sOffset = sItem.offset()
                 const col = lstLeft.indexOf(sOffset.left)
                 lstColumn[col].push(sItem)
@@ -630,15 +633,13 @@ Vue.component('vitem-wrap', {
                 const items = lstColumn[cl]
                 for (let rw = 0; rw < items.length - 1; rw++) {
                     sItem = items[rw]
+                    const sItem1 = items[rw + 1]
 
-                    const nextItem = items[rw + 1]
                     sOffset = sItem.offset()
-                    const nextOffset = nextItem.offset()
+                    const nextOffset = sItem1.offset()
                     const dY = nextOffset.top - (sOffset.top + sItem.offsetHeight)
-                    if (15 < dY) {
-                        nextItem.style.marginTop = `-60px`
-                    } else if (dY < 0) {
-                        nextItem.style.marginTop = ''
+                    if (12 < dY) {
+                        sItem1.style.marginTop = `-60px`
                     }
                 }
             }
@@ -648,31 +649,13 @@ Vue.component('vitem-wrap', {
         this.styleHeight()
     },
     updated() {
-
         if (this.IsExpand) {
             this.styleHeight(60)
         } else {
             this.styleHeight()
         }
-
         this.styleMarginTopActions()
     },
-})
-Vue.component('group-action', {
-    props: ['actions'],
-    inject: ['getMCount', 'getDndOptions'],
-    data() {
-        return {
-            ListSortable: [],
-            VColumn: [],
-        }
-    },
-    // watch: {
-    //     actions(lstA) { },
-    // },
-    // methods: {
-
-    // },
 })
 
 Vue.component('modal-pop', {

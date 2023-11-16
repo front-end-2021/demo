@@ -265,19 +265,16 @@
                                 
                                 <div class="sub-viewaction">
                                     <h6>List Action</h6>
-                                    <group-action inline-template 
-                                        :actions="sub.Actions">
-                                        <draggable :list="actions"
-                                            class="vlist-action d-flex flex-wrap"
-                                            v-bind="getDndOptions(3)">
-                                            <vitem-wrap v-for="action in actions" 
-                                                :key="action.Guid"
-                                                :class="['action-wrap']" 
-                                                :item="action">
+                                    <draggable :list="sub.Actions"
+                                        class="vlist-action d-flex flex-wrap"
+                                        v-bind="getDndOptions(3)">
+                                        <vitem-wrap v-for="action in sub.Actions" 
+                                            :key="action.Guid"
+                                            :class="['action-wrap']" 
+                                            :item="action">
 
-                                            </vitem-wrap>
-                                        </draggable>
-                                    </group-action>
+                                        </vitem-wrap>
+                                    </draggable>
                                 </div>
                             </div>
                         </draggable>
@@ -361,7 +358,7 @@
     </main>
 
     <script type="text/x-template" id="vitem-wrap-temp">
-        <div class="item-wrap ms-2" :expand="IsExpand" :guid="item.Guid">
+        <div class="item-wrap ms-2" :expand="IsExpand">
             <h6 class="item-name">{{item.Name}}</h6>
             <div v-if="ShowDate" class="item-start-end font14">
                 <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-clock font14"
