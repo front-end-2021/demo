@@ -537,7 +537,10 @@ function ProfileChart() {
                     show: false
                 }
             };
-        new ApexCharts(profileReportChartEl, profileReportChartConfig).render()
+        const chart = new ApexCharts(profileReportChartEl, profileReportChartConfig).render()
+        return () => {
+            chart.destroy()
+        }
     })
     return (
         <div className="card">
@@ -818,7 +821,7 @@ function ApexChart() {
                     }
                 }
             }
-        new ApexCharts(totalRevenueChartEl, totalRevenueChartOptions).render()
+        const tChart = new ApexCharts(totalRevenueChartEl, totalRevenueChartOptions).render()
 
         const growthChartEl = document.querySelector('#growthChart'),
             growthChartOptions = {
@@ -894,7 +897,11 @@ function ApexChart() {
                     }
                 }
             }
-        new ApexCharts(growthChartEl, growthChartOptions).render()
+        const gChart = new ApexCharts(growthChartEl, growthChartOptions).render()
+        return () => {
+            tChart.destroy()
+            gChart.destroy()
+        }
     })
 
     return (

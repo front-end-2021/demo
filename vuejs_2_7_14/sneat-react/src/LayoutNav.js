@@ -5,7 +5,10 @@ import avatar1 from './assets/img/avatars/1.png'
 export default function LayoutNav() {
     const refDropdwn = useRef(null)
     useEffect(() => {
-        new Dropdown(refDropdwn.current)
+        const drpDwn = new Dropdown(refDropdwn.current)
+        return () => {
+            drpDwn.dispose()
+        }
     })
     return (
         <nav id="layout-navbar"
