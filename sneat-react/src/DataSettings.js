@@ -1,0 +1,66 @@
+export const UserLangs = [
+    { value: 'na', name: 'Select Language' },
+    { value: 'en', name: 'English' },
+    { value: 'fr', name: 'French' },
+    { value: 'de', name: 'German' },
+    { value: 'pt', name: 'Portuguese' },
+    { value: 'vn', name: 'Vietnam' }
+]
+export const Currencies = [
+    { value: 'na', name: 'Select Currency' },
+    { value: 'usd', name: 'USD' },
+    { value: 'euro', name: 'Euro' },
+    { value: 'pound', name: 'Pound' },
+    { value: 'btc', name: 'Bitcoin' },
+    { value: 'vnd', name: 'VND' }
+]
+export const Countries = [
+    { value: 'na', name: 'Select' },
+    { value: 'Australia', name: 'Australia' },
+    { value: 'Bangladesh', name: 'Bangladesh' },
+    { value: 'Belarus', name: 'Belarus' },
+    { value: 'Brazil', name: 'Brazil' },
+    { value: 'Canada', name: 'Canada' },
+    { value: 'China', name: 'China' },
+    { value: 'France', name: 'France' },
+    { value: 'Germany', name: 'Germany' },
+    { value: 'India', name: 'India' },
+    { value: 'Indonesia', name: 'Indonesia' },
+    { value: 'Israel', name: 'Israel' },
+    { value: 'Italy', name: 'Italy' },
+    { value: 'Japan', name: 'Japan' },
+    { value: 'Korea', name: 'Korea, Republic of' },
+    { value: 'Mexico', name: 'Mexico' },
+    { value: 'Philippines', name: 'Philippines' },
+    { value: 'Russia', name: 'Russian Federation' },
+    { value: 'South Africa', name: 'South Africa' },
+    { value: 'Thailand', name: 'Thailand' },
+    { value: 'Turkey', name: 'Turkey' },
+    { value: 'Ukraine', name: 'Ukraine' },
+    { value: 'United Arab Emirates', name: 'United Arab Emirates' },
+    { value: 'United Kingdom', name: 'United Kingdom' },
+    { value: 'United States', name: 'United States' },
+    { value: 'Vietnam', name: 'Vietnam' }
+]
+export const Timezones = [
+    { value: 'na', name: 'Select Timezone' },
+    { value: '-12', name: '(GMT-12:00) International Date Line West' },
+    { value: '-11', name: '(GMT-11:00) Midway Island, Samoa' },
+    { value: '-10', name: '(GMT-10:00) Hawaii' },
+    { value: '-9', name: '(GMT-09:00) Alaska' },
+    { value: '-8', name: '(GMT-08:00) Pacific Time (US & Canada)' },
+    { value: '-8', name: '(GMT-08:00) Tijuana, Baja California' },
+    { value: '-7', name: '(GMT-07:00) Arizona' },
+    { value: '-7', name: '(GMT-07:00) Chihuahua, La Paz, Mazatlan' },
+    { value: '-7', name: '(GMT-07:00) Mountain Time (US & Canada)' },
+    { value: '-6', name: '(GMT-06:00) Central America' },
+    { value: '-6', name: '(GMT-06:00) Central Time (US & Canada)' },
+    { value: '-6', name: '(GMT-06:00) Guadalajara, Mexico City, Monterrey' },
+    { value: '-6', name: '(GMT-06:00) Saskatchewan' },
+    { value: '-5', name: '(GMT-05:00) Bogota, Lima, Quito, Rio Branco' },
+    { value: '-5', name: '(GMT-05:00) Eastern Time (US & Canada)' },
+    { value: '-5', name: '(GMT-05:00) Indiana (East)' },
+    { value: '-4', name: '(GMT-04:00) Atlantic Time (Canada)' },
+    { value: '-4', name: '(GMT-04:00) Caracas, La Paz' },
+    { value: '+7', name: '(GMT+07:00) Bangkok, Hanoi, Jakatar' }
+]
