@@ -14,6 +14,7 @@ import {
   LayoutWithContainer, LayoutWithFluid
 } from './layouts/Layouts'
 import { AccountSettings } from './pages/PagesAccountSettings';
+import AuthForms from './forms/AuthForms';
 
 import './fonts/boxicons.scss';
 import './scss/core.scss';
@@ -29,11 +30,28 @@ function App() {
   const [layout, setLayout] = useReducer(routerReducer, router.Home);
   const [person, setPerson] = useReducer(userReducer, user);
 
+  const PageType = useMemo(() => {
+    switch (layout) {
+      case router.Home:
+      case router.LayoutWithoutMenu:
+      case router.LayoutWithoutNavbar:
+      case router.LayoutWithContainer:
+      case router.LayoutWithFluid:
+      case router.LayoutWithBlank:
+      case router.AccountSettingsAccount:
+      case router.AccountSettingsAccount:
+      case router.AccountSettingsNotify:
+      case router.AccountSettingsConnect: return 1
+      case router.AuthLoginBasic: return 2
+      default: return 0
+    }
+  }, [layout])
+
   return (
-    <>
-      <div className="layout-wrapper layout-content-navbar">
-        <div className="layout-container">
-          <RouterContext.Provider value={{ layout, setLayout }}>
+    <RouterContext.Provider value={{ layout, setLayout }}>
+      {PageType == 1 && (
+        <div className="layout-wrapper layout-content-navbar">
+          <div className="layout-container">
             <LayoutMenu />
             <div className="layout-page">
               <UserContext.Provider value={{ person, setPerson }} >
@@ -58,16 +76,17 @@ function App() {
 
               </UserContext.Provider>
             </div>
-          </RouterContext.Provider>
+          </div >
+          <div className="layout-overlay layout-menu-toggle"></div>
         </div >
-        <div className="layout-overlay layout-menu-toggle"></div>
-      </div >
+      )}
+      {PageType == 2 && <AuthForms />}
       <div className="buy-now">
         <a className="btn btn-danger btn-buy-now"
           href="#pro"
           target="_blank">Upgrade to Pro</a>
       </div>
-    </>
+    </RouterContext.Provider>
   );
 }
 
@@ -87,34 +106,25 @@ function LayoutMenu() {
     });
   })
 
-  const ActiveHome = useMemo(
-    () => {
-      if (layout == router.Home) return ' active'
-      return ''
-    }, [layout]
-  );
-  const ActiveLayout = useMemo(
+  const ActiveC = useMemo(
     () => {
       switch (layout) {
+        case router.Home: return 1;    // active Home
         case router.LayoutWithoutMenu:
         case router.LayoutWithoutNavbar:
         case router.LayoutWithContainer:
         case router.LayoutWithFluid:
-        case router.LayoutWithBlank: return ' active open';
-        default: return ''
-      }
-    }, [layout]
-  );
-  const ActiveAccountSettings = useMemo(
-    () => {
-      switch (layout) {
+        case router.LayoutWithBlank: return 2;  // active Layout
         case router.AccountSettingsAccount:
         case router.AccountSettingsNotify:
-        case router.AccountSettingsConnect: return ' active open';
-        default: return ''
+        case router.AccountSettingsConnect: return 3; // active Account
+        case router.AuthRegisterBasic:
+        case router.AuthForgotPassword:
+        case router.AuthLoginBasic: return 4;   // active Auth Forms
+        default: return 0
       }
     }, [layout]
-  );
+  )
 
   return (
     <aside id="layout-menu" className="layout-menu menu-vertical menu bg-menu-theme">
@@ -175,14 +185,14 @@ function LayoutMenu() {
       <div className="menu-inner-shadow"></div>
       <ul className="menu-inner py-1">
 
-        <li className={`menu-item${ActiveHome}`}>
+        <li className={`menu-item${ActiveC == 1 ? ' active' : ''}`}>
           <a href="#" className="menu-link" onClick={() => setLayout('BACK_ROOT')}>
             <i className="menu-icon tf-icons bx bx-home-circle"></i>
             <div data-i18n="Analytics">Dashboard</div>
           </a>
         </li>
 
-        <li className={`menu-item${ActiveLayout}`}>
+        <li className={`menu-item${ActiveC == 2 ? ' active open' : ''}`}>
           <a href="#layout" className="menu-link menu-toggle">
             <i className="menu-icon tf-icons bx bx-layout"></i>
             <div data-i18n="Layouts">Layouts</div>
@@ -225,7 +235,7 @@ function LayoutMenu() {
         <li className="menu-header small text-uppercase">
           <span className="menu-header-text">Pages</span>
         </li>
-        <li className={`menu-item${ActiveAccountSettings}`}>
+        <li className={`menu-item${ActiveC == 3 ? ' active open' : ''}`}>
           <a href="#account-settings" className="menu-link menu-toggle">
             <i className="menu-icon tf-icons bx bx-dock-top"></i>
             <div data-i18n="Account Settings">Account Settings</div>
@@ -239,36 +249,39 @@ function LayoutMenu() {
             </li>
             <li className={`menu-item${layout == router.AccountSettingsNotify ? ' active' : ''}`}>
               <a href="#account-settings-notifications" className="menu-link"
-              onClick={() => setLayout('ACCOUNT_SETTINGS_NOTIFY')}>
+                onClick={() => setLayout('ACCOUNT_SETTINGS_NOTIFY')}>
                 <div data-i18n="Notifications">Notifications</div>
               </a>
             </li>
             <li className={`menu-item${layout == router.AccountSettingsConnect ? ' active' : ''}`}>
               <a href="#account-settings-connections" className="menu-link"
-              onClick={() => setLayout('ACCOUNT_SETTINGS_CONNECT')}>
+                onClick={() => setLayout('ACCOUNT_SETTINGS_CONNECT')}>
                 <div data-i18n="Connections">Connections</div>
               </a>
             </li>
           </ul>
         </li>
-        <li className="menu-item">
-          <a href="void(0)" className="menu-link menu-toggle">
+        <li className={`menu-item${ActiveC == 4 ? ' active open' : ''}`}>
+          <a href="#authen" className="menu-link menu-toggle">
             <i className="menu-icon tf-icons bx bx-lock-open-alt"></i>
             <div data-i18n="Authentications">Authentications</div>
           </a>
           <ul className="menu-sub">
-            <li className="menu-item">
-              <a href="auth-login-basic.html" className="menu-link" target="_blank">
+            <li className={`menu-item${layout == router.AuthLoginBasic ? ' active' : ''}`}>
+              <a href="#auth-login-basic" className="menu-link"
+                onClick={() => setLayout('AUTH_LOGIN_BASIC')}>
                 <div data-i18n="Basic">Login</div>
               </a>
             </li>
-            <li className="menu-item">
-              <a href="auth-register-basic.html" className="menu-link" target="_blank">
+            <li className={`menu-item${layout == router.AuthRegisterBasic ? ' active' : ''}`}>
+              <a href="#auth-register-basic" className="menu-link"
+                onClick={() => setLayout('AUTH_REGISTER_BASIC')}>
                 <div data-i18n="Basic">Register</div>
               </a>
             </li>
-            <li className="menu-item">
-              <a href="auth-forgot-password-basic.html" className="menu-link" target="_blank">
+            <li className={`menu-item${layout == router.AuthForgotPassword ? ' active' : ''}`}>
+              <a href="#auth-forgot-password" className="menu-link"
+                onClick={() => setLayout('AUTH_FORGOT_PASS')}>
                 <div data-i18n="Basic">Forgot Password</div>
               </a>
             </li>

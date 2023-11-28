@@ -14,6 +14,9 @@ export const router = {
     AccountSettingsAccount: '#accSettingsAccount',
     AccountSettingsNotify: '#accSettingsNotify',
     AccountSettingsConnect: '#accSettingsConnect',
+    AuthLoginBasic: '#formLoginBasic',
+    AuthRegisterBasic: '#formRegisterBasic',
+    AuthForgotPassword: '#formForgotPass',
 }
 export const RouterContext = createContext(router.Home);
 export const routerReducer = (state, action) => {
@@ -36,6 +39,12 @@ export const routerReducer = (state, action) => {
             return router.AccountSettingsNotify
         case 'ACCOUNT_SETTINGS_CONNECT':
             return router.AccountSettingsConnect
+        case 'AUTH_FORGOT_PASS':
+            return router.AuthForgotPassword
+        case 'AUTH_LOGIN_BASIC':
+            return router.AuthLoginBasic
+        case 'AUTH_REGISTER_BASIC':
+            return router.AuthRegisterBasic
     }
     return state
 }
