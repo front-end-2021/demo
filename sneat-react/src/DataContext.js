@@ -4,7 +4,7 @@ import {
     Timezones
 } from './DataSettings'
 
-export const router = {
+const router = {
     Home: '',
     LayoutWithoutMenu: '#layoutWithoutMenu',
     LayoutWithoutNavbar: '#layoutWithoutNavbar',
@@ -18,6 +18,8 @@ export const router = {
     AuthRegisterBasic: '#formRegisterBasic',
     AuthForgotPassword: '#formForgotPass',
 }
+Object.freeze(router);
+
 export const RouterContext = createContext(router.Home);
 export const routerReducer = (state, action) => {
     switch (action) {
@@ -57,7 +59,7 @@ const user = {
     Language: UserLangs[0].value, Timezone: Timezones[0].value, Currency: Currencies[1].value
 }
 Object.freeze(user);
-export { user }
+export { user, router }
 export const UserContext = createContext(user)
 export const userReducer = (sUser, action) => {
     if (typeof action.Key == 'string' && action.Key != '') {
