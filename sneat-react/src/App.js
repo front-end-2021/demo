@@ -15,6 +15,9 @@ import {
 } from './layouts/Layouts'
 import { AccountSettings } from './pages/PagesAccountSettings';
 import AuthForms, { LogoSneat } from './forms/AuthForms';
+import PagesMisc from './pages/PagesMisc';
+import { CardBasic } from './forms/CardExtendUi';
+import { UiAccordion, UiAlert, UiBadges } from './uis/UserInterfaces';
 
 import './fonts/boxicons.scss';
 import './scss/core.scss';
@@ -41,9 +44,15 @@ function App() {
       case router.AccountSettingsAccount:
       case router.AccountSettingsNotify:
       case router.AccountSettingsConnect: return 7;
+      case router.ComponentsCards: return 8;
+      case router.UIAccordion: return 9;
+      case router.UIAlert: return 10;
+      case router.UIBadges: return 11;
       case router.AuthLoginBasic:
       case router.AuthRegisterBasic:
-      case router.AuthForgotPassword: return 8;
+      case router.AuthForgotPassword: return 89;
+      case router.PageMiscError:
+      case router.PageMiscMaintain: return 90;
       default: return 0
     }
   }, [layout])
@@ -51,7 +60,7 @@ function App() {
   return (
     <RouterContext.Provider value={{ layout, setLayout }}>
       <UserContext.Provider value={{ person, setPerson }} >
-        {(0 < LayoutType && LayoutType < 8) && (
+        {(0 < LayoutType && LayoutType < 89) && (
           <div className="layout-wrapper layout-content-navbar">
             <div className="layout-container">
               <LayoutMenu />
@@ -67,6 +76,10 @@ function App() {
                   {LayoutType == 5 && <LayoutWithFluid />}
                   {LayoutType == 6 && <h4 className="fw-bold p-4">Blank Page</h4>}
                   {LayoutType == 7 && <AccountSettings />}
+                  {LayoutType == 8 && <CardBasic />}
+                  {LayoutType == 9 && <UiAccordion />}
+                  {LayoutType == 10 && <UiAlert />}
+                  {LayoutType == 11 && <UiBadges />}
 
                   <Footer ></Footer>
 
@@ -78,7 +91,8 @@ function App() {
             <div className="layout-overlay layout-menu-toggle"></div>
           </div >
         )}
-        {LayoutType == 8 && <AuthForms />}
+        {LayoutType == 89 && <AuthForms />}
+        {LayoutType == 90 && <PagesMisc />}
       </UserContext.Provider>
       <div className="buy-now">
         <a className="btn btn-danger btn-buy-now"
@@ -120,6 +134,12 @@ function LayoutMenu() {
         case router.AuthRegisterBasic:
         case router.AuthForgotPassword:
         case router.AuthLoginBasic: return 4;   // active Auth Forms
+        case router.PageMiscError:
+        case router.PageMiscMaintain: return 5;   // active Miscs
+        case router.ComponentsCards: return 6;   // active Cards
+        case router.UIAccordion:
+        case router.UIBadges:
+        case router.UIAlert: return 7;   // active User Interface Accordion
         default: return 0
       }
     }, [layout]
@@ -238,19 +258,21 @@ function LayoutMenu() {
             </li>
           </ul>
         </li>
-        <li className="menu-item">
-          <a href="void(0)" className="menu-link menu-toggle">
+        <li className={`menu-item${ActiveC == 5 ? ' active open' : ''}`}>
+          <a href="#misc" className="menu-link menu-toggle">
             <i className="menu-icon tf-icons bx bx-cube-alt"></i>
             <div data-i18n="Misc">Misc</div>
           </a>
           <ul className="menu-sub">
-            <li className="menu-item">
-              <a href="pages-misc-error.html" className="menu-link">
+            <li className={`menu-item${layout == router.PageMiscError ? ' active' : ''}`}>
+              <a href="#pages-misc-error" className="menu-link"
+                onClick={() => setLayout('PAGE_MISC_ERROR')}>
                 <div data-i18n="Error">Error</div>
               </a>
             </li>
-            <li className="menu-item">
-              <a href="pages-misc-under-maintenance.html" className="menu-link">
+            <li className={`menu-item${layout == router.PageMiscMaintain ? ' active' : ''}`}>
+              <a href="#pages-misc-under-maintenance" className="menu-link"
+                onClick={() => setLayout('PAGE_MISC_MAINTAIN')}>
                 <div data-i18n="Under Maintenance">Under Maintenance</div>
               </a>
             </li>
@@ -259,31 +281,32 @@ function LayoutMenu() {
 
         <li className="menu-header small text-uppercase"><span className="menu-header-text">Components</span></li>
 
-        <li className="menu-item">
-          <a href="cards-basic.html" className="menu-link">
+        <li className={`menu-item${ActiveC == 6 ? ' active' : ''}`}>
+          <a href="#cards-basic" className="menu-link"
+            onClick={() => setLayout('COMPONENTS_CARDS')}>
             <i className="menu-icon tf-icons bx bx-collection"></i>
             <div data-i18n="Basic">Cards</div>
           </a>
         </li>
 
-        <li className="menu-item">
-          <a href="void(0)" className="menu-link menu-toggle">
+        <li className={`menu-item${ActiveC == 7 ? ' active open' : ''}`}>
+          <a href="#user-interface" className="menu-link menu-toggle">
             <i className="menu-icon tf-icons bx bx-box"></i>
             <div data-i18n="User interface">User interface</div>
           </a>
           <ul className="menu-sub">
-            <li className="menu-item">
-              <a href="ui-accordion.html" className="menu-link">
+            <li className={`menu-item${layout == router.UIAccordion ? ' active' : ''}`}>
+              <a href="#ui-accordion" className="menu-link" onClick={() => setLayout('UI_ACCORDION')}>
                 <div data-i18n="Accordion">Accordion</div>
               </a>
             </li>
-            <li className="menu-item">
-              <a href="ui-alerts.html" className="menu-link">
+            <li className={`menu-item${layout == router.UIAlert ? ' active' : ''}`}>
+              <a href="#ui-alerts" className="menu-link" onClick={() => setLayout('UI_ALERT')}>
                 <div data-i18n="Alerts">Alerts</div>
               </a>
             </li>
-            <li className="menu-item">
-              <a href="ui-badges.html" className="menu-link">
+            <li className={`menu-item${layout == router.UIBadges ? ' active' : ''}`}>
+              <a href="#ui-badges" className="menu-link" onClick={() => setLayout('UI_BADGES')}>
                 <div data-i18n="Badges">Badges</div>
               </a>
             </li>

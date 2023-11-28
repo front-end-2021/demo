@@ -17,6 +17,12 @@ const router = {
     AuthLoginBasic: '#formLoginBasic',
     AuthRegisterBasic: '#formRegisterBasic',
     AuthForgotPassword: '#formForgotPass',
+    PageMiscError: '#pageMiscError',
+    PageMiscMaintain: '#pageMiscMaintain',
+    ComponentsCards: '#componentsCards',
+    UIAccordion: '#userInterfaceAccordion',
+    UIAlert: '#userInterfaceAlert',
+    UIBadges: '#userInterfaceBadge',
 }
 Object.freeze(router);
 
@@ -47,6 +53,18 @@ export const routerReducer = (state, action) => {
             return router.AuthLoginBasic
         case 'AUTH_REGISTER_BASIC':
             return router.AuthRegisterBasic
+        case 'PAGE_MISC_ERROR':
+            return router.PageMiscError
+        case 'PAGE_MISC_MAINTAIN':
+            return router.PageMiscMaintain
+        case 'COMPONENTS_CARDS':
+            return router.ComponentsCards
+        case 'UI_ACCORDION':
+            return router.UIAccordion
+        case 'UI_ALERT':
+            return router.UIAlert
+        case 'UI_BADGES':
+            return router.UIBadges
     }
     return state
 }
