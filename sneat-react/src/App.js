@@ -503,17 +503,13 @@ function Footer() {
           <a href="https://themeselection.com/license/" className="footer-link me-4" target="_blank">License</a>
           <a href="https://themeselection.com/" target="_blank" className="footer-link me-4">More Themes</a>
 
-          <a
+          <a target="_blank"
             href="https://themeselection.com/demo/sneat-bootstrap-html-admin-template/documentation/"
-            target="_blank"
-            className="footer-link me-4"
-          >Documentation</a>
+            className="footer-link me-4">Documentation</a>
 
-          <a
+          <a target="_blank"
             href="https://github.com/themeselection/sneat-html-admin-template-free/issues"
-            target="_blank"
-            className="footer-link me-4"
-          >Support</a>
+            className="footer-link me-4">Support</a>
         </div>
       </div>
     </footer>
