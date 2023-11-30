@@ -46,7 +46,7 @@ function App() {
       case router.AccountSettingsConnect: return 7;
       case router.ComponentsCards: return 8;
       case router.UIAccordion:
-      case router.UIAlert: 
+      case router.UIAlert:
       case router.UIBadges: return 9;
       case router.AuthLoginBasic:
       case router.AuthRegisterBasic:
@@ -309,82 +309,83 @@ function LayoutMenu() {
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-buttons.html" className="menu-link">
+              <a href="ui-buttons.html" className="menu-link" onClick={() => setLayout(router.UIButtons)}>
                 <div data-i18n="Buttons">Buttons</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-carousel.html" className="menu-link">
+              <a href="ui-carousel.html" className="menu-link" onClick={() => setLayout(router.UICarousel)}>
                 <div data-i18n="Carousel">Carousel</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-collapse.html" className="menu-link">
+              <a href="ui-collapse.html" className="menu-link" onClick={() => setLayout(router.UICollapse)}>
                 <div data-i18n="Collapse">Collapse</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-dropdowns.html" className="menu-link">
+              <a href="ui-dropdowns.html" className="menu-link" onClick={() => setLayout(router.UIDropdowns)}>
                 <div data-i18n="Dropdowns">Dropdowns</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-footer.html" className="menu-link">
+              <a href="ui-footer.html" className="menu-link" onClick={() => setLayout(router.UIFooter)}>
                 <div data-i18n="Footer">Footer</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-list-groups.html" className="menu-link">
+              <a href="ui-list-groups.html" className="menu-link" onClick={() => setLayout(router.UIListGroups)}>
                 <div data-i18n="List Groups">List groups</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-modals.html" className="menu-link">
+              <a href="ui-modals.html" className="menu-link" onClick={() => setLayout(router.UIModals)}>
                 <div data-i18n="Modals">Modals</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-navbar.html" className="menu-link">
+              <a href="ui-navbar.html" className="menu-link" onClick={() => setLayout(router.UINavbar)}>
                 <div data-i18n="Navbar">Navbar</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-offcanvas.html" className="menu-link">
+              <a href="ui-offcanvas.html" className="menu-link" onClick={() => setLayout(router.UIOffcanvas)}>
                 <div data-i18n="Offcanvas">Offcanvas</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-pagination-breadcrumbs.html" className="menu-link">
+              <a href="ui-pagination-breadcrumbs.html" className="menu-link"
+                onClick={() => setLayout(router.UIPaginationBreadcrumbs)}>
                 <div data-i18n="Pagination &amp; Breadcrumbs">Pagination &amp; Breadcrumbs</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-progress.html" className="menu-link">
+              <a href="ui-progress.html" className="menu-link" onClick={() => setLayout(router.UIProgress)}>
                 <div data-i18n="Progress">Progress</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-spinners.html" className="menu-link">
+              <a href="ui-spinners.html" className="menu-link" onClick={() => setLayout(router.UISpinners)}>
                 <div data-i18n="Spinners">Spinners</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-tabs-pills.html" className="menu-link">
+              <a href="ui-tabs-pills.html" className="menu-link" onClick={() => setLayout(router.UITabsPills)}>
                 <div data-i18n="Tabs &amp; Pills">Tabs &amp; Pills</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-toasts.html" className="menu-link">
+              <a href="ui-toasts.html" className="menu-link" onClick={() => setLayout(router.UIToasts)}>
                 <div data-i18n="Toasts">Toasts</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-tooltips-popovers.html" className="menu-link">
+              <a href="ui-tooltips-popovers.html" className="menu-link" onClick={() => setLayout(router.UITooltipsPopovers)}>
                 <div data-i18n="Tooltips & Popovers">Tooltips &amp; popovers</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="ui-typography.html" className="menu-link">
+              <a href="ui-typography.html" className="menu-link" onClick={() => setLayout(router.UITypography)}>
                 <div data-i18n="Typography">Typography</div>
               </a>
             </li>

@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import {
     RouterContext, router, routerReducer,
     user, userReducer, UserContext
-  } from '../DataContext'
+} from '../DataContext'
 
 import elm1 from '../assets/img/elements/1.jpg'
 import elm2 from '../assets/img/elements/2.jpg'
@@ -18,13 +18,22 @@ export default function UserInterfaces() {
         {layout == router.UIAccordion && <UiAccordion />}
         {layout == router.UIAlert && <UiAlert />}
         {layout == router.UIBadges && <UiBadges />}
-        {layout == router.UIBadges && <UiBadges />}
-        {layout == router.UIBadges && <UiBadges />}
-        {layout == router.UIBadges && <UiBadges />}
-        {layout == router.UIBadges && <UiBadges />}
-        {layout == router.UIBadges && <UiBadges />}
-        {layout == router.UIBadges && <UiBadges />}
-        {layout == router.UIBadges && <UiBadges />}
+        {layout == router.UIButtons && <UiButtons />}
+        {layout == router.UICarousel && <UiCarousel />}
+        {layout == router.UICollapse && <UiCollapse />}
+        {layout == router.UIDropdowns && <UiDropdowns />}
+        {layout == router.UIFooter && <UiFooter />}
+        {layout == router.UIListGroups && <UiListGroups />}
+        {layout == router.UIModals && <UiModals />}
+        {layout == router.UINavbar && <UiNavbar />}
+        {layout == router.UIOffcanvas && <UiOffcanvas />}
+        {layout == router.UIPaginationBreadcrumbs && <UiPagniationBreadcrumbs />}
+        {layout == router.UIProgress && <UiProgress />}
+        {layout == router.UISpinners && <UiSpinners />}
+        {layout == router.UITabsPills && <UiTabsPills />}
+        {layout == router.UIToasts && <UiToasts />}
+        {layout == router.UITooltipsPopovers && <UiTooltipsPopovers />}
+        {layout == router.UITypography && <UiTypography />}
     </div>)
 }
 

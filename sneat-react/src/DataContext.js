@@ -26,6 +26,7 @@ const router = {
     UIButtons: '#userInterfaceButtons',
     UICarousel: '#userInterfaceCarousel',
     UIDropdowns: '#userInterfaceDropdowns',
+    UICollapse: '#userInterfaceCollapse',
     UIFooter: '#userInterfaceFooter',
     UIListGroups: '#userInterfaceListGroup',
     UIModals: '#userInterfaceModals',
