@@ -18,6 +18,7 @@ import AuthForms, { LogoSneat } from './forms/AuthForms';
 import PagesMisc from './pages/PagesMisc';
 import { CardBasic } from './forms/CardExtendUi';
 import UserInterfaces from './uis/UserInterfaces';
+import ExtendedUI from './uis/ExtendedUi';
 
 import './fonts/boxicons.scss';
 import './scss/core.scss';
@@ -64,6 +65,8 @@ function App() {
       case router.UITooltipsPopovers:
       case router.UITypography:
       case router.UIBadges: return 9;
+      case router.ExtUiPerfectScrollbar:
+      case router.ExtUiTextDivider: return 10;
       case router.AuthLoginBasic:
       case router.AuthRegisterBasic:
       case router.AuthForgotPassword: return 89;
@@ -94,6 +97,7 @@ function App() {
                   {LayoutType == 7 && <AccountSettings />}
                   {LayoutType == 8 && <CardBasic />}
                   {LayoutType == 9 && <UserInterfaces />}
+                  {LayoutType == 10 && <ExtendedUI />}
 
                   <Footer ></Footer>
 
@@ -119,19 +123,6 @@ function App() {
 
 function LayoutMenu() {
   const { layout, setLayout } = useContext(RouterContext);
-  useEffect(() => {
-    let layoutMenuEl = document.querySelectorAll('#layout-menu');
-    layoutMenuEl.forEach(function (element) {
-      const menu = new Menu(element, {
-        orientation: 'vertical',
-        closeChildren: false
-      })
-      // Change parameter to true if you want scroll animation
-      const animate = false
-      Helpers.scrollToActive((animate));
-      Helpers.mainMenu = menu;
-    });
-  })
 
   const ActiveC = useMemo(
     () => {
@@ -153,12 +144,43 @@ function LayoutMenu() {
         case router.ComponentsCards: return 6;   // active Cards
         case router.UIAccordion:
         case router.UIBadges:
-        case router.UIAlert: return 7;   // active User Interface Accordion
+        case router.UIButtons:
+        case router.UICarousel:
+        case router.UIDropdowns:
+        case router.UICollapse:
+        case router.UIFooter:
+        case router.UIListGroups:
+        case router.UIModals:
+        case router.UINavbar:
+        case router.UIOffcanvas:
+        case router.UIPaginationBreadcrumbs:
+        case router.UIProgress:
+        case router.UISpinners:
+        case router.UITabsPills:
+        case router.UIToasts:
+        case router.UITooltipsPopovers:
+        case router.UITypography:
+        case router.UIAlert: return 7;   // active User Interface
+        case router.ExtUiPerfectScrollbar:
+        case router.ExtUiTextDivider: return 8;   // active Extended UI
         default: return 0
       }
     }, [layout]
   )
 
+  useEffect(() => {
+    let layoutMenuEl = document.querySelectorAll('#layout-menu');
+    layoutMenuEl.forEach(function (element) {
+      const menu = new Menu(element, {
+        orientation: 'vertical',
+        closeChildren: false
+      })
+      // Change parameter to true if you want scroll animation
+      const animate = true
+      window.Helpers.scrollToActive((animate));
+      window.Helpers.mainMenu = menu;
+    });
+  }, [ActiveC])
   return (
     <aside id="layout-menu" className="layout-menu menu-vertical menu bg-menu-theme">
       <div className="app-brand demo">
@@ -169,7 +191,6 @@ function LayoutMenu() {
       </div>
       <div className="menu-inner-shadow"></div>
       <ul className="menu-inner py-1">
-
         <li className={`menu-item${ActiveC == 1 ? ' active' : ''}`}>
           <a href="#" className="menu-link" onClick={() => setLayout(router.Home)}>
             <i className="menu-icon tf-icons bx bx-home-circle"></i>
@@ -310,7 +331,8 @@ function LayoutMenu() {
           </a>
           <ul className="menu-sub">
             <li className={`menu-item${layout == router.UIAccordion ? ' active' : ''}`}>
-              <a href="#ui-accordion" className="menu-link" onClick={() => setLayout(router.UIAccordion)}>
+              <a href="#ui-accordion" className="menu-link"
+                onClick={() => setLayout(router.UIAccordion)}>
                 <div data-i18n="Accordion">Accordion</div>
               </a>
             </li>
@@ -324,103 +346,108 @@ function LayoutMenu() {
                 <div data-i18n="Badges">Badges</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UIButtons ? ' active' : ''}`}>
               <a href="#ui-buttons" className="menu-link" onClick={() => setLayout(router.UIButtons)}>
                 <div data-i18n="Buttons">Buttons</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UICarousel ? ' active' : ''}`}>
               <a href="#ui-carousel" className="menu-link" onClick={() => setLayout(router.UICarousel)}>
                 <div data-i18n="Carousel">Carousel</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UICollapse ? ' active' : ''}`}>
               <a href="#ui-collapse" className="menu-link" onClick={() => setLayout(router.UICollapse)}>
                 <div data-i18n="Collapse">Collapse</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UIDropdowns ? ' active' : ''}`}>
               <a href="#ui-dropdowns" className="menu-link" onClick={() => setLayout(router.UIDropdowns)}>
                 <div data-i18n="Dropdowns">Dropdowns</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UIFooter ? ' active' : ''}`}>
               <a href="#ui-footer" className="menu-link" onClick={() => setLayout(router.UIFooter)}>
                 <div data-i18n="Footer">Footer</div>
               </a>
             </li>
-            <li className="menu-item">
-              <a href="#ui-list-groups" className="menu-link" onClick={() => setLayout(router.UIListGroups)}>
+            <li className={`menu-item${layout == router.UIListGroups ? ' active' : ''}`}>
+              <a href="#ui-list-groups" className="menu-link"
+                onClick={() => setLayout(router.UIListGroups)}>
                 <div data-i18n="List Groups">List groups</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UIModals ? ' active' : ''}`}>
               <a href="#ui-modals" className="menu-link" onClick={() => setLayout(router.UIModals)}>
                 <div data-i18n="Modals">Modals</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UINavbar ? ' active' : ''}`}>
               <a href="#ui-navbar" className="menu-link" onClick={() => setLayout(router.UINavbar)}>
                 <div data-i18n="Navbar">Navbar</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UIOffcanvas ? ' active' : ''}`}>
               <a href="#ui-offcanvas" className="menu-link" onClick={() => setLayout(router.UIOffcanvas)}>
                 <div data-i18n="Offcanvas">Offcanvas</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UIPaginationBreadcrumbs ? ' active' : ''}`}>
               <a href="#ui-pagination-breadcrumbs" className="menu-link"
                 onClick={() => setLayout(router.UIPaginationBreadcrumbs)}>
                 <div data-i18n="Pagination &amp; Breadcrumbs">Pagination &amp; Breadcrumbs</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UIProgress ? ' active' : ''}`}>
               <a href="#ui-progress" className="menu-link" onClick={() => setLayout(router.UIProgress)}>
                 <div data-i18n="Progress">Progress</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UISpinners ? ' active' : ''}`}>
               <a href="#ui-spinners" className="menu-link" onClick={() => setLayout(router.UISpinners)}>
                 <div data-i18n="Spinners">Spinners</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UITabsPills ? ' active' : ''}`}>
               <a href="#ui-tabs-pills" className="menu-link" onClick={() => setLayout(router.UITabsPills)}>
                 <div data-i18n="Tabs &amp; Pills">Tabs &amp; Pills</div>
               </a>
             </li>
-            <li className="menu-item">
+            <li className={`menu-item${layout == router.UIToasts ? ' active' : ''}`}>
               <a href="#ui-toasts" className="menu-link" onClick={() => setLayout(router.UIToasts)}>
                 <div data-i18n="Toasts">Toasts</div>
               </a>
             </li>
-            <li className="menu-item">
-              <a href="#ui-tooltips-popovers" className="menu-link" onClick={() => setLayout(router.UITooltipsPopovers)}>
+            <li className={`menu-item${layout == router.UITooltipsPopovers ? ' active' : ''}`}>
+              <a href="#ui-tooltips-popovers" className="menu-link"
+                onClick={() => setLayout(router.UITooltipsPopovers)}>
                 <div data-i18n="Tooltips & Popovers">Tooltips &amp; popovers</div>
               </a>
             </li>
-            <li className="menu-item">
-              <a href="#ui-typography" className="menu-link" onClick={() => setLayout(router.UITypography)}>
+            <li className={`menu-item${layout == router.UITypography ? ' active' : ''}`}>
+              <a href="#ui-typography" className="menu-link"
+                onClick={() => setLayout(router.UITypography)}>
                 <div data-i18n="Typography">Typography</div>
               </a>
             </li>
           </ul>
         </li>
 
-        <li className="menu-item">
-          <a href="void(0)" className="menu-link menu-toggle">
+        <li className={`menu-item${ActiveC == 8 ? ' active open' : ''}`}>
+          <a href="#extended-ui" className="menu-link menu-toggle">
             <i className="menu-icon tf-icons bx bx-copy"></i>
             <div data-i18n="Extended UI">Extended UI</div>
           </a>
           <ul className="menu-sub">
-            <li className="menu-item">
-              <a href="extended-ui-perfect-scrollbar.html" className="menu-link">
+            <li className={`menu-item${layout == router.ExtUiPerfectScrollbar ? ' active' : ''}`}>
+              <a href="#ext-ui-perfect-scrollbar" className="menu-link"
+                onClick={() => setLayout(router.ExtUiPerfectScrollbar)}>
                 <div data-i18n="Perfect Scrollbar">Perfect scrollbar</div>
               </a>
             </li>
-            <li className="menu-item">
-              <a href="extended-ui-text-divider.html" className="menu-link">
+            <li className={`menu-item${layout == router.ExtUiTextDivider ? ' active' : ''}`}>
+              <a href="#ext-ui-text-divider" className="menu-link"
+                onClick={() => setLayout(router.ExtUiTextDivider)}>
                 <div data-i18n="Text Divider">Text Divider</div>
               </a>
             </li>

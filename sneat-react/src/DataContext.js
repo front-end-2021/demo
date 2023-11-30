@@ -39,6 +39,9 @@ const router = {
     UIToasts: '#userInterfaceToasts',
     UITooltipsPopovers: '#uiTooltipsPopovers',
     UITypography: '#userInterfaceTypography',
+    UITypography: '#userInterfaceTypography',
+    ExtUiPerfectScrollbar: '#extUiPerfectScrollbar',
+    ExtUiTextDivider: '#extUiTextDivider',
 }
 Object.freeze(router);
 

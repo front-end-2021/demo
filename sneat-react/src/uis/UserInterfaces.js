@@ -12,7 +12,7 @@ import elm18 from '../assets/img/elements/18.jpg'
 
 
 export default function UserInterfaces() {
-    const { layout, setLayout } = useContext(RouterContext);
+    const { layout } = useContext(RouterContext);
 
     return (<div className="container-xxl flex-grow-1 container-p-y">
         {layout == router.UIAccordion && <UiAccordion />}
@@ -340,39 +340,33 @@ function UiBadges() {
                             <div className="col-sm-4">
                                 <small className="text-light fw-semibold">Default</small>
                                 <div className="demo-inline-spacing">
-                                    <button type="button" className="btn btn-primary">
-                                        Text
-                                        <span className="badge bg-white text-primary">4</span>
+                                    <button type="button" className="btn btn-primary"
+                                    >Text <span className="badge bg-white text-primary ms-1">4</span>
                                     </button>
-                                    <button type="button" className="btn btn-primary">
-                                        Text
-                                        <span className="badge bg-secondary rounded-pill">4</span>
+                                    <button type="button" className="btn btn-primary"
+                                    >Text <span className="badge bg-secondary rounded-pill ms1">4</span>
                                     </button>
                                 </div>
                             </div>
                             <div className="col-sm-4">
                                 <small className="text-light fw-semibold">Label</small>
                                 <div className="demo-inline-spacing">
-                                    <button type="button" className="btn btn-outline-primary">
-                                        Text
-                                        <span className="badge bg-white text-primary">4</span>
+                                    <button type="button" className="btn btn-outline-primary"
+                                    >Text <span className="badge bg-white text-primary ms-1">4</span>
                                     </button>
-                                    <button type="button" className="btn btn-outline-primary">
-                                        Text
-                                        <span className="badge bg-secondary rounded-pill">4</span>
+                                    <button type="button" className="btn btn-outline-primary"
+                                    >Text <span className="badge bg-secondary rounded-pill ms-1">4</span>
                                     </button>
                                 </div>
                             </div>
                             <div className="col-sm-4">
                                 <small className="text-light fw-semibold">Outline</small>
                                 <div className="demo-inline-spacing">
-                                    <button type="button" className="btn btn-outline-primary">
-                                        Text
-                                        <span className="badge">4</span>
+                                    <button type="button" className="btn btn-outline-primary"
+                                    >Text <span className="badge ms-1">4</span>
                                     </button>
-                                    <button type="button" className="btn btn-outline-secondary">
-                                        Text
-                                        <span className="badge rounded-pill">4</span>
+                                    <button type="button" className="btn btn-outline-secondary"
+                                    >Text <span className="badge rounded-pill ms-1">4</span>
                                     </button>
                                 </div>
                             </div>
@@ -393,19 +387,19 @@ function UiBadges() {
                                 <div className="text-light small fw-semibold mb-2">Default</div>
                                 <div className="demo-inline-spacing">
                                     <p>
-                                        <span className="badge badge-center rounded-pill bg-primary">1</span>
-                                        <span className="badge badge-center rounded-pill bg-secondary">2</span>
-                                        <span className="badge badge-center rounded-pill bg-success">3</span>
-                                        <span className="badge badge-center rounded-pill bg-danger">4</span>
-                                        <span className="badge badge-center rounded-pill bg-warning">5</span>
+                                        <span className="badge badge-center rounded-pill bg-primary me-1">1</span>
+                                        <span className="badge badge-center rounded-pill bg-secondary me-1">2</span>
+                                        <span className="badge badge-center rounded-pill bg-success me-1">3</span>
+                                        <span className="badge badge-center rounded-pill bg-danger me-1">4</span>
+                                        <span className="badge badge-center rounded-pill bg-warning me-1">5</span>
                                         <span className="badge badge-center rounded-pill bg-info">6</span>
                                     </p>
                                     <p>
-                                        <span className="badge badge-center bg-primary">1</span>
-                                        <span className="badge badge-center bg-secondary">2</span>
-                                        <span className="badge badge-center bg-success">3</span>
-                                        <span className="badge badge-center bg-danger">4</span>
-                                        <span className="badge badge-center bg-warning">5</span>
+                                        <span className="badge badge-center bg-primary me-1">1</span>
+                                        <span className="badge badge-center bg-secondary me-1">2</span>
+                                        <span className="badge badge-center bg-success me-1">3</span>
+                                        <span className="badge badge-center bg-danger me-1">4</span>
+                                        <span className="badge badge-center bg-warning me-1">5</span>
                                         <span className="badge badge-center bg-info">6</span>
                                     </p>
                                 </div>
@@ -415,19 +409,19 @@ function UiBadges() {
                                 <div className="text-light small fw-semibold mb-2">Default</div>
                                 <div className="demo-inline-spacing">
                                     <p>
-                                        <span className="badge badge-center rounded-pill bg-label-primary">1</span>
-                                        <span className="badge badge-center rounded-pill bg-label-secondary">2</span>
-                                        <span className="badge badge-center rounded-pill bg-label-success">3</span>
-                                        <span className="badge badge-center rounded-pill bg-label-danger">4</span>
-                                        <span className="badge badge-center rounded-pill bg-label-warning">5</span>
+                                        <span className="badge badge-center rounded-pill bg-label-primary me-1">1</span>
+                                        <span className="badge badge-center rounded-pill bg-label-secondary me-1">2</span>
+                                        <span className="badge badge-center rounded-pill bg-label-success me-1">3</span>
+                                        <span className="badge badge-center rounded-pill bg-label-danger me-1">4</span>
+                                        <span className="badge badge-center rounded-pill bg-label-warning me-1">5</span>
                                         <span className="badge badge-center rounded-pill bg-label-info">6</span>
                                     </p>
                                     <p>
-                                        <span className="badge badge-center bg-label-primary">1</span>
-                                        <span className="badge badge-center bg-label-secondary">2</span>
-                                        <span className="badge badge-center bg-label-success">3</span>
-                                        <span className="badge badge-center bg-label-danger">4</span>
-                                        <span className="badge badge-center bg-label-warning">5</span>
+                                        <span className="badge badge-center bg-label-primary me-1">1</span>
+                                        <span className="badge badge-center bg-label-secondary me-1">2</span>
+                                        <span className="badge badge-center bg-label-success me-1">3</span>
+                                        <span className="badge badge-center bg-label-danger me-1">4</span>
+                                        <span className="badge badge-center bg-label-warning me-1">5</span>
                                         <span className="badge badge-center bg-label-info">6</span>
                                     </p>
                                 </div>
@@ -638,7 +632,7 @@ function UiButtons() {
                                         type="button"
                                         className="btn btn-primary d-block"
                                         data-bs-toggle="button"
-                                        autocomplete="off"
+                                        autoComplete="off"
                                     >
                                         Toggle button
                                     </button>
@@ -646,7 +640,7 @@ function UiButtons() {
                                         type="button"
                                         className="btn btn-primary active d-block"
                                         data-bs-toggle="button"
-                                        autocomplete="off"
+                                        autoComplete="off"
                                         aria-pressed="true"
                                     >
                                         Active toggle button
@@ -656,7 +650,7 @@ function UiButtons() {
                                         className="btn btn-primary d-block"
                                         disabled
                                         data-bs-toggle="button"
-                                        autocomplete="off"
+                                        autoComplete="off"
                                     >
                                         Disabled toggle button
                                     </button>
@@ -666,16 +660,18 @@ function UiButtons() {
                                 <div className="text-light small fw-semibold">Checkbox toggle buttons</div>
                                 <div className="demo-vertical-spacing">
                                     <div className="d-block">
-                                        <input type="checkbox" className="btn-check" id="btn-check" autocomplete="off" />
-                                        <label className="btn btn-primary" for="btn-check">Single toggle</label>
+                                        <input type="checkbox" className="btn-check" id="btn-check" autoComplete="off" />
+                                        <label className="btn btn-primary" htmlFor="btn-check">Single toggle</label>
                                     </div>
                                     <div className="d-block">
-                                        <input type="checkbox" className="btn-check" id="btn-check-2" checked autocomplete="off" />
-                                        <label className="btn btn-primary" for="btn-check-2">Checked</label>
+                                        <input type="checkbox" className="btn-check" id="btn-check-2"
+                                            defaultChecked autoComplete="off" />
+                                        <label className="btn btn-primary" htmlFor="btn-check-2">Checked</label>
                                     </div>
                                     <div className="d-block">
-                                        <input type="checkbox" className="btn-check" id="btn-check-3" checked autocomplete="off" />
-                                        <label className="btn btn-primary" for="btn-check-3">Checked</label>
+                                        <input type="checkbox" className="btn-check" id="btn-check-3"
+                                            defaultChecked autoComplete="off" />
+                                        <label className="btn btn-primary" htmlFor="btn-check-3">Checked</label>
                                     </div>
                                 </div>
                             </div>
@@ -683,28 +679,27 @@ function UiButtons() {
                                 <div className="text-light small fw-semibold">Checkbox and radio</div>
                                 <div className="demo-vertical-spacing">
                                     <div className="btn-group" role="group" aria-label="Basic checkbox toggle button group">
-                                        <input type="checkbox" className="btn-check" id="btncheck1" checked autocomplete="off" />
-                                        <label className="btn btn-outline-primary" for="btncheck1">Checkbox 1 (pre-checked)</label>
-                                        <input type="checkbox" className="btn-check" id="btncheck2" autocomplete="off" />
-                                        <label className="btn btn-outline-primary" for="btncheck2">Checkbox 2</label>
-                                        <input type="checkbox" className="btn-check" id="btncheck3" autocomplete="off" />
-                                        <label className="btn btn-outline-primary" for="btncheck3">Checkbox 3</label>
+                                        <input type="checkbox" className="btn-check" id="btncheck1"
+                                            defaultChecked autoComplete="off" />
+                                        <label className="btn btn-outline-primary" htmlFor="btncheck1">Checkbox 1 (pre-checked)</label>
+                                        <input type="checkbox" className="btn-check" id="btncheck2" autoComplete="off" />
+                                        <label className="btn btn-outline-primary" htmlFor="btncheck2">Checkbox 2</label>
+                                        <input type="checkbox" className="btn-check" id="btncheck3" autoComplete="off" />
+                                        <label className="btn btn-outline-primary" htmlFor="btncheck3">Checkbox 3</label>
                                     </div>
                                     <br />
                                     <div className="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                        <input
-                                            type="radio"
+                                        <input type="radio"
                                             className="btn-check"
                                             name="btnradio"
                                             id="btnradio1"
-                                            checked
-                                            autocomplete="off"
-                                        />
-                                        <label className="btn btn-outline-primary" for="btnradio1">Radio 1</label>
-                                        <input type="radio" className="btn-check" name="btnradio" id="btnradio2" autocomplete="off" />
-                                        <label className="btn btn-outline-primary" for="btnradio2">Radio 2</label>
-                                        <input type="radio" className="btn-check" name="btnradio" id="btnradio3" autocomplete="off" />
-                                        <label className="btn btn-outline-primary" for="btnradio3">Radio 3</label>
+                                            defaultChecked
+                                            autoComplete="off" />
+                                        <label className="btn btn-outline-primary" htmlFor="btnradio1">Radio 1</label>
+                                        <input type="radio" className="btn-check" name="btnradio" id="btnradio2" autoComplete="off" />
+                                        <label className="btn btn-outline-primary" htmlFor="btnradio2">Radio 2</label>
+                                        <input type="radio" className="btn-check" name="btnradio" id="btnradio3" autoComplete="off" />
+                                        <label className="btn btn-outline-primary" htmlFor="btnradio3">Radio 3</label>
                                     </div>
                                 </div>
                             </div>
@@ -1830,19 +1825,17 @@ function UiDropdowns() {
                                 </div>
                             </div>
                             <div className="btn-group">
-                                <button
-                                    type="button"
+                                <button type="button"
                                     className="btn btn-primary dropdown-toggle"
                                     data-bs-toggle="dropdown"
                                     aria-haspopup="true"
-                                    aria-expanded="false"
-                                >
+                                    aria-expanded="false" >
                                     Forms
                                 </button>
                                 <div className="dropdown-menu dropdown-menu-end w-px-300">
-                                    <form className="p-4" onsubmit="return false">
+                                    <form className="p-4" onSubmit={e => { return false }}>
                                         <div className="mb-3">
-                                            <label for="exampleDropdownFormEmail1" className="form-label">Email address</label>
+                                            <label htmlFor="exampleDropdownFormEmail1" className="form-label">Email address</label>
                                             <input
                                                 type="email"
                                                 className="form-control"
@@ -1851,7 +1844,7 @@ function UiDropdowns() {
                                             />
                                         </div>
                                         <div className="mb-3">
-                                            <label for="exampleDropdownFormPassword1" className="form-label">Password</label>
+                                            <label htmlFor="exampleDropdownFormPassword1" className="form-label">Password</label>
                                             <input
                                                 type="password"
                                                 className="form-control"
@@ -1862,7 +1855,7 @@ function UiDropdowns() {
                                         <div className="mb-3">
                                             <div className="form-check">
                                                 <input type="checkbox" className="form-check-input" id="dropdownCheck" />
-                                                <label className="form-check-label" for="dropdownCheck"> Remember me </label>
+                                                <label className="form-check-label" htmlFor="dropdownCheck"> Remember me </label>
                                             </div>
                                         </div>
                                         <button type="button" className="btn btn-primary">Sign in</button>
@@ -2052,8 +2045,9 @@ function UiFooter() {
                     </div>
                     <div>
                         <div className="form-check form-control-sm footer-link me-3">
-                            <input className="form-check-input" type="checkbox" value="" id="customCheck2" checked />
-                            <label className="form-check-label" for="customCheck2"> Show </label>
+                            <input className="form-check-input" type="checkbox"
+                                id="customCheck2" defaultChecked />
+                            <label className="form-check-label" htmlFor="customCheck2"> Show </label>
                         </div>
                         <div className="dropdown dropup footer-link me-3">
                             <button
@@ -2116,18 +2110,15 @@ function UiListGroups() {
                         <small className="text-light fw-semibold">With Bagdes & Pills</small>
                         <div className="demo-inline-spacing mt-3">
                             <ul className="list-group">
-                                <li className="list-group-item d-flex justify-content-between align-items-center">
-                                    Soufflé pastry pie ice
-                                    <span className="badge bg-primary">5</span>
+                                <li className="list-group-item d-flex justify-content-between align-items-center"
+                                >Soufflé pastry pie ice <span className="badge bg-primary ms-1">5</span>
                                 </li>
                                 <li className="list-group-item disabled">Bear claw cake biscuit</li>
-                                <li className="list-group-item d-flex justify-content-between align-items-center">
-                                    Tart tiramisu cake
-                                    <span className="badge bg-success">2</span>
+                                <li className="list-group-item d-flex justify-content-between align-items-center"
+                                >Tart tiramisu cake <span className="badge bg-success ms-1">2</span>
                                 </li>
-                                <li className="list-group-item d-flex justify-content-between align-items-center">
-                                    Bonbon toffee muffin
-                                    <span className="badge bg-danger rounded-pill">3</span>
+                                <li className="list-group-item d-flex justify-content-between align-items-center"
+                                >Bonbon toffee muffin <span className="badge bg-danger rounded-pill ms-1">3</span>
                                 </li>
                                 <li className="list-group-item">Dragée tootsie roll</li>
                             </ul>
@@ -2143,20 +2134,15 @@ function UiListGroups() {
                         <div className="demo-inline-spacing mt-3">
                             <div className="list-group list-group-flush">
                                 <a href="void(0);" className="list-group-item list-group-item-action"
-                                >Bear claw cake biscuit</a
-                                >
+                                >Bear claw cake biscuit</a>
                                 <a href="void(0);" className="list-group-item list-group-item-action"
-                                >Soufflé pastry pie ice</a
-                                >
+                                >Soufflé pastry pie ice</a>
                                 <a href="void(0);" className="list-group-item list-group-item-action"
-                                >Tart tiramisu cake</a
-                                >
+                                >Tart tiramisu cake</a>
                                 <a href="void(0);" className="list-group-item list-group-item-action"
-                                >Bonbon toffee muffin</a
-                                >
+                                >Bonbon toffee muffin</a>
                                 <a href="void(0);" className="list-group-item list-group-item-action"
-                                >Dragée tootsie roll</a
-                                >
+                                >Dragée tootsie roll</a>
                             </div>
                         </div>
                     </div>
@@ -2473,7 +2459,7 @@ function UiModals() {
                             >
                                 Launch modal
                             </button>
-                            <div className="modal fade" id="basicModal" tabindex="-1" aria-hidden="true">
+                            <div className="modal fade" id="basicModal" tabIndex="-1" aria-hidden="true">
                                 <div className="modal-dialog" role="document">
                                     <div className="modal-content">
                                         <div className="modal-header">
@@ -2488,17 +2474,17 @@ function UiModals() {
                                         <div className="modal-body">
                                             <div className="row">
                                                 <div className="col mb-3">
-                                                    <label for="nameBasic" className="form-label">Name</label>
+                                                    <label htmlFor="nameBasic" className="form-label">Name</label>
                                                     <input type="text" id="nameBasic" className="form-control" placeholder="Enter Name" />
                                                 </div>
                                             </div>
                                             <div className="row g-2">
                                                 <div className="col mb-0">
-                                                    <label for="emailBasic" className="form-label">Email</label>
+                                                    <label htmlFor="emailBasic" className="form-label">Email</label>
                                                     <input type="text" id="emailBasic" className="form-control" placeholder="xxxx@xxx.xx" />
                                                 </div>
                                                 <div className="col mb-0">
-                                                    <label for="dobBasic" className="form-label">DOB</label>
+                                                    <label htmlFor="dobBasic" className="form-label">DOB</label>
                                                     <input type="text" id="dobBasic" className="form-control" placeholder="DD / MM / YY" />
                                                 </div>
                                             </div>
@@ -2525,7 +2511,7 @@ function UiModals() {
                             >
                                 Launch modal
                             </button>
-                            <div className="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+                            <div className="modal fade" id="modalCenter" tabIndex="-1" aria-hidden="true">
                                 <div className="modal-dialog modal-dialog-centered" role="document">
                                     <div className="modal-content">
                                         <div className="modal-header">
@@ -2540,7 +2526,7 @@ function UiModals() {
                                         <div className="modal-body">
                                             <div className="row">
                                                 <div className="col mb-3">
-                                                    <label for="nameWithTitle" className="form-label">Name</label>
+                                                    <label htmlFor="nameWithTitle" className="form-label">Name</label>
                                                     <input
                                                         type="text"
                                                         id="nameWithTitle"
@@ -2551,7 +2537,7 @@ function UiModals() {
                                             </div>
                                             <div className="row g-2">
                                                 <div className="col mb-0">
-                                                    <label for="emailWithTitle" className="form-label">Email</label>
+                                                    <label htmlFor="emailWithTitle" className="form-label">Email</label>
                                                     <input
                                                         type="text"
                                                         id="emailWithTitle"
@@ -2560,7 +2546,7 @@ function UiModals() {
                                                     />
                                                 </div>
                                                 <div className="col mb-0">
-                                                    <label for="dobWithTitle" className="form-label">DOB</label>
+                                                    <label htmlFor="dobWithTitle" className="form-label">DOB</label>
                                                     <input
                                                         type="text"
                                                         id="dobWithTitle"
@@ -2587,7 +2573,7 @@ function UiModals() {
                             <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTop">
                                 Launch modal
                             </button>
-                            <div className="modal modal-top fade" id="modalTop" tabindex="-1">
+                            <div className="modal modal-top fade" id="modalTop" tabIndex="-1">
                                 <div className="modal-dialog">
                                     <form className="modal-content">
                                         <div className="modal-header">
@@ -2602,7 +2588,7 @@ function UiModals() {
                                         <div className="modal-body">
                                             <div className="row">
                                                 <div className="col mb-3">
-                                                    <label for="nameSlideTop" className="form-label">Name</label>
+                                                    <label htmlFor="nameSlideTop" className="form-label">Name</label>
                                                     <input
                                                         type="text"
                                                         id="nameSlideTop"
@@ -2613,7 +2599,7 @@ function UiModals() {
                                             </div>
                                             <div className="row g-2">
                                                 <div className="col mb-0">
-                                                    <label for="emailSlideTop" className="form-label">Email</label>
+                                                    <label htmlFor="emailSlideTop" className="form-label">Email</label>
                                                     <input
                                                         type="text"
                                                         id="emailSlideTop"
@@ -2622,7 +2608,7 @@ function UiModals() {
                                                     />
                                                 </div>
                                                 <div className="col mb-0">
-                                                    <label for="dobSlideTop" className="form-label">DOB</label>
+                                                    <label htmlFor="dobSlideTop" className="form-label">DOB</label>
                                                     <input
                                                         type="text"
                                                         id="dobSlideTop"
@@ -2656,11 +2642,11 @@ function UiModals() {
                                 className="btn btn-primary"
                                 data-bs-toggle="modal"
                                 data-bs-target="#youTubeModal"
-                                data-theVideo="https://www.youtube.com/embed/EngW7tLk6R8"
+                                data-thevideo="https://www.youtube.com/embed/EngW7tLk6R8"
                             >
                                 Launch modal
                             </button>
-                            <div className="modal fade" id="youTubeModal" tabindex="-1" aria-hidden="true">
+                            <div className="modal fade" id="youTubeModal" tabIndex="-1" aria-hidden="true">
                                 <div className="modal-dialog" role="document">
                                     <div className="modal-content">
                                         <iframe height="350" src="https://www.youtube.com/embed/EngW7tLk6R8"></iframe>
@@ -2684,8 +2670,8 @@ function UiModals() {
                                 className="modal fade"
                                 id="modalToggle"
                                 aria-labelledby="modalToggleLabel"
-                                tabindex="-1"
-                                style="display: none"
+                                tabIndex="-1"
+                                style={{ display: 'none' }}
                                 aria-hidden="true"
                             >
                                 <div className="modal-dialog modal-dialog-centered">
@@ -2718,7 +2704,7 @@ function UiModals() {
                                 id="modalToggle2"
                                 aria-hidden="true"
                                 aria-labelledby="modalToggleLabel2"
-                                tabindex="-1"
+                                tabIndex="-1"
                             >
                                 <div className="modal-dialog modal-dialog-centered">
                                     <div className="modal-content">
@@ -2758,7 +2744,7 @@ function UiModals() {
                             >
                                 Launch modal
                             </button>
-                            <div className="modal fade" id="fullscreenModal" tabindex="-1" aria-hidden="true">
+                            <div className="modal fade" id="fullscreenModal" tabIndex="-1" aria-hidden="true">
                                 <div className="modal-dialog modal-fullscreen" role="document">
                                     <div className="modal-content">
                                         <div className="modal-header">
@@ -2874,7 +2860,7 @@ function UiModals() {
                 <div className="row gy-3">
                     <div className="col-lg-4 col-md-6">
                         <small className="text-light fw-semibold">Sizes</small>
-                        <div className="modal fade" id="smallModal" tabindex="-1" aria-hidden="true">
+                        <div className="modal fade" id="smallModal" tabIndex="-1" aria-hidden="true">
                             <div className="modal-dialog modal-sm" role="document">
                                 <div className="modal-content">
                                     <div className="modal-header">
@@ -2889,17 +2875,17 @@ function UiModals() {
                                     <div className="modal-body">
                                         <div className="row">
                                             <div className="col mb-3">
-                                                <label for="nameSmall" className="form-label">Name</label>
+                                                <label htmlFor="nameSmall" className="form-label">Name</label>
                                                 <input type="text" id="nameSmall" className="form-control" placeholder="Enter Name" />
                                             </div>
                                         </div>
                                         <div className="row g-2">
                                             <div className="col mb-0">
-                                                <label className="form-label" for="emailSmall">Email</label>
+                                                <label className="form-label" htmlFor="emailSmall">Email</label>
                                                 <input type="text" className="form-control" id="emailSmall" placeholder="xxxx@xxx.xx" />
                                             </div>
                                             <div className="col mb-0">
-                                                <label for="dobSmall" className="form-label">DOB</label>
+                                                <label htmlFor="dobSmall" className="form-label">DOB</label>
                                                 <input id="dobSmall" type="text" className="form-control" placeholder="DD / MM / YY" />
                                             </div>
                                         </div>
@@ -2913,7 +2899,7 @@ function UiModals() {
                                 </div>
                             </div>
                         </div>
-                        <div className="modal fade" id="largeModal" tabindex="-1" aria-hidden="true">
+                        <div className="modal fade" id="largeModal" tabIndex="-1" aria-hidden="true">
                             <div className="modal-dialog modal-lg" role="document">
                                 <div className="modal-content">
                                     <div className="modal-header">
@@ -2928,17 +2914,17 @@ function UiModals() {
                                     <div className="modal-body">
                                         <div className="row">
                                             <div className="col mb-3">
-                                                <label for="nameLarge" className="form-label">Name</label>
+                                                <label htmlFor="nameLarge" className="form-label">Name</label>
                                                 <input type="text" id="nameLarge" className="form-control" placeholder="Enter Name" />
                                             </div>
                                         </div>
                                         <div className="row g-2">
                                             <div className="col mb-0">
-                                                <label for="emailLarge" className="form-label">Email</label>
+                                                <label htmlFor="emailLarge" className="form-label">Email</label>
                                                 <input type="text" id="emailLarge" className="form-control" placeholder="xxxx@xxx.xx" />
                                             </div>
                                             <div className="col mb-0">
-                                                <label for="dobLarge" className="form-label">DOB</label>
+                                                <label htmlFor="dobLarge" className="form-label">DOB</label>
                                                 <input type="text" id="dobLarge" className="form-control" placeholder="DD / MM / YY" />
                                             </div>
                                         </div>
@@ -2952,7 +2938,7 @@ function UiModals() {
                                 </div>
                             </div>
                         </div>
-                        <div className="modal fade" id="exLargeModal" tabindex="-1" aria-hidden="true">
+                        <div className="modal fade" id="exLargeModal" tabIndex="-1" aria-hidden="true">
                             <div className="modal-dialog modal-xl" role="document">
                                 <div className="modal-content">
                                     <div className="modal-header">
@@ -2967,17 +2953,17 @@ function UiModals() {
                                     <div className="modal-body">
                                         <div className="row">
                                             <div className="col mb-3">
-                                                <label for="nameExLarge" className="form-label">Name</label>
+                                                <label htmlFor="nameExLarge" className="form-label">Name</label>
                                                 <input type="text" id="nameExLarge" className="form-control" placeholder="Enter Name" />
                                             </div>
                                         </div>
                                         <div className="row g-2">
                                             <div className="col mb-0">
-                                                <label for="emailExLarge" className="form-label">Email</label>
+                                                <label htmlFor="emailExLarge" className="form-label">Email</label>
                                                 <input type="text" id="emailExLarge" className="form-control" placeholder="xxxx@xxx.xx" />
                                             </div>
                                             <div className="col mb-0">
-                                                <label for="dobExLarge" className="form-label">DOB</label>
+                                                <label htmlFor="dobExLarge" className="form-label">DOB</label>
                                                 <input type="text" id="dobExLarge" className="form-control" placeholder="DD / MM / YY" />
                                             </div>
                                         </div>
@@ -3022,7 +3008,7 @@ function UiModals() {
                     </div>
                     <div className="col-lg-4 col-md-3">
                         <small className="text-light fw-semibold">Scrolling long content</small>
-                        <div className="modal fade" id="modalLong" tabindex="-1" aria-hidden="true">
+                        <div className="modal fade" id="modalLong" tabIndex="-1" aria-hidden="true">
                             <div className="modal-dialog" role="document">
                                 <div className="modal-content">
                                     <div className="modal-header">
@@ -3123,7 +3109,7 @@ function UiModals() {
                                 </div>
                             </div>
                         </div>
-                        <div className="modal fade" id="modalScrollable" tabindex="-1" aria-hidden="true">
+                        <div className="modal fade" id="modalScrollable" tabIndex="-1" aria-hidden="true">
                             <div className="modal-dialog modal-dialog-scrollable" role="document">
                                 <div className="modal-content">
                                     <div className="modal-header">
@@ -3254,7 +3240,7 @@ function UiModals() {
                             >
                                 Launch modal
                             </button>
-                            <div className="modal fade" id="backDropModal" data-bs-backdrop="static" tabindex="-1">
+                            <div className="modal fade" id="backDropModal" data-bs-backdrop="static" tabIndex="-1">
                                 <div className="modal-dialog">
                                     <form className="modal-content">
                                         <div className="modal-header">
@@ -3269,7 +3255,7 @@ function UiModals() {
                                         <div className="modal-body">
                                             <div className="row">
                                                 <div className="col mb-3">
-                                                    <label for="nameBackdrop" className="form-label">Name</label>
+                                                    <label htmlFor="nameBackdrop" className="form-label">Name</label>
                                                     <input
                                                         type="text"
                                                         id="nameBackdrop"
@@ -3280,7 +3266,7 @@ function UiModals() {
                                             </div>
                                             <div className="row g-2">
                                                 <div className="col mb-0">
-                                                    <label for="emailBackdrop" className="form-label">Email</label>
+                                                    <label htmlFor="emailBackdrop" className="form-label">Email</label>
                                                     <input
                                                         type="text"
                                                         id="emailBackdrop"
@@ -3289,7 +3275,7 @@ function UiModals() {
                                                     />
                                                 </div>
                                                 <div className="col mb-0">
-                                                    <label for="dobBackdrop" className="form-label">DOB</label>
+                                                    <label htmlFor="dobBackdrop" className="form-label">DOB</label>
                                                     <input
                                                         type="text"
                                                         id="dobBackdrop"
@@ -3362,10 +3348,10 @@ function UiNavbar() {
                             </ul>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link disabled" href="void(0)" tabindex="-1">Disabled</a>
+                            <a className="nav-link disabled" href="void(0)" tabIndex="-1">Disabled</a>
                         </li>
                     </ul>
-                    <form className="d-flex" onsubmit="return false">
+                    <form className="d-flex" onSubmit={e => { return false }}>
                         <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
                         <button className="btn btn-outline-primary" type="submit">Search</button>
                     </form>
@@ -3439,8 +3425,7 @@ function UiNavbar() {
                         className="navbar-toggler"
                         type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target="#navbar-ex-3"
-                    >
+                        data-bs-target="#navbar-ex-3">
                         <span className="navbar-toggler-icon"></span>
                     </button>
 
@@ -3451,7 +3436,7 @@ function UiNavbar() {
                             <a className="nav-item nav-link" href="void(0)">Contact</a>
                         </div>
 
-                        <form onsubmit="return false">
+                        <form onSubmit={e => { return false }}>
                             <button className="btn btn-outline-primary" type="button">Buy Now</button>
                         </form>
                     </div>
@@ -3481,7 +3466,7 @@ function UiOffcanvas() {
                             </button>
                             <div
                                 className="offcanvas offcanvas-start"
-                                tabindex="-1"
+                                tabIndex="-1"
                                 id="offcanvasStart"
                                 aria-labelledby="offcanvasStartLabel"
                             >
@@ -3527,7 +3512,7 @@ function UiOffcanvas() {
                             </button>
                             <div
                                 className="offcanvas offcanvas-end"
-                                tabindex="-1"
+                                tabIndex="-1"
                                 id="offcanvasEnd"
                                 aria-labelledby="offcanvasEndLabel"
                             >
@@ -3573,7 +3558,7 @@ function UiOffcanvas() {
                             </button>
                             <div
                                 className="offcanvas offcanvas-top"
-                                tabindex="-1"
+                                tabIndex="-1"
                                 id="offcanvasTop"
                                 aria-labelledby="offcanvasTopLabel"
                             >
@@ -3615,7 +3600,7 @@ function UiOffcanvas() {
                             </button>
                             <div
                                 className="offcanvas offcanvas-bottom"
-                                tabindex="-1"
+                                tabIndex="-1"
                                 id="offcanvasBottom"
                                 aria-labelledby="offcanvasBottomLabel"
                             >
@@ -3666,7 +3651,7 @@ function UiOffcanvas() {
                                 className="offcanvas offcanvas-end"
                                 data-bs-scroll="true"
                                 data-bs-backdrop="false"
-                                tabindex="-1"
+                                tabIndex="-1"
                                 id="offcanvasScroll"
                                 aria-labelledby="offcanvasScrollLabel"
                             >
@@ -3712,7 +3697,7 @@ function UiOffcanvas() {
                             </button>
                             <div
                                 className="offcanvas offcanvas-end"
-                                tabindex="-1"
+                                tabIndex="-1"
                                 id="offcanvasBackdrop"
                                 aria-labelledby="offcanvasBackdropLabel"
                             >
@@ -3759,7 +3744,7 @@ function UiOffcanvas() {
                             <div
                                 className="offcanvas offcanvas-end"
                                 data-bs-scroll="true"
-                                tabindex="-1"
+                                tabIndex="-1"
                                 id="offcanvasBoth"
                                 aria-labelledby="offcanvasBothLabel"
                             >
@@ -4095,7 +4080,7 @@ function UiProgress() {
                         <div
                             className="progress-bar"
                             role="progressbar"
-                            style="width: 25%"
+                            style={{ width: '25%' }}
                             aria-valuenow="25"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4116,21 +4101,21 @@ function UiProgress() {
             <div className="card-body">
                 <div className="text-light small fw-semibold">Height</div>
                 <div className="demo-vertical-spacing">
-                    <div className="progress" style="height: 6px">
+                    <div className="progress" style={{ height: '6px' }}>
                         <div
                             className="progress-bar"
                             role="progressbar"
-                            style="width: 25%"
+                            style={{ width: '25%' }}
                             aria-valuenow="25"
                             aria-valuemin="0"
                             aria-valuemax="100"
                         ></div>
                     </div>
-                    <div className="progress" style="height: 10px">
+                    <div className="progress" style={{ height: '10px' }}>
                         <div
                             className="progress-bar"
                             role="progressbar"
-                            style="width: 75%"
+                            style={{ width: '75%' }}
                             aria-valuenow="75"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4146,7 +4131,7 @@ function UiProgress() {
                         <div
                             className="progress-bar"
                             role="progressbar"
-                            style="width: 25%"
+                            style={{ width: '25%' }}
                             aria-valuenow="25"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4158,7 +4143,7 @@ function UiProgress() {
                         <div
                             className="progress-bar"
                             role="progressbar"
-                            style="width: 75%"
+                            style={{ width: '75%' }}
                             aria-valuenow="75"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4177,7 +4162,7 @@ function UiProgress() {
                         <div
                             className="progress-bar bg-primary"
                             role="progressbar"
-                            style="width: 20%"
+                            style={{ width: '20%' }}
                             aria-valuenow="20"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4187,7 +4172,7 @@ function UiProgress() {
                         <div
                             className="progress-bar bg-secondary"
                             role="progressbar"
-                            style="width: 30%"
+                            style={{ width: '30%' }}
                             aria-valuenow="30"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4197,7 +4182,7 @@ function UiProgress() {
                         <div
                             className="progress-bar bg-success"
                             role="progressbar"
-                            style="width: 40%"
+                            style={{ width: '40%' }}
                             aria-valuenow="40"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4207,7 +4192,7 @@ function UiProgress() {
                         <div
                             className="progress-bar bg-danger"
                             role="progressbar"
-                            style="width: 75%"
+                            style={{ width: '75%' }}
                             aria-valuenow="75"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4217,7 +4202,7 @@ function UiProgress() {
                         <div
                             className="progress-bar bg-warning"
                             role="progressbar"
-                            style="width: 60%"
+                            style={{ width: '60%' }}
                             aria-valuenow="60"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4227,7 +4212,7 @@ function UiProgress() {
                         <div
                             className="progress-bar bg-info"
                             role="progressbar"
-                            style="width: 50%"
+                            style={{ width: '50%' }}
                             aria-valuenow="50"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4237,7 +4222,7 @@ function UiProgress() {
                         <div
                             className="progress-bar bg-dark"
                             role="progressbar"
-                            style="width: 85%"
+                            style={{ width: '85%' }}
                             aria-valuenow="85"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4254,7 +4239,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped bg-primary"
                             role="progressbar"
-                            style="width: 20%"
+                            style={{ width: '20%' }}
                             aria-valuenow="20"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4264,7 +4249,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped bg-secondary"
                             role="progressbar"
-                            style="width: 30%"
+                            style={{ width: '30%' }}
                             aria-valuenow="30"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4274,7 +4259,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped bg-success"
                             role="progressbar"
-                            style="width: 40%"
+                            style={{ width: '40%' }}
                             aria-valuenow="40"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4284,7 +4269,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped bg-danger"
                             role="progressbar"
-                            style="width: 75%"
+                            style={{ width: '75%' }}
                             aria-valuenow="75"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4294,7 +4279,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped bg-warning"
                             role="progressbar"
-                            style="width: 60%"
+                            style={{ width: '60%' }}
                             aria-valuenow="60"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4304,7 +4289,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped bg-info"
                             role="progressbar"
-                            style="width: 50%"
+                            style={{ width: '50%' }}
                             aria-valuenow="50"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4314,7 +4299,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped bg-dark"
                             role="progressbar"
-                            style="width: 85%"
+                            style={{ width: '85%' }}
                             aria-valuenow="85"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4331,7 +4316,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
                             role="progressbar"
-                            style="width: 20%"
+                            style={{ width: '20%' }}
                             aria-valuenow="20"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4341,7 +4326,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped progress-bar-animated bg-secondary"
                             role="progressbar"
-                            style="width: 30%"
+                            style={{ width: '30%' }}
                             aria-valuenow="30"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4351,7 +4336,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped progress-bar-animated bg-success"
                             role="progressbar"
-                            style="width: 40%"
+                            style={{ width: '40%' }}
                             aria-valuenow="40"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4361,7 +4346,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped progress-bar-animated bg-danger"
                             role="progressbar"
-                            style="width: 75%"
+                            style={{ width: '75%' }}
                             aria-valuenow="75"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4371,7 +4356,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped progress-bar-animated bg-warning"
                             role="progressbar"
-                            style="width: 60%"
+                            style={{ width: '60%' }}
                             aria-valuenow="60"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4381,7 +4366,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped progress-bar-animated bg-info"
                             role="progressbar"
-                            style="width: 50%"
+                            style={{ width: '50%' }}
                             aria-valuenow="50"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4391,7 +4376,7 @@ function UiProgress() {
                         <div
                             className="progress-bar progress-bar-striped progress-bar-animated bg-dark"
                             role="progressbar"
-                            style="width: 85%"
+                            style={{ width: '85%' }}
                             aria-valuenow="85"
                             aria-valuemin="0"
                             aria-valuemax="100"
@@ -4408,7 +4393,7 @@ function UiProgress() {
                     <div
                         className="progress-bar bg-primary shadow-none"
                         role="progressbar"
-                        style="width: 15%"
+                        style={{ width: '15%' }}
                         aria-valuenow="15"
                         aria-valuemin="0"
                         aria-valuemax="100"
@@ -4416,7 +4401,7 @@ function UiProgress() {
                     <div
                         className="progress-bar bg-success shadow-none"
                         role="progressbar"
-                        style="width: 30%"
+                        style={{ width: '30%' }}
                         aria-valuenow="30"
                         aria-valuemin="0"
                         aria-valuemax="100"
@@ -4424,7 +4409,7 @@ function UiProgress() {
                     <div
                         className="progress-bar bg-danger shadow-none"
                         role="progressbar"
-                        style="width: 20%"
+                        style={{ width: '20%' }}
                         aria-valuenow="20"
                         aria-valuemin="0"
                         aria-valuemax="100"
@@ -4436,7 +4421,7 @@ function UiProgress() {
                     <div
                         className="progress-bar bg-primary progress-bar-striped shadow-none"
                         role="progressbar"
-                        style="width: 15%"
+                        style={{ width: '15%' }}
                         aria-valuenow="15"
                         aria-valuemin="0"
                         aria-valuemax="100"
@@ -4444,7 +4429,7 @@ function UiProgress() {
                     <div
                         className="progress-bar bg-success progress-bar-striped shadow-none"
                         role="progressbar"
-                        style="width: 30%"
+                        style={{ width: '30%' }}
                         aria-valuenow="30"
                         aria-valuemin="0"
                         aria-valuemax="100"
@@ -4452,7 +4437,7 @@ function UiProgress() {
                     <div
                         className="progress-bar bg-danger progress-bar-striped shadow-none"
                         role="progressbar"
-                        style="width: 20%"
+                        style={{ width: '20%' }}
                         aria-valuenow="20"
                         aria-valuemin="0"
                         aria-valuemax="100"
@@ -4464,7 +4449,7 @@ function UiProgress() {
                     <div
                         className="progress-bar bg-primary progress-bar-striped progress-bar-animated shadow-none"
                         role="progressbar"
-                        style="width: 15%"
+                        style={{ width: '15%' }}
                         aria-valuenow="15"
                         aria-valuemin="0"
                         aria-valuemax="100"
@@ -4472,7 +4457,7 @@ function UiProgress() {
                     <div
                         className="progress-bar bg-success progress-bar-striped progress-bar-animated shadow-none"
                         role="progressbar"
-                        style="width: 30%"
+                        style={{ width: '30%' }}
                         aria-valuenow="30"
                         aria-valuemin="0"
                         aria-valuemax="100"
@@ -4480,7 +4465,7 @@ function UiProgress() {
                     <div
                         className="progress-bar bg-danger progress-bar-striped progress-bar-animated shadow-none"
                         role="progressbar"
-                        style="width: 20%"
+                        style={{ width: '20%' }}
                         aria-valuenow="20"
                         aria-valuemin="0"
                         aria-valuemax="100"
@@ -4699,42 +4684,36 @@ function UiTabsPills() {
                 <div className="nav-align-top mb-4">
                     <ul className="nav nav-tabs nav-fill" role="tablist">
                         <li className="nav-item">
-                            <button
-                                type="button"
+                            <button type="button"
                                 className="nav-link active"
                                 role="tab"
                                 data-bs-toggle="tab"
                                 data-bs-target="#navs-justified-home"
                                 aria-controls="navs-justified-home"
-                                aria-selected="true"
-                            >
-                                <i className="tf-icons bx bx-home"></i> Home
-                                <span className="badge rounded-pill badge-center h-px-20 w-px-20 bg-label-danger">3</span>
+                                aria-selected="true">
+                                <i className="tf-icons bx bx-home"></i> Home<span
+                                    className="badge rounded-pill badge-center h-px-20 w-px-20 bg-label-danger ms-1">3</span>
                             </button>
                         </li>
                         <li className="nav-item">
-                            <button
-                                type="button"
+                            <button type="button"
                                 className="nav-link"
                                 role="tab"
                                 data-bs-toggle="tab"
                                 data-bs-target="#navs-justified-profile"
                                 aria-controls="navs-justified-profile"
-                                aria-selected="false"
-                            >
+                                aria-selected="false">
                                 <i className="tf-icons bx bx-user"></i> Profile
                             </button>
                         </li>
                         <li className="nav-item">
-                            <button
-                                type="button"
+                            <button type="button"
                                 className="nav-link"
                                 role="tab"
                                 data-bs-toggle="tab"
                                 data-bs-target="#navs-justified-messages"
                                 aria-controls="navs-justified-messages"
-                                aria-selected="false"
-                            >
+                                aria-selected="false">
                                 <i className="tf-icons bx bx-message-square"></i> Messages
                             </button>
                         </li>
@@ -4867,42 +4846,36 @@ function UiTabsPills() {
                 <div className="nav-align-top mb-4">
                     <ul className="nav nav-pills mb-3 nav-fill" role="tablist">
                         <li className="nav-item">
-                            <button
-                                type="button"
+                            <button type="button"
                                 className="nav-link active"
                                 role="tab"
                                 data-bs-toggle="tab"
                                 data-bs-target="#navs-pills-justified-home"
                                 aria-controls="navs-pills-justified-home"
-                                aria-selected="true"
-                            >
-                                <i className="tf-icons bx bx-home"></i> Home
-                                <span className="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger">3</span>
+                                aria-selected="true" >
+                                <i className="tf-icons bx bx-home"></i> Home <span
+                                    className="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger ms-1">3</span>
                             </button>
                         </li>
                         <li className="nav-item">
-                            <button
-                                type="button"
+                            <button type="button"
                                 className="nav-link"
                                 role="tab"
                                 data-bs-toggle="tab"
                                 data-bs-target="#navs-pills-justified-profile"
                                 aria-controls="navs-pills-justified-profile"
-                                aria-selected="false"
-                            >
+                                aria-selected="false" >
                                 <i className="tf-icons bx bx-user"></i> Profile
                             </button>
                         </li>
                         <li className="nav-item">
-                            <button
-                                type="button"
+                            <button type="button"
                                 className="nav-link"
                                 role="tab"
                                 data-bs-toggle="tab"
                                 data-bs-target="#navs-pills-justified-messages"
                                 aria-controls="navs-pills-justified-messages"
-                                aria-selected="false"
-                            >
+                                aria-selected="false">
                                 <i className="tf-icons bx bx-message-square"></i> Messages
                             </button>
                         </li>
@@ -4968,9 +4941,9 @@ function UiToasts() {
             <div className="card-body">
                 <div className="row gx-3 gy-2 align-items-center">
                     <div className="col-md-3">
-                        <label className="form-label" for="selectTypeOpt">Type</label>
+                        <label className="form-label" htmlFor="selectTypeOpt">Type</label>
                         <select id="selectTypeOpt" className="form-select color-dropdown">
-                            <option value="bg-primary" selected>Primary</option>
+                            <option value="bg-primary" defaultValue>Primary</option>
                             <option value="bg-secondary">Secondary</option>
                             <option value="bg-success">Success</option>
                             <option value="bg-danger">Danger</option>
@@ -4980,7 +4953,7 @@ function UiToasts() {
                         </select>
                     </div>
                     <div className="col-md-3">
-                        <label className="form-label" for="selectPlacement">Placement</label>
+                        <label className="form-label" htmlFor="selectPlacement">Placement</label>
                         <select className="form-select placement-dropdown" id="selectPlacement">
                             <option value="top-0 start-0">Top left</option>
                             <option value="top-0 start-50 translate-middle-x">Top center</option>
@@ -4994,7 +4967,7 @@ function UiToasts() {
                         </select>
                     </div>
                     <div className="col-md-3">
-                        <label className="form-label" for="showToastPlacement">&nbsp;</label>
+                        <label className="form-label" htmlFor="showToastPlacement">&nbsp;</label>
                         <button id="showToastPlacement" className="btn btn-primary d-block">Show Toast</button>
                     </div>
                 </div>
@@ -5281,330 +5254,117 @@ function UiToasts() {
 }
 function UiTooltipsPopovers() {
     return (<>
-        <h4 className="fw-semibold py-3 mb-4"><span className="text-muted fw-light">UI elements /</span> Toasts</h4>
-        <div className="bs-toast toast toast-placement-ex m-2"
-            role="alert"
-            aria-live="assertive"
-            aria-atomic="true"
-            data-delay="2000" >
-            <div className="toast-header">
-                <i className="bx bx-bell me-2"></i>
-                <div className="me-auto fw-semibold">Bootstrap</div>
-                <small>11 mins ago</small>
-                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div className="toast-body">Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.</div>
-        </div>
+        <h4 className="fw-bold py-3 mb-4">
+            <span className="text-muted fw-light">UI elements /</span> Tooltips & popovers
+        </h4>
         <div className="card mb-4">
-            <h5 className="card-header">Bootstrap Toasts Example With Placement</h5>
+            <h5 className="card-header">Tooltips</h5>
             <div className="card-body">
-                <div className="row gx-3 gy-2 align-items-center">
-                    <div className="col-md-3">
-                        <label className="form-label" for="selectTypeOpt">Type</label>
-                        <select id="selectTypeOpt" className="form-select color-dropdown">
-                            <option value="bg-primary" selected>Primary</option>
-                            <option value="bg-secondary">Secondary</option>
-                            <option value="bg-success">Success</option>
-                            <option value="bg-danger">Danger</option>
-                            <option value="bg-warning">Warning</option>
-                            <option value="bg-info">Info</option>
-                            <option value="bg-dark">Dark</option>
-                        </select>
+                <div className="text-light small fw-semibold">Directions</div>
+                <div className="row demo-vertical-spacing">
+                    <div className="col">
+                        <button type="button"
+                            className="btn btn-primary"
+                            data-bs-toggle="tooltip"
+                            data-bs-offset="0,4"
+                            data-bs-placement="right"
+                            data-bs-html="true"
+                            title="<i class='bx bx-trending-up bx-xs' ></i> <span>Tooltip on right</span>"
+                        >Right</button>
                     </div>
-                    <div className="col-md-3">
-                        <label className="form-label" for="selectPlacement">Placement</label>
-                        <select className="form-select placement-dropdown" id="selectPlacement">
-                            <option value="top-0 start-0">Top left</option>
-                            <option value="top-0 start-50 translate-middle-x">Top center</option>
-                            <option value="top-0 end-0">Top right</option>
-                            <option value="top-50 start-0 translate-middle-y">Middle left</option>
-                            <option value="top-50 start-50 translate-middle">Middle center</option>
-                            <option value="top-50 end-0 translate-middle-y">Middle right</option>
-                            <option value="bottom-0 start-0">Bottom left</option>
-                            <option value="bottom-0 start-50 translate-middle-x">Bottom center</option>
-                            <option value="bottom-0 end-0">Bottom right</option>
-                        </select>
+                    <div className="col">
+                        <button type="button"
+                            className="btn btn-primary"
+                            data-bs-toggle="tooltip"
+                            data-bs-offset="0,4"
+                            data-bs-placement="top"
+                            data-bs-html="true"
+                            title="<i class='bx bx-bell bx-xs' ></i> <span>Tooltip on top</span>"
+                        >Top</button>
                     </div>
-                    <div className="col-md-3">
-                        <label className="form-label" for="showToastPlacement">&nbsp;</label>
-                        <button id="showToastPlacement" className="btn btn-primary d-block">Show Toast</button>
+                    <div className="col">
+                        <button type="button"
+                            className="btn btn-primary"
+                            data-bs-toggle="tooltip"
+                            data-bs-offset="0,4"
+                            data-bs-placement="bottom"
+                            data-bs-html="true"
+                            title="<i class='bx bx-heart bx-xs' ></i> <span>Tooltip on bottom</span>"
+                        >Bottom</button>
+                    </div>
+                    <div className="col">
+                        <button type="button"
+                            className="btn btn-primary"
+                            data-bs-toggle="tooltip"
+                            data-bs-offset="0,4"
+                            data-bs-placement="left"
+                            data-bs-html="true"
+                            title="<i class='bx bx-dollar bx-xs' ></i> <span>Tooltip on left</span>"
+                        >Left</button>
                     </div>
                 </div>
             </div>
         </div>
-        <div className="card mb-4">
-            <h5 className="card-header">Bootstrap Toasts Styles</h5>
-            <div className="row g-0">
-                <div className="col-md-6 p-4">
-                    <div className="text-light small fw-semibold mb-3">Default</div>
-                    <div className="toast-container">
-                        <div className="bs-toast toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-primary"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
+        <div className="card">
+            <h5 className="card-header">Popovers</h5>
+            <div className="card-body">
+                <div className="text-light small fw-semibold">Directions</div>
+                <div className="row demo-vertical-spacing">
+                    <div className="col">
+                        <button
+                            type="button"
+                            className="btn btn-primary text-nowrap"
+                            data-bs-toggle="popover"
+                            data-bs-offset="0,14"
+                            data-bs-placement="right"
+                            data-bs-html="true"
+                            data-bs-content="<p>This is a very beautiful popover, show some love.</p> <div class='d-flex justify-content-between'><button type='button' class='btn btn-sm btn-outline-secondary'>Skip</button><button type='button' class='btn btn-sm btn-primary'>Read More</button></div>"
+                            title="Popover Title"
                         >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-secondary"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
-                        >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-success"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
-                        >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-danger"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
-                        >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-warning"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
-                        >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-info"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
-                        >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-dark"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
-                        >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
+                            Popover on right
+                        </button>
                     </div>
-                </div>
-                <div className="col-md-6 ui-bg-overlay-container p-4">
-                    <div className="ui-bg-overlay bg-dark opacity-75 rounded-end-bottom"></div>
-                    <div className="text-white small fw-semibold mb-3">Translucent</div>
-
-                    <div className="toast-container">
-                        <div className="bs-toast toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-primary"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
+                    <div className="col">
+                        <button
+                            type="button"
+                            className="btn btn-primary text-nowrap"
+                            data-bs-toggle="popover"
+                            data-bs-offset="0,14"
+                            data-bs-placement="top"
+                            data-bs-html="true"
+                            data-bs-content="<p>This is a very beautiful popover, show some love.</p> <div class='d-flex justify-content-between'><button type='button' class='btn btn-sm btn-outline-secondary'>Skip</button><button type='button' class='btn btn-sm btn-primary'>Read More</button></div>"
+                            title="Popover Title"
                         >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-secondary"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
+                            Popover on top
+                        </button>
+                    </div>
+                    <div className="col">
+                        <button
+                            type="button"
+                            className="btn btn-primary text-nowrap"
+                            data-bs-toggle="popover"
+                            data-bs-offset="0,14"
+                            data-bs-placement="bottom"
+                            data-bs-html="true"
+                            data-bs-content="<p>This is a very beautiful popover, show some love.</p> <div class='d-flex justify-content-between'><button type='button' class='btn btn-sm btn-outline-secondary'>Skip</button><button type='button' class='btn btn-sm btn-primary'>Read More</button></div>"
+                            title="Popover Title"
                         >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-success"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
+                            Popover on bottom
+                        </button>
+                    </div>
+                    <div className="col">
+                        <button
+                            type="button"
+                            className="btn btn-primary text-nowrap"
+                            data-bs-toggle="popover"
+                            data-bs-offset="0,14"
+                            data-bs-placement="left"
+                            data-bs-html="true"
+                            data-bs-content="<p>This is a very beautiful popover, show some love.</p> <div class='d-flex justify-content-between'><button type='button' class='btn btn-sm btn-outline-secondary'>Skip</button><button type='button' class='btn btn-sm btn-primary'>Read More</button></div>"
+                            title="Popover Title"
                         >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-danger"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
-                        >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-warning"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
-                        >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-info"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
-                        >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
-
-                        <div
-                            className="bs-toast toast fade show bg-dark"
-                            role="alert"
-                            aria-live="assertive"
-                            aria-atomic="true"
-                        >
-                            <div className="toast-header">
-                                <i className="bx bx-bell me-2"></i>
-                                <div className="me-auto fw-semibold">Bootstrap</div>
-                                <small>11 mins ago</small>
-                                <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                            <div className="toast-body">
-                                Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
-                            </div>
-                        </div>
+                            Popover on left
+                        </button>
                     </div>
                 </div>
             </div>
