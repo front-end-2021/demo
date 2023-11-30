@@ -40,19 +40,19 @@ export function AccountSettings() {
                     <ul className="nav nav-pills flex-column flex-md-row mb-3">
                         <li className="nav-item">
                             <a className={`nav-link${layout == router.AccountSettingsAccount ? ' active' : ''}`}
-                                onClick={e => setLayout('ACCOUNT_SETTINGS_ACCOUNT')}
+                                onClick={e => setLayout(router.AccountSettingsAccount)}
                                 href="#account-settings-account">
                                 <i className="bx bx-user me-1"></i> Account</a>
                         </li>
                         <li className="nav-item">
                             <a className={`nav-link${layout == router.AccountSettingsNotify ? ' active' : ''}`}
-                                onClick={e => setLayout('ACCOUNT_SETTINGS_NOTIFY')}
+                                onClick={e => setLayout(router.AccountSettingsNotify)}
                                 href="#account-settings-notifications">
                                 <i className="bx bx-bell me-1"></i> Notifications</a>
                         </li>
                         <li className="nav-item">
                             <a className={`nav-link${layout == router.AccountSettingsConnect ? ' active' : ''}`}
-                                onClick={e => setLayout('ACCOUNT_SETTINGS_CONNECT')}
+                                onClick={e => setLayout(router.AccountSettingsConnect)}
                                 href="#account-settings-connections">
                                 <i className="bx bx-link-alt me-1"></i> Connections</a>
                         </li>

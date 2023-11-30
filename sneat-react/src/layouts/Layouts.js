@@ -80,7 +80,7 @@ export function LayoutWithoutMenu() {
             <div className="layout-demo-info">
                 <h4>Layout without Menu (Navigation)</h4>
                 <button className="btn btn-primary" type="button"
-                    onClick={() => setLayout('BACK_ROOT')}>Go Back</button>
+                    onClick={() => setLayout(router.Home)}>Go Back</button>
             </div>
         </div>
     )

@@ -17,7 +17,7 @@ import { AccountSettings } from './pages/PagesAccountSettings';
 import AuthForms, { LogoSneat } from './forms/AuthForms';
 import PagesMisc from './pages/PagesMisc';
 import { CardBasic } from './forms/CardExtendUi';
-import { UiAccordion, UiAlert, UiBadges } from './uis/UserInterfaces';
+import UserInterfaces from './uis/UserInterfaces';
 
 import './fonts/boxicons.scss';
 import './scss/core.scss';
@@ -45,9 +45,9 @@ function App() {
       case router.AccountSettingsNotify:
       case router.AccountSettingsConnect: return 7;
       case router.ComponentsCards: return 8;
-      case router.UIAccordion: return 9;
-      case router.UIAlert: return 10;
-      case router.UIBadges: return 11;
+      case router.UIAccordion:
+      case router.UIAlert: 
+      case router.UIBadges: return 9;
       case router.AuthLoginBasic:
       case router.AuthRegisterBasic:
       case router.AuthForgotPassword: return 89;
@@ -77,9 +77,7 @@ function App() {
                   {LayoutType == 6 && <h4 className="fw-bold p-4">Blank Page</h4>}
                   {LayoutType == 7 && <AccountSettings />}
                   {LayoutType == 8 && <CardBasic />}
-                  {LayoutType == 9 && <UiAccordion />}
-                  {LayoutType == 10 && <UiAlert />}
-                  {LayoutType == 11 && <UiBadges />}
+                  {LayoutType == 9 && <UserInterfaces />}
 
                   <Footer ></Footer>
 
@@ -157,7 +155,7 @@ function LayoutMenu() {
       <ul className="menu-inner py-1">
 
         <li className={`menu-item${ActiveC == 1 ? ' active' : ''}`}>
-          <a href="#" className="menu-link" onClick={() => setLayout('BACK_ROOT')}>
+          <a href="#" className="menu-link" onClick={() => setLayout(router.Home)}>
             <i className="menu-icon tf-icons bx bx-home-circle"></i>
             <div data-i18n="Analytics">Dashboard</div>
           </a>
@@ -172,31 +170,31 @@ function LayoutMenu() {
           <ul className="menu-sub">
             <li className={`menu-item${layout == router.LayoutWithoutMenu ? ' active' : ''}`}>
               <a href="#without-menu" className="menu-link"
-                onClick={() => setLayout('LAYOUT_WITHOUT_MENU')}>
+                onClick={() => setLayout(router.LayoutWithoutMenu)}>
                 <div data-i18n="Without menu">Without menu</div>
               </a>
             </li>
             <li className={`menu-item${layout == router.LayoutWithoutNavbar ? ' active' : ''}`}>
               <a href="#without-navbar" className="menu-link"
-                onClick={() => setLayout('LAYOUT_WITHOUT_NAVBAR')}>
+                onClick={() => setLayout(router.LayoutWithoutNavbar)}>
                 <div data-i18n="Without navbar">Without navbar</div>
               </a>
             </li>
             <li className={`menu-item${layout == router.LayoutWithContainer ? ' active' : ''}`}>
               <a href="#layouts-container" className="menu-link"
-                onClick={() => setLayout('LAYOUT_WITH_CONTAINER')}>
+                onClick={() => setLayout(router.LayoutWithContainer)}>
                 <div data-i18n="Container">Container</div>
               </a>
             </li>
             <li className={`menu-item${layout == router.LayoutWithFluid ? ' active' : ''}`}>
               <a href="#layouts-fluid" className="menu-link"
-                onClick={() => setLayout('LAYOUT_WITH_FLUID')}>
+                onClick={() => setLayout(router.LayoutWithFluid)}>
                 <div data-i18n="Fluid">Fluid</div>
               </a>
             </li>
             <li className={`menu-item${layout == router.LayoutWithBlank ? ' active' : ''}`}>
               <a href="#layouts-blank" className="menu-link"
-                onClick={() => setLayout('LAYOUT_WITH_BLANK')}>
+                onClick={() => setLayout(router.LayoutWithBlank)}>
                 <div data-i18n="Blank">Blank</div>
               </a>
             </li>
@@ -214,19 +212,19 @@ function LayoutMenu() {
           <ul className="menu-sub">
             <li className={`menu-item${layout == router.AccountSettingsAccount ? ' active' : ''}`}>
               <a href="#account-settings-account" className="menu-link"
-                onClick={() => setLayout('ACCOUNT_SETTINGS_ACCOUNT')}>
+                onClick={() => setLayout(router.AccountSettingsAccount)}>
                 <div data-i18n="Account">Account</div>
               </a>
             </li>
             <li className={`menu-item${layout == router.AccountSettingsNotify ? ' active' : ''}`}>
               <a href="#account-settings-notifications" className="menu-link"
-                onClick={() => setLayout('ACCOUNT_SETTINGS_NOTIFY')}>
+                onClick={() => setLayout(router.AccountSettingsNotify)}>
                 <div data-i18n="Notifications">Notifications</div>
               </a>
             </li>
             <li className={`menu-item${layout == router.AccountSettingsConnect ? ' active' : ''}`}>
               <a href="#account-settings-connections" className="menu-link"
-                onClick={() => setLayout('ACCOUNT_SETTINGS_CONNECT')}>
+                onClick={() => setLayout(router.AccountSettingsConnect)}>
                 <div data-i18n="Connections">Connections</div>
               </a>
             </li>
@@ -240,19 +238,19 @@ function LayoutMenu() {
           <ul className="menu-sub">
             <li className={`menu-item${layout == router.AuthLoginBasic ? ' active' : ''}`}>
               <a href="#auth-login-basic" className="menu-link"
-                onClick={() => setLayout('AUTH_LOGIN_BASIC')}>
+                onClick={() => setLayout(router.AuthLoginBasic)}>
                 <div data-i18n="Basic">Login</div>
               </a>
             </li>
             <li className={`menu-item${layout == router.AuthRegisterBasic ? ' active' : ''}`}>
               <a href="#auth-register-basic" className="menu-link"
-                onClick={() => setLayout('AUTH_REGISTER_BASIC')}>
+                onClick={() => setLayout(router.AuthRegisterBasic)}>
                 <div data-i18n="Basic">Register</div>
               </a>
             </li>
             <li className={`menu-item${layout == router.AuthForgotPassword ? ' active' : ''}`}>
               <a href="#auth-forgot-password" className="menu-link"
-                onClick={() => setLayout('AUTH_FORGOT_PASS')}>
+                onClick={() => setLayout(router.AuthForgotPassword)}>
                 <div data-i18n="Basic">Forgot Password</div>
               </a>
             </li>
@@ -266,13 +264,13 @@ function LayoutMenu() {
           <ul className="menu-sub">
             <li className={`menu-item${layout == router.PageMiscError ? ' active' : ''}`}>
               <a href="#pages-misc-error" className="menu-link"
-                onClick={() => setLayout('PAGE_MISC_ERROR')}>
+                onClick={() => setLayout(router.PageMiscError)}>
                 <div data-i18n="Error">Error</div>
               </a>
             </li>
             <li className={`menu-item${layout == router.PageMiscMaintain ? ' active' : ''}`}>
               <a href="#pages-misc-under-maintenance" className="menu-link"
-                onClick={() => setLayout('PAGE_MISC_MAINTAIN')}>
+                onClick={() => setLayout(router.PageMiscMaintain)}>
                 <div data-i18n="Under Maintenance">Under Maintenance</div>
               </a>
             </li>
@@ -283,7 +281,7 @@ function LayoutMenu() {
 
         <li className={`menu-item${ActiveC == 6 ? ' active' : ''}`}>
           <a href="#cards-basic" className="menu-link"
-            onClick={() => setLayout('COMPONENTS_CARDS')}>
+            onClick={() => setLayout(router.ComponentsCards)}>
             <i className="menu-icon tf-icons bx bx-collection"></i>
             <div data-i18n="Basic">Cards</div>
           </a>
@@ -296,17 +294,17 @@ function LayoutMenu() {
           </a>
           <ul className="menu-sub">
             <li className={`menu-item${layout == router.UIAccordion ? ' active' : ''}`}>
-              <a href="#ui-accordion" className="menu-link" onClick={() => setLayout('UI_ACCORDION')}>
+              <a href="#ui-accordion" className="menu-link" onClick={() => setLayout(router.UIAccordion)}>
                 <div data-i18n="Accordion">Accordion</div>
               </a>
             </li>
             <li className={`menu-item${layout == router.UIAlert ? ' active' : ''}`}>
-              <a href="#ui-alerts" className="menu-link" onClick={() => setLayout('UI_ALERT')}>
+              <a href="#ui-alerts" className="menu-link" onClick={() => setLayout(router.UIAlert)}>
                 <div data-i18n="Alerts">Alerts</div>
               </a>
             </li>
             <li className={`menu-item${layout == router.UIBadges ? ' active' : ''}`}>
-              <a href="#ui-badges" className="menu-link" onClick={() => setLayout('UI_BADGES')}>
+              <a href="#ui-badges" className="menu-link" onClick={() => setLayout(router.UIBadges)}>
                 <div data-i18n="Badges">Badges</div>
               </a>
             </li>

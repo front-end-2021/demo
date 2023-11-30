@@ -22,7 +22,7 @@ function PageMiscError() {
         <h2 className="mb-2 mx-2">Page Not Found :(</h2>
         <p className="mb-4 mx-2">Oops! 😖 The requested URL was not found on this server.</p>
         <a href="#" className="btn btn-primary"
-            onClick={e => setLayout('BACK_ROOT')}>Back to home</a>
+            onClick={e => setLayout(router.Home)}>Back to home</a>
         <div className="mt-3">
             <img src={mscError}
                 alt="page-misc-error-light"
@@ -40,7 +40,7 @@ function PageMiscUnderMaintain() {
         <h2 className="mb-2 mx-2">Under Maintenance!</h2>
         <p className="mb-4 mx-2">Sorry for the inconvenience but we're performing some maintenance at the moment</p>
         <a href="#" className="btn btn-primary"
-            onClick={e => setLayout('BACK_ROOT')}>Back to home</a>
+            onClick={e => setLayout(router.Home)}>Back to home</a>
         <div className="mt-4">
             <img src={doingYoga}
                 alt="girl-doing-yoga-light"

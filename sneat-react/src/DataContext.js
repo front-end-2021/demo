@@ -23,50 +23,27 @@ const router = {
     UIAccordion: '#userInterfaceAccordion',
     UIAlert: '#userInterfaceAlert',
     UIBadges: '#userInterfaceBadge',
+    UIButtons: '#userInterfaceButtons',
+    UICarousel: '#userInterfaceCarousel',
+    UIDropdowns: '#userInterfaceDropdowns',
+    UIFooter: '#userInterfaceFooter',
+    UIListGroups: '#userInterfaceListGroup',
+    UIModals: '#userInterfaceModals',
+    UINavbar: '#userInterfaceNavbar',
+    UIOffcanvas: '#userInterfaceOffcanvas',
+    UIPaginationBreadcrumbs: '#uiPaginationBreadcrumbs',
+    UIProgress: '#userInterfaceProgress',
+    UISpinners: '#userInterfaceSpinners',
+    UITabsPills: '#userInterfaceTabsPills',
+    UIToasts: '#userInterfaceToasts',
+    UITooltipsPopovers: '#uiTooltipsPopovers',
+    UITypography: '#userInterfaceTypography',
 }
 Object.freeze(router);
 
 export const RouterContext = createContext(router.Home);
 export const routerReducer = (state, action) => {
-    switch (action) {
-        case 'BACK_ROOT':
-            return router.Home
-        case 'LAYOUT_WITHOUT_MENU':
-            return router.LayoutWithoutMenu
-        case 'LAYOUT_WITHOUT_NAVBAR':
-            return router.LayoutWithoutNavbar
-        case 'LAYOUT_WITH_CONTAINER':
-            return router.LayoutWithContainer
-        case 'LAYOUT_WITH_FLUID':
-            return router.LayoutWithFluid
-        case 'LAYOUT_WITH_BLANK':
-            return router.LayoutWithBlank
-        case 'ACCOUNT_SETTINGS_ACCOUNT':
-            return router.AccountSettingsAccount
-        case 'ACCOUNT_SETTINGS_NOTIFY':
-            return router.AccountSettingsNotify
-        case 'ACCOUNT_SETTINGS_CONNECT':
-            return router.AccountSettingsConnect
-        case 'AUTH_FORGOT_PASS':
-            return router.AuthForgotPassword
-        case 'AUTH_LOGIN_BASIC':
-            return router.AuthLoginBasic
-        case 'AUTH_REGISTER_BASIC':
-            return router.AuthRegisterBasic
-        case 'PAGE_MISC_ERROR':
-            return router.PageMiscError
-        case 'PAGE_MISC_MAINTAIN':
-            return router.PageMiscMaintain
-        case 'COMPONENTS_CARDS':
-            return router.ComponentsCards
-        case 'UI_ACCORDION':
-            return router.UIAccordion
-        case 'UI_ALERT':
-            return router.UIAlert
-        case 'UI_BADGES':
-            return router.UIBadges
-    }
-    return state
+    return action
 }
 
 const user = {

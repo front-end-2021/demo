@@ -81,7 +81,7 @@ export default function LayoutNav() {
                             </li>
                             <li>
                                 <a className="dropdown-item" href="#account-settings-account"
-                                    onClick={() => setLayout('ACCOUNT_SETTINGS_ACCOUNT')}>
+                                    onClick={() => setLayout(router.AccountSettingsAccount)}>
                                     <i className="bx bx-cog me-2"></i>
                                     <span className="align-middle">Settings</span>
                                 </a>

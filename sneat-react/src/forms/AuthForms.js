@@ -99,7 +99,7 @@ function AuthForgotPassword({ setType }) {
         </form>
         <div className="text-center">
             <a href="#auth-login-basic" className="d-flex align-items-center justify-content-center"
-                onClick={e => setType('AUTH_LOGIN_BASIC')}>
+                onClick={e => setType(router.AuthLoginBasic)}>
                 <i className="bx bx-chevron-left scaleX-n1-rtl bx-sm"></i>Back to login </a>
         </div>
     </>)
@@ -108,7 +108,7 @@ function AuthLoginBasic({ setType }) {
     const { setLayout } = useContext(RouterContext);
     const onSignIn = e => {
         e.preventDefault()
-        setLayout('BACK_ROOT')
+        setLayout(router.Home)
     }
 
     const onTogglePass = (e) => {
@@ -140,7 +140,7 @@ function AuthLoginBasic({ setType }) {
             <div className="mb-3 form-password-toggle">
                 <div className="d-flex justify-content-between">
                     <label className="form-label" htmlFor="password">Password</label>
-                    <a href="#auth-forgot-password" onClick={e => setType('AUTH_FORGOT_PASS')}>
+                    <a href="#auth-forgot-password" onClick={e => setType(router.AuthForgotPassword)}>
                         <small>Forgot Password?</small>
                     </a>
                 </div>
@@ -169,7 +169,7 @@ function AuthLoginBasic({ setType }) {
         <p className="text-center">
             <span>New on our platform?</span>
             <a href="#auth-register-basic"
-                onClick={e => setType('AUTH_REGISTER_BASIC')}><span>Create an account</span></a>
+                onClick={e => setType(router.AuthRegisterBasic)}><span>Create an account</span></a>
         </p>
     </>)
 }
@@ -219,7 +219,7 @@ function AuthRegisterBasic({ setType }) {
         <p className="text-center">
             <span>Already have an account?</span>
             <a href="#auth-login-basic"
-                onClick={e => setType('AUTH_LOGIN_BASIC')}><span>Sign in instead</span>
+                onClick={e => setType(router.AuthLoginBasic)}><span>Sign in instead</span>
             </a>
         </p>
     </>)
@@ -235,7 +235,7 @@ export function LogoSneat({ className }) {
         }, [className])
 
     return (<a href="#" className={`app-brand-link${clsName}`}
-        onClick={e => setLayout('BACK_ROOT')}>
+        onClick={e => setLayout(router.Home)}>
         <span className="app-brand-logo demo">
             <svg width="25"
                 viewBox="0 0 25 42"
