@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import {
     RouterContext, router, routerReducer,
     user, userReducer, UserContext
-  } from './DataContext'
+  } from '../DataContext'
 
 import elm1 from '../assets/img/elements/1.jpg'
 import elm2 from '../assets/img/elements/2.jpg'
