@@ -94,12 +94,10 @@
                 <div class="list-main">
                     <item-mgoal v-for="main in ListMain" :item="main" :type="1" :key="main.Guid">
                         <div class="list-sub">
-                            <item-subgoal v-for="sub in main.Subs" :key="sub.Guid" :item="sub"
-                                :mid="main.Id" :type="2">
+                            <item-subgoal v-for="sub in main.Subs" :key="sub.Guid" :item="sub" :mid="main.Id" :type="2">
                                 <div class="list-action">
-                                    <item-action inline-template v-for="(act, ia) in sub.Actions"
-                                        :key="act.Guid" :index="ia" :actions="sub.Actions"
-                                        :item="act" :sid="sub.Id" :mid="main.Id">
+                                    <item-action inline-template v-for="(act, ia) in sub.Actions" :key="act.Guid"
+                                        :index="ia" :actions="sub.Actions" :item="act" :sid="sub.Id" :mid="main.Id">
                                         <div :id="domId" class="item-wrap"
                                             v-bind:style="[ styleWidth(), styleInline(), styleMrgLeft() ]"
                                             v-observe-visibility="{
@@ -152,41 +150,39 @@
                         <sub-view inline-template v-for="sub in subs" :item="sub" :key="sub.Guid">
                             <div class="view-sub">
                                 <div class="d-inline-grid align-items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" @click.stop="onToggleExpand"
-                                        class="bi" :class="[ IsExpand ? 'bi-caret-down-fill' : 'bi-caret-right-fill' ]"
-                                        width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <svg xmlns="http://www.w3.org/2000/svg" @click.stop="onToggleExpand" class="bi"
+                                        :class="[ IsExpand ? 'bi-caret-down-fill' : 'bi-caret-right-fill' ]" width="16"
+                                        height="16" fill="currentColor" viewBox="0 0 16 16">
                                         <path v-if="IsExpand"
                                             d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                                         <path v-else
-                                            d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                                            d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
                                     </svg>
                                     <h5>{{item.Name}}</h5>
-                                    <svg v-if="NeedSync" @click.stop="syncToCloud" class="bi bi-cloud" viewBox="0 0 16 16"
-                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" >
-                                        <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
-                                      </svg>
+                                    <svg v-if="NeedSync" @click.stop="syncToCloud" class="bi bi-cloud"
+                                        viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        fill="currentColor">
+                                        <path
+                                            d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z" />
+                                    </svg>
                                     <svg v-else class="bi bi-cloud-check" viewBox="0 0 16 16"
-                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" >
-                                        <path fill-rule="evenodd" d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-                                        <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
-                                      </svg>
+                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708 0z" />
+                                        <path
+                                            d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z" />
+                                    </svg>
                                 </div>
-                                <draggable v-if="IsExpand" 
-                                        class="list-action d-flex flex-column"
-                                        v-bind="DragOptions"
-                                        v-model="item.Actions"
-                                        @start="onDndStart" @end="onDndEnd" :move="checkMove">
-                                    <action-view inline-template v-for="act in item.Actions"
-                                        :subid="item.Id"
+                                <draggable v-if="IsExpand" class="list-action d-flex flex-column" v-bind="DragOptions"
+                                    v-model="item.Actions" @start="onDndStart" @end="onDndEnd" :move="checkMove">
+                                    <action-view inline-template v-for="act in item.Actions" :subid="item.Id"
                                         :item="act" :key="act.Guid">
                                         <div class="d-inline-grid align-items-center">
-                                            <input v-if="IsDoneDisable" class="form-check-input mt-0" 
-                                                type="checkbox" checked disabled />
-                                            <input v-else-if="aIsDone(item.Id)"
-                                                class="form-check-input mt-0" type="checkbox"
-                                                checked @click.stop="() => checkToggleDone(false)" />
-                                            <input v-else
-                                                class="form-check-input mt-0" type="checkbox"
+                                            <input v-if="IsDoneDisable" class="form-check-input mt-0" type="checkbox"
+                                                checked disabled />
+                                            <input v-else-if="aIsDone(item.Id)" class="form-check-input mt-0"
+                                                type="checkbox" checked @click.stop="() => checkToggleDone(false)" />
+                                            <input v-else class="form-check-input mt-0" type="checkbox"
                                                 @click.stop="() => checkToggleDone(true)" />
                                             <p class="a-name mb-0 ms-2" @click.stop="onClickScrollTo">{{item.Name}}</p>
                                             <span class="text-center font14" :data-title="YearStart || null"
@@ -209,8 +205,7 @@
                         <table class="vwCalendar" style="height: 52px;">
                             <thead>
                                 <tr>
-                                    <th v-for="month in ListMonth" 
-                                        :colspan="month.colspan" class="text-center font14" 
+                                    <th v-for="month in ListMonth" :colspan="month.colspan" class="text-center font14"
                                         :class="[
                                             month.IsNow ? 'text-primary' : ''
                                         ]">{{month.MM}}{{month.colspan > 2 ? '/' + month.YYYY : ''}}</th>
@@ -227,12 +222,10 @@
                             </tbody>
                         </table>
                         <div class="group-sub" v-for="sub in subs">
-                            <action-time inline-template v-if="isExpand(sub.Id)"
-                                v-for="act in sub.Actions" :item="act"
+                            <action-time inline-template v-if="isExpand(sub.Id)" v-for="act in sub.Actions" :item="act"
                                 :key="act.Guid">
                                 <div class="dnb-act-time d-inline-block">
-                                    <span class="d-inline-block" :atime-id="item.Id" :class="[ClssStatus]" 
-                                        :style="[{
+                                    <span class="d-inline-block" :atime-id="item.Id" :class="[ClssStatus]" :style="[{
                                             width: Width, marginLeft: Left
                                         }, Border]" />
                                 </div>
@@ -242,58 +235,49 @@
                 </div>
             </section>
         </vw-overview>
-        <vw-customer inline-template v-if="NavBar.Index == 2" :mains="ListMains">
+        <vw-customer inline-template v-if="NavBar.Index == 2" :mains="ListGoal">
             <section id="view-customer" style="padding: 12px;">
-                <div v-for="main in mains" :key="main.Guid"
-                    class="list-main-goal d-grid">
-                    <vitem-wrap :class="['main-wrap']" :item="main">
-
-                    </vitem-wrap>
-                    <div class="goal-viewsub">
-                        <h6>List Sub-goal</h6>
-                        <draggable :list="main.Subs"
-                            class="dnd-subs"
-                            v-bind="getDndOptions(2)" >
-                            <div v-for="sub in main.Subs" 
-                                v-if="isShowSub(sub)"
-                                class="list-sub-goal d-grid">
-                                <vitem-wrap :item="sub"
-                                    :key="sub.Guid"
-                                    :class="['sub-wrap']" >
-
-                                </vitem-wrap>
-                                
-                                <div class="sub-viewaction">
-                                    <h6>List Action</h6>
-                                    <draggable :list="sub.Actions"
-                                        class="vlist-action d-flex flex-wrap"
-                                        v-bind="getDndOptions(3)">
-                                        <vitem-wrap v-for="action in sub.Actions" 
-                                            :key="action.Guid"
-                                            :class="['action-wrap']" 
-                                            :item="action">
-
-                                        </vitem-wrap>
-                                    </draggable>
+                <draggable :list="mains" v-bind="getDndOptions(1)">
+                    <vcustom-goal inline-template 
+                        v-for="main in mains" :item="main" 
+                        :key="main.Guid">
+                        <div class="list-main-goal d-grid">
+                            <vitem-wrap :class="['main-wrap']" :item="item" ></vitem-wrap>
+                            <div class="goal-viewsub">
+                                <div>View Tasks</div>
+                                <div class="dnd-subs">
+                                    <div class="list-sub-goal d-grid">
+                                        <div class="sub-viewaction">
+                                            <h6>List Task</h6>
+                                            <draggable :list="ListAction" 
+                                                class="vlist-action d-flex flex-wrap"
+                                                v-bind="getDndOptions(3)">
+                                                <vitem-wrap :key="action.Guid"
+                                                    v-for="action in ListAction" 
+                                                    :class="['action-wrap']" 
+                                                    :item="action">
+                                                </vitem-wrap>
+                                            </draggable>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </draggable>
-                    </div>
-                </div>
+                        </div>
+                    </vcustom-goal>
+                </draggable>
             </section>
         </vw-customer>
 
         <!-- Scrollable modal -->
         <modal-pop inline-template v-show="ListModal.length">
-            <div class="modal fade" id="modal-pop" tabindex="-1" 
-                data-bs-backdrop="static" data-bs-keyboard="false"
+            <div class="modal fade" id="modal-pop" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
                 aria-labelledby="modal-pop-tlt" aria-hidden="true">
                 <div class="modal-dialog">
                     <div v-if="title != null" class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="modal-pop-tlt">{{title}}</h5>
-                            <button type="button" class="btn-close" @click="closeModal" 
-                                data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close" @click="closeModal" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <form v-if="data.Type == 'UserInfo'">
@@ -321,8 +305,7 @@
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" value=""
                                                 id="modal-pop-remem" checked />
-                                            <label class="form-check-label" 
-                                                for="modal-pop-remem"> Remember me </label>
+                                            <label class="form-check-label" for="modal-pop-remem"> Remember me </label>
                                         </div>
                                     </div>
                                     <div class="col">
@@ -410,6 +393,10 @@
             return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
         }
     </script>
+    <script src="script/repository/common.js"></script>
+    <script src="script/repository/mock-data.js"></script>
+
+    <script src="script/vcustomer.js"></script>
     <script src="script/components.js"></script>
     <script src="script/vw-component.js"></script>
     <script src="script/cv-app.js"></script>

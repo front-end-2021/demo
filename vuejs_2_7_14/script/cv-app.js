@@ -13,6 +13,12 @@ const cvApp = new Vue({
             SearchText: '',
             User: { name: 'Dainb', email: 'dainb8x@gmail.com' }
         },
+        ListGoal: [],
+        ListAction: [],
+        ListUser: [],
+        ListMapGoalAction: [],
+
+
         Mains: [],
         ListModal: [],  // [{Type, Title, Body}]
     },
@@ -124,11 +130,6 @@ const cvApp = new Vue({
     methods: {
         setNavIndex(index) { this.NavBar.Index = index },
         closeModal() { this.ListModal.pop() },
-        newGuid() {
-            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-            )
-        },
         setSearchText(txt) { this.NavBar.SearchText = txt.trim() },
         isInSearch(item) {
             const txtSearch = this.NavBar.SearchText
@@ -170,16 +171,31 @@ const cvApp = new Vue({
         this.Mains = getDataMains()
         for (let mm = 0; mm < this.Mains.length; mm++) {
             const main = this.Mains[mm]
-            main.Guid = this.newGuid()
+            main.Guid = newGuid()
             for (let ss = 0; ss < main.Subs.length; ss++) {
                 const sub = main.Subs[ss]
-                sub.Guid = this.newGuid()
+                sub.Guid = newGuid()
                 for (let aa = 0; aa < sub.Actions.length; aa++) {
                     const action = sub.Actions[aa]
-                    action.Guid = this.newGuid()
+                    action.Guid = newGuid()
                 }
             }
         }
+
+        const goals = getListGoal()
+        for (let ii = 0; ii < goals.length; ii++) {
+            const goal = goals[ii]
+            goal.Guid = newGuid()
+            this.ListGoal.push(goal)
+        }
+        const actions = getListAction()
+        for (let ii = 0; ii < actions.length; ii++) {
+            const action = actions[ii]
+            action.Guid = newGuid()
+            this.ListAction.push(action)
+        }
+        this.ListMapGoalAction = getMapsGoalAction(goals, actions)
+        this.ListUser = getListUser()
     },
 })
 function getDataMains() {
@@ -223,16 +239,7 @@ function getDataMains() {
 
     return Mains
 }
-function sortDate(d1, d2) {
-    if (!d1.Start) return 1
-    if (!d2.Start) return -1
-    return d1.Start.getTime() - d2.Start.getTime()
-}
-function getRandomInt(min, max) {   // min <= x < max
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min) + min)
-}
+
 function getRandStart(bStart) {
     if (bStart) {
         const dayPlus = getRandomInt(0, 15)
