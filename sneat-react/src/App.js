@@ -19,6 +19,7 @@ import PagesMisc from './menu-pages/PagesMisc';
 import { CardBasic } from './menu-components/CardExtendUi';
 import UserInterfaces from './menu-components/UserInterfaces';
 import ExtendedUI from './menu-components/ExtendedUi';
+import IconsBoxicons from './menu-components/IconsBoxicons';
 
 import './fonts/boxicons.scss';
 import './scss/core.scss';
@@ -67,6 +68,7 @@ function App() {
       case router.UIBadges: return 9;
       case router.ExtUiPerfectScrollbar:
       case router.ExtUiTextDivider: return 10;
+      case router.CompBoxicons: return 11;
       case router.AuthLoginBasic:
       case router.AuthRegisterBasic:
       case router.AuthForgotPassword: return 89;
@@ -98,6 +100,7 @@ function App() {
                   {LayoutType == 8 && <CardBasic />}
                   {LayoutType == 9 && <UserInterfaces />}
                   {LayoutType == 10 && <ExtendedUI />}
+                  {LayoutType == 11 && <IconsBoxicons />}
 
                   <Footer ></Footer>
 
@@ -454,8 +457,9 @@ function LayoutMenu() {
           </ul>
         </li>
 
-        <li className="menu-item">
-          <a href="icons-boxicons.html" className="menu-link">
+        <li className={`menu-item${layout == router.CompBoxicons ? ' active' : ''}`}>
+          <a href="#icons-boxicons" className="menu-link"
+            onClick={() => setLayout(router.CompBoxicons)}>
             <i className="menu-icon tf-icons bx bx-crown"></i>
             <div data-i18n="Boxicons">Boxicons</div>
           </a>
@@ -470,12 +474,12 @@ function LayoutMenu() {
           </a>
           <ul className="menu-sub">
             <li className="menu-item">
-              <a href="forms-basic-inputs.html" className="menu-link">
+              <a href="#forms-basic-inputs" className="menu-link">
                 <div data-i18n="Basic Inputs">Basic Inputs</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="forms-input-groups.html" className="menu-link">
+              <a href="#forms-input-groups" className="menu-link">
                 <div data-i18n="Input groups">Input groups</div>
               </a>
             </li>
@@ -488,12 +492,12 @@ function LayoutMenu() {
           </a>
           <ul className="menu-sub">
             <li className="menu-item">
-              <a href="form-layouts-vertical.html" className="menu-link">
+              <a href="#form-layouts-vertical" className="menu-link">
                 <div data-i18n="Vertical Form">Vertical Form</div>
               </a>
             </li>
             <li className="menu-item">
-              <a href="form-layouts-horizontal.html" className="menu-link">
+              <a href="#form-layouts-horizontal" className="menu-link">
                 <div data-i18n="Horizontal Form">Horizontal Form</div>
               </a>
             </li>
@@ -501,7 +505,7 @@ function LayoutMenu() {
         </li>
 
         <li className="menu-item">
-          <a href="tables-basic.html" className="menu-link">
+          <a href="#tables-basic" className="menu-link">
             <i className="menu-icon tf-icons bx bx-table"></i>
             <div data-i18n="Tables">Tables</div>
           </a>
@@ -509,20 +513,16 @@ function LayoutMenu() {
 
         <li className="menu-header small text-uppercase"><span className="menu-header-text">Misc</span></li>
         <li className="menu-item">
-          <a
+          <a target="_blank"
             href="https://github.com/themeselection/sneat-html-admin-template-free/issues"
-            target="_blank"
-            className="menu-link" >
-            <i className="menu-icon tf-icons bx bx-support"></i>
+            className="menu-link" ><i className="menu-icon tf-icons bx bx-support"></i>
             <div data-i18n="Support">Support</div>
           </a>
         </li>
         <li className="menu-item">
-          <a
+          <a target="_blank"
             href="https://themeselection.com/demo/sneat-bootstrap-html-admin-template/documentation/"
-            target="_blank"
-            className="menu-link" >
-            <i className="menu-icon tf-icons bx bx-file"></i>
+            className="menu-link" ><i className="menu-icon tf-icons bx bx-file"></i>
             <div data-i18n="Documentation">Documentation</div>
           </a>
         </li>
@@ -557,6 +557,5 @@ function Footer() {
     </footer>
   )
 }
-
 
 export default App;

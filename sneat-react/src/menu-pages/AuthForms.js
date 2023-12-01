@@ -7,6 +7,29 @@ import { Tooltip } from "bootstrap";
 
 import '../scss/pages/page-auth.scss'
 
+// Tooltip.prototype.show = (original => {
+//     return function addTooltipColor() {
+//         if (this._config.toggle === 'tooltip') {
+//             if (this._element.getAttribute('data-color')) {
+//                 const str = `tooltip-${this._element.getAttribute('data-color')}`
+//                 this.getTipElement().classList.add(str)
+//             }
+//         }
+//         original.apply(this)
+//     }
+// })(Tooltip.prototype.show)
+// Popover.prototype.show = (original => {
+//     return function addPopoverColor() {
+//       if (this._config.toggle === 'popover') {
+//         if (this._element.getAttribute('data-color')) {
+//           const str = `popover-${this._element.getAttribute('data-color')}`
+//           this.getTipElement().classList.add(str)
+//         }
+//       }
+//       original.apply(this)
+//     }
+//   })(Popover.prototype.show)
+
 export default function AuthForms() {
     const { layout, setLayout } = useContext(RouterContext);
 
@@ -127,7 +150,7 @@ function AuthLoginBasic({ setType }) {
         <h4 className="mb-2">Welcome to Sneat! 👋</h4>
         <p className="mb-4">Please sign-in to your account and start the adventure</p>
 
-        <form id="formAuthentication" className="mb-3" action="index.html" method="POST">
+        <form id="formAuthentication" className="mb-3" action="#">
             <div className="mb-3">
                 <label htmlFor="email" className="form-label">Email or Username</label>
                 <input type="text"
@@ -178,7 +201,7 @@ function AuthRegisterBasic({ setType }) {
         <h4 className="mb-2">Adventure starts here 🚀</h4>
         <p className="mb-4">Make your app management easy and fun!</p>
 
-        <form id="formAuthentication" className="mb-3" action="index.html" method="POST">
+        <form id="formAuthentication" className="mb-3" action="#home">
             <div className="mb-3">
                 <label htmlFor="username" className="form-label">Username</label>
                 <input type="text"

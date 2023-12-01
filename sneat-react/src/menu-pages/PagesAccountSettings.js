@@ -436,7 +436,8 @@ function Connections() {
                                 </div>
                                 <div className="col-3 text-end">
                                     <div className="form-check form-switch">
-                                        <input className="form-check-input float-end" type="checkbox" role="switch" checked />
+                                        <input className="form-check-input float-end"
+                                            type="checkbox" role="switch" defaultChecked />
                                     </div>
                                 </div>
                             </div>
@@ -471,7 +472,8 @@ function Connections() {
                                 </div>
                                 <div className="col-3 text-end">
                                     <div className="form-check form-switch">
-                                        <input className="form-check-input float-end" type="checkbox" role="switch" checked />
+                                        <input className="form-check-input float-end"
+                                            type="checkbox" role="switch" defaultChecked />
                                     </div>
                                 </div>
                             </div>
@@ -487,7 +489,8 @@ function Connections() {
                                 </div>
                                 <div className="col-3 text-end">
                                     <div className="form-check form-switch">
-                                        <input className="form-check-input float-end" type="checkbox" role="switch" checked />
+                                        <input className="form-check-input float-end"
+                                            type="checkbox" role="switch" defaultChecked />
                                     </div>
                                 </div>
                             </div>

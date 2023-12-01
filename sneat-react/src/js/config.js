@@ -1,4 +1,4 @@
-export default config = {
+const config = {
   colors: {
     primary: '#696cff',
     secondary: '#8592a3',
@@ -15,3 +15,4 @@ export default config = {
     borderColor: '#eceef1'
   }
 };
+export default config

@@ -42,6 +42,12 @@ const router = {
     UITypography: '#userInterfaceTypography',
     ExtUiPerfectScrollbar: '#extUiPerfectScrollbar',
     ExtUiTextDivider: '#extUiTextDivider',
+    CompBoxicons: '#compBoxicons',
+    FormBasicInputs: '#formBasicInputs',
+    FormInputGroups: '#formInputGroups',
+    FormLayoutVertical: '#formLayoutVertical',
+    FormLayoutHorizontal: '#formLayoutHorizontal',
+    Tables: '#menuTables',
 }
 Object.freeze(router);
 
