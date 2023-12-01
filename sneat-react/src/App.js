@@ -14,11 +14,11 @@ import {
   LayoutWithContainer, LayoutWithFluid
 } from './layouts/Layouts'
 import { AccountSettings } from './pages/PagesAccountSettings';
-import AuthForms, { LogoSneat } from './forms/AuthForms';
+import AuthForms, { LogoSneat } from './pages/AuthForms';
 import PagesMisc from './pages/PagesMisc';
-import { CardBasic } from './forms/CardExtendUi';
-import UserInterfaces from './uis/UserInterfaces';
-import ExtendedUI from './uis/ExtendedUi';
+import { CardBasic } from './menu-components/CardExtendUi';
+import UserInterfaces from './menu-components/UserInterfaces';
+import ExtendedUI from './menu-components/ExtendedUi';
 
 import './fonts/boxicons.scss';
 import './scss/core.scss';
