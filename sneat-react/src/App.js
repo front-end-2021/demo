@@ -12,10 +12,10 @@ import HomeContent from './HomeContent';
 import {
   LayoutWithoutMenu, LayoutWithoutNavbar,
   LayoutWithContainer, LayoutWithFluid
-} from './layouts/Layouts'
-import { AccountSettings } from './pages/PagesAccountSettings';
-import AuthForms, { LogoSneat } from './pages/AuthForms';
-import PagesMisc from './pages/PagesMisc';
+} from './menu-layouts/Layouts'
+import { AccountSettings } from './menu-pages/PagesAccountSettings';
+import AuthForms, { LogoSneat } from './menu-pages/AuthForms';
+import PagesMisc from './menu-pages/PagesMisc';
 import { CardBasic } from './menu-components/CardExtendUi';
 import UserInterfaces from './menu-components/UserInterfaces';
 import ExtendedUI from './menu-components/ExtendedUi';
