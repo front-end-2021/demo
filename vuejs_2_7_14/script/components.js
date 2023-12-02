@@ -587,63 +587,7 @@ Vue.component('vitem-wrap', {
             this.IsExpand = !this.IsExpand
 
         },
-        styleMarginTopActions() {
-            const item = this.$el
-
-            const lstItem = []
-            const lstLeft = []
-            let sItem = item.previousElementSibling
-            let sOffset
-            while (sItem) {
-                lstItem.push(sItem)
-
-                sOffset = sItem.offset()
-                if (!lstLeft.includes(sOffset.left)) {
-                    lstLeft.push(sOffset.left)
-                }
-                sItem = sItem.previousElementSibling
-            }
-            lstItem.push(item)
-            sItem = item.nextElementSibling
-            while (sItem) {
-                lstItem.push(sItem)
-
-                sOffset = sItem.offset()
-                if (!lstLeft.includes(sOffset.left)) {
-                    lstLeft.push(sOffset.left)
-                }
-                sItem = sItem.nextElementSibling
-            }
-            lstLeft.sort((a, b) => a - b)
-
-            const lstColumn = []
-            for (let ii = 0; ii < lstLeft.length; ii++) {
-                lstColumn.push([])
-            }
-            for (let ii = 0; ii < lstItem.length; ii++) {
-                sItem = lstItem[ii]
-                sItem.style.marginTop = ''
-
-                sOffset = sItem.offset()
-                const col = lstLeft.indexOf(sOffset.left)
-                lstColumn[col].push(sItem)
-            }
-
-            for (let cl = 0; cl < lstColumn.length; cl++) {
-                const items = lstColumn[cl]
-                for (let rw = 0; rw < items.length - 1; rw++) {
-                    sItem = items[rw]
-                    const sItem1 = items[rw + 1]
-
-                    sOffset = sItem.offset()
-                    const nextOffset = sItem1.offset()
-                    const dY = nextOffset.top - (sOffset.top + sItem.offsetHeight)
-                    if (12 < dY) {
-                        sItem1.style.marginTop = `-60px`
-                    }
-                }
-            }
-        }
+        
     },
     mounted() {
         this.styleHeight()
@@ -654,7 +598,7 @@ Vue.component('vitem-wrap', {
         } else {
             this.styleHeight()
         }
-        this.styleMarginTopActions()
+        
     },
 })
 
