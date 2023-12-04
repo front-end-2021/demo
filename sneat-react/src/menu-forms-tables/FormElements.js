@@ -1,7 +1,15 @@
+import { useContext } from 'react'
+import {
+    RouterContext, router, routerReducer,
+    user, userReducer, UserContext
+} from '../DataContext'
 
 export default function FormElements() {
-    return (<div className="container-xxl flex-grow-1 container-p-y">
+    const { layout } = useContext(RouterContext);
 
+    return (<div className="container-xxl flex-grow-1 container-p-y">
+        {layout == router.FormBasicInputs && <FormBasicInputs />}
+        {layout == router.FormInputGroups && <FormInputGroups />}
     </div>)
 }
 
@@ -16,7 +24,7 @@ function FormBasicInputs() {
                     <h5 className="card-header">Default</h5>
                     <div className="card-body">
                         <div>
-                            <label for="defaultFormControlInput" className="form-label">Name</label>
+                            <label htmlFor="defaultFormControlInput" className="form-label">Name</label>
                             <input
                                 type="text"
                                 className="form-control"
@@ -43,7 +51,7 @@ function FormBasicInputs() {
                                 placeholder="John Doe"
                                 aria-describedby="floatingInputHelp"
                             />
-                            <label for="floatingInput">Name</label>
+                            <label htmlFor="floatingInput">Name</label>
                             <div id="floatingInputHelp" className="form-text">
                                 We'll never share your details with anyone else.
                             </div>
@@ -56,7 +64,7 @@ function FormBasicInputs() {
                     <h5 className="card-header">Form Controls</h5>
                     <div className="card-body">
                         <div className="mb-3">
-                            <label for="exampleFormControlInput1" className="form-label">Email address</label>
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Email address</label>
                             <input
                                 type="email"
                                 className="form-control"
@@ -65,66 +73,61 @@ function FormBasicInputs() {
                             />
                         </div>
                         <div className="mb-3">
-                            <label for="exampleFormControlReadOnlyInput1" className="form-label">Read only</label>
+                            <label htmlFor="exampleFormControlReadOnlyInput1" className="form-label">Read only</label>
                             <input
                                 className="form-control"
                                 type="text"
                                 id="exampleFormControlReadOnlyInput1"
                                 placeholder="Readonly input here..."
-                                readonly
+                                readOnly
                             />
                         </div>
                         <div className="mb-3">
-                            <label for="exampleFormControlReadOnlyInputPlain1" className="form-label">Read plain</label>
-                            <input
-                                type="text"
-                                readonly
+                            <label htmlFor="exampleFormControlReadOnlyInputPlain1" className="form-label">Read plain</label>
+                            <input type="text"
+                                readOnly
                                 className="form-control-plaintext"
                                 id="exampleFormControlReadOnlyInputPlain1"
                                 value="email@example.com"
                             />
                         </div>
                         <div className="mb-3">
-                            <label for="exampleFormControlSelect1" className="form-label">Example select</label>
+                            <label htmlFor="exampleFormControlSelect1" className="form-label">Example select</label>
                             <select className="form-select" id="exampleFormControlSelect1" aria-label="Default select example">
-                                <option defaultValue>Open this select menu</option>
+                                <option value="0" defaultValue="0">Open this select menu</option>
                                 <option value="1">One</option>
                                 <option value="2">Two</option>
                                 <option value="3">Three</option>
                             </select>
                         </div>
                         <div className="mb-3">
-                            <label for="exampleDataList" className="form-label">Datalist example</label>
-                            <input
-                                className="form-control"
+                            <label htmlFor="exampleDataList" className="form-label">Datalist example</label>
+                            <input className="form-control"
                                 list="datalistOptions"
                                 id="exampleDataList"
-                                placeholder="Type to search..."
-                            />
+                                placeholder="Type to search..."/>
                             <datalist id="datalistOptions">
                                 <option value="San Francisco"></option>
-                                <option value="New York" defaultValue></option>
+                                <option value="New York" defaultValue="New York"></option>
                                 <option value="Seattle"></option>
                                 <option value="Los Angeles"></option>
                                 <option value="Chicago"></option>
                             </datalist>
                         </div>
                         <div className="mb-3">
-                            <label for="exampleFormControlSelect2" className="form-label">Example multiple select</label>
-                            <select
-                                multiple
+                            <label htmlFor="exampleFormControlSelect2" className="form-label">Example multiple select</label>
+                            <select multiple
                                 className="form-select"
                                 id="exampleFormControlSelect2"
-                                aria-label="Multiple select example"
-                            >
-                                <option defaultValue>Open this select menu</option>
+                                aria-label="Multiple select example">
+                                <option value="0" defaultValue="0">Open this select menu</option>
                                 <option value="1">One</option>
                                 <option value="2">Two</option>
                                 <option value="3">Three</option>
                             </select>
                         </div>
                         <div>
-                            <label for="exampleFormControlTextarea1" className="form-label">Example textarea</label>
+                            <label htmlFor="exampleFormControlTextarea1" className="form-label">Example textarea</label>
                             <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                         </div>
                     </div>
@@ -137,7 +140,7 @@ function FormBasicInputs() {
                         <small className="text-light fw-semibold">Input text</small>
 
                         <div className="mt-2 mb-3">
-                            <label for="largeInput" className="form-label">Large input</label>
+                            <label htmlFor="largeInput" className="form-label">Large input</label>
                             <input
                                 id="largeInput"
                                 className="form-control form-control-lg"
@@ -146,11 +149,11 @@ function FormBasicInputs() {
                             />
                         </div>
                         <div className="mb-3">
-                            <label for="defaultInput" className="form-label">Default input</label>
+                            <label htmlFor="defaultInput" className="form-label">Default input</label>
                             <input id="defaultInput" className="form-control" type="text" placeholder="Default input" />
                         </div>
                         <div>
-                            <label for="smallInput" className="form-label">Small input</label>
+                            <label htmlFor="smallInput" className="form-label">Small input</label>
                             <input
                                 id="smallInput"
                                 className="form-control form-control-sm"
@@ -163,7 +166,7 @@ function FormBasicInputs() {
                     <div className="card-body">
                         <small className="text-light fw-semibold">Input select</small>
                         <div className="mt-2 mb-3">
-                            <label for="largeSelect" className="form-label">Large select</label>
+                            <label htmlFor="largeSelect" className="form-label">Large select</label>
                             <select id="largeSelect" className="form-select form-select-lg">
                                 <option defaultValue>Large select</option>
                                 <option value="1">One</option>
@@ -172,7 +175,7 @@ function FormBasicInputs() {
                             </select>
                         </div>
                         <div className="mb-3">
-                            <label for="defaultSelect" className="form-label">Default select</label>
+                            <label htmlFor="defaultSelect" className="form-label">Default select</label>
                             <select id="defaultSelect" className="form-select">
                                 <option defaultValue>Default select</option>
                                 <option value="1">One</option>
@@ -181,7 +184,7 @@ function FormBasicInputs() {
                             </select>
                         </div>
                         <div>
-                            <label for="smallSelect" className="form-label">Small select</label>
+                            <label htmlFor="smallSelect" className="form-label">Small select</label>
                             <select id="smallSelect" className="form-select form-select-sm">
                                 <option defaultValue>Small select</option>
                                 <option value="1">One</option>
@@ -201,30 +204,30 @@ function FormBasicInputs() {
                                 <small className="text-light fw-semibold">Checkboxes</small>
                                 <div className="form-check mt-3">
                                     <input className="form-check-input" type="checkbox" value="" id="defaultCheck1" />
-                                    <label className="form-check-label" for="defaultCheck1"> Unchecked </label>
+                                    <label className="form-check-label" htmlFor="defaultCheck1"> Unchecked </label>
                                 </div>
                                 <div className="form-check">
-                                    <input className="form-check-input" type="checkbox" value="" id="defaultCheck2" checked />
-                                    <label className="form-check-label" for="defaultCheck2"> Indeterminate </label>
+                                    <input className="form-check-input" type="checkbox" 
+                                    value="" id="defaultCheck2" defaultChecked />
+                                    <label className="form-check-label" htmlFor="defaultCheck2"> Indeterminate </label>
                                 </div>
                                 <div className="form-check">
-                                    <input className="form-check-input" type="checkbox" value="" id="defaultCheck3" checked />
-                                    <label className="form-check-label" for="defaultCheck3"> Checked </label>
+                                    <input className="form-check-input" type="checkbox" 
+                                    value="" id="defaultCheck3" defaultChecked />
+                                    <label className="form-check-label" htmlFor="defaultCheck3"> Checked </label>
                                 </div>
                                 <div className="form-check">
                                     <input className="form-check-input" type="checkbox" value="" id="disabledCheck1" disabled />
-                                    <label className="form-check-label" for="disabledCheck1"> Disabled Unchecked </label>
+                                    <label className="form-check-label" htmlFor="disabledCheck1"> Disabled Unchecked </label>
                                 </div>
                                 <div className="form-check">
-                                    <input
+                                    <input type="checkbox"
                                         className="form-check-input"
-                                        type="checkbox"
                                         value=""
                                         id="disabledCheck2"
                                         disabled
-                                        checked
-                                    />
-                                    <label className="form-check-label" for="disabledCheck2"> Disabled Checked </label>
+                                        defaultChecked />
+                                    <label className="form-check-label" htmlFor="disabledCheck2"> Disabled Checked </label>
                                 </div>
                             </div>
                             <div className="col-md">
@@ -237,33 +240,29 @@ function FormBasicInputs() {
                                         value=""
                                         id="defaultRadio1"
                                     />
-                                    <label className="form-check-label" for="defaultRadio1"> Unchecked </label>
+                                    <label className="form-check-label" htmlFor="defaultRadio1"> Unchecked </label>
                                 </div>
                                 <div className="form-check">
-                                    <input
+                                    <input type="radio"
                                         name="default-radio-1"
-                                        className="form-check-input"
-                                        type="radio"
+                                        className="form-check-input"                                       
                                         value=""
                                         id="defaultRadio2"
-                                        checked
-                                    />
-                                    <label className="form-check-label" for="defaultRadio2"> Checked </label>
+                                        defaultChecked />
+                                    <label className="form-check-label" htmlFor="defaultRadio2"> Checked </label>
                                 </div>
                                 <div className="form-check">
                                     <input className="form-check-input" type="radio" value="" id="disabledRadio1" disabled />
-                                    <label className="form-check-label" for="disabledRadio1"> Disabled unchecked </label>
+                                    <label className="form-check-label" htmlFor="disabledRadio1"> Disabled unchecked </label>
                                 </div>
                                 <div className="form-check">
-                                    <input
+                                    <input type="radio"
                                         className="form-check-input"
-                                        type="radio"
                                         value=""
                                         id="disabledRadio2"
                                         disabled
-                                        checked
-                                    />
-                                    <label className="form-check-label" for="disabledRadio2"> Disabled checkbox </label>
+                                        defaultChecked />
+                                    <label className="form-check-label" htmlFor="disabledRadio2"> Disabled checkbox </label>
                                 </div>
                             </div>
                         </div>
@@ -275,11 +274,11 @@ function FormBasicInputs() {
                                 <small className="text-light fw-semibold d-block">Inline Checkboxes</small>
                                 <div className="form-check form-check-inline mt-3">
                                     <input className="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" />
-                                    <label className="form-check-label" for="inlineCheckbox1">1</label>
+                                    <label className="form-check-label" htmlFor="inlineCheckbox1">1</label>
                                 </div>
                                 <div className="form-check form-check-inline">
                                     <input className="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2" />
-                                    <label className="form-check-label" for="inlineCheckbox2">2</label>
+                                    <label className="form-check-label" htmlFor="inlineCheckbox2">2</label>
                                 </div>
                                 <div className="form-check form-check-inline">
                                     <input
@@ -289,7 +288,7 @@ function FormBasicInputs() {
                                         value="option3"
                                         disabled
                                     />
-                                    <label className="form-check-label" for="inlineCheckbox3">3 (disabled)</label>
+                                    <label className="form-check-label" htmlFor="inlineCheckbox3">3 (disabled)</label>
                                 </div>
                             </div>
                             <div className="col-md">
@@ -302,7 +301,7 @@ function FormBasicInputs() {
                                         id="inlineRadio1"
                                         value="option1"
                                     />
-                                    <label className="form-check-label" for="inlineRadio1">1</label>
+                                    <label className="form-check-label" htmlFor="inlineRadio1">1</label>
                                 </div>
                                 <div className="form-check form-check-inline">
                                     <input
@@ -312,7 +311,7 @@ function FormBasicInputs() {
                                         id="inlineRadio2"
                                         value="option2"
                                     />
-                                    <label className="form-check-label" for="inlineRadio2">2</label>
+                                    <label className="form-check-label" htmlFor="inlineRadio2">2</label>
                                 </div>
                                 <div className="form-check form-check-inline">
                                     <input
@@ -323,7 +322,7 @@ function FormBasicInputs() {
                                         value="option3"
                                         disabled
                                     />
-                                    <label className="form-check-label" for="inlineRadio3">3 (disabled)</label>
+                                    <label className="form-check-label" htmlFor="inlineRadio3">3 (disabled)</label>
                                 </div>
                             </div>
                         </div>
@@ -334,31 +333,30 @@ function FormBasicInputs() {
                     <div className="card-body">
                         <div className="form-check form-switch mb-2">
                             <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" />
-                            <label className="form-check-label" for="flexSwitchCheckDefault"
+                            <label className="form-check-label" htmlFor="flexSwitchCheckDefault"
                             >Default switch checkbox input</label
                             >
                         </div>
                         <div className="form-check form-switch mb-2">
-                            <input className="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked />
-                            <label className="form-check-label" for="flexSwitchCheckChecked"
-                            >Checked switch checkbox input</label
-                            >
+                            <input className="form-check-input" type="checkbox" 
+                            id="flexSwitchCheckChecked" defaultChecked />
+                            <label className="form-check-label" 
+                            htmlFor="flexSwitchCheckChecked">Checked switch checkbox input</label>
                         </div>
                         <div className="form-check form-switch mb-2">
                             <input className="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" disabled />
-                            <label className="form-check-label" for="flexSwitchCheckDisabled"
-                            >Disabled switch checkbox input</label
-                            >
+                            <label className="form-check-label" 
+                            htmlFor="flexSwitchCheckDisabled">Disabled switch checkbox input</label>
                         </div>
                         <div className="form-check form-switch">
                             <input
                                 className="form-check-input"
                                 type="checkbox"
                                 id="flexSwitchCheckCheckedDisabled"
-                                checked
+                                defaultChecked
                                 disabled
                             />
-                            <label className="form-check-label" for="flexSwitchCheckCheckedDisabled"
+                            <label className="form-check-label" htmlFor="flexSwitchCheckCheckedDisabled"
                             >Disabled checked switch checkbox input</label
                             >
                         </div>
@@ -368,19 +366,19 @@ function FormBasicInputs() {
                     <h5 className="card-header">Range</h5>
                     <div className="card-body">
                         <div className="mb-3">
-                            <label for="formRange1" className="form-label">Example range</label>
+                            <label htmlFor="formRange1" className="form-label">Example range</label>
                             <input type="range" className="form-range" id="formRange1" />
                         </div>
                         <div className="mb-3">
-                            <label for="disabledRange" className="form-label">Disabled range</label>
+                            <label htmlFor="disabledRange" className="form-label">Disabled range</label>
                             <input type="range" className="form-range" id="disabledRange" disabled />
                         </div>
                         <div className="mb-3">
-                            <label for="formRange2" className="form-label">Min and max</label>
+                            <label htmlFor="formRange2" className="form-label">Min and max</label>
                             <input type="range" className="form-range" min="0" max="5" id="formRange2" />
                         </div>
                         <div>
-                            <label for="formRange3" className="form-label">Steps</label>
+                            <label htmlFor="formRange3" className="form-label">Steps</label>
                             <input type="range" className="form-range" min="0" max="5" step="0.5" id="formRange3" />
                         </div>
                     </div>
@@ -392,25 +390,25 @@ function FormBasicInputs() {
                     <h5 className="card-header">HTML5 Inputs</h5>
                     <div className="card-body">
                         <div className="mb-3 row">
-                            <label for="html5-text-input" className="col-md-2 col-form-label">Text</label>
+                            <label htmlFor="html5-text-input" className="col-md-2 col-form-label">Text</label>
                             <div className="col-md-10">
                                 <input className="form-control" type="text" value="Sneat" id="html5-text-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
-                            <label for="html5-search-input" className="col-md-2 col-form-label">Search</label>
+                            <label htmlFor="html5-search-input" className="col-md-2 col-form-label">Search</label>
                             <div className="col-md-10">
                                 <input className="form-control" type="search" value="Search ..." id="html5-search-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
-                            <label for="html5-email-input" className="col-md-2 col-form-label">Email</label>
+                            <label htmlFor="html5-email-input" className="col-md-2 col-form-label">Email</label>
                             <div className="col-md-10">
                                 <input className="form-control" type="email" value="john@example.com" id="html5-email-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
-                            <label for="html5-url-input" className="col-md-2 col-form-label">URL</label>
+                            <label htmlFor="html5-url-input" className="col-md-2 col-form-label">URL</label>
                             <div className="col-md-10">
                                 <input
                                     className="form-control"
@@ -421,25 +419,25 @@ function FormBasicInputs() {
                             </div>
                         </div>
                         <div className="mb-3 row">
-                            <label for="html5-tel-input" className="col-md-2 col-form-label">Phone</label>
+                            <label htmlFor="html5-tel-input" className="col-md-2 col-form-label">Phone</label>
                             <div className="col-md-10">
                                 <input className="form-control" type="tel" value="90-(164)-188-556" id="html5-tel-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
-                            <label for="html5-password-input" className="col-md-2 col-form-label">Password</label>
+                            <label htmlFor="html5-password-input" className="col-md-2 col-form-label">Password</label>
                             <div className="col-md-10">
                                 <input className="form-control" type="password" value="password" id="html5-password-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
-                            <label for="html5-number-input" className="col-md-2 col-form-label">Number</label>
+                            <label htmlFor="html5-number-input" className="col-md-2 col-form-label">Number</label>
                             <div className="col-md-10">
                                 <input className="form-control" type="number" value="18" id="html5-number-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
-                            <label for="html5-datetime-local-input" className="col-md-2 col-form-label">Datetime</label>
+                            <label htmlFor="html5-datetime-local-input" className="col-md-2 col-form-label">Datetime</label>
                             <div className="col-md-10">
                                 <input
                                     className="form-control"
@@ -450,37 +448,37 @@ function FormBasicInputs() {
                             </div>
                         </div>
                         <div className="mb-3 row">
-                            <label for="html5-date-input" className="col-md-2 col-form-label">Date</label>
+                            <label htmlFor="html5-date-input" className="col-md-2 col-form-label">Date</label>
                             <div className="col-md-10">
                                 <input className="form-control" type="date" value="2021-06-18" id="html5-date-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
-                            <label for="html5-month-input" className="col-md-2 col-form-label">Month</label>
+                            <label htmlFor="html5-month-input" className="col-md-2 col-form-label">Month</label>
                             <div className="col-md-10">
                                 <input className="form-control" type="month" value="2021-06" id="html5-month-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
-                            <label for="html5-week-input" className="col-md-2 col-form-label">Week</label>
+                            <label htmlFor="html5-week-input" className="col-md-2 col-form-label">Week</label>
                             <div className="col-md-10">
                                 <input className="form-control" type="week" value="2021-W25" id="html5-week-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
-                            <label for="html5-time-input" className="col-md-2 col-form-label">Time</label>
+                            <label htmlFor="html5-time-input" className="col-md-2 col-form-label">Time</label>
                             <div className="col-md-10">
                                 <input className="form-control" type="time" value="12:30:00" id="html5-time-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
-                            <label for="html5-color-input" className="col-md-2 col-form-label">Color</label>
+                            <label htmlFor="html5-color-input" className="col-md-2 col-form-label">Color</label>
                             <div className="col-md-10">
                                 <input className="form-control" type="color" value="#666EE8" id="html5-color-input" />
                             </div>
                         </div>
                         <div className="row">
-                            <label for="html5-range" className="col-md-2 col-form-label">Range</label>
+                            <label htmlFor="html5-range" className="col-md-2 col-form-label">Range</label>
                             <div className="col-md-10">
                                 <input type="range" className="form-range mt-3" id="html5-range" />
                             </div>
@@ -491,15 +489,15 @@ function FormBasicInputs() {
                     <h5 className="card-header">File input</h5>
                     <div className="card-body">
                         <div className="mb-3">
-                            <label for="formFile" className="form-label">Default file input example</label>
+                            <label htmlFor="formFile" className="form-label">Default file input example</label>
                             <input className="form-control" type="file" id="formFile" />
                         </div>
                         <div className="mb-3">
-                            <label for="formFileMultiple" className="form-label">Multiple files input example</label>
+                            <label htmlFor="formFileMultiple" className="form-label">Multiple files input example</label>
                             <input className="form-control" type="file" id="formFileMultiple" multiple />
                         </div>
                         <div>
-                            <label for="formFileDisabled" className="form-label">Disabled file input example</label>
+                            <label htmlFor="formFileDisabled" className="form-label">Disabled file input example</label>
                             <input className="form-control" type="file" id="formFileDisabled" disabled />
                         </div>
                     </div>
@@ -529,7 +527,7 @@ function FormInputGroups() {
                         </div>
 
                         <div className="form-password-toggle">
-                            <label className="form-label" for="basic-default-password12">Password</label>
+                            <label className="form-label" htmlFor="basic-default-password12">Password</label>
                             <div className="input-group">
                                 <input
                                     type="password"
@@ -600,7 +598,7 @@ function FormInputGroups() {
                         </div>
 
                         <div className="form-password-toggle">
-                            <label className="form-label" for="basic-default-password32">Password</label>
+                            <label className="form-label" htmlFor="basic-default-password32">Password</label>
                             <div className="input-group input-group-merge">
                                 <input
                                     type="password"
@@ -969,9 +967,9 @@ function FormInputGroups() {
                             <h5 className="card-header">Custom select</h5>
                             <div className="card-body demo-vertical-spacing demo-only-element">
                                 <div className="input-group">
-                                    <label className="input-group-text" for="inputGroupSelect01">Options</label>
+                                    <label className="input-group-text" htmlFor="inputGroupSelect01">Options</label>
                                     <select className="form-select" id="inputGroupSelect01">
-                                        <option defaultValue={ }>Choose...</option>
+                                        <option defaultValue>Choose...</option>
                                         <option value="1">One</option>
                                         <option value="2">Two</option>
                                         <option value="3">Three</option>
@@ -985,7 +983,7 @@ function FormInputGroups() {
                                         <option value="2">Two</option>
                                         <option value="3">Three</option>
                                     </select>
-                                    <label className="input-group-text" for="inputGroupSelect02">Options</label>
+                                    <label className="input-group-text" htmlFor="inputGroupSelect02">Options</label>
                                 </div>
 
                                 <div className="input-group">
@@ -1027,13 +1025,13 @@ function FormInputGroups() {
                     <h5 className="card-header">Custom file input</h5>
                     <div className="card-body demo-vertical-spacing demo-only-element">
                         <div className="input-group">
-                            <label className="input-group-text" for="inputGroupFile01">Upload</label>
+                            <label className="input-group-text" htmlFor="inputGroupFile01">Upload</label>
                             <input type="file" className="form-control" id="inputGroupFile01" />
                         </div>
 
                         <div className="input-group">
                             <input type="file" className="form-control" id="inputGroupFile02" />
-                            <label className="input-group-text" for="inputGroupFile02">Upload</label>
+                            <label className="input-group-text" htmlFor="inputGroupFile02">Upload</label>
                         </div>
 
                         <div className="input-group">

@@ -20,6 +20,7 @@ import { CardBasic } from './menu-components/CardExtendUi';
 import UserInterfaces from './menu-components/UserInterfaces';
 import ExtendedUI from './menu-components/ExtendedUi';
 import IconsBoxicons from './menu-components/IconsBoxicons';
+import FormElements from './menu-forms-tables/FormElements';
 
 import './fonts/boxicons.scss';
 import './scss/core.scss';
@@ -69,6 +70,8 @@ function App() {
       case router.ExtUiPerfectScrollbar:
       case router.ExtUiTextDivider: return 10;
       case router.CompBoxicons: return 11;
+      case router.FormBasicInputs:
+      case router.FormInputGroups: return 12;
       case router.AuthLoginBasic:
       case router.AuthRegisterBasic:
       case router.AuthForgotPassword: return 89;
@@ -101,6 +104,7 @@ function App() {
                   {LayoutType == 9 && <UserInterfaces />}
                   {LayoutType == 10 && <ExtendedUI />}
                   {LayoutType == 11 && <IconsBoxicons />}
+                  {LayoutType == 12 && <FormElements />}
 
                   <Footer ></Footer>
 
@@ -166,6 +170,8 @@ function LayoutMenu() {
         case router.UIAlert: return 7;   // active User Interface
         case router.ExtUiPerfectScrollbar:
         case router.ExtUiTextDivider: return 8;   // active Extended UI
+        case router.FormBasicInputs:
+        case router.FormInputGroups: return 9;   // active Form Elements
         default: return 0
       }
     }, [layout]
@@ -458,7 +464,7 @@ function LayoutMenu() {
         </li>
 
         <li className={`menu-item${layout == router.CompBoxicons ? ' active' : ''}`}>
-          <a href="#icons-boxicons" className="menu-link"
+          <a href={router.CompBoxicons} className="menu-link"
             onClick={() => setLayout(router.CompBoxicons)}>
             <i className="menu-icon tf-icons bx bx-crown"></i>
             <div data-i18n="Boxicons">Boxicons</div>
@@ -466,20 +472,21 @@ function LayoutMenu() {
         </li>
 
         <li className="menu-header small text-uppercase"><span className="menu-header-text">Forms &amp; Tables</span></li>
-
-        <li className="menu-item">
-          <a href="void(0)" className="menu-link menu-toggle">
+        <li className={`menu-item${ActiveC == 9 ? ' active open' : ''}`}>
+          <a href="#form-elements" className="menu-link menu-toggle">
             <i className="menu-icon tf-icons bx bx-detail"></i>
             <div data-i18n="Form Elements">Form Elements</div>
           </a>
           <ul className="menu-sub">
-            <li className="menu-item">
-              <a href="#forms-basic-inputs" className="menu-link">
+            <li className={`menu-item${layout == router.FormBasicInputs ? ' active' : ''}`}>
+              <a href={router.FormBasicInputs} className="menu-link"
+                onClick={() => setLayout(router.FormBasicInputs)}>
                 <div data-i18n="Basic Inputs">Basic Inputs</div>
               </a>
             </li>
-            <li className="menu-item">
-              <a href="#forms-input-groups" className="menu-link">
+            <li className={`menu-item${layout == router.FormInputGroups ? ' active' : ''}`}>
+              <a href={router.FormInputGroups} className="menu-link"
+                onClick={() => setLayout(router.FormInputGroups)}>
                 <div data-i18n="Input groups">Input groups</div>
               </a>
             </li>
