@@ -71,6 +71,8 @@ function App() {
       case router.ExtUiTextDivider: return 10;
       case router.CompBoxicons: return 11;
       case router.FormBasicInputs:
+      case router.FormLayoutVertical:
+      case router.FormLayoutHorizontal:
       case router.FormInputGroups: return 12;
       case router.AuthLoginBasic:
       case router.AuthRegisterBasic:
@@ -172,6 +174,9 @@ function LayoutMenu() {
         case router.ExtUiTextDivider: return 8;   // active Extended UI
         case router.FormBasicInputs:
         case router.FormInputGroups: return 9;   // active Form Elements
+        case router.FormLayoutVertical:
+        case router.FormLayoutHorizontal:
+        case router.Tables: return 10;   // active Form Layouts & Tables
         default: return 0
       }
     }, [layout]
@@ -492,27 +497,29 @@ function LayoutMenu() {
             </li>
           </ul>
         </li>
-        <li className="menu-item">
-          <a href="void(0)" className="menu-link menu-toggle">
+        <li className={`menu-item${ActiveC == 10 ? ' active open' : ''}`}>
+          <a href="#form-layouts" className="menu-link menu-toggle">
             <i className="menu-icon tf-icons bx bx-detail"></i>
             <div data-i18n="Form Layouts">Form Layouts</div>
           </a>
           <ul className="menu-sub">
-            <li className="menu-item">
-              <a href="#form-layouts-vertical" className="menu-link">
+            <li className={`menu-item${layout == router.FormLayoutVertical ? ' active' : ''}`}>
+              <a href={router.FormLayoutVertical} className="menu-link"
+                onClick={() => setLayout(router.FormLayoutVertical)}>
                 <div data-i18n="Vertical Form">Vertical Form</div>
               </a>
             </li>
-            <li className="menu-item">
-              <a href="#form-layouts-horizontal" className="menu-link">
+            <li className={`menu-item${layout == router.FormLayoutHorizontal ? ' active' : ''}`}>
+              <a href={router.FormLayoutHorizontal} className="menu-link"
+                onClick={() => setLayout(router.FormLayoutHorizontal)}>
                 <div data-i18n="Horizontal Form">Horizontal Form</div>
               </a>
             </li>
           </ul>
         </li>
 
-        <li className="menu-item">
-          <a href="#tables-basic" className="menu-link">
+        <li className={`menu-item${layout == router.Tables ? ' active' : ''}`}>
+          <a href={router.Tables} className="menu-link" onClick={() => setLayout(router.Tables)}>
             <i className="menu-icon tf-icons bx bx-table"></i>
             <div data-i18n="Tables">Tables</div>
           </a>

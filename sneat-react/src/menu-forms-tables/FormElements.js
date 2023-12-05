@@ -10,6 +10,8 @@ export default function FormElements() {
     return (<div className="container-xxl flex-grow-1 container-p-y">
         {layout == router.FormBasicInputs && <FormBasicInputs />}
         {layout == router.FormInputGroups && <FormInputGroups />}
+        {layout == router.FormLayoutVertical && <FormLayoutsVertical />}
+        {layout == router.FormLayoutHorizontal && <FormLayoutsHorizontal />}
     </div>)
 }
 
@@ -88,7 +90,7 @@ function FormBasicInputs() {
                                 readOnly
                                 className="form-control-plaintext"
                                 id="exampleFormControlReadOnlyInputPlain1"
-                                value="email@example.com"
+                                defaultValue="email@example.com"
                             />
                         </div>
                         <div className="mb-3">
@@ -105,7 +107,7 @@ function FormBasicInputs() {
                             <input className="form-control"
                                 list="datalistOptions"
                                 id="exampleDataList"
-                                placeholder="Type to search..."/>
+                                placeholder="Type to search..." />
                             <datalist id="datalistOptions">
                                 <option value="San Francisco"></option>
                                 <option value="New York" defaultValue="New York"></option>
@@ -203,27 +205,29 @@ function FormBasicInputs() {
                             <div className="col-md">
                                 <small className="text-light fw-semibold">Checkboxes</small>
                                 <div className="form-check mt-3">
-                                    <input className="form-check-input" type="checkbox" value="" id="defaultCheck1" />
+                                    <input className="form-check-input" type="checkbox"
+                                        defaultValue="" id="defaultCheck1" />
                                     <label className="form-check-label" htmlFor="defaultCheck1"> Unchecked </label>
                                 </div>
                                 <div className="form-check">
-                                    <input className="form-check-input" type="checkbox" 
-                                    value="" id="defaultCheck2" defaultChecked />
+                                    <input className="form-check-input" type="checkbox"
+                                        defaultValue="" id="defaultCheck2" defaultChecked />
                                     <label className="form-check-label" htmlFor="defaultCheck2"> Indeterminate </label>
                                 </div>
                                 <div className="form-check">
-                                    <input className="form-check-input" type="checkbox" 
-                                    value="" id="defaultCheck3" defaultChecked />
+                                    <input className="form-check-input" type="checkbox"
+                                        defaultValue="" id="defaultCheck3" defaultChecked />
                                     <label className="form-check-label" htmlFor="defaultCheck3"> Checked </label>
                                 </div>
                                 <div className="form-check">
-                                    <input className="form-check-input" type="checkbox" value="" id="disabledCheck1" disabled />
+                                    <input className="form-check-input" type="checkbox"
+                                        defaultValue="" id="disabledCheck1" disabled />
                                     <label className="form-check-label" htmlFor="disabledCheck1"> Disabled Unchecked </label>
                                 </div>
                                 <div className="form-check">
                                     <input type="checkbox"
                                         className="form-check-input"
-                                        value=""
+                                        defaultValue=""
                                         id="disabledCheck2"
                                         disabled
                                         defaultChecked />
@@ -237,7 +241,7 @@ function FormBasicInputs() {
                                         name="default-radio-1"
                                         className="form-check-input"
                                         type="radio"
-                                        value=""
+                                        defaultValue=""
                                         id="defaultRadio1"
                                     />
                                     <label className="form-check-label" htmlFor="defaultRadio1"> Unchecked </label>
@@ -245,8 +249,8 @@ function FormBasicInputs() {
                                 <div className="form-check">
                                     <input type="radio"
                                         name="default-radio-1"
-                                        className="form-check-input"                                       
-                                        value=""
+                                        className="form-check-input"
+                                        defaultValue=""
                                         id="defaultRadio2"
                                         defaultChecked />
                                     <label className="form-check-label" htmlFor="defaultRadio2"> Checked </label>
@@ -258,7 +262,7 @@ function FormBasicInputs() {
                                 <div className="form-check">
                                     <input type="radio"
                                         className="form-check-input"
-                                        value=""
+                                        defaultValue=""
                                         id="disabledRadio2"
                                         disabled
                                         defaultChecked />
@@ -273,19 +277,20 @@ function FormBasicInputs() {
                             <div className="col-md">
                                 <small className="text-light fw-semibold d-block">Inline Checkboxes</small>
                                 <div className="form-check form-check-inline mt-3">
-                                    <input className="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" />
+                                    <input className="form-check-input" type="checkbox"
+                                        id="inlineCheckbox1" defaultValue="option1" />
                                     <label className="form-check-label" htmlFor="inlineCheckbox1">1</label>
                                 </div>
                                 <div className="form-check form-check-inline">
-                                    <input className="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2" />
+                                    <input className="form-check-input" type="checkbox"
+                                        id="inlineCheckbox2" defaultValue="option2" />
                                     <label className="form-check-label" htmlFor="inlineCheckbox2">2</label>
                                 </div>
                                 <div className="form-check form-check-inline">
-                                    <input
-                                        className="form-check-input"
+                                    <input className="form-check-input"
                                         type="checkbox"
                                         id="inlineCheckbox3"
-                                        value="option3"
+                                        defaultValue="option3"
                                         disabled
                                     />
                                     <label className="form-check-label" htmlFor="inlineCheckbox3">3 (disabled)</label>
@@ -299,7 +304,7 @@ function FormBasicInputs() {
                                         type="radio"
                                         name="inlineRadioOptions"
                                         id="inlineRadio1"
-                                        value="option1"
+                                        defaultValue="option1"
                                     />
                                     <label className="form-check-label" htmlFor="inlineRadio1">1</label>
                                 </div>
@@ -309,7 +314,7 @@ function FormBasicInputs() {
                                         type="radio"
                                         name="inlineRadioOptions"
                                         id="inlineRadio2"
-                                        value="option2"
+                                        defaultValue="option2"
                                     />
                                     <label className="form-check-label" htmlFor="inlineRadio2">2</label>
                                 </div>
@@ -319,7 +324,7 @@ function FormBasicInputs() {
                                         type="radio"
                                         name="inlineRadioOptions"
                                         id="inlineRadio3"
-                                        value="option3"
+                                        defaultValue="option3"
                                         disabled
                                     />
                                     <label className="form-check-label" htmlFor="inlineRadio3">3 (disabled)</label>
@@ -338,15 +343,15 @@ function FormBasicInputs() {
                             >
                         </div>
                         <div className="form-check form-switch mb-2">
-                            <input className="form-check-input" type="checkbox" 
-                            id="flexSwitchCheckChecked" defaultChecked />
-                            <label className="form-check-label" 
-                            htmlFor="flexSwitchCheckChecked">Checked switch checkbox input</label>
+                            <input className="form-check-input" type="checkbox"
+                                id="flexSwitchCheckChecked" defaultChecked />
+                            <label className="form-check-label"
+                                htmlFor="flexSwitchCheckChecked">Checked switch checkbox input</label>
                         </div>
                         <div className="form-check form-switch mb-2">
                             <input className="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" disabled />
-                            <label className="form-check-label" 
-                            htmlFor="flexSwitchCheckDisabled">Disabled switch checkbox input</label>
+                            <label className="form-check-label"
+                                htmlFor="flexSwitchCheckDisabled">Disabled switch checkbox input</label>
                         </div>
                         <div className="form-check form-switch">
                             <input
@@ -392,48 +397,49 @@ function FormBasicInputs() {
                         <div className="mb-3 row">
                             <label htmlFor="html5-text-input" className="col-md-2 col-form-label">Text</label>
                             <div className="col-md-10">
-                                <input className="form-control" type="text" value="Sneat" id="html5-text-input" />
+                                <input className="form-control" type="text"
+                                    defaultValue="Sneat" id="html5-text-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
                             <label htmlFor="html5-search-input" className="col-md-2 col-form-label">Search</label>
                             <div className="col-md-10">
-                                <input className="form-control" type="search" value="Search ..." id="html5-search-input" />
+                                <input className="form-control" type="search"
+                                    defaultValue="Search ..." id="html5-search-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
                             <label htmlFor="html5-email-input" className="col-md-2 col-form-label">Email</label>
                             <div className="col-md-10">
-                                <input className="form-control" type="email" value="john@example.com" id="html5-email-input" />
+                                <input className="form-control" type="email"
+                                    defaultValue="john@example.com" id="html5-email-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
                             <label htmlFor="html5-url-input" className="col-md-2 col-form-label">URL</label>
                             <div className="col-md-10">
-                                <input
-                                    className="form-control"
+                                <input className="form-control"
                                     type="url"
-                                    value="https://themeselection.com"
-                                    id="html5-url-input"
-                                />
+                                    defaultValue="https://themeselection.com"
+                                    id="html5-url-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
                             <label htmlFor="html5-tel-input" className="col-md-2 col-form-label">Phone</label>
                             <div className="col-md-10">
-                                <input className="form-control" type="tel" value="90-(164)-188-556" id="html5-tel-input" />
+                                <input className="form-control" type="tel" defaultValue="90-(164)-188-556" id="html5-tel-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
                             <label htmlFor="html5-password-input" className="col-md-2 col-form-label">Password</label>
                             <div className="col-md-10">
-                                <input className="form-control" type="password" value="password" id="html5-password-input" />
+                                <input className="form-control" type="password" defaultValue="password" id="html5-password-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
                             <label htmlFor="html5-number-input" className="col-md-2 col-form-label">Number</label>
                             <div className="col-md-10">
-                                <input className="form-control" type="number" value="18" id="html5-number-input" />
+                                <input className="form-control" type="number" defaultValue="18" id="html5-number-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
@@ -442,7 +448,7 @@ function FormBasicInputs() {
                                 <input
                                     className="form-control"
                                     type="datetime-local"
-                                    value="2021-06-18T12:30:00"
+                                    defaultValue="2021-06-18T12:30:00"
                                     id="html5-datetime-local-input"
                                 />
                             </div>
@@ -450,31 +456,31 @@ function FormBasicInputs() {
                         <div className="mb-3 row">
                             <label htmlFor="html5-date-input" className="col-md-2 col-form-label">Date</label>
                             <div className="col-md-10">
-                                <input className="form-control" type="date" value="2021-06-18" id="html5-date-input" />
+                                <input className="form-control" type="date" defaultValue="2021-06-18" id="html5-date-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
                             <label htmlFor="html5-month-input" className="col-md-2 col-form-label">Month</label>
                             <div className="col-md-10">
-                                <input className="form-control" type="month" value="2021-06" id="html5-month-input" />
+                                <input className="form-control" type="month" defaultValue="2021-06" id="html5-month-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
                             <label htmlFor="html5-week-input" className="col-md-2 col-form-label">Week</label>
                             <div className="col-md-10">
-                                <input className="form-control" type="week" value="2021-W25" id="html5-week-input" />
+                                <input className="form-control" type="week" defaultValue="2021-W25" id="html5-week-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
                             <label htmlFor="html5-time-input" className="col-md-2 col-form-label">Time</label>
                             <div className="col-md-10">
-                                <input className="form-control" type="time" value="12:30:00" id="html5-time-input" />
+                                <input className="form-control" type="time" defaultValue="12:30:00" id="html5-time-input" />
                             </div>
                         </div>
                         <div className="mb-3 row">
                             <label htmlFor="html5-color-input" className="col-md-2 col-form-label">Color</label>
                             <div className="col-md-10">
-                                <input className="form-control" type="color" value="#666EE8" id="html5-color-input" />
+                                <input className="form-control" type="color" defaultValue="#666EE8" id="html5-color-input" />
                             </div>
                         </div>
                         <div className="row">
@@ -1060,4 +1066,338 @@ function FormInputGroups() {
             </div>
         </div>
     </>)
+}
+function FormLayoutsVertical() {
+    return (<div className="container-xxl flex-grow-1 container-p-y">
+        <h4 className="fw-bold py-3 mb-4"><span className="text-muted fw-light">Forms/</span> Vertical Layouts</h4>
+        <div className="row">
+            <div className="col-xl">
+                <div className="card mb-4">
+                    <div className="card-header d-flex justify-content-between align-items-center">
+                        <h5 className="mb-0">Basic Layout</h5>
+                        <small className="text-muted float-end">Default label</small>
+                    </div>
+                    <div className="card-body">
+                        <form>
+                            <div className="mb-3">
+                                <label className="form-label" htmlFor="basic-default-fullname">Full Name</label>
+                                <input type="text" className="form-control" id="basic-default-fullname" placeholder="John Doe" />
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label" htmlFor="basic-default-company">Company</label>
+                                <input type="text" className="form-control" id="basic-default-company" placeholder="ACME Inc." />
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label" htmlFor="basic-default-email">Email</label>
+                                <div className="input-group input-group-merge">
+                                    <input
+                                        type="text"
+                                        id="basic-default-email"
+                                        className="form-control"
+                                        placeholder="john.doe"
+                                        aria-label="john.doe"
+                                        aria-describedby="basic-default-email2"
+                                    />
+                                    <span className="input-group-text" id="basic-default-email2">@example.com</span>
+                                </div>
+                                <div className="form-text">You can use letters, numbers & periods</div>
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label" htmlFor="basic-default-phone">Phone No</label>
+                                <input
+                                    type="text"
+                                    id="basic-default-phone"
+                                    className="form-control phone-mask"
+                                    placeholder="658 799 8941"
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label" htmlFor="basic-default-message">Message</label>
+                                <textarea
+                                    id="basic-default-message"
+                                    className="form-control"
+                                    placeholder="Hi, Do you have a moment to talk Joe?"
+                                ></textarea>
+                            </div>
+                            <button type="submit" className="btn btn-primary">Send</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div className="col-xl">
+                <div className="card mb-4">
+                    <div className="card-header d-flex justify-content-between align-items-center">
+                        <h5 className="mb-0">Basic with Icons</h5>
+                        <small className="text-muted float-end">Merged input group</small>
+                    </div>
+                    <div className="card-body">
+                        <form>
+                            <div className="mb-3">
+                                <label className="form-label" htmlFor="basic-icon-default-fullname">Full Name</label>
+                                <div className="input-group input-group-merge">
+                                    <span id="basic-icon-default-fullname2" className="input-group-text"
+                                    ><i className="bx bx-user"></i
+                                    ></span>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="basic-icon-default-fullname"
+                                        placeholder="John Doe"
+                                        aria-label="John Doe"
+                                        aria-describedby="basic-icon-default-fullname2"
+                                    />
+                                </div>
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label" htmlFor="basic-icon-default-company">Company</label>
+                                <div className="input-group input-group-merge">
+                                    <span id="basic-icon-default-company2" className="input-group-text"
+                                    ><i className="bx bx-buildings"></i
+                                    ></span>
+                                    <input
+                                        type="text"
+                                        id="basic-icon-default-company"
+                                        className="form-control"
+                                        placeholder="ACME Inc."
+                                        aria-label="ACME Inc."
+                                        aria-describedby="basic-icon-default-company2"
+                                    />
+                                </div>
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label" htmlFor="basic-icon-default-email">Email</label>
+                                <div className="input-group input-group-merge">
+                                    <span className="input-group-text"><i className="bx bx-envelope"></i></span>
+                                    <input
+                                        type="text"
+                                        id="basic-icon-default-email"
+                                        className="form-control"
+                                        placeholder="john.doe"
+                                        aria-label="john.doe"
+                                        aria-describedby="basic-icon-default-email2"
+                                    />
+                                    <span id="basic-icon-default-email2" className="input-group-text">@example.com</span>
+                                </div>
+                                <div className="form-text">You can use letters, numbers & periods</div>
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label" htmlFor="basic-icon-default-phone">Phone No</label>
+                                <div className="input-group input-group-merge">
+                                    <span id="basic-icon-default-phone2" className="input-group-text"
+                                    ><i className="bx bx-phone"></i
+                                    ></span>
+                                    <input
+                                        type="text"
+                                        id="basic-icon-default-phone"
+                                        className="form-control phone-mask"
+                                        placeholder="658 799 8941"
+                                        aria-label="658 799 8941"
+                                        aria-describedby="basic-icon-default-phone2"
+                                    />
+                                </div>
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label" htmlFor="basic-icon-default-message">Message</label>
+                                <div className="input-group input-group-merge">
+                                    <span id="basic-icon-default-message2" className="input-group-text"
+                                    ><i className="bx bx-comment"></i
+                                    ></span>
+                                    <textarea
+                                        id="basic-icon-default-message"
+                                        className="form-control"
+                                        placeholder="Hi, Do you have a moment to talk Joe?"
+                                        aria-label="Hi, Do you have a moment to talk Joe?"
+                                        aria-describedby="basic-icon-default-message2"
+                                    ></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" className="btn btn-primary">Send</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>)
+}
+function FormLayoutsHorizontal() {
+    return (<div className="container-xxl flex-grow-1 container-p-y">
+        <h4 className="fw-bold py-3 mb-4"><span className="text-muted fw-light">Forms/</span> Horizontal Layouts</h4>
+        <div className="row">
+            <div className="col-xxl">
+                <div className="card mb-4">
+                    <div className="card-header d-flex align-items-center justify-content-between">
+                        <h5 className="mb-0">Basic Layout</h5>
+                        <small className="text-muted float-end">Default label</small>
+                    </div>
+                    <div className="card-body">
+                        <form>
+                            <div className="row mb-3">
+                                <label className="col-sm-2 col-form-label" htmlFor="basic-default-name">Name</label>
+                                <div className="col-sm-10">
+                                    <input type="text" className="form-control" id="basic-default-name" placeholder="John Doe" />
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label className="col-sm-2 col-form-label" htmlFor="basic-default-company">Company</label>
+                                <div className="col-sm-10">
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="basic-default-company"
+                                        placeholder="ACME Inc."
+                                    />
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label className="col-sm-2 col-form-label" htmlFor="basic-default-email">Email</label>
+                                <div className="col-sm-10">
+                                    <div className="input-group input-group-merge">
+                                        <input
+                                            type="text"
+                                            id="basic-default-email"
+                                            className="form-control"
+                                            placeholder="john.doe"
+                                            aria-label="john.doe"
+                                            aria-describedby="basic-default-email2"
+                                        />
+                                        <span className="input-group-text" id="basic-default-email2">@example.com</span>
+                                    </div>
+                                    <div className="form-text">You can use letters, numbers & periods</div>
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label className="col-sm-2 col-form-label" htmlFor="basic-default-phone">Phone No</label>
+                                <div className="col-sm-10">
+                                    <input
+                                        type="text"
+                                        id="basic-default-phone"
+                                        className="form-control phone-mask"
+                                        placeholder="658 799 8941"
+                                        aria-label="658 799 8941"
+                                        aria-describedby="basic-default-phone"
+                                    />
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label className="col-sm-2 col-form-label" htmlFor="basic-default-message">Message</label>
+                                <div className="col-sm-10">
+                                    <textarea id="basic-default-message"
+                                        className="form-control"
+                                        placeholder="Hi, Do you have a moment to talk Joe?"
+                                        aria-label="Hi, Do you have a moment to talk Joe?"
+                                        aria-describedby="basic-icon-default-message2"
+                                    ></textarea>
+                                </div>
+                            </div>
+                            <div className="row justify-content-end">
+                                <div className="col-sm-10">
+                                    <button type="submit" className="btn btn-primary">Send</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div className="col-xxl">
+                <div className="card mb-4">
+                    <div className="card-header d-flex align-items-center justify-content-between">
+                        <h5 className="mb-0">Basic with Icons</h5>
+                        <small className="text-muted float-end">Merged input group</small>
+                    </div>
+                    <div className="card-body">
+                        <form>
+                            <div className="row mb-3">
+                                <label className="col-sm-2 col-form-label" htmlFor="basic-icon-default-fullname">Name</label>
+                                <div className="col-sm-10">
+                                    <div className="input-group input-group-merge">
+                                        <span id="basic-icon-default-fullname2"
+                                            className="input-group-text"><i className="bx bx-user"></i></span>
+                                        <input type="text"
+                                            className="form-control"
+                                            id="basic-icon-default-fullname"
+                                            placeholder="John Doe"
+                                            aria-label="John Doe"
+                                            aria-describedby="basic-icon-default-fullname2" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label className="col-sm-2 col-form-label" htmlFor="basic-icon-default-company">Company</label>
+                                <div className="col-sm-10">
+                                    <div className="input-group input-group-merge">
+                                        <span id="basic-icon-default-company2"
+                                            className="input-group-text"><i className="bx bx-buildings"></i></span>
+                                        <input type="text"
+                                            id="basic-icon-default-company"
+                                            className="form-control"
+                                            placeholder="ACME Inc."
+                                            aria-label="ACME Inc."
+                                            aria-describedby="basic-icon-default-company2" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label className="col-sm-2 col-form-label" htmlFor="basic-icon-default-email">Email</label>
+                                <div className="col-sm-10">
+                                    <div className="input-group input-group-merge">
+                                        <span className="input-group-text"><i className="bx bx-envelope"></i></span>
+                                        <input
+                                            type="text"
+                                            id="basic-icon-default-email"
+                                            className="form-control"
+                                            placeholder="john.doe"
+                                            aria-label="john.doe"
+                                            aria-describedby="basic-icon-default-email2"
+                                        />
+                                        <span id="basic-icon-default-email2" className="input-group-text">@example.com</span>
+                                    </div>
+                                    <div className="form-text">You can use letters, numbers & periods</div>
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label className="col-sm-2 form-label" htmlFor="basic-icon-default-phone">Phone No</label>
+                                <div className="col-sm-10">
+                                    <div className="input-group input-group-merge">
+                                        <span id="basic-icon-default-phone2" className="input-group-text"
+                                        ><i className="bx bx-phone"></i
+                                        ></span>
+                                        <input
+                                            type="text"
+                                            id="basic-icon-default-phone"
+                                            className="form-control phone-mask"
+                                            placeholder="658 799 8941"
+                                            aria-label="658 799 8941"
+                                            aria-describedby="basic-icon-default-phone2"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label className="col-sm-2 form-label" htmlFor="basic-icon-default-message">Message</label>
+                                <div className="col-sm-10">
+                                    <div className="input-group input-group-merge">
+                                        <span id="basic-icon-default-message2" className="input-group-text"
+                                        ><i className="bx bx-comment"></i
+                                        ></span>
+                                        <textarea
+                                            id="basic-icon-default-message"
+                                            className="form-control"
+                                            placeholder="Hi, Do you have a moment to talk Joe?"
+                                            aria-label="Hi, Do you have a moment to talk Joe?"
+                                            aria-describedby="basic-icon-default-message2"
+                                        ></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row justify-content-end">
+                                <div className="col-sm-10">
+                                    <button type="submit" className="btn btn-primary">Send</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>)
 }
