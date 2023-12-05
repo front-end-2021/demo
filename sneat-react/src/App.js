@@ -73,6 +73,7 @@ function App() {
       case router.FormBasicInputs:
       case router.FormLayoutVertical:
       case router.FormLayoutHorizontal:
+      case router.Tables:
       case router.FormInputGroups: return 12;
       case router.AuthLoginBasic:
       case router.AuthRegisterBasic:
@@ -175,8 +176,7 @@ function LayoutMenu() {
         case router.FormBasicInputs:
         case router.FormInputGroups: return 9;   // active Form Elements
         case router.FormLayoutVertical:
-        case router.FormLayoutHorizontal:
-        case router.Tables: return 10;   // active Form Layouts & Tables
+        case router.FormLayoutHorizontal: return 10; // active Form Layouts
         default: return 0
       }
     }, [layout]

@@ -9,6 +9,13 @@ const GaStatus = {
     VisibleMix: 23
 }
 
+const regionPrefix = ["Ash", "Birch", "Cress", "Elm", "Fern", "Fair", "Ficus", "Gale", "Harmony", "Heritage", "Hickory", "Magnolia", "Maple", "Oak", "Old", "Pebble", "Placid", "Pleasant", "Red", "Rocky", "Rolling", "Rose", "Sleepy", "Stony", "Sunny", "Sycamore", "Tranquil", "Walnut", "Willow", "Whispering", "Winding"];
+const regionSuffix = ["Acres", "Bluff", "Brook", "Canyon", "Commons", "Chase", "Creek", "Crossing", "Estates", "Gardens", "Glen", "Greens", "Grove", "Heights", "Hill", "Knolls", "Meadow", "Mill", "Park", "Place", "Plains", "Point", "Ridge", "Rock", "Run", "Terrace", "View", "Way", "Woods"];
+function getRegionName() {
+    var randomPrefix = Math.floor(Math.random() * (regionPrefix.length));
+    var randomSuffix = Math.floor(Math.random() * (regionSuffix.length));
+    return `${regionPrefix[randomPrefix]} ${regionSuffix[randomSuffix]}`
+}
 function getRandomCategory() {
     const i = getRandomInt(0, 13)
     switch (i) {

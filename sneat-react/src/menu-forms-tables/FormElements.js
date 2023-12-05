@@ -3,6 +3,7 @@ import {
     RouterContext, router, routerReducer,
     user, userReducer, UserContext
 } from '../DataContext'
+import { TablesBasic } from './Tables';
 
 export default function FormElements() {
     const { layout } = useContext(RouterContext);
@@ -12,11 +13,11 @@ export default function FormElements() {
         {layout == router.FormInputGroups && <FormInputGroups />}
         {layout == router.FormLayoutVertical && <FormLayoutsVertical />}
         {layout == router.FormLayoutHorizontal && <FormLayoutsHorizontal />}
+        {layout == router.Tables && <TablesBasic />}
     </div>)
 }
 
 function FormBasicInputs() {
-
     return (<>
         <h4 className="fw-bold py-3 mb-4"><span className="text-muted fw-light">Forms /</span> Basic Inputs</h4>
 
