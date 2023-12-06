@@ -6,7 +6,7 @@ function dateToString(date1) {
 }
 Vue.component('nav-bar', {
     props: ['view-index'],
-    inject: ['setNavIndex', 'pushModal'],
+    inject: ['setNavIndex'],
     data() {
         return {
             TextSearch: this.$root.NavBar.SearchText,
@@ -26,11 +26,11 @@ Vue.component('nav-bar', {
         },
         openModal(mItem, index) {
             const obj = Object.assign({ Type: 'UserInfo' }, mItem)
-            this.pushModal(obj)
+            this.$root.pushModal(obj)
         },
         signOut(user) {
             const obj = Object.assign({ Type: 'SignOut' }, user)
-            this.pushModal(obj)
+            this.$root.pushModal(obj)
         },
     },
 });
@@ -587,7 +587,7 @@ Vue.component('vitem-wrap', {
             this.IsExpand = !this.IsExpand
 
         },
-        
+
     },
     mounted() {
         this.styleHeight()
@@ -598,31 +598,55 @@ Vue.component('vitem-wrap', {
         } else {
             this.styleHeight()
         }
-        
+
     },
 })
 
 Vue.component('modal-pop', {
-    inject: ['getModalData', 'closeModal', 'saveModal'],
+    inject: ['closeModal', 'saveModal'],
+    data() {
+        return {
+            entry: {},
+            isModified: false
+        }
+    },
     computed: {
         title() {
-            const data = this.getModalData()
+            const lstM = this.$root.ListModal
+            const data = lstM[lstM.length - 1]
             if (data == null) return null
+            if (data == undefined) return null
             switch (data.Type) {
                 case 'UserInfo': return 'Account Info'
                 case 'SignOut': return 'Login'
+                case 'EditGoal': return 'Edit Goal'
+                case 'EditAction': return 'Edit Action'
                 default: return null
             }
         },
         data() {
-            const data = this.getModalData()
+            const lstM = this.$root.ListModal
+            const data = lstM[lstM.length - 1]
+            if (data == undefined) return {}
             if (data == null) return {}
+            if (data.Type == 'EditGoal' || data.Type == 'EditAction') {
+                this.entry.Name = data.Name
+                this.entry.StartMin = '2023-09-01'
+                this.entry.EndMax = '2169-12-31'
+
+                this.entry.StartStr = this.getYYYYMMdd(data.Start)
+
+                this.entry.EndStr = this.getYYYYMMdd(data.End)
+            }
             return data
         },
         message() {
-            const data = this.getModalData()
+            const lstM = this.$root.ListModal
+            const data = lstM[lstM.length - 1]
             if (data == null) return null
             switch (data.Type) {
+                case 'EditGoal':
+                case 'EditAction':
                 case 'UserInfo': return 'Save'
                 case 'SignOut': return 'Sign in'
                 default: return null
@@ -630,16 +654,86 @@ Vue.component('modal-pop', {
         }
     },
     methods: {
-        saveAndClose(data) {
+        saveAndClose() {
+            const data = this.data
             switch (data.Type) {
                 case 'UserInfo':
                     this.saveModal(data)
-                    break
+                    break;
                 case 'SignOut':
                     this.saveModal(data)
                     break;
+                case 'EditGoal':
+                case 'EditAction':
+                    this.saveModal(data, this.entry)
+                    break;
                 default:
+                    break;
             }
-        }
+            this.entry = {}
+            this.closeModal()
+        },
+        closePop() {
+            const data = this.data
+            switch (data.Type) {
+                case 'UserInfo':
+                case 'SignOut':
+                    this.entry = {}
+                    this.closeModal()
+                    break;
+                case 'EditGoal':
+                case 'EditAction':
+                    if (isChange.call(this)) {
+                        if (confirm('on Data change') == true) {
+                            this.saveAndClose()
+                        } else {
+                            this.entry = {}
+                            this.closeModal()
+                        }
+
+                    }
+                    function isChange() {
+                        const entry = this.entry
+                        if (entry.Name != data.Name) return true
+
+                        const oldStart = this.getYYYYMMdd(data.Start)
+                        if (entry.StartStr != oldStart) return true
+
+                        const oldEnd = this.getYYYYMMdd(data.End)
+                        if (entry.EndStr != oldEnd) return true
+
+                        return false
+                    }
+                    break;
+                default:
+                    this.entry = {}
+                    this.closeModal()
+                    break;
+            }
+        },
+        onChangeInput(type, e) {
+            switch (type) {
+                case 'start': {
+                    const val = e.target.value
+                    this.$el.querySelector(`[name="goal-end"]`).setAttribute('min', val)
+                    break;
+                }
+                case 'end': {
+                    const val = e.target.value
+                    this.$el.querySelector(`[name="goal-start"]`).setAttribute('max', val)
+                    break;
+                }
+            }
+        },
+        getYYYYMMdd(dt) {
+            if (dt instanceof Date) {
+                let date = dt.getDate()
+                if (date < 10) date = `0${date}`
+                let month = dt.getMonth() + 1
+                if (month < 10) month = `0${month}`
+                return `${dt.getFullYear()}-${month}-${date}`
+
+            }
+        },
     },
 });

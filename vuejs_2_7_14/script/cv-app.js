@@ -89,26 +89,8 @@ const cvApp = new Vue({
         return {
             setNavIndex: this.setNavIndex,
             getNavIndex: () => { return this.NavBar.Index },
-            pushModal: (object) => {
-                const lstModal = this.ListModal
-                const oType = object.Type
-
-                const index = lstModal.findIndex(x => oType == x.Type)
-
-                if (index < 0) lstModal.push(object)
-                else lstModal.splice(index, 1, object)  // replace
-
-            },
-            getModalData: () => {
-                const lstModal = this.ListModal
-                const len = lstModal.length
-                if (!len) return null
-
-                const obj = lstModal[len - 1]
-                return obj
-            },
             closeModal: this.closeModal,
-            saveModal: (data) => {
+            saveModal: (data, entry) => {
                 const oType = data.Type
                 switch (oType) {
                     case 'UserInfo':
@@ -122,8 +104,11 @@ const cvApp = new Vue({
                     case 'SignOut':
 
                         break;
+                    case 'EditGoal':
+                    case 'EditAction':
+                        console.log('save goal action', data, entry)
+                        break;
                 }
-                this.closeModal()
             },
         }
     },
@@ -165,6 +150,16 @@ const cvApp = new Vue({
                     default: continue;   // for mm
                 }
             }
+        },
+        pushModal(object) {
+            const lstModal = this.ListModal
+            const oType = object.Type
+
+            const index = lstModal.findIndex(x => oType == x.Type)
+
+            if (index < 0) lstModal.push(object)
+            else lstModal.splice(index, 1, object)  // replace
+
         },
     },
     mounted() {

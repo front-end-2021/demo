@@ -36,5 +36,13 @@ Vue.component('vcustom-goal', {
             const newIds = newActions.map(x => x.Id)
             goal.ActionIds = newIds
         },
+        onEditAction(action){
+            const entry = Object.assign({ Type: 'EditAction' }, action)
+            this.$root.pushModal(entry)
+        },
+        onEditGoal(main){
+            const goal = Object.assign({ Type: 'EditGoal' }, main)
+            this.$root.pushModal(goal)
+        },
     },
 });

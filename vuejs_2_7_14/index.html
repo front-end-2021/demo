@@ -240,7 +240,14 @@
                 <draggable :list="mains" v-bind="getDndOptions(1)">
                     <vcustom-goal inline-template v-for="main in mains" :item="main" :key="main.Guid">
                         <div class="list-main-goal d-grid">
-                            <vitem-wrap :class="['main-wrap']" :item="item"></vitem-wrap>
+                            <vitem-wrap :class="['main-wrap']" :item="item">
+                                <div>
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#modal-pop" @click.stop="e => onEditGoal(item, e)">Edit</button>
+                                    <button type="button" class="btn btn-success">Duplicate</button>
+                                    <button type="button" class="btn btn-danger">Delete</button>
+                                </div>
+                            </vitem-wrap>
                             <div class="goal-viewsub">
                                 <div>View Tasks</div>
                                 <div class="dnd-subs">
@@ -251,6 +258,13 @@
                                                 v-bind="getDndOptions(3)">
                                                 <vitem-wrap :key="action.Guid" v-for="action in ListAction"
                                                     :class="['action-wrap']" :item="action">
+                                                    <div>
+                                                        <button type="button" class="btn btn-primary" 
+                                                            data-bs-toggle="modal" data-bs-target="#modal-pop" 
+                                                            @click.stop="e => onEditAction(action, e)">Edit</button>
+                                                        <button type="button" class="btn btn-success">Duplicate</button>
+                                                        <button type="button" class="btn btn-danger">Delete</button>
+                                                    </div>
                                                 </vitem-wrap>
                                             </draggable>
                                         </div>
@@ -268,10 +282,10 @@
             <div class="modal fade" id="modal-pop" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
                 aria-labelledby="modal-pop-tlt" aria-hidden="true">
                 <div class="modal-dialog">
-                    <div v-if="title != null" class="modal-content">
+                    <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="modal-pop-tlt">{{title}}</h5>
-                            <button type="button" class="btn-close" @click="closeModal" data-bs-dismiss="modal"
+                            <button type="button" class="btn-close" @click="closePop" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -324,10 +338,28 @@
                                     </button>
                                 </div>
                             </form>
+                            <form v-if="data.Type == 'EditGoal' || data.Type == 'EditAction'">
+                                <div class="mb-3">
+                                    <label class="col-form-label">Name:</label>
+                                    <input type="text" class="form-control" v-model="data.Name">
+                                </div>
+                                <div class="mb-3 d-grid" style="grid-template-columns: 50% 50%;">
+                                    <div>
+                                        <input type="date" name="goal-start" v-model="entry.StartStr" 
+                                            @change="e => onChangeInput('start', e)"
+                                            :min="entry.StartMin" :max="entry.EndStr" />
+                                    </div>
+                                    <div>
+                                        <input type="date" name="goal-end" v-model="entry.EndStr" 
+                                        @change="e => onChangeInput('end', e)"
+                                        :min="entry.StartStr" :max="entry.EndMax" />
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                                @click="() => { saveAndClose(data) }">{{message}}</button>
+                                @click="() => { saveAndClose() }">{{message}}</button>
                         </div>
                     </div>
                 </div>
@@ -346,10 +378,9 @@
                 <span v-if="item.End">- {{ToEnd}}</span>
             </div>
             <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-chevron-down" 
-                    @click.stop="onToggleExpand"
-                    width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-                  </svg>
+                <span class="d-inline-block fs-5 fw-bold" style="cursor:pointer;"
+                @click.stop="onToggleExpand">{{IsExpand ? '--' : '+'}}</span>
+                <slot v-if="IsExpand"></slot>
             </div>
         </div>
     </script>
