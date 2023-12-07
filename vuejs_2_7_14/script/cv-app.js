@@ -105,8 +105,20 @@ const cvApp = new Vue({
 
                         break;
                     case 'EditGoal':
+                        const goal = this.ListGoal.find(x => x.Guid == entry.Guid)
+                        if(goal) {
+                            goal.Name = entry.Name
+                            goal.Start = new Date(entry.StartStr)
+                            goal.End = new Date(entry.EndStr)
+                        }
+                        break;
                     case 'EditAction':
-                        console.log('save goal action', data, entry)
+                        const action = this.ListAction.find(x => x.Guid == entry.Guid)
+                        if(action) {
+                            action.Name = entry.Name
+                            action.Start = new Date(entry.StartStr)
+                            action.End = new Date(entry.EndStr)
+                        }
                         break;
                 }
             },
@@ -121,35 +133,6 @@ const cvApp = new Vue({
             if (txtSearch == '') return true
             if (item.Name.includes(txtSearch)) return true
             return false
-        },
-        queryData(type, fnCondition, fnProcess, isAll) {
-            const listMain = isAll ? this.Mains : this.ListMains
-            for (let mm = 0; mm < listMain.length; mm++) {
-                const main = listMain[mm]
-
-                switch (type) {
-                    case 1:     // Main
-                        if (fnCondition(main)) fnProcess(main)
-                        continue;       // for mm
-                    case 2:     // Sub
-                    case 3:     // Action
-                        for (let ss = 0; ss < main.Subs.length; ss++) {
-                            const sub = main.Subs[ss]
-                            if (type == 2) {
-                                if (fnCondition(sub, main)) fnProcess(sub, main)
-                                continue        // for ss
-                            }
-                            for (let aa = 0; aa < sub.Actions.length; aa++) {
-                                const action = sub.Actions[aa]
-                                if (fnCondition(action, sub, main))
-                                    fnProcess(action, sub, main)
-                            }
-                            continue;        // for ss
-                        }
-                        continue;        // for mm
-                    default: continue;   // for mm
-                }
-            }
         },
         pushModal(object) {
             const lstModal = this.ListModal

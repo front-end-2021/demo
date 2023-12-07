@@ -630,6 +630,7 @@ Vue.component('modal-pop', {
             if (data == undefined) return {}
             if (data == null) return {}
             if (data.Type == 'EditGoal' || data.Type == 'EditAction') {
+                this.entry.Guid = data.Guid
                 this.entry.Name = data.Name
                 this.entry.StartMin = '2023-09-01'
                 this.entry.EndMax = '2169-12-31'
@@ -690,7 +691,6 @@ Vue.component('modal-pop', {
                             this.entry = {}
                             this.closeModal()
                         }
-
                     }
                     function isChange() {
                         const entry = this.entry
