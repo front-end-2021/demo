@@ -22,8 +22,14 @@ Vue.component('vcustom-goal', {
             ListAction
         }
     },
+    provide() {
+        return {
+            setMarginTopActions: this.setMarginTopActions
+        }
+    },
     updated() {
         this.updateListMap()
+        console.log('update')
     },
     methods: {
         updateListMap() {
@@ -93,5 +99,27 @@ Vue.component('vcustom-goal', {
                     return;
             }
         },
+        setMarginTopActions() {
+            this.$el.querySelectorAll(`.action-wrap`).forEach(a => a.style.marginTop = '')
+            this.$el.querySelectorAll('.vlist-action').forEach(temp1 => {
+                const lstE = []
+                temp1.querySelectorAll(`.action-wrap`).forEach(a => lstE.push(a))
+                for (let ii = 0; ii < lstE.length; ii++) {
+                    const itemI = lstE[ii]
+                    const offsetI = itemI.offset()
+
+                    for (let jj = ii + 1; jj < lstE.length; jj++) {
+                        const itemJ = lstE[jj]
+                        const offsetJ = itemJ.offset()
+                        if (offsetI.left != offsetJ.left) continue
+
+                        const dY = offsetI.top + itemI.offsetHeight + 12 - offsetJ.top      // paddingTop = 12
+                        itemJ.style.marginTop = `${dY}px`
+                        break
+                    }
+                }
+            })
+
+        }
     },
 });

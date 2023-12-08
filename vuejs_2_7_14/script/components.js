@@ -566,6 +566,7 @@ Vue.component('action-time', {
 Vue.component('vitem-wrap', {
     template: '#vitem-wrap-temp',
     mixins: [itemGA],
+    inject: ['setMarginTopActions'],
     data() {
         return {
             IsExpand: false
@@ -585,7 +586,6 @@ Vue.component('vitem-wrap', {
         },
         onToggleExpand() {
             this.IsExpand = !this.IsExpand
-
         },
 
     },
@@ -595,8 +595,10 @@ Vue.component('vitem-wrap', {
     updated() {
         if (this.IsExpand) {
             this.styleHeight(60)
+            this.setMarginTopActions()
         } else {
             this.styleHeight()
+            this.setMarginTopActions()
         }
 
     },
