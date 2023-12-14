@@ -475,12 +475,11 @@ Vue.component('vw-customer', {
     props: ['mains'],
     data() {
         return {
-            MCount: 2
+            
         }
     },
     provide() {
         return {
-            getMCount: () => { return this.MCount },
             getDndOptions: this.getDndOptions,
         }
     },
@@ -503,15 +502,8 @@ Vue.component('vw-customer', {
             }
             return option
         },
-        setMCount() {
-            const sViewA = this.$el.querySelector('.sub-viewaction')
-            if (!sViewA) return
-
-            const itemWidth = 288
-            this.MCount = Math.floor(sViewA.offsetWidth / itemWidth)
-        },
         onResize() {
-            this.setMCount()
+            
         },
         isShowSub(sub){
             let isShow = this.$root.isInSearch(sub)
@@ -525,11 +517,10 @@ Vue.component('vw-customer', {
         },
     },
     mounted() {
-        this.setMCount()
         window.addEventListener('resize', this.onResize)
     },
     updated() {
-        this.setMCount()
+        
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.onResize)
