@@ -139,7 +139,7 @@
                                 <draggable v-if="IsExpand" class="list-action d-flex flex-column" v-bind="DragOptions"
                                     v-model="item.Actions" @start="onDndStart" @end="onDndEnd" :move="checkMove">
                                     <action-view inline-template v-for="act in item.Actions" :subid="item.Id"
-                                        :item="act" :key="act.Guid">
+                                        :item="act" :key="'action-info-' + act.Id">
                                         <div class="d-inline-grid align-items-center">
                                             <input v-if="IsDoneDisable" class="form-check-input mt-0" type="checkbox"
                                                 checked disabled />
@@ -186,7 +186,7 @@
                         </table>
                         <div class="group-sub" v-for="sub in subs">
                             <action-time inline-template v-if="isExpand(sub.Id)" v-for="act in sub.Actions" :item="act"
-                                :key="act.Guid">
+                                :key="'action-timeline-' + act.Id">
                                 <div class="dnb-act-time d-inline-block">
                                     <span class="d-inline-block" :atime-id="item.Id" :class="[ClssStatus]" :style="[{
                                             width: Width, marginLeft: Left
