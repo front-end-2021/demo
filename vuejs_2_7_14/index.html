@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style/5.3.2_dist_css_bootstrap.min.css" />
+    <link rel="stylesheet" href="style/bowtie.css" />
     <link rel="stylesheet" href="style/app_style.css" />
 
     <script src="script/boots/jquery-3.7.1.min.js"></script>
@@ -25,34 +26,7 @@
                     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                         <a href="/"
                             class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                viewBox="0 0 48 48" width="40" height="32">
-                                <defs>
-                                    <linearGradient id="a" x1="3.2173" y1="15" x2="44.7812" y2="15"
-                                        gradientUnits="userSpaceOnUse">
-                                        <stop offset="0" stop-color="#d93025" />
-                                        <stop offset="1" stop-color="#ea4335" />
-                                    </linearGradient>
-                                    <linearGradient id="b" x1="20.7219" y1="47.6791" x2="41.5039" y2="11.6837"
-                                        gradientUnits="userSpaceOnUse">
-                                        <stop offset="0" stop-color="#fcc934" />
-                                        <stop offset="1" stop-color="#fbbc04" />
-                                    </linearGradient>
-                                    <linearGradient id="c" x1="26.5981" y1="46.5015" x2="5.8161" y2="10.506"
-                                        gradientUnits="userSpaceOnUse">
-                                        <stop offset="0" stop-color="#1e8e3e" />
-                                        <stop offset="1" stop-color="#34a853" />
-                                    </linearGradient>
-
-                                    <path id="p"
-                                        d="M13.6086 30.0031 3.218 12.006A23.994 23.994 0 0 0 24.0025 48l10.3906-17.9971-.0067-.0068a11.9852 11.9852 0 0 1-20.7778.007Z" />
-                                </defs>
-                                <use xlink:href="#p" fill="url(#a)" transform="rotate(120 24 24)" />
-                                <use xlink:href="#p" fill="url(#b)" transform="rotate(-120 24 24)" />
-                                <use xlink:href="#p" fill="url(#c)" />
-                                <circle cx="24" cy="24" r="12" style="fill:#fff" />
-                                <circle cx="24" cy="24" r="9.5" style="fill:#1a73e8" />
-                            </svg>
+                            <i class="bowtie-cloud" style="font-size: 24px; color: rgb(13, 110, 253);"></i>
                         </a>
                         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                             <li v-for="(mName, i) in NavMenus" @click="(e) => {setNavIndex(i)}">
@@ -109,13 +83,7 @@
                                                 class="form-control ieName" aria-describedby="inputGroup-sizing-sm"
                                                 @keyup.esc="onCancelSetName" @keyup.enter="onSaveName" />
                                             <div v-if="IsInView && ShowDate" class="fw-lighter">
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill="currentColor"
-                                                        d="M8 9C7.44772 9 7 9.44771 7 10C7 10.5523 7.44772 11 8 11H16C16.5523 11 17 10.5523 17 10C17 9.44771 16.5523 9 16 9H8Z" />
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"
-                                                        d="M6 3C4.34315 3 3 4.34315 3 6V18C3 19.6569 4.34315 21 6 21H18C19.6569 21 21 19.6569 21 18V6C21 4.34315 19.6569 3 18 3H6ZM5 18V7H19V18C19 18.5523 18.5523 19 18 19H6C5.44772 19 5 18.5523 5 18Z" />
-                                                </svg>
+                                                <i class="bowtie-calendar"></i>
                                                 <span v-if="item.Start" class="small">{{ToStart}}</span>
                                                 <span v-if="item.End" class="small"> - {{ToEnd}}</span>
                                             </div>
@@ -150,14 +118,9 @@
                         <sub-view inline-template v-for="sub in subs" :item="sub" :key="sub.Guid">
                             <div class="view-sub">
                                 <div class="d-inline-grid align-items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" @click.stop="onToggleExpand" class="bi"
-                                        :class="[ IsExpand ? 'bi-caret-down-fill' : 'bi-caret-right-fill' ]" width="16"
-                                        height="16" fill="currentColor" viewBox="0 0 16 16">
-                                        <path v-if="IsExpand"
-                                            d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                                        <path v-else
-                                            d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-                                    </svg>
+                                    <i v-bind:class="[IsExpand ? 'bowtie-triangle-down' : 'bowtie-triangle-right']"
+                                        @click.stop="onToggleExpand"
+                                        style="font-size: 18px;"></i>
                                     <h5>{{item.Name}}</h5>
                                     <svg v-if="NeedSync" @click.stop="syncToCloud" class="bi bi-cloud"
                                         viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -193,7 +156,7 @@
                                                 @click.stop="onClickScrollToEnd"
                                                 :class="[ End == '-' ? 'text-black-50' : '' ]">{{End}}</span>
                                             <span
-                                                class="a-status text-center text-uppercase fw-bold text-white rounded-1"
+                                                class="font12 text-center text-uppercase fw-bold text-white rounded-1"
                                                 :class="[ClssStatus]">{{Status}}</span>
                                         </div>
                                     </action-view>
@@ -371,9 +334,7 @@
         <div class="item-wrap ms-2" :expand="IsExpand">
             <h6 class="item-name">{{item.Name}}</h6>
             <div v-if="ShowDate" class="item-start-end font14">
-                <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-clock font14"
-                    width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
-                  </svg>
+                <i class="bowtie-calendar me-1 font11"></i>
                 <span>{{ToStart}}</span>
                 <span v-if="item.End">- {{ToEnd}}</span>
             </div>

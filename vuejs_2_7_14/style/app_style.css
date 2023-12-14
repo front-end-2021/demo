@@ -1,3 +1,4 @@
+[class|="bowtie"] { font-size: 14px; }
 .form-outline {
     position: relative;
     width: 100%;
@@ -119,10 +120,6 @@
     overflow: hidden;
 }
 
-.a-status {
-    font-size: 12px;
-}
-
 .dnb-overview {
     width: 100vw;
     height: calc(100vh - 49px);
@@ -188,6 +185,12 @@
 
 .font14 {
     font-size: 14px;
+}
+.font12 {
+    font-size: 12px;
+}
+.font11 {
+    font-size: 11px;
 }
 
 span[data-title] {
@@ -285,9 +288,9 @@ span[data-title]:hover::after {
     top: 0;
 }
 
-.item-start-end>.bi-clock {
-    width: 12px;
-    height: 12px;
+.item-start-end {
+    align-items: center;
+    display: flex;
 }
 
 .vlist-action {
