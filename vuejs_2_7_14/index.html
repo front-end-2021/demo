@@ -114,7 +114,8 @@
                                 <div class="d-inline-grid align-items-center">
                                     <i v-bind:class="[IsExpand ? 'bowtie-triangle-down' : 'bowtie-triangle-right']"
                                         @click.stop="onToggleExpand" style="font-size: 18px;"></i>
-                                    <h5 v-if="GoalItem">{{GoalItem.Name}}</h5>
+                                    <h5 v-if="GoalItem" 
+                                        style="text-overflow: ellipsis; overflow: hidden; white-space: pre;">{{GoalItem.Name}}</h5>
                                     <svg v-if="NeedSync" @click.stop="syncToCloud" class="bi bi-cloud"
                                         viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         fill="currentColor">
