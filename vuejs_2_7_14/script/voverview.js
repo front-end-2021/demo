@@ -1,9 +1,13 @@
 
 const DayPxUnit = 20       // 1day = 20px
 const MixActionOvw = {
-    props: ['item'],
+    props: ['itemid'],
     inject: ['aIsDone'],
     computed: {
+        item(){
+            const aId = this.itemid
+            return this.$root.ListAction.find(x => aId == x.Id)
+        },
         ClssStatus() {
             const item = this.item
             const type = this.getCompareType(item)
@@ -238,9 +242,13 @@ Vue.component('action-view', {
 
 Vue.component('sub-view', {
     props: ['item'],
-    inject: ['toggleExpand', 'isExpand', 'sIsSync', 'syncSubToCloud'],
+    inject: ['toggleExpand', 'isExpand', 'sIsSync', 'syncSubToCloud'],    
     computed: {
-        IsExpand() { return this.isExpand(this.item.Id) },
+        GoalItem(){
+            const goalId = this.item.GoalId
+            return this.$root.ListGoal.find(x => goalId == x.Id)
+        },
+        IsExpand() { return this.isExpand(this.item.GoalId) },
         DragOptions() {
             return {
                 group: 'action',
@@ -248,12 +256,11 @@ Vue.component('sub-view', {
                 handle: "p.a-name",
             }
         },
-        NeedSync() { return this.sIsSync(this.item.Id) },
+        NeedSync() { return this.sIsSync(this.item.GoalId) },
     },
     methods: {
-        onToggleExpand() { this.toggleExpand(this.item.Id) },
-        syncToCloud() { this.syncSubToCloud(this.item.Id) },
-        onDndStart(evt) { },
+        onToggleExpand() { this.toggleExpand(this.item.GoalId) },
+        syncToCloud() { this.syncSubToCloud(this.item.GoalId) },
         checkMove(evt) {
             const srcTarget = evt.dragged
             let srcE = evt.draggedContext

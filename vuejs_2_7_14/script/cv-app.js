@@ -3,7 +3,7 @@ const cvApp = new Vue({
     name: 'cv-app',
     data: {
         NavBar: {
-            Index: 2,
+            Index: 0,
             NavPages: ['Overview', 'Inventory', 'Customers', 'Products'],
             UserMenus: [
                 { id: 1, url: '#new-project', title: 'New project...' },
@@ -52,37 +52,6 @@ const cvApp = new Vue({
                 }
             }
             return lstMain
-        },
-        Subs() {
-            const subs = []
-            for (let mi = 0; mi < this.ListMains.length; mi++) {
-                const main = this.ListMains[mi]
-                for (let si = 0; si < main.Subs.length; si++) {
-                    const sub = main.Subs[si]
-                    subs.push(sub)
-                }
-            }
-
-            const txtSearch = this.NavBar.SearchText
-            if (txtSearch == '') return subs
-
-            for (let ss = subs.length - 1; ss > -1; ss--) {
-                const sub = subs[ss]
-                if (sub.Name.includes(txtSearch)) continue
-
-                let hasAction = false
-                for (let aa = 0; aa < sub.Actions.length; aa++) {
-                    const action = sub.Actions[aa]
-                    if (action.Name.includes(txtSearch)) {
-                        hasAction = true
-                        break
-                    }
-                }
-                if (!hasAction) {
-                    subs.splice(ss, 1)
-                }
-            }
-            return subs
         },
     },
     provide() {
@@ -145,7 +114,7 @@ const cvApp = new Vue({
 
         },
     },
-    mounted() {
+    beforeMount() {
         this.Mains = getDataMains()
         for (let mm = 0; mm < this.Mains.length; mm++) {
             const main = this.Mains[mm]

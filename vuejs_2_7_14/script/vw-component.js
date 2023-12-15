@@ -1,24 +1,35 @@
 Vue.component('vw-overview', {
-    props: ['subs'],
-    data() {
+    props: ['mgactions'],
+    data() {     
+        const lstGoalId = []
+        for (let mm = 0; mm < this.$root.Mains.length; mm++) {
+            const main = this.$root.Mains[mm]
+            for (let ss = 0; ss < main.Subs.length; ss++) {
+                const sub = main.Subs[ss]
+                lstGoalId.push({
+                    GoalId: sub.Id, 
+                    ActionIds: sub.Actions.map(x => x.Id)
+                })
+            }
+        }
+         
         return {
             IdActionsDone: [],
             IdSubsCollapse: [],
             IdSubsSync: [],
+            List_GoalMini: lstGoalId
         }
     },
     computed: {
-        MinStart() { return this.getMinS(this.subs) },
-        MaxEnd() { return this.getMaxE(this.subs) },
+        MinStart() { return this.getMinS(this.mgactions) },
+        MaxEnd() { return this.getMaxE(this.mgactions) },
         ListMonth() {
-            const subs = this.subs
-
             const dNow = new Date()
             const mNow = dNow.getMonth() + 1
             const yNow = dNow.getFullYear()
 
-            const minS = this.getMinS(subs)
-            const maxE = this.getMaxE(subs)
+            const minS = this.getMinS(this.mgactions)
+            const maxE = this.getMaxE(this.mgactions)
 
             const minD = new Date(minS)
             const maxD = new Date(maxE)
@@ -119,15 +130,13 @@ Vue.component('vw-overview', {
             return lstMMYYY
         },
         ListDay() {
-            const subs = this.subs
-
             const dtNow = new Date()
             const mNow = dtNow.getMonth() + 1
             const yNow = dtNow.getFullYear()
             const dNow = dtNow.getDate()
 
-            const minS = this.getMinS(subs)
-            const maxE = this.getMaxE(subs)
+            const minS = this.getMinS(this.mgactions)
+            const maxE = this.getMaxE(this.mgactions)
 
             const minD = new Date(minS)
             const maxD = new Date(maxE)
@@ -212,8 +221,8 @@ Vue.component('vw-overview', {
     },
     provide() {
         return {
-            getMinStart: () => { return this.getMinS(this.subs) },
-            getMaxEnd: () => { return this.getMaxE(this.subs) },
+            getMinStart: () => { return this.getMinS(this.mgactions) },
+            getMaxEnd: () => { return this.getMaxE(this.mgactions) },
             toggleDone: (aId, isDone) => {
                 const ids = this.IdActionsDone
                 const i = ids.indexOf(aId)
@@ -241,12 +250,13 @@ Vue.component('vw-overview', {
         }
     },
     methods: {
-        getMinS(subs) {
+        getMinS(mapGsa) {
             let minS = Number.MAX_SAFE_INTEGER
-            for (let isb = 0; isb < subs.length; isb++) {
-                const sub = subs[isb]
-                for (let ia = 0; ia < sub.Actions.length; ia++) {
-                    const act = sub.Actions[ia]
+            for (let isb = 0; isb < mapGsa.length; isb++) {
+                const ga = mapGsa[isb]
+                const lstA = this.$root.ListAction.filter(x => ga.ActionIds.includes(x.Id))
+                for (let ia = 0; ia < lstA.length; ia++) {
+                    const act = lstA[ia]
                     setMinS(act.Start)
                 }
             }
@@ -266,18 +276,19 @@ Vue.component('vw-overview', {
                 if (mStart < minS) minS = mStart
             }
         },
-        getMaxE(subs) {
+        getMaxE(mapGsa) {
             let maxE = 0
-            for (let isb = 0; isb < subs.length; isb++) {
-                const sub = subs[isb]
-                for (let ia = 0; ia < sub.Actions.length; ia++) {
-                    const act = sub.Actions[ia]
+            for (let isb = 0; isb < mapGsa.length; isb++) {
+                const ga = mapGsa[isb]
+                const lstA = this.$root.ListAction.filter(x => ga.ActionIds.includes(x.Id))
+                for (let ia = 0; ia < lstA.length; ia++) {
+                    const act = lstA[ia]
                     setMaxE(act.End)
                 }
             }
-            const maxS = this.getMaxS(subs)
+            const maxS = this.getMaxS(mapGsa)
             if (maxE < 1) {
-                const minS = this.getMinS(subs)
+                const minS = this.getMinS(mapGsa)
                 if (minS < maxS) return maxS + 6 * 24000 * 3600
                 return minS + 69 * 24000 * 3600
             }
@@ -297,12 +308,13 @@ Vue.component('vw-overview', {
                 if (maxE < eStart) maxE = eStart
             }
         },
-        getMaxS(subs) {
+        getMaxS(mapGsa) {
             let maxS = 0
-            for (let isb = 0; isb < subs.length; isb++) {
-                const sub = subs[isb]
-                for (let ia = 0; ia < sub.Actions.length; ia++) {
-                    const act = sub.Actions[ia]
+            for (let isb = 0; isb < mapGsa.length; isb++) {
+                const ga = mapGsa[isb]
+                const lstA = this.$root.ListAction.filter(x => ga.ActionIds.includes(x.Id))
+                for (let ia = 0; ia < lstA.length; ia++) {
+                    const act = lstA[ia]
                     setMaxS(act.Start)
                 }
             }

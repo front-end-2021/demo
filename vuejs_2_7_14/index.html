@@ -26,7 +26,7 @@
                     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                         <a href="/"
                             class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
-                            <i class="bowtie-cloud" style="font-size: 24px; color: rgb(13, 110, 253);"></i>
+                            <i class="bowtie-dashboard" style="font-size: 24px; color: rgb(13, 110, 253);"></i>
                         </a>
                         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                             <li v-for="(mName, i) in NavMenus" @click="(e) => {setNavIndex(i)}">
@@ -96,32 +96,25 @@
                 </div>
             </section>
         </vw-inventory>
-        <vw-overview inline-template v-if="NavBar.Index == 0" :subs="Subs">
+        <vw-overview inline-template v-if="NavBar.Index == 0" :mgactions="ListMapGoalAction">
             <section class="dnb-overview dnbOverview" @scroll.passive="onScroll">
                 <div class="dnb-content d-grid">
                     <div class="list-left d-inline-block border-end pt-2">
                         <div class="d-inline-grid align-items-center pb-2"
                             style="grid-template-columns: 286px 45px 45px 45px;">
                             <button type="button" class="btn btn-primary ms-3 me-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-plus-circle" viewBox="0 0 16 16">
-                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                    <path
-                                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-                                </svg>
-                                New goal
+                                <i class="bowtie-math-plus-circle"></i> New goal
                             </button>
                             <span class="text-center text-secondary border-start">Start</span>
                             <span class="text-center text-secondary">Last</span>
                             <span class="text-center text-secondary">End</span>
                         </div>
-                        <sub-view inline-template v-for="sub in subs" :item="sub" :key="sub.Guid">
+                        <sub-view inline-template v-for="sub in mgactions" :item="sub" :key="'sub-view-' + sub.GoalId">
                             <div class="view-sub">
                                 <div class="d-inline-grid align-items-center">
                                     <i v-bind:class="[IsExpand ? 'bowtie-triangle-down' : 'bowtie-triangle-right']"
-                                        @click.stop="onToggleExpand"
-                                        style="font-size: 18px;"></i>
-                                    <h5>{{item.Name}}</h5>
+                                        @click.stop="onToggleExpand" style="font-size: 18px;"></i>
+                                    <h5 v-if="GoalItem">{{GoalItem.Name}}</h5>
                                     <svg v-if="NeedSync" @click.stop="syncToCloud" class="bi bi-cloud"
                                         viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         fill="currentColor">
@@ -137,17 +130,18 @@
                                     </svg>
                                 </div>
                                 <draggable v-if="IsExpand" class="list-action d-flex flex-column" v-bind="DragOptions"
-                                    v-model="item.Actions" @start="onDndStart" @end="onDndEnd" :move="checkMove">
-                                    <action-view inline-template v-for="act in item.Actions" :subid="item.Id"
-                                        :item="act" :key="'action-info-' + act.Id">
+                                    v-model="item.ActionIds" @end="onDndEnd" :move="checkMove">
+                                    <action-view inline-template v-for="actId in item.ActionIds" :subid="item.GoalId"
+                                        :itemid="actId"
+                                        :key="'action-info-' + actId">
                                         <div class="d-inline-grid align-items-center">
                                             <input v-if="IsDoneDisable" class="form-check-input mt-0" type="checkbox"
                                                 checked disabled />
-                                            <input v-else-if="aIsDone(item.Id)" class="form-check-input mt-0"
+                                            <input v-else-if="aIsDone(itemid)" class="form-check-input mt-0"
                                                 type="checkbox" checked @click.stop="() => checkToggleDone(false)" />
                                             <input v-else class="form-check-input mt-0" type="checkbox"
                                                 @click.stop="() => checkToggleDone(true)" />
-                                            <p class="a-name mb-0 ms-2" @click.stop="onClickScrollTo">{{item.Name}}</p>
+                                            <p v-if="item" class="a-name mb-0 ms-2" @click.stop="onClickScrollTo">{{item.Name}}</p>
                                             <span class="text-center font14" :data-title="YearStart || null"
                                                 @click.stop="onClickScrollToStart">{{Start}}</span>
                                             <span class="text-center font14"
@@ -184,13 +178,13 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="group-sub" v-for="sub in subs">
-                            <action-time inline-template v-if="isExpand(sub.Id)" v-for="act in sub.Actions" :item="act"
-                                :key="'action-timeline-' + act.Id">
+                        <div class="group-sub" v-for="sub in mgactions">
+                            <action-time inline-template v-if="isExpand(sub.GoalId)" v-for="actId in sub.ActionIds" 
+                                :itemid="actId"
+                                :key="'action-timeline-' + actId">
                                 <div class="dnb-act-time d-inline-block">
-                                    <span class="d-inline-block" :atime-id="item.Id" :class="[ClssStatus]" :style="[{
-                                            width: Width, marginLeft: Left
-                                        }, Border]" />
+                                    <span class="d-inline-block" :atime-id="itemid" :class="[ClssStatus]" 
+                                        :style="[{ width: Width, marginLeft: Left }, Border]" ></span>
                                 </div>
                             </action-time>
                         </div>
