@@ -36,7 +36,7 @@ function getListAction() {
         listA.push({
             Id, Name: getRandomTask(),
             Status: GaStatus.Default,
-            Start, End: getRandomDate(3, Start)
+            Start, End: getRandomEnd(Start, 15)
         })
     }
     return listA

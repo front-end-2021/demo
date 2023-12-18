@@ -142,6 +142,27 @@ function getRandomDate(days, start) {
         return new Date(eTime)      // get end
     }
 }
+function getRandStart(bStart) {
+    if (bStart instanceof Date) {
+        const dayPlus = getRandomInt(0, 15)
+        const dTime = dayPlus * 3600 * 24000    // milisec
+        return new Date(bStart.getTime() + dTime)
+    }
+    if (Math.random() < 0.6) return null
+    const year = getRandomInt(2021, 2024)
+    const month = getRandomInt(1, 13)
+    const day = getRandomInt(1, 28)
+    return new Date(year, month - 1, day)
+}
+function getRandomEnd(start, days) {
+    if(!(start instanceof Date)) return null
+    if (Math.random() < 0.5) return null
+    days = typeof days != 'number' ? 29 : days
+    const timeE = start.getTime()           // mili sec
+    const delDay = getRandomInt(days, 90)        // day
+    return new Date(timeE + delDay * 3600 * 24000)
+}
+
 function sortDate(d1, d2) {
     if (!d1.Start) return 1
     if (!d2.Start) return -1

@@ -13,11 +13,10 @@ const cvApp = new Vue({
             SearchText: '',
             User: { name: 'Dainb', email: 'dainb8x@gmail.com' }
         },
-        ListGoal: [],
-        ListAction: [],
-        ListUser: [],
-        ListMapGoalAction: [],
-
+        ListGoal: [],           // { Id: int, Name, Status, Start, End }
+        ListAction: [],         // { Id: int, Name, Status, Start, End }
+        ListUser: [],           // { Id: int, Name, LastName, Email }
+        ListMapGoalAction: [],  // { GoalId: int, ActionIds: [int] }
 
         Mains: [],
         ListModal: [],  // [{Type, Title, Body}]
@@ -115,7 +114,7 @@ const cvApp = new Vue({
         },
     },
     beforeMount() {
-        this.Mains = getDataMains()
+        this.Mains = getDataMains() 
         for (let mm = 0; mm < this.Mains.length; mm++) {
             const main = this.Mains[mm]
             main.Guid = newGuid()
@@ -129,20 +128,38 @@ const cvApp = new Vue({
             }
         }
 
-        const goals = getListGoal()
-        for (let ii = 0; ii < goals.length; ii++) {
-            const goal = goals[ii]
-            goal.Guid = newGuid()
-            this.ListGoal.push(goal)
-        }
-        const actions = getListAction()
-        for (let ii = 0; ii < actions.length; ii++) {
-            const action = actions[ii]
-            action.Guid = newGuid()
-            this.ListAction.push(action)
-        }
-        this.ListMapGoalAction = getMapsGoalAction(goals, actions)
-        this.ListUser = getListUser()
+        const pListGoal = new Promise((res) => {
+            const goals = getListGoal()
+            for (let ii = 0; ii < goals.length; ii++) {
+                const goal = goals[ii]
+                goal.Guid = newGuid()
+                this.ListGoal.push(goal)
+            }
+            res(goals)
+        })
+        const pListAction = new Promise((res) => {
+            const actions = getListAction()
+            for (let ii = 0; ii < actions.length; ii++) {
+                const action = actions[ii]
+                action.Guid = newGuid()
+                this.ListAction.push(action)
+            }
+            res(actions)
+        })
+
+        const pListUser = new Promise((res) => {
+            const users = getListUser()
+            this.ListUser = users
+            res(users)
+        })
+
+        Promise.all([pListGoal, pListAction, pListUser]).then((values) => {
+            const goals = values[0]
+            const actions = values[1]
+            this.ListMapGoalAction = getMapsGoalAction(goals, actions)
+            return values
+        })
+        
     },
 })
 function getDataMains() {
@@ -185,24 +202,4 @@ function getDataMains() {
     }
 
     return Mains
-}
-
-function getRandStart(bStart) {
-    if (bStart) {
-        const dayPlus = getRandomInt(0, 15)
-        const dTime = dayPlus * 3600 * 24000    // milisec
-        return new Date(bStart.getTime() + dTime)
-    }
-    if (Math.random() < 0.6) return null
-    const year = getRandomInt(2021, 2024)
-    const month = getRandomInt(1, 13)
-    const day = getRandomInt(1, 28)
-    return new Date(year, month - 1, day)
-}
-function getRandomEnd(start) {
-    if (!start) return null
-    if (Math.random() < 0.5) return null
-    const timeE = start.getTime()           // mili sec
-    const delDay = getRandomInt(29, 90)        // day
-    return new Date(timeE + delDay * 3600 * 24000)
 }
