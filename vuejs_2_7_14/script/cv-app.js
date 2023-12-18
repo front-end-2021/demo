@@ -135,7 +135,7 @@ const cvApp = new Vue({
                 goal.Guid = newGuid()
                 this.ListGoal.push(goal)
             }
-            res(goals)
+            setTimeout(() => { res(goals) }, getRandomInt(300, 600))
         })
         const pListAction = new Promise((res) => {
             const actions = getListAction()
@@ -144,22 +144,20 @@ const cvApp = new Vue({
                 action.Guid = newGuid()
                 this.ListAction.push(action)
             }
-            res(actions)
+            setTimeout(() => { res(actions) }, getRandomInt(300, 600))
         })
-
         const pListUser = new Promise((res) => {
             const users = getListUser()
             this.ListUser = users
-            res(users)
+            setTimeout(() => { res(users) }, getRandomInt(300, 600))
         })
 
         Promise.all([pListGoal, pListAction, pListUser]).then((values) => {
             const goals = values[0]
             const actions = values[1]
             this.ListMapGoalAction = getMapsGoalAction(goals, actions)
-            return values
+//            return values
         })
-        
     },
 })
 function getDataMains() {
