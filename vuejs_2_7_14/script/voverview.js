@@ -4,9 +4,9 @@ const MixActionOvw = {
     props: ['itemid'],
     inject: ['aIsDone'],
     computed: {
-        item(){
+        item() {
             const aId = this.itemid
-            return this.$root.ListAction.find(x => aId == x.Id)
+            return this.getItem(aId)
         },
         ClssStatus() {
             const item = this.item
@@ -52,6 +52,9 @@ const MixActionOvw = {
             }
             return item.End
         },
+        getItem(aId){
+            return this.$root.ListAction.find(x => aId == x.Id)
+        }
     },
 }
 Vue.component('action-time', {
@@ -134,7 +137,14 @@ Vue.component('action-time', {
 
 Vue.component('action-view', {
     mixins: [MixActionOvw],
+    props: ['goalsync'],
     inject: ['toggleDone'],
+    data(){
+        const aId = this.itemid
+        return {
+            IsDoneDisable: this.isDoneDisable(aId)
+        }
+    },
     computed: {
         Start() {
             const item = this.item
@@ -179,18 +189,11 @@ Vue.component('action-view', {
                     return 'Cong';
             }
         },
-        IsDoneDisable() {
-            const item = this.item
-            if (item.End) {
-                const dNow = new Date()
-                dNow.setHours(0, 0, 0, 0)
-                const tNow = dNow.getTime()
-                const tEnd = item.End.getTime()
-                if (tEnd < tNow) {
-                    return true
-                }
-            }
-            return false
+    },
+    watch: {
+        goalsync(){
+            const aId = this.itemid
+            this.IsDoneDisable = this.isDoneDisable(aId)
         },
     },
     methods: {
@@ -234,17 +237,33 @@ Vue.component('action-view', {
             this.scrollToX(-513, true)
         },
         checkToggleDone(isDone) {
-            const item = this.item
-            this.toggleDone(item.Id, isDone)
+            const itemId = this.itemid
+            this.toggleDone(itemId, isDone)
         },
+        isDoneDisable(aId){
+            const aIdsDone = this.$root.ListDoneActionId
+            if(aIdsDone.includes(aId)) return true
+
+            const item = this.getItem(aId)
+            if(!item) return false
+            if(!item.End) return false
+            const dNow = new Date()
+            dNow.setHours(0, 0, 0, 0)
+            const tNow = dNow.getTime()
+            const tEnd = item.End.getTime()
+            if (tEnd < tNow) {
+                return true
+            }
+            return false
+        }
     },
 });
 
 Vue.component('sub-view', {
     props: ['item'],
-    inject: ['toggleExpand', 'isExpand', 'sIsSync', 'syncSubToCloud'],    
+    inject: ['toggleExpand', 'isExpand', 'syncGoalCloud', 'getActIdsDone'],
     computed: {
-        GoalItem(){
+        GoalItem() {
             const goalId = this.item.GoalId
             return this.$root.ListGoal.find(x => goalId == x.Id)
         },
@@ -256,11 +275,18 @@ Vue.component('sub-view', {
                 handle: "p.a-name",
             }
         },
-        NeedSync() { return this.sIsSync(this.item.GoalId) },
+        NeedSync(){
+            const aIds = this.item.ActionIds            
+            const aIdsDone = this.$root.ListDoneActionId
+            const doneIds = aIdsDone.filter(id => aIds.includes(id))
+            const lstIdDone = this.getActIdsDone(aIds)
+            if(!lstIdDone.length) return false
+            return doneIds.length != lstIdDone.length
+        },
     },
     methods: {
         onToggleExpand() { this.toggleExpand(this.item.GoalId) },
-        syncToCloud() { this.syncSubToCloud(this.item.GoalId) },
+        syncToCloud() { this.syncGoalCloud(this.item) },
         checkMove(evt) {
             const srcTarget = evt.dragged
             let srcE = evt.draggedContext

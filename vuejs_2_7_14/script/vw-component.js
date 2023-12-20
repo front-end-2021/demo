@@ -12,11 +12,17 @@ Vue.component('vw-overview', {
                 })
             }
         }
+
+        let aIds = []
+        for(let ii = 0; ii < this.mgactions.length; ii++) {
+            const goal = this.mgactions[ii]
+            aIds = [...aIds, ...goal.ActionIds]
+        }
+        const aIdsDone = this.$root.ListDoneActionId
          
         return {
-            IdActionsDone: [],
+            IdActionsDone: aIdsDone.filter(id => aIds.includes(id)),
             IdSubsCollapse: [],
-            IdSubsSync: [],
             List_GoalMini: lstGoalId
         }
     },
@@ -218,35 +224,52 @@ Vue.component('vw-overview', {
             }
             return lstDays
         },
+        DndGoalOptions(){
+            return {
+                handle: ".view-sub",
+                group: 'goal'
+            }
+        },
     },
     provide() {
         return {
             getMinStart: () => { return this.getMinS(this.mgactions) },
             getMaxEnd: () => { return this.getMaxE(this.mgactions) },
-            toggleDone: (aId, isDone) => {
-                const ids = this.IdActionsDone
-                const i = ids.indexOf(aId)
-                if (i > -1) {
-                    if (!isDone) ids.splice(i, 1)
-                } else if (isDone) ids.push(aId)
-            },
-            aIsDone: this.aIsDone,
             toggleExpand: (sId) => {
                 const ii = this.IdSubsCollapse.indexOf(sId)
                 if (ii > -1) this.IdSubsCollapse.splice(ii, 1)
                 else this.IdSubsCollapse.push(sId)
             },
             isExpand: this.isExpand,
-            sIsSync: this.sIsSync,
-            syncSubToCloud: (sId) => {
-                const ii = this.IdSubsSync.indexOf(sId)
-                if (ii > -1) {
-                    const sub = this.subs.find(x => x.Id == sId)
-                    const subCopy = JSON.parse(JSON.stringify(sub))
-                    console.log('sync sub to server', subCopy)
-                    this.IdSubsSync.splice(ii, 1)
+            syncGoalCloud: (goal) => {
+                //const goalId = goal.GoalId
+                const aIds = goal.ActionIds
+                const lstIdDone = this.IdActionsDone
+                const aIdsDone = this.$root.ListDoneActionId
+                for(let kk = 0; kk < aIds.length; kk++) {
+                    const aId = aIds[kk]
+                    let ik = lstIdDone.indexOf(aId)
+                    if(ik < 0) continue
+                    
+                    lstIdDone.splice(ik, 1)
+                    ik = aIdsDone.indexOf(aId)
+                    if(ik < 0) {
+                        aIdsDone.push(aId)
+                    }
                 }
             },
+            aIsDone: (aId) => { 
+                let isDone = this.$root.ListDoneActionId.includes(aId)
+                return isDone || this.IdActionsDone.includes(aId) 
+            },
+            toggleDone: (aId, isDone) => {
+                const doneIds = this.IdActionsDone
+                const i = doneIds.indexOf(aId)
+                if (i > -1) {
+                    if (!isDone) doneIds.splice(i, 1)
+                } else if (isDone) doneIds.push(aId)
+            },
+            getActIdsDone: this.getActIdsDone,
         }
     },
     methods: {
@@ -367,9 +390,11 @@ Vue.component('vw-overview', {
             const mth = dNow.getMonth()
             return new Date(yy, mth, 1)
         },
-        aIsDone(aId) { return this.IdActionsDone.includes(aId) },
         isExpand(sId) { return !this.IdSubsCollapse.includes(sId) },
-        sIsSync(sId) { return this.IdSubsSync.includes(sId) },
+        getActIdsDone (aIds) {
+            const doneIds = this.IdActionsDone
+            return doneIds.filter(id => aIds.includes(id))
+        },
     },
     mounted() {
         this.stlWidthVwRight()
@@ -393,31 +418,24 @@ Vue.component('vw-overview', {
         this.stlWidthVwRight()
 
         processScroll()
-        processDnd.call(this)
-
+       
         function processScroll() {
             if (typeof window.fncQueuScrollToDateNow == 'function') {
                 window.fncQueuScrollToDateNow()
             }
             delete window.fncQueuScrollToDateNow
         }
-        function processDnd() {
-            const srcSubId = window.SrcSubId
-            const desSubId = window.DesSubId
-            if (typeof srcSubId != 'number' || typeof desSubId != 'number') {
-                delete window.SrcSubId
-                delete window.DesSubId
-                return
-            }
-            if (srcSubId === desSubId) {
-                if (!this.IdSubsSync.includes(srcSubId)) this.IdSubsSync.push(srcSubId)
-            } else {
-                if (!this.IdSubsSync.includes(srcSubId)) this.IdSubsSync.push(srcSubId)
-                if (!this.IdSubsSync.includes(desSubId)) this.IdSubsSync.push(desSubId)
-            }
-            delete window.SrcSubId
-            delete window.DesSubId
-        }
+        // function processDnd() {
+        //     const srcSubId = window.SrcSubId
+        //     const desSubId = window.DesSubId
+        //     if (typeof srcSubId != 'number' || typeof desSubId != 'number') {
+        //         delete window.SrcSubId
+        //         delete window.DesSubId
+        //         return
+        //     }
+        //     delete window.SrcSubId
+        //     delete window.DesSubId
+        // }
     },
 });
 

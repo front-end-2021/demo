@@ -17,6 +17,8 @@ const cvApp = new Vue({
         ListAction: [],         // { Id: int, Name, Status, Start, End }
         ListUser: [],           // { Id: int, Name, LastName, Email }
         ListMapGoalAction: [],  // { GoalId: int, ActionIds: [int] }
+        ListDoneActionId: [],
+        ListDoneGoalId: [],
 
         Mains: [],
         ListModal: [],  // [{Type, Title, Body}]
