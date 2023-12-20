@@ -133,30 +133,30 @@ const cvApp = new Vue({
             for (let ii = 0; ii < goals.length; ii++) {
                 const goal = goals[ii]
                 goal.Guid = newGuid()
-                this.ListGoal.push(goal)
             }
-            setTimeout(() => { res(goals) }, getRandomInt(300, 600))
+            setTimeout(() => { res(goals) }, getRandomInt(300, 1200))
         })
         const pListAction = new Promise((res) => {
             const actions = getListAction()
             for (let ii = 0; ii < actions.length; ii++) {
                 const action = actions[ii]
                 action.Guid = newGuid()
-                this.ListAction.push(action)
             }
-            setTimeout(() => { res(actions) }, getRandomInt(300, 600))
+            setTimeout(() => { res(actions) }, getRandomInt(300, 1200))
         })
         const pListUser = new Promise((res) => {
             const users = getListUser()
-            this.ListUser = users
-            setTimeout(() => { res(users) }, getRandomInt(300, 600))
+            setTimeout(() => { res(users) }, getRandomInt(300, 1200))
         })
 
         Promise.all([pListGoal, pListAction, pListUser]).then((values) => {
             const goals = values[0]
             const actions = values[1]
-            this.ListMapGoalAction = getMapsGoalAction(goals, actions)
-//            return values
+            const users = values[2]            
+            this.ListGoal = goals
+            this.ListAction = actions
+            this.ListUser = users
+            setTimeout(() => { this.ListMapGoalAction = getMapsGoalAction(goals, actions) }, getRandomInt(300, 1200))
         })
     },
 })
