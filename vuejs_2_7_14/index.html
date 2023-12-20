@@ -192,12 +192,13 @@
                 </div>
             </section>
         </vw-overview>
-        <vw-customer inline-template v-if="NavBar.Index == 2" :mains="ListGoal">
+        <vw-customer inline-template v-if="NavBar.Index == 2" :mgactions="ListMapGoalAction">
             <section id="view-customer" style="padding: 12px;">
-                <draggable :list="mains" v-bind="getDndOptions(1)">
-                    <vcustom-goal inline-template v-for="main in mains" :item="main" :key="main.Guid">
+                <draggable :list="mgactions" v-bind="getDndOptions(1)">
+                    <vcustom-goal inline-template v-for="gMap in mgactions" :itemid="gMap.GoalId" 
+                        :key="'view-custom-g-' + gMap.GoalId">
                         <div class="list-main-goal d-grid">
-                            <vitem-wrap :class="['main-wrap']" :item="item">
+                            <vitem-wrap v-if="ItemData" :class="['main-wrap']" :item="ItemData">
                                 <div>
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#modal-pop" @click.stop="e => onEditGa(item, 1)">Edit</button>

@@ -484,12 +484,7 @@ Vue.component('vw-inventory', {
 
 });
 Vue.component('vw-customer', {
-    props: ['mains'],
-    data() {
-        return {
-            
-        }
-    },
+    props: ['mgactions'],
     provide() {
         return {
             getDndOptions: this.getDndOptions,
@@ -514,27 +509,8 @@ Vue.component('vw-customer', {
             }
             return option
         },
-        onResize() {
-            
-        },
-        isShowSub(sub){
-            let isShow = this.$root.isInSearch(sub)
-            if(isShow) return true
-            for(let aa = 0; aa < sub.Actions.length; aa++) {
-                const action = sub.Actions[aa]
-                isShow = this.$root.isInSearch(action)
-                if(isShow) return true
-            }
-            return false
-        },
     },
-    mounted() {
-        window.addEventListener('resize', this.onResize)
-    },
-    updated() {
-        
-    },
-    beforeDestroy() {
-        window.removeEventListener('resize', this.onResize)
-    },
+    //mounted() { },
+    //updated() { },
+    //beforeDestroy() { },
 })

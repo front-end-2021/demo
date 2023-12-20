@@ -1,11 +1,11 @@
 
 Vue.component('vcustom-goal', {
-    props: ['item'],
+    props: [ 'itemid' ],
     inject: ['getDndOptions'],
     data() {
-        const item = this.item
+        const goalId = this.itemid
         const mapsGa = this.$root.ListMapGoalAction
-        const goal = mapsGa.find(x => x.GoalId == item.Id)
+        const goal = mapsGa.find(x => x.GoalId == goalId)
         let ListAction = []
         if (goal) {
             const aIds = goal.ActionIds
@@ -22,6 +22,13 @@ Vue.component('vcustom-goal', {
             ListAction
         }
     },
+    computed: {
+        ItemData(){
+            const goalId = this.itemid
+            const lstGoal = this.$root.ListGoal
+            return lstGoal.find(x => goalId == x.Id)
+        },
+    },
     provide() {
         return {
             setMarginTopActions: this.setMarginTopActions
@@ -33,9 +40,9 @@ Vue.component('vcustom-goal', {
     },
     methods: {
         updateListMap() {
-            const item = this.item
+            const goalId = this.itemid
             const mapsGa = this.$root.ListMapGoalAction
-            const goal = mapsGa.find(x => x.GoalId == item.Id)
+            const goal = mapsGa.find(x => x.GoalId == goalId)
             if (!goal) return
 
             const newActions = this.ListAction
@@ -76,20 +83,20 @@ Vue.component('vcustom-goal', {
                     }
                     return;
                 case 3:
-                    const goal = this.item
+                    const goalId = this.itemid
                     iA = this.ListAction.findIndex(x => x.Id == ga.Id)
                     if (iA > -1) this.ListAction.splice(iA, 1)
 
                     for (let ii = 0; ii < lstMapGa.length; ii++) {
                         const entry = lstMapGa[ii]
-                        if (entry.GoalId != goal.Id) continue
+                        if (entry.GoalId != goalId) continue
 
                         iA = entry.ActionIds.indexOf(ga.Id)
                         if (iA > -1) entry.ActionIds.splice(iA, 1)   // remove at iA
                     }
                     for (let ii = 0; ii < lstMapGa.length; ii++) {
                         const entry = lstMapGa[ii]
-                        if (entry.GoalId == goal.Id) continue
+                        if (entry.GoalId == goalId) continue
 
                         iA = entry.ActionIds.indexOf(ga.Id)
                         if (iA > -1) return
