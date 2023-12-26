@@ -1,33 +1,19 @@
 
 Vue.component('vcustom-goal', {
-    props: [ 'itemid' ],
+    props: ['itemid'],
     inject: ['getDndOptions'],
     data() {
         const goalId = this.itemid
         const mapsGa = this.$root.ListMapGoalAction
         const goal = mapsGa.find(x => x.GoalId == goalId)
-        let ListAction = []
+        let ListActionId = []
         if (goal) {
-            const aIds = goal.ActionIds
-            const actions = this.$root.ListAction
-            for (let aa = 0; aa < actions.length; aa++) {
-                const action = actions[aa]
-                if (!aIds.includes(action.Id)) continue
-
-                ListAction.push(action)
-            }
+            ListActionId = goal.ActionIds
         }
 
         return {
-            ListAction
+            ListActionId
         }
-    },
-    computed: {
-        ItemData(){
-            const goalId = this.itemid
-            const lstGoal = this.$root.ListGoal
-            return lstGoal.find(x => goalId == x.Id)
-        },
     },
     provide() {
         return {
@@ -45,33 +31,36 @@ Vue.component('vcustom-goal', {
             const goal = mapsGa.find(x => x.GoalId == goalId)
             if (!goal) return
 
-            const newActions = this.ListAction
-            const newIds = newActions.map(x => x.Id)
-            goal.ActionIds = newIds
+            goal.ActionIds = this.ListActionId
         },
-        onEditGa(ga, type) {
-            let entry
+        onEditGa(gaId, type) {
+            let entry, item
             switch (type) {
                 case 1:
-                    entry = Object.assign({ Type: 'EditGoal' }, ga)
+                    const lstGoal = this.$root.ListGoal
+                    item = lstGoal.find(x => gaId == x.Id)
+                    entry = Object.assign({ Type: 'EditGoal' }, item)
                     break;
                 case 3:
-                    entry = Object.assign({ Type: 'EditAction' }, ga)
+                    const actions = this.$root.ListAction
+                    item = actions.find(x => gaId == x.Id)
+                    entry = Object.assign({ Type: 'EditAction' }, item)
                     break;
             }
-            this.$root.pushModal(entry)
+            if(item)
+                this.$root.pushModal(entry)
         },
-        onDeleteGa(ga, type) {
+        onDeleteGa(gaId, type) {
             const lstMapGa = this.$root.ListMapGoalAction
             const lstA = this.$root.ListAction
             let iA = -1
             switch (type) {
                 case 1:
                     const lstG = this.$root.ListGoal
-                    iA = lstG.findIndex(g => g.Id == ga.Id)
+                    iA = lstG.findIndex(g => g.Id == gaId)
                     if (iA > -1) lstG.splice(iA, 1)
 
-                    iA = lstMapGa.findIndex(m => m.GoalId == ga.Id)
+                    iA = lstMapGa.findIndex(m => m.GoalId == gaId)
                     if (iA > -1) {
                         const idsA = lstMapGa[iA].ActionIds
                         lstMapGa.splice(iA, 1)
@@ -84,24 +73,24 @@ Vue.component('vcustom-goal', {
                     return;
                 case 3:
                     const goalId = this.itemid
-                    iA = this.ListAction.findIndex(x => x.Id == ga.Id)
+                    iA = this.ListAction.findIndex(x => x.Id == gaId)
                     if (iA > -1) this.ListAction.splice(iA, 1)
 
                     for (let ii = 0; ii < lstMapGa.length; ii++) {
                         const entry = lstMapGa[ii]
                         if (entry.GoalId != goalId) continue
 
-                        iA = entry.ActionIds.indexOf(ga.Id)
+                        iA = entry.ActionIds.indexOf(gaId)
                         if (iA > -1) entry.ActionIds.splice(iA, 1)   // remove at iA
                     }
                     for (let ii = 0; ii < lstMapGa.length; ii++) {
                         const entry = lstMapGa[ii]
                         if (entry.GoalId == goalId) continue
 
-                        iA = entry.ActionIds.indexOf(ga.Id)
+                        iA = entry.ActionIds.indexOf(gaId)
                         if (iA > -1) return
                     }
-                    iA = lstA.findIndex(x => x.Id == ga.Id)
+                    iA = lstA.findIndex(x => x.Id == gaId)
                     if (iA > -1) lstA.splice(iA, 1)      // remove at iA
                     return;
             }

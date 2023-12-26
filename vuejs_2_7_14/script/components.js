@@ -24,11 +24,12 @@ Vue.component('nav-bar', {
         onSearch() {
             console.log('keyup Enter onSearch', this.TextSearch)
         },
-        openModal(mItem, index) {
-            const obj = Object.assign({ Type: 'UserInfo' }, mItem)
+        openModal(mItem) {
+            const obj = Object.assign({ Type: 'UserInfo' }, mItem)  // {id, url, title}
             this.$root.pushModal(obj)
         },
-        signOut(user) {
+        openPopSignOut() {
+            const user = this.$root.NavBar.User
             const obj = Object.assign({ Type: 'SignOut' }, user)
             this.$root.pushModal(obj)
         },
@@ -291,12 +292,40 @@ Vue.component('item-mgoal', {
 
 Vue.component('vitem-wrap', {
     template: '#vitem-wrap-temp',
-    mixins: [itemGA],
+    props: ['itemid', 'itype'],
     inject: ['setMarginTopActions'],
     data() {
         return {
             IsExpand: false
         }
+    },
+    computed: {
+        item() {
+            const gaId = this.itemid
+            switch (this.itype) {
+                case 1:
+                    const lstGoal = this.$root.ListGoal
+                    return lstGoal.find(x => gaId == x.Id)
+                case 3:
+                    const actions = this.$root.ListAction
+                    return actions.find(x => gaId == x.Id)
+            }
+        },
+        ShowDate() {
+            if (this.item.Start) return true
+            if (this.item.End) return true
+            return false
+        },
+        ToStart() {
+            const s = this.item.Start
+            if (!s) return
+            return dateToString(s)
+        },
+        ToEnd() {
+            const e = this.item.End
+            if (!e) return
+            return dateToString(e)
+        },
     },
     methods: {
         styleHeight(offset) {
@@ -339,7 +368,7 @@ Vue.component('modal-pop', {
         }
     },
     computed: {
-        title() {
+        lblHead() {
             const lstM = this.$root.ListModal
             const data = lstM[lstM.length - 1]
             if (data == null) return null
@@ -369,7 +398,7 @@ Vue.component('modal-pop', {
             }
             return data
         },
-        message() {
+        lblSaveAndClose() {
             const lstM = this.$root.ListModal
             const data = lstM[lstM.length - 1]
             if (data == null) return null

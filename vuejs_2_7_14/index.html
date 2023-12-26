@@ -44,7 +44,7 @@
                                     class="rounded-circle">
                             </a>
                             <ul class="dropdown-menu text-small border-0 shadow-sm bg-secondary pt-0 pb-0">
-                                <li v-for="(menu, i) in UserMenus" @click="(e) => {openModal(menu, i)}">
+                                <li v-for="(menu, i) in UserMenus" @click="(e) => openModal(menu)">
                                     <a class="dropdown-item pt-2 pb-2" v-bind:href="menu.url" data-bs-toggle="modal"
                                         data-bs-target="#modal-pop">{{menu.title}}</a>
                                 </li>
@@ -52,7 +52,7 @@
                                     <hr class="dropdown-divider m-0">
                                 </li>
                                 <li><a class="dropdown-item pt-2 pb-2" data-bs-toggle="modal"
-                                        data-bs-target="#modal-pop" href="#" @click="(e) => signOut(User)">Sign out</a>
+                                        data-bs-target="#modal-pop" href="#" @click="openPopSignOut">Sign out</a>
                                 </li>
                             </ul>
                         </div>
@@ -199,12 +199,12 @@
                     <vcustom-goal inline-template v-for="gMap in mgactions" :itemid="gMap.GoalId" 
                         :key="'view-custom-g-' + gMap.GoalId">
                         <div class="list-main-goal d-grid">
-                            <vitem-wrap v-if="ItemData" :class="['main-wrap']" :item="ItemData">
+                            <vitem-wrap :class="['main-wrap']" :itemid="itemid" :itype="1">
                                 <div>
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#modal-pop" @click.stop="e => onEditGa(item, 1)">Edit</button>
+                                        data-bs-target="#modal-pop" @click.stop="e => onEditGa(itemid, 1)">Edit</button>
                                     <button type="button" class="btn btn-danger"
-                                        @click.stop="e => onDeleteGa(item, 1)">Delete</button>
+                                        @click.stop="e => onDeleteGa(itemid, 1)">Delete</button>
                                 </div>
                             </vitem-wrap>
                             <div class="goal-viewsub">
@@ -213,16 +213,17 @@
                                     <div class="list-sub-goal d-grid">
                                         <div class="sub-viewaction">
                                             <h6>List Task</h6>
-                                            <draggable :list="ListAction" class="vlist-action d-flex flex-wrap"
+                                            <draggable :list="ListActionId" class="vlist-action d-flex flex-wrap"
                                                 v-bind="getDndOptions(3)">
-                                                <vitem-wrap :key="action.Guid" v-for="action in ListAction"
-                                                    :class="['action-wrap']" :item="action">
+                                                <vitem-wrap v-for="aId in ListActionId"
+                                                    :key="'view-item-wrap-action-' + aId"
+                                                    :class="['action-wrap']" :itemid="aId" :itype="3">
                                                     <div>
                                                         <button type="button" class="btn btn-primary" 
                                                             data-bs-toggle="modal" data-bs-target="#modal-pop" 
-                                                            @click.stop="e => onEditGa(action, 3)">Edit</button>
+                                                            @click.stop="e => onEditGa(aId, 3)">Edit</button>
                                                         <button type="button" class="btn btn-danger"
-                                                        @click.stop="e => onDeleteGa(action, 3)">Delete</button>
+                                                        @click.stop="e => onDeleteGa(aId, 3)">Delete</button>
                                                     </div>
                                                 </vitem-wrap>
                                             </draggable>
@@ -243,7 +244,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modal-pop-tlt">{{title}}</h5>
+                            <h5 class="modal-title" id="modal-pop-tlt">{{lblHead}}</h5>
                             <button type="button" class="btn-close" @click="closePop" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
@@ -318,7 +319,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                                @click="() => { saveAndClose() }">{{message}}</button>
+                                @click="saveAndClose">{{lblSaveAndClose}}</button>
                         </div>
                     </div>
                 </div>
