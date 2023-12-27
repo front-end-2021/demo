@@ -9,7 +9,7 @@ Vue.component('nav-bar', {
     inject: ['setNavIndex'],
     data() {
         return {
-            TextSearch: this.$root.NavBar.SearchText,
+            TextSearch: this.$root.SearchText,
         }
     },
     computed: {
@@ -308,20 +308,32 @@ Vue.component('vitem-wrap', {
                     return lstGoal.find(x => gaId == x.Id)
                 case 3:
                     const actions = this.$root.ListAction
-                    return actions.find(x => gaId == x.Id)
+                    const action = actions.find(x => gaId == x.Id)
+                    let tSrch = this.$root.SearchText
+                    if (tSrch == '') return action
+                    if (action) {
+                        tSrch = tSrch.toLowerCase()
+                        let txt = action.Name.toLowerCase()
+                        if (txt.includes(tSrch)) {
+                            return action
+                        }
+                    }
             }
         },
         ShowDate() {
+            if (!this.item) return false
             if (this.item.Start) return true
             if (this.item.End) return true
             return false
         },
         ToStart() {
+            if (!this.item) return
             const s = this.item.Start
             if (!s) return
             return dateToString(s)
         },
         ToEnd() {
+            if (!this.item) return
             const e = this.item.End
             if (!e) return
             return dateToString(e)
@@ -331,6 +343,7 @@ Vue.component('vitem-wrap', {
         styleHeight(offset) {
             const thisEl = this.$el
             const children = thisEl.children
+            if (!children) return
             let height = 0
             for (let i = 0; i < children.length; i++) {
                 const child = children[i]

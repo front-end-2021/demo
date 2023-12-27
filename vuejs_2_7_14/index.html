@@ -110,11 +110,11 @@
                         <draggable :list="mgactions" v-bind="DndGoalOptions">
                             <sub-view inline-template v-for="sub in mgactions" :item="sub" 
                                 :key="'sub-view-' + sub.GoalId">
-                                <div v-if="GoalItem" class="view-sub">
+                                <div v-if="GoalData" class="view-sub" v-bind:style="{opacity: OpcInSearch}">
                                     <div class="d-inline-grid align-items-center">
                                         <i v-bind:class="[IsExpand ? 'bowtie-triangle-down' : 'bowtie-triangle-right']"
                                             @click.stop="onToggleExpand" style="font-size: 18px;"></i>
-                                        <h5 style="text-overflow: ellipsis; overflow: hidden; white-space: pre;">{{GoalItem.Name}}</h5>
+                                        <h5 style="text-overflow: ellipsis; overflow: hidden; white-space: pre;">{{GoalData.Name}}</h5>
                                         <svg v-if="NeedSync" @click.stop="syncToCloud" class="bi bi-cloud"
                                             viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                             fill="currentColor">
@@ -134,7 +134,7 @@
                                         <action-view inline-template v-for="actId in item.ActionIds" :subid="item.GoalId"
                                             :goalsync="NeedSync"
                                             :itemid="actId" :key="'action-info-' + actId">
-                                            <div class="d-inline-grid align-items-center">
+                                            <div v-if="item" class="d-inline-grid align-items-center">
                                                 <input v-if="IsDoneDisable" class="form-check-input mt-0" type="checkbox"
                                                     checked disabled />
                                                 <input v-else-if="aIsDone(itemid)" class="form-check-input mt-0"
@@ -183,7 +183,7 @@
                             <action-time inline-template v-if="isExpand(sub.GoalId)" v-for="actId in sub.ActionIds" 
                                 :itemid="actId"
                                 :key="'action-timeline-' + actId">
-                                <div class="dnb-act-time d-inline-block">
+                                <div v-if="item" class="dnb-act-time d-inline-block">
                                     <span class="d-inline-block" :atime-id="itemid" :class="[ClssStatus]" 
                                         :style="[{ width: Width, marginLeft: Left }, Border]" ></span>
                                 </div>
@@ -328,7 +328,7 @@
     </main>
 
     <script type="text/x-template" id="vitem-wrap-temp">
-        <div class="item-wrap ms-2" :expand="IsExpand">
+        <div v-if="item" class="item-wrap ms-2" :expand="IsExpand">
             <h6 class="item-name">{{item.Name}}</h6>
             <div v-if="ShowDate" class="item-start-end font14">
                 <i class="bowtie-calendar me-1 font11"></i>

@@ -10,9 +10,9 @@ const cvApp = new Vue({
                 { id: 2, url: '#setting', title: 'Settings' },
                 { id: 3, url: '#profile', title: 'Profile' },
             ],
-            SearchText: '',
             User: { name: 'Dainb', email: 'dainb8x@gmail.com' }
         },
+        SearchText: '',
         ListGoal: [],           // { Id: int, Name, Status, Start, End }
         ListAction: [],         // { Id: int, Name, Status, Start, End }
         ListUser: [],           // { Id: int, Name, LastName, Email }
@@ -25,7 +25,7 @@ const cvApp = new Vue({
     },
     computed: {
         ListMains() {
-            const txtSearch = this.NavBar.SearchText
+            const txtSearch = this.SearchText
             if (txtSearch == '') return this.Mains
             const lstMain = []
             for (let mm = 0; mm < this.Mains.length; mm++) {
@@ -40,16 +40,16 @@ const cvApp = new Vue({
                         lstMain.push(main)
                         break
                     }
-                    let isInSearch = false
+                    let is_View = false
                     for (let aa = 0; aa < sub.Actions.length; aa++) {
                         const action = sub.Actions[aa]
                         if (action.Name.includes(txtSearch)) {
                             lstMain.push(main)
-                            isInSearch = true
+                            is_View = true
                             break
                         }
                     }
-                    if (isInSearch) break
+                    if (is_View) break
                 }
             }
             return lstMain
@@ -97,13 +97,7 @@ const cvApp = new Vue({
     methods: {
         setNavIndex(index) { this.NavBar.Index = index },
         closeModal() { this.ListModal.pop() },
-        setSearchText(txt) { this.NavBar.SearchText = txt.trim() },
-        isInSearch(item) {
-            const txtSearch = this.NavBar.SearchText
-            if (txtSearch == '') return true
-            if (item.Name.includes(txtSearch)) return true
-            return false
-        },
+        setSearchText(txt) { this.SearchText = txt.trim() },
         pushModal(object) {
             const lstModal = this.ListModal
             const oType = object.Type

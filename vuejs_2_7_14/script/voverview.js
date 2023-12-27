@@ -5,19 +5,28 @@ const MixActionOvw = {
     inject: ['aIsDone'],
     computed: {
         item() {
-            const aId = this.itemid
-            return this.getItem(aId)
+            const action = this.getItem(this.itemid)
+            let tSrch = this.$root.SearchText
+            if (tSrch == '') return action
+            if (action) {
+                tSrch = tSrch.toLowerCase()
+                let txt = action.Name.toLowerCase()
+                if (txt.includes(tSrch)) {
+                    return action
+                }
+            }
         },
         ClssStatus() {
-            const item = this.item
-            const type = this.getCompareType(item)
+            if (!this.item) return
+
+            const type = this.getCompareType(this.item)
             switch (type) {
                 case 0:
                 case 2:
                 case 3:
                 case 4: return 'bg-success';
                 default:
-                    if (this.aIsDone(item.Id)) return 'bg-success';
+                    if (this.aIsDone(this.item.Id)) return 'bg-success';
                     return 'bg-primary';
             }
         },
@@ -52,7 +61,7 @@ const MixActionOvw = {
             }
             return item.End
         },
-        getItem(aId){
+        getItem(aId) {
             return this.$root.ListAction.find(x => aId == x.Id)
         }
     },
@@ -62,6 +71,7 @@ Vue.component('action-time', {
     inject: ['getMinStart', 'getMaxEnd'],
     computed: {
         Width() {
+            if (!this.item) return
             const item = this.item
             let dTime = 86400000
             if (!item.Start) {
@@ -94,6 +104,7 @@ Vue.component('action-time', {
             return `${DayPxUnit * dTime / 24000 / 3600}px`
         },
         Left() {
+            if (!this.item) return
             const item = this.item
             if (!item.Start) return
             const minS = this.getMinStart()
@@ -102,6 +113,7 @@ Vue.component('action-time', {
             return `${DayPxUnit * dTime / 24000 / 3600}px`
         },
         Border() {
+            if (!this.item) return
             const item = this.item
             const tEnd = this.getEndTime(item)
             if (!item.Start && !tEnd)
@@ -139,7 +151,7 @@ Vue.component('action-view', {
     mixins: [MixActionOvw],
     props: ['goalsync'],
     inject: ['toggleDone'],
-    data(){
+    data() {
         const aId = this.itemid
         return {
             IsDoneDisable: this.isDoneDisable(aId)
@@ -147,10 +159,12 @@ Vue.component('action-view', {
     },
     computed: {
         Start() {
+            if (!this.item) return
             const item = this.item
             return this.getDDMM(item.Start)
         },
         End() {
+            if (!this.item) return
             const item = this.item
             if (!item.End && this.aIsDone(item.Id)) {
                 if (!item.Start) {
@@ -167,16 +181,19 @@ Vue.component('action-view', {
             return this.getDDMM(item.End)
         },
         YearStart() {
+            if (!this.item) return
             const item = this.item
             if (!item.Start) return
             return item.Start.getFullYear()
         },
         YearEnd() {
+            if (!this.item) return ''
             const item = this.item
             if (!item.End) return ''
             return item.End.getFullYear()
         },
         Status() {
+            if (!this.item) return
             const item = this.item
             const type = this.getCompareType(item)
             switch (type) {
@@ -191,7 +208,7 @@ Vue.component('action-view', {
         },
     },
     watch: {
-        goalsync(){
+        goalsync() {
             const aId = this.itemid
             this.IsDoneDisable = this.isDoneDisable(aId)
         },
@@ -240,13 +257,13 @@ Vue.component('action-view', {
             const itemId = this.itemid
             this.toggleDone(itemId, isDone)
         },
-        isDoneDisable(aId){
+        isDoneDisable(aId) {
             const aIdsDone = this.$root.ListDoneActionId
-            if(aIdsDone.includes(aId)) return true
+            if (aIdsDone.includes(aId)) return true
 
             const item = this.getItem(aId)
-            if(!item) return false
-            if(!item.End) return false
+            if (!item) return false
+            if (!item.End) return false
             const dNow = new Date()
             dNow.setHours(0, 0, 0, 0)
             const tNow = dNow.getTime()
@@ -263,9 +280,24 @@ Vue.component('sub-view', {
     props: ['item'],
     inject: ['toggleExpand', 'isExpand', 'syncGoalCloud', 'getActIdsDone'],
     computed: {
-        GoalItem() {
+        GoalData() {
             const goalId = this.item.GoalId
             return this.$root.ListGoal.find(x => goalId == x.Id)
+        },
+        OpcInSearch() {
+            const goal = this.GoalData
+            if (!goal) return 0
+            let tSrch = this.$root.SearchText
+            if (tSrch == '') return 1
+
+            const aIds = this.item.ActionIds
+            if (!aIds.length) return 0.45
+
+            let actions = this.$root.ListAction.filter(a => aIds.includes(a.Id))
+            tSrch = tSrch.toLowerCase()
+            actions = actions.filter(a => a.Name.toLowerCase().includes(tSrch))
+            if (actions.length) return 1
+            return 0.12
         },
         IsExpand() { return this.isExpand(this.item.GoalId) },
         DragOptions() {
@@ -275,17 +307,20 @@ Vue.component('sub-view', {
                 handle: "p.a-name",
             }
         },
-        NeedSync(){
-            const aIds = this.item.ActionIds            
+        NeedSync() {
+            const aIds = this.item.ActionIds
             const aIdsDone = this.$root.ListDoneActionId
             const doneIds = aIdsDone.filter(id => aIds.includes(id))
             const lstIdDone = this.getActIdsDone(aIds)
-            if(!lstIdDone.length) return false
+            if (!lstIdDone.length) return false
             return doneIds.length != lstIdDone.length
         },
     },
     methods: {
-        onToggleExpand() { this.toggleExpand(this.item.GoalId) },
+        onToggleExpand() { 
+            if(this.OpcInSearch < 1) return
+            this.toggleExpand(this.item.GoalId) 
+        },
         syncToCloud() { this.syncGoalCloud(this.item) },
         checkMove(evt) {
             const srcTarget = evt.dragged
