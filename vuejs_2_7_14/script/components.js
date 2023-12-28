@@ -293,12 +293,7 @@ Vue.component('item-mgoal', {
 Vue.component('vitem-wrap', {
     template: '#vitem-wrap-temp',
     props: ['itemid', 'itype'],
-    inject: ['setMarginTopActions'],
-    data() {
-        return {
-            IsExpand: false
-        }
-    },
+    inject: ['setMarginTopActions', 'isExpandGa', 'setExpandGa'],
     computed: {
         item() {
             const gaId = this.itemid
@@ -338,6 +333,11 @@ Vue.component('vitem-wrap', {
             if (!e) return
             return dateToString(e)
         },
+        IsExpand() {
+            const gaId = this.itemid
+            const type = this.itype
+            return this.isExpandGa(gaId, type)
+        },
     },
     methods: {
         styleHeight(offset) {
@@ -353,7 +353,9 @@ Vue.component('vitem-wrap', {
             thisEl.style.height = `${height + offset + 21}px`
         },
         onToggleExpand() {
-            this.IsExpand = !this.IsExpand
+            const gaId = this.itemid
+            const type = this.itype
+            this.setExpandGa(gaId, type)
         },
 
     },

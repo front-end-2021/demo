@@ -1,25 +1,25 @@
 Vue.component('vw-overview', {
     props: ['mgactions'],
-    data() {     
+    data() {
         const lstGoalId = []
         for (let mm = 0; mm < this.$root.Mains.length; mm++) {
             const main = this.$root.Mains[mm]
             for (let ss = 0; ss < main.Subs.length; ss++) {
                 const sub = main.Subs[ss]
                 lstGoalId.push({
-                    GoalId: sub.Id, 
+                    GoalId: sub.Id,
                     ActionIds: sub.Actions.map(x => x.Id)
                 })
             }
         }
 
         let aIds = []
-        for(let ii = 0; ii < this.mgactions.length; ii++) {
+        for (let ii = 0; ii < this.mgactions.length; ii++) {
             const goal = this.mgactions[ii]
             aIds = [...aIds, ...goal.ActionIds]
         }
         const aIdsDone = this.$root.ListDoneActionId
-         
+
         return {
             IdActionsDone: aIdsDone.filter(id => aIds.includes(id)),
             IdSubsCollapse: [],
@@ -224,7 +224,7 @@ Vue.component('vw-overview', {
             }
             return lstDays
         },
-        DndGoalOptions(){
+        DndGoalOptions() {
             return {
                 handle: ".view-sub",
                 group: 'goal'
@@ -246,21 +246,21 @@ Vue.component('vw-overview', {
                 const aIds = goal.ActionIds
                 const lstIdDone = this.IdActionsDone
                 const aIdsDone = this.$root.ListDoneActionId
-                for(let kk = 0; kk < aIds.length; kk++) {
+                for (let kk = 0; kk < aIds.length; kk++) {
                     const aId = aIds[kk]
                     let ik = lstIdDone.indexOf(aId)
-                    if(ik < 0) continue
-                    
+                    if (ik < 0) continue
+
                     lstIdDone.splice(ik, 1)
                     ik = aIdsDone.indexOf(aId)
-                    if(ik < 0) {
+                    if (ik < 0) {
                         aIdsDone.push(aId)
                     }
                 }
             },
-            aIsDone: (aId) => { 
+            aIsDone: (aId) => {
                 let isDone = this.$root.ListDoneActionId.includes(aId)
-                return isDone || this.IdActionsDone.includes(aId) 
+                return isDone || this.IdActionsDone.includes(aId)
             },
             toggleDone: (aId, isDone) => {
                 const doneIds = this.IdActionsDone
@@ -391,7 +391,7 @@ Vue.component('vw-overview', {
             return new Date(yy, mth, 1)
         },
         isExpand(sId) { return !this.IdSubsCollapse.includes(sId) },
-        getActIdsDone (aIds) {
+        getActIdsDone(aIds) {
             const doneIds = this.IdActionsDone
             return doneIds.filter(id => aIds.includes(id))
         },
@@ -418,7 +418,7 @@ Vue.component('vw-overview', {
         this.stlWidthVwRight()
 
         processScroll()
-       
+
         function processScroll() {
             if (typeof window.fncQueuScrollToDateNow == 'function') {
                 window.fncQueuScrollToDateNow()
@@ -440,7 +440,7 @@ Vue.component('vw-overview', {
 });
 
 Vue.component('vw-inventory', {
-    inject: ['getNavIndex' ],
+    inject: ['getNavIndex'],
     props: ['mains'],
     computed: {
         Index() { return this.getNavIndex() },
@@ -503,9 +503,16 @@ Vue.component('vw-inventory', {
 });
 Vue.component('vw-customer', {
     props: ['mgactions'],
+    data() {
+        return {
+            IdExpand: '',
+        }
+    },
     provide() {
         return {
             getDndOptions: this.getDndOptions,
+            setExpandGa: (gaId, type) => { this.IdExpand = `${type}_${gaId}` },
+            isExpandGa: (gaId, type) => { return this.IdExpand == `${type}_${gaId}` }
         }
     },
     methods: {
@@ -513,17 +520,17 @@ Vue.component('vw-customer', {
             const option = {
                 handle: ".item-name",
             }
-            switch(type) {
+            switch (type) {
                 case 1: // main
                     option.group = 'main'
-                break;
+                    break;
                 case 2: // sub
                     option.group = 'sub'
                     option.handle = '.sub-wrap .item-name'
-                break;
+                    break;
                 case 3: // action
                     option.group = 'action'
-                break;
+                    break;
             }
             return option
         },
