@@ -24,7 +24,7 @@ Vue.component('nav-bar', {
         onSearch() {
             console.log('keyup Enter onSearch', this.TextSearch)
         },
-        openModal(mItem) {
+        openPopInfoUser(mItem) {
             const obj = Object.assign({ Type: 'UserInfo' }, mItem)  // {id, url, title}
             this.$root.pushModal(obj)
         },

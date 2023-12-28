@@ -44,7 +44,7 @@
                                     class="rounded-circle">
                             </a>
                             <ul class="dropdown-menu text-small border-0 shadow-sm bg-secondary pt-0 pb-0">
-                                <li v-for="(menu, i) in UserMenus" @click="(e) => openModal(menu)">
+                                <li v-for="(menu, i) in UserMenus" @click="(e) => openPopInfoUser(menu)">
                                     <a class="dropdown-item pt-2 pb-2" v-bind:href="menu.url" data-bs-toggle="modal"
                                         data-bs-target="#modal-pop">{{menu.title}}</a>
                                 </li>
