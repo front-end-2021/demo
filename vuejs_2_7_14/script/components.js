@@ -1,9 +1,5 @@
 const TimePxUnit = 10       // 1day = 10px
-function dateToString(date1) {
-    const opt = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-    const dtFormat = new Intl.DateTimeFormat('en-GB', opt);
-    return dtFormat.format(date1) // Expected output: "Friday, 1 June 2012"
-}
+
 Vue.component('nav-bar', {
     props: ['view-index'],
     inject: ['setNavIndex'],
@@ -72,12 +68,12 @@ const itemGA = {
         ToStart() {
             const s = this.item.Start
             if (!s) return
-            return dateToString(s)
+            return s.stringFormat('wek, dd MM YYYY')
         },
         ToEnd() {
             const e = this.item.End
             if (!e) return
-            return dateToString(e)
+            return e.stringFormat('wek, dd MM YYYY')
         },
     },
 }

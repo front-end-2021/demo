@@ -160,25 +160,26 @@ Vue.component('action-view', {
     computed: {
         Start() {
             if (!this.item) return
-            const item = this.item
-            return this.getDDMM(item.Start)
+            const date = this.item.Start
+            if (date instanceof Date) {
+                return date.stringFormat('dd/MM')
+            }
         },
         End() {
             if (!this.item) return
             const item = this.item
             if (!item.End && this.aIsDone(item.Id)) {
                 if (!item.Start) {
-                    return this.getDDMM(Date.now())
+                    return Date.now().stringFormat('dd/MM')
                 }
                 const dNow = new Date()
                 dNow.setHours(0, 0, 0, 0)
                 const tNow = dNow.getTime()
                 const tStart = item.Start.getTime()
-                if (tStart < tNow) return this.getDDMM(dNow)
-                return this.getDDMM(item.Start)
-                //return this.getDDMM(new Date(tStart + 24000 * 3600))
+                if (tStart < tNow) return dNow.stringFormat('dd/MM')
+                return item.Start.stringFormat('dd/MM')
             }
-            return this.getDDMM(item.End)
+            if(item.End) item.End.stringFormat('dd/MM')
         },
         YearStart() {
             if (!this.item) return
@@ -214,15 +215,6 @@ Vue.component('action-view', {
         },
     },
     methods: {
-        getDDMM(date) {
-            if (!date) return '-'
-            if (typeof date == 'number') {
-                date = new Date(date)
-            }
-            const dd = date.getDate()
-            const mm = date.getMonth()
-            return `${dd}/${mm + 1}`
-        },
         onClickScrollToStart() {
             this.scrollToX(0)
         },
@@ -317,9 +309,9 @@ Vue.component('sub-view', {
         },
     },
     methods: {
-        onToggleExpand() { 
-            if(this.OpcInSearch < 1) return
-            this.toggleExpand(this.item.GoalId) 
+        onToggleExpand() {
+            if (this.OpcInSearch < 1) return
+            this.toggleExpand(this.item.GoalId)
         },
         syncToCloud() { this.syncGoalCloud(this.item) },
         checkMove(evt) {

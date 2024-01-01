@@ -33,14 +33,14 @@ Vue.component('vitem-wrap', {
         ToStart() {
             if (!this.item) return
             const s = this.item.Start
-            if (!s) return
-            return dateToString(s)
+            if (!s) return            
+            return s.stringFormat('wek, dd MM YYYY')
         },
         ToEnd() {
             if (!this.item) return
             const e = this.item.End
             if (!e) return
-            return dateToString(e)
+            return e.stringFormat('wek, dd MM YYYY')
         },
         IsExpand() {
             const gaId = this.itemid

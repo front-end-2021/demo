@@ -155,7 +155,7 @@ function getRandStart(bStart) {
     return new Date(year, month - 1, day)
 }
 function getRandomEnd(start, days) {
-    if(!(start instanceof Date)) return null
+    if (!(start instanceof Date)) return null
     if (Math.random() < 0.5) return null
     days = typeof days != 'number' ? 29 : days
     const timeE = start.getTime()           // mili sec
@@ -172,4 +172,17 @@ function newGuid() {
     return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     )
+}
+
+Date.prototype.stringFormat = function (formatStr) {
+    switch (formatStr) {
+        case 'dd/MM':
+            const dd = this.getDate()
+            const mm = this.getMonth()
+            return `${dd}/${mm + 1}`;
+        case 'wek, dd MM YYYY':
+            const opt = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }
+            const dtFormat = new Intl.DateTimeFormat('en-GB', opt)
+            return dtFormat.format(this) // Expected output: "Friday, 1 June 2012"
+    }
 }
