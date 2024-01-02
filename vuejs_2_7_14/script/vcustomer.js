@@ -8,20 +8,11 @@ Vue.component('vitem-wrap', {
             const gaId = this.itemid
             switch (this.itype) {
                 case 1:
-                    const lstGoal = this.$root.ListGoal
+                    const lstGoal = this.$root.DataGoals
                     return lstGoal.find(x => gaId == x.Id)
                 case 3:
-                    const actions = this.$root.ListAction
-                    const action = actions.find(x => gaId == x.Id)
-                    let tSrch = this.$root.SearchText
-                    if (tSrch == '') return action
-                    if (action) {
-                        tSrch = tSrch.toLowerCase()
-                        let txt = action.Name.toLowerCase()
-                        if (txt.includes(tSrch)) {
-                            return action
-                        }
-                    }
+                    const actions = this.$root.DataActions
+                    return actions.find(x => gaId == x.Id)
             }
         },
         FormatRange() {

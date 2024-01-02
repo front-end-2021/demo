@@ -5,16 +5,8 @@ const MixActionOvw = {
     inject: ['aIsDone'],
     computed: {
         item() {
-            const action = this.getItem(this.itemid)
-            let tSrch = this.$root.SearchText
-            if (tSrch == '') return action
-            if (action) {
-                tSrch = tSrch.toLowerCase()
-                let txt = action.Name.toLowerCase()
-                if (txt.includes(tSrch)) {
-                    return action
-                }
-            }
+            const aId = this.itemid
+            return this.$root.DataActions.find(x => aId == x.Id)
         },
         ClssStatus() {
             if (!this.item) return
@@ -61,9 +53,6 @@ const MixActionOvw = {
             }
             return item.End
         },
-        getItem(aId) {
-            return this.$root.ListAction.find(x => aId == x.Id)
-        }
     },
 }
 Vue.component('action-time', {
@@ -179,7 +168,7 @@ Vue.component('action-view', {
                 if (tStart < tNow) return dNow.stringFormat('dd/MM')
                 return item.Start.stringFormat('dd/MM')
             }
-            if(item.End) item.End.stringFormat('dd/MM')
+            if (item.End) item.End.stringFormat('dd/MM')
         },
         YearStart() {
             if (!this.item) return
@@ -253,7 +242,7 @@ Vue.component('action-view', {
             const aIdsDone = this.$root.ListDoneActionId
             if (aIdsDone.includes(aId)) return true
 
-            const item = this.getItem(aId)
+            const item = this.$root.ListAction.find(x => aId == x.Id)
             if (!item) return false
             if (!item.End) return false
             const dNow = new Date()

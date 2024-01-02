@@ -24,7 +24,7 @@ function getListGoal() {
         listMain.push({
             Id, Name,
             Status: GaStatus.Default,
-            Start, End: getRandomDate(3, Start)
+            Start, End: getRandomDate(369, Start)
         })
     }
     return listMain

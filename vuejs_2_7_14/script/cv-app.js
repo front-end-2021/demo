@@ -54,6 +54,31 @@ const cvApp = new Vue({
             }
             return lstMain
         },
+        DataGoals(){
+            const txtSearch = this.SearchText
+            if (txtSearch == '') return this.ListGoal
+            const lstG = []
+            for(let gg = 0; gg < this.ListGoal.length; gg++) {
+                const goal = this.ListGoal[gg]
+                if (goal.Name.includes(txtSearch)) {
+                    lstG.push(goal)
+                }
+            }
+            return lstG
+        },
+        DataActions(){
+            let txtSearch = this.SearchText
+            if (txtSearch == '') return this.ListAction
+            txtSearch = txtSearch.toLowerCase()
+            const lstA = []
+            for(let gg = 0; gg < this.ListAction.length; gg++) {
+                const goal = this.ListAction[gg]
+                if (goal.Name.toLowerCase().includes(txtSearch)) {
+                    lstA.push(goal)
+                }
+            }
+            return lstA
+        },
     },
     provide() {
         return {
