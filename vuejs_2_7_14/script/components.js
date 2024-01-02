@@ -60,20 +60,11 @@ const itemObsev = {
 const itemGA = {
     props: ['item'],
     computed: {
-        ShowDate() {
-            if (this.item.Start) return true
-            if (this.item.End) return true
-            return false
-        },
-        ToStart() {
-            const s = this.item.Start
-            if (!s) return
-            return s.stringFormat('wek, dd MM YYYY')
-        },
-        ToEnd() {
-            const e = this.item.End
-            if (!e) return
-            return e.stringFormat('wek, dd MM YYYY')
+        FormatRange() {
+            const data = this.item
+            const dt1 = data.Start
+            const dt2 = data.End
+            return dateTimeFormatRange('wek, dd MM YYYY', dt1, dt2)
         },
     },
 }

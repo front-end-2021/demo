@@ -175,14 +175,40 @@ function newGuid() {
 }
 
 Date.prototype.stringFormat = function (formatStr) {
+    let opt
     switch (formatStr) {
         case 'dd/MM':
             const dd = this.getDate()
             const mm = this.getMonth()
             return `${dd}/${mm + 1}`;
         case 'wek, dd MM YYYY':
-            const opt = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }
+            opt = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }
             const dtFormat = new Intl.DateTimeFormat('en-GB', opt)
-            return dtFormat.format(this) // Expected output: "Friday, 1 June 2012"
+            return dtFormat.format(this) // output: "Fri, 1 Sep 2023"
+        case 'nd/nM/YYYY':      //date formatting for language with a fallback language Indonesian
+            opt = ['ban', 'id']
+            return new Intl.DateTimeFormat(opt).format(this)    // output: "2/1/2024"
+        case 'nM/nd/YYYY':
+            opt = 'en-US'
+            return new Intl.DateTimeFormat(opt).format(this)    // output: "1/2/2024"
+        case 'dd/MM/YYYY':
+            return new Intl.DateTimeFormat("en-GB").format(this)    // output: "02/01/2023"
+
+    }
+}
+function dateTimeFormatRange(formatStr, dt1, dt2) {
+    const isD1 = dt1 instanceof Date
+    const isD2 = dt2 instanceof Date
+    if (!isD1 && !isD2) return
+
+    let opt
+    switch (formatStr) {
+        case 'wek, dd MM YYYY':
+            opt = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }
+            const dtFormat = new Intl.DateTimeFormat('en-GB', opt)
+            if (isD1 && !isD2) return dtFormat.format(dt1)
+            if (!isD1 && isD2) return dtFormat.format(dt2)
+            return dtFormat.formatRange(dt1, dt2) // "Fri, 1 Sep 2023 – Tue, 2 Jan 2024"
+
     }
 }

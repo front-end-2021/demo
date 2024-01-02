@@ -24,23 +24,12 @@ Vue.component('vitem-wrap', {
                     }
             }
         },
-        ShowDate() {
-            if (!this.item) return false
-            if (this.item.Start) return true
-            if (this.item.End) return true
-            return false
-        },
-        ToStart() {
-            if (!this.item) return
-            const s = this.item.Start
-            if (!s) return            
-            return s.stringFormat('wek, dd MM YYYY')
-        },
-        ToEnd() {
-            if (!this.item) return
-            const e = this.item.End
-            if (!e) return
-            return e.stringFormat('wek, dd MM YYYY')
+        FormatRange() {
+            const data = this.item
+            if (!data) return
+            const dt1 = data.Start
+            const dt2 = data.End
+            return dateTimeFormatRange('wek, dd MM YYYY', dt1, dt2)
         },
         IsExpand() {
             const gaId = this.itemid
@@ -131,7 +120,7 @@ Vue.component('vcustom-goal', {
                     entry = Object.assign({ Type: 'EditAction' }, item)
                     break;
             }
-            if(item)
+            if (item)
                 this.$root.pushModal(entry)
         },
         onDeleteGa(gaId, type) {

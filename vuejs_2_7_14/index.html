@@ -80,10 +80,9 @@
                                             <input v-if="IsEditName" v-model="Name" type="text"
                                                 class="form-control ieName" aria-describedby="inputGroup-sizing-sm"
                                                 @keyup.esc="onCancelSetName" @keyup.enter="onSaveName" />
-                                            <div v-if="IsInView && ShowDate" class="fw-lighter">
+                                            <div v-if="IsInView && FormatRange" class="fw-lighter">
                                                 <i class="bowtie-calendar"></i>
-                                                <span v-if="item.Start" class="small">{{ToStart}}</span>
-                                                <span v-if="item.End" class="small"> - {{ToEnd}}</span>
+                                                <span class="small">{{FormatRange}}</span>
                                             </div>
                                         </div>
                                     </item-action>
@@ -330,10 +329,9 @@
     <script type="text/x-template" id="vitem-wrap-temp">
         <div v-if="item" class="item-wrap ms-2" :expand="IsExpand">
             <h6 class="item-name">{{item.Name}}</h6>
-            <div v-if="ShowDate" class="item-start-end font14">
+            <div v-if="FormatRange" class="item-start-end font14">
                 <i class="bowtie-calendar me-1 font11"></i>
-                <span>{{ToStart}}</span>
-                <span v-if="item.End">- {{ToEnd}}</span>
+                <span>{{FormatRange}}</span>
             </div>
             <div>
                 <span class="d-inline-block fs-5 fw-bold" style="cursor:pointer;"
@@ -357,9 +355,8 @@
                 aria-describedby="inputGroup-sizing-sm" 
                 @keyup.esc="onCancelSetName"
                 @keyup.enter="onSaveName"/>
-            <div v-if="ShowDate">
-                <span v-if="item.Start" class="small"><b>Start:</b> {{ToStart}}</span>
-                <span v-if="item.End" class="small"><b> - End:</b> {{ToEnd}}</span>
+            <div v-if="FormatRange">
+                <span class="small">{{FormatRange}}</span>
             </div>
             <slot v-if="IsInView"></slot>
         </div>
