@@ -511,7 +511,14 @@ Vue.component('vw-customer', {
     provide() {
         return {
             getDndOptions: this.getDndOptions,
-            setExpandGa: (gaId, type) => { this.IdExpand = `${type}_${gaId}` },
+            setExpandGa: (gaId, type) => {
+                const tt = `${type}_${gaId}`
+                if (this.IdExpand == tt) {
+                    this.IdExpand = ''
+                } else {
+                    this.IdExpand = tt
+                }
+            },
             isExpandGa: (gaId, type) => { return this.IdExpand == `${type}_${gaId}` }
         }
     },

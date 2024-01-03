@@ -64,6 +64,8 @@ const cvApp = new Vue({
                     lstG.push(goal)
                 }
             }
+            const tt = Date.now()
+            console.log('computed DataGoals', tt - window.DnbTimer)
             return lstG
         },
         DataActions(){
@@ -77,6 +79,8 @@ const cvApp = new Vue({
                     lstA.push(goal)
                 }
             }
+            const tt = Date.now()
+            console.log('computed DataActions', tt - window.DnbTimer)
             return lstA
         },
     },
@@ -103,16 +107,16 @@ const cvApp = new Vue({
                         const goal = this.ListGoal.find(x => x.Guid == entry.Guid)
                         if(goal) {
                             goal.Name = entry.Name
-                            goal.Start = new Date(entry.StartStr)
-                            goal.End = new Date(entry.EndStr)
+                            goal.Start = entry.Start
+                            goal.End = entry.End
                         }
                         break;
                     case 'EditAction':
                         const action = this.ListAction.find(x => x.Guid == entry.Guid)
                         if(action) {
                             action.Name = entry.Name
-                            action.Start = new Date(entry.StartStr)
-                            action.End = new Date(entry.EndStr)
+                            action.Start = entry.Start
+                            action.End = entry.End
                         }
                         break;
                 }
@@ -134,7 +138,7 @@ const cvApp = new Vue({
 
         },
     },
-    beforeMount() {
+    created() {
         this.Mains = getDataMains() 
         for (let mm = 0; mm < this.Mains.length; mm++) {
             const main = this.Mains[mm]
@@ -155,7 +159,7 @@ const cvApp = new Vue({
                 const goal = goals[ii]
                 goal.Guid = newGuid()
             }
-            setTimeout(() => { res(goals) }, getRandomInt(300, 1200))
+            setTimeout(() => { res(goals) }, 123)
         })
         const pListAction = new Promise((res) => {
             const actions = getListAction()
@@ -163,11 +167,11 @@ const cvApp = new Vue({
                 const action = actions[ii]
                 action.Guid = newGuid()
             }
-            setTimeout(() => { res(actions) }, getRandomInt(300, 1200))
+            setTimeout(() => { res(actions) }, 345)
         })
         const pListUser = new Promise((res) => {
             const users = getListUser()
-            setTimeout(() => { res(users) }, getRandomInt(300, 1200))
+            setTimeout(() => { res(users) }, 456)
         })
 
         Promise.all([pListGoal, pListAction, pListUser]).then((values) => {
@@ -177,8 +181,18 @@ const cvApp = new Vue({
             this.ListGoal = goals
             this.ListAction = actions
             this.ListUser = users
-            setTimeout(() => { this.ListMapGoalAction = getMapsGoalAction(goals, actions) }, getRandomInt(300, 1200))
+
+            this.ListMapGoalAction = getMapsGoalAction(goals, actions) 
+            window.DnbTimer = Date.now()
         })
+    },
+    //mounted(){ },
+    updated(){        
+        const tt = Date.now()
+        console.group('app updated')
+        console.log('time', tt - window.DnbTimer)
+        window.DnbTimer = Date.now()
+        console.groupEnd()
     },
 })
 function getDataMains() {

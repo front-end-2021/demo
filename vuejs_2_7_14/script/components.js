@@ -18,7 +18,10 @@ Vue.component('nav-bar', {
     },
     methods: {
         onSearch() {
-            console.log('keyup Enter onSearch', this.TextSearch)
+            console.log('keyup Enter on Search', this.TextSearch)
+        },
+        onChangeSearch() {
+            window.DnbTimer = Date.now()
         },
         openPopInfoUser(mItem) {
             const obj = Object.assign({ Type: 'UserInfo' }, mItem)  // {id, url, title}
@@ -341,7 +344,20 @@ Vue.component('modal-pop', {
                     break;
                 case 'EditGoal':
                 case 'EditAction':
-                    this.saveModal(data, this.entry)
+                    const entry = this.entry
+                    if(typeof entry.StartStr != 'string' || entry.StartStr.length < 6) {
+                        entry.Start = null
+                    } else {
+                        entry.Start = new Date(entry.StartStr)
+                    }
+                    delete entry.StartStr
+                    if(typeof entry.EndStr != 'string' || entry.EndStr < 6) {
+                        entry.End = null
+                    } else {
+                        entry.End = new Date(entry.EndStr)
+                    }
+                    delete entry.EndStr
+                    this.saveModal(data, entry)
                     break;
                 default:
                     break;
@@ -402,12 +418,7 @@ Vue.component('modal-pop', {
         },
         getYYYYMMdd(dt) {
             if (dt instanceof Date) {
-                let date = dt.getDate()
-                if (date < 10) date = `0${date}`
-                let month = dt.getMonth() + 1
-                if (month < 10) month = `0${month}`
-                return `${dt.getFullYear()}-${month}-${date}`
-
+                return dt.stringFormat('YYYY-MM-dd')
             }
         },
     },

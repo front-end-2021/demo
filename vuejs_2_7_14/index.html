@@ -34,7 +34,7 @@
                         </ul>
                         <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" name="dnbfctrl" role="search" action="#">
                             <input type="search" class="form-control" placeholder="Search..." aria-label="Search"
-                                v-model="TextSearch" v-on:keyup.enter="onSearch">
+                                v-model="TextSearch" v-on:keyup.enter="onSearch" v-on:change="onChangeSearch">
                         </form>
 
                         <div class="dropdown text-end">

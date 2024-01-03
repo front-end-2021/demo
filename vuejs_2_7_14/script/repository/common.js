@@ -193,7 +193,7 @@ Date.prototype.stringFormat = function (formatStr) {
             return new Intl.DateTimeFormat(opt).format(this)    // output: "1/2/2024"
         case 'dd/MM/YYYY':
             return new Intl.DateTimeFormat("en-GB").format(this)    // output: "02/01/2023"
-
+        case 'YYYY-MM-dd': return this.toISOString().split('T')[0]
     }
 }
 function dateTimeFormatRange(formatStr, dt1, dt2) {
