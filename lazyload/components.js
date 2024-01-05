@@ -1,4 +1,3 @@
-
 const options = {
     root: null,
     rootMargin: "0px",
@@ -48,9 +47,13 @@ customElements.define(
             super();
             let template = document.querySelector(`#dnb-table-view`);
             let templateContent = template.content.cloneNode(true);
-
             const shadowRoot = this.attachShadow({ mode: "open" });
             shadowRoot.appendChild(document.importNode(templateContent, true));
+
+            const stl = document.querySelector(`style[stl-grp-vtable]`)
+            const sheet = new CSSStyleSheet();
+            sheet.replaceSync(stl.textContent);
+            shadowRoot.adoptedStyleSheets = [sheet];
         }
 
         // fires after the element has been attached to the DOM
@@ -58,9 +61,9 @@ customElements.define(
             const shadowRoot = this.shadowRoot
 
             const _table = shadowRoot.querySelector('table')
-            const _thead = _table.querySelector('thead')
-
             const pos = this.pos
+            this.addDomHeader(_table, pos)
+            
             if (pos == glbApp.viewIndex) {
                 document.querySelectorAll(`[t-active]`).forEach(vActive => {
                     vActive.removeAttribute('t-active')
@@ -69,10 +72,9 @@ customElements.define(
             }
 
             const _tbody = this.getBodyElement(fields, pos)
-            if (_tbody != undefined) {
+            if (_tbody) {
                 _table.appendChild(_tbody)
                 if (pos != 0) {
-                    _thead.style.visibility = 'hidden'
                     _table.style.marginTop = '-34px'
                 }
                 this.bindInputEvent()
@@ -97,18 +99,25 @@ customElements.define(
                         _table.style.height = `${_h}px`
                         const _tbody = _table.querySelector('tbody')
                         if (_tbody) _tbody.remove()
+                        const _thead = _table.querySelector('thead')
+                        if (_thead) _thead.remove()
+                        const _colGrp = _table.querySelector('colgroup')
+                        if (_colGrp) _colGrp.remove()
+                        return
                     }
 
                     const isTrueToNull = oldValue != null && newValue == null
                     if (isTrueToNull) {
                         const _table = shadowRoot.querySelector('table')
                         const pos = this.pos
+                        this.addDomHeader(_table, pos)
                         const _tbody = this.getBodyElement(fields, pos)
-                        if (_tbody != undefined) {
+                        if (_tbody) {
                             _table.appendChild(_tbody)
                             _table.style.height = ''
                             this.bindInputEvent()
                         }
+                        return
                     }
                     break;
                 case 't-active':
@@ -116,7 +125,6 @@ customElements.define(
                     break;
             }
         }
-
         getBodyElement(fields, pos) {
             const rows = glbApp.getMains(pos)
             if (!rows.length) return
@@ -131,7 +139,8 @@ customElements.define(
             return _tbody
         }
         bindInputEvent() {
-            const _table = this.shadowRoot.querySelector('table')
+            const shadowRoot = this.shadowRoot
+            const _table = shadowRoot.querySelector('table')
             _table.querySelectorAll('.cbx-done').forEach(cbxDone => {
                 cbxDone.addEventListener("change", (e) => {
                     const target = e.target
@@ -159,11 +168,57 @@ customElements.define(
                 }, true)
             })
         }
-
         // gathering data from element attributes
+        addDomHeader(table, pos){
+            const colGrp = document.createElement('colgroup')
+            colGrp.innerHTML = `<col span="2">`
+            table.appendChild(colGrp)
+
+            const tHead = document.createElement('thead')
+            if(0 < pos) {
+                tHead.style.visibility = 'hidden'
+            }
+            tHead.innerHTML = `<tr>
+            <th>Id</th><th>Name</th>
+            <th>Finish</th>
+            <th>Responsibilities</th>
+            <th>Regions</th>
+            <th>Index</th>
+            <th>Note</th>
+            <th>Start</th><th>End</th>
+        </tr>`
+            table.appendChild(tHead)
+        }
         get pos() {
             let pos = this.getAttribute('t-pos')
             return parseInt(pos)
         }
     }
 );
+
+function getStrTds(object, fields) {
+    //console.log(object)
+    let strTd = ''
+    fields.forEach(col => {
+        const value = object[col]
+
+        if (value != undefined && value != 'null') {
+            if (col == 'Start') {
+                strTd += `<td><input class="dte-start" type="date" value="${value}" /></td>`
+            }
+            else if (col == 'Note') {
+                strTd += `<td><input type="text" value="${value}" /></td>`
+            }
+            else if (typeof value == 'boolean') {
+                strTd += `<td><input class="cbx-done" type="checkbox" ${value ? 'checked' : ''}/></td>`
+            }
+            else strTd += `<td>${value}</td>`
+        } else {
+            if (col == 'Note') {
+                strTd += `<td><input class="txt-note" type="text" /></td>`
+            }
+            else strTd += `<td></td>`
+        }
+    })
+    return strTd
+}

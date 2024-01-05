@@ -10,9 +10,14 @@
     <meta http-equiv='pragma' content='no-cache' />
     <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@100&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Manjari;
-        }
+        body { font-family: Manjari; }
+    </style>
+    <style stl-grp-vtable>
+        table { font-size: 18px; }
+        colgroup col { background-color: #D6EEEE; }
+        th { height: 30px; padding: 0 12px; }
+        td { height: 24px; padding: 0 12px; }
+        td:first-child { width: 36px; }
     </style>
 </head>
 
@@ -22,51 +27,7 @@
     </main>
     <footer style="font-size: 3rem;"></footer>
     <template id="dnb-table-view">
-        <style>
-            table {
-                font-size: 18px;
-            }
-
-            colgroup col {
-                background-color: #D6EEEE;
-            }
-
-            th {
-                height: 30px;
-                padding: 0 12px;
-            }
-
-            td {
-                height: 24px;
-                padding: 0 12px;
-            }
-
-            td:first-child {
-                width: 36px;
-            }
-
-            td:nth-child(2) {
-                min-width: 109px;
-            }
-        </style>
-        <table>
-            <colgroup>
-                <col span="2">
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Finish</th>
-                    <th>Responsibilities</th>
-                    <th>Regions</th>
-                    <th>Index</th>
-                    <th>Note</th>
-                    <th>Start</th>
-                    <th>End</th>
-                </tr>
-            </thead>
-        </table>
+        <table class="dnb-vlazy-tbl"></table>
     </template>
 
     <script src="/lazyload/data.js"></script>

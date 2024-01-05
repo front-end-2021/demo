@@ -75,3 +75,32 @@ var glbApp = {
         this.viewIndex = pos
     },
 }
+function hideTbodyContent(pos) {
+    const grpTables = document.querySelectorAll(`[t-pos]`)
+    if (1 < pos) {
+        // hide items above current pos
+        const currentV = grpTables[pos]
+        let maxPos = pos - 1
+        const prevV = grpTables[maxPos]
+
+        if (currentV.offsetHeight < prevV.offsetHeight) {
+            maxPos = pos - 2
+        }
+
+        let minPos = Math.ceil(window.outerHeight / currentV.offsetHeight)
+        
+        for (let i = minPos; i < maxPos; i++) {
+            const grpTable = grpTables[i]
+            const tHide = grpTable.getAttribute('t-hide')
+            if (tHide != 'true') grpTable.setAttribute('t-hide', true)
+        }
+    }
+    if (pos + 2 < grpTables.length) {
+        // hide items under current pos
+        for (let i = pos + 2; i < grpTables.length; i++) {
+            const grpTable = grpTables[i]
+            const tHide = grpTable.getAttribute('t-hide')
+            if (tHide != 'true') grpTable.setAttribute('t-hide', true)
+        }
+    }
+}
