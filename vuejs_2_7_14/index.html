@@ -179,14 +179,15 @@
                             </tbody>
                         </table>
                         <div class="group-sub" v-for="sub in mgactions">
-                            <action-time inline-template v-if="isExpand(sub.GoalId)" v-for="actId in sub.ActionIds" 
-                                :itemid="actId"
-                                :key="'action-timeline-' + actId">
-                                <div v-if="item" class="dnb-act-time d-inline-block">
-                                    <span class="d-inline-block" :atime-id="itemid" :class="[ClssStatus]" 
-                                        :style="[{ width: Width, marginLeft: Left }, Border]" ></span>
-                                </div>
-                            </action-time>
+                            <draggable v-bind="DragActionOptions" :list="sub.ActionIds">
+                                <action-time inline-template v-if="isExpand(sub.GoalId)" v-for="actId in sub.ActionIds" 
+                                    :itemid="actId" :key="'action-timeline-' + actId">
+                                    <div v-if="item" class="dnb-act-time d-inline-block">
+                                        <span class="d-inline-block" :atime-id="itemid" :class="[ClssStatus]" 
+                                            :style="[{ width: Width, marginLeft: Left }, Border]" ></span>
+                                    </div>
+                                </action-time>
+                            </draggable>
                         </div>
                     </div>
                 </div>

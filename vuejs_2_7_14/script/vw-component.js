@@ -230,6 +230,13 @@ Vue.component('vw-overview', {
                 group: 'goal'
             }
         },
+        DragActionOptions() {
+            return {
+                group: 'action',
+                swap: true,
+                handle: "p.a-name"
+            }
+        },
     },
     provide() {
         return {
