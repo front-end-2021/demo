@@ -54,6 +54,35 @@ const cvApp = new Vue({
             }
             return lstMain
         },
+        ProxyGoals(){
+            const lstGoal = []
+            const goals = this.ListGoal
+            const actions = this.ListAction
+            const mapGactions = this.ListMapGoalAction
+            for(let gg = 0; gg < goals.length; gg++) {
+                const goal = goals[gg]
+                const mGoal = mapGactions.find(x => x.GoalId == goal.Id)
+                if(!mGoal) continue
+                const lstA = []
+                const aIds = mGoal.ActionIds
+                for(let aa = 0; aa < actions.length; aa++) {
+                    const act = actions[aa]
+                    if(!aIds.includes(act.Id)) continue
+                    lstA.push(act)
+                }
+                const handler1 = { 
+                    get(target, prop, receiver) {
+                        switch(prop){
+                            case 'Actions': return lstA
+                        }    
+                        return Reflect.get(...arguments);
+                    },
+                }
+                const pGoal = new Proxy(goal, handler1)
+                lstGoal.push(pGoal)
+            }
+            return lstGoal
+        },
         DataGoals(){
             const txtSearch = this.SearchText
             if (txtSearch == '') return this.ListGoal
