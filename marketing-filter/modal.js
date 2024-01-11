@@ -1,7 +1,7 @@
 const Operands = [
     { Id: 1, Name: 'And' }, { Id: 2, Name: 'Or' }
 ]
-const filterBy = [{Id: 0, Name: 'Filter by'}]
+const filterBy = [{ Id: 0, Name: 'Filter by' }]
 // list criterial type
 const mType = [
     { Id: 0, Name: 'Please select' },
@@ -53,6 +53,15 @@ const mFilter = {
         new Criterial(0, 1, [0, 0])
     ],
     Controls: [],
+    $Container: null,
+    init: function($container){
+        this.$Container = $container
+
+    },
+    renderUi: function(ii){
+        const row = this.Blocks[ii]
+
+    },
     addFilter: function (type) {
         type = typeof type == 'number' ? type : 0
         const isNewBlk = isNewBlock.call(this)
@@ -77,7 +86,64 @@ function getIds(type) {
     switch (type) {
         case 1: // Land/Region
             return [0, 0]
-        case 2: 
+        case 2:
+            return [-1, -2, -3]
+    }
+}
+
+function getSourceIds(criter, index) {
+    let lst
+    switch (criter.Type) {
+        case 1: // Land/Region
+            lst = [lType[0]]
+            if (index == 0) {
+                for (let ii = 0; ii < Lands.length; ii++) {
+                    lst.push(Lands[ii])
+                }
+                return lst
+            }
+            const landId = criter.Ids[0]
+            if (landId < 1) {
+                for (let ii = 0; ii < Regions.length; ii++) {
+                    lst.push(Regions[ii])
+                }
+                return lst
+            }
+            for (let ii = 0; ii < Regions.length; ii++) {
+                const regn = Regions[ii]
+                if (landId != regn.LandId) continue
+                lst.push(regn)
+            }
+            return lst
+        case 2: // Product groups/Product
+            switch (index) {
+                case 0:
+                    lst = [lType[1]]
+                    for (let ii = 0; ii < ProductGroups.length; ii++) {
+                        lst.push(ProductGroups[ii])
+                    }
+                    return lst
+                case 1:
+                    const prdGrpId = criter.Ids[index - 1]
+                    lst = [lType[2]]
+                    for (let ii = 0; ii < Products.length; ii++) {
+                        const prd = Products[ii]
+                        if (prdGrpId != prd.PrgId) continue
+                        lst.push(prd)
+                    }
+                    return lst
+                case 2:
+                    const prdId = criter.Ids[index - 1]
+                    lst = [lType[3]]
+                    for (let ii = 0; ii < SubProducts.length; ii++) {
+                        const sprd = SubProducts[ii]
+                        if (prdId != sprd.ProdId) continue
+                        lst.push(sprd)
+                    }
+                    return lst
+            }
+
+
             return [-1, -2, -3]
     }
 }
