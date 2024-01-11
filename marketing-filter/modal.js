@@ -1,5 +1,5 @@
 const Operands = [
-    { Id: 1, Name: 'And' }, { Id: 2, Name: 'Or' }, { Id: 0, Name: 'Filter by' }
+    { Id: 1, Name: 'And' }, { Id: 2, Name: 'Or' }
 ]
 // list criterial type
 const mType = [
@@ -40,6 +40,13 @@ const lType = [
     { Id: -11, Name: `Select Stakeholder groups` },
     { Id: -12, Name: `Please select` },
 ]
+class Criterial {
+    constructor(operand, type, ids) {
+        this.Operand = typeof operand == 'number' ? operand : 0
+        this.Type = typeof type == 'number' ? type : lType[0].Id
+        this.Ids = Array.isArray(ids) ? ids : []
+    }
+}
 const mFilter = {
     Blocks: [
         new Criterial(0, 1, [0, 0])
@@ -63,13 +70,7 @@ const mFilter = {
     }
 
 }
-class Criterial {
-    constructor(operand, type, ids) {
-        this.Operand = typeof operand == 'number' ? operand : 0
-        this.Type = typeof type == 'number' ? type : lType[0].Id
-        this.Ids = Array.isArray(ids) ? ids : []
-    }
-}
+
 function getIds(type) {
     switch (type) {
         case 1: // Land/Region

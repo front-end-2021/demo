@@ -1,13 +1,48 @@
 <head>
-    <link rel="stylesheet" href="3rd/default-ocean-blue.css" />
+    <link rel="stylesheet" href="3rd/default-ocean-blue.css" />    
+    <link rel="stylesheet" href="style.css" />
     <script src="3rd/jquery-3.4.1.min.js"></script>
-    <script src="3rd/kendo.all.min.js.js"></script>
+    <script src="3rd/kendo.all.min.js"></script>
 
     <script src="mock-data.js"></script>
     <script src="modal.js"></script>
 </head>
+
 <body>
-    <section>
+    <section id="mFilter">
 
     </section>
+    <script>
+        const lstOperand = []
+        const lstType = []
+        $(document).ready(function () {
+            const $mFilter = $('#mFilter')
+            mFilter.Blocks.forEach(row => {
+                // {Operand, Type, Ids}
+                const tRow = `<div class="m-criterial">
+                    <input class="mOperand" style="width: 72px;" />
+                    <input class="mType" style="width: 240px;"/>
+                </div>`
+                $mFilter.append(tRow)
+
+                let $operand = $mFilter.find('.mOperand')
+                $operand.kendoDropDownList({
+                    dataTextField: "Name",
+                    dataValueField: "Id",
+                    dataSource: Operands,
+                    value: row.Operand
+                })
+                lstOperand.push($operand)
+                let $type = $mFilter.find('.mType')
+                $type.kendoDropDownList({
+                    dataTextField: "Name",
+                    dataValueField: "Id",
+                    dataSource: mType,
+                    value: row.Type
+                })
+                lstType.push($type)
+            })
+        })
+        
+    </script>
 </body>
