@@ -1,34 +1,80 @@
+const Operands = [
+    { Id: 1, Name: 'And' }, { Id: 2, Name: 'Or' }, { Id: 0, Name: 'Filter by' }
+]
 // list criterial type
 const mType = [
-    { Type: 0, Value: 'Please select' },
-    { Type: 1, Value: `Land/Region` },
-    { Type: 2, Value: `Product groups/Product` },
-    { Type: 3, Value: `Stakeholder groups/Contact Person` },
-    { Type: 4, Value: `Customer Journey Group` },
-    { Type: 5, Value: `Market segments/Stakeholder groups` },
-    { Type: 6, Value: `Task` },
-    { Type: 7, Value: `User` },
-    { Type: 8, Value: `Status` },
-    { Type: 9, Value: `Objective category` },
-    { Type: 10, Value: `Measure category` },
-    { Type: 11, Value: `Instruments` },
-    { Type: 12, Value: `Advertising material/Advertiser` },
-    { Type: 13, Value: `Superior objectives and measures` },
-    { Type: 14, Value: `Master goals` },
-    { Type: 15, Value: `Department/Field` },
-    { Type: 16, Value: `Subject/thema` },
-    { Type: 17, Value: `Supplier` },
-    { Type: 18, Value: `Hidden elements` },
+    { Id: 0, Name: 'Please select' },
+    { Id: 1, Name: `Land/Region` },
+    { Id: 2, Name: `Product groups/Product` },
+    { Id: 3, Name: `Stakeholder groups/Contact Person` },
+    { Id: 4, Name: `Customer Journey Group` },
+    { Id: 5, Name: `Market segments/Stakeholder groups` },
+    { Id: 6, Name: `Task` },
+    { Id: 7, Name: `User` },
+    { Id: 8, Name: `Status` },
+    { Id: 9, Name: `Objective category` },
+    { Id: 10, Name: `Measure category` },
+    { Id: 11, Name: `Instruments` },
+    { Id: 12, Name: `Advertising material/Advertiser` },
+    { Id: 13, Name: `Superior objectives and measures` },
+    { Id: 14, Name: `Master goals` },
+    { Id: 15, Name: `Department/Field` },
+    { Id: 16, Name: `Subject/thema` },
+    { Id: 17, Name: `Supplier` },
+    { Id: 18, Name: `Hidden elements` },
 ]
 
 // list dropdown type
 const lType = [
-    { Id: 0, Name: `Select all` }
+    { Id: 0, Name: `Select all` },
+    { Id: -1, Name: `Product groups` },
+    { Id: -2, Name: `Product` },
+    { Id: -3, Name: `Subproduct` },
+    { Id: -4, Name: `Stakeholder groups` },
+    { Id: -5, Name: `Contact Person` },
+    { Id: -6, Name: `Contact SubPerson` },
+    { Id: -7, Name: `Customer Journey Group` },
+    { Id: -8, Name: `Customer Journey` },
+    { Id: -9, Name: `Customer Sub-journey` },
+    { Id: -10, Name: `Select Market segments` },
+    { Id: -11, Name: `Select Stakeholder groups` },
+    { Id: -12, Name: `Please select` },
 ]
 const mFilter = {
-    Blocks: [], // [{Operand, Type, Values}]
+    Blocks: [
+        new Criterial(0, 1, [0, 0])
+    ],
+    addFilter: function (type) {
+        type = typeof type == 'number' ? type : 0
+        const isNewBlk = isNewBlock.call(this)
+        let oprnd = isNewBlk ? Operands[1].Id : Operands[0].Id
+        const criter = new Criterial(oprnd, type, getIds(type))
 
+        function isNewBlock() {
+            const lstRow = this.Blocks
+            if (lstRow.length < 1) return true
+            if (lstRow.length == 1) {
+                if (type == 1) return true
+                return false
+            }
 
+        }
+    }
+
+}
+class Criterial {
+    constructor(operand, type, ids) {
+        this.Operand = typeof operand == 'number' ? operand : 0
+        this.Type = typeof type == 'number' ? type : lType[0].Id
+        this.Ids = Array.isArray(ids) ? ids : []
+    }
+}
+function getIds(type) {
+    switch (type) {
+        case 1: // Land/Region
+
+            return []
+    }
 }
 function* getCriterial(type, parentId) {
     switch (type) {
@@ -43,7 +89,7 @@ function getRegionIds(landId) {
 
     return lType
 }
-function getProductIds(productGroupId){
+function getProductIds(productGroupId) {
     // (listProductGroupd || listProducts) = this
 
     return lType
