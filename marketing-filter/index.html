@@ -28,21 +28,20 @@
         </div>
     </section>
     <script>
-        const lstOperand = []
-        const lstType = []
+        
         $(document).ready(function () {
             const $mFilter = $('#mFilter')
             const $lstCrite = $mFilter.find('.list-criterial')
             for(let ii = 0; ii < mFilter.Blocks.length; ii++) {
                 const row = mFilter.Blocks[ii]
                 // {Operand, Type, Ids}
-                let tRow = `<div class="m-criterial">
+                let tRow = `<div class="m-criterial_${ii} cri-wrap">
                     <input class="mOperand" style="width: 96px;" />
                     <input class="mType" style="width: 240px;"/>
                 </div>`
                 $lstCrite.append(tRow)
 
-                let $operand = $lstCrite.find('.mOperand')
+                const $operand = $lstCrite.find('.mOperand')
                 $operand.kendoDropDownList({
                     dataTextField: "Name",
                     dataValueField: "Id",
@@ -54,8 +53,8 @@
                         row.Operand = parseInt(value)
                     }
                 })
-                lstOperand.push($operand)
-                let $type = $lstCrite.find('.mType')
+                
+                const $type = $lstCrite.find('.mType')
                 $type.kendoDropDownList({
                     dataTextField: "Name",
                     dataValueField: "Id",
@@ -64,20 +63,56 @@
                     change: function(e) {
                         const value = this.value()
                         row.Type = parseInt(value)
+
+                        const control = mFilter.Controls[ii]
+                        const ctlIds = control.Ids
+                        for(let kk = ctlIds.length - 1; -1 < kk; kk--) {
+                            const $cId = ctlIds[kk]
+                            $cId.data("kendoDropDownList").destroy()
+                            $cId.closest('.k-dropdownlist.fcsub').remove()
+                            ctlIds.splice(kk, 1)
+                        }
+                        row.Ids = getIds(row.Type)
+
+                        const $tRow = e.sender.element.closest('.cri-wrap')
+                        control.Ids = renderIdsDropdownList.call($tRow, row.Ids)
                     }
                 })
-                lstType.push($type)
-
-                if(row.Ids.length) {
-                    const $tRow = $lstCrite.find('.m-criterial')
-                    for(let jj = 0; jj < row.Ids; jj++) {
-                        const _id = row.Ids[jj]
-
-                    }
-                }
                 
+                let cIds = []
+                if(row.Ids.length) {
+                    const $tRow = $lstCrite.find(`.m-criterial_${ii}`)
+                    cIds = renderIdsDropdownList.call($tRow, row.Ids)
+                }
+                mFilter.Controls.push({
+                    Operand: $operand, Type: $type, Ids: cIds
+                })
             }
         })
-        
+        function renderIdsDropdownList(ids){
+            const $tRow = this
+            const cIds = []
+            let tInput = ``
+            for(let jj = 0; jj < ids.length; jj++) {
+                tInput = `<input class="f-sub-${jj} fcsub" style="width: 240px;" />`
+                $tRow.append(tInput)
+            }
+            
+            for(let jj = 0; jj < ids.length; jj++) {
+                const _id = ids[jj]
+                const $input = $tRow.find(`.f-sub-${jj}`)
+                $input.kendoDropDownList({
+                    dataTextField: "Name",
+                    dataValueField: "Id",
+                    dataSource: lType,
+                    value: _id,                    
+                    change: function(e) {
+                        
+                    }
+                })
+                cIds.push($input)
+            }
+            return cIds
+        }
     </script>
 </body>

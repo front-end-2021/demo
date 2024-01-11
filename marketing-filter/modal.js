@@ -52,6 +52,7 @@ const mFilter = {
     Blocks: [
         new Criterial(0, 1, [0, 0])
     ],
+    Controls: [],
     addFilter: function (type) {
         type = typeof type == 'number' ? type : 0
         const isNewBlk = isNewBlock.call(this)
@@ -75,8 +76,9 @@ const mFilter = {
 function getIds(type) {
     switch (type) {
         case 1: // Land/Region
-
             return [0, 0]
+        case 2: 
+            return [-1, -2, -3]
     }
 }
 function* getCriterial(type, parentId) {
