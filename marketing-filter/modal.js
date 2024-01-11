@@ -1,6 +1,7 @@
 const Operands = [
     { Id: 1, Name: 'And' }, { Id: 2, Name: 'Or' }
 ]
+const filterBy = [{Id: 0, Name: 'Filter by'}]
 // list criterial type
 const mType = [
     { Id: 0, Name: 'Please select' },
