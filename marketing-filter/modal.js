@@ -53,6 +53,7 @@ const mFilter = {
         function isNewBlock() {
             const lstRow = this.Blocks
             if (lstRow.length < 1) return true
+            if (type == 1) return true
             if (lstRow.length == 1) {
                 if (type == 1) return true
                 return false
@@ -73,7 +74,7 @@ function getIds(type) {
     switch (type) {
         case 1: // Land/Region
 
-            return []
+            return [0, 0]
     }
 }
 function* getCriterial(type, parentId) {
