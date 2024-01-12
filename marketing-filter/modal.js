@@ -56,9 +56,12 @@ const mFilter = {
     $Container: null,
     init: function ($container) {
         this.$Container = $container
-
+        const $lstCrite = $container.find('.list-criterial')
+        for (let ii = 0; ii < mFilter.Blocks.length; ii++) {
+            this.renderRow(ii, $lstCrite)
+        }
     },
-    renderUi: function (ii, $lstCrite) {
+    renderRow: function (ii, $lstCrite) {
         const row = this.Blocks[ii] // {Operand, Type, Ids}
         let tRow = `<div class="m-criterial_${ii} cri-wrap">
                     <input class="mOperand" style="width: 96px;" />
@@ -86,6 +89,7 @@ const mFilter = {
             change: function (e) {
                 const tType = this.value()
                 row.Type = parseInt(tType)
+                console.log('on change type', this)
 
                 const control = mFilter.Controls[ii]
                 const ctlIds = control.Ids
@@ -97,9 +101,17 @@ const mFilter = {
                 }
                 row.Ids = getInitIds(row.Type)
 
-                const $tRow = e.sender.element.closest('.cri-wrap')
+                const $tRow = this.element.closest('.cri-wrap')
                 control.Ids = renderIdsDropdownList.call($tRow, row)
             }
+        })
+        let cIds = []
+        if (row.Ids.length) {
+            const $tRow = $lstCrite.find(`.m-criterial_${ii}`)
+            cIds = renderIdsDropdownList.call($tRow, row)
+        }
+        mFilter.Controls.push({
+            Operand: $operand, Type: $type, Ids: cIds
         })
 
     },
@@ -109,6 +121,11 @@ const mFilter = {
         let oprnd = isNewBlk ? Operands[1].Id : Operands[0].Id
         const criter = new Criterial(oprnd, type, getInitIds(type))
         this.Blocks.push(criter)
+
+        const ii = this.Blocks.length - 1
+        const $lstCrite = this.$Container.find('.list-criterial')
+        this.renderRow(ii, $lstCrite)
+
 
         function isNewBlock() {
             const lstRow = this.Blocks
@@ -120,10 +137,54 @@ const mFilter = {
             }
             return false
         }
-    }
+    },
 
 }
+function renderIdsDropdownList(crite) {
+    const $tRow = this
+    const cIds = []
+    if (!Array.isArray(crite.Ids)) return cIds
+    let tInput = ``
+    for (let jj = 0; jj < crite.Ids.length; jj++) {
+        tInput = `<input class="fcsub" c-index="${jj}" style="width: 240px;" />`
+        $tRow.append(tInput)
+    }
 
+    for (let jj = 0; jj < crite.Ids.length; jj++) {
+        const _id = crite.Ids[jj]
+        const $input = $tRow.find(`[c-index="${jj}"]`)
+        $input.kendoDropDownList({
+            dataTextField: "Name",
+            dataValueField: "Id",
+            dataSource: getSourceIds(crite, jj),
+            value: _id,
+            change: function (e) {
+                const id = parseInt(this.value())
+                crite.Ids[jj] = id
+                initCtrlChildren()
+
+                function initCtrlChildren() {
+                    if (crite.Ids.length - 1 <= jj) return
+
+                    const initIds = getInitIds(crite.Type)
+                    for (let kk = jj + 1; kk < crite.Ids.length; kk++) {
+                        const nxtInitId = initIds[kk]
+                        crite.Ids[kk] = nxtInitId
+                        const nextCtrl = cIds[kk]
+                        if (!nextCtrl) continue
+
+                        const nxtDrp = nextCtrl.data("kendoDropDownList")
+                        nxtDrp.value(nxtInitId)
+                        nxtDrp.setDataSource(getSourceIds(crite, kk))
+                        nxtDrp.refresh()
+                    }
+                }
+            }
+        })
+        cIds.push($input)
+    }
+    return cIds
+}
 function getInitIds(type) {
     switch (type) {
         case 1: // Land/Region
