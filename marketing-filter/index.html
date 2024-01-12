@@ -45,7 +45,7 @@
                 $operand.kendoDropDownList({
                     dataTextField: "Name",
                     dataValueField: "Id",
-                    dataSource: ii > 0 ? Operands : filterBy,
+                    dataSource: ii > 0 ? Operands : [mFilterBy],
                     enable: ii < 1 ? false : true,
                     value: row.Operand,
                     change: function (e) {
@@ -72,7 +72,7 @@
                             $cId.closest('.k-dropdownlist.fcsub').remove()
                             ctlIds.splice(kk, 1)
                         }
-                        row.Ids = getIds(row.Type)
+                        row.Ids = getInitIds(row.Type)
 
                         const $tRow = e.sender.element.closest('.cri-wrap')
                         control.Ids = renderIdsDropdownList.call($tRow, row)
@@ -111,7 +111,7 @@
                         const id = parseInt(this.value())
                         crite.Ids[jj] = id
                         if (jj < crite.Ids.length - 1) {
-                            const initIds = getIds(crite.Type)
+                            const initIds = getInitIds(crite.Type)
                             for (let kk = jj + 1; kk < crite.Ids.length; kk++) {
                                 const nxtInitId = initIds[kk]
                                 crite.Ids[kk] = nxtInitId

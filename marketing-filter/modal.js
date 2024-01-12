@@ -1,7 +1,7 @@
 const Operands = [
     { Id: 1, Name: 'And' }, { Id: 2, Name: 'Or' }
 ]
-const filterBy = [{ Id: 0, Name: 'Filter by' }]
+const mFilterBy = { Id: 0, Name: 'Filter by' }
 // list criterial type
 const mType = [
     { Id: 0, Name: 'Please select' },
@@ -66,7 +66,7 @@ const mFilter = {
         type = typeof type == 'number' ? type : 0
         const isNewBlk = isNewBlock.call(this)
         let oprnd = isNewBlk ? Operands[1].Id : Operands[0].Id
-        const criter = new Criterial(oprnd, type, getIds(type))
+        const criter = new Criterial(oprnd, type, getInitIds(type))
 
         function isNewBlock() {
             const lstRow = this.Blocks
@@ -82,7 +82,7 @@ const mFilter = {
 
 }
 
-function getIds(type) {
+function getInitIds(type) {
     switch (type) {
         case 1: // Land/Region
             return [0, 0]
@@ -103,18 +103,7 @@ function getSourceIds(criter, index) {
                 return lst
             }
             const landId = criter.Ids[0]
-            if (landId < 1) {
-                for (let ii = 0; ii < Regions.length; ii++) {
-                    lst.push(Regions[ii])
-                }
-                return lst
-            }
-            for (let ii = 0; ii < Regions.length; ii++) {
-                const regn = Regions[ii]
-                if (landId != regn.LandId) continue
-                lst.push(regn)
-            }
-            return lst
+            return getRegions.call(Regions, landId, lst)
         case 2: // Product groups/Product
             switch (index) {
                 case 0:
@@ -126,21 +115,11 @@ function getSourceIds(criter, index) {
                 case 1:
                     const prdGrpId = criter.Ids[index - 1]
                     lst = [lType[2]]
-                    for (let ii = 0; ii < Products.length; ii++) {
-                        const prd = Products[ii]
-                        if (prdGrpId != prd.PrgId) continue
-                        lst.push(prd)
-                    }
-                    return lst
+                    return getProducts.call(Products, prdGrpId, lst)
                 case 2:
                     const prdId = criter.Ids[index - 1]
                     lst = [lType[3]]
-                    for (let ii = 0; ii < SubProducts.length; ii++) {
-                        const sprd = SubProducts[ii]
-                        if (prdId != sprd.ProdId) continue
-                        lst.push(sprd)
-                    }
-                    return lst
+                    return getSubProducts.call(SubProducts, prdId, lst)
             }
 
 
@@ -150,18 +129,41 @@ function getSourceIds(criter, index) {
 function* getCriterial(type, parentId) {
     switch (type) {
         case 1: // Land/Region
-            yield getRegionIds(parentId)
+            yield getRegions.call(Regions, parentId, [])
         case 2: // Product groups/Product
-            yield getProductIds(parentId)
+            yield getProducts.call(Products, parentId, [])
     }
 }
-function getRegionIds(landId) {
-    // (listLand || listRegion) = this
-
-    return lType
+function getRegions(landId, lst) {
+    const Regions = this
+    if (landId < 1) {
+        for (let ii = 0; ii < Regions.length; ii++) {
+            lst.push(Regions[ii])
+        }
+        return lst
+    }
+    for (let ii = 0; ii < Regions.length; ii++) {
+        const regn = Regions[ii]
+        if (landId != regn.LandId) continue
+        lst.push(regn)
+    }
+    return lst
 }
-function getProductIds(productGroupId) {
-    // (listProductGroupd || listProducts) = this
-
-    return lType
+function getProducts(prdGroupId, lst) {
+    const Products = this
+    for (let ii = 0; ii < Products.length; ii++) {
+        const prd = Products[ii]
+        if (prdGroupId != prd.PrgId) continue
+        lst.push(prd)
+    }
+    return lst
+}
+function getSubProducts(productId, lst){
+    const SubProducts = this
+    for (let ii = 0; ii < SubProducts.length; ii++) {
+        const sprd = SubProducts[ii]
+        if (productId != sprd.ProdId) continue
+        lst.push(sprd)
+    }
+    return lst
 }
