@@ -54,12 +54,53 @@ const mFilter = {
     ],
     Controls: [],
     $Container: null,
-    init: function($container){
+    init: function ($container) {
         this.$Container = $container
 
     },
-    renderUi: function(ii){
-        const row = this.Blocks[ii]
+    renderUi: function (ii, $lstCrite) {
+        const row = this.Blocks[ii] // {Operand, Type, Ids}
+        let tRow = `<div class="m-criterial_${ii} cri-wrap">
+                    <input class="mOperand" style="width: 96px;" />
+                    <input class="mType" style="width: 240px;"/>
+                </div>`
+        $lstCrite.append(tRow)
+        const $operand = $lstCrite.find('.mOperand')
+        $operand.kendoDropDownList({
+            dataTextField: "Name",
+            dataValueField: "Id",
+            dataSource: ii > 0 ? Operands : [mFilterBy],
+            enable: ii < 1 ? false : true,
+            value: row.Operand,
+            change: function (e) {
+                const tOprnd = this.value()
+                row.Operand = parseInt(tOprnd)
+            }
+        })
+        const $type = $lstCrite.find('.mType')
+        $type.kendoDropDownList({
+            dataTextField: "Name",
+            dataValueField: "Id",
+            dataSource: mType,
+            value: row.Type,
+            change: function (e) {
+                const tType = this.value()
+                row.Type = parseInt(tType)
+
+                const control = mFilter.Controls[ii]
+                const ctlIds = control.Ids
+                for (let kk = ctlIds.length - 1; -1 < kk; kk--) {
+                    const $cId = ctlIds[kk]
+                    $cId.data("kendoDropDownList").destroy()
+                    $cId.closest('.k-dropdownlist.fcsub').remove()
+                    ctlIds.splice(kk, 1)
+                }
+                row.Ids = getInitIds(row.Type)
+
+                const $tRow = e.sender.element.closest('.cri-wrap')
+                control.Ids = renderIdsDropdownList.call($tRow, row)
+            }
+        })
 
     },
     addFilter: function (type) {
@@ -67,6 +108,7 @@ const mFilter = {
         const isNewBlk = isNewBlock.call(this)
         let oprnd = isNewBlk ? Operands[1].Id : Operands[0].Id
         const criter = new Criterial(oprnd, type, getInitIds(type))
+        this.Blocks.push(criter)
 
         function isNewBlock() {
             const lstRow = this.Blocks
@@ -76,7 +118,7 @@ const mFilter = {
                 if (type == 1) return true
                 return false
             }
-
+            return false
         }
     }
 
@@ -136,7 +178,7 @@ function* getCriterial(type, parentId) {
 }
 function getRegions(landId, lst) {
     const Regions = this
-    if (landId < 1) {
+    if (landId == 0) {
         for (let ii = 0; ii < Regions.length; ii++) {
             lst.push(Regions[ii])
         }
@@ -153,16 +195,16 @@ function getProducts(prdGroupId, lst) {
     const Products = this
     for (let ii = 0; ii < Products.length; ii++) {
         const prd = Products[ii]
-        if (prdGroupId != prd.PrgId) continue
+        if (0 != prdGroupId && prdGroupId != prd.PrgId) continue
         lst.push(prd)
     }
     return lst
 }
-function getSubProducts(productId, lst){
+function getSubProducts(productId, lst) {
     const SubProducts = this
     for (let ii = 0; ii < SubProducts.length; ii++) {
         const sprd = SubProducts[ii]
-        if (productId != sprd.ProdId) continue
+        if (0 != productId && productId != sprd.ProdId) continue
         lst.push(sprd)
     }
     return lst

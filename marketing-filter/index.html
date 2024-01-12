@@ -95,13 +95,13 @@
             if (!Array.isArray(crite.Ids)) return cIds
             let tInput = ``
             for (let jj = 0; jj < crite.Ids.length; jj++) {
-                tInput = `<input class="f-sub-${jj} fcsub" style="width: 240px;" />`
+                tInput = `<input class="fcsub" c-index="${jj}" style="width: 240px;" />`
                 $tRow.append(tInput)
             }
 
             for (let jj = 0; jj < crite.Ids.length; jj++) {
                 const _id = crite.Ids[jj]
-                const $input = $tRow.find(`.f-sub-${jj}`)
+                const $input = $tRow.find(`[c-index="${jj}"]`)
                 $input.kendoDropDownList({
                     dataTextField: "Name",
                     dataValueField: "Id",
@@ -110,20 +110,24 @@
                     change: function (e) {
                         const id = parseInt(this.value())
                         crite.Ids[jj] = id
-                        if (jj < crite.Ids.length - 1) {
+                        initCtrlChildren()
+
+                        function initCtrlChildren() {
+                            if (crite.Ids.length - 1 <= jj) return
+
                             const initIds = getInitIds(crite.Type)
                             for (let kk = jj + 1; kk < crite.Ids.length; kk++) {
                                 const nxtInitId = initIds[kk]
                                 crite.Ids[kk] = nxtInitId
                                 const nextCtrl = cIds[kk]
                                 if (!nextCtrl) continue
+
                                 const nxtDrp = nextCtrl.data("kendoDropDownList")
                                 nxtDrp.value(nxtInitId)
                                 nxtDrp.setDataSource(getSourceIds(crite, kk))
                                 nxtDrp.refresh()
                             }
                         }
-
                     }
                 })
                 cIds.push($input)
