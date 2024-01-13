@@ -1,1 +1,4 @@
 .list-criterial, .list-button {padding: 6px;}
+.list-criterial > * {margin-bottom: 6px; display: flex;}
+.list-criterial > * > * {margin-right: 3px;}
+.btn-del-crite {width: 30px; padding-left: 6px;}
