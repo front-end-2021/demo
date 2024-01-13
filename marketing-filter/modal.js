@@ -63,51 +63,53 @@ const mFilter = {
     },
     renderRow: function (ii, $lstCrite) {
         const row = this.Blocks[ii] // {Operand, Type, Ids}
-        let tRow = `<div class="m-criterial_${ii} cri-wrap">
-                    <input class="mOperand" style="width: 96px;" />
-                    <input class="mType" style="width: 240px;"/>
+        let tRow = `<div c-criterial="${ii}">
+                    <input c-operand="${ii}" style="width: 96px;" />
+                    <input c-type="${ii}" style="width: 240px;"/>
                 </div>`
         $lstCrite.append(tRow)
-        const $operand = $lstCrite.find('.mOperand')
+        const $operand = $lstCrite.find(`[c-operand="${ii}"]`)
+        const operandChange = (e) => {
+            const tOprnd = e.sender.value()
+            row.Operand = parseInt(tOprnd)
+        }
         $operand.kendoDropDownList({
             dataTextField: "Name",
             dataValueField: "Id",
             dataSource: ii > 0 ? Operands : [mFilterBy],
             enable: ii < 1 ? false : true,
             value: row.Operand,
-            change: function (e) {
-                const tOprnd = this.value()
-                row.Operand = parseInt(tOprnd)
-            }
+            change: operandChange
         })
-        const $type = $lstCrite.find('.mType')
+        const $type = $lstCrite.find(`[c-type="${ii}"]`)
+        const typeChange = (e) => {
+            const tType = e.sender.value()
+            row.Type = parseInt(tType)
+            console.log('on change type', this, e.sender)
+
+            const control = mFilter.Controls[ii]
+            const ctlIds = control.Ids
+            for (let kk = ctlIds.length - 1; -1 < kk; kk--) {
+                const $cId = ctlIds[kk]
+                $cId.data("kendoDropDownList").destroy()
+                $cId.closest('.k-dropdownlist.fcsub').remove()
+                ctlIds.splice(kk, 1)
+            }
+            row.Ids = getInitIds(row.Type)
+
+            const $tRow = e.sender.element.closest(`[c-criterial="${ii}"]`)
+            control.Ids = renderIdsDropdownList.call($tRow, row)
+        }
         $type.kendoDropDownList({
             dataTextField: "Name",
             dataValueField: "Id",
             dataSource: mType,
             value: row.Type,
-            change: function (e) {
-                const tType = this.value()
-                row.Type = parseInt(tType)
-                console.log('on change type', this)
-
-                const control = mFilter.Controls[ii]
-                const ctlIds = control.Ids
-                for (let kk = ctlIds.length - 1; -1 < kk; kk--) {
-                    const $cId = ctlIds[kk]
-                    $cId.data("kendoDropDownList").destroy()
-                    $cId.closest('.k-dropdownlist.fcsub').remove()
-                    ctlIds.splice(kk, 1)
-                }
-                row.Ids = getInitIds(row.Type)
-
-                const $tRow = this.element.closest('.cri-wrap')
-                control.Ids = renderIdsDropdownList.call($tRow, row)
-            }
+            change: typeChange
         })
         let cIds = []
         if (row.Ids.length) {
-            const $tRow = $lstCrite.find(`.m-criterial_${ii}`)
+            const $tRow = $lstCrite.find(`[c-criterial="${ii}"]`)
             cIds = renderIdsDropdownList.call($tRow, row)
         }
         mFilter.Controls.push({
