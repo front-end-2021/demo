@@ -47,3 +47,18 @@ const SubProducts = [
     {Id: 5, Name: `Episode V U+002d The Empire Strikes Back`, ProdId: 9},
     {Id: 6, Name: `Episode VI U+002d Return of the Jedi`, ProdId: 9},
 ]
+const MarketSegments = [
+    {Id: 1, Name: 'Aeon', LandIds: [1, 3]},
+    {Id: 2, Name: 'Big C', LandIds: [1, 2]},
+    {Id: 3, Name: 'WWin Mart', LandIds: [1, 2, 3]},
+    {Id: 4, Name: 'Coo-op Mart', LandIds: [2, 3]}
+]
+
+// Submarket
+const StakeholderGroups = [
+    {Id: 1, Name: 'Aeon Long Biên', MarketId: 1},
+    {Id: 2, Name: 'Aeon Hà Đông', MarketId: 1},
+    {Id: 3, Name: 'Aeon Hải Phòng', MarketId: 1},
+    {Id: 4, Name: 'Wwin Mart Thanh Xuân', MarketId: 2},
+    {Id: 5, Name: 'Wwin Mart Hai Bà Trưng', MarketId: 2},
+]

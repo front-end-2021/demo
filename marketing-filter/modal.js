@@ -151,6 +151,40 @@ const mFilter = {
             return false
         }
     },
+    getLandIds: function(){
+        const lstTypeLandRegion = this.Blocks.filter(x => 1 == x.Type)
+        const allLandId = Lands.map(x => x.Id)
+        let ids = []
+        for(let ii = 0; ii < lstTypeLandRegion.length; ii++) {
+            const criterial = lstTypeLandRegion[ii]
+            const id = criterial.Ids[0]
+            if(criterial.Operand < 1) {
+                // Filter By
+                ids.push(id)
+                continue
+            }
+            if(criterial.Operand < 2) {
+                // == 1 (And)
+                if(id == 0) {
+                    if(ids.includes(id)) continue
+                    ids.push(id)
+                    continue
+                }
+                if(0 < id) {
+                    if(ids.includes(id)) {
+                        ids = [id]    
+                        continue
+                    }
+                    ids.splice(0)       // list empty
+                    break
+                }
+                continue
+            }
+            // == 2 Or
+            
+        }
+        return ids
+    },
 
 }
 function renderIdsDropdownList($tRow, ii) {
