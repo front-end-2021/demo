@@ -204,7 +204,7 @@ function renderBtnRemove($tRow, ii) {
     const clssBtnDel = `btn-del-crite`
     let btnDeleteii = $tRow.find(`.${clssBtnDel}-${ii}`)
     if (btnDeleteii.length) {
-      //  btnDeleteii.off('click');
+        btnDeleteii.off('click');
         btnDeleteii.remove()
     }
     if (ii < 1) return
@@ -213,9 +213,13 @@ function renderBtnRemove($tRow, ii) {
     $tRow.append(btnDeleteii)
 
     const onDelRow = (e) => {
-        console.log('delete row', ii, this, $tRow)
+        const btn = e.target
+        const row = btn.closest(`[c-criterial]`)
+        destroyControl.call(this, ii, 'All')
+        row.remove()
     }
-    $tRow.on('click', `.${clssBtnDel}-${ii}`, onDelRow)
+    btnDeleteii = $tRow.find(`.${clssBtnDel}-${ii}`)
+    btnDeleteii.on('click', onDelRow)
 }
 function destroyControl(ii, type) {
     const control = this.Controls[ii]
