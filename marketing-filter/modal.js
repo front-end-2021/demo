@@ -175,14 +175,15 @@ const mFilter = {
                         ids = [id]    
                         continue
                     }
-                    ids.splice(0)       // list empty
-                    break
+                    return []
                 }
                 continue
             }
             // == 2 Or
-            
+            if(ids.includes(id)) continue
+            ids.push(id)
         }
+        
         return ids
     },
 
