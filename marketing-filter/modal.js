@@ -85,7 +85,7 @@ class mkFilter {
                         continue
                     }
                     const i0 = ids.indexOf(0)
-                    if(-1 < i0) {
+                    if (-1 < i0) {
                         ids.splice(i0, 1)
                         ids.push(id)
                         continue
@@ -102,7 +102,7 @@ class mkFilter {
         if (ids.includes(0)) return Lands.map(x => x.Id)
         return ids
     }
-    get RegionIds(){
+    get RegionIds() {
 
         return []
     }
@@ -152,12 +152,11 @@ class mkFilter {
         const typeChange = (e) => {
             const tType = e.sender.value()
             row.Type = parseInt(tType)
-            if (ii < 1) return
-    
+            
             //console.log('on change type', this, e.sender)
             this.destroyControl(ii, 'Ids')
             row.Ids = getInitIds(row.Type)
-    
+
             const $tRow = e.sender.element.closest(`[c-criterial="${ii}"]`)
             const control = this.#Controls[ii]
             control.Ids = this.renderIdsDropdownList($tRow, ii)
@@ -189,7 +188,7 @@ class mkFilter {
             tInput = `<input class="fcsub-${jj}" c-index="${jj}" style="width: 240px;" />`
             $tRow.append(tInput)
         }
-    
+
         for (let jj = 0; jj < crite.Ids.length; jj++) {
             const _id = crite.Ids[jj]
             const $input = $tRow.find(`[c-index="${jj}"]`)
@@ -198,17 +197,17 @@ class mkFilter {
                 id = parseInt(id)
                 crite.Ids[jj] = id
                 initCtrlChildren()
-    
+
                 function initCtrlChildren() {
                     if (crite.Ids.length - 1 <= jj) return
-    
+
                     const initIds = getInitIds(crite.Type)
                     for (let kk = jj + 1; kk < crite.Ids.length; kk++) {
                         const nxtInitId = initIds[kk]
                         crite.Ids[kk] = nxtInitId
                         const nextCtrl = cIds[kk]
                         if (!nextCtrl) continue
-    
+
                         const nxtDrp = nextCtrl.data("kendoDropDownList")
                         nxtDrp.value(nxtInitId)
                         nxtDrp.setDataSource(getSourceIds(crite, kk))
@@ -238,7 +237,7 @@ class mkFilter {
         btnDeleteii = `<button class="btn btn-primary rounded-circle bi bi-trash-fill ${clssBtnDel}-${ii} ${clssBtnDel}"
             type="button"></button>`
         $tRow.append(btnDeleteii)
-    
+
         const onDelRow = (e) => {
             const btn = e.target
             const row = btn.closest(`[c-criterial]`)
@@ -262,7 +261,7 @@ class mkFilter {
                 destroyOperand()
                 break;
         }
-    
+
         function destroyOperand() {
             const $oprnd = control.Operand
             $oprnd.data("kendoDropDownList").destroy()
@@ -286,10 +285,13 @@ class mkFilter {
 
 function getInitIds(type) {
     switch (type) {
-        case 1: // Land/Region
+        case 1:     // Land/Region
             return [0, 0]
-        case 2:
+        case 2:     //Product groups/Product
             return [-1, -2, -3]
+
+        case 5:     // Market segments/Stakeholder groups
+            return [-10, -11]
     }
 }
 
@@ -308,24 +310,40 @@ function getSourceIds(criter, index) {
             return getRegions.call(Regions, landId, lst)
         case 2: // Product groups/Product
             switch (index) {
-                case 0:
+                case 0:     // Product group
                     lst = [lType[1]]
                     for (let ii = 0; ii < ProductGroups.length; ii++) {
                         lst.push(ProductGroups[ii])
                     }
                     return lst
-                case 1:
+                case 1:     // product
                     const prdGrpId = criter.Ids[index - 1]
                     lst = [lType[2]]
                     return getProducts.call(Products, prdGrpId, lst)
-                case 2:
+                case 2:     // sub product
                     const prdId = criter.Ids[index - 1]
                     lst = [lType[3]]
                     return getSubProducts.call(SubProducts, prdId, lst)
             }
+            return []
 
-
-            return [-1, -2, -3]
+        case 5: // Market segments/Stakeholder groups
+            if (index == 0) {
+                lst = [lType[10], lType[0]]
+                for (let ii = 0; ii < MarketSegments.length; ii++) {
+                    lst.push(MarketSegments[ii])
+                }
+                return lst
+            }
+            const marketId = criter.Ids[0]
+            lst = [lType[11]]
+            if(marketId < 0) return lst
+            for(let ii = 0; ii < StakeholderGroups.length; ii++) {
+                const stk = StakeholderGroups[ii]
+                if(0 < marketId && marketId != stk.MarketId) continue
+                lst.push(stk)
+            }
+            return lst
     }
 }
 function* getCriterial(type, parentId) {
