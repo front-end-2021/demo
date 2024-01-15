@@ -49,34 +49,76 @@ class Criterial {
     }
 }
 class mkFilter {
-    Blocks = [];       // [{Operand, Type, Ids}]
-    Controls = [];   // [{Operand, Type, Ids}]
+    #Blocks = [];       // [{Operand, Type, Ids}]
+    #Controls = [];   // [{Operand, Type, Ids}]
     constructor(container, criterials) {
         for (let ii = 0; ii < criterials.length; ii++) {
-            this.Blocks.push(criterials[ii])
+            this.#Blocks.push(criterials[ii])
         }
         this.Container = container
         const $lstCrite = this.Container.find('.list-criterial')
-        for (let ii = 0; ii < this.Blocks.length; ii++) {
-            renderRow.call(this, ii, $lstCrite)
+        for (let ii = 0; ii < this.#Blocks.length; ii++) {
+            this.renderRow(ii, $lstCrite)
         }
     }
-    get LandIds(){
-        return getLandIds.call(this)
+    get LandIds() {
+        const lstTypeLandRegion = this.#Blocks.filter(x => 1 == x.Type)
+        let ids = []
+        for (let ii = 0; ii < lstTypeLandRegion.length; ii++) {
+            const criterial = lstTypeLandRegion[ii]
+            const id = criterial.Ids[0]
+            if (criterial.Operand < 1) {
+                // Filter By
+                ids.push(id)
+                continue
+            }
+            if (criterial.Operand < 2) {
+                // == 1 (And)
+                if (id == 0) {  // select all
+                    if (ids.includes(id)) continue
+                    ids.push(id)
+                    continue
+                }
+                if (0 < id) {
+                    if (ids.includes(id)) {
+                        ids = [id]
+                        continue
+                    }
+                    const i0 = ids.indexOf(0)
+                    if(-1 < i0) {
+                        ids.splice(i0, 1)
+                        ids.push(id)
+                        continue
+                    }
+                    return []
+                }
+                continue
+            }
+            // == 2 Or
+            if (ids.includes(0)) continue
+            if (ids.includes(id)) continue
+            ids.push(id)
+        }
+        if (ids.includes(0)) return Lands.map(x => x.Id)
+        return ids
+    }
+    get RegionIds(){
+
+        return []
     }
     addFilter(type) {
         type = typeof type == 'number' ? type : 0
         const isNewBlk = isNewBlock.call(this)
         let oprnd = isNewBlk ? Operands[1].Id : Operands[0].Id
         const criter = new Criterial(oprnd, type, getInitIds(type))
-        this.Blocks.push(criter)
-    
-        const ii = this.Blocks.length - 1
+        this.#Blocks.push(criter)
+
+        const ii = this.#Blocks.length - 1
         const $lstCrite = this.Container.find('.list-criterial')
-        renderRow.call(this, ii, $lstCrite)
-    
+        this.renderRow(ii, $lstCrite)
+
         function isNewBlock() {
-            const lstRow = this.Blocks
+            const lstRow = this.#Blocks
             if (lstRow.length < 1) return true
             if (type == 1) return true
             if (lstRow.length == 1) {
@@ -86,199 +128,162 @@ class mkFilter {
             return false
         }
     }
-}
-function getLandIds() {
-    const lstTypeLandRegion = this.Blocks.filter(x => 1 == x.Type)
-    const allLandId = Lands.map(x => x.Id)
-    let ids = []
-    for (let ii = 0; ii < lstTypeLandRegion.length; ii++) {
-        const criterial = lstTypeLandRegion[ii]
-        const id = criterial.Ids[0]
-        if (criterial.Operand < 1) {
-            // Filter By
-            ids.push(id)
-            continue
+    renderRow(ii, $lstCrite) {
+        const row = this.#Blocks[ii] // {Operand, Type, Ids}
+        let tRow = `<div c-criterial="${ii}">
+                    <input c-operand="${ii}" style="width: 96px;" />
+                    <input c-type="${ii}" style="width: 240px;"/>
+                </div>`
+        $lstCrite.append(tRow)
+        const $operand = $lstCrite.find(`[c-operand="${ii}"]`)
+        const operandChange = (e) => {
+            const tOprnd = e.sender.value()
+            row.Operand = parseInt(tOprnd)
         }
-        if (criterial.Operand < 2) {
-            // == 1 (And)
-            if (id == 0) {  // select all
-                if (ids.includes(id)) continue
-                ids.push(id)
-                continue
-            }
-            if (0 < id) {
-                if (ids.includes(id)) {
-                    ids = [id]
-                    continue
-                }
-                if(ids.includes(0)) continue
-                return []
-            }
-            continue
-        }
-        // == 2 Or
-        if(ids.includes(0)) continue
-        if (ids.includes(id)) continue
-        ids.push(id)
-    }
-
-    return ids
-}
-function renderRow(ii, $lstCrite) {
-    const row = this.Blocks[ii] // {Operand, Type, Ids}
-    let tRow = `<div c-criterial="${ii}">
-                <input c-operand="${ii}" style="width: 96px;" />
-                <input c-type="${ii}" style="width: 240px;"/>
-            </div>`
-    $lstCrite.append(tRow)
-    const $operand = $lstCrite.find(`[c-operand="${ii}"]`)
-    const operandChange = (e) => {
-        const tOprnd = e.sender.value()
-        row.Operand = parseInt(tOprnd)
-    }
-    $operand.kendoDropDownList({
-        dataTextField: "Name",
-        dataValueField: "Id",
-        dataSource: ii > 0 ? Operands : [mFilterBy],
-        enable: ii < 1 ? false : true,
-        value: row.Operand,
-        change: operandChange
-    })
-    const $type = $lstCrite.find(`[c-type="${ii}"]`)
-    const typeChange = (e) => {
-        const tType = e.sender.value()
-        row.Type = parseInt(tType)
-        if(ii < 1) return
-        
-        //console.log('on change type', this, e.sender)
-        destroyControl.call(this, ii, 'Ids')
-        row.Ids = getInitIds(row.Type)
-
-        const $tRow = e.sender.element.closest(`[c-criterial="${ii}"]`)
-        const control = this.Controls[ii]
-        control.Ids = renderIdsDropdownList.call(this, $tRow, ii)
-        renderBtnRemove.call(this, $tRow, ii)
-    }
-    $type.kendoDropDownList({
-        dataTextField: "Name",
-        dataValueField: "Id",
-        dataSource: mType,
-        value: row.Type,
-        change: typeChange
-    })
-    const $tRow = $lstCrite.find(`[c-criterial="${ii}"]`)
-    let cIds = []
-    if (row.Ids.length) {
-        cIds = renderIdsDropdownList.call(this, $tRow, ii)
-    }
-    this.Controls.push({
-        Operand: $operand, Type: $type, Ids: cIds
-    })
-
-    renderBtnRemove.call(this, $tRow, ii)
-}
-function renderIdsDropdownList($tRow, ii) {
-    const crite = this.Blocks[ii] // {Operand, Type, Ids}
-    const cIds = []
-    if (!Array.isArray(crite.Ids)) return cIds
-    let tInput = ``
-    for (let jj = 0; jj < crite.Ids.length; jj++) {
-        tInput = `<input class="fcsub-${jj}" c-index="${jj}" style="width: 240px;" />`
-        $tRow.append(tInput)
-    }
-
-    for (let jj = 0; jj < crite.Ids.length; jj++) {
-        const _id = crite.Ids[jj]
-        const $input = $tRow.find(`[c-index="${jj}"]`)
-        const idChange = (e) => {
-            let id = e.sender.value()
-            id = parseInt(id)
-            crite.Ids[jj] = id
-            initCtrlChildren()
-
-            function initCtrlChildren() {
-                if (crite.Ids.length - 1 <= jj) return
-
-                const initIds = getInitIds(crite.Type)
-                for (let kk = jj + 1; kk < crite.Ids.length; kk++) {
-                    const nxtInitId = initIds[kk]
-                    crite.Ids[kk] = nxtInitId
-                    const nextCtrl = cIds[kk]
-                    if (!nextCtrl) continue
-
-                    const nxtDrp = nextCtrl.data("kendoDropDownList")
-                    nxtDrp.value(nxtInitId)
-                    nxtDrp.setDataSource(getSourceIds(crite, kk))
-                    nxtDrp.refresh()
-                }
-            }
-        }
-        $input.kendoDropDownList({
+        $operand.kendoDropDownList({
             dataTextField: "Name",
             dataValueField: "Id",
-            dataSource: getSourceIds(crite, jj),
-            value: _id,
-            change: idChange
+            dataSource: ii > 0 ? Operands : [mFilterBy],
+            enable: ii < 1 ? false : true,
+            value: row.Operand,
+            change: operandChange
         })
-        cIds.push($input)
+        const $type = $lstCrite.find(`[c-type="${ii}"]`)
+        const typeChange = (e) => {
+            const tType = e.sender.value()
+            row.Type = parseInt(tType)
+            if (ii < 1) return
+    
+            //console.log('on change type', this, e.sender)
+            this.destroyControl(ii, 'Ids')
+            row.Ids = getInitIds(row.Type)
+    
+            const $tRow = e.sender.element.closest(`[c-criterial="${ii}"]`)
+            const control = this.#Controls[ii]
+            control.Ids = this.renderIdsDropdownList($tRow, ii)
+            this.renderBtnRemove($tRow, ii)
+        }
+        $type.kendoDropDownList({
+            dataTextField: "Name",
+            dataValueField: "Id",
+            dataSource: mType,
+            value: row.Type,
+            change: typeChange
+        })
+        const $tRow = $lstCrite.find(`[c-criterial="${ii}"]`)
+        let cIds = []
+        if (row.Ids.length) {
+            cIds = this.renderIdsDropdownList($tRow, ii)
+        }
+        this.#Controls.push({
+            Operand: $operand, Type: $type, Ids: cIds
+        })
+        this.renderBtnRemove($tRow, ii)
     }
-    return cIds
-}
-function renderBtnRemove($tRow, ii) {
-    const clssBtnDel = `btn-del-crite`
-    let btnDeleteii = $tRow.find(`.${clssBtnDel}-${ii}`)
-    if (btnDeleteii.length) {
-        btnDeleteii.off('click');
-        btnDeleteii.remove()
+    renderIdsDropdownList($tRow, ii) {
+        const crite = this.#Blocks[ii] // {Operand, Type, Ids}
+        const cIds = []
+        if (!Array.isArray(crite.Ids)) return cIds
+        let tInput = ``
+        for (let jj = 0; jj < crite.Ids.length; jj++) {
+            tInput = `<input class="fcsub-${jj}" c-index="${jj}" style="width: 240px;" />`
+            $tRow.append(tInput)
+        }
+    
+        for (let jj = 0; jj < crite.Ids.length; jj++) {
+            const _id = crite.Ids[jj]
+            const $input = $tRow.find(`[c-index="${jj}"]`)
+            const idChange = (e) => {
+                let id = e.sender.value()
+                id = parseInt(id)
+                crite.Ids[jj] = id
+                initCtrlChildren()
+    
+                function initCtrlChildren() {
+                    if (crite.Ids.length - 1 <= jj) return
+    
+                    const initIds = getInitIds(crite.Type)
+                    for (let kk = jj + 1; kk < crite.Ids.length; kk++) {
+                        const nxtInitId = initIds[kk]
+                        crite.Ids[kk] = nxtInitId
+                        const nextCtrl = cIds[kk]
+                        if (!nextCtrl) continue
+    
+                        const nxtDrp = nextCtrl.data("kendoDropDownList")
+                        nxtDrp.value(nxtInitId)
+                        nxtDrp.setDataSource(getSourceIds(crite, kk))
+                        nxtDrp.refresh()
+                    }
+                }
+            }
+            $input.kendoDropDownList({
+                dataTextField: "Name",
+                dataValueField: "Id",
+                dataSource: getSourceIds(crite, jj),
+                value: _id,
+                change: idChange
+            })
+            cIds.push($input)
+        }
+        return cIds
     }
-    if (ii < 1) return
-    btnDeleteii = `<button class="btn btn-primary rounded-circle bi bi-trash-fill ${clssBtnDel}-${ii} ${clssBtnDel}"
-        type="button"></button>`
-    $tRow.append(btnDeleteii)
-
-    const onDelRow = (e) => {
-        const btn = e.target
-        const row = btn.closest(`[c-criterial]`)
-        destroyControl.call(this, ii, 'All')
-        this.Blocks.splice(ii, 1)
-        row.remove()
+    renderBtnRemove($tRow, ii) {
+        const clssBtnDel = `btn-del-crite`
+        let btnDeleteii = $tRow.find(`.${clssBtnDel}-${ii}`)
+        if (btnDeleteii.length) {
+            btnDeleteii.off('click');
+            btnDeleteii.remove()
+        }
+        if (ii < 1) return
+        btnDeleteii = `<button class="btn btn-primary rounded-circle bi bi-trash-fill ${clssBtnDel}-${ii} ${clssBtnDel}"
+            type="button"></button>`
+        $tRow.append(btnDeleteii)
+    
+        const onDelRow = (e) => {
+            const btn = e.target
+            const row = btn.closest(`[c-criterial]`)
+            this.destroyControl(ii, 'All')
+            this.#Blocks.splice(ii, 1)
+            row.remove()
+        }
+        btnDeleteii = $tRow.find(`.${clssBtnDel}-${ii}`)
+        btnDeleteii.on('click', onDelRow)
     }
-    btnDeleteii = $tRow.find(`.${clssBtnDel}-${ii}`)
-    btnDeleteii.on('click', onDelRow)
-}
-function destroyControl(ii, type) {
-    const control = this.Controls[ii]
-    const ctlIds = control.Ids
-    switch (type) {
-        case 'Ids':
-            destroyIds()
-            break;
-        case 'All':
-            destroyIds()
-            destroyType()
-            destroyOperand()
-            break;
-    }
-
-    function destroyOperand() {
-        const $oprnd = control.Operand
-        $oprnd.data("kendoDropDownList").destroy()
-        $oprnd.closest(`.k-dropdownlist`).remove()
-    }
-    function destroyType() {
-        const $type = control.Type
-        $type.data("kendoDropDownList").destroy()
-        $type.closest(`.k-dropdownlist`).remove()
-    }
-    function destroyIds() {
-        for (let kk = ctlIds.length - 1; -1 < kk; kk--) {
-            const $cId = ctlIds[kk]
-            $cId.data("kendoDropDownList").destroy()
-            $cId.closest(`.k-dropdownlist.fcsub-${kk}`).remove()
-            ctlIds.splice(kk, 1)
+    destroyControl(ii, type) {
+        const control = this.#Controls[ii]
+        const ctlIds = control.Ids
+        switch (type) {
+            case 'Ids':
+                destroyIds()
+                break;
+            case 'All':
+                destroyIds()
+                destroyType()
+                destroyOperand()
+                break;
+        }
+    
+        function destroyOperand() {
+            const $oprnd = control.Operand
+            $oprnd.data("kendoDropDownList").destroy()
+            $oprnd.closest(`.k-dropdownlist`).remove()
+        }
+        function destroyType() {
+            const $type = control.Type
+            $type.data("kendoDropDownList").destroy()
+            $type.closest(`.k-dropdownlist`).remove()
+        }
+        function destroyIds() {
+            for (let kk = ctlIds.length - 1; -1 < kk; kk--) {
+                const $cId = ctlIds[kk]
+                $cId.data("kendoDropDownList").destroy()
+                $cId.closest(`.k-dropdownlist.fcsub-${kk}`).remove()
+                ctlIds.splice(kk, 1)
+            }
         }
     }
 }
+
 function getInitIds(type) {
     switch (type) {
         case 1: // Land/Region
