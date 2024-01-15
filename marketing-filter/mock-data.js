@@ -18,12 +18,12 @@ const Regions = [
     { Id: 12, Name: 'Vịnh Nha Trang', LandId: 2 },
 ]
 const ProductGroups = [
-    { Id: 1, Name: 'Game Esport' },
-    { Id: 2, Name: 'Game In door' },
-    { Id: 3, Name: `Education's books` },
-    { Id: 4, Name: `Novel books` },
-    { Id: 5, Name: 'Events' },
-    { Id: 6, Name: 'Start up' },
+    { Id: 1, Name: 'Game Esport', RegionIds: [4, 8, 9] },
+    { Id: 2, Name: 'Game In door', RegionIds: [3, 4, 5, 7, 8, 9, 10]},
+    { Id: 3, Name: `Education's books`, RegionIds: [1, 2, 3, 5, 10, 11, 12] },
+    { Id: 4, Name: `Novel books`, RegionIds: [10, 11, 12] },
+    { Id: 5, Name: 'Events', RegionIds: [12, 7] },
+    { Id: 6, Name: 'Start up', RegionIds: [9, 8, 4] },
 ]
 const Products = [
     { Id: 1, Name: 'Dota 2', PrgId: 1 },

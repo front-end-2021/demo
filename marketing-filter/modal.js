@@ -139,7 +139,7 @@ class mkFilter {
         const row = this.#Blocks[ii] // {Operand, Type, Ids}
         let tRow = `<div c-criterial="${ii}">
                     <input c-operand="${ii}" style="width: 96px;" />
-                    <input c-type="${ii}" style="width: 240px;"/>
+                    <input c-type="${ii}" style="width: 270px;"/>
                 </div>`
         $lstCrite.append(tRow)
         const $operand = $lstCrite.find(`[c-operand="${ii}"]`)
@@ -203,40 +203,9 @@ class mkFilter {
                 let id = e.sender.value()
                 id = parseInt(id)
                 crite.Ids[jj] = id
-                initCtrlChildren.call(this)
-                updateSourceNext.call(this)
+                initCtrlChildren.call(this, jj)
+                updateSourceNext.call(this, jj, id)
 
-                function updateSourceNext() {
-                    switch (crite.Type) {
-                        case 1:     // Land/Region
-                            if (0 < jj) return
-                            const control = this.findLowestControl(ii, 5)
-                            if(!control) return
-                            
-                            const lst = [lType[10], lType[0]]
-                            const markets = getMarkets(id, lst)
-                            const ctrlMarket = control.Ids[0].data("kendoDropDownList")
-                            ctrlMarket.setDataSource(markets)
-                            ctrlMarket.value(-10)
-                            return
-                    }
-                }
-                function initCtrlChildren() {
-                    if (crite.Ids.length - 1 <= jj) return
-
-                    const initIds = getInitIds(crite.Type)
-                    for (let kk = jj + 1; kk < crite.Ids.length; kk++) {
-                        const nxtInitId = initIds[kk]
-                        crite.Ids[kk] = nxtInitId
-                        const nextCtrl = cIds[kk]
-                        if (!nextCtrl) continue
-
-                        const nxtDrp = nextCtrl.data("kendoDropDownList")
-                        nxtDrp.value(nxtInitId)
-                        nxtDrp.setDataSource(this.getSourceIds(ii, kk))
-                        nxtDrp.refresh()
-                    }
-                }
             }
             $input.kendoDropDownList({
                 dataTextField: "Name",
@@ -248,6 +217,49 @@ class mkFilter {
             cIds.push($input)
         }
         return cIds
+        function updateSourceNext(jj, id) {
+            switch (crite.Type) {
+                case 1:     // Land/Region
+                    if (0 < jj) {
+                        selectRegion.call(this, id)
+                        return
+                    }
+                    selectLand.call(this, id)
+                    return
+            }
+        }
+        function selectRegion(id) {
+            const control = this.findLowestControl(ii, 2)
+            if (!control) return
+            const lst = [lType[1]]
+            const lstPrG = getProductGroups([id], lst)
+            const ctrlPrG = control.Ids[0].data("kendoDropDownList")
+            ctrlPrG.setDataSource(lstPrG)
+            ctrlPrG.value(-1)
+        }
+        function selectLand(id) {
+            const control = this.findLowestControl(ii, 5)
+            if (!control) return
+            const lst = [lType[10], lType[0]]
+            const markets = getMarkets(id, lst)
+            const ctrlMarket = control.Ids[0].data("kendoDropDownList")
+            ctrlMarket.setDataSource(markets)
+            ctrlMarket.value(-10)
+        }
+        function initCtrlChildren(jj) {
+            if (crite.Ids.length - 1 <= jj) return
+            const initIds = getInitIds(crite.Type)
+            for (let kk = jj + 1; kk < crite.Ids.length; kk++) {
+                const nxtInitId = initIds[kk]
+                crite.Ids[kk] = nxtInitId
+                const nextCtrl = cIds[kk]
+                if (!nextCtrl) continue
+                const nxtDrp = nextCtrl.data("kendoDropDownList")
+                nxtDrp.value(nxtInitId)
+                nxtDrp.setDataSource(this.getSourceIds(ii, kk))
+                nxtDrp.refresh()
+            }
+        }
     }
     renderBtnRemove($tRow, ii) {
         const clssBtnDel = `btn-del-crite`
@@ -306,7 +318,7 @@ class mkFilter {
     }
     getSourceIds(ii, index) {
         const criter = this.#Blocks[ii]
-        let lst
+        let lst = []
         switch (criter.Type) {
             case 1: // Land/Region
                 lst = [lType[0]]
@@ -322,10 +334,7 @@ class mkFilter {
                 switch (index) {
                     case 0:     // Product group
                         lst = [lType[1]]
-                        for (let ii = 0; ii < ProductGroups.length; ii++) {
-                            lst.push(ProductGroups[ii])
-                        }
-                        return lst
+                        return getProductGroups([0], lst)
                     case 1:     // product
                         const prdGrpId = criter.Ids[index - 1]
                         lst = [lType[2]]
@@ -336,7 +345,16 @@ class mkFilter {
                         return getSubProducts.call(SubProducts, prdId, lst)
                 }
                 return []
-
+            case 3:
+                switch (index) {
+                    case 0:     // stake holder group | sub market
+                        lst = [lType[4]]
+                        const mkIds = closestMarketIds.call(this)
+                        return getSubmarket(mkIds, lst)
+                    case 1: return [lType[5]]    // Contact person
+                    case 2: return [lType[6]]    // Sub contact
+                }
+                return []
             case 5: // Market segments/Stakeholder groups
                 if (index == 0) {
                     lst = [lType[10], lType[0]]
@@ -354,6 +372,27 @@ class mkFilter {
                 return lst
         }
 
+        function closestMarketIds() {
+            for (let jj = ii - 1; -1 < jj; jj--) {
+                const prevCrite = this.#Blocks[jj]
+                if (1 == prevCrite.Type) {
+                    const landId = prevCrite.Ids[0]
+                    if (landId < 0) return []
+                    if (landId == 0) {
+                        const markets = getMarkets(0, [])
+                        return markets.map(x => x.Id)
+                    }
+                    const markets = getMarkets(landId, [])
+                    return markets.map(x => x.Id)
+                }
+                if (5 == prevCrite.Type) {
+                    const mkrId = prevCrite.Ids[0]
+                    const markets = getMarkets(mkrId, [])
+                    return markets.map(x => x.Id)
+                }
+            }
+            return []
+        }
         function closestLandId() {
             for (let jj = ii - 1; -1 < jj; jj--) {
                 const prevCrite = this.#Blocks[jj]
@@ -397,6 +436,15 @@ function getInitIds(type) {
         case 14: return [-18, -19]       // Master goals
     }
 }
+function getSubmarket(marketIds, lst) {
+    for (let ii = 0; ii < StakeholderGroups.length; ii++) {
+        const subMrk = StakeholderGroups[ii]
+        if (marketIds.includes(subMrk.MarketId)) {
+            lst.push(subMrk)
+        }
+    }
+    return lst
+}
 function getMarkets(landId, lst) {
     if (landId < 0) return lst
     for (let ii = 0; ii < MarketSegments.length; ii++) {
@@ -419,6 +467,21 @@ function getRegions(landId, lst) {
         const regn = Regions[ii]
         if (landId != regn.LandId) continue
         lst.push(regn)
+    }
+    return lst
+}
+function getProductGroups(regionIds, lst) {
+    if(!regionIds.length) return []
+    if (regionIds.includes(0)) return ProductGroups
+    for (let ii = 0; ii < ProductGroups.length; ii++) {
+        const prdG = ProductGroups[ii]
+        for(let kk = 0; kk < prdG.RegionIds.length; kk++) {
+            const rgId = prdG.RegionIds[kk]
+            if(regionIds.includes(rgId)) {
+                lst.push(prdG)
+                break
+            }
+        }
     }
     return lst
 }
