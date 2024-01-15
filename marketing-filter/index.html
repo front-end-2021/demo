@@ -28,13 +28,13 @@
         </div>
     </section>
     <script>
-
+        let mktFilter
         $(document).ready(function () {
             const $mFilter = $('#mFilter')
-            const mF = new mkFilter($mFilter, [new Criterial(0, 1, [0, 0])])
+            mktFilter = new mkFilter($mFilter, [new Criterial(0, 1, [0, 0])])
             
             const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
-            btnAddFilter.addEventListener('click', (e) => mF.addFilter())
+            btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
         })
         
     </script>

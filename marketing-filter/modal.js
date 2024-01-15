@@ -101,7 +101,7 @@ function getLandIds() {
         }
         if (criterial.Operand < 2) {
             // == 1 (And)
-            if (id == 0) {
+            if (id == 0) {  // select all
                 if (ids.includes(id)) continue
                 ids.push(id)
                 continue
@@ -111,11 +111,13 @@ function getLandIds() {
                     ids = [id]
                     continue
                 }
+                if(ids.includes(0)) continue
                 return []
             }
             continue
         }
         // == 2 Or
+        if(ids.includes(0)) continue
         if (ids.includes(id)) continue
         ids.push(id)
     }
@@ -147,21 +149,7 @@ function renderRow(ii, $lstCrite) {
         const tType = e.sender.value()
         row.Type = parseInt(tType)
         if(ii < 1) return
-        let drpOperand
-        switch (row.Type) {
-            case 1: // Land/Region
-                drpOperand = $operand.data('kendoDropDownList')
-                drpOperand.value(2)     // Or
-                row.Operand = 2
-                drpOperand.enable(false)
-                break;
-            default:
-                drpOperand = $operand.data('kendoDropDownList')
-                drpOperand.value(1)     // And
-                row.Operand = 1
-                drpOperand.enable(true)
-                break;
-        }
+        
         //console.log('on change type', this, e.sender)
         destroyControl.call(this, ii, 'Ids')
         row.Ids = getInitIds(row.Type)
@@ -252,6 +240,7 @@ function renderBtnRemove($tRow, ii) {
         const btn = e.target
         const row = btn.closest(`[c-criterial]`)
         destroyControl.call(this, ii, 'All')
+        this.Blocks.splice(ii, 1)
         row.remove()
     }
     btnDeleteii = $tRow.find(`.${clssBtnDel}-${ii}`)
