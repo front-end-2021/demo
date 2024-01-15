@@ -31,10 +31,10 @@
 
         $(document).ready(function () {
             const $mFilter = $('#mFilter')
-            mFilter.init($mFilter)
-
+            const mF = new mkFilter($mFilter, [new Criterial(0, 1, [0, 0])])
+            
             const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
-            btnAddFilter.addEventListener('click', () => addFilter.call(mFilter))
+            btnAddFilter.addEventListener('click', (e) => mF.addFilter())
         })
         
     </script>

@@ -61,20 +61,31 @@ class mkFilter {
             renderRow.call(this, ii, $lstCrite)
         }
     }
-}
-const mFilter = {
-    Blocks: [
-        new Criterial(0, 1, [0, 0])
-    ],
-    Controls: [],   // [{Operand, Type, Ids}]
-    $Container: null,
-    init: function ($container) {
-        this.$Container = $container
-        const $lstCrite = $container.find('.list-criterial')
-        for (let ii = 0; ii < this.Blocks.length; ii++) {
-            renderRow.call(this, ii, $lstCrite)
+    get LandIds(){
+        return getLandIds.call(this)
+    }
+    addFilter(type) {
+        type = typeof type == 'number' ? type : 0
+        const isNewBlk = isNewBlock.call(this)
+        let oprnd = isNewBlk ? Operands[1].Id : Operands[0].Id
+        const criter = new Criterial(oprnd, type, getInitIds(type))
+        this.Blocks.push(criter)
+    
+        const ii = this.Blocks.length - 1
+        const $lstCrite = this.Container.find('.list-criterial')
+        renderRow.call(this, ii, $lstCrite)
+    
+        function isNewBlock() {
+            const lstRow = this.Blocks
+            if (lstRow.length < 1) return true
+            if (type == 1) return true
+            if (lstRow.length == 1) {
+                if (type == 1) return true
+                return false
+            }
+            return false
         }
-    },
+    }
 }
 function getLandIds() {
     const lstTypeLandRegion = this.Blocks.filter(x => 1 == x.Type)
@@ -111,28 +122,6 @@ function getLandIds() {
 
     return ids
 }
-function addFilter(type) {
-    type = typeof type == 'number' ? type : 0
-    const isNewBlk = isNewBlock.call(this)
-    let oprnd = isNewBlk ? Operands[1].Id : Operands[0].Id
-    const criter = new Criterial(oprnd, type, getInitIds(type))
-    this.Blocks.push(criter)
-
-    const ii = this.Blocks.length - 1
-    const $lstCrite = this.$Container.find('.list-criterial')
-    this.renderRow(ii, $lstCrite)
-
-    function isNewBlock() {
-        const lstRow = this.Blocks
-        if (lstRow.length < 1) return true
-        if (type == 1) return true
-        if (lstRow.length == 1) {
-            if (type == 1) return true
-            return false
-        }
-        return false
-    }
-}
 function renderRow(ii, $lstCrite) {
     const row = this.Blocks[ii] // {Operand, Type, Ids}
     let tRow = `<div c-criterial="${ii}">
@@ -157,6 +146,7 @@ function renderRow(ii, $lstCrite) {
     const typeChange = (e) => {
         const tType = e.sender.value()
         row.Type = parseInt(tType)
+        if(ii < 1) return
         let drpOperand
         switch (row.Type) {
             case 1: // Land/Region
@@ -172,8 +162,7 @@ function renderRow(ii, $lstCrite) {
                 drpOperand.enable(true)
                 break;
         }
-        console.log('on change type', this, e.sender)
-
+        //console.log('on change type', this, e.sender)
         destroyControl.call(this, ii, 'Ids')
         row.Ids = getInitIds(row.Type)
 
