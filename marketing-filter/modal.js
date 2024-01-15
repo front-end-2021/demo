@@ -40,6 +40,13 @@ const lType = [
     { Id: -10, Name: `Select Market segments` },
     { Id: -11, Name: `Select Stakeholder groups` },
     { Id: -12, Name: `Please select` },
+    { Id: -13, Name: `All Status` },
+    { Id: -14, Name: `Advertising meterial` },
+    { Id: -15, Name: `Advertiser` },
+    { Id: -16, Name: `Superior themes` },
+    { Id: -17, Name: `Themes` },
+    { Id: -18, Name: `Select master maingoals` },
+    { Id: -19, Name: `Select master subgoals` },
 ]
 class Criterial {
     constructor(operand, type, ids) {
@@ -285,16 +292,26 @@ class mkFilter {
 
 function getInitIds(type) {
     switch (type) {
-        case 1:     // Land/Region
-            return [0, 0]
-        case 2:     //Product groups/Product
-            return [-1, -2, -3]
-
-        case 5:     // Market segments/Stakeholder groups
-            return [-10, -11]
+        case 1: return [0, 0]           // Land/Region
+        case 2: return [-1, -2, -3]     //Product groups/Product
+        case 3: return [-4, -5, -6]     // Stakeholder groups/Contact Person
+        case 4: return [-7, -8, -9]     // Customer Journey Group
+        case 5: return [-10, -11]       // Market segments/Stakeholder groups
+        case 6:                         // Task
+        case 7:                         // User
+        case 10:                         // Measure category
+        case 11:                         // Instruments
+        case 15:                        // Department/Field
+        case 16:                        // Subject/thema
+        case 17:                        // Supplier
+        case 18:                        // Hidden elements
+        case 9: return [-12]             // Objecttive category
+        case 8: return [-13, -12]       // Status
+        case 12: return [-14, -15]       // Advertising material/Advertiser
+        case 13: return [-16, -17]       // Superior objectives and measures
+        case 14: return [-18, -19]       // Master goals
     }
 }
-
 function getSourceIds(criter, index) {
     let lst
     switch (criter.Type) {
@@ -346,14 +363,7 @@ function getSourceIds(criter, index) {
             return lst
     }
 }
-function* getCriterial(type, parentId) {
-    switch (type) {
-        case 1: // Land/Region
-            yield getRegions.call(Regions, parentId, [])
-        case 2: // Product groups/Product
-            yield getProducts.call(Products, parentId, [])
-    }
-}
+
 function getRegions(landId, lst) {
     const Regions = this
     if (landId == 0) {
