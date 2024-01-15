@@ -159,7 +159,7 @@ class mkFilter {
         const typeChange = (e) => {
             const tType = e.sender.value()
             row.Type = parseInt(tType)
-            
+
             //console.log('on change type', this, e.sender)
             this.destroyControl(ii, 'Ids')
             row.Ids = getInitIds(row.Type)
@@ -203,8 +203,24 @@ class mkFilter {
                 let id = e.sender.value()
                 id = parseInt(id)
                 crite.Ids[jj] = id
-                initCtrlChildren()
+                initCtrlChildren.call(this)
+                updateSourceNext.call(this)
 
+                function updateSourceNext() {
+                    switch (crite.Type) {
+                        case 1:     // Land/Region
+                            if (0 < jj) return
+                            const control = this.findLowestControl(ii, 5)
+                            if(!control) return
+                            
+                            const lst = [lType[10], lType[0]]
+                            const markets = getMarkets(id, lst)
+                            const ctrlMarket = control.Ids[0].data("kendoDropDownList")
+                            ctrlMarket.setDataSource(markets)
+                            ctrlMarket.value(-10)
+                            return
+                    }
+                }
                 function initCtrlChildren() {
                     if (crite.Ids.length - 1 <= jj) return
 
@@ -217,7 +233,7 @@ class mkFilter {
 
                         const nxtDrp = nextCtrl.data("kendoDropDownList")
                         nxtDrp.value(nxtInitId)
-                        nxtDrp.setDataSource(getSourceIds(crite, kk))
+                        nxtDrp.setDataSource(this.getSourceIds(ii, kk))
                         nxtDrp.refresh()
                     }
                 }
@@ -225,7 +241,7 @@ class mkFilter {
             $input.kendoDropDownList({
                 dataTextField: "Name",
                 dataValueField: "Id",
-                dataSource: getSourceIds(crite, jj),
+                dataSource: this.getSourceIds(ii, jj),
                 value: _id,
                 change: idChange
             })
@@ -288,6 +304,75 @@ class mkFilter {
             }
         }
     }
+    getSourceIds(ii, index) {
+        const criter = this.#Blocks[ii]
+        let lst
+        switch (criter.Type) {
+            case 1: // Land/Region
+                lst = [lType[0]]
+                if (index == 0) {
+                    for (let ii = 0; ii < Lands.length; ii++) {
+                        lst.push(Lands[ii])
+                    }
+                    return lst
+                }
+                const landId = criter.Ids[0]
+                return getRegions.call(Regions, landId, lst)
+            case 2: // Product groups/Product
+                switch (index) {
+                    case 0:     // Product group
+                        lst = [lType[1]]
+                        for (let ii = 0; ii < ProductGroups.length; ii++) {
+                            lst.push(ProductGroups[ii])
+                        }
+                        return lst
+                    case 1:     // product
+                        const prdGrpId = criter.Ids[index - 1]
+                        lst = [lType[2]]
+                        return getProducts.call(Products, prdGrpId, lst)
+                    case 2:     // sub product
+                        const prdId = criter.Ids[index - 1]
+                        lst = [lType[3]]
+                        return getSubProducts.call(SubProducts, prdId, lst)
+                }
+                return []
+
+            case 5: // Market segments/Stakeholder groups
+                if (index == 0) {
+                    lst = [lType[10], lType[0]]
+                    const landId = closestLandId.call(this)
+                    return getMarkets(landId, lst)
+                }
+                const marketId = criter.Ids[0]
+                lst = [lType[11]]
+                if (marketId < 0) return lst
+                for (let ii = 0; ii < StakeholderGroups.length; ii++) {
+                    const stk = StakeholderGroups[ii]
+                    if (0 < marketId && marketId != stk.MarketId) continue
+                    lst.push(stk)
+                }
+                return lst
+        }
+
+        function closestLandId() {
+            for (let jj = ii - 1; -1 < jj; jj--) {
+                const prevCrite = this.#Blocks[jj]
+                if (1 == prevCrite.Type) {
+                    return prevCrite.Ids[0]
+                }
+            }
+            return -1
+        }
+    }
+    findLowestControl(ii, type) {
+        for (let jj = ii + 1; jj < this.#Blocks.length; jj++) {
+            const nxtCrite = this.#Blocks[jj]
+            if (nxtCrite.Type === type) {
+                return this.#Controls[jj]
+            }
+        }
+        return null
+    }
 }
 
 function getInitIds(type) {
@@ -312,58 +397,16 @@ function getInitIds(type) {
         case 14: return [-18, -19]       // Master goals
     }
 }
-function getSourceIds(criter, index) {
-    let lst
-    switch (criter.Type) {
-        case 1: // Land/Region
-            lst = [lType[0]]
-            if (index == 0) {
-                for (let ii = 0; ii < Lands.length; ii++) {
-                    lst.push(Lands[ii])
-                }
-                return lst
-            }
-            const landId = criter.Ids[0]
-            return getRegions.call(Regions, landId, lst)
-        case 2: // Product groups/Product
-            switch (index) {
-                case 0:     // Product group
-                    lst = [lType[1]]
-                    for (let ii = 0; ii < ProductGroups.length; ii++) {
-                        lst.push(ProductGroups[ii])
-                    }
-                    return lst
-                case 1:     // product
-                    const prdGrpId = criter.Ids[index - 1]
-                    lst = [lType[2]]
-                    return getProducts.call(Products, prdGrpId, lst)
-                case 2:     // sub product
-                    const prdId = criter.Ids[index - 1]
-                    lst = [lType[3]]
-                    return getSubProducts.call(SubProducts, prdId, lst)
-            }
-            return []
-
-        case 5: // Market segments/Stakeholder groups
-            if (index == 0) {
-                lst = [lType[10], lType[0]]
-                for (let ii = 0; ii < MarketSegments.length; ii++) {
-                    lst.push(MarketSegments[ii])
-                }
-                return lst
-            }
-            const marketId = criter.Ids[0]
-            lst = [lType[11]]
-            if(marketId < 0) return lst
-            for(let ii = 0; ii < StakeholderGroups.length; ii++) {
-                const stk = StakeholderGroups[ii]
-                if(0 < marketId && marketId != stk.MarketId) continue
-                lst.push(stk)
-            }
-            return lst
+function getMarkets(landId, lst) {
+    if (landId < 0) return lst
+    for (let ii = 0; ii < MarketSegments.length; ii++) {
+        const mrk = MarketSegments[ii]
+        if (landId == 0 || mrk.LandIds.includes(landId)) {
+            lst.push(mrk)
+        }
     }
+    return lst
 }
-
 function getRegions(landId, lst) {
     const Regions = this
     if (landId == 0) {
