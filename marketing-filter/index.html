@@ -34,7 +34,7 @@
             mFilter.init($mFilter)
 
             const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
-            btnAddFilter.addEventListener('click', () => mFilter.addFilter())
+            btnAddFilter.addEventListener('click', () => addFilter.call(mFilter))
         })
         
     </script>

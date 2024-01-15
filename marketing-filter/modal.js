@@ -48,6 +48,20 @@ class Criterial {
         this.Ids = Array.isArray(ids) ? ids : []
     }
 }
+class mkFilter {
+    Blocks = [];       // [{Operand, Type, Ids}]
+    Controls = [];   // [{Operand, Type, Ids}]
+    constructor(container, criterials) {
+        for (let ii = 0; ii < criterials.length; ii++) {
+            this.Blocks.push(criterials[ii])
+        }
+        this.Container = container
+        const $lstCrite = this.Container.find('.list-criterial')
+        for (let ii = 0; ii < this.Blocks.length; ii++) {
+            renderRow.call(this, ii, $lstCrite)
+        }
+    }
+}
 const mFilter = {
     Blocks: [
         new Criterial(0, 1, [0, 0])
@@ -58,135 +72,133 @@ const mFilter = {
         this.$Container = $container
         const $lstCrite = $container.find('.list-criterial')
         for (let ii = 0; ii < this.Blocks.length; ii++) {
-            this.renderRow(ii, $lstCrite)
+            renderRow.call(this, ii, $lstCrite)
         }
     },
-    renderRow: function (ii, $lstCrite) {
-        const row = this.Blocks[ii] // {Operand, Type, Ids}
-        let tRow = `<div c-criterial="${ii}">
-                    <input c-operand="${ii}" style="width: 96px;" />
-                    <input c-type="${ii}" style="width: 240px;"/>
-                </div>`
-        $lstCrite.append(tRow)
-        const $operand = $lstCrite.find(`[c-operand="${ii}"]`)
-        const operandChange = (e) => {
-            const tOprnd = e.sender.value()
-            row.Operand = parseInt(tOprnd)
+}
+function getLandIds() {
+    const lstTypeLandRegion = this.Blocks.filter(x => 1 == x.Type)
+    const allLandId = Lands.map(x => x.Id)
+    let ids = []
+    for (let ii = 0; ii < lstTypeLandRegion.length; ii++) {
+        const criterial = lstTypeLandRegion[ii]
+        const id = criterial.Ids[0]
+        if (criterial.Operand < 1) {
+            // Filter By
+            ids.push(id)
+            continue
         }
-        $operand.kendoDropDownList({
-            dataTextField: "Name",
-            dataValueField: "Id",
-            dataSource: ii > 0 ? Operands : [mFilterBy],
-            enable: ii < 1 ? false : true,
-            value: row.Operand,
-            change: operandChange
-        })
-        const $type = $lstCrite.find(`[c-type="${ii}"]`)
-        const typeChange = (e) => {
-            const tType = e.sender.value()
-            row.Type = parseInt(tType)
-            let drpOperand
-            switch (row.Type) {
-                case 1: // Land/Region
-                    drpOperand = $operand.data('kendoDropDownList')
-                    drpOperand.value(2)     // Or
-                    row.Operand = 2
-                    drpOperand.enable(false)
-                    break;
-                default:
-                    drpOperand = $operand.data('kendoDropDownList')
-                    drpOperand.value(1)     // And
-                    row.Operand = 1
-                    drpOperand.enable(true)
-                    break;
-            }
-            console.log('on change type', this, e.sender)
-
-            destroyControl.call(this, ii, 'Ids')
-            row.Ids = getInitIds(row.Type)
-
-            const $tRow = e.sender.element.closest(`[c-criterial="${ii}"]`)
-            const control = this.Controls[ii]
-            control.Ids = renderIdsDropdownList.call(this, $tRow, ii)
-            renderBtnRemove.call(this, $tRow, ii)
-        }
-        $type.kendoDropDownList({
-            dataTextField: "Name",
-            dataValueField: "Id",
-            dataSource: mType,
-            value: row.Type,
-            change: typeChange
-        })
-        const $tRow = $lstCrite.find(`[c-criterial="${ii}"]`)
-        let cIds = []
-        if (row.Ids.length) {
-            cIds = renderIdsDropdownList.call(this, $tRow, ii)
-        }
-        this.Controls.push({
-            Operand: $operand, Type: $type, Ids: cIds
-        })
-
-        renderBtnRemove.call(this, $tRow, ii)
-    },
-    addFilter: function (type) {
-        type = typeof type == 'number' ? type : 0
-        const isNewBlk = isNewBlock.call(this)
-        let oprnd = isNewBlk ? Operands[1].Id : Operands[0].Id
-        const criter = new Criterial(oprnd, type, getInitIds(type))
-        this.Blocks.push(criter)
-
-        const ii = this.Blocks.length - 1
-        const $lstCrite = this.$Container.find('.list-criterial')
-        this.renderRow(ii, $lstCrite)
-
-
-        function isNewBlock() {
-            const lstRow = this.Blocks
-            if (lstRow.length < 1) return true
-            if (type == 1) return true
-            if (lstRow.length == 1) {
-                if (type == 1) return true
-                return false
-            }
-            return false
-        }
-    },
-    getLandIds: function(){
-        const lstTypeLandRegion = this.Blocks.filter(x => 1 == x.Type)
-        const allLandId = Lands.map(x => x.Id)
-        let ids = []
-        for(let ii = 0; ii < lstTypeLandRegion.length; ii++) {
-            const criterial = lstTypeLandRegion[ii]
-            const id = criterial.Ids[0]
-            if(criterial.Operand < 1) {
-                // Filter By
+        if (criterial.Operand < 2) {
+            // == 1 (And)
+            if (id == 0) {
+                if (ids.includes(id)) continue
                 ids.push(id)
                 continue
             }
-            if(criterial.Operand < 2) {
-                // == 1 (And)
-                if(id == 0) {
-                    if(ids.includes(id)) continue
-                    ids.push(id)
+            if (0 < id) {
+                if (ids.includes(id)) {
+                    ids = [id]
                     continue
                 }
-                if(0 < id) {
-                    if(ids.includes(id)) {
-                        ids = [id]    
-                        continue
-                    }
-                    return []
-                }
-                continue
+                return []
             }
-            // == 2 Or
-            if(ids.includes(id)) continue
-            ids.push(id)
+            continue
         }
-        
-        return ids
-    },
+        // == 2 Or
+        if (ids.includes(id)) continue
+        ids.push(id)
+    }
 
+    return ids
+}
+function addFilter(type) {
+    type = typeof type == 'number' ? type : 0
+    const isNewBlk = isNewBlock.call(this)
+    let oprnd = isNewBlk ? Operands[1].Id : Operands[0].Id
+    const criter = new Criterial(oprnd, type, getInitIds(type))
+    this.Blocks.push(criter)
+
+    const ii = this.Blocks.length - 1
+    const $lstCrite = this.$Container.find('.list-criterial')
+    this.renderRow(ii, $lstCrite)
+
+    function isNewBlock() {
+        const lstRow = this.Blocks
+        if (lstRow.length < 1) return true
+        if (type == 1) return true
+        if (lstRow.length == 1) {
+            if (type == 1) return true
+            return false
+        }
+        return false
+    }
+}
+function renderRow(ii, $lstCrite) {
+    const row = this.Blocks[ii] // {Operand, Type, Ids}
+    let tRow = `<div c-criterial="${ii}">
+                <input c-operand="${ii}" style="width: 96px;" />
+                <input c-type="${ii}" style="width: 240px;"/>
+            </div>`
+    $lstCrite.append(tRow)
+    const $operand = $lstCrite.find(`[c-operand="${ii}"]`)
+    const operandChange = (e) => {
+        const tOprnd = e.sender.value()
+        row.Operand = parseInt(tOprnd)
+    }
+    $operand.kendoDropDownList({
+        dataTextField: "Name",
+        dataValueField: "Id",
+        dataSource: ii > 0 ? Operands : [mFilterBy],
+        enable: ii < 1 ? false : true,
+        value: row.Operand,
+        change: operandChange
+    })
+    const $type = $lstCrite.find(`[c-type="${ii}"]`)
+    const typeChange = (e) => {
+        const tType = e.sender.value()
+        row.Type = parseInt(tType)
+        let drpOperand
+        switch (row.Type) {
+            case 1: // Land/Region
+                drpOperand = $operand.data('kendoDropDownList')
+                drpOperand.value(2)     // Or
+                row.Operand = 2
+                drpOperand.enable(false)
+                break;
+            default:
+                drpOperand = $operand.data('kendoDropDownList')
+                drpOperand.value(1)     // And
+                row.Operand = 1
+                drpOperand.enable(true)
+                break;
+        }
+        console.log('on change type', this, e.sender)
+
+        destroyControl.call(this, ii, 'Ids')
+        row.Ids = getInitIds(row.Type)
+
+        const $tRow = e.sender.element.closest(`[c-criterial="${ii}"]`)
+        const control = this.Controls[ii]
+        control.Ids = renderIdsDropdownList.call(this, $tRow, ii)
+        renderBtnRemove.call(this, $tRow, ii)
+    }
+    $type.kendoDropDownList({
+        dataTextField: "Name",
+        dataValueField: "Id",
+        dataSource: mType,
+        value: row.Type,
+        change: typeChange
+    })
+    const $tRow = $lstCrite.find(`[c-criterial="${ii}"]`)
+    let cIds = []
+    if (row.Ids.length) {
+        cIds = renderIdsDropdownList.call(this, $tRow, ii)
+    }
+    this.Controls.push({
+        Operand: $operand, Type: $type, Ids: cIds
+    })
+
+    renderBtnRemove.call(this, $tRow, ii)
 }
 function renderIdsDropdownList($tRow, ii) {
     const crite = this.Blocks[ii] // {Operand, Type, Ids}
