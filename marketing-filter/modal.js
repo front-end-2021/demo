@@ -54,6 +54,12 @@ class Criterial {
         this.Type = typeof type == 'number' ? type : lType[0].Id
         this.Ids = Array.isArray(ids) ? ids : []
     }
+    toString(){
+        return `{Operand:${this.Operand},Type:${this.Type},Ids:[${this.Ids.join(',')}]}`
+    }
+    copy() {
+        return JSON.parse(JSON.stringify(this))
+    }
 }
 class mkFilter {
     #Blocks = [];       // [{Operand, Type, Ids}]
@@ -109,9 +115,13 @@ class mkFilter {
         if (ids.includes(0)) return Lands.map(x => x.Id)
         return ids
     }
-    get RegionIds() {
-
-        return []
+    get Criterials() {
+        const lst = []
+        for(let ii = 0; ii < this.#Blocks.length; ii++) {
+            const crite = this.#Blocks[ii]
+            lst.push(crite.copy())
+        }
+        return lst
     }
     addFilter(type) {
         type = typeof type == 'number' ? type : 0
@@ -435,6 +445,12 @@ class mkFilter {
             control.setDataSource(lst)
         }
     }
+    toString(type){
+        type = typeof  type != 'string' ? 'Data' : type
+        switch(type) {
+            case 'Data': return `[${this.#Blocks.map(crite => crite.toString()).join(',')}]`
+        }
+    }
 }
 
 function getInitIds(type) {
@@ -480,22 +496,21 @@ function getMarkets(landId, lst) {
 }
 function getRegions(landId, lst) {
     const Regions = this
-    if (landId == 0) {
-        for (let ii = 0; ii < Regions.length; ii++) {
-            lst.push(Regions[ii])
-        }
-        return lst
-    }
     for (let ii = 0; ii < Regions.length; ii++) {
         const regn = Regions[ii]
-        if (landId != regn.LandId) continue
+        if (0 == landId || landId != regn.LandId) continue
         lst.push(regn)
     }
     return lst
 }
 function getProductGroups(regionIds, lst) {
     if (!regionIds.length) return []
-    if (regionIds.includes(0)) return ProductGroups
+    if (regionIds.includes(0)) {
+        for(let ii = 0; ii < ProductGroups.length; ii++) {
+            lst.push(ProductGroups[ii])
+        }
+        return lst
+    }
     for (let ii = 0; ii < ProductGroups.length; ii++) {
         const prdG = ProductGroups[ii]
         for (let kk = 0; kk < prdG.RegionIds.length; kk++) {
