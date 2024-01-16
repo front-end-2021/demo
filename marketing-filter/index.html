@@ -26,13 +26,13 @@
         </div>
     </section>
     <section id="dashboard">
-        <div class="list-land" onclick="toggleCollapse(this)"><strong>List Land: </strong></div>
-        <div class="list-region" onclick="toggleCollapse(this)"><strong>List Region: </strong></div>
-        <div class="list-productgroup" onclick="toggleCollapse(this)"><strong>List Product group: </strong></div>
-        <div class="list-product" onclick="toggleCollapse(this)"></div>
-        <div class="list-subproduct" onclick="toggleCollapse(this)"></div>
-        <div class="list-market" onclick="toggleCollapse(this)"></div>
-        <div class="list-submarket" onclick="toggleCollapse(this)"></div>
+        <div class="list-land"><h6 onclick="toggleCollapse(this)">List Land: <b>&#10010;</b></h6></div>
+        <div class="list-region"><h6 onclick="toggleCollapse(this)">List Region:  <b>&#10010;</b></h6></div>
+        <div class="list-productgroup"><h6 onclick="toggleCollapse(this)">List Product group:  <b>&#10010;</b></h6></div>
+        <div class="list-product"><h6 onclick="toggleCollapse(this)">List Product:  <b>&#10010;</b></h6></div>
+        <div class="list-subproduct"><h6 onclick="toggleCollapse(this)">List Sub product:  <b>&#10010;</b></h6></div>
+        <div class="list-market"><h6 onclick="toggleCollapse(this)">List Market:  <b>&#10010;</b></h6></div>
+        <div class="list-submarket"><h6 onclick="toggleCollapse(this)">List sub market: <b>&#10010;</b></h6></div>
     </section>
     <script>
         let mktFilter
@@ -95,7 +95,8 @@
             }
         }
         function toggleCollapse(e) {
-            e.classList.toggle('dnb-collapse');
+            const container = e.closest(`[class|="list"]`)
+            container.classList.toggle('dnb-collapse');
         }
     </script>
 </body>

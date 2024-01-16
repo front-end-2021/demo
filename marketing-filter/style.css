@@ -15,3 +15,6 @@ body {display: grid;
 .list-product.dnb-collapse > .lst-entry,
 .list-market.dnb-collapse > .lst-entry,
 .list-submarket.dnb-collapse > .lst-entry {display: none !important;}
+
+#dashboard [class|="list"] b {display: none;}
+#dashboard [class|="list"].dnb-collapse b {display: initial;}
