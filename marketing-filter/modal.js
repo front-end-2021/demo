@@ -412,6 +412,29 @@ class mkFilter {
         }
         return null
     }
+    updateSourceIds(type, index) {
+        const lstBlock = this.#Blocks
+        index = typeof index != 'number' ? 0 : index
+        for (let ii = 0; ii < lstBlock.length; ii++) {
+            const row = lstBlock[ii]
+            if (row.Type == type) {
+                updateSourceLand.call(this, row, ii)
+            }
+        }
+        function updateSourceLand(row, ii) {
+            if (row.Type != 1) return
+            let control = this.#Controls[ii]
+            if(!control) return
+            control = control.Ids[index]
+            if(!control) return
+            const lst = [lType[0]]
+            for (let ii = 0; ii < Lands.length; ii++) {
+                lst.push(Lands[ii])
+            }
+            control = control.data('kendoDropDownList')
+            control.setDataSource(lst)
+        }
+    }
 }
 
 function getInitIds(type) {
@@ -471,13 +494,13 @@ function getRegions(landId, lst) {
     return lst
 }
 function getProductGroups(regionIds, lst) {
-    if(!regionIds.length) return []
+    if (!regionIds.length) return []
     if (regionIds.includes(0)) return ProductGroups
     for (let ii = 0; ii < ProductGroups.length; ii++) {
         const prdG = ProductGroups[ii]
-        for(let kk = 0; kk < prdG.RegionIds.length; kk++) {
+        for (let kk = 0; kk < prdG.RegionIds.length; kk++) {
             const rgId = prdG.RegionIds[kk]
-            if(regionIds.includes(rgId)) {
+            if (regionIds.includes(rgId)) {
                 lst.push(prdG)
                 break
             }
