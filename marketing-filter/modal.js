@@ -54,7 +54,7 @@ class Criterial {
         this.Type = typeof type == 'number' ? type : lType[0].Id
         this.Ids = Array.isArray(ids) ? ids : []
     }
-    toString(){
+    toString() {
         return `{Operand:${this.Operand},Type:${this.Type},Ids:[${this.Ids.join(',')}]}`
     }
     copy() {
@@ -115,9 +115,147 @@ class mkFilter {
         if (ids.includes(0)) return Lands.map(x => x.Id)
         return ids
     }
+    get SubmarketIds() {
+        let subMrketIds = []
+        const blocks = this.#Blocks
+        let lastI = -1
+        for (let ii = 0; ii < blocks.length; ii++) {
+            const crite = blocks[ii]
+            if (5 != crite.Type) continue
+            const marketId = crite.Ids[0]
+            const subMarketId = crite.Ids[1]
+            if (!subMrketIds.length) {
+                // 1st time
+                if (marketId < 0) {
+                    lastI = ii
+                    continue
+                }
+                if (0 == marketId) {
+                    if (subMarketId < 1) {
+                        subMrketIds.push(0)
+                        lastI = ii
+                        continue
+                    }
+                    subMrketIds.push(subMarketId)
+                    lastI = ii
+                    continue
+                }
+                // 0 < marketId
+                if (subMarketId < 1) {
+                    lastI = ii
+                    continue
+                }
+                subMrketIds.push(subMarketId)
+                lastI = ii
+                continue
+            }
+            // 2nd times or more
+            if (1 == crite.Operand) {        // And
+                if (marketId < 0) {
+                    lastI = ii
+                    continue
+                }
+                // 0 <= marketId
+                if (subMarketId < 1) {
+                    subMrketIds.splice(0)      // empty array
+                    lastI = ii
+                    continue
+                }
+                // 0 < subMarketId
+                if (subMrketIds.includes(0)) {
+                    subMrketIds.splice(0)      // empty array
+                    subMrketIds.push(subMarketId)
+                    lastI = ii
+                    continue
+                }
+                if (subMrketIds.includes(subMarketId)) {
+                    lastI = ii
+                    continue
+                }
+                subMrketIds.splice(0)      // empty array
+                lastI = ii
+                continue
+            }
+            // Or
+            if (subMarketId < 1 || subMrketIds.includes(0) || subMrketIds.includes(subMarketId)) {
+                lastI = ii
+                continue
+            }
+            // 0 < subMarketId
+            subMrketIds.push(subMarketId)
+            lastI = ii
+        }
+        if (lastI < 0) {
+            const landIds = this.LandIds
+            const marketIds = getMarketsIn(landIds, []).map(x => x.Id)
+            return getSubmarket(marketIds, []).map(x => x.Id)
+        }
+        if (subMrketIds.includes(0)) {
+            return getSubmarket([0], []).map(x => x.Id)
+        }
+        return subMrketIds
+    }
+    get ProductIds() {
+        let productIds = []
+        const blocks = this.#Blocks
+        let lastI = -1
+        for (let ii = 0; ii < blocks.length; ii++) {
+            const crite = blocks[ii]
+            if (2 != crite.Type) continue
+            const prdId = crite.Ids[1]
+            if (prdId < 1) {
+                lastI = ii
+                continue
+            }
+            if (!productIds.length) {
+                // 1st time
+                productIds.push(prdId)
+                lastI = ii
+                continue
+            }
+            // 2nd times or more
+            if (2 == crite.Operand) {        // Or
+                if (productIds.includes(prdId)) {
+                    lastI = ii
+                    continue
+                }
+                productIds.push(prdId)
+                lastI = ii
+                continue
+            }
+            // And
+            if (productIds.includes(prdId)) {
+                lastI = ii
+                continue
+            }
+            productIds.splice(0)
+            lastI = ii
+            continue
+        }
+        if (lastI < 0) {
+            const landIds = this.LandIds
+            const regionIds = getRegionsIn(landIds, []).map(x => x.Id)
+            const prdGrpIds = getProductGroups(regionIds, []).map(x => x.Id)
+            return getProductsIn(prdGrpIds, []).map(x => x.Id)
+        }
+        return productIds
+    }
+    get SubmarketProductIds(){
+        const subMrktIds = this.SubmarketIds
+        const prdIds = this.ProductIds
+        const lst = []
+        for(let ss = 0; ss < subMrktIds.length; ss++) {
+            const submarketId = subMrktIds[ss]
+            for(let pp = 0; pp < prdIds.length; pp++) {
+                const prdId = prdIds[pp]
+                lst.push(`${submarketId}-${prdId}`)
+            }
+        }
+        return lst
+    }
     get Criterials() {
         const lst = []
-        for(let ii = 0; ii < this.#Blocks.length; ii++) {
+        for (let ii = 0; ii < this.#Blocks.length; ii++) {
             const crite = this.#Blocks[ii]
             lst.push(crite.copy())
         }
@@ -339,7 +477,7 @@ class mkFilter {
                     return lst
                 }
                 const landId = criter.Ids[0]
-                return getRegions.call(Regions, landId, lst)
+                return getRegions(landId, lst)
             case 2: // Product groups/Product
                 switch (index) {
                     case 0:     // Product group
@@ -348,11 +486,11 @@ class mkFilter {
                     case 1:     // product
                         const prdGrpId = criter.Ids[index - 1]
                         lst = [lType[2]]
-                        return getProducts.call(Products, prdGrpId, lst)
+                        return getProducts(prdGrpId, lst)
                     case 2:     // sub product
                         const prdId = criter.Ids[index - 1]
                         lst = [lType[3]]
-                        return getSubProducts.call(SubProducts, prdId, lst)
+                        return getSubProducts(prdId, lst)
                 }
                 return []
             case 3:
@@ -434,9 +572,9 @@ class mkFilter {
         function updateSourceLand(row, ii) {
             if (row.Type != 1) return
             let control = this.#Controls[ii]
-            if(!control) return
+            if (!control) return
             control = control.Ids[index]
-            if(!control) return
+            if (!control) return
             const lst = [lType[0]]
             for (let ii = 0; ii < Lands.length; ii++) {
                 lst.push(Lands[ii])
@@ -445,9 +583,9 @@ class mkFilter {
             control.setDataSource(lst)
         }
     }
-    toString(type){
-        type = typeof  type != 'string' ? 'Data' : type
-        switch(type) {
+    toString(type) {
+        type = typeof type != 'string' ? 'Data' : type
+        switch (type) {
             case 'Data': return `[${this.#Blocks.map(crite => crite.toString()).join(',')}]`
         }
     }
@@ -478,8 +616,25 @@ function getInitIds(type) {
 function getSubmarket(marketIds, lst) {
     for (let ii = 0; ii < StakeholderGroups.length; ii++) {
         const subMrk = StakeholderGroups[ii]
-        if (marketIds.includes(subMrk.MarketId)) {
+        if (marketIds.includes(0) || marketIds.includes(subMrk.MarketId)) {
             lst.push(subMrk)
+        }
+    }
+    return lst
+}
+function getMarketsIn(landIds, lst) {
+    if (!landIds.length) return lst
+    if (landIds.includes(0)) {
+        return getMarkets(0, lst)
+    }
+    for (let ii = 0; ii < MarketSegments.length; ii++) {
+        const mrk = MarketSegments[ii]
+        for (let ll = 0; ll < landIds.length; ll++) {
+            const landId = landIds[ll]
+            if (mrk.LandIds.includes(landId)) {
+                lst.push(mrk)
+                break
+            }
         }
     }
     return lst
@@ -494,8 +649,21 @@ function getMarkets(landId, lst) {
     }
     return lst
 }
+function getRegionsIn(landIds, lst) {
+    if (!landIds.length) return lst
+    if (landIds.includes(0)) return getRegions(0, lst)
+    for (let ii = 0; ii < Regions.length; ii++) {
+        const regn = Regions[ii]
+        for (let ll = 0; ll < landIds.length; ll++) {
+            const landId = landIds[ll]
+            if (landId != regn.LandId) continue
+            lst.push(regn)
+            break
+        }
+    }
+    return lst
+}
 function getRegions(landId, lst) {
-    const Regions = this
     for (let ii = 0; ii < Regions.length; ii++) {
         const regn = Regions[ii]
         if (0 == landId || landId != regn.LandId) continue
@@ -506,7 +674,7 @@ function getRegions(landId, lst) {
 function getProductGroups(regionIds, lst) {
     if (!regionIds.length) return []
     if (regionIds.includes(0)) {
-        for(let ii = 0; ii < ProductGroups.length; ii++) {
+        for (let ii = 0; ii < ProductGroups.length; ii++) {
             lst.push(ProductGroups[ii])
         }
         return lst
@@ -523,8 +691,18 @@ function getProductGroups(regionIds, lst) {
     }
     return lst
 }
+function getProductsIn(prdGrpIds, lst) {
+    if (!prdGrpIds.length) return lst
+    if (prdGrpIds.includes(0)) return getProducts(0, lst)
+    for (let ii = 0; ii < Products.length; ii++) {
+        const prd = Products[ii]
+        if (prdGrpIds.includes(prd.PrgId)) {
+            lst.push(prd)
+        }
+    }
+    return lst
+}
 function getProducts(prdGroupId, lst) {
-    const Products = this
     for (let ii = 0; ii < Products.length; ii++) {
         const prd = Products[ii]
         if (0 != prdGroupId && prdGroupId != prd.PrgId) continue
@@ -533,7 +711,6 @@ function getProducts(prdGroupId, lst) {
     return lst
 }
 function getSubProducts(productId, lst) {
-    const SubProducts = this
     for (let ii = 0; ii < SubProducts.length; ii++) {
         const sprd = SubProducts[ii]
         if (0 != productId && productId != sprd.ProdId) continue
