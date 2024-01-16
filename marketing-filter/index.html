@@ -12,9 +12,7 @@
 
 <body>
     <section id="mFilter">
-        <div class="list-criterial">
-
-        </div>
+        <div class="list-criterial"></div>
         <div class="list-button">
             <button type="button" class="btn btn-primary">
                 <i class="bi bi-search"></i> Filter</button>
@@ -27,15 +25,77 @@
 
         </div>
     </section>
+    <section id="dashboard">
+        <div class="list-land" onclick="toggleCollapse(this)"><strong>List Land: </strong></div>
+        <div class="list-region" onclick="toggleCollapse(this)"><strong>List Region: </strong></div>
+        <div class="list-productgroup" onclick="toggleCollapse(this)"><strong>List Product group: </strong></div>
+        <div class="list-product" onclick="toggleCollapse(this)"></div>
+        <div class="list-subproduct" onclick="toggleCollapse(this)"></div>
+        <div class="list-market" onclick="toggleCollapse(this)"></div>
+        <div class="list-submarket" onclick="toggleCollapse(this)"></div>
+    </section>
     <script>
         let mktFilter
         $(document).ready(function () {
             const $mFilter = $('#mFilter')
             mktFilter = new mkFilter($mFilter, [new Criterial(0, 1, [0, 0])])
-            
+
             const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
             btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
+
+            renderDashboard(document.querySelector(`#dashboard`))
         })
-        
+
+        function renderDashboard(container) {
+            const dLstLand = container.querySelector(`.list-land`)
+            const dLstRegion = container.querySelector(`.list-region`)
+            const dLstPrdGroup = container.querySelector(`.list-productgroup`)
+            const dLstProduct = container.querySelector(`.list-product`)
+            const dLstSubProduct = container.querySelector(`.list-subproduct`)
+            const dLstMarket = container.querySelector(`.list-market`)
+            const dLstSubMarket = container.querySelector(`.list-submarket`)
+
+            renderLands()
+            renderRegions()
+            renderProductGroups()
+
+            
+            function renderProductGroups() {
+                const $wrapLst = $(dLstPrdGroup)
+                for (let ii = 0; ii < ProductGroups.length; ii++) {
+                    const item = ProductGroups[ii]
+                    $wrapLst.append(`<div class="lst-entry">
+                        <span>${item.Id}</span>
+                        <input type="text" class="form-control" value="${item.Name}"/>
+                        <button type="button" class="btn btn-secondary">Update</button>
+                        </div>`)
+                }
+            }
+            function renderRegions() {
+                const $wrapLst = $(dLstRegion)
+                for (let ii = 0; ii < Regions.length; ii++) {
+                    const item = Regions[ii]
+                    $wrapLst.append(`<div class="lst-entry">
+                        <span>${item.Id}</span>
+                        <input type="text" class="form-control" value="${item.Name}"/>
+                        <button type="button" class="btn btn-secondary">Update</button>
+                        </div>`)
+                }
+            }
+            function renderLands() {
+                const $wrapLst = $(dLstLand)
+                for (let ii = 0; ii < Lands.length; ii++) {
+                    const item = Lands[ii]
+                    $wrapLst.append(`<div class="lst-entry">
+                        <span>${item.Id}</span>
+                        <input type="text" class="form-control" value="${item.Name}"/>
+                        <button type="button" class="btn btn-secondary">Update</button>
+                        </div>`)
+                }
+            }
+        }
+        function toggleCollapse(e) {
+            e.classList.toggle('dnb-collapse');
+        }
     </script>
 </body>

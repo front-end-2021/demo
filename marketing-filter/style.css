@@ -1,4 +1,17 @@
+body {display: grid;
+    grid-template-columns: 50% 50%;}
+
 .list-criterial, .list-button {padding: 6px;}
 .list-criterial > * {margin-bottom: 6px; display: flex;}
 .list-criterial > * > * {margin-right: 3px;}
 .btn-del-crite {width: 30px; padding-left: 6px;}
+
+#dashboard {max-height: 100vh; overflow-y: auto;}
+#dashboard [class|="list"] > .lst-entry {display: grid; grid-template-columns: 30px 600px 90px; grid-gap: 9px; margin-bottom: 9px;align-items: center;}
+
+.list-land.dnb-collapse > .lst-entry,
+.list-region.dnb-collapse > .lst-entry,
+.list-productgroup.dnb-collapse > .lst-entry,
+.list-product.dnb-collapse > .lst-entry,
+.list-market.dnb-collapse > .lst-entry,
+.list-submarket.dnb-collapse > .lst-entry {display: none !important;}
