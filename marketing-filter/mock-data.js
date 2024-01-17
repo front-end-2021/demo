@@ -80,3 +80,14 @@ const Actions = [
     {Id: 4, Name: '2 điểm bán trong tháng 6', GoalId: 1},
     {Id: 3, Name: '3 điểm bán trong tháng 9', GoalId: 1},
 ]
+// 12. Table MarketRegion: Id (Bigint), MarketId (Bigint), RegionId (Bigint)
+const MarketRegions = [
+    {Id: 1, MarketId: 1, RegionId: 2},
+    {Id: 2, MarketId: 2, RegionId: 1},
+    {Id: 3, MarketId: 30, RegionId: 2},
+]
+// 13. Table SubmarketProductId: Id (Bigint), SubmarketId (Bigint), ProductId (Bigint)
+const SubmarketProductIds = [
+    {Id: 1, SubmarketId: 1, ProductId: 8},
+    {Id: 2, SubmarketId: 2, ProductId: 1}
+]
