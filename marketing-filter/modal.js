@@ -64,6 +64,7 @@ class Criterial {
 class mkFilter {
     #Blocks = [];       // [{Operand, Type, Ids}]
     #Controls = [];   // [{Operand, Type, Ids}]
+    onSelectFilter = null;
     constructor(container, criterials) {
         for (let ii = 0; ii < criterials.length; ii++) {
             this.#Blocks.push(criterials[ii])
@@ -240,18 +241,32 @@ class mkFilter {
         }
         return productIds
     }
-    get SubmarketProductIds(){
-        const subMrktIds = this.SubmarketIds
-        const prdIds = this.ProductIds
+    get GoalIds() {
         const lst = []
-        for(let ss = 0; ss < subMrktIds.length; ss++) {
-            const submarketId = subMrktIds[ss]
-            for(let pp = 0; pp < prdIds.length; pp++) {
-                const prdId = prdIds[pp]
-                lst.push(`${submarketId}-${prdId}`)
+        const goals = Goals.map(goal => {
+            const subMrkPrdIds = goal.SubmarketProductId.split('-')
+            return {
+                Id: goal.Id,
+                SubmarketId: parseInt(subMrkPrdIds[0]),
+                ProductId: parseInt(subMrkPrdIds[1])
             }
         }
-        return lst
+        )
+        const subMrktIds = this.SubmarketIds
+        for (let ii = 0; ii < goals.length; ii++) {
+            const goal = goals[ii]
+            if (subMrktIds.includes(goal.SubmarketId)) {
+                lst.push(goal)
+            }
+        }
+        const prdIds = this.ProductIds
+        for (let ii = lst.length - 1; -1 < ii; ii--) {
+            const goal = lst[ii]
+            if (!prdIds.includes(goal.ProductId)) {
+                lst.splice(ii, 1)
+            }
+        }
+        return lst.map(x => x.Id)
     }
     get Criterials() {
         const lst = []
@@ -294,6 +309,9 @@ class mkFilter {
         const operandChange = (e) => {
             const tOprnd = e.sender.value()
             row.Operand = parseInt(tOprnd)
+            if (typeof this.onSelectFilter == 'function') {
+                this.onSelectFilter(this.GoalIds)
+            }
         }
         $operand.kendoDropDownList({
             dataTextField: "Name",
@@ -307,8 +325,6 @@ class mkFilter {
         const typeChange = (e) => {
             const tType = e.sender.value()
             row.Type = parseInt(tType)
-
-            //console.log('on change type', this, e.sender)
             this.destroyControl(ii, 'Ids')
             row.Ids = getInitIds(row.Type)
 
@@ -316,6 +332,9 @@ class mkFilter {
             const control = this.#Controls[ii]
             control.Ids = this.renderIdsDropdownList($tRow, ii)
             this.renderBtnRemove($tRow, ii)
+            if (typeof this.onSelectFilter == 'function') {
+                this.onSelectFilter(this.GoalIds)
+            }
         }
         $type.kendoDropDownList({
             dataTextField: "Name",
@@ -354,6 +373,9 @@ class mkFilter {
                 initCtrlChildren.call(this, jj)
                 updateSourceNext.call(this, jj, id)
 
+                if (typeof this.onSelectFilter == 'function') {
+                    this.onSelectFilter(this.GoalIds)
+                }
             }
             $input.kendoDropDownList({
                 dataTextField: "Name",
@@ -384,6 +406,10 @@ class mkFilter {
             const ctrlPrG = control.Ids[0].data("kendoDropDownList")
             ctrlPrG.setDataSource(lstPrG)
             ctrlPrG.value(-1)
+            
+            if(typeof this.onSelectFilter == 'function') {
+                this.onSelectFilter(this.GoalIds)
+            }
         }
         function selectLand(id) {
             const control = this.findLowestControl(ii, 5)
@@ -393,6 +419,10 @@ class mkFilter {
             const ctrlMarket = control.Ids[0].data("kendoDropDownList")
             ctrlMarket.setDataSource(markets)
             ctrlMarket.value(-10)
+            
+            if(typeof this.onSelectFilter == 'function') {
+                this.onSelectFilter(this.GoalIds)
+            }
         }
         function initCtrlChildren(jj) {
             if (crite.Ids.length - 1 <= jj) return
@@ -427,6 +457,9 @@ class mkFilter {
             this.destroyControl(ii, 'All')
             this.#Blocks.splice(ii, 1)
             row.remove()
+            if (typeof this.onSelectFilter == 'function') {
+                this.onSelectFilter(this.GoalIds)
+            }
         }
         btnDeleteii = $tRow.find(`.${clssBtnDel}-${ii}`)
         btnDeleteii.on('click', onDelRow)

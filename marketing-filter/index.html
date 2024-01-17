@@ -11,20 +11,24 @@
 </head>
 
 <body>
-    <section id="mFilter">
-        <div class="list-criterial"></div>
-        <div class="list-button">
-            <button type="button" class="btn btn-primary">
-                <i class="bi bi-search"></i> Filter</button>
-            <button type="button" class="btn btn-secondary"><i class="bi bi-arrow-repeat">
-                </i> Reset</button>
-            <button type="button" class="btn btn-primary btnAddFilter">
-                <i class="bi bi-plus-circle"></i> Add</button>
-            <button type="button" class="btn btn-primary">
-                <i class="bi bi-download"></i> Save filter</button>
-
-        </div>
-    </section>
+    <main>
+        <section id="mFilter">
+            <div class="list-criterial"></div>
+            <div class="list-button">
+                <button type="button" class="btn btn-secondary"><i class="bi bi-arrow-repeat">
+                    </i> Reset</button>
+                <button type="button" class="btn btn-primary btnAddFilter">
+                    <i class="bi bi-plus-circle"></i> Add</button>
+                <button type="button" class="btn btn-primary">
+                    <i class="bi bi-download"></i> Save filter</button>
+    
+            </div>
+        </section>
+        <article>
+            <h6>View Goals: </h6>
+            <div></div>
+        </article>
+    </main>
     <section id="dashboard">
         <div class="list-land"><h6 onclick="toggleCollapse(this)">List Land: <b>&#10010;</b></h6></div>
         <div class="list-region"><h6 onclick="toggleCollapse(this)">List Region:  <b>&#10010;</b></h6></div>
@@ -42,10 +46,14 @@
 
             const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
             btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
+            mktFilter.onSelectFilter = renderGoals
 
             renderDashboard(document.querySelector(`#dashboard`))
         })
-
+        function renderGoals(goalIds) {
+            const goals = Goals.filter(x => goalIds.includes(x.Id))
+            console.log(goals)
+        }
         function renderDashboard(container) {
             const dLstLand = container.querySelector(`.list-land`)
             const dLstRegion = container.querySelector(`.list-region`)
