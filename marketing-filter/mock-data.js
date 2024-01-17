@@ -72,7 +72,7 @@ const StakeholderGroups = [
 // 10. Table Goal: Id (Bigint), Name (VARCHAR), SubmarketId (Bigint), ProductId (Bigint)
 const Goals = [
     {Id: 1, Name: 'Xây dựng 6 điểm bán sách', SubmarketProductId: '1-8'},
-    {Id: 2, Name: 'Xây dựng 3 phòng live stream', SubmarketProductId: '30-1'},
+    {Id: 2, Name: 'Xây dựng 3 phòng live stream', SubmarketProductId: '2-1'},
 ]
 // 11. Table Action: Id (Bigint), Name (VARCHAR), GoalId (Bigint)
 const Actions = [
