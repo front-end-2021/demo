@@ -225,6 +225,11 @@ class mkFilter {
                 continue
             }
             // And
+            // const regnId = closestRegionId(ii)
+            // if(0 < regnId) {
+            //     const prdGrpIds = getProductGroups([regnId], []).map(x => x.Id)
+            //     const lstPrdId = getProductsIn(prdGrpIds, [])
+            // }
             if (productIds.includes(prdId)) {
                 lastI = ii
                 continue
@@ -240,6 +245,13 @@ class mkFilter {
             return getProductsIn(prdGrpIds, []).map(x => x.Id)
         }
         return productIds
+        function closestRegionId(ii) {
+            for (let jj = ii - 1; -1 < jj; jj++) {
+                const crite = blocks[jj]
+                if (1 == crite.Type) return crite.Ids[1]
+            }
+            return -333
+        }
     }
     get GoalIds() {
         const lst = []
@@ -401,26 +413,43 @@ class mkFilter {
         function selectRegion(id) {
             const control = this.findLowestControl(ii, 2)
             if (!control) return
-            const lst = [lType[1]]
+            let lst = [lType[1]]
             const lstPrG = getProductGroups([id], lst)
             const ctrlPrG = control.Ids[0].data("kendoDropDownList")
             ctrlPrG.setDataSource(lstPrG)
             ctrlPrG.value(-1)
-            
-            if(typeof this.onSelectFilter == 'function') {
+            const ctrlPrd = control.Ids[1].data("kendoDropDownList")
+            lst = [lType[2]]
+            const lstPrd = getProductsIn(lstPrG.map(x => x.Id), lst)
+            ctrlPrd.setDataSource(lstPrd)
+            ctrlPrd.value(-2)
+            if (typeof this.onSelectFilter == 'function') {
                 this.onSelectFilter(this.GoalIds)
             }
         }
         function selectLand(id) {
-            const control = this.findLowestControl(ii, 5)
-            if (!control) return
-            const lst = [lType[10], lType[0]]
-            const markets = getMarkets(id, lst)
-            const ctrlMarket = control.Ids[0].data("kendoDropDownList")
-            ctrlMarket.setDataSource(markets)
-            ctrlMarket.value(-10)
-            
-            if(typeof this.onSelectFilter == 'function') {
+            let control = lowestMarket.call(this)
+            if(control) {
+                const lst = [lType[10], lType[0]]
+                const markets = getMarkets(id, lst)
+                const ctrlMarket = control.Ids[0].data("kendoDropDownList")
+                ctrlMarket.setDataSource(markets)
+                ctrlMarket.value(-10)
+            }
+            control = lowestProductGrp.call(this)
+            if(control) {
+                const regionIds = id != 0 ? getRegions(id, []).map(x => x.Id) : [0]
+                let lst = [lType[1]]
+                const prdGrps = getProductGroups(regionIds, lst)
+                let ctlDrp = control.Ids[0].data('kendoDropDownList')
+                ctlDrp.setDataSource(prdGrps)
+                ctlDrp.value(-1)
+                const prds = getProductsIn(prdGrps.map(x => x.Id), [])
+                ctlDrp = control.Ids[1].data('kendoDropDownList')
+                ctlDrp.setDataSource(prds)
+                ctlDrp.value(-2)
+            }
+            if (typeof this.onSelectFilter == 'function') {
                 this.onSelectFilter(this.GoalIds)
             }
         }
@@ -437,6 +466,22 @@ class mkFilter {
                 nxtDrp.setDataSource(this.getSourceIds(ii, kk))
                 nxtDrp.refresh()
             }
+        }
+        function lowestProductGrp() {
+            for(let kk = ii + 1; kk < this.#Blocks.length; kk++) {
+                const crite = this.#Blocks[kk]
+                if(1 == crite.Type) return null
+                if(2 == crite.Type) return this.#Controls[kk]
+            }
+            return null
+        }
+        function lowestMarket() {            
+            for(let kk = ii + 1; kk < this.#Blocks.length; kk++) {
+                const crite = this.#Blocks[kk]
+                if(1 == crite.Type) return null
+                if(5 == crite.Type) return this.#Controls[kk]
+            }
+            return null
         }
     }
     renderBtnRemove($tRow, ii) {
@@ -515,11 +560,11 @@ class mkFilter {
                 switch (index) {
                     case 0:     // Product group
                         lst = [lType[1]]
-                        return getProductGroups([0], lst)
+                        return getPrdGroups.call(this, lst)
                     case 1:     // product
-                        const prdGrpId = criter.Ids[index - 1]
+                        const lstPrdGrpId = getPrdGroups.call(this, []).map(x => x.Id)
                         lst = [lType[2]]
-                        return getProducts(prdGrpId, lst)
+                        return getProductsIn(lstPrdGrpId, lst)
                     case 2:     // sub product
                         const prdId = criter.Ids[index - 1]
                         lst = [lType[3]]
@@ -539,7 +584,8 @@ class mkFilter {
             case 5: // Market segments/Stakeholder groups
                 if (index == 0) {
                     lst = [lType[10], lType[0]]
-                    const landId = closestLandId.call(this)
+                    const landRegnId = this.closestIds(ii, 1)
+                    const landId = landRegnId.length ? landRegnId[0] : -1
                     return getMarkets(landId, lst)
                 }
                 const marketId = criter.Ids[0]
@@ -552,7 +598,11 @@ class mkFilter {
                 }
                 return lst
         }
-
+        function getPrdGroups(lst){
+            const landRgnId = this.closestIds(ii, 1)
+            const rgnIds = landRgnId.length > 1 ? [landRgnId[1]] : [0]
+            return getProductGroups(rgnIds, lst)
+        }
         function closestMarketIds() {
             for (let jj = ii - 1; -1 < jj; jj--) {
                 const prevCrite = this.#Blocks[jj]
@@ -574,15 +624,6 @@ class mkFilter {
             }
             return []
         }
-        function closestLandId() {
-            for (let jj = ii - 1; -1 < jj; jj--) {
-                const prevCrite = this.#Blocks[jj]
-                if (1 == prevCrite.Type) {
-                    return prevCrite.Ids[0]
-                }
-            }
-            return -1
-        }
     }
     findLowestControl(ii, type) {
         for (let jj = ii + 1; jj < this.#Blocks.length; jj++) {
@@ -592,6 +633,13 @@ class mkFilter {
             }
         }
         return null
+    }
+    closestIds(ii, type) {
+        for (let jj = ii - 1; -1 < jj; jj--) {
+            const crite = this.#Blocks[jj]
+            if (crite.Type == type) return crite.Ids
+        }
+        return []
     }
     updateSourceIds(type, index) {
         const lstBlock = this.#Blocks

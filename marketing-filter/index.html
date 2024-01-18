@@ -21,12 +21,11 @@
                     <i class="bi bi-plus-circle"></i> Add</button>
                 <button type="button" class="btn btn-primary">
                     <i class="bi bi-download"></i> Save filter</button>
-    
             </div>
         </section>
         <article>
             <h6>View Goals: </h6>
-            <div></div>
+            <div class="dnb_list-goal"></div>
         </article>
     </main>
     <section id="dashboard">
@@ -52,6 +51,15 @@
         })
         function renderGoals(goalIds) {
             const goals = Goals.filter(x => goalIds.includes(x.Id))
+            const $lstGoal = $('.dnb_list-goal')
+            $lstGoal.html('')
+            let row = ''
+            for(let ii = 0; ii < goals.length; ii++) {
+                const goal = goals[ii]
+                row += `<div><span>${goal.Id}<span>
+                    <span>${goal.Name}</span></div>`
+            }
+            $lstGoal.append(`<div>${row}</div>`)
             console.log(goals)
         }
         function renderDashboard(container) {

@@ -42,7 +42,8 @@ const Products = [
         Id: 8, Name: `The Good Life: Lessons from the World's Longest Scientific Study of Happiness`,
         PrgId: 3
     },
-    {Id: 9, Name: 'Star Wars', PrgId: 4}
+    {Id: 9, Name: 'Star Wars', PrgId: 4},
+    {Id: 10, Name: 'e-Commer', PrgId: 6},
 ]
 // 6. Table SubProduct: Id (Bigint), Name (VARCHAR), ProductId (Bigint)
 const SubProducts = [
@@ -71,8 +72,13 @@ const StakeholderGroups = [
 ]
 // 10. Table Goal: Id (Bigint), Name (VARCHAR), SubmarketId (Bigint), ProductId (Bigint)
 const Goals = [
-    {Id: 1, Name: 'Xây dựng 6 điểm bán sách', SubmarketProductId: '1-8'},
-    {Id: 2, Name: 'Xây dựng 3 phòng live stream', SubmarketProductId: '2-1'},
+    {Id: 1, Name: 'Build 3 điểm bán sách', SubmarketProductId: '1-8'},
+    {Id: 2, Name: 'Build 1 phòng live esport', SubmarketProductId: '3-2'},
+    {Id: 3, Name: 'Build 2 phòng live stream', SubmarketProductId: '2-1'},
+    {Id: 4, Name: 'Build 3 phòng live face', SubmarketProductId: '2-1'},
+    {Id: 5, Name: 'Build 4 phòng shop online', SubmarketProductId: '4-10'},
+    {Id: 6, Name: 'Build 5 phòng live stream', SubmarketProductId: '2-1'},
+    {Id: 7, Name: 'Build 6 phòng live tiktok', SubmarketProductId: '2-1'},
 ]
 // 11. Table Action: Id (Bigint), Name (VARCHAR), GoalId (Bigint)
 const Actions = [
