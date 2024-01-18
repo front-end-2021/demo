@@ -411,7 +411,7 @@ class mkFilter {
             }
         }
         function selectRegion(id) {
-            const control = this.findLowestControl(ii, 2)
+            const control = lowestProductGrp.call(this)
             if (!control) return
             let lst = [lType[1]]
             const lstPrG = getProductGroups([id], lst)
@@ -624,15 +624,6 @@ class mkFilter {
             }
             return []
         }
-    }
-    findLowestControl(ii, type) {
-        for (let jj = ii + 1; jj < this.#Blocks.length; jj++) {
-            const nxtCrite = this.#Blocks[jj]
-            if (nxtCrite.Type === type) {
-                return this.#Controls[jj]
-            }
-        }
-        return null
     }
     closestIds(ii, type) {
         for (let jj = ii - 1; -1 < jj; jj--) {
