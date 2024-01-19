@@ -10,22 +10,22 @@ const Regions = [
     { Id: 2, Name: 'Đông Bắc Bộ', LandId: 1 },
     { Id: 3, Name: 'Trung du miền núi phía Bắc', LandId: 1 },
     { Id: 4, Name: 'Hạ lưu sông Hồng', LandId: 1 },
+    { Id: 9, Name: 'Hà Nội', LandId: 1 },
     { Id: 5, Name: 'Thanh Hóa, Nghệ An, Hà Tĩnh', LandId: 2 },
     { Id: 6, Name: 'Đồng Hới, Quảng Bình', LandId: 2 },
-    { Id: 7, Name: 'Đồng bằng sông Cứu Long', LandId: 3 },
-    { Id: 8, Name: 'Thành Phố Hồ Chí Minh', LandId: 3 },
-    { Id: 9, Name: 'Hà Nội', LandId: 1 },
-    { Id: 10, Name: 'Miền Tây', LandId: 3 },
     { Id: 11, Name: 'Biên giới Việt-Lào', LandId: 2 },
     { Id: 12, Name: 'Vịnh Nha Trang', LandId: 2 },
+    { Id: 7, Name: 'Đồng bằng sông Cứu Long', LandId: 3 },
+    { Id: 8, Name: 'Thành Phố Hồ Chí Minh', LandId: 3 },
+    { Id: 10, Name: 'Miền Tây', LandId: 3 },
 ]
 // 3. Table MapRegionProductGroup: Id (Bigint), RegionId (Bigint), ProductGroupId (Bigint)
 // 4. Table ProductGroup: Id (Bigint), Name (VARCHAR)
 const ProductGroups = [
     { Id: 1, Name: 'Game Esport', RegionIds: [4, 8, 9] },
     { Id: 2, Name: 'Game In door', RegionIds: [3, 4, 5, 7, 8, 9, 10]},
-    { Id: 3, Name: `Education's books`, RegionIds: [1, 2, 3, 5, 10, 11, 12] },
-    { Id: 4, Name: `Novel books`, RegionIds: [10, 11, 12] },
+    { Id: 3, Name: `Education's books`, RegionIds: [2, 3, 5, 6, 12] },
+    { Id: 4, Name: `Novel books`, RegionIds: [10] },
     { Id: 5, Name: 'Events', RegionIds: [12, 7] },
     { Id: 6, Name: 'Start up', RegionIds: [9, 8, 4] },
 ]

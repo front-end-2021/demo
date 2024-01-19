@@ -46,8 +46,10 @@
             const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
             btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
             mktFilter.onSelectFilter = renderGoals
-
+            
             renderDashboard(document.querySelector(`#dashboard`))
+
+            mktFilter.onSelectFilter(mktFilter.GoalIds)
         })
         function renderGoals(goalIds) {
             const goals = Goals.filter(x => goalIds.includes(x.Id))
