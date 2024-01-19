@@ -23,7 +23,7 @@ const Regions = [
 // 4. Table ProductGroup: Id (Bigint), Name (VARCHAR)
 const ProductGroups = [
     { Id: 1, Name: 'Game Esport', RegionIds: [4, 8, 9] },
-    { Id: 2, Name: 'Game In door', RegionIds: [3, 4, 5, 7, 8, 9, 10]},
+    { Id: 2, Name: 'Game In door', RegionIds: [3, 4, 5, 7, 8, 9, 10] },
     { Id: 3, Name: `Education's books`, RegionIds: [2, 3, 5, 6, 12] },
     { Id: 4, Name: `Novel books`, RegionIds: [10] },
     { Id: 5, Name: 'Events', RegionIds: [12, 7] },
@@ -42,58 +42,88 @@ const Products = [
         Id: 8, Name: `The Good Life: Lessons from the World's Longest Scientific Study of Happiness`,
         PrgId: 3
     },
-    {Id: 9, Name: 'Star Wars', PrgId: 4},
-    {Id: 10, Name: 'e-Commer', PrgId: 6},
+    { Id: 9, Name: 'Star Wars', PrgId: 4 },
+    { Id: 10, Name: 'e-Commer', PrgId: 6 },
 ]
 // 6. Table SubProduct: Id (Bigint), Name (VARCHAR), ProductId (Bigint)
 const SubProducts = [
-    {Id: 1, Name: `Episode I U+002d The Phantom Menace`, ProdId: 9},
-    {Id: 2, Name: `Episode II U+002d Attack of the Clones`, ProdId: 9},
-    {Id: 3, Name: `Episode III U+002d Revenge of the Sith`, ProdId: 9},
-    {Id: 4, Name: `Episode IV U+002d A New Hope`, ProdId: 9},
-    {Id: 5, Name: `Episode V U+002d The Empire Strikes Back`, ProdId: 9},
-    {Id: 6, Name: `Episode VI U+002d Return of the Jedi`, ProdId: 9},
+    { Id: 1, Name: `Episode I U+002d The Phantom Menace`, ProdId: 9 },
+    { Id: 2, Name: `Episode II U+002d Attack of the Clones`, ProdId: 9 },
+    { Id: 3, Name: `Episode III U+002d Revenge of the Sith`, ProdId: 9 },
+    { Id: 4, Name: `Episode IV U+002d A New Hope`, ProdId: 9 },
+    { Id: 5, Name: `Episode V U+002d The Empire Strikes Back`, ProdId: 9 },
+    { Id: 6, Name: `Episode VI U+002d Return of the Jedi`, ProdId: 9 },
 ]
 // 7. Table MapLandMarket: Id (Bigint), LandId (Bigint), MarketId (Bigint)
 // 8. Table Market: Id (Bigint), Name (VARCHAR)
 const MarketSegments = [
-    {Id: 1, Name: 'Aeon', LandIds: [1, 3]},
-    {Id: 2, Name: 'Big C', LandIds: [1, 2]},
-    {Id: 30, Name: 'Dota ESL Roomate', LandIds: [1, 2, 3]},
-    {Id: 4, Name: 'Wwin Mart', LandIds: [2, 3]}
+    { Id: 1, Name: 'Aeon', LandIds: [1, 3] },
+    { Id: 2, Name: 'Big C', LandIds: [1, 2] },
+    { Id: 30, Name: 'Dota ESL Roomate', LandIds: [1, 2, 3] },
+    { Id: 4, Name: 'Wwin Mart', LandIds: [2, 3] }
 ]
 // 9. Table Submarket: Id (Bigint), Name (VARCHAR), MarketId (Bigint)
 const StakeholderGroups = [
-    {Id: 1, Name: 'Aeon Long Biên', MarketId: 1},
-    {Id: 2, Name: 'Aeon Hà Đông', MarketId: 1},
-    {Id: 3, Name: 'ESL Roomate Hanoi', MarketId: 30},
-    {Id: 4, Name: 'Wwin Mart Thanh Xuân', MarketId: 2},
-    {Id: 5, Name: 'Wwin Mart Hai Bà Trưng', MarketId: 2},
+    { Id: 1, Name: 'Aeon Long Biên', MarketId: 1 },
+    { Id: 2, Name: 'Aeon Hà Đông', MarketId: 1 },
+    { Id: 3, Name: 'ESL Roomate Hanoi', MarketId: 30 },
+    { Id: 4, Name: 'Wwin Mart Thanh Xuân', MarketId: 2 },
+    { Id: 5, Name: 'Wwin Mart Hai Bà Trưng', MarketId: 2 },
 ]
 // 10. Table Goal: Id (Bigint), Name (VARCHAR), SubmarketId (Bigint), ProductId (Bigint)
 const Goals = [
-    {Id: 1, Name: 'Build 3 điểm bán sách', SubmarketProductId: '1-8'},
-    {Id: 2, Name: 'Build 1 phòng live esport', SubmarketProductId: '3-2'},
-    {Id: 3, Name: 'Build 2 phòng live stream', SubmarketProductId: '2-1'},
-    {Id: 4, Name: 'Build 3 phòng live face', SubmarketProductId: '2-1'},
-    {Id: 5, Name: 'Build 4 phòng shop online', SubmarketProductId: '4-10'},
-    {Id: 6, Name: 'Build 5 phòng live stream', SubmarketProductId: '2-1'},
-    {Id: 7, Name: 'Build 6 phòng live tiktok', SubmarketProductId: '2-1'},
+    {
+        Id: 1, Name: 'Build 3 điểm bán sách', SubmarketProductId: '1-8',
+        Finish: false, Start: null, End: null
+    },
+    {
+        Id: 2, Name: 'Build 1 phòng live esport', SubmarketProductId: '3-2',
+        Finish: false, Start: null, End: null
+    },
+    {
+        Id: 3, Name: 'Build 2 phòng live stream', SubmarketProductId: '2-1',
+        Finish: false, Start: null, End: null
+    },
+    {
+        Id: 4, Name: 'Build 3 phòng live face', SubmarketProductId: '2-1',
+        Finish: false, Start: null, End: null
+    },
+    {
+        Id: 5, Name: 'Build 4 phòng shop online', SubmarketProductId: '4-10',
+        Finish: false, Start: null, End: null
+    },
+    {
+        Id: 6, Name: 'Build 5 phòng live stream', SubmarketProductId: '2-1',
+        Finish: false, Start: null, End: null
+    },
+    {
+        Id: 7, Name: 'Build 6 phòng live tiktok', SubmarketProductId: '2-1',
+        Finish: false, Start: null, End: null
+    },
 ]
 // 11. Table Action: Id (Bigint), Name (VARCHAR), GoalId (Bigint)
 const Actions = [
-    {Id: 1, Name: '1 điểm bán trong tháng 3', GoalId: 1},
-    {Id: 4, Name: '2 điểm bán trong tháng 6', GoalId: 1},
-    {Id: 3, Name: '3 điểm bán trong tháng 9', GoalId: 1},
+    {
+        Id: 1, Name: '1 điểm bán trong tháng 3', GoalId: 1,
+        Finish: false, Start: null, End: null
+    },
+    {
+        Id: 4, Name: '2 điểm bán trong tháng 6', GoalId: 1,
+        Finish: false, Start: null, End: null
+    },
+    {
+        Id: 3, Name: '3 điểm bán trong tháng 9', GoalId: 1,
+        Finish: false, Start: null, End: null
+    },
 ]
 // 12. Table MarketRegion: Id (Bigint), MarketId (Bigint), RegionId (Bigint)
 const MarketRegions = [
-    {Id: 1, MarketId: 1, RegionId: 2},
-    {Id: 2, MarketId: 2, RegionId: 1},
-    {Id: 3, MarketId: 30, RegionId: 2},
+    { Id: 1, MarketId: 1, RegionId: 2 },
+    { Id: 2, MarketId: 2, RegionId: 1 },
+    { Id: 3, MarketId: 30, RegionId: 2 },
 ]
 // 13. Table SubmarketProductId: Id (Bigint), SubmarketId (Bigint), ProductId (Bigint)
 const SubmarketProductIds = [
-    {Id: 1, SubmarketId: 1, ProductId: 8},
-    {Id: 2, SubmarketId: 2, ProductId: 1}
+    { Id: 1, SubmarketId: 1, ProductId: 8 },
+    { Id: 2, SubmarketId: 2, ProductId: 1 }
 ]

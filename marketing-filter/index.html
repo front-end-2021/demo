@@ -15,8 +15,10 @@
         <section id="mFilter">
             <div class="list-criterial"></div>
             <div class="list-button">
-                <button type="button" class="btn btn-secondary"><i class="bi bi-arrow-repeat">
-                    </i> Reset</button>
+                <button type="button" class="btn btn-primary btnSetFilter"><i class="bi bi-search">
+                    </i> Filter</button>
+                    <button type="button" class="btn btn-secondary"><i class="bi bi-arrow-repeat">
+                        </i> Reset</button>
                 <button type="button" class="btn btn-primary btnAddFilter">
                     <i class="bi bi-plus-circle"></i> Add</button>
                 <button type="button" class="btn btn-primary">
@@ -45,11 +47,12 @@
 
             const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
             btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
-            mktFilter.onSelectFilter = renderGoals
+            const btnSetFilter = document.querySelector('#mFilter .btnSetFilter')
+            btnSetFilter.addEventListener('click', (e) => renderGoals(mktFilter.GoalIds))
             
             renderDashboard(document.querySelector(`#dashboard`))
 
-            mktFilter.onSelectFilter(mktFilter.GoalIds)
+            renderGoals(mktFilter.GoalIds)
         })
         function renderGoals(goalIds) {
             const goals = Goals.filter(x => goalIds.includes(x.Id))

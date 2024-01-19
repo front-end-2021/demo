@@ -1,6 +1,4 @@
-const Operands = [
-    { Id: 1, Name: 'And' }, { Id: 2, Name: 'Or' }
-]
+const Operands = [{ Id: 1, Name: 'And' }, { Id: 2, Name: 'Or' }]
 const mFilterBy = { Id: 0, Name: 'Filter by' }
 // list criterial type
 const mType = [
@@ -24,7 +22,6 @@ const mType = [
     { Id: 17, Name: `Supplier` },
     { Id: 18, Name: `Hidden elements` },
 ]
-
 // list dropdown type
 const lType = [
     { Id: 0, Name: `Select all` },
@@ -64,7 +61,6 @@ class Criterial {
 class mkFilter {
     #Blocks = [];       // [{Operand, Type, Ids}]
     #Controls = [];   // [{Operand, Type, Ids}]
-    onSelectFilter = null;
     constructor(container, criterials) {
         for (let ii = 0; ii < criterials.length; ii++) {
             this.#Blocks.push(criterials[ii])
@@ -123,31 +119,40 @@ class mkFilter {
             const crite = blocks[ii]
             if (1 != crite.Type) continue
             const rgnId = crite.Ids[1]
-            if (rgnId < 0) continue
+            if (rgnId < 0) continue            
+            if(!lstId.length) {
+                // 1st
+                lstId.push(rgnId)
+                continue
+            }
             if (rgnId == 0) {           // Select all
                 if (lstId.includes(0)) {
+                    continue
+                } 
+                if (1 == crite.Operand) {       // And
                     continue
                 }
                 lstId = [0]
                 continue
             }
             // 0 < rgnId
+            if (1 == crite.Operand) {       // And
+                if (!lstId.includes(rgnId)) {
+                    if (lstId.includes(0)) {
+                        lstId = [rgnId]
+                        continue
+                    }
+                    lstId.splice(0)     // empty list
+                    continue
+                }
+                lstId = [rgnId]
+                continue
+            }
             if (2 == crite.Operand) {        // Or
                 if (lstId.includes(rgnId)) continue
                 lstId.push(rgnId)
                 continue
             }
-            // And
-            if (!lstId.includes(rgnId)) {
-                if (lstId.includes(0)) {
-                    lstId = [rgnId]
-                    continue
-                }
-                lstId.splice(0)     // empty list
-                continue
-            }
-            lstId = [rgnId]
-            continue
         }
         return lstId
     }
@@ -274,7 +279,7 @@ class mkFilter {
             return getProductsIn(prdGrpIds, []).map(x => x.Id)
         }
         return productIds
-        
+
     }
     get GoalIds() {
         const lst = []
@@ -344,9 +349,6 @@ class mkFilter {
         const operandChange = (e) => {
             const tOprnd = e.sender.value()
             row.Operand = parseInt(tOprnd)
-            if (typeof this.onSelectFilter == 'function') {
-                this.onSelectFilter(this.GoalIds)
-            }
         }
         $operand.kendoDropDownList({
             dataTextField: "Name",
@@ -367,9 +369,6 @@ class mkFilter {
             const control = this.#Controls[ii]
             control.Ids = this.renderIdsDropdownList($tRow, ii)
             this.renderBtnRemove($tRow, ii)
-            if (typeof this.onSelectFilter == 'function') {
-                this.onSelectFilter(this.GoalIds)
-            }
         }
         $type.kendoDropDownList({
             dataTextField: "Name",
@@ -383,9 +382,7 @@ class mkFilter {
         if (row.Ids.length) {
             cIds = this.renderIdsDropdownList($tRow, ii)
         }
-        this.#Controls.push({
-            Operand: $operand, Type: $type, Ids: cIds
-        })
+        this.#Controls.push({ Operand: $operand, Type: $type, Ids: cIds })
         this.renderBtnRemove($tRow, ii)
     }
     renderIdsDropdownList($tRow, ii) {
@@ -397,7 +394,6 @@ class mkFilter {
             tInput = `<input class="fcsub-${jj}" c-index="${jj}" style="width: 240px;" />`
             $tRow.append(tInput)
         }
-
         for (let jj = 0; jj < crite.Ids.length; jj++) {
             const _id = crite.Ids[jj]
             const $input = $tRow.find(`[c-index="${jj}"]`)
@@ -407,10 +403,6 @@ class mkFilter {
                 crite.Ids[jj] = id
                 initCtrlChildren.call(this, jj)
                 updateSourceNext.call(this, jj, id)
-
-                if (typeof this.onSelectFilter == 'function') {
-                    this.onSelectFilter(this.GoalIds)
-                }
             }
             $input.kendoDropDownList({
                 dataTextField: "Name",
@@ -446,9 +438,6 @@ class mkFilter {
             const lstPrd = getProductsIn(lstPrG.map(x => x.Id), lst)
             ctrlPrd.setDataSource(lstPrd)
             ctrlPrd.value(-2)
-            if (typeof this.onSelectFilter == 'function') {
-                this.onSelectFilter(this.GoalIds)
-            }
         }
         function selectLand(id) {
             let control = lowestMarket.call(this)
@@ -471,9 +460,6 @@ class mkFilter {
                 ctlDrp = control.Ids[1].data('kendoDropDownList')
                 ctlDrp.setDataSource(prds)
                 ctlDrp.value(-2)
-            }
-            if (typeof this.onSelectFilter == 'function') {
-                this.onSelectFilter(this.GoalIds)
             }
         }
         function initCtrlChildren(jj) {
@@ -525,9 +511,6 @@ class mkFilter {
             this.destroyControl(ii, 'All')
             this.#Blocks.splice(ii, 1)
             row.remove()
-            if (typeof this.onSelectFilter == 'function') {
-                this.onSelectFilter(this.GoalIds)
-            }
         }
         btnDeleteii = $tRow.find(`.${clssBtnDel}-${ii}`)
         btnDeleteii.on('click', onDelRow)
