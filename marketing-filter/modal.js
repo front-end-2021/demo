@@ -119,8 +119,8 @@ class mkFilter {
             const crite = blocks[ii]
             if (1 != crite.Type) continue
             const rgnId = crite.Ids[1]
-            if (rgnId < 0) continue            
-            if(!lstId.length) {
+            if (rgnId < 0) continue
+            if (!lstId.length) {
                 // 1st
                 lstId.push(rgnId)
                 continue
@@ -128,7 +128,7 @@ class mkFilter {
             if (rgnId == 0) {           // Select all
                 if (lstId.includes(0)) {
                     continue
-                } 
+                }
                 if (1 == crite.Operand) {       // And
                     continue
                 }
@@ -155,6 +155,61 @@ class mkFilter {
             }
         }
         return lstId
+    }
+    get MarketIds() {
+        const marketIds = []
+        const blocks = this.#Blocks
+        let lastI = -1
+        for (let ii = 0; ii < blocks.length; ii++) {
+            const crite = blocks[ii]
+            if (5 != crite.Type) continue
+            const marketId = crite.Ids[0]
+            if (!marketIds.length) {
+                if (-1 < marketId) marketIds.push(marketId)
+                lastI = ii
+                continue
+            }
+            if (1 == crite.Operand) {        // And
+                if (marketId < 0) {
+                    marketIds.splice(0)
+                    lastI = ii
+                    continue
+                }
+                if (marketId == 0) {
+                    if (marketIds.includes(0)) {
+                        lastI = ii
+                        continue
+                    }
+                    marketIds.splice(0)
+                    marketIds.push(0)
+                    lastI = ii
+                    continue
+                }
+                // 0 < marketId
+                if (marketIds.includes(0)) {
+                    marketIds.splice(0)
+                    marketIds.push(marketId)
+                    lastI = ii
+                    continue
+                }
+            }
+            // Or
+            if (marketId <= 0 || marketIds.includes(0)) {
+                lastI = ii
+                continue
+            }
+            // 0 < marketId
+            marketIds.push(marketId)
+            lastI = ii
+        }
+        if(lastI < 0) {
+            const landIds = this.LandIds
+            return getMarketsIn(landIds, []).map(x => x.Id)
+        }
+        if(marketIds.includes(0)) {
+            return getMarkets(0, []).map(x => x.Id)
+        }
+        return marketIds
     }
     get SubmarketIds() {
         let subMrketIds = []

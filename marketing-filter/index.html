@@ -17,8 +17,8 @@
             <div class="list-button">
                 <button type="button" class="btn btn-primary btnSetFilter"><i class="bi bi-search">
                     </i> Filter</button>
-                    <button type="button" class="btn btn-secondary"><i class="bi bi-arrow-repeat">
-                        </i> Reset</button>
+                <button type="button" class="btn btn-secondary"><i class="bi bi-arrow-repeat">
+                    </i> Reset</button>
                 <button type="button" class="btn btn-primary btnAddFilter">
                     <i class="bi bi-plus-circle"></i> Add</button>
                 <button type="button" class="btn btn-primary">
@@ -31,13 +31,27 @@
         </article>
     </main>
     <section id="dashboard">
-        <div class="list-land"><h6 onclick="toggleCollapse(this)">List Land: <b>&#10010;</b></h6></div>
-        <div class="list-region"><h6 onclick="toggleCollapse(this)">List Region:  <b>&#10010;</b></h6></div>
-        <div class="list-productgroup"><h6 onclick="toggleCollapse(this)">List Product group:  <b>&#10010;</b></h6></div>
-        <div class="list-product"><h6 onclick="toggleCollapse(this)">List Product:  <b>&#10010;</b></h6></div>
-        <div class="list-subproduct"><h6 onclick="toggleCollapse(this)">List Sub product:  <b>&#10010;</b></h6></div>
-        <div class="list-market"><h6 onclick="toggleCollapse(this)">List Market:  <b>&#10010;</b></h6></div>
-        <div class="list-submarket"><h6 onclick="toggleCollapse(this)">List sub market: <b>&#10010;</b></h6></div>
+        <div class="list-land">
+            <h6 onclick="toggleCollapse(this)">List Land: <b>&#10010;</b></h6>
+        </div>
+        <div class="list-region">
+            <h6 onclick="toggleCollapse(this)">List Region: <b>&#10010;</b></h6>
+        </div>
+        <div class="list-productgroup">
+            <h6 onclick="toggleCollapse(this)">List Product group: <b>&#10010;</b></h6>
+        </div>
+        <div class="list-product">
+            <h6 onclick="toggleCollapse(this)">List Product: <b>&#10010;</b></h6>
+        </div>
+        <div class="list-subproduct">
+            <h6 onclick="toggleCollapse(this)">List Sub product: <b>&#10010;</b></h6>
+        </div>
+        <div class="list-market">
+            <h6 onclick="toggleCollapse(this)">List Market: <b>&#10010;</b></h6>
+        </div>
+        <div class="list-submarket">
+            <h6 onclick="toggleCollapse(this)">List sub market: <b>&#10010;</b></h6>
+        </div>
     </section>
     <script>
         let mktFilter
@@ -49,9 +63,8 @@
             btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
             const btnSetFilter = document.querySelector('#mFilter .btnSetFilter')
             btnSetFilter.addEventListener('click', (e) => renderGoals(mktFilter.GoalIds))
-            
-            renderDashboard(document.querySelector(`#dashboard`))
 
+            renderDashboard(document.querySelector(`#dashboard`))
             renderGoals(mktFilter.GoalIds)
         })
         function renderGoals(goalIds) {
@@ -59,13 +72,65 @@
             const $lstGoal = $('.dnb_list-goal')
             $lstGoal.html('')
             let row = ''
-            for(let ii = 0; ii < goals.length; ii++) {
+            for (let ii = 0; ii < goals.length; ii++) {
                 const goal = goals[ii]
                 row += `<div><span>${goal.Id}<span>
                     <span>${goal.Name}</span></div>`
             }
             $lstGoal.append(`<div>${row}</div>`)
             console.log(goals)
+        }
+        function renderDataRegions(filter) {
+            const lstLand = getLands()
+            const lstRegion = getRegions()
+            const lstPath = getPaths(lstLand, lstRegion)
+
+            function addProducts(paths) {
+                const lst = []
+                let lstRegionId = []
+                for (let ii = 0; ii < Products.length; ii++) {
+                    const prd = Products[ii]
+                    if (filter.ProductIds.includes(prd.Id)) {
+                        lst.push(prd)
+                        const prdGrp = ProductGroups.find(x => x.Id == prd.PrgId)
+                        lstRegionId = lstRegionId.concat(prdGrp.RegionIds)
+                    }
+                }
+
+            }
+            function getPaths(lands, regns) {
+                const lst = []
+                for (let ii = 0; ii < regns.length; ii++) {
+                    const regn = regns[ii]
+                    const land = lands.find(x => x.Id == regn.LandId)
+                    if (!land) continue
+                    lst.push({
+                        IdLand: regn.LandId, IdRegion: regn.Id,
+                        Name: `${land.Name} > ${regn.Name}`
+                    })
+                }
+                return lst
+            }
+            function getLands() {
+                const lst = []
+                for (let ii = 0; ii < Lands.length; ii++) {
+                    const land = Lands[ii]
+                    if (filter.LandIds.includes(land.Id)) {
+                        lst.push(land)
+                    }
+                }
+                return lst
+            }
+            function getRegions() {
+                const lst = []
+                for (let ii = 0; ii < Regions.length; ii++) {
+                    const regn = Regions[ii]
+                    if (filter.RegionIds.includes(regn.Id)) {
+                        lst.push(regn)
+                    }
+                }
+                return lst
+            }
         }
         function renderDashboard(container) {
             const dLstLand = container.querySelector(`.list-land`)
@@ -80,7 +145,6 @@
             renderRegions()
             renderProductGroups()
 
-            
             function renderProductGroups() {
                 const $wrapLst = $(dLstPrdGroup)
                 for (let ii = 0; ii < ProductGroups.length; ii++) {
