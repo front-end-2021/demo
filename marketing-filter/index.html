@@ -62,10 +62,14 @@
             const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
             btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
             const btnSetFilter = document.querySelector('#mFilter .btnSetFilter')
-            btnSetFilter.addEventListener('click', (e) => renderGoals(mktFilter.GoalIds))
+            btnSetFilter.addEventListener('click', (e) => {
+                renderGoals(mktFilter.GoalIds)
+                renderDataRegions(mktFilter)
+            })
 
             renderDashboard(document.querySelector(`#dashboard`))
             renderGoals(mktFilter.GoalIds)
+            renderDataRegions(mktFilter)
         })
         function renderGoals(goalIds) {
             const goals = Goals.filter(x => goalIds.includes(x.Id))
@@ -84,6 +88,9 @@
             const lstLand = getLands()
             const lstRegion = getRegions()
             const lstPath = getPaths(lstLand, lstRegion)
+            console.log(lstLand)
+            console.log(lstRegion)
+            console.log(lstPath)
 
             function addProducts(paths) {
                 const lst = []

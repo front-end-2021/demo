@@ -154,6 +154,9 @@ class mkFilter {
                 continue
             }
         }
+        if(lstId.includes(0)) {
+            return Regions.map(x => x.Id)
+        }
         return lstId
     }
     get MarketIds() {
