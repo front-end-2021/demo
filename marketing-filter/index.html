@@ -95,15 +95,21 @@
 
             function addProducts(paths) {
                 const lst = []
-                let lstRegionId = []
+                const lstPrdGrp = []
+                let lstRegionId = [],
+                    prdGrp
                 for (let ii = 0; ii < Products.length; ii++) {
                     const prd = Products[ii]
                     if (filter.ProductIds.includes(prd.Id)) {
+                        if (!prdGrp || prdGrp.Id != prd.PrgId) {
+                            prdGrp = ProductGroups.find(x => x.Id == prd.PrgId)
+                        }
                         lst.push(prd)
-                        const prdGrp = ProductGroups.find(x => x.Id == prd.PrgId)
+                        lstPrdGrp.push(prdGrp)
                         lstRegionId = lstRegionId.concat(prdGrp.RegionIds)
                     }
                 }
+                lstRegionId.distinct()
 
             }
             function getPaths(lands, regns) {
