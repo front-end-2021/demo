@@ -88,29 +88,21 @@
         function renderDataRegions(filter) {
             const lstLand = getLands()
             const lstRegion = getRegions()
+            const lstProduct = getProducts()
             const lstPath = getPaths(lstLand, lstRegion)
             console.log(lstLand)
             console.log(lstRegion)
             console.log(lstPath)
+            addProducts()
 
-            function addProducts(paths) {
+            function addProducts() {
                 const lst = []
-                const lstPrdGrp = []
-                let lstRegionId = [],
-                    prdGrp
-                for (let ii = 0; ii < Products.length; ii++) {
-                    const prd = Products[ii]
-                    if (filter.ProductIds.includes(prd.Id)) {
-                        if (!prdGrp || prdGrp.Id != prd.PrgId) {
-                            prdGrp = ProductGroups.find(x => x.Id == prd.PrgId)
-                        }
-                        lst.push(prd)
-                        lstPrdGrp.push(prdGrp)
-                        lstRegionId = lstRegionId.concat(prdGrp.RegionIds)
-                    }
+                for (let ii = 0; ii < lstPath.length; ii++) {
+                    const item = lstPath[ii]
+                    const product = lstProduct.find(x => x.RegionIds.includes(item.IdRegion))
+                    if(!product) continue
+                    
                 }
-                lstRegionId.distinct()
-
             }
             function getPaths(lands, regns) {
                 const lst = []
@@ -122,6 +114,19 @@
                         IdLand: regn.LandId, IdRegion: regn.Id,
                         Name: `${land.Name} > ${regn.Name}`
                     })
+                }
+                return lst
+            }
+            function getProducts() {
+                const lst = []
+                let prdGrp = null
+                for (let ii = 0; ii < Products.length; ii++) {
+                    const prd = Products[ii]
+                    if (!filter.ProductIds.includes(prd.Id)) continue
+                    if (!prdGrp || prdGrp.Id != prd.PrgId) {
+                        prdGrp = ProductGroups.find(x => x.Id == prd.PrgId)
+                    }
+                    lst.push({ Product: prd, RegionIds: prdGrp.RegionIds, PGroupName: prdGrp.Name })
                 }
                 return lst
             }
