@@ -87,7 +87,7 @@
         }
         function renderDataRegions(filter) {
             const lstLand = getLands()
-            const lstRegion = getRegions()
+            const lstRegion = getRegionsIn(filter.LandIds, [])
             const lstProduct = getProducts()
             const lstPath = getPaths(lstLand, lstRegion)
             console.log(lstLand)
@@ -101,7 +101,7 @@
                     const item = lstPath[ii]
                     const product = lstProduct.find(x => x.RegionIds.includes(item.IdRegion))
                     if(!product) continue
-                    
+
                 }
             }
             function getPaths(lands, regns) {
@@ -136,16 +136,6 @@
                     const land = Lands[ii]
                     if (filter.LandIds.includes(land.Id)) {
                         lst.push(land)
-                    }
-                }
-                return lst
-            }
-            function getRegions() {
-                const lst = []
-                for (let ii = 0; ii < Regions.length; ii++) {
-                    const regn = Regions[ii]
-                    if (filter.RegionIds.includes(regn.Id)) {
-                        lst.push(regn)
                     }
                 }
                 return lst
