@@ -88,20 +88,25 @@
         function renderDataRegions(filter) {
             const lstLand = getLands(filter.LandIds)
             const lstRegion = getRegions(filter.RegionIds)
-            const lstProduct = getProducts(filter.ProductIds)
+            const lstProductGrp = getProductGroups(filter.ProductIds)
             const lstPath = getPaths(lstLand, lstRegion)
             console.log(lstLand)
             console.log(lstRegion)
-            console.log(lstPath)
-            addProducts()
+            console.log(lstProductGrp)
+            console.log(JSON.parse(JSON.stringify(lstPath)))
+            addProducts(lstProductGrp)
+            console.log(JSON.parse(JSON.stringify(lstPath)))
 
             function addProducts() {
-                const lst = []
-                for (let ii = 0; ii < lstPath.length; ii++) {
+                for (let ii = lstPath.length - 1; -1 < ii ; ii--) {
                     const item = lstPath[ii]
-                    const product = lstProduct.find(x => x.RegionIds.includes(item.IdRegion))
-                    if (!product) continue
-
+                    const prdGrp = lstProductGrp.find(x => x.RegionIds.includes(item.IdRegion))
+                    if (!prdGrp) {
+                        lstPath.splice(ii, 1)
+                        continue
+                    }
+                    item.ProductGroupName = prdGrp.Name
+                    item.Products = prdGrp.Products
                 }
             }
             function getPaths(lands, regns) {
@@ -112,12 +117,12 @@
                     if (!land) continue
                     lst.push({
                         IdLand: regn.LandId, IdRegion: regn.Id,
-                        Name: `${land.Name} > ${regn.Name}`
+                        Path: `${land.Name} > ${regn.Name}`
                     })
                 }
                 return lst
             }
-            function getProducts(prdIds) {
+            function getProductGroups(prdIds) {
                 const lst = []
                 let prdGrp = null
                 for (let ii = 0; ii < Products.length; ii++) {
@@ -125,12 +130,16 @@
                     if (!prdIds.includes(prd.Id)) continue
                     if (!prdGrp || prdGrp.Id != prd.PrgId) {
                         prdGrp = ProductGroups.find(x => x.Id == prd.PrgId)
+                        lst.push({
+                            Products: [prd],
+                            RegionIds: prdGrp.RegionIds,
+                            Name: prdGrp.Name,
+                            Id: prdGrp.Id
+                        })
+                    } else {
+                        const item = lst.find(x => x.Id == prdGrp.Id)
+                        item.Products.push(prd)
                     }
-                    lst.push({
-                        Product: prd,
-                        RegionIds: prdGrp.RegionIds,
-                        PGroupName: prdGrp.Name
-                    })
                 }
                 return lst
             }
