@@ -86,27 +86,84 @@
             console.log(goals)
         }
         function renderDataRegions(filter) {
+            const lstGoal = getGoals(filter.GoalIds)
             const lstLand = getLands(filter.LandIds)
             const lstRegion = getRegions(filter.RegionIds)
             const lstProductGrp = getProductGroups(filter.ProductIds)
-            const lstPath = getPaths(lstLand, lstRegion)
-            console.log(lstLand)
-            console.log(lstRegion)
-            console.log(lstProductGrp)
-            console.log(JSON.parse(JSON.stringify(lstPath)))
-            addProducts(lstProductGrp)
-            console.log(JSON.parse(JSON.stringify(lstPath)))
+            const lstSubmarketId = getSubmarketIds(filter.SubmarketIds, filter.LandIds)
+            const lstPath = getPaths(lstLand, lstRegion)        // {IdLand, IdRegion, Path}
+            console.log('List Land', lstLand)
+            console.log('List Region', lstRegion)
+            console.log('List Product group Products', lstProductGrp)
+            console.log('List SubmarketId', lstSubmarketId)     // {IdLands, IdSubmarkets}
+            console.log('List Goal', lstGoal)
+            console.log('List original Path', JSON.parse(JSON.stringify(lstPath)))
+            addProducts()
+            console.log('List Path with Products', JSON.parse(JSON.stringify(lstPath)))
+            addSubmarketIds()
+            console.log('List Path with Products and IdSubmarkets', JSON.parse(JSON.stringify(lstPath)))
+            addGoals()
+            console.log('List Path with Goals', JSON.parse(JSON.stringify(lstPath)))
 
+            function addGoals() {
+                for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                    const item = lstPath[ii]
+                    const idSubmarkets = item.IdSubmarkets
+                    let goals = lstGoal.filter(g => idSubmarkets.includes(g.SubmarketId))
+                    if (!goals.length) {
+                        lstPath.splice(ii, 1)
+                        continue
+                    }
+                    const idProducts = item.Products.map(x => x.Id)
+                    goals = goals.filter(g => idProducts.includes(g.ProductId))
+                    if (!goals.length) {
+                        lstPath.splice(ii, 1)
+                        continue
+                    }
+                    for (let pd = 0; pd < item.Products.length; pd++) {
+                        const product = item.Products[pd]
+                        product.ListGoal = goals.map(x => { return { Id: x.Id, Name: x.Name } })
+                    }
+                }
+            }
+            function getGoals(goalIds) {
+                const lstGoal = Goals.filter(x => goalIds.includes(x.Id))
+                return lstGoal.map(g => {
+                    const lstSmkPrdId = g.SubmarketProductId.split('-')
+                    return {
+                        Id: g.Id, Name: g.Name,
+                        SubmarketId: parseInt(lstSmkPrdId[0]),
+                        ProductId: parseInt(lstSmkPrdId[1])
+                    }
+                })
+            }
+            function addSubmarketIds() {
+                for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                    const item = lstPath[ii]
+                    const submrkIds = lstSubmarketId.filter(x => x.IdLands.includes(item.IdLand))
+                    if (!submrkIds.length) {
+                        lstPath.splice(ii, 1)
+                        continue
+                    }
+                    if (!Array.isArray(item.IdSubmarkets)) item.IdSubmarkets = []
+
+                    submrkIds.forEach(itmSubmrkId => {
+                        item.IdSubmarkets = [...item.IdSubmarkets, ...itmSubmrkId.IdSubmarkets]
+                    })
+
+                    item.IdSubmarkets.distinct()
+                }
+            }
             function addProducts() {
-                for (let ii = lstPath.length - 1; -1 < ii ; ii--) {
+                for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                     const item = lstPath[ii]
                     const prdGrp = lstProductGrp.find(x => x.RegionIds.includes(item.IdRegion))
                     if (!prdGrp) {
                         lstPath.splice(ii, 1)
                         continue
                     }
-                    item.ProductGroupName = prdGrp.Name
-                    item.Products = prdGrp.Products
+                    item.PGroupName = prdGrp.Name
+                    item.Products = prdGrp.Products.map(x => { return { Id: x.Id, Name: x.Name } })
                 }
             }
             function getPaths(lands, regns) {
@@ -159,18 +216,40 @@
                 }
                 return lst
             }
-            function getMarketsSubs(mrkIds, subMrkIds){
-                const lst = []
+            function getSubmarketIds(subMrkIds, landIds) {
+                const lstsMrkId = [];
+                let mrk;
+                const submarkets = StakeholderGroups
+                for (let ii = 0; ii < submarkets.length; ii++) {
+                    const sMkr = submarkets[ii]
+                    if (!subMrkIds.includes(sMkr.Id)) continue
 
-                for(let ii = 0; ii < MarketSegments.length; ii++) {
-                    const mkr = MarketSegments[ii]
-                    
+                    if (!mrk || sMkr.MarketId != mrk.Id) {
+                        mrk = MarketSegments.find(x => x.Id == sMkr.MarketId)
+                        lstsMrkId.push({
+                            IdMarket: mrk.Id,
+                            IdLands: mrk.LandIds,
+                            IdSubmarkets: [sMkr.Id]
+                        })
+                        continue
+                    }
+                    const lstItem = lstsMrkId.find(x => x.IdMarket == mrk.Id)
+                    if (!lstItem) continue
+                    lstItem.IdSubmarkets.push(sMkr.Id)
                 }
-
-                for(let ii = 0; ii < StakeholderGroups.length; ii++) {
-                    const sMkr = StakeholderGroups[ii]
-
+                for (let ii = lstsMrkId.length - 1; -1 < ii; ii--) {
+                    const mrkItem = lstsMrkId[ii]
+                    if (!anyIds(landIds, mrkItem.IdLands)) {
+                        lstsMrkId.splice(ii, 1)
+                    }
                 }
+                return lstsMrkId
+            }
+            function anyIds(lstId1, lstId2) {
+                for (let ii = 0; ii < lstId1.length; ii++) {
+                    if (lstId2.includes(lstId1[ii])) return true
+                }
+                return false
             }
         }
         function renderDashboard(container) {
