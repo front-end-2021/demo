@@ -96,7 +96,7 @@
             console.log('List Region', lstRegion)
             console.log('List Product group Products', lstProductGrp)
             console.log('List SubmarketId', lstSubmarketId)     // {IdLands, IdSubmarkets}
-            console.log('List Goal', lstGoal)
+            console.log('List Goal', JSON.parse(JSON.stringify(lstGoal)))
             console.log('List original Path', JSON.parse(JSON.stringify(lstPath)))
             addProducts()
             console.log('List Path with Products', JSON.parse(JSON.stringify(lstPath)))
@@ -108,34 +108,44 @@
             function addGoals() {
                 for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                     const item = lstPath[ii]
-                    const idSubmarkets = item.IdSubmarkets
-                    let goals = lstGoal.filter(g => idSubmarkets.includes(g.SubmarketId))
+                    let goals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
                     if (!goals.length) {
                         lstPath.splice(ii, 1)
                         continue
                     }
                     const idProducts = item.Products.map(x => x.Id)
-                    goals = goals.filter(g => idProducts.includes(g.ProductId))
+                    goals = filterGoalsBy.call(goals, idProducts, 1)
                     if (!goals.length) {
                         lstPath.splice(ii, 1)
                         continue
                     }
                     for (let pd = 0; pd < item.Products.length; pd++) {
                         const product = item.Products[pd]
-                        product.ListGoal = goals.map(x => { return { Id: x.Id, Name: x.Name } })
+                        product.ListGoal = []
+                        for(let gg = 0; gg < goals.length; gg++) {
+                            product.ListGoal.push(goals[gg])
+                        }
                     }
                 }
             }
+            function filterGoalsBy(idSubmrkPrdIds, type) {    // type = 0 | 1
+                const goals = this
+                const lst = []
+                for (let gg = goals.length - 1; -1 < gg; gg--) {
+                    const goal = goals[gg]
+                    const lstSmkPrdId = goal.SubmarketProductId.split('-')
+                    const spId = parseInt(lstSmkPrdId[type])
+                    if (idSubmrkPrdIds.includes(spId)) lst.push(goal)
+                }
+                return lst
+            }
             function getGoals(goalIds) {
-                const lstGoal = Goals.filter(x => goalIds.includes(x.Id))
-                return lstGoal.map(g => {
-                    const lstSmkPrdId = g.SubmarketProductId.split('-')
-                    return {
-                        Id: g.Id, Name: g.Name,
-                        SubmarketId: parseInt(lstSmkPrdId[0]),
-                        ProductId: parseInt(lstSmkPrdId[1])
-                    }
-                })
+                const lstGoal = []
+                for (let gg = 0; gg < Goals.length; gg++) {
+                    const x = Goals[gg]
+                    if (goalIds.includes(x.Id)) lstGoal.push(x)
+                }
+                return lstGoal
             }
             function addSubmarketIds() {
                 for (let ii = lstPath.length - 1; -1 < ii; ii--) {
