@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <main>
+    <main class="dnb-view-100h">
         <section id="mFilter">
             <div class="list-criterial"></div>
             <div class="list-button">
@@ -26,12 +26,12 @@
                     <i class="bi bi-download"></i> Save filter</button>
             </div>
         </section>
-        <article>
-            <h6>View Goals: </h6>
-            <div class="dnb_list-goal"></div>
+        <article style="padding: 6px;">
+            <h6>View Data: </h6>
+            <div class="dnb_list-data"></div>
         </article>
     </main>
-    <section id="dashboard">
+    <section id="dashboard" class="dnb-view-100h">
         <div class="list-land">
             <h6 onclick="toggleCollapse(this)">List Land: <b>&#10010;</b></h6>
         </div>
@@ -64,17 +64,17 @@
             btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
             const btnSetFilter = document.querySelector('#mFilter .btnSetFilter')
             btnSetFilter.addEventListener('click', (e) => {
-                renderGoals(mktFilter.GoalIds)
+                //   renderGoals(mktFilter.GoalIds)
                 renderDataRegions(mktFilter)
             })
 
             renderDashboard(document.querySelector(`#dashboard`))
-            renderGoals(mktFilter.GoalIds)
+            //  renderGoals(mktFilter.GoalIds)
             renderDataRegions(mktFilter)
         })
         function renderGoals(goalIds) {
             const goals = Goals.filter(x => goalIds.includes(x.Id))
-            const $lstGoal = $('.dnb_list-goal')
+            const $lstGoal = $('.dnb_list-data')
             $lstGoal.html('')
             let row = ''
             for (let ii = 0; ii < goals.length; ii++) {
@@ -92,19 +92,53 @@
             const lstProductGrp = getProductGroups(filter.ProductIds)
             const lstSubmarketId = getSubmarketIds(filter.SubmarketIds, filter.LandIds)
             const lstPath = getPaths(lstLand, lstRegion)        // {IdLand, IdRegion, Path}
-            console.log('List Land', lstLand)
-            console.log('List Region', lstRegion)
-            console.log('List Product group Products', lstProductGrp)
-            console.log('List SubmarketId', lstSubmarketId)     // {IdLands, IdSubmarkets}
-            console.log('List Goal', JSON.parse(JSON.stringify(lstGoal)))
-            console.log('List original Path', JSON.parse(JSON.stringify(lstPath)))
+            // console.log('List Land', lstLand)
+            // console.log('List Region', lstRegion)
+            // console.log('List Product group Products', lstProductGrp)
+            // console.log('List SubmarketId', lstSubmarketId)     // {IdLands, IdSubmarkets}
+            // console.log('List Goal', JSON.parse(JSON.stringify(lstGoal)))
+            // console.log('List original Path', JSON.parse(JSON.stringify(lstPath)))
             addProducts()
-            console.log('List Path with Products', JSON.parse(JSON.stringify(lstPath)))
+            //console.log('List Path with Products', JSON.parse(JSON.stringify(lstPath)))
             addSubmarketIds()
-            console.log('List Path with Products and IdSubmarkets', JSON.parse(JSON.stringify(lstPath)))
+            //console.log('List Path with Products and IdSubmarkets', JSON.parse(JSON.stringify(lstPath)))
             addGoals()
-            console.log('List Path with Goals', JSON.parse(JSON.stringify(lstPath)))
+            renderData()
 
+            function renderData() {
+                const $lstData = $('.dnb_list-data')
+                $lstData.html('')
+                let wRow = ''
+                for (let ii = 0; ii < lstPath.length; ii++) {
+                    const wItem = lstPath[ii]   // { Products, Path, PGroupName }
+
+                    let wProduct = ''
+                    wItem.Products.forEach(prd => {     // { Name, ListGoal }
+                        let wPItem = `<p class="mb-0">${prd.Name}</p>`
+                        let wGoal = ''
+                        prd.ListGoal.forEach(goal => {  // { Name, Finish, Start, End }
+                            wGoal += `<li>
+                                    <b>${goal.Name}</b>
+                                    <div>
+                                        <label>Finish</label>
+                                        ${goal.Finish ? `<input checked type="checkbox"/>` : `<input type="checkbox"/>`}
+                                    </div>
+                                </li>`
+                        })
+                        wGoal = `<ul>${wGoal}</ul>`
+                        wPItem += wGoal
+                        wProduct += `<li>${wPItem}</li>`
+                    })
+                    wRow += `<li>
+                            <i>${wItem.Path}</i>
+                            <div>
+                                <h5>${wItem.PGroupName}</h5>
+                                <ul>${wProduct}</ul>
+                            </div>
+                        </li>`
+                }
+                $lstData.append(`<ul>${wRow}</ul>`)
+            }
             function addGoals() {
                 for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                     const item = lstPath[ii]
@@ -122,7 +156,7 @@
                     for (let pd = 0; pd < item.Products.length; pd++) {
                         const product = item.Products[pd]
                         product.ListGoal = []
-                        for(let gg = 0; gg < goals.length; gg++) {
+                        for (let gg = 0; gg < goals.length; gg++) {
                             product.ListGoal.push(goals[gg])
                         }
                     }

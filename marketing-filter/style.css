@@ -6,7 +6,7 @@ body {display: grid;
 .list-criterial > * > * {margin-right: 3px;}
 .btn-del-crite {width: 30px; padding-left: 6px;}
 
-#dashboard {max-height: 100vh; overflow-y: auto;}
+.dnb-view-100h {max-height: 100vh; overflow-y: auto;}
 #dashboard [class|="list"] > .lst-entry {display: grid; grid-template-columns: 30px 600px 90px; grid-gap: 9px; margin-bottom: 9px;align-items: center;}
 
 .list-land.dnb-collapse > .lst-entry,

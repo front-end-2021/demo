@@ -74,7 +74,7 @@ const StakeholderGroups = [
 const Goals = [
     {
         Id: 1, Name: 'Build 3 điểm bán sách', SubmarketProductId: '1-8',
-        Finish: false, Start: null, End: null
+        Finish: true, Start: null, End: null
     },
     {
         Id: 2, Name: 'Build 1 phòng live esport', SubmarketProductId: '3-2',
@@ -90,7 +90,7 @@ const Goals = [
     },
     {
         Id: 5, Name: 'Build 4 phòng shop online', SubmarketProductId: '4-10',
-        Finish: false, Start: null, End: null
+        Finish: true, Start: null, End: null
     },
     {
         Id: 6, Name: 'Build 5 phòng live stream', SubmarketProductId: '2-1',
