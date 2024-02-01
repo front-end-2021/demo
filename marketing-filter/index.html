@@ -58,33 +58,15 @@
         let mktFilter
         $(document).ready(function () {
             const $mFilter = $('#mFilter')
-            mktFilter = new mkFilter($mFilter, [new Criterial(0, 1, [0, 0])])
+            mktFilter = new mkFilter('#mFilter', [new Criterial(0, 1, [0, 0])])
+            mktFilter.setFilter(renderDataRegions)
 
             const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
             btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
-            const btnSetFilter = document.querySelector('#mFilter .btnSetFilter')
-            btnSetFilter.addEventListener('click', (e) => {
-                //   renderGoals(mktFilter.GoalIds)
-                renderDataRegions(mktFilter)
-            })
 
             renderDashboard(document.querySelector(`#dashboard`))
-            //  renderGoals(mktFilter.GoalIds)
             renderDataRegions(mktFilter)
         })
-        function renderGoals(goalIds) {
-            const goals = Goals.filter(x => goalIds.includes(x.Id))
-            const $lstGoal = $('.dnb_list-data')
-            $lstGoal.html('')
-            let row = ''
-            for (let ii = 0; ii < goals.length; ii++) {
-                const goal = goals[ii]
-                row += `<div><span>${goal.Id}<span>
-                    <span>${goal.Name}</span></div>`
-            }
-            $lstGoal.append(`<div>${row}</div>`)
-            console.log(goals)
-        }
         function renderDataRegions(filter) {
             const lstGoal = getGoals(filter.GoalIds)
             const lstLand = getLands(filter.LandIds)

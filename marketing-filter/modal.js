@@ -51,31 +51,29 @@ class Criterial {
         this.Type = typeof type == 'number' ? type : lType[0].Id
         this.Ids = Array.isArray(ids) ? ids : []
     }
-    toString() {
-        return `{Operand:${this.Operand},Type:${this.Type},Ids:[${this.Ids.join(',')}]}`
-    }
-    copy() {
-        return JSON.parse(JSON.stringify(this))
-    }
+    toTxt() { return `{Operand:${this.Operand},Type:${this.Type},Ids:[${this.Ids.join(',')}]}` }
+    copy() { return JSON.parse(JSON.stringify(this)) }
 }
 class mkFilter {
     #Blocks = [];       // [{Operand, Type, Ids}]
     #Controls = [];   // [{Operand, Type, Ids}]
-    constructor(container, criterials) {
+    constructor(contSelector, criterials) {
         for (let ii = 0; ii < criterials.length; ii++) {
             this.#Blocks.push(criterials[ii])
         }
-        this.Container = container
-        const $lstCrite = this.Container.find('.list-criterial')
+        this.Container = contSelector
+        const $mFilter = $(contSelector)
+        const $lstCrite = $mFilter.find('.list-criterial')
         for (let ii = 0; ii < this.#Blocks.length; ii++) {
             this.renderRow(ii, $lstCrite)
         }
     }
     get LandIds() {
-        const lstTypeLandRegion = this.#Blocks.filter(x => 1 == x.Type)
+        const rwLandRegns = this.#Blocks.filter(x => 1 == x.Type)
+        if (!rwLandRegns.length) return Lands.map(x => x.Id)
         let ids = []
-        for (let ii = 0; ii < lstTypeLandRegion.length; ii++) {
-            const criterial = lstTypeLandRegion[ii]
+        for (let ii = 0; ii < rwLandRegns.length; ii++) {
+            const criterial = rwLandRegns[ii]
             const id = criterial.Ids[0]
             if (criterial.Operand < 1) {
                 // Filter By
@@ -113,11 +111,11 @@ class mkFilter {
         return ids
     }
     get RegionIds() {
+        const rwLandRegns = this.#Blocks.filter(x => 1 == x.Type)
+        if (!rwLandRegns.length) return Regions.map(x => x.Id)
         let lstId = []
-        const blocks = this.#Blocks
-        for (let ii = 0; ii < blocks.length; ii++) {
-            const crite = blocks[ii]
-            if (1 != crite.Type) continue
+        for (let ii = 0; ii < rwLandRegns.length; ii++) {
+            const crite = rwLandRegns[ii]
             const rgnId = crite.Ids[1]
             if (rgnId < 0) continue
             if (!lstId.length) {
@@ -154,9 +152,7 @@ class mkFilter {
                 continue
             }
         }
-        if(lstId.includes(0)) {
-            return Regions.map(x => x.Id)
-        }
+        if (lstId.includes(0)) return Regions.map(x => x.Id)
         return lstId
     }
     get MarketIds() {
@@ -205,13 +201,10 @@ class mkFilter {
             marketIds.push(marketId)
             lastI = ii
         }
-        if(lastI < 0) {
-            const landIds = this.LandIds
-            return getMarketsIn(landIds, []).map(x => x.Id)
+        if (lastI < 0) {
+            return getMarketsIn(this.LandIds, []).map(x => x.Id)
         }
-        if(marketIds.includes(0)) {
-            return getMarkets(0, []).map(x => x.Id)
-        }
+        if (marketIds.includes(0)) return getMarkets(0, []).map(x => x.Id)
         return marketIds
     }
     get SubmarketIds() {
@@ -285,8 +278,7 @@ class mkFilter {
             lastI = ii
         }
         if (lastI < 0) {
-            const landIds = this.LandIds
-            const marketIds = getMarketsIn(landIds, []).map(x => x.Id)
+            const marketIds = this.MarketIds
             return getSubmarket(marketIds, []).map(x => x.Id)
         }
         if (subMrketIds.includes(0)) {
@@ -332,12 +324,10 @@ class mkFilter {
             continue
         }
         if (lastI < 0) {
-            const regionIds = this.RegionIds
-            const prdGrpIds = getProductGroups(regionIds, []).map(x => x.Id)
+            const prdGrpIds = getProductGroups(this.RegionIds, []).map(x => x.Id)
             return getProductsIn(prdGrpIds, []).map(x => x.Id)
         }
         return productIds
-
     }
     get GoalIds() {
         const lst = []
@@ -382,7 +372,8 @@ class mkFilter {
         this.#Blocks.push(criter)
 
         const ii = this.#Blocks.length - 1
-        const $lstCrite = this.Container.find('.list-criterial')
+        const $mFilter = $(this.Container)
+        const $lstCrite = $mFilter.find('.list-criterial')
         this.renderRow(ii, $lstCrite)
 
         function isNewBlock() {
@@ -480,8 +471,30 @@ class mkFilter {
                         return
                     }
                     selectLand.call(this, id)
-                    return
+                    return;
+                case 2:     // Product group/Product
+                    if (jj == 0) selectProductGroup.call(this, id)
+                    if (jj == 1) selectProduct.call(this, id)
+                    return;
             }
+        }
+        function selectProductGroup(pGrpId) {
+            const control = this.#Controls[ii]
+            if (control) {
+                let pGrpIds = []
+                if (pGrpId < 0) {
+                    const ctrLandRgn = closestLandRgn()
+                    if (!ctrLandRgn) pGrpIds = getProductGroups([0], []).map(x => x.Id)
+                    else pGrpIds = getProductGroups(this.RegionIds, []).map(x => x.Id)
+                } else pGrpIds = [pGrpId]
+                const prds = getProductsIn(pGrpIds, [lType[2]])
+                const ctlDrp = control.Ids[1].data('kendoDropDownList')
+                ctlDrp.setDataSource(prds)
+                ctlDrp.value(-2)
+            }
+        }
+        function selectProduct(prdId) {
+
         }
         function selectRegion(id) {
             const control = lowestProductGrp.call(this)
@@ -533,6 +546,13 @@ class mkFilter {
                 nxtDrp.setDataSource(this.getSourceIds(ii, kk))
                 nxtDrp.refresh()
             }
+        }
+        function closestLandRgn() {
+            for (let kk = ii - 1; -1 < kk; kk--) {
+                const crite = this.#Blocks[kk]
+                if (1 == crite.Type) return this.#Controls[kk]
+            }
+            return null
         }
         function lowestProductGrp() {
             for (let kk = ii + 1; kk < this.#Blocks.length; kk++) {
@@ -718,10 +738,18 @@ class mkFilter {
             control.setDataSource(lst)
         }
     }
-    toString(type) {
+    setFilter(fnc) {
+        if (typeof fnc != 'function') return
+        const btnSetFilter = document.querySelector(`${this.Container} .btnSetFilter`)
+        btnSetFilter.addEventListener('click', (e) => { fnc(this, e) })
+    }
+    toTxt(type) {
         type = typeof type != 'string' ? 'Data' : type
         switch (type) {
-            case 'Data': return `[${this.#Blocks.map(crite => crite.toString()).join(',')}]`
+            case 'Data': return `[${this.#Blocks.map(crite => crite.toTxt()).join(',')}]`
+            case 'Operand': return `[${this.#Blocks.map(crite => crite.Operand).join(',')}]`
+            case 'Type': return `[${this.#Blocks.map(crite => crite.Type).join(',')}]`
+            case 'Ids': return `[${this.#Blocks.map(crite => crite.Ids.join(',')).join(',')}]`
         }
     }
 }
