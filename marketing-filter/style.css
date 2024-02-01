@@ -7,6 +7,7 @@ body {display: grid;
 .btn-del-crite {width: 30px; padding-left: 6px;}
 
 .dnb-view-100h {max-height: 100vh; overflow-y: auto;}
-#dashboard [class|="list"] > .lst-entry {display: grid; grid-template-columns: 30px 600px 90px; grid-gap: 9px; margin-bottom: 9px;align-items: center;}
+#dashboard [class|="list"] > .lst-entry {display: grid; grid-template-columns: 42px 554px 90px; grid-gap: 9px; margin-bottom: 9px;align-items: center;}
 
 #dashboard [class|="list"] > h6:first-child {cursor: pointer;}
+.dnb-r14px {width: 14px;height: 14px;}

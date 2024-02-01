@@ -16,35 +16,36 @@
         <section id="mFilter">
             <div class="list-criterial"></div>
             <div class="list-button">
-                <button type="button" class="btn btn-primary btnSetFilter">
+                <button type="button" class="btn btn-primary btn-sm btnSetFilter">
                     <i class="bi bi-search"></i> Filter</button>
-                <button type="button" class="btn btn-secondary">
+                <button type="button" class="btn btn-secondary btn-sm">
                     <i class="bi bi-arrow-repeat"></i> Reset</button>
-                <button type="button" class="btn btn-primary btnAddFilter">
+                <button type="button" class="btn btn-primary btn-sm btnAddFilter">
                     <i class="bi bi-plus-circle"></i> Add</button>
-                <button type="button" class="btn btn-primary">
+                <button type="button" class="btn btn-primary btn-sm">
                     <i class="bi bi-download"></i> Save filter</button>
             </div>
         </section>
         <section style="padding: 6px;">
             <h6>View Data: </h6>
             <div id="dnb-app-vue">
-                <ul>
-                    <li v-for="wItem in ListDataUI" v-bind:id-land="'dnb-land_' + wItem.IdLand"
+                <ul class="list-group list-group-flush">
+                    <li v-for="wItem in ListDataUI" 
+                        class="list-group-item"
+                        v-bind:id-land="'dnb-land_' + wItem.IdLand"
                         v-bind:id-region="'dnb-land_' + wItem.IdRegion">
                         <i>{{wItem.Land.Name}} > {{wItem.Region.Name}}</i>
                         <div>
                             <h5>{{wItem.PGroup.Name}}</h5>
                             <ul class="dnb-products">
                                 <li v-for="prduct in wItem.Products" v-bind:id-product="'dnb-product_' + prduct.Id">
-                                    <p class="mb-0">{{prduct.Name}}</p>
+                                    <b class="mb-0">{{prduct.Name}}</b>
                                     <ul class="dnb-goals">
                                         <li v-for="goal in prduct.ListGoal" v-bind:id-goal="'dnb-goal_' + goal.Id">
-                                            <b>{{goal.Name}}</b>
-                                            <div>
-                                                <label>Finish</label>
-                                                <input v-model="goal.Finish" type="checkbox" />
-                                            </div>
+                                            <p class="mb-0">
+                                                <input v-model="goal.Finish" type="checkbox" class="form-check-input dnb-r14px"/> {{goal.Name}}
+                                            </p>
+                                            
                                         </li>
                                     </ul>
                                 </li>
@@ -55,61 +56,54 @@
             </div>
             </article>
     </main>
-    <section id="dashboard" class="dnb-view-100h">
+    <section id="dashboard" class="dnb-view-100h p-1">
         <div class="list-land">
             <h6 @click.stop="e => toggleCollapse(1)">List Land: <b v-if="!showExpand(1)">&#10010;</b></h6>
             <div v-if="showExpand(1)" class="lst-entry" v-for="item in Lands">
-                <span>{{item.Id}}</span>
-                <input type="text" class="form-control" v-model="item.Name" />
-                <button type="button" class="btn btn-secondary">Update</button>
+                <span>Id: {{item.Id}}</span>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
             </div>
         </div>
         <div class="list-region">
             <h6 @click.stop="e => toggleCollapse(2)">List Region: <b v-if="!showExpand(2)">&#10010;</b></h6>
             <div v-if="showExpand(2)" class="lst-entry" v-for="item in Regions">
-                <span>{{item.Id}}</span>
-                <input type="text" class="form-control" v-model="item.Name" />
-                <button type="button" class="btn btn-secondary">Update</button>
+                <span>Id: {{item.Id}}</span>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
             </div>
         </div>
         <div class="list-productgroup">
             <h6 @click.stop="e => toggleCollapse(3)">List Product group: <b v-if="!showExpand(3)">&#10010;</b></h6>
             <div v-if="showExpand(3)" class="lst-entry" v-for="item in ProductGroups">
-                <span>{{item.Id}}</span>
-                <input type="text" class="form-control" v-model="item.Name" />
-                <button type="button" class="btn btn-secondary">Update</button>
+                <span>Id: {{item.Id}}</span>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
             </div>
         </div>
         <div class="list-product">
             <h6 @click.stop="e => toggleCollapse(4)">List Product: <b v-if="!showExpand(4)">&#10010;</b></h6>
             <div v-if="showExpand(4)" class="lst-entry" v-for="item in Products">
-                <span>{{item.Id}}</span>
-                <input type="text" class="form-control" v-model="item.Name" />
-                <button type="button" class="btn btn-secondary">Update</button>
+                <span>Id: {{item.Id}}</span>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
             </div>
         </div>
         <div class="list-subproduct">
             <h6 @click.stop="e => toggleCollapse(5)">List Sub product: <b v-if="!showExpand(5)">&#10010;</b></h6>
             <div v-if="showExpand(5)" class="lst-entry" v-for="item in SubProducts">
-                <span>{{item.Id}}</span>
-                <input type="text" class="form-control" v-model="item.Name" />
-                <button type="button" class="btn btn-secondary">Update</button>
+                <span>Id: {{item.Id}}</span>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
             </div>
         </div>
         <div class="list-market">
             <h6 @click.stop="e => toggleCollapse(6)">List Market: <b v-if="!showExpand(6)">&#10010;</b></h6>
             <div v-if="showExpand(6)" class="lst-entry" v-for="item in MarketSegments">
-                <span>{{item.Id}}</span>
-                <input type="text" class="form-control" v-model="item.Name" />
-                <button type="button" class="btn btn-secondary">Update</button>
+                <span>Id: {{item.Id}}</span>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
             </div>
         </div>
         <div class="list-submarket">
             <h6 @click.stop="e => toggleCollapse(7)">List sub market: <b v-if="!showExpand(7)">&#10010;</b></h6>
             <div v-if="showExpand(7)" class="lst-entry" v-for="item in StakeholderGroups">
-                <span>{{item.Id}}</span>
-                <input type="text" class="form-control" v-model="item.Name" />
-                <button type="button" class="btn btn-secondary">Update</button>
+                <span>Id: {{item.Id}}</span>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
             </div>
         </div>
     </section>
