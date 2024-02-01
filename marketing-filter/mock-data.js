@@ -101,8 +101,8 @@ const Goals = [
         Finish: false, Start: null, End: null
     },
 ]
-// 11. Table Action: Id (Bigint), Name (VARCHAR), GoalId (Bigint)
-const Actions = [
+// 11. Table Activity: Id (Bigint), Name (VARCHAR), GoalId (Bigint)
+const Activities = [
     {
         Id: 1, Name: '1 điểm bán trong tháng 3', GoalId: 1,
         Finish: false, Start: null, End: null

@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="style.css" />
     <script src="3rd/jquery-3.4.1.min.js"></script>
     <script src="3rd/kendo.all.min.js"></script>
-
+    <script src="3rd/dev_vue@2_7_14.js"></script>
     <script src="common.js"></script>
     <script src="mock-data.js"></script>
     <script src="modal.js"></script>
@@ -16,318 +16,115 @@
         <section id="mFilter">
             <div class="list-criterial"></div>
             <div class="list-button">
-                <button type="button" class="btn btn-primary btnSetFilter"><i class="bi bi-search">
-                    </i> Filter</button>
-                <button type="button" class="btn btn-secondary"><i class="bi bi-arrow-repeat">
-                    </i> Reset</button>
+                <button type="button" class="btn btn-primary btnSetFilter">
+                    <i class="bi bi-search"></i> Filter</button>
+                <button type="button" class="btn btn-secondary">
+                    <i class="bi bi-arrow-repeat"></i> Reset</button>
                 <button type="button" class="btn btn-primary btnAddFilter">
                     <i class="bi bi-plus-circle"></i> Add</button>
                 <button type="button" class="btn btn-primary">
                     <i class="bi bi-download"></i> Save filter</button>
             </div>
         </section>
-        <article style="padding: 6px;">
+        <section style="padding: 6px;">
             <h6>View Data: </h6>
-            <div class="dnb_list-data"></div>
-        </article>
+            <div id="dnb-app-vue">
+                <ul>
+                    <li v-for="wItem in ListDataUI" v-bind:id-land="'dnb-land_' + wItem.IdLand"
+                        v-bind:id-region="'dnb-land_' + wItem.IdRegion">
+                        <i>{{wItem.Land.Name}} > {{wItem.Region.Name}}</i>
+                        <div>
+                            <h5>{{wItem.PGroup.Name}}</h5>
+                            <ul class="dnb-products">
+                                <li v-for="prduct in wItem.Products" v-bind:id-product="'dnb-product_' + prduct.Id">
+                                    <p class="mb-0">{{prduct.Name}}</p>
+                                    <ul class="dnb-goals">
+                                        <li v-for="goal in prduct.ListGoal" v-bind:id-goal="'dnb-goal_' + goal.Id">
+                                            <b>{{goal.Name}}</b>
+                                            <div>
+                                                <label>Finish</label>
+                                                <input v-model="goal.Finish" type="checkbox" />
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            </article>
     </main>
     <section id="dashboard" class="dnb-view-100h">
         <div class="list-land">
-            <h6 onclick="toggleCollapse(this)">List Land: <b>&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(1)">List Land: <b v-if="!showExpand(1)">&#10010;</b></h6>
+            <div v-if="showExpand(1)" class="lst-entry" v-for="item in Lands">
+                <span>{{item.Id}}</span>
+                <input type="text" class="form-control" v-model="item.Name" />
+                <button type="button" class="btn btn-secondary">Update</button>
+            </div>
         </div>
         <div class="list-region">
-            <h6 onclick="toggleCollapse(this)">List Region: <b>&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(2)">List Region: <b v-if="!showExpand(2)">&#10010;</b></h6>
+            <div v-if="showExpand(2)" class="lst-entry" v-for="item in Regions">
+                <span>{{item.Id}}</span>
+                <input type="text" class="form-control" v-model="item.Name" />
+                <button type="button" class="btn btn-secondary">Update</button>
+            </div>
         </div>
         <div class="list-productgroup">
-            <h6 onclick="toggleCollapse(this)">List Product group: <b>&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(3)">List Product group: <b v-if="!showExpand(3)">&#10010;</b></h6>
+            <div v-if="showExpand(3)" class="lst-entry" v-for="item in ProductGroups">
+                <span>{{item.Id}}</span>
+                <input type="text" class="form-control" v-model="item.Name" />
+                <button type="button" class="btn btn-secondary">Update</button>
+            </div>
         </div>
         <div class="list-product">
-            <h6 onclick="toggleCollapse(this)">List Product: <b>&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(4)">List Product: <b v-if="!showExpand(4)">&#10010;</b></h6>
+            <div v-if="showExpand(4)" class="lst-entry" v-for="item in Products">
+                <span>{{item.Id}}</span>
+                <input type="text" class="form-control" v-model="item.Name" />
+                <button type="button" class="btn btn-secondary">Update</button>
+            </div>
         </div>
         <div class="list-subproduct">
-            <h6 onclick="toggleCollapse(this)">List Sub product: <b>&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(5)">List Sub product: <b v-if="!showExpand(5)">&#10010;</b></h6>
+            <div v-if="showExpand(5)" class="lst-entry" v-for="item in SubProducts">
+                <span>{{item.Id}}</span>
+                <input type="text" class="form-control" v-model="item.Name" />
+                <button type="button" class="btn btn-secondary">Update</button>
+            </div>
         </div>
         <div class="list-market">
-            <h6 onclick="toggleCollapse(this)">List Market: <b>&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(6)">List Market: <b v-if="!showExpand(6)">&#10010;</b></h6>
+            <div v-if="showExpand(6)" class="lst-entry" v-for="item in MarketSegments">
+                <span>{{item.Id}}</span>
+                <input type="text" class="form-control" v-model="item.Name" />
+                <button type="button" class="btn btn-secondary">Update</button>
+            </div>
         </div>
         <div class="list-submarket">
-            <h6 onclick="toggleCollapse(this)">List sub market: <b>&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(7)">List sub market: <b v-if="!showExpand(7)">&#10010;</b></h6>
+            <div v-if="showExpand(7)" class="lst-entry" v-for="item in StakeholderGroups">
+                <span>{{item.Id}}</span>
+                <input type="text" class="form-control" v-model="item.Name" />
+                <button type="button" class="btn btn-secondary">Update</button>
+            </div>
         </div>
     </section>
+
     <script>
-        let mktFilter
+        let mktFilter;
         $(document).ready(function () {
-            const $mFilter = $('#mFilter')
             mktFilter = new mkFilter('#mFilter', [new Criterial(0, 1, [0, 0])])
-            mktFilter.setFilter(renderDataRegions)
 
             const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
             btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
 
-            renderDashboard(document.querySelector(`#dashboard`))
-            renderDataRegions(mktFilter)
+            newAppVue(mktFilter)
+            newAppVueDasboard()
         })
-        function renderDataRegions(filter) {
-            const lstGoal = getGoals(filter.GoalIds)
-            const lstLand = getLands(filter.LandIds)
-            const lstRegion = getRegions(filter.RegionIds)
-            const lstProductGrp = getProductGroups(filter.ProductIds)
-            const lstSubmarketId = getSubmarketIds(filter.SubmarketIds, filter.LandIds)
-            const lstPath = getPaths(lstLand, lstRegion)        // {IdLand, IdRegion, Path}
-            // console.log('List Land', lstLand)
-            // console.log('List Region', lstRegion)
-            // console.log('List Product group Products', lstProductGrp)
-            // console.log('List SubmarketId', lstSubmarketId)     // {IdLands, IdSubmarkets}
-            // console.log('List Goal', JSON.parse(JSON.stringify(lstGoal)))
-            // console.log('List original Path', JSON.parse(JSON.stringify(lstPath)))
-            addProducts()
-            //console.log('List Path with Products', JSON.parse(JSON.stringify(lstPath)))
-            addSubmarketIds()
-            //console.log('List Path with Products and IdSubmarkets', JSON.parse(JSON.stringify(lstPath)))
-            addGoals()
-            renderData()
-
-            function renderData() {
-                const $lstData = $('.dnb_list-data')
-                $lstData.html('')
-                let wRow = ''
-                for (let ii = 0; ii < lstPath.length; ii++) {
-                    const wItem = lstPath[ii]   // { Products, Path, PGroupName }
-
-                    let wProduct = ''
-                    wItem.Products.forEach(prd => {     // { Name, ListGoal }
-                        let wPItem = `<p class="mb-0">${prd.Name}</p>`
-                        let wGoal = ''
-                        prd.ListGoal.forEach(goal => {  // { Name, Finish, Start, End }
-                            wGoal += `<li>
-                                    <b>${goal.Name}</b>
-                                    <div>
-                                        <label>Finish</label>
-                                        ${goal.Finish ? `<input checked type="checkbox"/>` : `<input type="checkbox"/>`}
-                                    </div>
-                                </li>`
-                        })
-                        wGoal = `<ul>${wGoal}</ul>`
-                        wPItem += wGoal
-                        wProduct += `<li>${wPItem}</li>`
-                    })
-                    wRow += `<li>
-                            <i>${wItem.Path}</i>
-                            <div>
-                                <h5>${wItem.PGroupName}</h5>
-                                <ul>${wProduct}</ul>
-                            </div>
-                        </li>`
-                }
-                $lstData.append(`<ul>${wRow}</ul>`)
-            }
-            function addGoals() {
-                for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                    const item = lstPath[ii]
-                    let goals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
-                    if (!goals.length) {
-                        lstPath.splice(ii, 1)
-                        continue
-                    }
-                    const idProducts = item.Products.map(x => x.Id)
-                    goals = filterGoalsBy.call(goals, idProducts, 1)
-                    if (!goals.length) {
-                        lstPath.splice(ii, 1)
-                        continue
-                    }
-                    for (let pd = 0; pd < item.Products.length; pd++) {
-                        const product = item.Products[pd]
-                        product.ListGoal = []
-                        for (let gg = 0; gg < goals.length; gg++) {
-                            product.ListGoal.push(goals[gg])
-                        }
-                    }
-                }
-            }
-            function filterGoalsBy(idSubmrkPrdIds, type) {    // type = 0 | 1
-                const goals = this
-                const lst = []
-                for (let gg = goals.length - 1; -1 < gg; gg--) {
-                    const goal = goals[gg]
-                    const lstSmkPrdId = goal.SubmarketProductId.split('-')
-                    const spId = parseInt(lstSmkPrdId[type])
-                    if (idSubmrkPrdIds.includes(spId)) lst.push(goal)
-                }
-                return lst
-            }
-            function getGoals(goalIds) {
-                const lstGoal = []
-                for (let gg = 0; gg < Goals.length; gg++) {
-                    const x = Goals[gg]
-                    if (goalIds.includes(x.Id)) lstGoal.push(x)
-                }
-                return lstGoal
-            }
-            function addSubmarketIds() {
-                for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                    const item = lstPath[ii]
-                    const submrkIds = lstSubmarketId.filter(x => x.IdLands.includes(item.IdLand))
-                    if (!submrkIds.length) {
-                        lstPath.splice(ii, 1)
-                        continue
-                    }
-                    if (!Array.isArray(item.IdSubmarkets)) item.IdSubmarkets = []
-
-                    submrkIds.forEach(itmSubmrkId => {
-                        item.IdSubmarkets = [...item.IdSubmarkets, ...itmSubmrkId.IdSubmarkets]
-                    })
-
-                    item.IdSubmarkets.distinct()
-                }
-            }
-            function addProducts() {
-                for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                    const item = lstPath[ii]
-                    const prdGrp = lstProductGrp.find(x => x.RegionIds.includes(item.IdRegion))
-                    if (!prdGrp) {
-                        lstPath.splice(ii, 1)
-                        continue
-                    }
-                    item.PGroupName = prdGrp.Name
-                    item.Products = prdGrp.Products.map(x => { return { Id: x.Id, Name: x.Name } })
-                }
-            }
-            function getPaths(lands, regns) {
-                const lst = []
-                for (let ii = 0; ii < regns.length; ii++) {
-                    const regn = regns[ii]
-                    const land = lands.find(x => x.Id == regn.LandId)
-                    if (!land) continue
-                    lst.push({
-                        IdLand: regn.LandId, IdRegion: regn.Id,
-                        Path: `${land.Name} > ${regn.Name}`
-                    })
-                }
-                return lst
-            }
-            function getProductGroups(prdIds) {
-                const lst = []
-                let prdGrp = null
-                for (let ii = 0; ii < Products.length; ii++) {
-                    const prd = Products[ii]
-                    if (!prdIds.includes(prd.Id)) continue
-                    if (!prdGrp || prdGrp.Id != prd.PrgId) {
-                        prdGrp = ProductGroups.find(x => x.Id == prd.PrgId)
-                        lst.push({
-                            Products: [prd],
-                            RegionIds: prdGrp.RegionIds,
-                            Name: prdGrp.Name,
-                            Id: prdGrp.Id
-                        })
-                    } else {
-                        const item = lst.find(x => x.Id == prdGrp.Id)
-                        item.Products.push(prd)
-                    }
-                }
-                return lst
-            }
-            function getLands(landIds) {
-                const lst = []
-                for (let ii = 0; ii < Lands.length; ii++) {
-                    const land = Lands[ii]
-                    if (landIds.includes(land.Id)) lst.push(land)
-                }
-                return lst
-            }
-            function getRegions(regnIds) {
-                const lst = []
-                for (let ii = 0; ii < Regions.length; ii++) {
-                    const rgn = Regions[ii]
-                    if (regnIds.includes(rgn.Id)) lst.push(rgn)
-                }
-                return lst
-            }
-            function getSubmarketIds(subMrkIds, landIds) {
-                const lstsMrkId = [];
-                let mrk;
-                const submarkets = StakeholderGroups
-                for (let ii = 0; ii < submarkets.length; ii++) {
-                    const sMkr = submarkets[ii]
-                    if (!subMrkIds.includes(sMkr.Id)) continue
-
-                    if (!mrk || sMkr.MarketId != mrk.Id) {
-                        mrk = MarketSegments.find(x => x.Id == sMkr.MarketId)
-                        lstsMrkId.push({
-                            IdMarket: mrk.Id,
-                            IdLands: mrk.LandIds,
-                            IdSubmarkets: [sMkr.Id]
-                        })
-                        continue
-                    }
-                    const lstItem = lstsMrkId.find(x => x.IdMarket == mrk.Id)
-                    if (!lstItem) continue
-                    lstItem.IdSubmarkets.push(sMkr.Id)
-                }
-                for (let ii = lstsMrkId.length - 1; -1 < ii; ii--) {
-                    const mrkItem = lstsMrkId[ii]
-                    if (!anyIds(landIds, mrkItem.IdLands)) {
-                        lstsMrkId.splice(ii, 1)
-                    }
-                }
-                return lstsMrkId
-            }
-            function anyIds(lstId1, lstId2) {
-                for (let ii = 0; ii < lstId1.length; ii++) {
-                    if (lstId2.includes(lstId1[ii])) return true
-                }
-                return false
-            }
-        }
-        function renderDashboard(container) {
-            const dLstLand = container.querySelector(`.list-land`)
-            const dLstRegion = container.querySelector(`.list-region`)
-            const dLstPrdGroup = container.querySelector(`.list-productgroup`)
-            const dLstProduct = container.querySelector(`.list-product`)
-            const dLstSubProduct = container.querySelector(`.list-subproduct`)
-            const dLstMarket = container.querySelector(`.list-market`)
-            const dLstSubMarket = container.querySelector(`.list-submarket`)
-
-            renderLands()
-            renderRegions()
-            renderProductGroups()
-
-            function renderProductGroups() {
-                const $wrapLst = $(dLstPrdGroup)
-                for (let ii = 0; ii < ProductGroups.length; ii++) {
-                    const item = ProductGroups[ii]
-                    $wrapLst.append(`<div class="lst-entry">
-                        <span>${item.Id}</span>
-                        <input type="text" class="form-control" value="${item.Name}"/>
-                        <button type="button" class="btn btn-secondary">Update</button>
-                        </div>`)
-                }
-            }
-            function renderRegions() {
-                const $wrapLst = $(dLstRegion)
-                for (let ii = 0; ii < Regions.length; ii++) {
-                    const item = Regions[ii]
-                    $wrapLst.append(`<div class="lst-entry">
-                        <span>${item.Id}</span>
-                        <input type="text" class="form-control" value="${item.Name}"/>
-                        <button type="button" class="btn btn-secondary">Update</button>
-                        </div>`)
-                }
-            }
-            function renderLands() {
-                const $wrapLst = $(dLstLand)
-                for (let ii = 0; ii < Lands.length; ii++) {
-                    const item = Lands[ii]
-                    $wrapLst.append(`<div class="lst-entry">
-                        <span>${item.Id}</span>
-                        <input type="text" class="form-control" value="${item.Name}"/>
-                        <button type="button" class="btn btn-secondary">Update</button>
-                        </div>`)
-                }
-            }
-        }
-        function toggleCollapse(e) {
-            const container = e.closest(`[class|="list"]`)
-            container.classList.toggle('dnb-collapse');
-        }
     </script>
+    <script src="app_vue.js"></script>
 </body>
