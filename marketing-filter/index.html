@@ -6,6 +6,9 @@
     <script src="3rd/jquery-3.4.1.min.js"></script>
     <script src="3rd/kendo/kendo.all.min.js"></script>
     <script src="3rd/dev_vue@2_7_14.js"></script>
+    <script src="3rd/react18/react.development.js"></script>
+    <script src="3rd/react18/react-dom.development.js"></script>
+    <script src="3rd/babel.min.js"></script>
     <script src="common.js"></script>
     <script src="mock-data.js"></script>
     <script src="modal.js"></script>
@@ -13,6 +16,7 @@
 
 <body>
     <main class="dnb-view-100h">
+        <section id="react-filter"></section>
         <section id="mFilter">
             <div class="list-criterial"></div>
             <div class="list-button">
@@ -30,9 +34,7 @@
             <h6>View Data: </h6>
             <div id="dnb-app-vue">
                 <ul class="list-group list-group-flush">
-                    <li v-for="wItem in ListDataUI" 
-                        class="list-group-item"
-                        v-bind:id-land="'dnb-land_' + wItem.IdLand"
+                    <li v-for="wItem in ListDataUI" class="list-group-item" v-bind:id-land="'dnb-land_' + wItem.IdLand"
                         v-bind:id-region="'dnb-land_' + wItem.IdRegion">
                         <i>{{wItem.Land.Name}} > {{wItem.Region.Name}}</i>
                         <div>
@@ -43,9 +45,10 @@
                                     <ul class="dnb-goals">
                                         <li v-for="goal in prduct.ListGoal" v-bind:id-goal="'dnb-goal_' + goal.Id">
                                             <p class="mb-0">
-                                                <input v-model="goal.Finish" type="checkbox" class="form-check-input dnb-r14px"/> {{goal.Name}}
+                                                <input v-model="goal.Finish" type="checkbox"
+                                                    class="form-check-input dnb-r14px" /> {{goal.Name}}
                                             </p>
-                                            
+
                                         </li>
                                     </ul>
                                 </li>
@@ -54,7 +57,7 @@
                     </li>
                 </ul>
             </div>
-            </article>
+        </section>
     </main>
     <section id="dashboard" class="dnb-view-100h p-1">
         <div class="list-land">
@@ -107,7 +110,6 @@
             </div>
         </div>
     </section>
-
     <script>
         let mktFilter;
         $(document).ready(function () {
@@ -120,5 +122,6 @@
             newAppVueDasboard()
         })
     </script>
+    <script src="app_react.js" type="text/babel" data-presets="react,stage-3"></script>
     <script src="app_vue.js"></script>
 </body>
