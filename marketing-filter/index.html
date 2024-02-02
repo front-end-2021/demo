@@ -64,62 +64,62 @@
             <h6 @click.stop="e => toggleCollapse(1)">List Land: <b v-if="!showExpand(1)">&#10010;</b></h6>
             <div v-if="showExpand(1)" class="lst-entry" v-for="item in Lands">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange"/>
             </div>
         </div>
         <div class="list-region">
             <h6 @click.stop="e => toggleCollapse(2)">List Region: <b v-if="!showExpand(2)">&#10010;</b></h6>
             <div v-if="showExpand(2)" class="lst-entry" v-for="item in Regions">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
+                <input type="text" class="form-control form-control-sm" v-model="item.Name"  @change="onChange"/>
             </div>
         </div>
         <div class="list-productgroup">
             <h6 @click.stop="e => toggleCollapse(3)">List Product group: <b v-if="!showExpand(3)">&#10010;</b></h6>
             <div v-if="showExpand(3)" class="lst-entry" v-for="item in ProductGroups">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
+                <input type="text" class="form-control form-control-sm" v-model="item.Name"  @change="onChange"/>
             </div>
         </div>
         <div class="list-product">
             <h6 @click.stop="e => toggleCollapse(4)">List Product: <b v-if="!showExpand(4)">&#10010;</b></h6>
             <div v-if="showExpand(4)" class="lst-entry" v-for="item in Products">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
+                <input type="text" class="form-control form-control-sm" v-model="item.Name"  @change="onChange"/>
             </div>
         </div>
         <div class="list-subproduct">
             <h6 @click.stop="e => toggleCollapse(5)">List Sub product: <b v-if="!showExpand(5)">&#10010;</b></h6>
             <div v-if="showExpand(5)" class="lst-entry" v-for="item in SubProducts">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
+                <input type="text" class="form-control form-control-sm" v-model="item.Name"  @change="onChange"/>
             </div>
         </div>
         <div class="list-market">
             <h6 @click.stop="e => toggleCollapse(6)">List Market: <b v-if="!showExpand(6)">&#10010;</b></h6>
             <div v-if="showExpand(6)" class="lst-entry" v-for="item in MarketSegments">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
+                <input type="text" class="form-control form-control-sm" v-model="item.Name"  @change="onChange"/>
             </div>
         </div>
         <div class="list-submarket">
             <h6 @click.stop="e => toggleCollapse(7)">List sub market: <b v-if="!showExpand(7)">&#10010;</b></h6>
             <div v-if="showExpand(7)" class="lst-entry" v-for="item in StakeholderGroups">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" />
+                <input type="text" class="form-control form-control-sm" v-model="item.Name"  @change="onChange"/>
             </div>
         </div>
     </section>
     <script>
         let mktFilter;
         $(document).ready(function () {
-            mktFilter = new mkFilter('#mFilter', [new Criterial(0, 1, [0, 0])])
+            window.mdFilter = new DFilter([new Criterial(0, 1, [0, 0])])
+            // mktFilter = new mkFilter('#mFilter', [new Criterial(0, 1, [0, 0])])
+            // const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
+            // btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
 
-            const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
-            btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
-
-            newAppVue(mktFilter)
-            newAppVueDasboard()
+            newAppVue(window.mdFilter)
+            newAppVueDasboard(window.mdFilter)
         })
     </script>
     <script src="app_react.js" type="text/babel" data-presets="react,stage-3"></script>

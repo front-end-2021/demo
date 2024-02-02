@@ -178,11 +178,12 @@ function newAppVue(mFlter) {
         created() { },
         updated() { },
     })
-    mFlter.setFilter(app.renderData)
+    //mFlter.setFilter(app.renderData)
+    mFlter.setFilter = app.renderData
     app.renderData(mFlter)
     return app;
 }
-function newAppVueDasboard() {
+function newAppVueDasboard(mdFilter) {
     new Vue({
         el: '#dashboard',
         name: 'DnbAppDashboard',
@@ -207,6 +208,9 @@ function newAppVueDasboard() {
                 else this.ExpandIds.splice(ii, 1)
             },
             showExpand(id) { return this.ExpandIds.includes(id) },
+            onChange(){
+                mdFilter.setDataSource()
+            }
         },
     })
 }
