@@ -321,13 +321,16 @@ class DFilter {
     }
 }
 
-const { useState, useEffect, useRef } = React
+const { useState, useEffect, useReducer, useRef } = React
+
 const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
     const [cOperand, setOperand] = useState(Blocks[ii].Operand)
     const [cType, setCType] = useState(Blocks[ii].Type)
     const [cIds, setCIds] = useState(Blocks[ii].Ids)
+    const LstLand = useRef(Lands)
 
     useEffect(() => {
+        console.log(LstLand)
         const row = Blocks[ii]
         const sWrap = document.querySelector(`[c-criterial="${ii}"]`)
         const $wrap = $(sWrap)
@@ -409,7 +412,7 @@ const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
                 case 1: // Land/Region
                     lst = [lType[0]]
                     if (0 == index) {
-                        Lands.forEach(land => lst.push(land))
+                        LstLand.current.forEach(land => lst.push(land))
                         return lst
                     }
                     const landId = criter.Ids[0]
@@ -491,7 +494,7 @@ const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
                 return []
             }
         }
-    }, [cOperand, cType, cIds, Blocks])
+    }, [cOperand, cType, cIds])
 
     const clssBtnDel = `btn btn-primary rounded-circle bi bi-trash-fill btn-del-crite-${ii} btn-del-crite`
     return (
