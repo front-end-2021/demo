@@ -313,117 +313,83 @@ class DFilter {
 }
 
 const { useState, useEffect, useRef } = React
-const ReactFilter = (props) => {
-    const Container = useRef(null);
-    const [blocks, setBlocks] = useState(props.dfilter.Blocks)
-    const [Controls] = useState([])   // [{Operand, Type, Ids}]
+const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
+    const [cOperand, setOperand] = useState(Blocks[ii].Operand)
+    const [cType, setCType] = useState(Blocks[ii].Type)
+    const [cIds, setCIds] = useState(Blocks[ii].Ids)
 
     useEffect(() => {
-        console.log('on use effect setup')
-        const { dfilter } = props
-        const $mFilter = $(Container.current)
-        const $lstCrite = $mFilter.find('.list-criterial')
-        for (let ii = 0; ii < dfilter.Blocks.length; ii++) {
-            renderControl(ii, $lstCrite)
-        }
+        console.log('on use effect setup ReactFltRow')
+        const row = Blocks[ii]
+        const sWrap = document.querySelector(`[c-criterial="${ii}"]`)
+        const $wrap = $(sWrap)
+        renOperandControl()
+        renTypeControl()
+        renderIdsDropdownList()
+
         return () => {
-            console.log('on use effect return')
-            for (let ii = Controls.length - 1; -1 < ii; ii--) {
-                const cotnrol = Controls[ii]
-                destroyIds(cotnrol.Ids)
-                destroyOperandType(cotnrol)
+            console.log('on use effect return ReactFltRow')
+            for (let jj = cIds.length - 1; -1 < jj; jj--) {
+                const $input = $wrap.find(`[c-index="${jj}"]`)
+                $input.data("kendoDropDownList").destroy()
             }
-            Controls.splice(0)
-            function destroyOperandType(control) {
-                let $ctr = control.Operand
-                $ctr.data("kendoDropDownList").destroy()
-                $ctr = control.Type
-                $ctr.data("kendoDropDownList").destroy()
-            }
-            function destroyIds(ctlIds) {
-                for (let kk = ctlIds.length - 1; -1 < kk; kk--) {
-                    const $cId = ctlIds[kk]
-                    $cId.data("kendoDropDownList").destroy()
-                    ctlIds.splice(kk, 1)
-                }
-            }
-        };
-    }, [blocks]);
+        }
 
-    const renderControl = (ii, $lstCrite) => {
-        const Blocks = [...blocks]
-        const row = Blocks[ii]          // {Operand, Type, Ids}
-        const $operand = $lstCrite.find(`[c-operand="${ii}"]`)
-        const operandChange = (e) => {
-            const tOprnd = e.sender.value()
-            row.Operand = parseInt(tOprnd)
-            setBlocks(Blocks)
-        }
-        $operand.kendoDropDownList({
-            dataTextField: "Name",
-            dataValueField: "Id",
-            dataSource: ii > 0 ? Operands : [mFilterBy],
-            enable: ii < 1 ? false : true,
-            value: row.Operand,
-            change: operandChange
-        })
-        const $type = $lstCrite.find(`[c-type="${ii}"]`)
-        const typeChange = (e) => {
-            const tType = e.sender.value()
-            row.Type = parseInt(tType)
-            const newIds = getInitIds(row.Type)
-            if (newIds.length < row.Ids.length) {
-                const copyLst = [...blocks]
-                copyLst.splice(ii, 1)
-                setBlocks(copyLst)
-                setTimeout(() => {
-                    row.Ids = newIds
-                    setBlocks(Blocks)
-                }, 333)
-            } else {
-                row.Ids = newIds
-                setBlocks(Blocks)
+        function renOperandControl() {
+            const $operand = $wrap.find(`[c-operand="${ii}"]`)
+            const operandChange = (e) => {
+                const tOprnd = e.sender.value()
+                row.Operand = parseInt(tOprnd)
+                setOperand(row.Operand)
             }
+            $operand.kendoDropDownList({
+                dataTextField: "Name",
+                dataValueField: "Id",
+                dataSource: ii > 0 ? Operands : [mFilterBy],
+                enable: ii < 1 ? false : true,
+                value: cOperand,
+                change: operandChange
+            })
         }
-        $type.kendoDropDownList({
-            dataTextField: "Name",
-            dataValueField: "Id",
-            dataSource: mType,
-            value: row.Type,
-            change: typeChange
-        })
-        const $tRow = $lstCrite.find(`[c-criterial="${ii}"]`)
-        let cIds = []
-        if (row.Ids.length) {
-            cIds = renderIdsDropdownList($tRow, ii)
+        function renTypeControl() {
+            const $type = $wrap.find(`[c-type="${ii}"]`)
+            const typeChange = (e) => {
+                const tType = e.sender.value()
+                row.Type = parseInt(tType)
+                row.Ids = getInitIds(row.Type)
+                setCType(row.Type)
+                setCIds(row.Ids)
+            }
+            $type.kendoDropDownList({
+                dataTextField: "Name",
+                dataValueField: "Id",
+                dataSource: mType,
+                value: cType,
+                change: typeChange
+            })
         }
-        Controls.push({ Operand: $operand, Type: $type, Ids: cIds })
-
-        function renderIdsDropdownList($tRow, ii) {
+        function renderIdsDropdownList() {
             const crite = Blocks[ii] // {Operand, Type, Ids}
-            const cIds = []
-            if (!Array.isArray(crite.Ids)) return cIds
+            if (!Array.isArray(crite.Ids) || !crite.Ids.length) return
             for (let jj = 0; jj < crite.Ids.length; jj++) {
                 const _id = crite.Ids[jj]
-                const $input = $tRow.find(`[c-index="${jj}"]`)
+                const $input = $wrap.find(`[c-index="${jj}"]`)
                 const idChange = (e) => {
                     let id = e.sender.value()
                     id = parseInt(id)
                     crite.Ids[jj] = id
-                    setBlocks(Blocks)
+                    setCIds(crite.Ids)
                 }
                 $input.kendoDropDownList({
                     dataTextField: "Name",
                     dataValueField: "Id",
-                    dataSource: getSourceIds(ii, jj),
+                    dataSource: getSourceIds(jj),
                     value: _id,
                     change: idChange
                 })
-                cIds.push($input)
             }
-            return cIds
         }
-        function getSourceIds(ii, index) {
+        function getSourceIds(index) {
             const criter = Blocks[ii]
             let lst = []
             switch (criter.Type) {
@@ -512,7 +478,27 @@ const ReactFilter = (props) => {
                 return []
             }
         }
-    }
+    }, [cOperand, cType, cIds, Blocks])
+
+    const clssBtnDel = `btn btn-primary rounded-circle bi bi-trash-fill btn-del-crite-${ii} btn-del-crite`
+    return (
+        <div c-criterial={ii}>
+            <input c-operand={ii} style={{ width: '96px' }} />
+            <input c-type={ii} style={{ width: '270px' }} />
+            {cIds.map((id, jj) => {
+                const cls = `fcsub-${jj}`
+                return <input className={cls} c-index={jj} style={{ width: '240px' }}
+                    key={'df-rids_' + jj} />
+            })}
+            {0 < ii ? <button className={clssBtnDel} type="button"
+                onClick={() => onDelRow(ii)}></button> : null}
+        </div>
+    )
+}
+const ReactFilter = (props) => {
+    const Container = useRef(null);
+    const [blocks, setBlocks] = useState(props.dfilter.Blocks)
+
     const onDelRow = (ii) => {
         const { dfilter } = props
         dfilter.Blocks.splice(ii, 1)
@@ -546,18 +532,8 @@ const ReactFilter = (props) => {
         <section ref={Container} className="mb-3">
             <b className="ms-2">React</b>
             <div className="list-criterial pb-0">
-                {blocks.map((row, ii) => {
-                    const clssBtnDel = `btn btn-primary rounded-circle bi bi-trash-fill btn-del-crite-${ii} btn-del-crite`
-                    return (<div c-criterial={ii} key={'react-df-row_' + ii}>
-                        <input c-operand={ii} style={{ width: '96px' }} />
-                        <input c-type={ii} style={{ width: '270px' }} />
-                        {row.Ids.map((id, jj) => {
-                            const cls = `fcsub-${jj}`
-                            return <input className={cls} c-index={jj} style={{ width: '240px' }} key={'react-df-rids_' + jj} />
-                        })}
-                        {0 < ii ? <button className={clssBtnDel} type="button" onClick={() => onDelRow(ii)}></button> : null}
-                    </div>)
-                })}
+                {blocks.map((row, ii) => <ReactFltRow key={'dnb-fcrite_' + ii}
+                    ii={ii} Blocks={blocks} onDelRow={onDelRow} />)}
             </div>
             <div className="list-button pt-0">
                 <button type="button" className="btn btn-primary btn-sm me-2 btnSetFilter"
