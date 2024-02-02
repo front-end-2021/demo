@@ -1,5 +1,6 @@
 class DFilter {
     Blocks = [];       // [{Operand, Type, Ids}]
+    CountChange = 0;
     constructor(criterials) {
         for (let ii = 0; ii < criterials.length; ii++) {
             this.Blocks.push(criterials[ii])
@@ -321,16 +322,14 @@ class DFilter {
     }
 }
 
-const { useState, useEffect, useReducer, useRef } = React
+const { useState, useEffect } = React
 
-const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
+const ReactFltRow = ({ ii, Blocks, onDelRow, cntchange }) => {
     const [cOperand, setOperand] = useState(Blocks[ii].Operand)
     const [cType, setCType] = useState(Blocks[ii].Type)
     const [cIds, setCIds] = useState(Blocks[ii].Ids)
-    const LstLand = useRef(Lands)
 
     useEffect(() => {
-        console.log(LstLand)
         const row = Blocks[ii]
         const sWrap = document.querySelector(`[c-criterial="${ii}"]`)
         const $wrap = $(sWrap)
@@ -412,7 +411,7 @@ const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
                 case 1: // Land/Region
                     lst = [lType[0]]
                     if (0 == index) {
-                        LstLand.current.forEach(land => lst.push(land))
+                        Lands.forEach(land => lst.push(land))
                         return lst
                     }
                     const landId = criter.Ids[0]
@@ -494,7 +493,7 @@ const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
                 return []
             }
         }
-    }, [cOperand, cType, cIds])
+    }, [cOperand, cType, cIds, cntchange])
 
     const clssBtnDel = `btn btn-primary rounded-circle bi bi-trash-fill btn-del-crite-${ii} btn-del-crite`
     return (
@@ -507,7 +506,7 @@ const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
         </div>
     )
 }
-const ReactFilter = ({ dfilter }) => {
+const ReactFilter = ({ dfilter, countchange }) => {
     const [blocks, setBlocks] = useState(dfilter.Blocks)
 
     const onDelRow = (ii) => {
@@ -541,6 +540,7 @@ const ReactFilter = ({ dfilter }) => {
             <b className="ms-2">React</b>
             <div className="list-criterial pb-0">
                 {blocks.map((row, ii) => <ReactFltRow key={'dnb-fcrite_' + ii}
+                    cntchange={countchange}
                     ii={ii} Blocks={dfilter.Blocks} onDelRow={onDelRow} />)}
             </div>
             <div className="list-button pt-0">
@@ -555,4 +555,4 @@ const ReactFilter = ({ dfilter }) => {
 
 const mdFilter = new DFilter([new Criterial(0, 1, [0, 0])])
 const rFlt = ReactDOM.createRoot(document.getElementById('react-filter'))
-rFlt.render(<ReactFilter dfilter={mdFilter} />);
+rFlt.render(<ReactFilter dfilter={mdFilter} countchange={mdFilter.CountChange} />);
