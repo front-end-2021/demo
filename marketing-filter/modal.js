@@ -775,6 +775,7 @@ function getInitIds(type) {
         case 13: return [-16, -17]       // Superior objectives and measures
         case 14: return [-18, -19]       // Master goals
     }
+    return []
 }
 function getSubmarket(marketIds, lst) {
     for (let ii = 0; ii < StakeholderGroups.length; ii++) {
