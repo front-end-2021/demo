@@ -310,6 +310,15 @@ class DFilter {
             case 'Ids': return `[${this.Blocks.map(crite => crite.Ids.join(',')).join(',')}]`
         }
     }
+    onSearch() {
+        console.log('D Filter searching')
+        console.log('List Land Id', this.LandIds)
+        console.log('List Region Id', this.RegionIds)
+        console.log('List Market Id', this.MarketIds)
+        console.log('List Submarket Id', this.SubmarketIds)
+        console.log('List Product Id', this.ProductIds)
+        console.log('List Goal Id', this.GoalIds)
+    }
 }
 
 const { useState, useEffect, useRef } = React
@@ -319,22 +328,28 @@ const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
     const [cIds, setCIds] = useState(Blocks[ii].Ids)
 
     useEffect(() => {
-        console.log('on use effect setup ReactFltRow')
         const row = Blocks[ii]
         const sWrap = document.querySelector(`[c-criterial="${ii}"]`)
         const $wrap = $(sWrap)
+        renderUiIds()
         renOperandControl()
         renTypeControl()
         renderIdsDropdownList()
-
         return () => {
-            console.log('on use effect return ReactFltRow')
             for (let jj = cIds.length - 1; -1 < jj; jj--) {
                 const $input = $wrap.find(`[c-index="${jj}"]`)
                 $input.data("kendoDropDownList").destroy()
             }
+            $wrap.find('.ccrite-grp-ids').empty();
         }
-
+        function renderUiIds() {
+            $wrap.find('.ccrite-grp-ids').empty();
+            let ui = ''
+            for (let jj = 0; jj < cIds.length; jj++) {
+                ui += `<input class="fcsub-${jj}" c-index="${jj}" style="width: 240px" />`
+            }
+            $wrap.find('.ccrite-grp-ids').append(ui)
+        }
         function renOperandControl() {
             const $operand = $wrap.find(`[c-operand="${ii}"]`)
             const operandChange = (e) => {
@@ -358,7 +373,7 @@ const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
                 row.Type = parseInt(tType)
                 row.Ids = getInitIds(row.Type)
                 setCType(row.Type)
-                setCIds(row.Ids)
+                setCIds([...row.Ids])
             }
             $type.kendoDropDownList({
                 dataTextField: "Name",
@@ -369,16 +384,14 @@ const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
             })
         }
         function renderIdsDropdownList() {
-            const crite = Blocks[ii] // {Operand, Type, Ids}
-            if (!Array.isArray(crite.Ids) || !crite.Ids.length) return
-            for (let jj = 0; jj < crite.Ids.length; jj++) {
-                const _id = crite.Ids[jj]
+            for (let jj = 0; jj < row.Ids.length; jj++) {
+                const _id = row.Ids[jj]
                 const $input = $wrap.find(`[c-index="${jj}"]`)
                 const idChange = (e) => {
                     let id = e.sender.value()
                     id = parseInt(id)
-                    crite.Ids[jj] = id
-                    setCIds(crite.Ids)
+                    row.Ids[jj] = id
+                    setCIds([...row.Ids])
                 }
                 $input.kendoDropDownList({
                     dataTextField: "Name",
@@ -390,7 +403,7 @@ const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
             }
         }
         function getSourceIds(index) {
-            const criter = Blocks[ii]
+            const criter = row
             let lst = []
             switch (criter.Type) {
                 case 1: // Land/Region
@@ -485,36 +498,29 @@ const ReactFltRow = ({ ii, Blocks, onDelRow }) => {
         <div c-criterial={ii}>
             <input c-operand={ii} style={{ width: '96px' }} />
             <input c-type={ii} style={{ width: '270px' }} />
-            {cIds.map((id, jj) => {
-                const cls = `fcsub-${jj}`
-                return <input className={cls} c-index={jj} style={{ width: '240px' }}
-                    key={'df-rids_' + jj} />
-            })}
+            <span className="ccrite-grp-ids"></span>
             {0 < ii ? <button className={clssBtnDel} type="button"
                 onClick={() => onDelRow(ii)}></button> : null}
         </div>
     )
 }
-const ReactFilter = (props) => {
-    const Container = useRef(null);
-    const [blocks, setBlocks] = useState(props.dfilter.Blocks)
+const ReactFilter = ({ dfilter }) => {
+    const [blocks, setBlocks] = useState(dfilter.Blocks)
 
     const onDelRow = (ii) => {
-        const { dfilter } = props
         dfilter.Blocks.splice(ii, 1)
-        setBlocks(dfilter.Blocks.map(x => x))
+        setBlocks([...dfilter.Blocks])
     }
     const addFilter = () => {
-        const { dfilter } = props
-        const Blocks = dfilter.Blocks
         const type = 0
         const isNewBlk = isNewBlock()
         let oprnd = isNewBlk ? Operands[1].Id : Operands[0].Id
         const criter = new Criterial(oprnd, type, getInitIds(type))
-        Blocks.push(criter)
-        setBlocks(dfilter.Blocks.map(x => x))
+        dfilter.Blocks.push(criter)
+        setBlocks([...dfilter.Blocks])
+
         function isNewBlock() {
-            const lstRow = Blocks
+            const lstRow = dfilter.Blocks
             if (lstRow.length < 1) return true
             if (type == 1) return true
             if (lstRow.length == 1) {
@@ -525,15 +531,14 @@ const ReactFilter = (props) => {
         }
     }
     const setFilter = () => {
-        const { onSearch } = props
-        if (typeof onSearch == 'function') onSearch()
+        dfilter.onSearch()
     }
     return (
-        <section ref={Container} className="mb-3">
+        <section className="mb-3">
             <b className="ms-2">React</b>
             <div className="list-criterial pb-0">
                 {blocks.map((row, ii) => <ReactFltRow key={'dnb-fcrite_' + ii}
-                    ii={ii} Blocks={blocks} onDelRow={onDelRow} />)}
+                    ii={ii} Blocks={dfilter.Blocks} onDelRow={onDelRow} />)}
             </div>
             <div className="list-button pt-0">
                 <button type="button" className="btn btn-primary btn-sm me-2 btnSetFilter"
@@ -542,7 +547,7 @@ const ReactFilter = (props) => {
                     onClick={() => addFilter()}><i className="bi bi-plus-circle"></i> Add</button>
             </div>
         </section>
-    );
+    )
 }
 
 const mdFilter = new DFilter([new Criterial(0, 1, [0, 0])])
