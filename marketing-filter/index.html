@@ -17,19 +17,6 @@
 <body>
     <main class="dnb-view-100h">
         <section id="react-filter"></section>
-        <section id="mFilter">
-            <div class="list-criterial"></div>
-            <div class="list-button">
-                <button type="button" class="btn btn-primary btn-sm btnSetFilter">
-                    <i class="bi bi-search"></i> Filter</button>
-                <button type="button" class="btn btn-secondary btn-sm">
-                    <i class="bi bi-arrow-repeat"></i> Reset</button>
-                <button type="button" class="btn btn-primary btn-sm btnAddFilter">
-                    <i class="bi bi-plus-circle"></i> Add</button>
-                <button type="button" class="btn btn-primary btn-sm">
-                    <i class="bi bi-download"></i> Save filter</button>
-            </div>
-        </section>
         <section style="padding: 6px;">
             <h6>View Data: </h6>
             <div id="dnb-app-vue">
@@ -62,64 +49,79 @@
     <section id="dashboard" class="dnb-view-100h p-1">
         <div class="list-land">
             <h6 @click.stop="e => toggleCollapse(1)">List Land: <b v-if="!showExpand(1)">&#10010;</b></h6>
-            <div v-if="showExpand(1)" class="lst-entry" v-for="item in Lands">
+            <div v-for="item in Lands" v-if="showExpand(1)" class="lst-entry">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange"/>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+            </div>
+            <div class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
+                <span class="align-self-center w45px">Id: {{NewItems[0].Id}}</span>
+                <input class="form-control form-control-sm"
+                    type="text" v-model="NewItems[0].Name" />
+                <input class="btn btn-primary btn-sm" value="+ Land"
+                    type="button" @click="e => newItem(0)" />
             </div>
         </div>
         <div class="list-region">
             <h6 @click.stop="e => toggleCollapse(2)">List Region: <b v-if="!showExpand(2)">&#10010;</b></h6>
             <div v-if="showExpand(2)" class="lst-entry" v-for="item in Regions">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name"  @change="onChange"/>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+                <span>LandId</span>
+                <input type="number" class="form-control form-control-sm" v-model="item.LandId" :min="MinLandId"
+                    :max="MaxLandId" @change="onChange" />
+            </div>
+            <div class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
+                <span class="align-self-center w45px">Id: {{NewItems[1].Id}}</span>
+                <input class="form-control form-control-sm" 
+                    type="text" v-model="NewItems[1].Name" />
+                <span class="ms-1">LandId: </span>
+                <input class="form-control form-control-sm w45px"
+                    type="number" v-model="NewItems[1].LandId" :min="MinLandId" :max="MaxLandId" />
+                <input class="btn btn-primary btn-sm"  value="+ Region"
+                    type="button" @click="e => newItem(1)" />
             </div>
         </div>
         <div class="list-productgroup">
             <h6 @click.stop="e => toggleCollapse(3)">List Product group: <b v-if="!showExpand(3)">&#10010;</b></h6>
             <div v-if="showExpand(3)" class="lst-entry" v-for="item in ProductGroups">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name"  @change="onChange"/>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
             </div>
         </div>
         <div class="list-product">
             <h6 @click.stop="e => toggleCollapse(4)">List Product: <b v-if="!showExpand(4)">&#10010;</b></h6>
             <div v-if="showExpand(4)" class="lst-entry" v-for="item in Products">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name"  @change="onChange"/>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
             </div>
         </div>
         <div class="list-subproduct">
             <h6 @click.stop="e => toggleCollapse(5)">List Sub product: <b v-if="!showExpand(5)">&#10010;</b></h6>
             <div v-if="showExpand(5)" class="lst-entry" v-for="item in SubProducts">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name"  @change="onChange"/>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
             </div>
         </div>
         <div class="list-market">
             <h6 @click.stop="e => toggleCollapse(6)">List Market: <b v-if="!showExpand(6)">&#10010;</b></h6>
             <div v-if="showExpand(6)" class="lst-entry" v-for="item in MarketSegments">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name"  @change="onChange"/>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
             </div>
         </div>
         <div class="list-submarket">
             <h6 @click.stop="e => toggleCollapse(7)">List sub market: <b v-if="!showExpand(7)">&#10010;</b></h6>
             <div v-if="showExpand(7)" class="lst-entry" v-for="item in StakeholderGroups">
                 <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name"  @change="onChange"/>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
             </div>
         </div>
     </section>
     <script>
-        let mktFilter;
+        window._mFlter = new MktFilter([new Criterial(0, 1, [0, 0])])
         $(document).ready(function () {
-            window.mdFilter = new DFilter([new Criterial(0, 1, [0, 0])])
-            // mktFilter = new mkFilter('#mFilter', [new Criterial(0, 1, [0, 0])])
-            // const btnAddFilter = document.querySelector('#mFilter .btnAddFilter')
-            // btnAddFilter.addEventListener('click', (e) => mktFilter.addFilter())
-
-            newAppVue(window.mdFilter)
-            newAppVueDasboard(window.mdFilter)
+            newAppVue(window._mFlter)
+            newAppVueDasboard(window._mFlter)
         })
     </script>
     <script src="app_react.js" type="text/babel" data-presets="react,stage-3"></script>

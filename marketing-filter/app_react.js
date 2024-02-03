@@ -13,14 +13,14 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
             setCIds([...row.Ids])
         }
         dfilter.setEvent(ii, evnt)
-        console.log('mounted/updated')
+        // console.log('mounted/updated')
         const $wrap = $(`[c-criterial="${ii}"]`)
         renderUiIds()
         renOperandControl()
         renTypeControl()
         renderIdsDropdownList()
         return () => {
-            console.log('before mount/update/unmount')
+            // console.log('before mount/update/unmount')
             let $input, control
             for (let jj = cIds.length - 1; -1 < jj; jj--) {
                 $input = $wrap.find(`[c-index="${jj}"]`)
@@ -40,7 +40,7 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
             $wrap.find('.ccrite-grp-ids').empty();
             let ui = ''
             for (let jj = 0; jj < cIds.length; jj++) {
-                ui += `<input class="fcsub-${jj}" c-index="${jj}" style="width: 240px" />`
+                ui += `<input c-index="${jj}" style="width: 240px" />`
             }
             $wrap.find('.ccrite-grp-ids').append(ui)
         }
@@ -67,9 +67,12 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
                 const tType = e.sender.value()
                 row.Type = parseInt(tType)
                 row.Ids = getInitIds(row.Type);
-                if (cType != row.Type) setCType(row.Type)
-                if (cIds.join() != row.Ids.join())
-                    setCIds([...row.Ids])
+                const isChangeTyp = cType != row.Type
+                if (isChangeTyp) setCType(row.Type)
+                const isChangeId = cIds.join() != row.Ids.join()
+                if (isChangeId) setCIds([...row.Ids])
+                if (isChangeTyp || isChangeId)
+                    dfilter.setDSource(ii)
             }
             $type.kendoDropDownList({
                 dataTextField: "Name",
@@ -88,6 +91,7 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
                     id = parseInt(id);
                     row.Ids[jj] = id;
                     setCIds([...row.Ids])
+                    dfilter.setDSource(ii)
                 }
                 $input.kendoDropDownList({
                     dataTextField: "Name",
@@ -236,15 +240,20 @@ const ReactFilter = ({ dfilter }) => {
                     key={`r-${ii}_o${row.Operand}_t${row.Type}_i${row.Ids.join('_')}`}
                     ii={ii} dfilter={dfilter} onDelRow={onDelRow} />)}
             </div>
-            <div className="list-button pt-0">
-                <button type="button" className="btn btn-primary btn-sm me-2 btnSetFilter"
+            <div className="list-button pt-1">
+                <button type="button" className="btn btn-primary btn-sm me-2"
                     onClick={() => setFilter()}><i className="bi bi-search"></i> Filter</button>
-                <button type="button" className="btn btn-primary btn-sm btnAddFilter"
+                <button type="button" className="btn btn-secondary btn-sm me-2">
+                    <i className="bi bi-arrow-repeat"></i> Reset</button>
+                <button type="button" className="btn btn-primary btn-sm me-2"
                     onClick={() => addFilter()}><i className="bi bi-plus-circle"></i> Add</button>
+                <button type="button" className="btn btn-primary btn-sm">
+                    <i className="bi bi-download"></i> Save filter</button>
             </div>
         </section>
     )
 }
 
-const rFlt = ReactDOM.createRoot(document.getElementById('react-filter'))
-rFlt.render(<StrictMode><ReactFilter dfilter={window.mdFilter} /></StrictMode>);
+ReactDOM.createRoot(document.getElementById('react-filter')).render(<StrictMode>
+    <ReactFilter dfilter={window._mFlter} />
+</StrictMode>);

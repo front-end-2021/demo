@@ -14,14 +14,10 @@ function newAppVue(mFlter) {
 
             ListDataUI: [],
         },
-        computed: {
-
-        },
-        provide() {
-            return {
-
-            }
-        },
+        // computed: { },
+        // provide() {
+        //     return { }
+        // },
         methods: {
             renderData(filter) {
                 const lstGoal = getGoals.call(this, filter.GoalIds)
@@ -175,15 +171,13 @@ function newAppVue(mFlter) {
                 }
             },
         },
-        created() { },
-        updated() { },
+        // created() { },
+        // updated() { },
     })
-    //mFlter.setFilter(app.renderData)
     mFlter.setFilter = app.renderData
     app.renderData(mFlter)
-    return app;
 }
-function newAppVueDasboard(mdFilter) {
+function newAppVueDasboard(mFlter) {
     new Vue({
         el: '#dashboard',
         name: 'DnbAppDashboard',
@@ -197,10 +191,31 @@ function newAppVueDasboard(mdFilter) {
             StakeholderGroups: StakeholderGroups,
             Goals: Goals,
             ExpandIds: [],
-        },
-        mounted() {
 
+            NewItems: [],
         },
+        computed: {
+            MinLandId() {
+                const ids = this.Lands.map(x => x.Id)
+                return getMinFrom(ids)
+            },
+            MaxLandId() {
+                const ids = this.Lands.map(x => x.Id)
+                return getMaxFrom(ids)
+            }
+        },
+        beforeMount() {
+            let minId = getMinFrom(this.Lands.map(x => x.Id))
+            let maxId = getMaxFrom(this.Lands.map(x => x.Id))
+            this.NewItems.push({ Id: maxId + 1, Name: '' })    // Land
+
+            maxId = getMaxFrom(this.Regions.map(x => x.Id))
+            this.NewItems.push({ Id: maxId + 1, Name: '', LandId: minId })    // Region
+
+            maxId = getMaxFrom(this.ProductGroups.map(x => x.Id))
+            this.NewItems.push({ Id: maxId + 1, Name: '', RegionIds: [] })    // Product Group
+        },
+        //mounted() { },
         methods: {
             toggleCollapse(id) {
                 const ii = this.ExpandIds.indexOf(id)
@@ -208,8 +223,27 @@ function newAppVueDasboard(mdFilter) {
                 else this.ExpandIds.splice(ii, 1)
             },
             showExpand(id) { return this.ExpandIds.includes(id) },
-            onChange(){
-                mdFilter.setDataSource()
+            onChange() { mFlter.setDataSource() },
+            newItem(ii) {
+                const nItem = this.NewItems[ii]
+                if (!nItem) return
+                if (nItem.Name.trim() == '') return
+                switch (ii) {
+                    case 0: {
+                        this.Lands.push(Object.assign({}, nItem))
+                        updateNewItem(this.Lands)
+                    }
+                    case 1: {
+                        this.Regions.push(Object.assign({}, nItem))
+                        updateNewItem(this.Regions)
+                    }
+                }
+
+                mFlter.setDataSource()
+                function updateNewItem(arr) {
+                    nItem.Id = getMaxFrom(arr.map(x => x.Id)) + 1
+                    nItem.Name = ''
+                }
             }
         },
     })
@@ -220,3 +254,5 @@ function anyIds(lstId1, lstId2) {
     }
     return false
 }
+function getMaxFrom(arr) { return arr.reduce((a, b) => Math.max(a, b), -Infinity); }
+function getMinFrom(arr) { return arr.reduce((a, b) => Math.min(a, b), Infinity); }
