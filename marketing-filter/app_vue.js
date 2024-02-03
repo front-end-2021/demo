@@ -24,6 +24,7 @@ function newAppVue(mFlter) {
                 const lstLand = getLands.call(this, filter.LandIds)
                 const lstRegion = getRegions.call(this, filter.RegionIds)
                 const lstProductGrp = getProductGroups.call(this, filter.ProductIds)
+                console.log(lstProductGrp.map(x => x.Id))
                 const lstSubmarketId = getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
                 const lstPath = getPaths(lstLand, lstRegion)        // {Land, Region}
                 addProducts()
