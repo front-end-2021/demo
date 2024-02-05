@@ -96,7 +96,7 @@ function newAppVue(mFlter) {
                     }
                 }
                 function addProducts() {
-                    for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                    for (let ii = 0; ii < lstPath.length; ii++) {
                         const item = lstPath[ii]
                         const prdGrp = lstProductGrp.find(x => x.PGroup.RegionIds.includes(item.Region.Id))
                         if (prdGrp) {
@@ -106,7 +106,10 @@ function newAppVue(mFlter) {
                     }
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                         const item = lstPath[ii]
-                        if (!item.PGroup) { lstPath.splice(ii, 1) }
+                        if (!item.PGroup) { 
+                            lstPath.splice(ii, 1) 
+                            console.log('item remove', JSON.parse(JSON.stringify(item)))
+                        }
                     }
                 }
                 function getPaths(lands, regns) {
