@@ -23,43 +23,54 @@ function newAppVue(mFlter) {
                 const lstGoal = getGoals.call(this, filter.GoalIds)
                 const lstLand = getLands.call(this, filter.LandIds)
                 const lstRegion = getRegions.call(this, filter.RegionIds)
-                const lstProductGrp = getProductGroups.call(this, filter.ProductIds)
-                console.log(JSON.parse(JSON.stringify(lstProductGrp)))
-                console.log(lstProductGrp.map(x => x.PGroup.RegionIds).flat())
+                const lstProductGrp = getProductGroups.call(this, filter.ProductIds)        // { PGroup, Products: [{Data}] }
                 const lstSubmarketId = getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
                 const lstPath = getPaths(lstLand, lstRegion)        // [{Land, Region}]
-                console.log(JSON.parse(JSON.stringify(lstPath)))
+                //   console.log('lstPath = ', JSON.parse(JSON.stringify(lstPath)))
                 addProducts()               //  [{Land, Region, PGroup, Products}]
-                console.log(JSON.parse(JSON.stringify(lstPath)))
-                console.log(lstPath.map(x => x.Products.map(x => x.Id)).flat())
-                console.log(lstPath.map(x => x.PGroup.PGroup.RegionIds).flat())
+                //   console.log('lstPath = ', JSON.parse(JSON.stringify(lstPath)))
                 addSubmarketIds()           //  [{Land, Region, PGroup, Products}]
-                console.log(JSON.parse(JSON.stringify(lstPath)))
+                //   console.log('lstPath = ', JSON.parse(JSON.stringify(lstPath)))
                 addGoals()
-                console.log(JSON.parse(JSON.stringify(lstPath)))
+                //  console.log('lstPath = ', JSON.parse(JSON.stringify(lstPath)))
                 this.ListDataUI = lstPath
 
                 function addGoals() {
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                        const item = lstPath[ii]        // {Land, Region, PGroup, Products, IdSubmarkets}
+                        const item = lstPath[ii]        // {Land, Region, PGroups, Products, IdSubmarkets}
                         let goals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
                         if (!goals.length) {
-                            lstPath.splice(ii, 1)
+                            lstPath.splice(ii, 1)       // remove item
                             continue
                         }
-                        const idProducts = item.Products.map(x => x.Id)
-                        goals = filterGoalsBy.call(goals, idProducts, 1)
-                        if (!goals.length) {
-                            lstPath.splice(ii, 1)
-                            continue
-                        }
-                        for (let pd = 0; pd < item.Products.length; pd++) {
-                            const product = item.Products[pd]
-                            product.ListGoal = []
-                            for (let gg = 0; gg < goals.length; gg++) {
-                                product.ListGoal.push(goals[gg])
+                        for (let pp = 0; pp < item.PGroups.length; pp++) {
+                            const pGrp = item.PGroups[pp]
+                            const idProducts = pGrp.Products.map(x => x.Data.Id)
+                            goals = filterGoalsBy.call(goals, idProducts, 1)
+                            if (goals.length) {
+                                for (let pd = 0; pd < pGrp.Products.length; pd++) {
+                                    const product = pGrp.Products[pd]           // { Data }
+                                    product.ListGoal = []
+                                    for (let gg = 0; gg < goals.length; gg++) {
+                                        product.ListGoal.push(goals[gg])
+                                    }
+                                }
                             }
                         }
+                    }
+                    for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                        const item = lstPath[ii]        // {Land, Region, PGroups, Products, IdSubmarkets}
+                        for (let pp = item.PGroups.length - 1; -1 < pp; pp--) {
+                            const pGrp = item.PGroups[pp]
+                            let sumGoal = 0
+                            for (let pr = pGrp.Products.length - 1; -1 < pr; pr--) {
+                                const prd = pGrp.Products[pr]
+                                if (Array.isArray(prd.ListGoal)) sumGoal += prd.ListGoal.length
+                            }
+                            if (!sumGoal) item.PGroups.splice(pp, 1)
+                            else pGrp.SumGoal = sumGoal
+                        }
+                        if (!item.PGroups.length) lstPath.splice(ii, 1)       // remove item
                     }
                 }
                 function filterGoalsBy(idSubmrkPrdIds, type) {    // type = 0 | 1
@@ -98,17 +109,24 @@ function newAppVue(mFlter) {
                 function addProducts() {
                     for (let ii = 0; ii < lstPath.length; ii++) {
                         const item = lstPath[ii]
-                        const prdGrp = lstProductGrp.find(x => x.PGroup.RegionIds.includes(item.Region.Id))
-                        if (prdGrp) {
-                            item.PGroup = prdGrp
-                            item.Products = prdGrp.Products
+                        const rgnId = item.Region.Id
+
+                        const lstGrp = []
+                        for (let pp = 0; pp < lstProductGrp.length; pp++) {
+                            const x = lstProductGrp[pp]
+                            if (x.PGroup.RegionIds.includes(rgnId)) lstGrp.push(x)
+                        }
+                        if (lstGrp.length) {
+                            item.PGroups = []
+                            for (let pp = 0; pp < lstGrp.length; pp++) {
+                                item.PGroups.push(lstGrp[pp])
+                            }
                         }
                     }
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                         const item = lstPath[ii]
-                        if (!item.PGroup) { 
-                            lstPath.splice(ii, 1) 
-                            console.log('item remove', JSON.parse(JSON.stringify(item)))
+                        if (!Array.isArray(item.PGroups)) {
+                            lstPath.splice(ii, 1)
                         }
                     }
                 }
@@ -130,10 +148,10 @@ function newAppVue(mFlter) {
                         if (!prdIds.includes(prd.Id)) continue
                         if (!prdGrp || prdGrp.Id != prd.PrgId) {
                             prdGrp = this.ProductGroups.find(x => x.Id == prd.PrgId)
-                            lst.push({ PGroup: prdGrp, Products: [prd] })
+                            lst.push({ PGroup: prdGrp, Products: [{ Data: prd }] })
                         } else {
                             const item = lst.find(x => x.PGroup.Id == prdGrp.Id)
-                            item.Products.push(prd)
+                            item.Products.push({ Data: prd })
                         }
                     }
                     return lst

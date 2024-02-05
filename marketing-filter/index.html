@@ -18,17 +18,21 @@
     <main class="dnb-view-100h">
         <section id="react-filter"></section>
         <section style="padding: 6px;">
-            <h6>View Data: </h6>
+            <b class="text-success">(Vuejs CDN) View Data: </b>
             <div id="dnb-app-vue">
                 <ul class="list-group list-group-flush">
+                    <li v-if="ListDataUI.length < 1">No results</li>
                     <li v-for="wItem in ListDataUI" class="list-group-item" v-bind:id-land="'dnb-land_' + wItem.IdLand"
                         v-bind:id-region="'dnb-land_' + wItem.IdRegion">
-                        <i>{{wItem.Land.Name}} > {{wItem.Region.Name}}</i>
-                        <div>
-                            <h5>{{wItem.PGroup.Name}}</h5>
-                            <ul class="dnb-products">
-                                <li v-for="prduct in wItem.Products" v-bind:id-product="'dnb-product_' + prduct.Id">
-                                    <b class="mb-0">{{prduct.Name}}</b>
+                        <i class="text-black-50">{{wItem.Land.Name}} > {{wItem.Region.Name}}</i>
+                        <div v-for="pGrp in wItem.PGroups">
+                            <div class="d-flex justify-content-start align-items-start">
+                                <b class="text-secondary me-2">{{pGrp.PGroup.Name}}</b>
+                                <span class="badge bg-info rounded-pill text-white fw-normal">{{pGrp.SumGoal}}</span>
+                            </div>
+                            <ol class="dnb-products">
+                                <li v-for="prduct in pGrp.Products" v-bind:id-product="'dnb-product_' + prduct.Id">
+                                    <h6 class="mb-0 text-muted">{{prduct.Data.Name}}</h6>
                                     <ul class="dnb-goals">
                                         <li v-for="goal in prduct.ListGoal" v-bind:id-goal="'dnb-goal_' + goal.Id">
                                             <p class="mb-0">
@@ -39,7 +43,7 @@
                                         </li>
                                     </ul>
                                 </li>
-                            </ul>
+                            </ol>
                         </div>
                     </li>
                 </ul>
@@ -47,6 +51,7 @@
         </section>
     </main>
     <section id="dashboard" class="dnb-view-100h p-1">
+        <b class="text-success">(Vuejs CDN) View Dashboard: </b>
         <div class="list-land">
             <h6 @click.stop="e => toggleCollapse(1)">List Land: <b v-if="!showExpand(1)">&#10010;</b></h6>
             <div v-for="item in Lands" v-if="showExpand(1)" class="lst-entry">
@@ -55,10 +60,8 @@
             </div>
             <div class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
                 <span class="align-self-center w45px">Id: {{NewItems[0].Id}}</span>
-                <input class="form-control form-control-sm"
-                    type="text" v-model="NewItems[0].Name" />
-                <input class="btn btn-primary btn-sm" value="+ Land"
-                    type="button" @click="e => newItem(0)" />
+                <input class="form-control form-control-sm" type="text" v-model="NewItems[0].Name" />
+                <input class="btn btn-primary btn-sm" value="+ Land" type="button" @click="e => newItem(0)" />
             </div>
         </div>
         <div class="list-region">
@@ -72,13 +75,11 @@
             </div>
             <div class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
                 <span class="align-self-center w45px">Id: {{NewItems[1].Id}}</span>
-                <input class="form-control form-control-sm" 
-                    type="text" v-model="NewItems[1].Name" />
+                <input class="form-control form-control-sm" type="text" v-model="NewItems[1].Name" />
                 <span class="ms-1">LandId: </span>
-                <input class="form-control form-control-sm w45px"
-                    type="number" v-model="NewItems[1].LandId" :min="MinLandId" :max="MaxLandId" />
-                <input class="btn btn-primary btn-sm"  value="+ Region"
-                    type="button" @click="e => newItem(1)" />
+                <input class="form-control form-control-sm w45px" type="number" v-model="NewItems[1].LandId"
+                    :min="MinLandId" :max="MaxLandId" />
+                <input class="btn btn-primary btn-sm" value="+ Region" type="button" @click="e => newItem(1)" />
             </div>
         </div>
         <div class="list-productgroup">

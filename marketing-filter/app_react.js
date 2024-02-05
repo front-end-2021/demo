@@ -234,7 +234,7 @@ const ReactFilter = ({ dfilter }) => {
     }
     return (
         <section className="mb-3">
-            <b className="ms-2">React</b>
+            <b className="ms-2 text-success">(React CDN) Filter</b>
             <div className="list-criterial pb-0">
                 {blocks.map((row, ii) => <ReactFltRow
                     key={`r-${ii}_o${row.Operand}_t${row.Type}_i${row.Ids.join('_')}`}
