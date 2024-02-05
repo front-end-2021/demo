@@ -34,7 +34,7 @@ const Products = [
     { Id: 1, Name: 'Dota 2', PrgId: 1 },
     { Id: 2, Name: 'League of Legend', PrgId: 1 },
     { Id: 3, Name: 'Lien quan Mobile', PrgId: 1 },
-    { Id: 4, Name: 'Need for speed 2', PrgId: 1 },
+    { Id: 4, Name: 'Need for speed 2', PrgId: 5 },
     { Id: 5, Name: 'Futsal', PrgId: 2 },
     { Id: 6, Name: 'Badminton', PrgId: 2 },
     { Id: 7, Name: 'Ping pong', PrgId: 2 },
