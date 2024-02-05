@@ -11,7 +11,7 @@ function newAppVue(mFlter) {
             MarketSegments: MarketSegments,
             StakeholderGroups: StakeholderGroups,
             Goals: Goals,
-
+            Activities: Activities,
             ListDataUI: [],
         },
         // computed: { },
@@ -20,7 +20,7 @@ function newAppVue(mFlter) {
         // },
         methods: {
             renderData(filter) {
-                const lstGoal = getGoals.call(this, filter.GoalIds)
+                const lstGoal = getGoals.call(this, filter.GoalIds) // [{ Data, ListActivity: [{Data}] }]
                 const lstLand = getLands.call(this, filter.LandIds)
                 const lstRegion = getRegions.call(this, filter.RegionIds)
                 const lstProductGrp = getProductGroups.call(this, filter.ProductIds)        // { PGroup, Products: [{Data}] }
@@ -37,7 +37,7 @@ function newAppVue(mFlter) {
 
                 function addGoals() {
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                        const item = lstPath[ii]        // {Land, Region, PGroups, Products, IdSubmarkets}
+                        const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
                         let goals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
                         if (!goals.length) {
                             lstPath.splice(ii, 1)       // remove item
@@ -74,23 +74,32 @@ function newAppVue(mFlter) {
                     }
                 }
                 function filterGoalsBy(idSubmrkPrdIds, type) {    // type = 0 | 1
-                    const goals = this
+                    const goals = this          // [{ Data, ListActivity: [{Data}] }]
                     const lst = []
                     for (let gg = goals.length - 1; -1 < gg; gg--) {
-                        const goal = goals[gg]
-                        const lstSmkPrdId = goal.SubmarketProductId.split('-')
+                        const goal = goals[gg]              // { Data, ListActivity: [{Data}] }
+                        const lstSmkPrdId = goal.Data.SubmarketProductId.split('-')
                         const spId = parseInt(lstSmkPrdId[type])
                         if (idSubmrkPrdIds.includes(spId)) lst.push(goal)
                     }
                     return lst
                 }
                 function getGoals(goalIds) {
-                    const lstGoal = []
+                    const lst = []
                     for (let gg = 0; gg < this.Goals.length; gg++) {
                         const x = this.Goals[gg]
-                        if (goalIds.includes(x.Id)) lstGoal.push(x)
+                        if (goalIds.includes(x.Id)) {
+                            const gData = { Data: x, ListActivity: [] }
+                            for (let aa = 0; aa < this.Activities.length; aa++) {
+                                const act = this.Activities[aa]
+                                if (act.GoalId == x.Id) {
+                                    gData.ListActivity.push({ Data: act })
+                                }
+                            }
+                            lst.push(gData)
+                        }
                     }
-                    return lstGoal
+                    return lst
                 }
                 function addSubmarketIds() {
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
@@ -222,8 +231,8 @@ function newAppVueDasboard(mFlter) {
             MarketSegments: MarketSegments,
             StakeholderGroups: StakeholderGroups,
             Goals: Goals,
+            Activities: Activities,
             ExpandIds: [],
-
             NewItems: [],
         },
         computed: {
@@ -234,7 +243,15 @@ function newAppVueDasboard(mFlter) {
             MaxLandId() {
                 const ids = this.Lands.map(x => x.Id)
                 return getMaxFrom(ids)
-            }
+            },
+            MinGoalId() {
+                const ids = this.Goals.map(x => x.Id)
+                return getMinFrom(ids)
+            },
+            MaxGoalId() {
+                const ids = this.Goals.map(x => x.Id)
+                return getMaxFrom(ids)
+            },
         },
         beforeMount() {
             let minId = getMinFrom(this.Lands.map(x => x.Id))

@@ -18,7 +18,7 @@
     <main class="dnb-view-100h">
         <section id="react-filter"></section>
         <section style="padding: 6px;">
-            <b class="text-success">(Vuejs CDN) View Data: </b>
+            <b class="text-success">View Data <span class="opacity-25">(Vuejs CDN)</span>: </b>
             <div id="dnb-app-vue">
                 <ul class="list-group list-group-flush">
                     <li v-if="ListDataUI.length < 1">No results</li>
@@ -34,12 +34,19 @@
                                 <li v-for="prduct in pGrp.Products" v-bind:id-product="'dnb-product_' + prduct.Id">
                                     <h6 class="mb-0 text-muted">{{prduct.Data.Name}}</h6>
                                     <ul class="dnb-goals">
-                                        <li v-for="goal in prduct.ListGoal" v-bind:id-goal="'dnb-goal_' + goal.Id">
+                                        <li v-for="goal in prduct.ListGoal" v-bind:id-goal="'dnb-goal_' + goal.Data.Id">
                                             <p class="mb-0">
-                                                <input v-model="goal.Finish" type="checkbox"
-                                                    class="form-check-input dnb-r14px" /> {{goal.Name}}
+                                                <input v-model="goal.Data.Finish" type="checkbox"
+                                                    class="form-check-input dnb-r14px" /> {{goal.Data.Name}}
                                             </p>
-
+                                            <ul class="dnb-activities">
+                                                <li v-for="actv in goal.ListActivity">
+                                                    <p class="mb-0">
+                                                        <input v-model="actv.Data.Finish" type="checkbox"
+                                                            class="form-check-input dnb-r14px" /> {{actv.Data.Name}}
+                                                    </p>
+                                                </li>
+                                            </ul>
                                         </li>
                                     </ul>
                                 </li>
@@ -51,7 +58,7 @@
         </section>
     </main>
     <section id="dashboard" class="dnb-view-100h p-1">
-        <b class="text-success">(Vuejs CDN) View Dashboard: </b>
+        <b class="text-success">View Dashboard <span class="opacity-25">(Vuejs CDN)</span>: </b>
         <div class="list-land">
             <h6 @click.stop="e => toggleCollapse(1)">List Land: <b v-if="!showExpand(1)">&#10010;</b></h6>
             <div v-for="item in Lands" v-if="showExpand(1)" class="lst-entry">
@@ -115,6 +122,24 @@
             <div v-if="showExpand(7)" class="lst-entry" v-for="item in StakeholderGroups">
                 <span>Id: {{item.Id}}</span>
                 <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+            </div>
+        </div>
+        <div class="list-goal">
+            <h6 @click.stop="e => toggleCollapse(8)">List goal: <b v-if="!showExpand(8)">&#10010;</b></h6>
+            <div v-if="showExpand(8)" class="lst-entry" v-for="item in Goals">
+                <span>Id: {{item.Id}}</span>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+                <span>Finish: <input v-model="item.Finish" type="checkbox" class="form-check-input dnb-r14px" /></span>
+            </div>
+        </div>
+        <div class="list-activity">
+            <h6 @click.stop="e => toggleCollapse(9)">List activity: <b v-if="!showExpand(9)">&#10010;</b></h6>
+            <div v-if="showExpand(9)" class="lst-entry" v-for="item in Activities">
+                <span>Id: {{item.Id}}</span>
+                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+                <span>Finish: <input v-model="item.Finish" type="checkbox" class="form-check-input dnb-r14px" /></span>
+                <input type="number" class="form-control form-control-sm" v-model="item.GoalId" :min="MinGoalId"
+                :max="MaxGoalId" @change="onChange" />
             </div>
         </div>
     </section>
