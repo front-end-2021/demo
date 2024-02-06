@@ -1,3 +1,6 @@
+<!doctype html>
+<html lang="en-US">
+
 <head>
     <link rel="stylesheet" href="3rd/bootstrap5/bootstrap.min.css" />
     <link rel="stylesheet" href="3rd/bootstrap5/bootstrap-icons.min.css" />
@@ -31,15 +34,22 @@
                                 <span class="badge bg-info rounded-pill text-white fw-normal">{{pGrp.SumGoal}}</span>
                             </div>
                             <ol class="dnb-products">
-                                <li v-for="prduct in pGrp.Products" v-bind:id-product="'dnb-product_' + prduct.Id">
+                                <li v-for="prduct in pGrp.Products" v-bind:id-product="'dnb-product_' + prduct.Data.Id">
                                     <h6 class="mb-0 text-muted">{{prduct.Data.Name}}</h6>
                                     <ul class="dnb-goals">
-                                        <mf-viewgoal inline-template v-for="goal in prduct.ListGoal" :entry="goal">
+                                        <mf-viewgoal inline-template v-for="goal in prduct.ListGoal" :entry="goal"
+                                            :key="'lnd'+wItem.Land.Id+'rg'+wItem.Region.Id+'prg'+pGrp.PGroup.Id+'p'+prduct.Data.Id+'gl'+goal.Id">
                                             <li v-bind:id-goal="'dnb-goal_' + entry.Id">
-                                                <p class="mb-0">
+                                                <p class="mb-0" v-bind:class="[entry.Finish ? 'text-black-50' : '']">{{entry.Name}}</p>
+                                                <div class="mb-2 d-flex justify-content-start" 
+                                                    v-bind:class="[entry.Finish ? 'text-black-50' : '']">
+                                                    <span class="text-muted me-1">Finish: </span>
                                                     <input v-model="entry.Finish" type="checkbox"
-                                                        class="form-check-input dnb-r14px" /> {{entry.Name}}
-                                                </p>
+                                                        class="form-check-input dnb-r14px" />
+                                                    <small v-if="Start || End" class="bi bi-calendar-range ms-3 me-1"></small>
+                                                    <small class="text-muted">{{Start}}</small>
+                                                    <small v-if="End" class="text-muted"> - {{End}}</small>
+                                                </div>
                                                 <ul class="dnb-activities">
                                                     <li v-for="actv in ListActivity">
                                                         <p class="mb-0">
@@ -128,11 +138,23 @@
         </div>
         <div class="list-goal">
             <h6 @click.stop="e => toggleCollapse(8)">List goal: <b v-if="!showExpand(8)">&#10010;</b></h6>
-            <div v-if="showExpand(8)" class="lst-entry" v-for="item in Goals">
-                <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
-                <span>Finish: <input v-model="item.Finish" type="checkbox" class="form-check-input dnb-r14px" /></span>
-            </div>
+            <mf-dashgoal inline-template v-for="item in Goals" v-if="showExpand(8)" :entry="item">
+                <div class="lst-entry">
+                    <span>Id: {{entry.Id}}</span>
+                    <input type="text" class="form-control form-control-sm" v-model="entry.Name" @change="onChange" />
+                    <span>Finish: <input v-model="entry.Finish" type="checkbox"
+                            class="form-check-input dnb-r14px" /></span>
+                    <span>
+                        <small>Start</small><input type="date" name="g-start" :value="Start" @change="changeStart"
+                            :max="End ? End : null" :disabled="entry.Finish ? true : false"/>
+                    </span>
+                    <span>
+                        <small>End</small><input type="date" name="g-end" :value="End" @change="changeEnd"
+                            :min="Start ? Start : null" 
+                            :disabled="entry.Finish ? true : (Start ? false : true)"/>
+                    </span>
+                </div>
+            </mf-dashgoal>
         </div>
         <div class="list-activity">
             <h6 @click.stop="e => toggleCollapse(9)">List activity: <b v-if="!showExpand(9)">&#10010;</b></h6>
@@ -155,3 +177,5 @@
     <script src="app_react.js" type="text/babel" data-presets="react,stage-3"></script>
     <script src="app_vue.js"></script>
 </body>
+
+</html>

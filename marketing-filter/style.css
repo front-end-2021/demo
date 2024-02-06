@@ -30,7 +30,7 @@ body {
 
 #dashboard [class|="list"]>.lst-entry {
     display: grid;
-    grid-template-columns: 42px 246px 81px 54px;
+    grid-template-columns: 42px 246px 81px 141px 141px;
     grid-gap: 9px;
     margin-bottom: 9px;
     align-items: center;
@@ -46,3 +46,5 @@ body {
 }
 .w45px {width: 45px;}
 .lstentry-new > * {max-width: 248px;margin-right: 3px;}
+.dnb-goals {list-style-type: disc;}
+.dnb-activities {list-style-type: square;}

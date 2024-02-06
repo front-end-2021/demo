@@ -12,6 +12,20 @@ Vue.component('mf-viewgoal', {
             ListActivity: lstA
         }
     },
+    computed: {
+        Start() {
+            const start = this.entry.Start
+            if (typeof start != 'string') return ''
+            if (start.trim() == '') return ''
+            return getDateStr(start, 'YYYY-MM-dd')
+        },
+        End() {
+            const end = this.entry.End
+            if (typeof end != 'string') return ''
+            if (end.trim() == '') return ''
+            return getDateStr(end, 'YYYY-MM-dd')
+        },
+    },
 })
 function newAppVue(mFlter) {
     const app = new Vue({
@@ -29,10 +43,6 @@ function newAppVue(mFlter) {
             Activities: Activities,
             ListDataUI: [],
         },
-        // computed: { },
-        // provide() {
-        //     return { }
-        // },
         methods: {
             renderData(filter) {
                 const lstGoal = getGoals.call(this, filter.GoalIds)
@@ -226,6 +236,69 @@ function newAppVue(mFlter) {
     mFlter.setFilter = app.renderData
     app.renderData(mFlter)
 }
+Vue.component('mf-dashgoal', {
+    name: 'DnVDashGoal',
+    props: ['entry'],
+    inject: ['onChange'],
+    data() {
+        let start = this.entry.Start
+        if (typeof start != 'string') start = ''
+        else if (start.trim() == '') start = ''
+        else start = getDateStr(start, 'YYYY-MM-dd')
+        let end = this.entry.End
+        if (typeof end != 'string') end = ''
+        else if (end.trim() == '') end = ''
+        else end = getDateStr(end, 'YYYY-MM-dd')
+
+        return {
+            Start: start, End: end,
+        }
+    },
+    beforeMount() {
+        if (this.entry.Finish && !this.entry.End) {
+            setStartEndNow.call(this)
+        }
+    },
+    watch: {
+        'entry.Start'(val, old) {
+            if (old && !val && this.End) {
+                this.entry.End = null
+                this.End = ''
+            }
+        },
+        'entry.Finish'(val, old) {
+            if (val && !this.entry.End) {
+                setStartEndNow.call(this)
+            }
+        },
+    },
+    methods: {
+        changeStart(e) {
+            let newD = e.target.value
+            if (newD == '' && this.entry.Start) {
+                this.entry.Start = null
+                this.Start = ''
+                return
+            }
+            if (!isDateStr(newD)) return
+            const newStr = new Date(newD).toISOString()
+            this.entry.Start = newStr
+            this.Start = newD
+        },
+        changeEnd(e) {
+            let newD = e.target.value
+            if (newD == '' && this.entry.End) {
+                this.entry.End = null
+                this.End = ''
+                return
+            }
+            if (!isDateStr(newD)) return
+            const newStr = new Date(newD).toISOString()
+            this.entry.End = newStr
+            this.End = newD
+        }
+    },
+})
 function newAppVueDasboard(mFlter) {
     new Vue({
         el: '#dashboard',
@@ -303,6 +376,11 @@ function newAppVueDasboard(mFlter) {
                 }
             }
         },
+        provide() {
+            return {
+                onChange: this.onChange
+            }
+        },
     })
 }
 function anyIds(lstId1, lstId2) {
@@ -313,3 +391,42 @@ function anyIds(lstId1, lstId2) {
 }
 function getMaxFrom(arr) { return arr.reduce((a, b) => Math.max(a, b), -Infinity); }
 function getMinFrom(arr) { return arr.reduce((a, b) => Math.min(a, b), Infinity); }
+function getDateStr(strDate, tFormat) {
+    const dS = new Date(strDate)
+    const year = dS.getFullYear()
+    const month = dS.getMonth() + 1
+    const day = dS.getDate()
+    switch (tFormat) {
+        case 'YYYY-MM-dd':
+            let mm = month < 10 ? `0${month}` : month
+            let dd = day < 10 ? `0${day}` : day
+            return `${year}-${mm}-${dd}`;
+    }
+    return ''
+}
+function isDateStr(str) {       // 'yyyy-mm-dd'
+    const arr = str.split('-')
+    if (arr.length < 3) return false
+    let nn = arr[0]
+    nn = parseInt(nn)
+    if (nn.toString().length < 4) return false
+    for (let ii = arr.length - 1; 0 < ii; ii--) {
+        nn = arr[ii]
+        nn = parseInt(nn)
+        if (isNaN(nn)) return false
+    }
+    return true;
+}
+function setStartEndNow() {
+    if (!this.entry.Finish) return
+    if (this.entry.End) return
+    const dNow = new Date()
+    const tE = dNow.toISOString()
+    let end = getDateStr(tE, 'YYYY-MM-dd')
+    this.entry.End = tE
+    this.End = end
+    if (!this.entry.Start) {
+        this.Start = end
+        this.entry.Start = tE
+    }
+}
