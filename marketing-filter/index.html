@@ -34,20 +34,22 @@
                                 <li v-for="prduct in pGrp.Products" v-bind:id-product="'dnb-product_' + prduct.Id">
                                     <h6 class="mb-0 text-muted">{{prduct.Data.Name}}</h6>
                                     <ul class="dnb-goals">
-                                        <li v-for="goal in prduct.ListGoal" v-bind:id-goal="'dnb-goal_' + goal.Data.Id">
-                                            <p class="mb-0">
-                                                <input v-model="goal.Data.Finish" type="checkbox"
-                                                    class="form-check-input dnb-r14px" /> {{goal.Data.Name}}
-                                            </p>
-                                            <ul class="dnb-activities">
-                                                <li v-for="actv in goal.ListActivity">
-                                                    <p class="mb-0">
-                                                        <input v-model="actv.Data.Finish" type="checkbox"
-                                                            class="form-check-input dnb-r14px" /> {{actv.Data.Name}}
-                                                    </p>
-                                                </li>
-                                            </ul>
-                                        </li>
+                                        <mf-viewgoal inline-template v-for="goal in prduct.ListGoal" :entry="goal">
+                                            <li v-bind:id-goal="'dnb-goal_' + entry.Id">
+                                                <p class="mb-0">
+                                                    <input v-model="entry.Finish" type="checkbox"
+                                                        class="form-check-input dnb-r14px" /> {{entry.Name}}
+                                                </p>
+                                                <ul class="dnb-activities">
+                                                    <li v-for="actv in ListActivity">
+                                                        <p class="mb-0">
+                                                            <input v-model="actv.Data.Finish" type="checkbox"
+                                                                class="form-check-input dnb-r14px" /> {{actv.Data.Name}}
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </mf-viewgoal>
                                     </ul>
                                 </li>
                             </ol>
@@ -139,7 +141,7 @@
                 <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
                 <span>Finish: <input v-model="item.Finish" type="checkbox" class="form-check-input dnb-r14px" /></span>
                 <input type="number" class="form-control form-control-sm" v-model="item.GoalId" :min="MinGoalId"
-                :max="MaxGoalId" @change="onChange" />
+                    :max="MaxGoalId" @change="onChange" />
             </div>
         </div>
     </section>

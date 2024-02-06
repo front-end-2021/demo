@@ -1,3 +1,18 @@
+Vue.component('mf-viewgoal', {
+    name: 'DnbViewGoal',
+    props: ['entry'],
+    data() {
+        const goalId = this.entry.Id
+        const lstA = []
+        for (let aa = 0; aa < this.$root.Activities.length; aa++) {
+            const act = this.$root.Activities[aa]
+            if (goalId == act.GoalId) lstA.push({ Data: act })
+        }
+        return {
+            ListActivity: lstA
+        }
+    },
+})
 function newAppVue(mFlter) {
     const app = new Vue({
         el: '#dnb-app-vue',
@@ -20,7 +35,7 @@ function newAppVue(mFlter) {
         // },
         methods: {
             renderData(filter) {
-                const lstGoal = getGoals.call(this, filter.GoalIds) // [{ Data, ListActivity: [{Data}] }]
+                const lstGoal = getGoals.call(this, filter.GoalIds)
                 const lstLand = getLands.call(this, filter.LandIds)
                 const lstRegion = getRegions.call(this, filter.RegionIds)
                 const lstProductGrp = getProductGroups.call(this, filter.ProductIds)        // { PGroup, Products: [{Data}] }
@@ -74,11 +89,11 @@ function newAppVue(mFlter) {
                     }
                 }
                 function filterGoalsBy(idSubmrkPrdIds, type) {    // type = 0 | 1
-                    const goals = this          // [{ Data, ListActivity: [{Data}] }]
+                    const goals = this
                     const lst = []
                     for (let gg = goals.length - 1; -1 < gg; gg--) {
-                        const goal = goals[gg]              // { Data, ListActivity: [{Data}] }
-                        const lstSmkPrdId = goal.Data.SubmarketProductId.split('-')
+                        const goal = goals[gg]
+                        const lstSmkPrdId = goal.SubmarketProductId.split('-')
                         const spId = parseInt(lstSmkPrdId[type])
                         if (idSubmrkPrdIds.includes(spId)) lst.push(goal)
                     }
@@ -89,14 +104,7 @@ function newAppVue(mFlter) {
                     for (let gg = 0; gg < this.Goals.length; gg++) {
                         const x = this.Goals[gg]
                         if (goalIds.includes(x.Id)) {
-                            const gData = { Data: x, ListActivity: [] }
-                            for (let aa = 0; aa < this.Activities.length; aa++) {
-                                const act = this.Activities[aa]
-                                if (act.GoalId == x.Id) {
-                                    gData.ListActivity.push({ Data: act })
-                                }
-                            }
-                            lst.push(gData)
+                            lst.push(x)
                         }
                     }
                     return lst
