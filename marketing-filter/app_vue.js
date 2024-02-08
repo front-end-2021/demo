@@ -26,6 +26,13 @@ Vue.component('mf-viewgoal', {
             return getDateStr(end, 'YYYY-MM-dd')
         },
     },
+    watch: {
+        'entry.Finish'(val, old) {
+            if (val && !this.entry.End) {
+                setStartEndNow.call(this, true)
+            }
+        },
+    },
 })
 function newAppVue(mFlter) {
     const app = new Vue({
@@ -51,27 +58,27 @@ function newAppVue(mFlter) {
                 const lstProductGrp = getProductGroups.call(this, filter.ProductIds)        // { PGroup, Products: [{Data}] }
                 const lstSubmarketId = getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
                 const lstPath = getPaths(lstLand, lstRegion)        // [{Land, Region}]
-                //   console.log('lstPath = ', JSON.parse(JSON.stringify(lstPath)))
+                //console.log('lstPath (0) = ', JSON.parse(JSON.stringify(lstPath)))
                 addProducts()               //  [{Land, Region, PGroup, Products}]
-                //   console.log('lstPath = ', JSON.parse(JSON.stringify(lstPath)))
+                //console.log('lstPath (add product) = ', JSON.parse(JSON.stringify(lstPath)))
                 addSubmarketIds()           //  [{Land, Region, PGroup, Products}]
-                //   console.log('lstPath = ', JSON.parse(JSON.stringify(lstPath)))
+                //console.log('lstPath (add submarket Id) = ', JSON.parse(JSON.stringify(lstPath)))
                 addGoals()
-                //  console.log('lstPath = ', JSON.parse(JSON.stringify(lstPath)))
+                //console.log('lstPath (add goal) = ', JSON.parse(JSON.stringify(lstPath)))
                 this.ListDataUI = lstPath
 
                 function addGoals() {
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                         const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
-                        let goals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
-                        if (!goals.length) {
+                        const lstGoalSub = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
+                        if (!lstGoalSub.length) {
                             lstPath.splice(ii, 1)       // remove item
                             continue
                         }
                         for (let pp = 0; pp < item.PGroups.length; pp++) {
                             const pGrp = item.PGroups[pp]
                             const idProducts = pGrp.Products.map(x => x.Data.Id)
-                            goals = filterGoalsBy.call(goals, idProducts, 1)
+                            const goals = filterGoalsBy.call(lstGoalSub, idProducts, 1)
                             if (goals.length) {
                                 for (let pd = 0; pd < pGrp.Products.length; pd++) {
                                     const product = pGrp.Products[pd]           // { Data }
@@ -92,16 +99,20 @@ function newAppVue(mFlter) {
                                 const prd = pGrp.Products[pr]
                                 if (Array.isArray(prd.ListGoal)) sumGoal += prd.ListGoal.length
                             }
-                            if (!sumGoal) item.PGroups.splice(pp, 1)
+                            if (!sumGoal) {
+                                item.PGroups.splice(pp, 1)
+                            }
                             else pGrp.SumGoal = sumGoal
                         }
-                        if (!item.PGroups.length) lstPath.splice(ii, 1)       // remove item
+                        if (!item.PGroups.length) {
+                            lstPath.splice(ii, 1)       // remove item
+                        }
                     }
                 }
                 function filterGoalsBy(idSubmrkPrdIds, type) {    // type = 0 | 1
                     const goals = this
                     const lst = []
-                    for (let gg = goals.length - 1; -1 < gg; gg--) {
+                    for (let gg = 0; gg < goals.length; gg++) {
                         const goal = goals[gg]
                         const lstSmkPrdId = goal.SubmarketProductId.split('-')
                         const spId = parseInt(lstSmkPrdId[type])
@@ -124,7 +135,8 @@ function newAppVue(mFlter) {
                         const item = lstPath[ii]
                         const submrkIds = lstSubmarketId.filter(x => x.IdLands.includes(item.Land.Id))
                         if (!submrkIds.length) {
-                            lstPath.splice(ii, 1); continue;
+                            lstPath.splice(ii, 1);
+                            continue;
                         }
                         if (!Array.isArray(item.IdSubmarkets)) item.IdSubmarkets = []
                         submrkIds.forEach(itmSubmrkId => {
@@ -266,6 +278,12 @@ Vue.component('mf-dashgoal', {
                 this.End = ''
             }
         },
+        'entry.End'(val, old) {
+            if (!old && val && !this.End) {
+                this.entry.End = null
+                this.End = getDateStr(val, 'YYYY-MM-dd')
+            }
+        },
         'entry.Finish'(val, old) {
             if (val && !this.entry.End) {
                 setStartEndNow.call(this)
@@ -274,25 +292,25 @@ Vue.component('mf-dashgoal', {
     },
     methods: {
         changeStart(e) {
-            let newD = e.target.value
-            if (newD == '' && this.entry.Start) {
+            const newD = e.target.value
+            const isDate = isDateStr(newD)
+            if (!isDate) {
                 this.entry.Start = null
                 this.Start = ''
                 return
             }
-            if (!isDateStr(newD)) return
             const newStr = new Date(newD).toISOString()
             this.entry.Start = newStr
             this.Start = newD
         },
         changeEnd(e) {
-            let newD = e.target.value
-            if (newD == '' && this.entry.End) {
+            const newD = e.target.value
+            const isDate = isDateStr(newD)
+            if (!isDate) {
                 this.entry.End = null
                 this.End = ''
                 return
             }
-            if (!isDateStr(newD)) return
             const newStr = new Date(newD).toISOString()
             this.entry.End = newStr
             this.End = newD
@@ -405,6 +423,9 @@ function getDateStr(strDate, tFormat) {
     return ''
 }
 function isDateStr(str) {       // 'yyyy-mm-dd'
+    if(typeof str != 'string') return false;
+    str = str.trim()
+    if(str === '') return false
     const arr = str.split('-')
     if (arr.length < 3) return false
     let nn = arr[0]
@@ -417,16 +438,19 @@ function isDateStr(str) {       // 'yyyy-mm-dd'
     }
     return true;
 }
-function setStartEndNow() {
+function setStartEndNow(notData) {
     if (!this.entry.Finish) return
     if (this.entry.End) return
-    const dNow = new Date()
+    let dNow = new Date()
+    if(this.entry.Start) {
+        dNow = new Date(this.entry.Start)
+    }
     const tE = dNow.toISOString()
     let end = getDateStr(tE, 'YYYY-MM-dd')
     this.entry.End = tE
-    this.End = end
+    if(!notData) this.End = end
     if (!this.entry.Start) {
-        this.Start = end
+        if(!notData) this.Start = end
         this.entry.Start = tE
     }
 }

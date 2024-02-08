@@ -74,11 +74,11 @@ const StakeholderGroups = [
 const Goals = [
     {
         Id: 1, Name: 'Build 3 điểm bán sách', SubmarketProductId: '1-8',
-        Finish: true, Start: null, End: null
+        Finish: true, Start: '2024-01-15T05:49:58.135Z', End: '2024-02-09T05:49:58.135Z'
     },
     {
         Id: 2, Name: 'Build 1 phòng live esport', SubmarketProductId: '3-2',
-        Finish: false, Start: null, End: null
+        Finish: false, Start: '2024-02-18T05:49:58.135Z', End: null
     },
     {
         Id: 3, Name: 'Build 2 phòng live stream', SubmarketProductId: '2-1',
@@ -90,7 +90,7 @@ const Goals = [
     },
     {
         Id: 5, Name: 'Build 4 phòng shop online', SubmarketProductId: '4-10',
-        Finish: true, Start: null, End: null
+        Finish: true, Start: '2024-02-03T05:49:58.135Z', End: '2024-02-27T05:49:58.135Z'
     },
     {
         Id: 6, Name: 'Build 5 phòng live stream', SubmarketProductId: '2-1',

@@ -1,6 +1,5 @@
 body {
-    display: grid;
-    grid-template-columns: 1200px calc(100% - 1200px);
+    display: flex;
 }
 
 .list-criterial,
@@ -26,6 +25,7 @@ body {
 .dnb-view-100h {
     max-height: 100vh;
     overflow-y: auto;
+    min-width: 1200px;
 }
 
 #dashboard [class|="list"]>.lst-entry {
