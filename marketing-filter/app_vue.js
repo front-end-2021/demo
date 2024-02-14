@@ -3,13 +3,9 @@ Vue.component('mf-viewgoal', {
     props: ['entry'],
     data() {
         const goalId = this.entry.Id
-        const lstA = []
-        for (let aa = 0; aa < this.$root.Activities.length; aa++) {
-            const act = this.$root.Activities[aa]
-            if (goalId == act.GoalId) lstA.push({ Data: act })
-        }
+        const activities = this.$root.Activities
         return {
-            ListActivity: lstA
+            ListActivity: genListActivity(goalId, activities)
         }
     },
     computed: {
@@ -33,6 +29,19 @@ Vue.component('mf-viewgoal', {
             }
         },
     },
+    mounted() { this.$root.ListGoalComponent.push(this) },
+    destroyed() {
+        const lstComps = this.$root.ListGoalComponent
+        const goalId = this.entry.Id
+        const i = lstComps.findIndex(e => goalId == e.entry.Id )
+        if (-1 < i) lstComps.splice(this)
+    },
+    methods: {
+        genListActivity(activities){
+            const goalId = this.entry.Id
+            this.ListActivity = genListActivity(goalId, activities)
+        },
+    },
 })
 function newAppVue(mFlter) {
     const app = new Vue({
@@ -49,6 +58,7 @@ function newAppVue(mFlter) {
             Goals: Goals,
             Activities: Activities,
             ListDataUI: [],
+            ListGoalComponent: [],
         },
         methods: {
             renderData(filter) {
@@ -241,12 +251,21 @@ function newAppVue(mFlter) {
                     return lstsMrkId
                 }
             },
+            genListActivity() {
+                const activities = this.Activities
+                const lstComps = this.$root.ListGoalComponent
+                for(let ii = 0; ii < lstComps.length; ii++){
+                    const comp = lstComps[ii]
+                    comp.genListActivity(activities)
+                }
+            },
         },
         // created() { },
         // updated() { },
     })
     mFlter.setFilter = app.renderData
     app.renderData(mFlter)
+    return app
 }
 Vue.component('mf-dashgoal', {
     name: 'DnVDashGoal',
@@ -317,7 +336,7 @@ Vue.component('mf-dashgoal', {
         }
     },
 })
-function newAppVueDasboard(mFlter) {
+function newAppVueDasboard(mFlter, app) {
     new Vue({
         el: '#dashboard',
         name: 'DnbAppDashboard',
@@ -363,7 +382,6 @@ function newAppVueDasboard(mFlter) {
             maxId = getMaxFrom(this.ProductGroups.map(x => x.Id))
             this.NewItems.push({ Id: maxId + 1, Name: '', RegionIds: [] })    // Product Group
         },
-        //mounted() { },
         methods: {
             toggleCollapse(id) {
                 const ii = this.ExpandIds.indexOf(id)
@@ -372,6 +390,22 @@ function newAppVueDasboard(mFlter) {
             },
             showExpand(id) { return this.ExpandIds.includes(id) },
             onChange() { mFlter.setDataSource() },
+            onChangeId(e, item, type) {
+                const target = e.target
+                const newVal = target.value
+                const newId = parseInt(newVal)
+                if (isNaN(newId)) return;
+                switch (type) {
+                    case 1: // Region
+                        item.LandId = newId;
+                        mFlter.setDataSource();
+                        return;
+                    case 2: // Activity
+                        item.GoalId = newId;
+                        app.genListActivity()
+                        return;
+                }
+            },
             newItem(ii) {
                 const nItem = this.NewItems[ii]
                 if (!nItem) return
@@ -425,9 +459,9 @@ function getDateStr(strDate, tFormat) {
     return ''
 }
 function isDateStr(str) {       // 'yyyy-mm-dd'
-    if(typeof str != 'string') return false;
+    if (typeof str != 'string') return false;
     str = str.trim()
-    if(str === '') return false
+    if (str === '') return false
     const arr = str.split('-')
     if (arr.length < 3) return false
     let nn = arr[0]
@@ -444,15 +478,23 @@ function setStartEndNow(notData) {
     if (!this.entry.Finish) return
     if (this.entry.End) return
     let dNow = new Date()
-    if(this.entry.Start) {
+    if (this.entry.Start) {
         dNow = new Date(this.entry.Start)
     }
     const tE = dNow.toISOString()
     let end = getDateStr(tE, 'YYYY-MM-dd')
     this.entry.End = tE
-    if(!notData) this.End = end
+    if (!notData) this.End = end
     if (!this.entry.Start) {
-        if(!notData) this.Start = end
+        if (!notData) this.Start = end
         this.entry.Start = tE
     }
+}
+function genListActivity(goalId, activities) {
+    const lstA = []
+    for (let aa = 0; aa < activities.length; aa++) {
+        const act = activities[aa]
+        if (goalId == act.GoalId) lstA.push({ Data: act })
+    }
+    return lstA
 }

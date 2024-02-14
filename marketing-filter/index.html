@@ -90,7 +90,7 @@
                 <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
                 <span>LandId</span>
                 <input type="number" class="form-control form-control-sm" v-model="item.LandId" :min="MinLandId"
-                    :max="MaxLandId" @change="onChange" />
+                    :max="MaxLandId" @change="e => onChangeId(e, item, 1)" />
             </div>
             <div class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
                 <span class="align-self-center w45px">Id: {{NewItems[1].Id}}</span>
@@ -163,15 +163,15 @@
                 <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
                 <span>Finish: <input v-model="item.Finish" type="checkbox" class="form-check-input dnb-r14px" /></span>
                 <input type="number" class="form-control form-control-sm" v-model="item.GoalId" :min="MinGoalId"
-                    :max="MaxGoalId" @change="onChange" />
+                    :max="MaxGoalId" @change="e => onChangeId(e, item, 2)" />
             </div>
         </div>
     </section>
     <script>
         window._mFlter = new MktFilter([new Criterial(0, 1, [0, 0])])
         $(document).ready(function () {
-            newAppVue(window._mFlter)
-            newAppVueDasboard(window._mFlter)
+            const app = newAppVue(window._mFlter)
+            newAppVueDasboard(window._mFlter, app)
         })
     </script>
     <script src="app_react.js" type="text/babel" data-presets="react,stage-3"></script>
