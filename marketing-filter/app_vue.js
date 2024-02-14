@@ -17,13 +17,13 @@ Vue.component('mf-viewgoal', {
             const start = this.entry.Start
             if (typeof start != 'string') return ''
             if (start.trim() == '') return ''
-            return getDateStr(start, 'YYYY-MM-dd')
+            return getDateStr(start, 'dd/MM/YYYY')
         },
         End() {
             const end = this.entry.End
             if (typeof end != 'string') return ''
             if (end.trim() == '') return ''
-            return getDateStr(end, 'YYYY-MM-dd')
+            return getDateStr(end, 'dd/MM/YYYY')
         },
     },
     watch: {
@@ -70,15 +70,15 @@ function newAppVue(mFlter) {
                 function addGoals() {
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                         const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
-                        const lstGoalSub = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
-                        if (!lstGoalSub.length) {
+                        const submkGoals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
+                        if (!submkGoals.length) {
                             lstPath.splice(ii, 1)       // remove item
                             continue
                         }
                         for (let pp = 0; pp < item.PGroups.length; pp++) {
                             const pGrp = item.PGroups[pp]
                             const idProducts = pGrp.Products.map(x => x.Data.Id)
-                            const goals = filterGoalsBy.call(lstGoalSub, idProducts, 1)
+                            const goals = filterGoalsBy.call(submkGoals, idProducts, 1)
                             if (goals.length) {
                                 for (let pd = 0; pd < pGrp.Products.length; pd++) {
                                     const product = pGrp.Products[pd]           // { Data }
@@ -414,11 +414,13 @@ function getDateStr(strDate, tFormat) {
     const year = dS.getFullYear()
     const month = dS.getMonth() + 1
     const day = dS.getDate()
+    let mm = month < 10 ? `0${month}` : month
+    let dd = day < 10 ? `0${day}` : day
     switch (tFormat) {
         case 'YYYY-MM-dd':
-            let mm = month < 10 ? `0${month}` : month
-            let dd = day < 10 ? `0${day}` : day
             return `${year}-${mm}-${dd}`;
+        case 'dd/MM/YYYY':
+            return `${dd}/${mm}/${year}`;
     }
     return ''
 }
