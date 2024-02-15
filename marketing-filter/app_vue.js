@@ -35,11 +35,11 @@ Vue.component('mf-viewgoal', {
         const goal = this.entry
         const gId = goal.Id
         const spId = goal.SubmarketProductId
-        const i = lstComps.findIndex(e => gId == e.entry.Id && spId == e.entry.SubmarketProductId )
+        const i = lstComps.findIndex(e => gId == e.entry.Id && spId == e.entry.SubmarketProductId)
         if (-1 < i) lstComps.splice(this)
     },
     methods: {
-        genListActivity(activities){
+        genListActivity(activities) {
             const goalId = this.entry.Id
             this.ListActivity = genListActivity(goalId, activities)
         },
@@ -100,24 +100,6 @@ function newAppVue(mFlter) {
                                     }
                                 }
                             }
-                        }
-                    }
-                    for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                        const item = lstPath[ii]        // {Land, Region, PGroups, Products, IdSubmarkets}
-                        for (let pp = item.PGroups.length - 1; -1 < pp; pp--) {
-                            const pGrp = item.PGroups[pp]
-                            let sumGoal = 0
-                            for (let pr = pGrp.Products.length - 1; -1 < pr; pr--) {
-                                const prd = pGrp.Products[pr]
-                                if (Array.isArray(prd.ListGoal)) sumGoal += prd.ListGoal.length
-                            }
-                            if (!sumGoal) {
-                                item.PGroups.splice(pp, 1)
-                            }
-                            else pGrp.SumGoal = sumGoal
-                        }
-                        if (!item.PGroups.length) {
-                            lstPath.splice(ii, 1)       // remove item
                         }
                     }
                 }
@@ -256,7 +238,7 @@ function newAppVue(mFlter) {
             genListActivity() {
                 const activities = this.Activities
                 const lstComps = this.$root.ListGoalComponent
-                for(let ii = 0; ii < lstComps.length; ii++){
+                for (let ii = 0; ii < lstComps.length; ii++) {
                     const comp = lstComps[ii]
                     comp.genListActivity(activities)
                 }

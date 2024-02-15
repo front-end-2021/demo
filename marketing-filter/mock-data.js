@@ -100,12 +100,19 @@ const Goals = [
         Id: 7, Name: 'Build 6 phòng live tiktok', SubmarketProductId: '2-1',
         Finish: false, Start: null, End: null
     },
-]
+];
+for(let ii = 8; ii < 1009; ii++) {
+    const gg = {
+        Id: ii, Name: `Test large data ${ii}`, SubmarketProductId: '1-8',
+        Finish: true, Start: '2024-01-15T05:49:58.135Z', End: null
+    }
+    Goals.push(gg)
+}
 // 11. Table Activity: Id (Bigint), Name (VARCHAR), GoalId (Bigint)
 const Activities = [
     {
         Id: 1, Name: '1 điểm bán trong tháng 3', GoalId: 1,
-        Finish: false, Start: null, End: null
+        Finish: false, Start: '2024-01-15T05:49:58.135Z', End: null
     },
     {
         Id: 4, Name: '2 điểm bán trong tháng 6', GoalId: 1,
@@ -115,7 +122,14 @@ const Activities = [
         Id: 3, Name: '3 điểm bán trong tháng 9', GoalId: 1,
         Finish: false, Start: null, End: null
     },
-]
+];
+for(let ii = 8; ii < 1009; ii++) {
+    const aa = {
+        Id: ii, Name: `Test large data activity ${ii}`, GoalId: 2,
+        Finish: false, Start: '2024-01-15T05:49:58.135Z', End: null
+    }
+    Activities.push(aa)
+}
 // 12. Table MarketRegion: Id (Bigint), MarketId (Bigint), RegionId (Bigint)
 const MarketRegions = [
     { Id: 1, MarketId: 1, RegionId: 2 },
