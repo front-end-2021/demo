@@ -32,8 +32,10 @@ Vue.component('mf-viewgoal', {
     mounted() { this.$root.ListGoalComponent.push(this) },
     destroyed() {
         const lstComps = this.$root.ListGoalComponent
-        const goalId = this.entry.Id
-        const i = lstComps.findIndex(e => goalId == e.entry.Id )
+        const goal = this.entry
+        const gId = goal.Id
+        const spId = goal.SubmarketProductId
+        const i = lstComps.findIndex(e => gId == e.entry.Id && spId == e.entry.SubmarketProductId )
         if (-1 < i) lstComps.splice(this)
     },
     methods: {
