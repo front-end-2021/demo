@@ -64,21 +64,38 @@ function newAppVue(mFlter) {
         },
         methods: {
             renderData(filter) {
-                const lstGoal = getGoals.call(this, filter.GoalIds)
-                const lstLand = getLands.call(this, filter.LandIds)
-                const lstRegion = getRegions.call(this, filter.RegionIds)
-                const lstProductGrp = getProductGroups.call(this, filter.ProductIds)        // { PGroup, Products: [{Data}] }
-                const lstSubmarketId = getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
-                const lstPath = getPaths(lstLand, lstRegion)        // [{Land, Region}]
+                let lstGoal// = getGoals.call(this, filter.GoalIds)
+                let lstLand// = getLands.call(this, filter.LandIds)
+                let lstRegion //= getRegions.call(this, filter.RegionIds)
+                let lstProductGrp //= getProductGroups.call(this, filter.ProductIds)        // { PGroup, Products: [{Data}] }
+                let lstSubmarketId //= getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
+                let lstPath //= getPaths(lstLand, lstRegion)        // [{Land, Region}]
+                const that = this
+                async function task1() {
+                    lstGoal = getGoals.call(that, filter.GoalIds)
+                    // Yield to the event loop and resume in a new browser task.
+                    await schedulerYield();
+                    lstLand = getLands.call(that, filter.LandIds)
+                    lstRegion = getRegions.call(that, filter.RegionIds)
+                    lstProductGrp = getProductGroups.call(that, filter.ProductIds)
+                    lstSubmarketId = getSubmarketIds.call(that, filter.SubmarketIds, filter.LandIds)
+                    lstPath = getPaths(lstLand, lstRegion)        // [{Land, Region}]
+                    await schedulerYield();
+                    addProducts()               //  [{Land, Region, PGroup, Products}]
+                    addSubmarketIds()           //  [{Land, Region, PGroup, Products}]
+                    await schedulerYield();
+                    addGoals()
+                }
+                // Schedule the long but yieldy task to run. scheduler.yield() can be used to break up long timers, long I/O callbacks, etc.
+                setTimeout(task1, 100);
                 //console.log('lstPath (0) = ', JSON.parse(JSON.stringify(lstPath)))
-                addProducts()               //  [{Land, Region, PGroup, Products}]
+                //  addProducts()               //  [{Land, Region, PGroup, Products}]
                 //console.log('lstPath (add product) = ', JSON.parse(JSON.stringify(lstPath)))
-                addSubmarketIds()           //  [{Land, Region, PGroup, Products}]
+                //  addSubmarketIds()           //  [{Land, Region, PGroup, Products}]
                 //console.log('lstPath (add submarket Id) = ', JSON.parse(JSON.stringify(lstPath)))
-                addGoals()
+                //  addGoals()
                 //console.log('lstPath (add goal) = ', JSON.parse(JSON.stringify(lstPath)))
-                this.ListDataUI = lstPath
-
+                this.ListDataUI = lstPath;
                 function addGoals() {
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                         const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
