@@ -10,8 +10,6 @@
     <script src="3rd/dev_vue@2_7_14.js"></script>
     <script src="3rd/react18/react.development.js"></script>
     <script src="3rd/react18/react-dom.development.js"></script>
-    <script src="https://unpkg.com/scheduler-polyfill"></script>
-    <script src="3rd/yield.js"></script>
     <script src="3rd/babel.min.js"></script>
     <script src="common.js"></script>
     <script src="mock-data.js"></script>
@@ -138,7 +136,7 @@
         </div>
         <div class="list-goal">
             <h6 @click.stop="e => toggleCollapse(8)">List goal: <b v-if="!showExpand(8)">&#10010;</b></h6>
-            <mf-dashgoal inline-template v-for="item in Goals" v-if="showExpand(8)" :entry="item">
+            <mf-dashgoal inline-template v-for="item in Goals" v-if="showExpand(8)" :entry="item" :key="'goal_' + item.Id">
                 <div class="lst-entry">
                     <span>Id: {{entry.Id}}</span>
                     <input type="text" class="form-control form-control-sm" v-model="entry.Name" @change="onChange" />

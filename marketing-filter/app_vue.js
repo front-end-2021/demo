@@ -64,39 +64,26 @@ function newAppVue(mFlter) {
         },
         methods: {
             renderData(filter) {
-                let lstGoal// = getGoals.call(this, filter.GoalIds)
-                let lstLand// = getLands.call(this, filter.LandIds)
-                let lstRegion //= getRegions.call(this, filter.RegionIds)
-                let lstProductGrp //= getProductGroups.call(this, filter.ProductIds)        // { PGroup, Products: [{Data}] }
-                let lstSubmarketId //= getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
-                let lstPath //= getPaths(lstLand, lstRegion)        // [{Land, Region}]
-                const that = this
-                async function task1() {
-                    lstGoal = getGoals.call(that, filter.GoalIds)
-                    // Yield to the event loop and resume in a new browser task.
-                    await schedulerYield();
-                    lstLand = getLands.call(that, filter.LandIds)
-                    lstRegion = getRegions.call(that, filter.RegionIds)
-                    lstProductGrp = getProductGroups.call(that, filter.ProductIds)
-                    lstSubmarketId = getSubmarketIds.call(that, filter.SubmarketIds, filter.LandIds)
-                    lstPath = getPaths(lstLand, lstRegion)        // [{Land, Region}]
-                    await schedulerYield();
-                    addProducts()               //  [{Land, Region, PGroup, Products}]
-                    addSubmarketIds()           //  [{Land, Region, PGroup, Products}]
-                    await schedulerYield();
-                    addGoals()
-                }
-                // Schedule the long but yieldy task to run. scheduler.yield() can be used to break up long timers, long I/O callbacks, etc.
-                setTimeout(task1, 100);
-                //console.log('lstPath (0) = ', JSON.parse(JSON.stringify(lstPath)))
-                //  addProducts()               //  [{Land, Region, PGroup, Products}]
-                //console.log('lstPath (add product) = ', JSON.parse(JSON.stringify(lstPath)))
-                //  addSubmarketIds()           //  [{Land, Region, PGroup, Products}]
-                //console.log('lstPath (add submarket Id) = ', JSON.parse(JSON.stringify(lstPath)))
-                //  addGoals()
-                //console.log('lstPath (add goal) = ', JSON.parse(JSON.stringify(lstPath)))
-                this.ListDataUI = lstPath;
-                function addGoals() {
+                const task1 = () => new Promise((resolve) => resolve(getGoals.call(this, filter.GoalIds)))
+                const task2 = () => new Promise((resolve) => {
+                    const lstLand = getLands.call(this, filter.LandIds)
+                    const lstRegion = getRegions.call(this, filter.RegionIds)
+                    resolve(getPaths(lstLand, lstRegion)) // [{Land, Region}]
+                })
+                const task3 = () => new Promise((resolve) => resolve(getProductGroups.call(this, filter.ProductIds)))
+                const task4 = () => new Promise((resolve) => resolve(getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)))
+                Promise.all([task1(), task2(), task3(), task4()]).then((values) => {
+                    const lstGoal = values[0]
+                    let lstPath = values[1]
+                    const lstProductGrp = values[2]
+                    const lstSubmarketId = values[3]
+                    addProducts.call(lstPath, lstProductGrp)               //  [{Land, Region, PGroup, Products}]
+                    addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, Products}]
+                    addGoals.call(lstPath, lstGoal)
+                    this.ListDataUI = lstPath;
+                })//.catch(() => {})
+                function addGoals(lstGoal) {
+                    const lstPath = this
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                         const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
                         const submkGoals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
@@ -113,10 +100,36 @@ function newAppVue(mFlter) {
                                     const product = pGrp.Products[pd]           // { Data }
                                     product.ListGoal = []
                                     for (let gg = 0; gg < goals.length; gg++) {
-                                        product.ListGoal.push(goals[gg])
+                                        const goal = goals[gg]
+                                        const lstSmkPrdId = goal.SubmarketProductId.split('-')
+                                        const pId = parseInt(lstSmkPrdId[1])
+                                        if (pId == product.Data.Id) product.ListGoal.push(goal)
                                     }
                                 }
                             }
+                        }
+                    }
+                    for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                        const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
+                        for (let pp = 0; pp < item.PGroups.length; pp++) {
+                            const pGrp = item.PGroups[pp]
+                            let sumG = 0
+                            for (let pd = 0; pd < pGrp.Products.length; pd++) {
+                                const product = pGrp.Products[pd]           // { Data }
+                                if (!Array.isArray(product.ListGoal) || !product.ListGoal.length) {
+                                    pGrp.Products.splice(pd, 1)
+                                    pd -= 1
+                                    continue
+                                }
+                                sumG += product.ListGoal.length
+                            }
+                            if (!pGrp.Products.length) {
+                                item.PGroups.splice(pp, 1)
+                                pp -= 1
+                            } else pGrp.SumGoal = sumG
+                        }
+                        if (!item.PGroups.length) {
+                            lstPath.splice(ii, 1)
                         }
                     }
                 }
@@ -141,7 +154,8 @@ function newAppVue(mFlter) {
                     }
                     return lst
                 }
-                function addSubmarketIds() {
+                function addSubmarketIds(lstSubmarketId) {
+                    const lstPath = this
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                         const item = lstPath[ii]
                         const submrkIds = lstSubmarketId.filter(x => x.IdLands.includes(item.Land.Id))
@@ -156,7 +170,8 @@ function newAppVue(mFlter) {
                         item.IdSubmarkets.distinct()
                     }
                 }
-                function addProducts() {
+                function addProducts(lstProductGrp) {
+                    const lstPath = this
                     for (let ii = 0; ii < lstPath.length; ii++) {
                         const item = lstPath[ii]
                         const rgnId = item.Region.Id
