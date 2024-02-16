@@ -65,15 +65,15 @@ function newAppVue(mFlter) {
         },
         methods: {
             renderData(filter) {
-                const task1 = () => new Promise((resolve) => resolve(getGoals.call(this, filter.GoalIds)))
-                const task2 = () => new Promise((resolve) => {
+                const task1 = new Promise((resolve) => resolve(getGoals.call(this, filter.GoalIds)))
+                const task2 = new Promise((resolve) => {
                     const lstLand = getLands.call(this, filter.LandIds)
                     const lstRegion = getRegions.call(this, filter.RegionIds)
                     resolve(getPaths(lstLand, lstRegion)) // [{Land, Region}]
                 })
-                const task3 = () => new Promise((resolve) => resolve(getProductGroups.call(this, filter.ProductIds)))
-                const task4 = () => new Promise((resolve) => resolve(getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)))
-                Promise.all([task1(), task2(), task3(), task4()]).then((values) => {
+                const task3 = new Promise((resolve) => resolve(getProductGroups.call(this, filter.ProductIds)))
+                const task4 = new Promise((resolve) => resolve(getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)))
+                Promise.all([task1, task2, task3, task4]).then((values) => {
                     const lstGoal = values[0]
                     let lstPath = values[1]
                     const lstProductGrp = values[2]
@@ -85,54 +85,61 @@ function newAppVue(mFlter) {
                 })//.catch(() => {})
                 function addGoals(lstGoal) {
                     const lstPath = this
+                    const lstTaskPath = []
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                         const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
-                        const submkGoals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
-                        if (!submkGoals.length) {
-                            lstPath.splice(ii, 1)       // remove item
-                            continue
-                        }
-                        for (let pp = 0; pp < item.PGroups.length; pp++) {
-                            const pGrp = item.PGroups[pp]
-                            const idProducts = pGrp.Products.map(x => x.Data.Id)
-                            const goals = filterGoalsBy.call(submkGoals, idProducts, 1)
-                            if (goals.length) {
-                                for (let pd = 0; pd < pGrp.Products.length; pd++) {
-                                    const product = pGrp.Products[pd]           // { Data }
-                                    product.ListGoal = []
-                                    for (let gg = 0; gg < goals.length; gg++) {
-                                        const goal = goals[gg]
-                                        const lstSmkPrdId = goal.SubmarketProductId.split('-')
-                                        const pId = parseInt(lstSmkPrdId[1])
-                                        if (pId == product.Data.Id) product.ListGoal.push(goal)
+                        const taskPath = new Promise((resolve) => {
+                            const submkGoals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
+                            if (submkGoals.length) {
+                                for (let pp = 0; pp < item.PGroups.length; pp++) {
+                                    const pGrp = item.PGroups[pp]
+                                    const idProducts = pGrp.Products.map(x => x.Data.Id)
+                                    const goals = filterGoalsBy.call(submkGoals, idProducts, 1)
+                                    if (goals.length) {
+                                        for (let pd = 0; pd < pGrp.Products.length; pd++) {
+                                            const product = pGrp.Products[pd]           // { Data }
+                                            product.ListGoal = []
+                                            for (let gg = 0; gg < goals.length; gg++) {
+                                                const goal = goals[gg]
+                                                const lstSmkPrdId = goal.SubmarketProductId.split('-')
+                                                const pId = parseInt(lstSmkPrdId[1])
+                                                if (pId == product.Data.Id) product.ListGoal.push(goal)
+                                            }
+                                        }
                                     }
                                 }
                             }
-                        }
+                            resolve(item)
+                        })
+                        lstTaskPath.push(taskPath)
                     }
-                    for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                        const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
-                        for (let pp = 0; pp < item.PGroups.length; pp++) {
-                            const pGrp = item.PGroups[pp]
-                            let sumG = 0
-                            for (let pd = 0; pd < pGrp.Products.length; pd++) {
-                                const product = pGrp.Products[pd]           // { Data }
-                                if (!Array.isArray(product.ListGoal) || !product.ListGoal.length) {
-                                    pGrp.Products.splice(pd, 1)
-                                    pd -= 1
-                                    continue
+                    Promise.all(lstTaskPath).then(items => {
+                        for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                            const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
+                            for (let pp = 0; pp < item.PGroups.length; pp++) {
+                                const pGrp = item.PGroups[pp]
+                                let sumG = 0
+                                for (let pd = 0; pd < pGrp.Products.length; pd++) {
+                                    const product = pGrp.Products[pd]           // { Data }
+                                    if (Array.isArray(product.ListGoal)) {
+                                        if (product.ListGoal.length) sumG += product.ListGoal.length
+                                        else {
+                                            pGrp.Products.splice(pd, 1)
+                                            pd -= 1
+                                        }
+                                    }
                                 }
-                                sumG += product.ListGoal.length
+                                if (!pGrp.Products.length) {
+                                    item.PGroups.splice(pp, 1)
+                                    pp -= 1
+                                    continue
+                                } else pGrp.SumGoal = sumG
                             }
-                            if (!pGrp.Products.length) {
-                                item.PGroups.splice(pp, 1)
-                                pp -= 1
-                            } else pGrp.SumGoal = sumG
+                            if (!item.PGroups.length) {
+                                lstPath.splice(ii, 1)
+                            }
                         }
-                        if (!item.PGroups.length) {
-                            lstPath.splice(ii, 1)
-                        }
-                    }
+                    })
                 }
                 function filterGoalsBy(idSubmrkPrdIds, type) {    // type = 0 | 1
                     const goals = this
@@ -276,12 +283,12 @@ function newAppVue(mFlter) {
                     comp.genListActivity(activities)
                 }
             },
-            isPrdExpand(id, pgId, rgId){ return !this.CollapsePrdId.includes(`${rgId}.${pgId}.${id}`)},
-            onTogglePrdExpand(id, pgId, rgId){
+            isPrdExpand(id, pgId, rgId) { return !this.CollapsePrdId.includes(`${rgId}.${pgId}.${id}`) },
+            onTogglePrdExpand(id, pgId, rgId) {
                 const lstId = this.CollapsePrdId
                 const tId = `${rgId}.${pgId}.${id}`
                 const i = lstId.indexOf(tId)
-                if(i < 0) lstId.push(tId)
+                if (i < 0) lstId.push(tId)
                 else lstId.splice(i, 1)
             },
         },
