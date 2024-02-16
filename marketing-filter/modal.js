@@ -323,33 +323,6 @@ class MktFilter {
         }
         return productIds
     }
-    get GoalIds() {
-        const lst = []
-        const goals = Goals.map(goal => {
-            const subMrkPrdIds = goal.SubmarketProductId.split('-')
-            return {
-                Id: goal.Id,
-                SubmarketId: parseInt(subMrkPrdIds[0]),
-                ProductId: parseInt(subMrkPrdIds[1])
-            }
-        }
-        )
-        const subMrktIds = this.SubmarketIds
-        for (let ii = 0; ii < goals.length; ii++) {
-            const goal = goals[ii]
-            if (subMrktIds.includes(goal.SubmarketId)) {
-                lst.push(goal)
-            }
-        }
-        const prdIds = this.ProductIds
-        for (let ii = lst.length - 1; -1 < ii; ii--) {
-            const goal = lst[ii]
-            if (!prdIds.includes(goal.ProductId)) {
-                lst.splice(ii, 1)
-            }
-        }
-        return lst.map(x => x.Id)
-    }
     get Criterials() {
         const lst = []
         for (let ii = 0; ii < this.#Blocks.length; ii++) {

@@ -5,7 +5,8 @@ Vue.component('mf-viewgoal', {
         const goalId = this.entry.Id
         const activities = this.$root.Activities
         return {
-            ListActivity: genListActivity(goalId, activities)
+            ListActivity: genListActivity(goalId, activities),
+            IsExpand: true
         }
     },
     computed: {
@@ -43,6 +44,7 @@ Vue.component('mf-viewgoal', {
             const goalId = this.entry.Id
             this.ListActivity = genListActivity(goalId, activities)
         },
+        toggleExpand(){ this.IsExpand = !this.IsExpand},
     },
 })
 function newAppVue(mFlter) {
@@ -65,7 +67,7 @@ function newAppVue(mFlter) {
         },
         methods: {
             renderData(filter) {
-                const task1 = new Promise((resolve) => resolve(getGoals.call(this, filter.GoalIds)))
+                const task1 = new Promise((resolve) => resolve(getGoals.call(this)))
                 const task2 = new Promise((resolve) => {
                     const lstLand = getLands.call(this, filter.LandIds)
                     const lstRegion = getRegions.call(this, filter.RegionIds)
@@ -121,12 +123,11 @@ function newAppVue(mFlter) {
                                 let sumG = 0
                                 for (let pd = 0; pd < pGrp.Products.length; pd++) {
                                     const product = pGrp.Products[pd]           // { Data }
-                                    if (Array.isArray(product.ListGoal)) {
-                                        if (product.ListGoal.length) sumG += product.ListGoal.length
-                                        else {
-                                            pGrp.Products.splice(pd, 1)
-                                            pd -= 1
-                                        }
+                                    if (Array.isArray(product.ListGoal) && product.ListGoal.length) {
+                                        sumG += product.ListGoal.length
+                                    } else {
+                                        pGrp.Products.splice(pd, 1)
+                                        pd -= 1
                                     }
                                 }
                                 if (!pGrp.Products.length) {
@@ -152,13 +153,11 @@ function newAppVue(mFlter) {
                     }
                     return lst
                 }
-                function getGoals(goalIds) {
+                function getGoals() {
                     const lst = []
                     for (let gg = 0; gg < this.Goals.length; gg++) {
                         const x = this.Goals[gg]
-                        if (goalIds.includes(x.Id)) {
-                            lst.push(x)
-                        }
+                        lst.push(x)
                     }
                     return lst
                 }

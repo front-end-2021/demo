@@ -39,8 +39,9 @@
                                         <mf-viewgoal inline-template v-for="goal in prduct.ListGoal" :entry="goal"
                                             :key="'lnd'+wItem.Land.Id+'rg'+wItem.Region.Id+'prg'+pGrp.PGroup.Id+'p'+prduct.Data.Id+'gl'+goal.Id">
                                             <li v-bind:id-goal="'dnb-goal_' + entry.Id">
-                                                <p class="mb-0" v-bind:class="[entry.Finish ? 'text-black-50' : '']">{{entry.Name}}</p>
-                                                <div class="mb-2 d-flex justify-content-start" 
+                                                <p class="mb-0" v-bind:class="[entry.Finish ? 'text-black-50' : '']"
+                                                    @click.stop="toggleExpand">{{entry.Name}}</p>
+                                                <div v-if="IsExpand" class="mb-2 d-flex justify-content-start" 
                                                     v-bind:class="[entry.Finish ? 'text-black-50' : '']">
                                                     <span class="text-muted me-1">Finish: </span>
                                                     <input v-model="entry.Finish" type="checkbox"
@@ -49,7 +50,7 @@
                                                     <small class="text-muted">{{Start}}</small>
                                                     <small v-if="End" class="text-muted">&nbsp;-&nbsp;{{End}}</small>
                                                 </div>
-                                                <ul class="dnb-activities">
+                                                <ul v-if="IsExpand" class="dnb-activities">
                                                     <li v-for="actv in ListActivity">
                                                         <p class="mb-0">
                                                             <input v-model="actv.Data.Finish" type="checkbox"
