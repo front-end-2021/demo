@@ -61,6 +61,7 @@ function newAppVue(mFlter) {
             Activities: Activities,
             ListDataUI: [],
             ListGoalComponent: [],
+            CollapsePrdId: [],
         },
         methods: {
             renderData(filter) {
@@ -274,6 +275,13 @@ function newAppVue(mFlter) {
                     const comp = lstComps[ii]
                     comp.genListActivity(activities)
                 }
+            },
+            isPrdExpand(id){ return !this.CollapsePrdId.includes(id)},
+            onTogglePrdExpand(id){
+                const lstId = this.CollapsePrdId
+                const i = lstId.indexOf(id)
+                if(i < 0) lstId.push(id)
+                else lstId.splice(i, 1)
             },
         },
         // created() { },
