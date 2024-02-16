@@ -276,11 +276,12 @@ function newAppVue(mFlter) {
                     comp.genListActivity(activities)
                 }
             },
-            isPrdExpand(id){ return !this.CollapsePrdId.includes(id)},
-            onTogglePrdExpand(id){
+            isPrdExpand(id, pgId, rgId){ return !this.CollapsePrdId.includes(`${rgId}.${pgId}.${id}`)},
+            onTogglePrdExpand(id, pgId, rgId){
                 const lstId = this.CollapsePrdId
-                const i = lstId.indexOf(id)
-                if(i < 0) lstId.push(id)
+                const tId = `${rgId}.${pgId}.${id}`
+                const i = lstId.indexOf(tId)
+                if(i < 0) lstId.push(tId)
                 else lstId.splice(i, 1)
             },
         },

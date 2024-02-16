@@ -33,9 +33,9 @@
                             </div>
                             <ol class="dnb-products">
                                 <li v-for="prduct in pGrp.Products" v-bind:id-product="'dnb-product_' + prduct.Data.Id">
-                                    <h6 class="mb-0 text-muted" style="cursor: default;"
-                                        @click="e => onTogglePrdExpand(prduct.Data.Id)">{{prduct.Data.Name}}</h6>
-                                    <ul v-show="isPrdExpand(prduct.Data.Id)" class="dnb-goals">
+                                    <h6 class="mb-0 text-muted" @click="e => onTogglePrdExpand(prduct.Data.Id, pGrp.PGroup.Id, wItem.IdRegion)"
+                                        style="cursor: default;">{{prduct.Data.Name}}</h6>
+                                    <ul v-if="isPrdExpand(prduct.Data.Id, pGrp.PGroup.Id, wItem.IdRegion)" class="dnb-goals">
                                         <mf-viewgoal inline-template v-for="goal in prduct.ListGoal" :entry="goal"
                                             :key="'lnd'+wItem.Land.Id+'rg'+wItem.Region.Id+'prg'+pGrp.PGroup.Id+'p'+prduct.Data.Id+'gl'+goal.Id">
                                             <li v-bind:id-goal="'dnb-goal_' + entry.Id">
