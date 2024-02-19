@@ -12,16 +12,29 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
             setCType(row.Type)
             setCIds([...row.Ids])
         }
-        dfilter.setEvent(ii, evnt)
         // console.log('mounted/updated')
         const $wrap = $(`[c-criterial="${ii}"]`)
-        const task1 = new Promise((resl) => {
-            renderUiIds()
-            renOperandControl()    
-        })
-        const task2 = new Promise((resl) => renTypeControl())
-        const task3 = new Promise((resl) => renderIdsDropdownList())
-        Promise.all([task1, task2, task3]);
+        const ctrlUserBlock = new TaskController({ priority: 'user-blocking' });
+        const ctrlUserVisble = new TaskController({ priority: 'user-visible' });
+        let options = { signal: ctrlUserVisble.signal };
+        let options2 = { signal: ctrlUserBlock.signal };
+        const process = async () => {
+            const task0 = scheduler.postTask(() => {
+                dfilter.setEvent(ii, evnt)
+            }, options2);
+            const task1 = scheduler.postTask(() => {
+                renderUiIds()
+                renOperandControl()
+            }, options);
+            const task2 = scheduler.postTask(() => {
+                renTypeControl()
+            }, options);
+            const task3 = scheduler.postTask(() => {
+                renderIdsDropdownList()
+            }, options);
+            await Promise.all([task0, task1, task2, task3]);
+        }
+        process()
         return () => {
             // console.log('before mount/update/unmount')
             let $input, control

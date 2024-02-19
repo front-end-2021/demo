@@ -44,7 +44,7 @@ Vue.component('mf-viewgoal', {
             const goalId = this.entry.Id
             this.ListActivity = genListActivity(goalId, activities)
         },
-        toggleExpand(){ this.IsExpand = !this.IsExpand},
+        toggleExpand() { this.IsExpand = !this.IsExpand },
     },
 })
 function newAppVue(mFlter) {
@@ -64,20 +64,33 @@ function newAppVue(mFlter) {
             ListDataUI: [],
             ListGoalComponent: [],
             CollapsePrdId: [],
+            AppMsg: null,
         },
         methods: {
             renderData(filter) {
                 //https://github.com/GoogleChromeLabs/scheduler-polyfill/blob/main/test/test.scheduler.js
-
-                const task1 = new Promise((resolve) => resolve(getGoals.call(this)))
-                const task2 = new Promise((resolve) => {
-                    const lstLand = getLands.call(this, filter.LandIds)
-                    const lstRegion = getRegions.call(this, filter.RegionIds)
-                    resolve(getPaths(lstLand, lstRegion)) // [{Land, Region}]
-                })
-                const task3 = new Promise((resolve) => resolve(getProductGroups.call(this, filter.ProductIds)))
-                const task4 = new Promise((resolve) => resolve(getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)))
-                Promise.all([task1, task2, task3, task4]).then((values) => {
+                const ctrlBackground = new TaskController({ priority: 'background' });
+                let options = { signal: ctrlBackground.signal };
+                this.AppMsg = 'Loadding ...'
+                this.ListDataUI.splice(0)
+                const process = async () => {
+                    const task0 = scheduler.postTask(() => {
+                        return getGoals.call(this)
+                    }, options);
+                    const task1 = scheduler.postTask(() => {
+                        const lstLand = getLands.call(this, filter.LandIds)
+                        const lstRegion = getRegions.call(this, filter.RegionIds)
+                        return getPaths(lstLand, lstRegion)  // [{Land, Region}]
+                    }, options);
+                    const task2 = scheduler.postTask(() => {
+                        return getProductGroups.call(this, filter.ProductIds)
+                    }, options);
+                    const task3 = scheduler.postTask(() => {
+                        return getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
+                    }, options);
+                    return await Promise.all([task0, task1, task2, task3]);
+                }
+                process().then(values => {
                     const lstGoal = values[0]
                     let lstPath = values[1]
                     const lstProductGrp = values[2]
@@ -86,7 +99,9 @@ function newAppVue(mFlter) {
                     addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, Products}]
                     addGoals.call(lstPath, lstGoal)
                     this.ListDataUI = lstPath;
-                })//.catch(() => {})
+                    if(!lstPath.length) this.AppMsg = 'No results'
+                    else this.AppMsg = null
+                })
                 function addGoals(lstGoal) {
                     const lstPath = this
                     const lstTaskPath = []
