@@ -15,10 +15,13 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
         dfilter.setEvent(ii, evnt)
         // console.log('mounted/updated')
         const $wrap = $(`[c-criterial="${ii}"]`)
-        renderUiIds()
-        renOperandControl()
-        renTypeControl()
-        renderIdsDropdownList()
+        const task1 = new Promise((resl) => {
+            renderUiIds()
+            renOperandControl()    
+        })
+        const task2 = new Promise((resl) => renTypeControl())
+        const task3 = new Promise((resl) => renderIdsDropdownList())
+        Promise.all([task1, task2, task3]);
         return () => {
             // console.log('before mount/update/unmount')
             let $input, control
