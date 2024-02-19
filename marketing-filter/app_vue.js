@@ -67,6 +67,8 @@ function newAppVue(mFlter) {
         },
         methods: {
             renderData(filter) {
+                //https://github.com/GoogleChromeLabs/scheduler-polyfill/blob/main/test/test.scheduler.js
+
                 const task1 = new Promise((resolve) => resolve(getGoals.call(this)))
                 const task2 = new Promise((resolve) => {
                     const lstLand = getLands.call(this, filter.LandIds)
