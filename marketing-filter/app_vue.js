@@ -95,18 +95,18 @@ function newAppVue(mFlter) {
                     let lstPath = values[1]
                     const lstProductGrp = values[2]
                     const lstSubmarketId = values[3]
-                    addProducts.call(lstPath, lstProductGrp)               //  [{Land, Region, PGroup, Products}]
-                    addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, Products}]
+                    addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
+                    addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
                     addGoals.call(lstPath, lstGoal)
                     this.ListDataUI = lstPath;
                     if(!lstPath.length) this.AppMsg = 'No results'
-                    else this.AppMsg = null
+                    else this.AppMsg = `Land > Region / Product group / Product / List goal / Activties`
                 })
                 function addGoals(lstGoal) {
                     const lstPath = this
                     const lstTaskPath = []
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                        const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
+                        const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
                         const taskPath = new Promise((resolve) => {
                             const submkGoals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
                             if (submkGoals.length) {
@@ -191,11 +191,11 @@ function newAppVue(mFlter) {
                         submrkIds.forEach(itmSubmrkId => {
                             item.IdSubmarkets = [...item.IdSubmarkets, ...itmSubmrkId.IdSubmarkets]
                         })
-                        item.IdSubmarkets.distinct()
+                        item.IdSubmarkets.distinct()    //     [{ Land, Region, IdSubmarkets }]
                     }
                 }
                 function addProducts(lstProductGrp) {
-                    const lstPath = this
+                    const lstPath = this    // [{ Land, Region }]
                     for (let ii = 0; ii < lstPath.length; ii++) {
                         const item = lstPath[ii]
                         const rgnId = item.Region.Id
@@ -208,7 +208,7 @@ function newAppVue(mFlter) {
                         if (lstGrp.length) {
                             item.PGroups = []
                             for (let pp = 0; pp < lstGrp.length; pp++) {
-                                item.PGroups.push(lstGrp[pp])
+                                item.PGroups.push(lstGrp[pp])       // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
                             }
                         }
                     }
