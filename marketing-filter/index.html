@@ -23,8 +23,8 @@
             <b class="text-success">View Data <span class="opacity-25">(Vuejs CDN)</span>: </b>
             <div id="dnb-app-vue">
                 <ul class="list-group list-group-flush">
-                    <li v-if="AppMsg" 
-                        class="text-black-50 fw-light fst-italic">{{AppMsg}}</li>
+                    <li v-if="AppMsg" v-html="AppMsg"
+                        class="text-black-50 fw-light fst-italic"></li>
                     <li v-for="wItem in ListDataUI" class="list-group-item ps-0" 
                         v-bind:id-land="'dnb-land_' + wItem.Land.Id"
                         v-bind:id-region="'dnb-regn_' + wItem.Region.Id">

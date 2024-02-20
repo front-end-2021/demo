@@ -70,7 +70,7 @@ function newAppVue(mFlter) {
             renderData(filter) {
                 //https://github.com/GoogleChromeLabs/scheduler-polyfill/blob/main/test/test.scheduler.js
                 const ctrlBackground = new TaskController({ priority: 'background' });
-                let options = { signal: ctrlBackground.signal };
+                const options = { signal: ctrlBackground.signal };
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
                 const process = async () => {
@@ -95,19 +95,43 @@ function newAppVue(mFlter) {
                     let lstPath = values[1]
                     const lstProductGrp = values[2]
                     const lstSubmarketId = values[3]
-                    addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
-                    addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
-                    addGoals.call(lstPath, lstGoal)
-                    this.ListDataUI = lstPath;
-                    if(!lstPath.length) this.AppMsg = 'No results'
-                    else this.AppMsg = `Land > Region / Product group / Product / List goal / Activties`
+                    const addPrdSubmrk = async () => {
+                        const task0 = scheduler.postTask(() => {
+                            addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
+                        }, options);
+                        const task1 = scheduler.postTask(() => {
+                            addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
+                        }, options);
+                        return await Promise.all([task0, task1]);
+                    }
+                    addPrdSubmrk().then(() => {
+                        addGoals.call(lstPath, lstGoal).then(items => {
+                            this.ListDataUI = lstPath;
+                            if (!lstPath.length) this.AppMsg = 'No results'
+                            else {
+                                let cGoal = 0, cAction = 0
+                                for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                                    const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
+                                    for (let pp = 0; pp < item.PGroups.length; pp++) {
+                                        const pGrp = item.PGroups[pp]
+                                        for (let pd = 0; pd < pGrp.Products.length; pd++) {
+                                            const product = pGrp.Products[pd]           // { Data }
+                                            if (Array.isArray(product.ListGoal))
+                                                cGoal += product.ListGoal.length
+                                        }
+                                    }
+                                }
+                                this.AppMsg = `Land > Region / Product group / Product / List goal (${cGoal}) / Activties`
+                            }
+                        })
+                    })
                 })
-                function addGoals(lstGoal) {
+                async function addGoals(lstGoal) {
                     const lstPath = this
                     const lstTaskPath = []
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                         const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
-                        const taskPath = new Promise((resolve) => {
+                        const taskPath = scheduler.postTask(() => {
                             const submkGoals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
                             if (submkGoals.length) {
                                 for (let pp = 0; pp < item.PGroups.length; pp++) {
@@ -128,11 +152,11 @@ function newAppVue(mFlter) {
                                     }
                                 }
                             }
-                            resolve(item)
-                        })
+                            return item
+                        }, options);
                         lstTaskPath.push(taskPath)
                     }
-                    Promise.all(lstTaskPath).then(items => {
+                    return await Promise.all(lstTaskPath).then(items => {
                         for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                             const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
                             for (let pp = 0; pp < item.PGroups.length; pp++) {
