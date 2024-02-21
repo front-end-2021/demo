@@ -14,25 +14,22 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
         }
         // console.log('mounted/updated')
         const $wrap = $(`[c-criterial="${ii}"]`)
+        const ctrlBackground = new TaskController({ priority: 'background' });
         const ctrlUserBlock = new TaskController({ priority: 'user-blocking' });
         const ctrlUserVisble = new TaskController({ priority: 'user-visible' });
-        let options = { signal: ctrlUserVisble.signal };
+        let options = { signal: ctrlBackground.signal };
         let options2 = { signal: ctrlUserBlock.signal };
         const process = async () => {
             const task0 = scheduler.postTask(() => {
                 dfilter.setEvent(ii, evnt)
-            }, options2);
+            }, options);
             const task1 = scheduler.postTask(() => {
                 renderUiIds()
                 renOperandControl()
-            }, options);
-            const task2 = scheduler.postTask(() => {
                 renTypeControl()
-            }, options);
-            const task3 = scheduler.postTask(() => {
                 renderIdsDropdownList()
-            }, options);
-            await Promise.all([task0, task1, task2, task3]);
+            }, options2);
+            await Promise.all([task0, task1]);
         }
         process()
         return () => {
@@ -105,8 +102,10 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
                 const idChange = (e) => {
                     let id = e.sender.value()
                     id = parseInt(id);
-                    row.Ids[jj] = id;
-                    setCIds([...row.Ids])
+                    if(row.Ids[jj] != id) {
+                        row.Ids[jj] = id;
+                        setCIds([...row.Ids])
+                    }
                     dfilter.setDSource(ii)
                 }
                 $input.kendoDropDownList({

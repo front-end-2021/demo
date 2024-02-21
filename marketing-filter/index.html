@@ -41,7 +41,7 @@
                                     <ul v-if="isPrdExpand(prduct.Data.Id, pGrp.PGroup.Id, wItem.Region.Id)" class="dnb-goals">
                                         <mf-viewgoal inline-template v-for="goal in prduct.ListGoal" :entry="goal"
                                             :key="'lnd'+wItem.Land.Id+'rg'+wItem.Region.Id+'prg'+pGrp.PGroup.Id+'p'+prduct.Data.Id+'gl'+goal.Id">
-                                            <li v-bind:id-goal="'dnb-goal_' + entry.Id">
+                                            <li v-bind:id-goal="'dnb-goal_' + entry.Id" >
                                                 <p class="mb-0" v-bind:class="[entry.Finish ? 'text-black-50' : '']"
                                                     @click.stop="toggleExpand">{{entry.Name}}</p>
                                                 <div v-if="IsExpand" class="mb-2 d-flex justify-content-start" 
@@ -53,14 +53,14 @@
                                                     <small class="text-muted">{{Start}}</small>
                                                     <small v-if="End" class="text-muted">&nbsp;-&nbsp;{{End}}</small>
                                                 </div>
-                                                <ul v-if="IsExpand" class="dnb-activities">
-                                                    <li v-for="actv in ListActivity">
-                                                        <p class="mb-0">
-                                                            <input v-model="actv.Data.Finish" type="checkbox"
-                                                                class="form-check-input dnb-r14px" /> {{actv.Data.Name}}
-                                                        </p>
-                                                    </li>
-                                                </ul>
+                                                <article v-if="IsExpand" class="d-inline-block">
+                                                    <div v-for="actv in ListActivity" 
+                                                        class="d-inline-flex align-items-center m-1 py-1 px-2 bg-light rounded-3">
+                                                        <input v-model="actv.Data.Finish" type="checkbox"
+                                                                class="form-check-input dnb-r14px mt-0 me-1" />
+                                                        <p class="mb-0">{{actv.Data.Name}}</p>
+                                                    </div>
+                                                </article>
                                             </li>
                                         </mf-viewgoal>
                                     </ul>
