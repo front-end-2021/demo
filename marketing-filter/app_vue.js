@@ -1,6 +1,7 @@
 Vue.component('mf-viewgoal', {
     name: 'DnbViewGoal',
     props: ['entry'],
+    //beforeCreate(){},
     data() {
         const goalId = this.entry.Id
         const activities = this.$root.Activities
@@ -23,6 +24,13 @@ Vue.component('mf-viewgoal', {
             return getDateStr(end, 'dd/MM/YYYY')
         },
     },
+    methods: {
+        genListActivity(activities) {
+            const goalId = this.entry.Id
+            this.ListActivity = genListActivity(goalId, activities)
+        },
+        toggleExpand() { this.IsExpand = !this.IsExpand },
+    },
     watch: {
         'entry.Finish'(val, old) {
             if (val && !this.entry.End) {
@@ -30,7 +38,11 @@ Vue.component('mf-viewgoal', {
             }
         },
     },
+    // created(){},
+    // beforeMount(){},
     mounted() { this.$root.ListGoalComponent.push(this) },
+    // beforeUpdate(){},
+    // updated(){},
     destroyed() {
         const lstComps = this.$root.ListGoalComponent
         const goal = this.entry
@@ -38,13 +50,6 @@ Vue.component('mf-viewgoal', {
         const spId = goal.SubmarketProductId
         const i = lstComps.findIndex(e => gId == e.entry.Id && spId == e.entry.SubmarketProductId)
         if (-1 < i) lstComps.splice(this)
-    },
-    methods: {
-        genListActivity(activities) {
-            const goalId = this.entry.Id
-            this.ListActivity = genListActivity(goalId, activities)
-        },
-        toggleExpand() { this.IsExpand = !this.IsExpand },
     },
 })
 function newAppVue(mFlter) {
