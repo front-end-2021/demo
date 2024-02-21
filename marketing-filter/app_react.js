@@ -4,29 +4,34 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
     const [cOperand, setOperand] = useState(dfilter.getBlock(ii).Operand)
     const [cType, setCType] = useState(dfilter.getBlock(ii).Type)
     const [cIds, setCIds] = useState(dfilter.getBlock(ii).Ids)
-    const destroyOperand = () => {
-        const $wrap = $(`[c-criterial="${ii}"]`)
+    const destroyOperand = ($wrap) => {
+        //const $wrap = $(`[c-criterial="${ii}"]`)
         let $input, control
         $input = $wrap.find(`[c-operand="${ii}"]`)
         control = $input.data("kendoDropDownList")
         if (control) control.destroy()
     }
-    const destroyType = () => {    
-        const $wrap = $(`[c-criterial="${ii}"]`)
+    const destroyType = ($wrap) => {
+        //const $wrap = $(`[c-criterial="${ii}"]`)
         let $input, control
         $input = $wrap.find(`[c-type="${ii}"]`)
         control = $input.data("kendoDropDownList")
         if (control) control.destroy()
     }
-    const destroyIds = () => {
-        const $wrap = $(`[c-criterial="${ii}"]`)
-        let $input, control
+    const destroyIds = async ($wrap) => {
+        //const $wrap = $(`[c-criterial="${ii}"]`)
+        const lstTask = []
         for (let jj = cIds.length - 1; -1 < jj; jj--) {
-            $input = $wrap.find(`[c-index="${jj}"]`)
-            control = $input.data("kendoDropDownList")
-            if (control) control.destroy()
+            const task = new Promise(res => {
+                const $input = $wrap.find(`[c-index="${jj}"]`)
+                const control = $input.data("kendoDropDownList")
+                if (control) control.destroy()
+            })
+            lstTask.push(task)
         }
-        $wrap.find('.ccrite-grp-ids').empty();
+        return await Promise.all(lstTask).then(() => {
+            $wrap.find('.ccrite-grp-ids').empty();
+        })
     }
     useEffect(() => {
         const row = dfilter.getBlock(ii)
@@ -41,16 +46,17 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
                     setCIds(row.Ids)
                 })
             }, options);
-            const task1 = scheduler.postTask(() => renOperandControl() , options);
-            await Promise.all([task0, task1]);
+            await Promise.all([task0]);
         }
         process();
+        renOperandControl()
         return () => {
             // console.log('before mount/update/unmount')
-            destroyIds()
-            destroyType()
-            destroyOperand()
-            dfilter.removeEvent(ii)
+            destroyIds($wrap).then(() => {
+                destroyType($wrap)
+                destroyOperand($wrap)
+                dfilter.removeEvent(ii)
+            })
         }
         function renOperandControl() {
             const $operand = $wrap.find(`[c-operand="${ii}"]`)
@@ -83,15 +89,16 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
                     setCIds(row.Ids)
                 })
             }, options);
-            const task1 = scheduler.postTask(() => renTypeControl(), options);
-            await Promise.all([task0, task1]);
+            await Promise.all([task0]);
         }
         process();
+        renTypeControl()
         return () => {
             // console.log('before mount/update/unmount')
-            destroyIds()
-            destroyType()
-            dfilter.removeEvent(ii)
+            destroyIds($wrap).then(() => {
+                destroyType($wrap)
+                dfilter.removeEvent(ii)
+            })
         }
         function renTypeControl() {
             const $type = $wrap.find(`[c-type="${ii}"]`)
@@ -128,17 +135,16 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
                     setCIds([...row.Ids])
                 })
             }, options);
-            const task1 = scheduler.postTask(() => {
-                renderUiIds()
-                renderIdsDropdownList()
-            }, options);
-            await Promise.all([task0, task1]);
+            await Promise.all([task0]);
         }
         process();
+        renderUiIds()
+        renderIdsDropdownList()
         return () => {
             // console.log('before mount/update/unmount')
-            destroyIds()
-            dfilter.removeEvent(ii)
+            destroyIds($wrap).then(() => {
+                dfilter.removeEvent(ii)
+            })
         }
         function renderUiIds() {
             $wrap.find('.ccrite-grp-ids').empty();
@@ -148,27 +154,32 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
             }
             $wrap.find('.ccrite-grp-ids').append(ui)
         }
-        function renderIdsDropdownList() {
+        async function renderIdsDropdownList() {
+            const lstTask = []
             for (let jj = 0; jj < row.Ids.length; jj++) {
                 const _id = row.Ids[jj]
-                const $input = $wrap.find(`[c-index="${jj}"]`)
-                const idChange = (e) => {
-                    let id = e.sender.value()
-                    id = parseInt(id);
-                    if(row.Ids[jj] != id) {
-                        row.Ids[jj] = id;
-                        setCIds([...row.Ids])
+                const task = scheduler.postTask(() => {
+                    const $input = $wrap.find(`[c-index="${jj}"]`)
+                    const idChange = (e) => {
+                        let id = e.sender.value()
+                        id = parseInt(id);
+                        if (row.Ids[jj] != id) {
+                            row.Ids[jj] = id;
+                            setCIds([...row.Ids])
+                        }
+                        dfilter.setDSource(ii)
                     }
-                    dfilter.setDSource(ii)
-                }
-                $input.kendoDropDownList({
-                    dataTextField: "Name",
-                    dataValueField: "Id",
-                    dataSource: getSourceIds(jj),
-                    value: _id,
-                    change: idChange
-                })
+                    $input.kendoDropDownList({
+                        dataTextField: "Name",
+                        dataValueField: "Id",
+                        dataSource: getSourceIds(jj),
+                        value: _id,
+                        change: idChange
+                    })
+                }, options)
+                lstTask.push(task)
             }
+            await Promise.all(lstTask);
         }
         function getSourceIds(index) {
             let lst = []
