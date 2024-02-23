@@ -1,12 +1,10 @@
 Vue.component('mf-viewgoal', {
     name: 'DnbViewGoal',
     props: ['entry'],
-    //beforeCreate(){},
+    //beforeCreate(){ },
     data() {
-        const goalId = this.entry.Id
-        const activities = this.$root.Activities
         return {
-            ListActivity: genListActivity(goalId, activities),
+            ListActivity: [],
             IsExpand: true
         }
     },
@@ -38,7 +36,18 @@ Vue.component('mf-viewgoal', {
             }
         },
     },
-    // created(){},
+    created() {
+        const goalId = this.entry.Id
+        const ctrlBackground = new TaskController({ priority: 'background' });
+        const options = { signal: ctrlBackground.signal };
+        const task = scheduler.postTask(() => {
+            const activities = this.$root.Activities
+            this.ListActivity = genListActivity(goalId, activities)
+        }, options);
+        (async () => {
+            await Promise.all([task])
+        })()
+    },
     // beforeMount(){},
     mounted() { this.$root.ListGoalComponent.push(this) },
     // beforeUpdate(){},
@@ -48,8 +57,15 @@ Vue.component('mf-viewgoal', {
         const goal = this.entry
         const gId = goal.Id
         const spId = goal.SubmarketProductId
-        const i = lstComps.findIndex(e => gId == e.entry.Id && spId == e.entry.SubmarketProductId)
-        if (-1 < i) lstComps.splice(this)
+        const ctrlBackground = new TaskController({ priority: 'background' });
+        const options = { signal: ctrlBackground.signal };
+        const task = scheduler.postTask(() => {
+            const i = lstComps.findIndex(e => gId == e.entry.Id && spId == e.entry.SubmarketProductId)
+            if (-1 < i) lstComps.splice(this)
+        }, options);
+        (async () => {
+            await Promise.all([task])
+        })()
     },
 })
 function newAppVue(mFlter) {
@@ -78,6 +94,7 @@ function newAppVue(mFlter) {
                 const options = { signal: ctrlBackground.signal };
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
+                delete window._mTaskListActivity
                 const process = async () => {
                     const task0 = scheduler.postTask(() => {
                         return getGoals.call(this)

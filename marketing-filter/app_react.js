@@ -18,22 +18,31 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
         renOperandControl()
         renTypeControl()
         renderIdsDropdownList()
-        return () => {
+        return async () => {
             // console.log('before mount/update/unmount')
-            let $input, control
+            const lstTask = []
             for (let jj = cIds.length - 1; -1 < jj; jj--) {
-                $input = $wrap.find(`[c-index="${jj}"]`)
-                control = $input.data("kendoDropDownList")
-                if (control) control.destroy()
+                const taskId = new Promise(() => {
+                    const $input = $wrap.find(`[c-index="${jj}"]`)
+                    const control = $input.data("kendoDropDownList")
+                    if (control) control.destroy()
+                    $wrap.find('.ccrite-grp-ids').empty();
+                })
+                lstTask.push(taskId)
             }
-            $input = $wrap.find(`[c-operand="${ii}"]`)
-            control = $input.data("kendoDropDownList")
-            if (control) control.destroy()
-            $input = $wrap.find(`[c-type="${ii}"]`)
-            control = $input.data("kendoDropDownList")
-            if (control) control.destroy()
-            $wrap.find('.ccrite-grp-ids').empty();
-            dfilter.removeEvent(ii)
+            const taskOprand = new Promise(() => {
+                const $input = $wrap.find(`[c-operand="${ii}"]`)
+                const control = $input.data("kendoDropDownList")
+                if (control) control.destroy()
+            })
+            lstTask.push(taskOprand)
+            const taskType = new Promise(() => {
+                const $input = $wrap.find(`[c-type="${ii}"]`)
+                const control = $input.data("kendoDropDownList")
+                if (control) control.destroy()
+            })
+            lstTask.push(taskType)
+            Promise.all(lstTask).then(() => { dfilter.removeEvent(ii) })
         }
         function renderUiIds() {
             $wrap.find('.ccrite-grp-ids').empty();
@@ -230,9 +239,7 @@ const ReactFilter = ({ dfilter }) => {
             return false
         }
     }
-    const setFilter = () => {
-        dfilter.onSearch()
-    }
+    const setFilter = () => { dfilter.onSearch() }
     return (
         <section className="mb-3">
             <b className="ms-2 text-success">Filter <span className="opacity-25">(React CDN)</span>: </b>
