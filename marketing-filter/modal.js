@@ -101,7 +101,7 @@ class MktFilter {
             if (ids.includes(id)) continue
             ids.push(id)
         }
-        if (ids.includes(0)) return Lands.map(x => x.Id)
+        if (ids.includes(0)) return [0]
         return ids
     }
     get RegionIds() {
@@ -146,7 +146,7 @@ class MktFilter {
                 continue
             }
         }
-        if (lstId.includes(0)) return Regions.map(x => x.Id)
+        if (lstId.includes(0)) return [0]
         return lstId
     }
     get MarketIds() {
@@ -198,7 +198,7 @@ class MktFilter {
         if (lastI < 0) {
             return getMarketsIn(this.LandIds, []).map(x => x.Id)
         }
-        if (marketIds.includes(0)) return getMarkets(0, []).map(x => x.Id)
+        if (marketIds.includes(0)) return [0]
         return marketIds
     }
     get SubmarketIds() {
@@ -272,8 +272,8 @@ class MktFilter {
             lastI = ii
         }
         if (lastI < 0) {
-            const marketIds = this.MarketIds
-            return getSubmarket(marketIds, []).map(x => x.Id)
+            const market_Ids = this.MarketIds
+            return getSubmarket(market_Ids, []).map(x => x.Id)
         }
         if (subMrketIds.includes(0)) {
             return getSubmarket([0], []).map(x => x.Id)
@@ -395,10 +395,17 @@ function getInitIds(type) {
     }
     return []
 }
-function getSubmarket(marketIds, lst) {
+function getSubmarket(market_Ids, lst) {
+    if(market_Ids.includes(0)) {
+        for (let ii = 0; ii < StakeholderGroups.length; ii++) {
+            const subMrk = StakeholderGroups[ii]
+            lst.push(subMrk)
+        }
+        return lst
+    }
     for (let ii = 0; ii < StakeholderGroups.length; ii++) {
         const subMrk = StakeholderGroups[ii]
-        if (marketIds.includes(0) || marketIds.includes(subMrk.MarketId)) {
+        if (market_Ids.includes(subMrk.MarketId)) {
             lst.push(subMrk)
         }
     }
@@ -454,9 +461,9 @@ function getRegions(landId, lst) {
     }
     return lst
 }
-function getProductGroups(regionIds, lst) {
-    if (!regionIds.length) return []
-    if (regionIds.includes(0)) {
+function getProductGroups(region_Ids, lst) {
+    if (!region_Ids.length) return lst
+    if (region_Ids.includes(0)) {
         for (let ii = 0; ii < ProductGroups.length; ii++) {
             lst.push(ProductGroups[ii])
         }
@@ -466,7 +473,7 @@ function getProductGroups(regionIds, lst) {
         const prdG = ProductGroups[ii]
         for (let kk = 0; kk < prdG.RegionIds.length; kk++) {
             const rgId = prdG.RegionIds[kk]
-            if (regionIds.includes(rgId)) {
+            if (region_Ids.includes(rgId)) {
                 lst.push(prdG)
                 break
             }

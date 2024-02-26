@@ -291,26 +291,41 @@ function newAppVue(mFlter) {
                     }
                     return lst
                 }
-                function getLands(landIds) {
+                function getLands(land_Ids) {
                     const lst = []
+                    if(land_Ids.includes(0)) {
+                        for (let ii = 0; ii < this.Lands.length; ii++) {
+                            const land = this.Lands[ii]
+                            lst.push(land)
+                        }
+                        return lst    
+                    }
                     for (let ii = 0; ii < this.Lands.length; ii++) {
                         const land = this.Lands[ii]
-                        if (landIds.includes(land.Id)) lst.push(land)
+                        if (land_Ids.includes(land.Id)) lst.push(land)
                     }
                     return lst
                 }
-                function getRegions(regnIds) {
+                function getRegions(region_Ids) {
                     const lst = []
+                    if(region_Ids.includes(0)) {
+                        for (let ii = 0; ii < this.Regions.length; ii++) {
+                            const rgn = this.Regions[ii]
+                            lst.push(rgn)
+                        }
+                        return lst
+                    }
                     for (let ii = 0; ii < this.Regions.length; ii++) {
                         const rgn = this.Regions[ii]
-                        if (regnIds.includes(rgn.Id)) lst.push(rgn)
+                        if (region_Ids.includes(rgn.Id)) lst.push(rgn)
                     }
                     return lst
                 }
-                function getSubmarketIds(subMrkIds, landIds) {
+                function getSubmarketIds(subMrkIds, land_Ids) {
                     const lstsMrkId = [];
                     let mrk;
                     const submarkets = this.StakeholderGroups
+                    const lstLandId = getLands.call(this, land_Ids).map(x => x.Id)
                     for (let ii = 0; ii < submarkets.length; ii++) {
                         const sMkr = submarkets[ii]
                         if (!subMrkIds.includes(sMkr.Id)) continue
@@ -330,7 +345,7 @@ function newAppVue(mFlter) {
                     }
                     for (let ii = lstsMrkId.length - 1; -1 < ii; ii--) {
                         const mrkItem = lstsMrkId[ii]
-                        if (!anyIds(landIds, mrkItem.IdLands)) {
+                        if (!anyIds(lstLandId, mrkItem.IdLands)) {
                             lstsMrkId.splice(ii, 1)
                         }
                     }
