@@ -326,9 +326,10 @@ function newAppVue(mFlter) {
                     let mrk;
                     const submarkets = this.StakeholderGroups
                     const lstLandId = getLands.call(this, land_Ids).map(x => x.Id)
+                    const isAllSubmrk = subMrkIds.includes(0)
                     for (let ii = 0; ii < submarkets.length; ii++) {
                         const sMkr = submarkets[ii]
-                        if (!subMrkIds.includes(sMkr.Id)) continue
+                        if (!isAllSubmrk && !subMrkIds.includes(sMkr.Id)) continue
 
                         if (!mrk || sMkr.MarketId != mrk.Id) {
                             mrk = this.MarketSegments.find(x => x.Id == sMkr.MarketId)

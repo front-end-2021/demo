@@ -276,7 +276,7 @@ class MktFilter {
             return getSubmarket(market_Ids, []).map(x => x.Id)
         }
         if (subMrketIds.includes(0)) {
-            return getSubmarket([0], []).map(x => x.Id)
+            return [0] //return getSubmarket([0], []).map(x => x.Id)
         }
         return subMrketIds
     }
