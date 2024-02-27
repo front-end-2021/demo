@@ -17,7 +17,12 @@ body {
     margin-right: 3px;
     height: 30px;
 }
-
+.list-criterial>*>*.ui.dropdown {
+    padding-top: 8px !important;
+    min-height: 30px !important;
+}
+.list-criterial>*>*.ui.selection.dropdown>.dropdown.icon {top:6px !important;}
+.list-criterial>*>*.ui.dropdown:first-child {min-width: 72px;}
 .btn-del-crite {
     width: 30px;
     padding-left: 6px;
