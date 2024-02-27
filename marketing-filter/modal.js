@@ -345,6 +345,15 @@ class MktFilter {
         if (typeof this.setFilter == 'function') this.setFilter(this)
     }
     getBlock(ii) { return this.#Blocks[ii] }
+    setNextIds(ii, isType) {
+        if (typeof ii != 'number') return
+        for (let kk = ii + 1; kk < this.#Blocks.length; kk++) {
+            const row = this.#Blocks[kk]
+            if (isType(row.Type)) return;
+            const initIds = getInitIds(row.Type);
+            row.Ids = initIds
+        }
+    }
     getBlocks() {
         const lst = []
         for (let ii = 0; ii < this.#Blocks.length; ii++) lst.push(this.#Blocks[ii])
@@ -363,7 +372,15 @@ class MktFilter {
         } else this.#Events.push(fnc)
     }
     removeEvent(ii) { if (this.#Events[ii]) this.#Events.splice(ii, 1) }
-    setDataSource() { this.#Events.forEach(fnc => fnc()) }
+    setDataSource(ii) {
+        if (typeof ii != 'number')
+            this.#Events.forEach(fnc => fnc())
+        else if (-1 < ii) {
+            for (let kk = ii; kk < this.#Events.length; kk++) {
+                this.#Events[kk]()
+            }
+        }
+    }
     setDSource(ii) {
         for (let kk = 0; kk < this.#Events.length; kk++) {
             if (ii == kk) continue
@@ -395,8 +412,98 @@ function getInitIds(type) {
     }
     return []
 }
+function getSourceIds(index, ii, cType, cIds) {
+    const dfilter = this
+    let lst = []
+    switch (cType) {
+        case 1: // Land/Region
+            lst = [lType[0]]
+            if (0 == index) {
+                Lands.forEach(land => lst.push(land))
+                return lst
+            }
+            const landId = cIds[0]
+            return getRegions(landId, lst)
+        case 2: // Product groups/Product
+            switch (index) {
+                case 0:     // Product group
+                    lst = [lType[1]]
+                    return getPrdGroups(lst)
+                case 1:     // product
+                    const pgId = cIds[index - 1]
+                    const lstPrdGrpId = pgId < 0 ? getPrdGroups([]).map(x => x.Id) : [pgId]
+                    lst = [lType[2]]
+                    return getProductsIn(lstPrdGrpId, lst)
+                case 2:     // sub product
+                    const prdId = cIds[index - 1]
+                    lst = [lType[3]]
+                    return getSubProducts(prdId, lst)
+            }
+            return []
+        case 3:
+            switch (index) {
+                case 0:     // stake holder group | sub market
+                    lst = [lType[4]]
+                    const mkIds = closestMarketIds()
+                    return getSubmarket(mkIds, lst)
+                case 1: return [lType[5]]    // Contact person
+                case 2: return [lType[6]]    // Sub contact
+            }
+            return []
+        case 5: // Market segments/Stakeholder groups
+            if (index == 0) {
+                lst = [lType[10], lType[0]]
+                const landRegnId = closestIds(ii, 1)
+                const landId = landRegnId.length ? landRegnId[0] : -1
+                return getMarkets(landId, lst)
+            }
+            const marketId = cIds[0]
+            lst = [lType[11]]
+            if (marketId < 0) return lst
+            for (let ii = 0; ii < StakeholderGroups.length; ii++) {
+                const stk = StakeholderGroups[ii]
+                if (0 < marketId && marketId != stk.MarketId) continue
+                lst.push(stk)
+            }
+            return lst
+    }
+    return lst
+    function getPrdGroups(lst) {
+        const landRgnId = closestIds(ii, 1)
+        const rgnIds = landRgnId.length > 1 ? [landRgnId[1]] : [0]
+        return getProductGroups(rgnIds, lst)
+    }
+    function closestMarketIds() {
+        for (let jj = ii - 1; -1 < jj; jj--) {
+            const prevCrite = dfilter.getBlock(jj)
+            if (1 == prevCrite.Type) {
+                const landId = prevCrite.Ids[0]
+                if (landId < 0) return []
+                if (landId == 0) {
+                    const markets = getMarkets(0, [])
+                    return markets.map(x => x.Id)
+                }
+                const markets = getMarkets(landId, [])
+                return markets.map(x => x.Id)
+            }
+            if (5 == prevCrite.Type) {
+                const mkrId = prevCrite.Ids[0]
+                const markets = getMarkets(mkrId, [])
+                return markets.map(x => x.Id)
+            }
+        }
+        return []
+    }
+    function closestIds(ii, type) {
+        for (let jj = ii - 1; -1 < jj; jj--) {
+            const crite = dfilter.getBlock(jj)
+            if (crite.Type == type) return crite.Ids
+        }
+        return []
+    }
+}
 function getSubmarket(market_Ids, lst) {
-    if(market_Ids.includes(0)) {
+    if (market_Ids.includes(0)) {
         for (let ii = 0; ii < StakeholderGroups.length; ii++) {
             const subMrk = StakeholderGroups[ii]
             lst.push(subMrk)

@@ -18,14 +18,14 @@ body {
     height: 30px;
 }
 .list-criterial>*>*.ui.dropdown {
-    padding-top: 8px !important;
+    padding-top: 7px !important;
     min-height: 30px !important;
 }
 .list-criterial>*>*.ui.selection.dropdown>.dropdown.icon {top:6px !important;}
-.list-criterial>*>*.ui.dropdown:first-child {min-width: 72px;}
+.list-criterial>*>*.ui.dropdown:first-child {min-width: 96px;}
 .btn-del-crite {
     width: 30px;
-    padding-left: 6px;
+    padding-left: 7px;
     padding-top: 3px;
 }
 
