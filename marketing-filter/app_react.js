@@ -1,6 +1,22 @@
-const { useState, useEffect, StrictMode, useMemo } = React
+const { useState, useEffect, StrictMode, useMemo, useReducer } = React
 const { Dropdown } = semanticUIReact
-
+function tasksReducer(blocks, action) {
+    switch (action.type) {
+        case 'added': {
+            return [...blocks, action.row]
+        }
+        case 'changed': {
+            return [...blocks]
+        }
+        case 'deleted': {
+            blocks.splice(action.iRow)
+            return [...blocks]
+        }
+        default: {
+            throw Error('Unknown action: ' + action.type);
+        }
+    }
+}
 const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
     const [cOperand, setOperand] = useState(dfilter.getBlock(ii).Operand)
     const [cType, setCType] = useState(dfilter.getBlock(ii).Type)
@@ -360,10 +376,15 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
     )
 }
 const ReactFilter = ({ dfilter }) => {
-    const [blocks, setBlocks] = useState(dfilter.getBlocks())
+    //const [blocks, setBlocks] = useState(dfilter.getBlocks())
+    const [blocks, dispatch] = useReducer(tasksReducer, dfilter.getBlocks());
     const onDelRow = (ii) => {
         dfilter.removeBlock(ii)
-        setBlocks([...dfilter.getBlocks()])
+        //setBlocks([...dfilter.getBlocks()])
+        dispatch({
+            type: 'deleted',
+            iRow: ii
+        });
     }
     const addFilter = () => {
         const type = 0
@@ -371,7 +392,11 @@ const ReactFilter = ({ dfilter }) => {
         let oprnd = isNewBlk ? Operands[1].Id : Operands[0].Id
         const criter = new Criterial(oprnd, type, getInitIds(type))
         dfilter.pushBlock(criter)
-        setBlocks([...dfilter.getBlocks()])
+        //setBlocks([...dfilter.getBlocks()])
+        dispatch({
+            type: 'added',
+            row: criter
+        });
         function isNewBlock() {
             const lstRow = dfilter.getBlocks()
             if (lstRow.length < 1) return true
