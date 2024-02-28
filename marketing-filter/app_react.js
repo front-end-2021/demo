@@ -146,7 +146,9 @@ const ReactFilter = ({ dfilter }) => {
             return false
         }
     }
-    const setFilter = () => { dfilter.onSearch() }
+    const setFilter = () => {
+        if (typeof dfilter.setFilter == 'function') dfilter.setFilter()
+    }
     return (
         <section className="mb-3">
             <b className="ms-2 text-success">Filter <span className="opacity-25">(React CDN)</span>: </b>

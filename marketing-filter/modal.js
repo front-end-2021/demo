@@ -341,9 +341,6 @@ class MktFilter {
         }
     }
     setFilter = null
-    onSearch() {
-        if (typeof this.setFilter == 'function') this.setFilter(this)
-    }
     getBlock(ii) { return this.#Blocks[ii] }
     setNextIds(ii, isType) {
         if (typeof ii != 'number') return

@@ -88,13 +88,14 @@ function newAppVue(mFlter) {
             AppMsg: null,
         },
         methods: {
-            renderData(filter) {
+            renderData() {
+                const filter = mFlter
                 //https://github.com/GoogleChromeLabs/scheduler-polyfill/blob/main/test/test.scheduler.js
                 const ctrlBackground = new TaskController({ priority: 'background' });
                 const options = { signal: ctrlBackground.signal };
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
-                delete window._mTaskListActivity
+                this.ListGoalComponent.splice(0)
                 const process = async () => {
                     const task0 = scheduler.postTask(() => {
                         return getGoals.call(this)
@@ -203,6 +204,7 @@ function newAppVue(mFlter) {
                                 lstPath.splice(ii, 1)
                             }
                         }
+                        return items
                     })
                 }
                 function filterGoalsBy(idSubmrkPrdIds, type) {    // type = 0 | 1
@@ -374,7 +376,7 @@ function newAppVue(mFlter) {
         // updated() { },
     })
     mFlter.setFilter = app.renderData
-    app.renderData(mFlter)
+    app.renderData()
     return app
 }
 Vue.component('mf-dashgoal', {
