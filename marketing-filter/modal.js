@@ -17,6 +17,8 @@ const mType = [
     { Id: 12, Name: `Advertising material/Advertiser` },
     { Id: 13, Name: `Superior objectives and measures` },
     { Id: 14, Name: `Master goals` },
+    { Id: 20, Name: `Masterbudget` },
+    { Id: 19, Name: `Fibu/Cost center` },
     { Id: 15, Name: `Department/Field` },
     { Id: 16, Name: `Subject/thema` },
     { Id: 17, Name: `Supplier` },
@@ -37,13 +39,17 @@ const lType = [
     { Id: -10, Name: `Select Market segments` },
     { Id: -11, Name: `Select Stakeholder groups` },
     { Id: -12, Name: `Please select` },
-    { Id: -13, Name: `All Status` },
+    { Id: -13, Name: `All status` },
     { Id: -14, Name: `Advertising meterial` },
     { Id: -15, Name: `Advertiser` },
     { Id: -16, Name: `Superior themes` },
     { Id: -17, Name: `Themes` },
     { Id: -18, Name: `Select master maingoals` },
     { Id: -19, Name: `Select master subgoals` },
+    { Id: -20, Name: `Show all` },
+    { Id: -21, Name: `Show only hidden` },
+    { Id: -22, Name: `Select Land/Region` },
+    { Id: -23, Name: `Last status` },
 ]
 class Criterial {
     constructor(operand, type, ids) {
@@ -393,8 +399,8 @@ function getInitIds(type) {
         case 3: return [-4, -5, -6]     // Stakeholder groups/Contact Person
         case 4: return [-7, -8, -9]     // Customer Journey Group
         case 5: return [-10, -11]       // Market segments/Stakeholder groups
+        case 7: return [-12]              // User
         case 6:                         // Task
-        case 7:                         // User
         case 10:                         // Measure category
         case 11:                         // Instruments
         case 15:                        // Department/Field
@@ -406,6 +412,8 @@ function getInitIds(type) {
         case 12: return [-14, -15]       // Advertising material/Advertiser
         case 13: return [-16, -17]       // Superior objectives and measures
         case 14: return [-18, -19]       // Master goals
+        case 19: return [-22, 0, 0]     //Fibu/Cost center
+        case 20: return [-18, -19]      // Masterbudget
     }
     return []
 }
@@ -447,8 +455,18 @@ function getSourceIds(index, ii, cType, cIds) {
                 case 2: return [lType[6]]    // Sub contact
             }
             return []
+        case 4:     //Customer Journey Group
+            switch (index) {
+                case 0: lst.push(lType[7])
+                    break;
+                case 1: lst.push(lType[8])
+                    break;
+                default: lst.push(lType[9])
+                    break;
+            }
+            return lst;
         case 5: // Market segments/Stakeholder groups
-            if (index == 0) {
+            if (0 == index) {
                 lst = [lType[10], lType[0]]
                 const landRegnId = closestIds(ii, 1)
                 const landId = landRegnId.length ? landRegnId[0] : -1
@@ -462,6 +480,70 @@ function getSourceIds(index, ii, cType, cIds) {
                 if (0 < marketId && marketId != stk.MarketId) continue
                 lst.push(stk)
             }
+            return lst
+        case 6:    // Task
+            lst.push(lType[12])
+            return lst
+        case 7:    // User
+            lst.push(lType[12])
+            for(let aa = 0; aa < ListAccount.length; aa++) {
+                const user = ListAccount[aa]
+                lst.push(user)
+            }
+            return lst
+        case 8:     // Status
+            if (0 == index) {
+                lst.push(lType[13])
+                lst.push(lType[23])
+            } else {
+                lst.push(lType[12])
+            }
+            return lst;
+        case 9:        //Objective category
+            lst.push(lType[12])
+            return lst;
+        case 10:        //Measure category
+            lst.push(lType[12])
+            return lst;
+        case 11:        //Instruments
+            lst.push(lType[12])
+            return lst;
+        case 12:        //Advertising material/Advertiser
+            if (0 == index) {
+                lst.push(lType[14])
+                lst.push(lType[0])
+            } else lst.push(lType[15])
+            return lst;
+        case 13:    // Superior objectives and measure
+            if (0 == index) lst.push(lType[16])
+            else lst.push(lType[17])
+            return lst
+        case 19:    // Fibu/Cost center
+            switch (index) {
+                case 0: lst.push(lType[22])
+                    break;
+                default: lst.push(lType[0])
+                    break;
+            }
+            return lst
+        case 15:    // Department/Field
+            lst.push(lType[12])
+            return lst
+        case 16:    // Subject/thema
+        case 17:    // Supplier
+            lst.push(lType[12])
+            lst.push(lType[20])
+            return lst;
+        case 18:    // Hidden elements
+            lst.push(lType[12])
+            lst.push(lType[20])
+            lst.push(lType[21])
+            return lst;
+        case 14:    //Master goals
+        case 20:    //Masterbudget
+            if (0 == index) {
+                lst.push(lType[18])
+            } else lst.push(lType[19])
             return lst
     }
     return lst
@@ -492,6 +574,7 @@ function getSourceIds(index, ii, cType, cIds) {
         return []
     }
     function closestIds(ii, type) {
+        if (ii == 0) return [0]
         for (let jj = ii - 1; -1 < jj; jj--) {
             const crite = dfilter.getBlock(jj)
             if (crite.Type == type) return crite.Ids

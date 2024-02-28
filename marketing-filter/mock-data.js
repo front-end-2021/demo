@@ -101,10 +101,10 @@ const Goals = [
         Finish: false, Start: null, End: null
     },
 ];
-for(let ii = 8; ii < 1111; ii++) {
+for (let ii = 8; ii < 1111; ii++) {
     const gg = {
         Id: ii, Name: `Test large data goal ${ii}`, SubmarketProductId: '1-8',
-        Finish: true, Start: '2024-01-15T05:49:58.135Z', End: null
+        Finish: false, Start: '2024-01-15T05:49:58.135Z', End: null
     }
     Goals.push(gg)
 }
@@ -123,7 +123,7 @@ const Activities = [
         Finish: false, Start: null, End: null
     },
 ];
-for(let ii = 8; ii < 1009; ii++) {
+for (let ii = 8; ii < 1009; ii++) {
     const aa = {
         Id: ii, Name: `Test large data activity ${ii}`, GoalId: 2,
         Finish: false, Start: '2024-01-15T05:49:58.135Z', End: null
@@ -140,4 +140,9 @@ const MarketRegions = [
 const SubmarketProductIds = [
     { Id: 1, SubmarketId: 1, ProductId: 8 },
     { Id: 2, SubmarketId: 2, ProductId: 1 }
+]
+// 14. Table Account
+const ListAccount = [
+    { Id: 1, Name: 'Dai Nguyen Ba' },
+    { Id: 2, Name: 'Huong Nguyen Thu' },
 ]

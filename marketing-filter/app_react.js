@@ -29,6 +29,22 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
         }
         return lstSrc
     }, [ii, cOperand, cType, cIds])
+    const srcType = useMemo(() => {
+        const lstSrc = []
+        for(let jj = 0; jj < mType.length; jj++) {
+            const x = mType[jj]
+            switch(cType) {
+                case 14: if(20 == x.Id || 19 == x.Id) continue;   // Master goal
+                break;
+                case 20: if(14 == x.Id || 19 == x.Id) continue;   // Masterbudget
+                break;
+                case 19: if(14 == x.Id || 20 == x.Id) continue;   // Fibu/Cost center
+                break;
+            }
+            lstSrc.push({ key: x.Id, text: x.Name, value: x.Id })
+        }
+        return lstSrc
+    }, [cType])
     useEffect(() => {
         const row = dfilter.getBlock(ii)
         const evnt = () => {
@@ -92,7 +108,6 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
     const clssBtnDel = `btn btn-primary rounded-circle bi bi-trash-fill btn-del-crite-${ii} btn-del-crite`
     return (
         <div c-criterial={ii}>
-            {/* <input c-operand={ii} style={{ width: '96px' }} /> */}
             {ii < 1 ? (<Dropdown disabled value={cOperand} selection
                 options={[{ key: mFilterBy.id, text: mFilterBy.Name, value: mFilterBy.Id }]} />) : (
                 <Dropdown selection placeholder='Operand Control'
@@ -101,15 +116,13 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
                     value={cOperand} />)}
             <Dropdown selection placeholder='Type Control'
                 onChange={(e, oj) => onChangeType(ii, oj)}
-                options={mType.map(x => { return { key: x.Id, text: x.Name, value: x.Id } })}
+                options={srcType}
                 value={cType} />
-            {/* <input c-type={ii} style={{ width: '270px' }} /> */}
             {Array.isArray(cIds) ? cIds.map((_id, jj) => {
                 return <Dropdown value={_id} options={sourceIds[jj]}
                     key={'id-item-idx_' + jj} selection
                     onChange={(e, oj) => onChangeId(ii, jj, oj)} />
             }) : null}
-            {/* <span className="ccrite-grp-ids"></span> */}
             {0 < ii ? <button className={clssBtnDel} type="button"
                 onClick={() => delRow()}></button> : null}
         </div>
