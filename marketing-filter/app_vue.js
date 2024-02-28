@@ -95,7 +95,6 @@ function newAppVue(mFlter) {
                 const options = { signal: ctrlBackground.signal };
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
-                this.ListGoalComponent.splice(0)
                 const process = async () => {
                     const task0 = scheduler.postTask(() => {
                         return getGoals.call(this)
