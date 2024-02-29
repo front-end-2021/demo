@@ -37,8 +37,8 @@ Vue.component('mf-viewgoal', {
         },
     },
     created() {
-        const lstGoalRef = this.$root.ListGoalComponent
-        lstGoalRef.push(this)
+        const lstComps = this.$root.ListGoalComponent
+        lstComps.push(this)
         const goalId = this.entry.Id
         window._mCtrlBackground = window._mCtrlBackground || new TaskController({ priority: 'background' });
         const task = scheduler.postTask(() => {
@@ -47,7 +47,7 @@ Vue.component('mf-viewgoal', {
         }, { signal: window._mCtrlBackground.signal });
         const lstTask = window._mSchedulerTasks
         lstTask.push(task)
-        if(this.$root.CountGoal === lstTask.length) {
+        if (this.$root.CountGoal === lstTask.length) {
             (async () => {
                 await Promise.all(lstTask).then(() => {
                     delete window._mSchedulerTasks
@@ -66,16 +66,8 @@ Vue.component('mf-viewgoal', {
         const goal = this.entry
         const gId = goal.Id
         const spId = goal.SubmarketProductId
-        window._mCtrlBackground = window._mCtrlBackground || new TaskController({ priority: 'background' });
-        const task = scheduler.postTask(() => {
-            const i = lstComps.findIndex(e => gId == e.entry.Id && spId == e.entry.SubmarketProductId)
-            if (-1 < i) lstComps.splice(this)
-        }, { signal: window._mCtrlBackground.signal });
-        (async () => {
-            await Promise.all([task]).then(() => {
-                delete window._mCtrlBackground
-            })
-        })()
+        const i = lstComps.findIndex(e => gId == e.entry.Id && spId == e.entry.SubmarketProductId)
+        if (-1 < i) lstComps.splice(this)
     },
 })
 function newAppVue(mFlter) {
