@@ -37,6 +37,8 @@ Vue.component('mf-viewgoal', {
         },
     },
     created() {
+        const lstGoalRef = this.$root.ListGoalComponent
+        lstGoalRef.push(this)
         const goalId = this.entry.Id
         const ctrlBackground = new TaskController({ priority: 'background' });
         const options = { signal: ctrlBackground.signal };
@@ -44,14 +46,21 @@ Vue.component('mf-viewgoal', {
             const activities = this.$root.Activities
             this.ListActivity = genListActivity(goalId, activities)
         }, options);
-        (async () => {
-            await Promise.all([task])
-        })()
+        const lstTask = window._mSchedulerTasks
+        lstTask.push(task)
+        if(this.$root.CountGoal === lstTask.length) {
+            (async () => {
+                await Promise.all(lstTask).then(() => {
+                    delete window._mSchedulerTasks
+                })
+            })();
+        }
     },
     // beforeMount(){},
-    mounted() { this.$root.ListGoalComponent.push(this) },
+    //mounted() { },
     // beforeUpdate(){},
     // updated(){},
+    //beforeDestroy() { },
     destroyed() {
         const lstComps = this.$root.ListGoalComponent
         const goal = this.entry
@@ -95,6 +104,7 @@ function newAppVue(mFlter) {
                 const options = { signal: ctrlBackground.signal };
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
+                this.ListGoalComponent.splice(0)
                 const process = async () => {
                     const task0 = scheduler.postTask(() => {
                         return getGoals.call(this)
@@ -129,6 +139,7 @@ function newAppVue(mFlter) {
                     addPrdSubmrk().then(() => {
                         addGoals.call(lstPath, lstGoal).then(items => {
                             this.ListDataUI = lstPath;
+                            window._mSchedulerTasks = []
                             if (!lstPath.length) this.AppMsg = 'No results'
                             else {
                                 let cGoal = 0, cAction = 0
@@ -294,12 +305,12 @@ function newAppVue(mFlter) {
                 }
                 function getLands(land_Ids) {
                     const lst = []
-                    if(land_Ids.includes(0)) {
+                    if (land_Ids.includes(0)) {
                         for (let ii = 0; ii < this.Lands.length; ii++) {
                             const land = this.Lands[ii]
                             lst.push(land)
                         }
-                        return lst    
+                        return lst
                     }
                     for (let ii = 0; ii < this.Lands.length; ii++) {
                         const land = this.Lands[ii]
@@ -309,7 +320,7 @@ function newAppVue(mFlter) {
                 }
                 function getRegions(region_Ids) {
                     const lst = []
-                    if(region_Ids.includes(0)) {
+                    if (region_Ids.includes(0)) {
                         for (let ii = 0; ii < this.Regions.length; ii++) {
                             const rgn = this.Regions[ii]
                             lst.push(rgn)
@@ -369,6 +380,24 @@ function newAppVue(mFlter) {
                 const i = lstId.indexOf(tId)
                 if (i < 0) lstId.push(tId)
                 else lstId.splice(i, 1)
+            },
+        },
+        computed: {
+            CountGoal() {
+                const lstPath = this.ListDataUI
+                let cGoal = 0;
+                for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                    const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
+                    for (let pp = 0; pp < item.PGroups.length; pp++) {
+                        const pGrp = item.PGroups[pp]
+                        for (let pd = 0; pd < pGrp.Products.length; pd++) {
+                            const product = pGrp.Products[pd]           // { Data }
+                            if (Array.isArray(product.ListGoal))
+                                cGoal += product.ListGoal.length
+                        }
+                    }
+                }
+                return cGoal
             },
         },
         // created() { },
