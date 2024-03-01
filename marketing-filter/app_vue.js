@@ -70,10 +70,17 @@ Vue.component('mf-viewgoal', {
         if (-1 < i) lstComps.splice(this)
     },
 })
-function newAppVue(mFlter) {
+async function processTask(arrFnc) {
     //https://github.com/GoogleChromeLabs/scheduler-polyfill/blob/main/test/test.scheduler.js
     const ctrlBackground = new TaskController({ priority: 'background' });
     const options = { signal: ctrlBackground.signal };
+    const lstTask = []
+    for (let ii = 0; ii < arrFnc.length; ii++) {
+        lstTask.push(scheduler.postTask(arrFnc[ii], options))
+    }
+    return await Promise.all(lstTask)
+}
+function newAppVue(mFlter) {
     const app = new Vue({
         el: '#dnb-app-vue',
         name: 'DnbAppVue',
@@ -98,121 +105,101 @@ function newAppVue(mFlter) {
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
                 this.ListGoalComponent.splice(0)
-                const process = async () => {console.log('process')
-                    const task0 = scheduler.postTask(() => {
-                        return getGoals.call(this)
-                    }, options);
-                    const task1 = scheduler.postTask(() => {
+                processTask([
+                    () => { return getGoals.call(this) },
+                    () => {
                         const lstLand = getLands.call(this, filter.LandIds)
                         const lstRegion = getRegions.call(this, filter.RegionIds)
                         return getPaths(lstLand, lstRegion)  // [{Land, Region}]
-                    }, options);
-                    const task2 = scheduler.postTask(() => {
-                        return getProductGroups.call(this, filter.ProductIds)
-                    }, options);
-                    const task3 = scheduler.postTask(() => {
-                        return getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
-                    }, options);
-                    await Promise.all([task0, task1, task2, task3]).then((values) => { 
-                        console.log('process then')
-                        const lstGoal = values[0]
-                        let lstPath = values[1]
-                        const lstProductGrp = values[2]
-                        const lstSubmarketId = values[3]
-                        const addPrdSubmrk = async () => {console.log('addPrdSubmrk')
-                            const task0 = scheduler.postTask(() => {
-                                addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
-                                return 1
-                            }, options);
-                            const task1 = scheduler.postTask(() => {
-                                addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
-                                return 1
-                            }, options);
-                            return await Promise.all([task0, task1]);
+                    },
+                    () => { return getProductGroups.call(this, filter.ProductIds) },
+                    () => { return getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds) }
+                ]).then((values) => {
+                    const lstGoal = values[0]
+                    let lstPath = values[1]
+                    const lstProductGrp = values[2]
+                    const lstSubmarketId = values[3]
+                    processTask([
+                        () => {
+                            addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
+                        },
+                        () => {
+                            addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
                         }
-                        addPrdSubmrk().then((status) => {
-                            addGoals.call(lstPath, lstGoal).then(items => {
-                                this.ListDataUI = lstPath; 
-                                window._mSchedulerTasks = []
-                                if (!lstPath.length) this.AppMsg = 'No results'
-                                else {
-                                    let cGoal = 0, cAction = 0
-                                    for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                                        const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
-                                        for (let pp = 0; pp < item.PGroups.length; pp++) {
-                                            const pGrp = item.PGroups[pp]
+                    ]).then(() => {
+                        const fncsAddGoal = []
+                        for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                            const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
+                            fncsAddGoal.push(() => {
+                                const submkGoals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
+                                if (submkGoals.length) {
+                                    for (let pp = 0; pp < item.PGroups.length; pp++) {
+                                        const pGrp = item.PGroups[pp]
+                                        const idProducts = pGrp.Products.map(x => x.Data.Id)
+                                        const goals = filterGoalsBy.call(submkGoals, idProducts, 1)
+                                        if (goals.length) {
                                             for (let pd = 0; pd < pGrp.Products.length; pd++) {
                                                 const product = pGrp.Products[pd]           // { Data }
-                                                if (Array.isArray(product.ListGoal))
-                                                    cGoal += product.ListGoal.length
+                                                product.ListGoal = []
+                                                for (let gg = 0; gg < goals.length; gg++) {
+                                                    const goal = goals[gg]
+                                                    const lstSmkPrdId = goal.SubmarketProductId.split('-')
+                                                    const pId = parseInt(lstSmkPrdId[1])
+                                                    if (pId == product.Data.Id) product.ListGoal.push(goal)
+                                                }
                                             }
                                         }
                                     }
-                                    this.AppMsg = `Land > Region / Product group / Product / List goal (${cGoal}) / Activties`
                                 }
+                                return item
                             })
-                        })
-                    })
-                }
-                process()
-                async function addGoals(lstGoal) {console.log('addGoals')
-                    const lstPath = this
-                    const lstTaskPath = []
-                    for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                        const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
-                        const taskPath = scheduler.postTask(() => {
-                            const submkGoals = filterGoalsBy.call(lstGoal, item.IdSubmarkets, 0)
-                            if (submkGoals.length) {
+                        }
+                        processTask(fncsAddGoal).then((items) => {
+                            for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                                const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
                                 for (let pp = 0; pp < item.PGroups.length; pp++) {
                                     const pGrp = item.PGroups[pp]
-                                    const idProducts = pGrp.Products.map(x => x.Data.Id)
-                                    const goals = filterGoalsBy.call(submkGoals, idProducts, 1)
-                                    if (goals.length) {
+                                    let sumG = 0
+                                    for (let pd = 0; pd < pGrp.Products.length; pd++) {
+                                        const product = pGrp.Products[pd]           // { Data }
+                                        if (Array.isArray(product.ListGoal) && product.ListGoal.length) {
+                                            sumG += product.ListGoal.length
+                                        } else {
+                                            pGrp.Products.splice(pd, 1)
+                                            pd -= 1
+                                        }
+                                    }
+                                    if (!pGrp.Products.length) {
+                                        item.PGroups.splice(pp, 1)
+                                        pp -= 1
+                                        continue
+                                    } else pGrp.SumGoal = sumG
+                                }
+                                if (!item.PGroups.length) {
+                                    lstPath.splice(ii, 1)
+                                }
+                            }
+                            this.ListDataUI = lstPath;
+                            window._mSchedulerTasks = []
+                            if (!lstPath.length) this.AppMsg = 'No results'
+                            else {
+                                let cGoal = 0, cAction = 0
+                                for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                                    const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
+                                    for (let pp = 0; pp < item.PGroups.length; pp++) {
+                                        const pGrp = item.PGroups[pp]
                                         for (let pd = 0; pd < pGrp.Products.length; pd++) {
                                             const product = pGrp.Products[pd]           // { Data }
-                                            product.ListGoal = []
-                                            for (let gg = 0; gg < goals.length; gg++) {
-                                                const goal = goals[gg]
-                                                const lstSmkPrdId = goal.SubmarketProductId.split('-')
-                                                const pId = parseInt(lstSmkPrdId[1])
-                                                if (pId == product.Data.Id) product.ListGoal.push(goal)
-                                            }
+                                            if (Array.isArray(product.ListGoal))
+                                                cGoal += product.ListGoal.length
                                         }
                                     }
                                 }
+                                this.AppMsg = `Land > Region / Product group / Product / List goal (${cGoal}) / Activties`
                             }
-                            return item
-                        }, options);
-                        lstTaskPath.push(taskPath)
-                    }
-                    return await Promise.all(lstTaskPath).then(items => {
-                        for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                            const item = lstPath[ii]        // {Land, Region, PGroups: [{Products}], IdSubmarkets}
-                            for (let pp = 0; pp < item.PGroups.length; pp++) {
-                                const pGrp = item.PGroups[pp]
-                                let sumG = 0
-                                for (let pd = 0; pd < pGrp.Products.length; pd++) {
-                                    const product = pGrp.Products[pd]           // { Data }
-                                    if (Array.isArray(product.ListGoal) && product.ListGoal.length) {
-                                        sumG += product.ListGoal.length
-                                    } else {
-                                        pGrp.Products.splice(pd, 1)
-                                        pd -= 1
-                                    }
-                                }
-                                if (!pGrp.Products.length) {
-                                    item.PGroups.splice(pp, 1)
-                                    pp -= 1
-                                    continue
-                                } else pGrp.SumGoal = sumG
-                            }
-                            if (!item.PGroups.length) {
-                                lstPath.splice(ii, 1)
-                            }
-                        }
-                        return items
+                        })
                     })
-                }
+                })
                 function filterGoalsBy(idSubmrkPrdIds, type) {    // type = 0 | 1
                     const goals = this
                     const lst = []
