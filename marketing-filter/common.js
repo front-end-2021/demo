@@ -16,3 +16,30 @@ Array.prototype.distinct = function () {
     }
     return this
 }
+function getBrowser() {
+    let userAgent = navigator.userAgent;
+    let browser = "Unknown";
+    // Detect Chrome
+    if (/Chrome/.test(userAgent) && !/Chromium/.test(userAgent)) {
+        return "Google Chrome";
+    }
+    // Detect Chromium-based Edge
+    else if (/Edg/.test(userAgent)) {
+        return "Microsoft Edge";
+    }
+    // Detect Firefox
+    else if (/Firefox/.test(userAgent)) {
+        return "Mozilla Firefox";
+    }
+    // Detect Safari
+    else if (/Safari/.test(userAgent)) {
+        return "Apple Safari";
+    }
+    // Detect Internet Explorer
+    else if (/Trident/.test(userAgent)) {
+        return "Internet Explorer";
+    }
+    return browser;
+}
+// Use the function
+//console.log("You are using " + getBrowser());
