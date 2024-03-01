@@ -40,6 +40,11 @@ Vue.component('mf-viewgoal', {
         const lstComps = this.$root.ListGoalComponent
         lstComps.push(this)
         const goalId = this.entry.Id
+        if (getBrowser() == 'Mozilla Firefox') {
+            const activities = this.$root.Activities
+            this.ListActivity = genListActivity(goalId, activities)
+            return
+        }
         window._mCtrlBackground = window._mCtrlBackground || new TaskController({ priority: 'background' });
         const task = scheduler.postTask(() => {
             const activities = this.$root.Activities
