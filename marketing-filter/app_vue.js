@@ -332,7 +332,6 @@ function newAppVue(mFlter) {
                     }
                     removeEmptyGoal.call(lstPath)
                     this.ListDataUI = lstPath;
-                    window._mSchedulerTasks = []
                     setAppMsg.call(this, lstPath)
                 }
                 function removeEmptyGoal() {
