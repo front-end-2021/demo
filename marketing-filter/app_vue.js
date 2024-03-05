@@ -37,8 +37,6 @@ Vue.component('mf-viewgoal', {
         },
     },
     created() {
-        const lstComps = this.$root.ListGoalComponent
-        lstComps.push(this)
         const goalId = this.entry.Id
         if (getBrowser() == 'Mozilla Firefox') {
             const activities = this.$root.Activities
@@ -66,14 +64,7 @@ Vue.component('mf-viewgoal', {
     // beforeUpdate(){},
     // updated(){},
     //beforeDestroy() { },
-    destroyed() {
-        const lstComps = this.$root.ListGoalComponent
-        const goal = this.entry
-        const gId = goal.Id
-        const spId = goal.SubmarketProductId
-        const i = lstComps.findIndex(e => gId == e.entry.Id && spId == e.entry.SubmarketProductId)
-        if (-1 < i) lstComps.splice(this)
-    },
+    //destroyed() { },
 })
 async function processTask(arrFnc) {
     //https://github.com/GoogleChromeLabs/scheduler-polyfill/blob/main/test/test.scheduler.js
@@ -98,7 +89,6 @@ function newAppVue(mFlter) {
             Goals: Goals,
             Activities: Activities,
             ListDataUI: [],
-            ListGoalComponent: [],
             CollapsePrdId: [],
             AppMsg: null,
         },
@@ -107,7 +97,6 @@ function newAppVue(mFlter) {
                 const filter = mFlter
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
-                this.ListGoalComponent.splice(0)
                 if (getBrowser() == 'Mozilla Firefox') {
                     processDataInFireFox.call(this)
                     return
@@ -355,11 +344,9 @@ function newAppVue(mFlter) {
             },
             genListActivity() {
                 const activities = this.Activities
-                const lstComps = this.$root.ListGoalComponent
-                for (let ii = 0; ii < lstComps.length; ii++) {
-                    const comp = lstComps[ii]
+                this.$children.forEach(comp => {
                     comp.genListActivity(activities)
-                }
+                })
             },
             isPrdExpand(id, pgId, rgId) { return !this.CollapsePrdId.includes(`${rgId}.${pgId}.${id}`) },
             onTogglePrdExpand(id, pgId, rgId) {
@@ -469,7 +456,6 @@ function newAppVueDasboard(mFlter, app) {
         el: '#dashboard',
         name: 'DnbAppDashboard',
         data: {
-            Lands: Lands,
             ProductGroups: ProductGroups,
             Products: Products,
             SubProducts: SubProducts,
@@ -481,13 +467,14 @@ function newAppVueDasboard(mFlter, app) {
             NewItems: [],
         },
         computed: {
+            Lands() { return DnbVxStore.getters.getLands([0]) },
             Regions() { return DnbVxStore.getters.getRegions([0]) },
             MinLandId() {
-                const ids = this.Lands.map(x => x.Id)
+                const ids = DnbVxStore.getters.getAllLandId()
                 return getMinFrom(ids)
             },
             MaxLandId() {
-                const ids = this.Lands.map(x => x.Id)
+                const ids = DnbVxStore.getters.getAllLandId()
                 return getMaxFrom(ids)
             },
             MinGoalId() {
@@ -500,8 +487,8 @@ function newAppVueDasboard(mFlter, app) {
             },
         },
         beforeMount() {
-            let minId = getMinFrom(this.Lands.map(x => x.Id))
-            let maxId = getMaxFrom(this.Lands.map(x => x.Id))
+            let minId = getMinFrom(DnbVxStore.getters.getAllLandId())
+            let maxId = getMaxFrom(DnbVxStore.getters.getAllLandId())
             this.NewItems.push({ Id: maxId + 1, Name: '' })    // Land
 
             maxId = getMaxFrom(this.Regions.map(x => x.Id))
@@ -540,12 +527,14 @@ function newAppVueDasboard(mFlter, app) {
                 if (nItem.Name.trim() == '') return
                 switch (ii) {
                     case 0: {
-                        this.Lands.push(Object.assign({}, nItem))
-                        updateNewItem(this.Lands)
+                        DnbVxStore.dispatch('pushLand', Object.assign({}, nItem));
+                        updateNewItem(DnbVxStore.getters.getLands([0]))
+                        break;
                     }
                     case 1: {
                         DnbVxStore.dispatch('pushRegion', Object.assign({}, nItem));
                         updateNewItem(DnbVxStore.getters.getRegions([0]))
+                        break;
                     }
                 }
                 mFlter.setDataSource()

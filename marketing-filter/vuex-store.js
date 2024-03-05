@@ -6,15 +6,15 @@ const DnbVxStore = Vuex.createStore({
         }
     },
     actions: {
-        setLands(context, lands) { context.commit('setLands', lands) },
+        pushLand(context, land) { context.commit('pushLand', land) },
         pushRegion(context, region) { context.commit('pushRegion', region) },
     },
     mutations: { // Commit with Payload (https://vuex.vuejs.org/guide/mutations.html)
-        pushRegion(state, region) {
-            state.Regions.push(region)
-        },
+        pushLand(state, land) { state.ListLand.push(land) },
+        pushRegion(state, region) { state.Regions.push(region) },
     },
     getters: {
+        getAllLandId: (state) => () => { return state.ListLand.map(x => x.Id) },
         getLands: (state) => (land_Ids) => {
             const lstLand = state.ListLand
             if (land_Ids.includes(0)) return lstLand
