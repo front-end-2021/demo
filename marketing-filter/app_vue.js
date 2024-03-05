@@ -90,8 +90,6 @@ function newAppVue(mFlter) {
         el: '#dnb-app-vue',
         name: 'DnbAppVue',
         data: {
-            Lands: Lands,
-            Regions: Regions,
             ProductGroups: ProductGroups,
             Products: Products,
             SubProducts: SubProducts,
@@ -117,8 +115,8 @@ function newAppVue(mFlter) {
                 processTask([
                     () => { return getGoals.call(this) },
                     () => {
-                        const lstLand = getLands.call(this, filter.LandIds)
-                        const lstRegion = getRegions.call(this, filter.RegionIds)
+                        const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
+                        const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
                         return getPaths(lstLand, lstRegion)  // [{Land, Region}]
                     },
                     () => { return getProductGroups.call(this, filter.ProductIds) },
@@ -238,41 +236,11 @@ function newAppVue(mFlter) {
                     }
                     return lst
                 }
-                function getLands(land_Ids) {
-                    const lst = []
-                    if (land_Ids.includes(0)) {
-                        for (let ii = 0; ii < this.Lands.length; ii++) {
-                            const land = this.Lands[ii]
-                            lst.push(land)
-                        }
-                        return lst
-                    }
-                    for (let ii = 0; ii < this.Lands.length; ii++) {
-                        const land = this.Lands[ii]
-                        if (land_Ids.includes(land.Id)) lst.push(land)
-                    }
-                    return lst
-                }
-                function getRegions(region_Ids) {
-                    const lst = []
-                    if (region_Ids.includes(0)) {
-                        for (let ii = 0; ii < this.Regions.length; ii++) {
-                            const rgn = this.Regions[ii]
-                            lst.push(rgn)
-                        }
-                        return lst
-                    }
-                    for (let ii = 0; ii < this.Regions.length; ii++) {
-                        const rgn = this.Regions[ii]
-                        if (region_Ids.includes(rgn.Id)) lst.push(rgn)
-                    }
-                    return lst
-                }
                 function getSubmarketIds(subMrkIds, land_Ids) {
                     const lstsMrkId = [];
                     let mrk;
                     const submarkets = this.StakeholderGroups
-                    const lstLandId = getLands.call(this, land_Ids).map(x => x.Id)
+                    const lstLandId =  DnbVxStore.getters.getLands(land_Ids).map(x => x.Id)
                     const isAllSubmrk = subMrkIds.includes(0)
                     for (let ii = 0; ii < submarkets.length; ii++) {
                         const sMkr = submarkets[ii]
@@ -319,8 +287,8 @@ function newAppVue(mFlter) {
                 }
                 function processDataInFireFox() {
                     const lstGoal = getGoals.call(this)
-                    const lstLand = getLands.call(this, filter.LandIds)
-                    const lstRegion = getRegions.call(this, filter.RegionIds)
+                    const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
+                    const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
                     const lstPath = getPaths(lstLand, lstRegion)  // [{Land, Region}]
                     const lstProductGrp = getProductGroups.call(this, filter.ProductIds)
                     const lstSubmarketId = getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
@@ -502,7 +470,6 @@ function newAppVueDasboard(mFlter, app) {
         name: 'DnbAppDashboard',
         data: {
             Lands: Lands,
-            Regions: Regions,
             ProductGroups: ProductGroups,
             Products: Products,
             SubProducts: SubProducts,
@@ -514,6 +481,7 @@ function newAppVueDasboard(mFlter, app) {
             NewItems: [],
         },
         computed: {
+            Regions() { return DnbVxStore.getters.getRegions([0]) },
             MinLandId() {
                 const ids = this.Lands.map(x => x.Id)
                 return getMinFrom(ids)
@@ -576,11 +544,10 @@ function newAppVueDasboard(mFlter, app) {
                         updateNewItem(this.Lands)
                     }
                     case 1: {
-                        this.Regions.push(Object.assign({}, nItem))
-                        updateNewItem(this.Regions)
+                        DnbVxStore.dispatch('pushRegion', Object.assign({}, nItem));
+                        updateNewItem(DnbVxStore.getters.getRegions([0]))
                     }
                 }
-
                 mFlter.setDataSource()
                 function updateNewItem(arr) {
                     nItem.Id = getMaxFrom(arr.map(x => x.Id)) + 1

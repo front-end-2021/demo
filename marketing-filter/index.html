@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css" />
     <script src="3rd/jquery-3.4.1.min.js"></script>
     <script src="3rd/dev_vue@2_7_14.js"></script>
+    <script src="3rd/vuex.global.js"></script>
     <script src="3rd/react18/react.development.js"></script>
     <script src="3rd/react18/react-dom.development.js"></script>
     <script src="3rd/babel.min.js"></script>
@@ -16,6 +17,22 @@
 </head>
 <body>
     <main class="dnb-view-100h">
+        <section id="dnb-appvue-nav">
+            <div class="ui secondary  menu">
+                <a class="item">Action Pln</a>
+                <a class="item active">TeamBrnd</a>
+                <a class="item">Friends</a>
+                <div class="right menu">
+                  <div class="item">
+                    <div class="ui icon input">
+                      <input type="text" placeholder="Search...">
+                      <i class="search link icon"></i>
+                    </div>
+                  </div>
+                  <a class="ui item">Account</a>
+                </div>
+              </div>
+        </section>
         <section id="react-filter"></section>
         <section style="padding: 6px;">
             <b class="text-success">View Data <span class="opacity-25">(Vuejs CDN)</span>: </b>
@@ -171,6 +188,7 @@
     <script src="common.js"></script>
     <script src="mock-data.js"></script>
     <script src="modal.js"></script>
+    <script src="vuex-store.js"></script>
     <script>
         window._mFlter = new MktFilter([new Criterial(0, 1, [0, 0])])
         $(document).ready(function () {
