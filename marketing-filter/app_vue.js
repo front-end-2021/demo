@@ -81,10 +81,6 @@ function newAppVue(mFlter) {
         el: '#dnb-app-vue',
         name: 'DnbAppVue',
         data: {
-            Products: Products,
-            SubProducts: SubProducts,
-            MarketSegments: MarketSegments,
-            StakeholderGroups: StakeholderGroups,
             Goals: Goals,
             Activities: Activities,
             ListDataUI: [],
@@ -211,7 +207,7 @@ function newAppVue(mFlter) {
                 function getSubmarketIds(subMrkIds, land_Ids) {
                     const lstsMrkId = [];
                     let mrk;
-                    const submarkets = this.StakeholderGroups
+                    const submarkets = DnbVxStore.getters.getSubMarkets()
                     const lstLandId = DnbVxStore.getters.getLands(land_Ids).map(x => x.Id)
                     const isAllSubmrk = subMrkIds.includes(0)
                     for (let ii = 0; ii < submarkets.length; ii++) {
@@ -219,7 +215,7 @@ function newAppVue(mFlter) {
                         if (!isAllSubmrk && !subMrkIds.includes(sMkr.Id)) continue
 
                         if (!mrk || sMkr.MarketId != mrk.Id) {
-                            mrk = this.MarketSegments.find(x => x.Id == sMkr.MarketId)
+                            mrk = DnbVxStore.getters.getMktSegment(sMkr.MarketId)
                             lstsMrkId.push({
                                 IdMarket: mrk.Id,
                                 IdLands: mrk.LandIds,
@@ -439,10 +435,6 @@ function newAppVueDasboard(mFlter, app) {
         el: '#dashboard',
         name: 'DnbAppDashboard',
         data: {
-            Products: Products,
-            SubProducts: SubProducts,
-            MarketSegments: MarketSegments,
-            StakeholderGroups: StakeholderGroups,
             Goals: Goals,
             Activities: Activities,
             ExpandIds: [],
@@ -452,6 +444,10 @@ function newAppVueDasboard(mFlter, app) {
             Lands() { return DnbVxStore.getters.getLands([0]) },
             Regions() { return DnbVxStore.getters.getRegions([0]) },
             ProductGroups() { return DnbVxStore.getters.getPGroups() },
+            Products() { return DnbVxStore.getters.getProducts() },
+            SubProducts() { return DnbVxStore.getters.getSubPrdcts() },
+            MarketSegments() { return DnbVxStore.getters.getMktSegments() },
+            StakeholderGroups() { return DnbVxStore.getters.getSubMarkets() },
             MinLandId() {
                 const ids = DnbVxStore.getters.getAllLandId()
                 return getMinFrom(ids)

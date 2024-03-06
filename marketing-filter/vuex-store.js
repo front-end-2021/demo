@@ -58,7 +58,12 @@ const DnbVxStore = Vuex.createStore({
             }
             return lst
         },
-        getPGroups: (state) => () => { return state.ProductGroups }
+        getPGroups: (state) => () => { return state.ProductGroups },
+        getProducts: (state) => () => { return state.Products },
+        getSubPrdcts: (state) => () => { return state.SubProducts },
+        getMktSegment: (state) => (id) => { return state.MarketSegments.find(x => x.Id == id) },
+        getMktSegments: (state) => () => { return state.MarketSegments },
+        getSubMarkets: (state) => () => { return state.StakeholderGroups }
     }
 });
 Vue.use(Vuex);
