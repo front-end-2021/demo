@@ -3,6 +3,13 @@ const DnbVxStore = Vuex.createStore({
         return {
             ListLand: Lands,
             Regions: Regions,
+            ProductGroups: ProductGroups,
+            Products: Products,
+            SubProducts: SubProducts,
+            MarketSegments: MarketSegments,
+            StakeholderGroups: StakeholderGroups,
+            Goals: Goals,
+            Activities: Activities,
         }
     },
     actions: {
