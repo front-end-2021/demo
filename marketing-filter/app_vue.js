@@ -23,9 +23,9 @@ Vue.component('mf-viewgoal', {
         },
     },
     methods: {
-        genListActivity(activities) {
+        genListActivity(lsActivity) {
             const goalId = this.entry.Id
-            this.ListActivity = genListActivity(goalId, activities)
+            this.ListActivity = genListActivity(goalId, lsActivity)
         },
         toggleExpand() { this.IsExpand = !this.IsExpand },
     },
@@ -39,14 +39,14 @@ Vue.component('mf-viewgoal', {
     created() {
         const goalId = this.entry.Id
         if (getBrowser() == 'Mozilla Firefox') {
-            const activities = this.$root.Activities
-            this.ListActivity = genListActivity(goalId, activities)
+            const lsActivity = DnbVxStore.getters.getActivities()
+            this.ListActivity = genListActivity(goalId, lsActivity)
             return
         }
         window._mCtrlBackground = window._mCtrlBackground || new TaskController({ priority: 'background' });
         const task = scheduler.postTask(() => {
-            const activities = this.$root.Activities
-            this.ListActivity = genListActivity(goalId, activities)
+            const lsActivity = DnbVxStore.getters.getActivities()
+            this.ListActivity = genListActivity(goalId, lsActivity)
         }, { signal: window._mCtrlBackground.signal });
         const lstTask = window._mSchedulerTasks
         lstTask.push(task)
@@ -82,7 +82,6 @@ function newAppVue(mFlter) {
         name: 'DnbAppVue',
         data: {
             Goals: Goals,
-            Activities: Activities,
             ListDataUI: [],
             CollapsePrdId: [],
             AppMsg: null,
@@ -97,7 +96,7 @@ function newAppVue(mFlter) {
                     return
                 }
                 processTask([
-                    () => { return getGoals.call(this) },
+                    () => { return DnbVxStore.getters.getRefGoals() },
                     () => {
                         const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
                         const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
@@ -142,14 +141,6 @@ function newAppVue(mFlter) {
                         const lstSmkPrdId = goal.SubmarketProductId.split('-')
                         const spId = parseInt(lstSmkPrdId[type])
                         if (idSubmrkPrdIds.includes(spId)) lst.push(goal)
-                    }
-                    return lst
-                }
-                function getGoals() {
-                    const lst = []
-                    for (let gg = 0; gg < this.Goals.length; gg++) {
-                        const x = this.Goals[gg]
-                        lst.push(x)
                     }
                     return lst
                 }
@@ -254,7 +245,7 @@ function newAppVue(mFlter) {
                     }
                 }
                 function processDataInFireFox() {
-                    const lstGoal = getGoals.call(this)
+                    const lstGoal = DnbVxStore.getters.getRefGoals()
                     const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
                     const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
                     const lstPath = getPaths(lstLand, lstRegion)  // [{Land, Region}]
@@ -322,9 +313,9 @@ function newAppVue(mFlter) {
                 }
             },
             genListActivity() {
-                const activities = this.Activities
+                const lsActivity = DnbVxStore.getters.getActivities()
                 this.$children.forEach(comp => {
-                    comp.genListActivity(activities)
+                    comp.genListActivity(lsActivity)
                 })
             },
             isPrdExpand(id, pgId, rgId) { return !this.CollapsePrdId.includes(`${rgId}.${pgId}.${id}`) },
@@ -435,8 +426,6 @@ function newAppVueDasboard(mFlter, app) {
         el: '#dashboard',
         name: 'DnbAppDashboard',
         data: {
-            Goals: Goals,
-            Activities: Activities,
             ExpandIds: [],
             NewItems: [],
         },
@@ -448,6 +437,8 @@ function newAppVueDasboard(mFlter, app) {
             SubProducts() { return DnbVxStore.getters.getSubPrdcts() },
             MarketSegments() { return DnbVxStore.getters.getMktSegments() },
             StakeholderGroups() { return DnbVxStore.getters.getSubMarkets() },
+            Goals() { return DnbVxStore.getters.getGoals() },
+            Activities() { return DnbVxStore.getters.getActivities() },
             MinLandId() {
                 const ids = DnbVxStore.getters.getAllLandId()
                 return getMinFrom(ids)
@@ -585,10 +576,10 @@ function setStartEndNow(notData) {
         this.entry.Start = tE
     }
 }
-function genListActivity(goalId, activities) {
+function genListActivity(goalId, lsActivity) {
     const lstA = []
-    for (let aa = 0; aa < activities.length; aa++) {
-        const act = activities[aa]
+    for (let aa = 0; aa < lsActivity.length; aa++) {
+        const act = lsActivity[aa]
         if (goalId == act.GoalId) lstA.push({ Data: act })
     }
     return lstA
