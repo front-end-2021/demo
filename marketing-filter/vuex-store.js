@@ -42,6 +42,22 @@ const DnbVxStore = Vuex.createStore({
             }
             return lst
         },
+        getProductGroups: (state) => (prdIds) => {
+            const lst = []
+            let prdGrp = null
+            for (let ii = 0; ii < state.Products.length; ii++) {
+                const prd = state.Products[ii]
+                if (!prdIds.includes(prd.Id)) continue
+                if (!prdGrp || prdGrp.Id != prd.PrgId) {
+                    prdGrp = state.ProductGroups.find(x => x.Id == prd.PrgId)
+                    lst.push({ PGroup: prdGrp, Products: [{ Data: prd }] })
+                } else {
+                    const item = lst.find(x => x.PGroup.Id == prdGrp.Id)
+                    item.Products.push({ Data: prd })
+                }
+            }
+            return lst
+        },
     }
 });
 Vue.use(Vuex);

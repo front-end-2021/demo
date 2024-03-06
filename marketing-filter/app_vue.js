@@ -108,7 +108,7 @@ function newAppVue(mFlter) {
                         const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
                         return getPaths(lstLand, lstRegion)  // [{Land, Region}]
                     },
-                    () => { return getProductGroups.call(this, filter.ProductIds) },
+                    () => { return DnbVxStore.getters.getProductGroups(filter.ProductIds) },
                     () => { return getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds) }
                 ]).then((values) => {
                     const lstGoal = values[0]
@@ -209,22 +209,6 @@ function newAppVue(mFlter) {
                     }
                     return lst
                 }
-                function getProductGroups(prdIds) {
-                    const lst = []
-                    let prdGrp = null
-                    for (let ii = 0; ii < this.Products.length; ii++) {
-                        const prd = this.Products[ii]
-                        if (!prdIds.includes(prd.Id)) continue
-                        if (!prdGrp || prdGrp.Id != prd.PrgId) {
-                            prdGrp = this.ProductGroups.find(x => x.Id == prd.PrgId)
-                            lst.push({ PGroup: prdGrp, Products: [{ Data: prd }] })
-                        } else {
-                            const item = lst.find(x => x.PGroup.Id == prdGrp.Id)
-                            item.Products.push({ Data: prd })
-                        }
-                    }
-                    return lst
-                }
                 function getSubmarketIds(subMrkIds, land_Ids) {
                     const lstsMrkId = [];
                     let mrk;
@@ -279,7 +263,7 @@ function newAppVue(mFlter) {
                     const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
                     const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
                     const lstPath = getPaths(lstLand, lstRegion)  // [{Land, Region}]
-                    const lstProductGrp = getProductGroups.call(this, filter.ProductIds)
+                    const lstProductGrp = DnbVxStore.getters.getProductGroups(filter.ProductIds)
                     const lstSubmarketId = getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
                     addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
                     addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
