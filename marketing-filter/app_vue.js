@@ -344,6 +344,12 @@ function newAppVue(mFlter) {
                 }
                 return cGoal
             },
+            DndGoalOptions() {
+                return {
+                    //  handle: ".view-sub",
+                    group: 'goal'
+                }
+            },
         },
         // created() { },
         // updated() { },

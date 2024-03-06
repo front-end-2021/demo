@@ -54,4 +54,4 @@ main.dnb-view-100h {min-width: 1200px;}
 .w45px {width: 45px;}
 .lstentry-new > * {max-width: 248px;margin-right: 3px;}
 .dnb-goals {list-style-type: disc;}
-.dnb-goals > li {width: 60.9vw;}
+.dnb-goals > * {width: 60.9vw;}
