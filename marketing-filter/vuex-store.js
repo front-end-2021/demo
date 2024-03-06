@@ -42,7 +42,7 @@ const DnbVxStore = Vuex.createStore({
             }
             return lst
         },
-        getProductGroups: (state) => (prdIds) => {
+        getDataPGroups: (state) => (prdIds) => {
             const lst = []
             let prdGrp = null
             for (let ii = 0; ii < state.Products.length; ii++) {
@@ -58,6 +58,7 @@ const DnbVxStore = Vuex.createStore({
             }
             return lst
         },
+        getPGroups: (state) => () => { return state.ProductGroups }
     }
 });
 Vue.use(Vuex);

@@ -81,7 +81,6 @@ function newAppVue(mFlter) {
         el: '#dnb-app-vue',
         name: 'DnbAppVue',
         data: {
-            ProductGroups: ProductGroups,
             Products: Products,
             SubProducts: SubProducts,
             MarketSegments: MarketSegments,
@@ -108,7 +107,7 @@ function newAppVue(mFlter) {
                         const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
                         return getPaths(lstLand, lstRegion)  // [{Land, Region}]
                     },
-                    () => { return DnbVxStore.getters.getProductGroups(filter.ProductIds) },
+                    () => { return DnbVxStore.getters.getDataPGroups(filter.ProductIds) },
                     () => { return getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds) }
                 ]).then((values) => {
                     const lstGoal = values[0]
@@ -213,7 +212,7 @@ function newAppVue(mFlter) {
                     const lstsMrkId = [];
                     let mrk;
                     const submarkets = this.StakeholderGroups
-                    const lstLandId =  DnbVxStore.getters.getLands(land_Ids).map(x => x.Id)
+                    const lstLandId = DnbVxStore.getters.getLands(land_Ids).map(x => x.Id)
                     const isAllSubmrk = subMrkIds.includes(0)
                     for (let ii = 0; ii < submarkets.length; ii++) {
                         const sMkr = submarkets[ii]
@@ -263,7 +262,7 @@ function newAppVue(mFlter) {
                     const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
                     const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
                     const lstPath = getPaths(lstLand, lstRegion)  // [{Land, Region}]
-                    const lstProductGrp = DnbVxStore.getters.getProductGroups(filter.ProductIds)
+                    const lstProductGrp = DnbVxStore.getters.getDataPGroups(filter.ProductIds)
                     const lstSubmarketId = getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
                     addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
                     addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
@@ -440,7 +439,6 @@ function newAppVueDasboard(mFlter, app) {
         el: '#dashboard',
         name: 'DnbAppDashboard',
         data: {
-            ProductGroups: ProductGroups,
             Products: Products,
             SubProducts: SubProducts,
             MarketSegments: MarketSegments,
@@ -453,6 +451,7 @@ function newAppVueDasboard(mFlter, app) {
         computed: {
             Lands() { return DnbVxStore.getters.getLands([0]) },
             Regions() { return DnbVxStore.getters.getRegions([0]) },
+            ProductGroups() { return DnbVxStore.getters.getPGroups() },
             MinLandId() {
                 const ids = DnbVxStore.getters.getAllLandId()
                 return getMinFrom(ids)
@@ -478,7 +477,7 @@ function newAppVueDasboard(mFlter, app) {
             maxId = getMaxFrom(this.Regions.map(x => x.Id))
             this.NewItems.push({ Id: maxId + 1, Name: '', LandId: minId })    // Region
 
-            maxId = getMaxFrom(this.ProductGroups.map(x => x.Id))
+            maxId = getMaxFrom(DnbVxStore.getters.getPGroups().map(x => x.Id))
             this.NewItems.push({ Id: maxId + 1, Name: '', RegionIds: [] })    // Product Group
         },
         methods: {
