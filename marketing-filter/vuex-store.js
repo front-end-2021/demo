@@ -10,15 +10,22 @@ const DnbVxStore = Vuex.createStore({
             StakeholderGroups: StakeholderGroups,
             Goals: Goals,
             Activities: Activities,
+            PageTab: 1,
+            CntProcess: 0,
         }
     },
     actions: {
         pushLand(context, land) { context.commit('pushLand', land) },
         pushRegion(context, region) { context.commit('pushRegion', region) },
+        setPageTab(context, index) { context.commit('setPageTab', index) },
+        setPageTab(context, index) { context.commit('setPageTab', index) },
+        setCntProcess(context, count) { context.commit('setCntProcess', count) },
     },
     mutations: { // Commit with Payload (https://vuex.vuejs.org/guide/mutations.html)
         pushLand(state, land) { state.ListLand.push(land) },
         pushRegion(state, region) { state.Regions.push(region) },
+        setPageTab(state, index) { state.PageTab = index },
+        setCntProcess(state, count) { state.CntProcess += count },
     },
     getters: {
         getAllLandId: (state) => () => { return state.ListLand.map(x => x.Id) },
@@ -74,6 +81,8 @@ const DnbVxStore = Vuex.createStore({
         },
         getGoals: (state) => () => { return state.Goals },
         getActivities: (state) => () => { return state.Activities },
+        getPageTab: (state) => () => { return state.PageTab },
+        getCntProcess: (state) => () => { return state.CntProcess },
     }
 });
 Vue.use(Vuex);

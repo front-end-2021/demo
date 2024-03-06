@@ -1,3 +1,19 @@
+function newAppVueNav() {
+    new Vue({
+        el: '#dnb-appvue-nav',
+        name: 'DnbAppNav',
+        //data: {},
+        computed: {
+            PageTab() { return DnbVxStore.getters.getPageTab() },
+        },
+        methods: {
+            setTab(index) {
+                if (DnbVxStore.getters.getCntProcess() > 0) return
+                DnbVxStore.dispatch('setPageTab', index)
+            },
+        }
+    })
+}
 Vue.component('mf-viewgoal', {
     name: 'DnbViewGoal',
     props: ['entry'],
@@ -37,26 +53,27 @@ Vue.component('mf-viewgoal', {
         },
     },
     created() {
+        DnbVxStore.dispatch('setCntProcess', 1)
         const goalId = this.entry.Id
         if (getBrowser() == 'Mozilla Firefox') {
             const lsActivity = DnbVxStore.getters.getActivities()
             this.ListActivity = genListActivity(goalId, lsActivity)
+            DnbVxStore.dispatch('setCntProcess', -1)
             return
         }
         window._mCtrlBackground = window._mCtrlBackground || new TaskController({ priority: 'background' });
-        const task = scheduler.postTask(() => {
+        const task = () => {
             const lsActivity = DnbVxStore.getters.getActivities()
             this.ListActivity = genListActivity(goalId, lsActivity)
-        }, { signal: window._mCtrlBackground.signal });
+            DnbVxStore.dispatch('setCntProcess', -1)
+        }
         const lstTask = window._mSchedulerTasks
         lstTask.push(task)
         if (this.$root.CountGoal === lstTask.length) {
-            (async () => {
-                await Promise.all(lstTask).then(() => {
-                    delete window._mSchedulerTasks
-                    delete window._mCtrlBackground
-                })
-            })();
+            processTask(lstTask).then(() => {
+                delete window._mSchedulerTasks
+                delete window._mCtrlBackground
+            })
         }
     },
     // beforeMount(){},
@@ -88,11 +105,13 @@ function newAppVue(mFlter) {
         },
         methods: {
             renderData() {
+                DnbVxStore.dispatch('setCntProcess', 1)
                 const filter = mFlter
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
                 if (getBrowser() == 'Mozilla Firefox') {
                     processDataInFireFox.call(this)
+                    DnbVxStore.dispatch('setCntProcess', -1)
                     return
                 }
                 processTask([
@@ -122,14 +141,14 @@ function newAppVue(mFlter) {
                             const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
                             fncsAddGoal.push(() => {
                                 addGoalToList.call(item, lstGoal)
-                                return item
                             })
                         }
-                        processTask(fncsAddGoal).then((items) => {
+                        processTask(fncsAddGoal).then(() => {
                             removeEmptyGoal.call(lstPath)
                             this.ListDataUI = lstPath;
                             window._mSchedulerTasks = []
                             setAppMsg.call(this, lstPath)
+                            DnbVxStore.dispatch('setCntProcess', -1)
                         })
                     })
                 })
@@ -344,10 +363,14 @@ function newAppVue(mFlter) {
                 }
                 return cGoal
             },
-            DndGoalOptions() {
-                return {
-                    //  handle: ".view-sub",
-                    group: 'goal'
+            PageTab() { return DnbVxStore.getters.getPageTab() },
+        },
+        watch: {
+            PageTab(val) {
+                switch (val) {
+                    case 1: this.renderData()
+                        break;
+                    default: break;
                 }
             },
         },
