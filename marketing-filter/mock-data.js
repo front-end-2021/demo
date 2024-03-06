@@ -144,5 +144,13 @@ const SubmarketProductIds = [
 // 14. Table Account
 const ListAccount = [
     { Id: 1, Name: 'Dai Nguyen Ba' },
-    { Id: 2, Name: 'Huong Nguyen Thu' },
+    { Id: 2, Name: 'Bui Thanh Nhon' },
+    { Id: 3, Name: 'Trinh Van Quyet' },
+    { Id: 4, Name: 'Nguyen Hoai Nam' },
+    { Id: 5, Name: 'Ngo Ba Kha' },
+]
+// 15. Table Deparment
+const Deparments = [
+    { Id: 1, Name: 'Haiduong Agency', AccIds: [1, 3]},
+    { Id: 2, Name: 'Hanoi Agency', AccIds: [2, 4]},
 ]
