@@ -9,7 +9,7 @@ function tasksReducer(blocks, action) {
             return [...blocks]
         }
         case 'deleted': {
-            blocks.splice(action.iRow)
+            blocks.splice(action.iRow, 1)
             return [...blocks]
         }
         default: {
