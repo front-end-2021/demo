@@ -55,12 +55,12 @@ Vue.component('mf-viewgoal', {
     created() {
         DnbVxStore.dispatch('setCntProcess', 1)
         const goalId = this.entry.Id
-        if (getBrowser() == 'Mozilla Firefox') {
-            const lsActivity = DnbVxStore.getters.getActivities()
-            this.ListActivity = genListActivity(goalId, lsActivity)
-            DnbVxStore.dispatch('setCntProcess', -1)
-            return
-        }
+        // if (getBrowser() == 'Mozilla Firefox') {
+        //     const lsActivity = DnbVxStore.getters.getActivities()
+        //     this.ListActivity = genListActivity(goalId, lsActivity)
+        //     DnbVxStore.dispatch('setCntProcess', -1)
+        //     return
+        // }
         const task = () => {
             const lsActivity = DnbVxStore.getters.getActivities()
             this.ListActivity = genListActivity(goalId, lsActivity)
@@ -81,10 +81,18 @@ Vue.component('mf-viewgoal', {
     //destroyed() { },
 })
 async function processTask(arrFnc) {
+    const lstTask = []
+    if (getBrowser() == 'Mozilla Firefox') {
+        for (let ii = 0; ii < arrFnc.length; ii++) {
+            const fnc = arrFnc[ii]
+            const pTsk = new Promise((resolve) => { resolve(fnc()) })
+            lstTask.push(pTsk)
+        }
+        return await Promise.all(lstTask)
+    }
     //https://github.com/GoogleChromeLabs/scheduler-polyfill/blob/main/test/test.scheduler.js
     const ctrlBackground = new TaskController({ priority: 'background' });
     const options = { signal: ctrlBackground.signal };
-    const lstTask = []
     for (let ii = 0; ii < arrFnc.length; ii++) {
         lstTask.push(scheduler.postTask(arrFnc[ii], options))
     }
@@ -106,11 +114,11 @@ function newAppVue(mFlter) {
                 const filter = mFlter
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
-                if (getBrowser() == 'Mozilla Firefox') {
-                    processDataInFireFox.call(this)
-                    DnbVxStore.dispatch('setCntProcess', -1)
-                    return
-                }
+                // if (getBrowser() == 'Mozilla Firefox') {
+                //     processDataInFireFox.call(this)
+                //     DnbVxStore.dispatch('setCntProcess', -1)
+                //     return
+                // }
                 DnbVxStore.dispatch('setListTask', [
                     () => { return DnbVxStore.getters.getGoals() },
                     () => {
@@ -263,23 +271,23 @@ function newAppVue(mFlter) {
                         this.AppMsg = `Land > Region / Product group / Product / List goal (${cGoal}) / Activties`
                     }
                 }
-                function processDataInFireFox() {
-                    const lstGoal = DnbVxStore.getters.getGoals()
-                    const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
-                    const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
-                    const lstPath = getPaths(lstLand, lstRegion)  // [{Land, Region}]
-                    const lstProductGrp = DnbVxStore.getters.getDataPGroups(filter.ProductIds)
-                    const lstSubmarketId = getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
-                    addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
-                    addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
-                    for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                        const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
-                        addGoalToList.call(item, lstGoal)
-                    }
-                    removeEmptyGoal.call(lstPath)
-                    this.ListDataUI = lstPath;
-                    setAppMsg.call(this, lstPath)
-                }
+                // function processDataInFireFox() {
+                //     const lstGoal = DnbVxStore.getters.getGoals()
+                //     const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
+                //     const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
+                //     const lstPath = getPaths(lstLand, lstRegion)  // [{Land, Region}]
+                //     const lstProductGrp = DnbVxStore.getters.getDataPGroups(filter.ProductIds)
+                //     const lstSubmarketId = getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
+                //     addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
+                //     addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
+                //     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                //         const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
+                //         addGoalToList.call(item, lstGoal)
+                //     }
+                //     removeEmptyGoal.call(lstPath)
+                //     this.ListDataUI = lstPath;
+                //     setAppMsg.call(this, lstPath)
+                // }
                 function removeEmptyGoal() {
                     const lstPath = this
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
