@@ -12,7 +12,6 @@ const DnbVxStore = Vuex.createStore({
             Activities: Activities,
             PageTab: 1,
             ListTask: [],
-            CntProcess: 0,
         }
     },
     actions: {
@@ -21,7 +20,6 @@ const DnbVxStore = Vuex.createStore({
         setPageTab(context, index) { context.commit('setPageTab', index) },
         setListTask(context, lstFnc) { context.commit('setListTask', lstFnc) },
         pushTasks(context, lstFnc) { context.commit('pushTasks', lstFnc) },
-        setCntProcess(context, count) { context.commit('setCntProcess', count) },
     },
     mutations: { // Commit with Payload (https://vuex.vuejs.org/guide/mutations.html)
         pushLand(state, land) { state.ListLand.push(land) },
@@ -33,12 +31,6 @@ const DnbVxStore = Vuex.createStore({
         },
         pushTasks(state, lstFnc) {
             lstFnc.forEach(fnc => { state.ListTask.push(fnc) })
-        },
-        setCntProcess(state, count) {
-            state.CntProcess += count
-            if (state.CntProcess != 0) {
-                document.body.style.cursor = 'wait'
-            } else document.body.style.cursor = ''
         },
     },
     getters: {
@@ -89,7 +81,6 @@ const DnbVxStore = Vuex.createStore({
         getActivities: (state) => () => { return state.Activities },
         getPageTab: (state) => () => { return state.PageTab },
         getListTask: (state) => () => { return state.ListTask },
-        getCntProcess: (state) => () => { return state.CntProcess },
     }
 });
 Vue.use(Vuex);

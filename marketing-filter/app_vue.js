@@ -8,7 +8,7 @@ function newAppVueNav() {
         },
         methods: {
             setTab(index) {
-                if (DnbVxStore.getters.getCntProcess() > 0) return
+                if (DnbVxStore.getters.getListTask().length > 0) return
                 DnbVxStore.dispatch('setPageTab', index)
             },
         }
@@ -53,18 +53,10 @@ Vue.component('mf-viewgoal', {
         },
     },
     created() {
-        DnbVxStore.dispatch('setCntProcess', 1)
         const goalId = this.entry.Id
-        // if (getBrowser() == 'Mozilla Firefox') {
-        //     const lsActivity = DnbVxStore.getters.getActivities()
-        //     this.ListActivity = genListActivity(goalId, lsActivity)
-        //     DnbVxStore.dispatch('setCntProcess', -1)
-        //     return
-        // }
         const task = () => {
             const lsActivity = DnbVxStore.getters.getActivities()
             this.ListActivity = genListActivity(goalId, lsActivity)
-            DnbVxStore.dispatch('setCntProcess', -1)
         }
         DnbVxStore.dispatch('pushTasks', [task])
         if (this.$root.CountGoal === DnbVxStore.getters.getListTask().length) {
@@ -103,22 +95,15 @@ function newAppVue(mFlter) {
         el: '#dnb-app-vue',
         name: 'DnbAppVue',
         data: {
-            Goals: Goals,
             ListDataUI: [],
             CollapsePrdId: [],
             AppMsg: null,
         },
         methods: {
             renderData() {
-                DnbVxStore.dispatch('setCntProcess', 1)
                 const filter = mFlter
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
-                // if (getBrowser() == 'Mozilla Firefox') {
-                //     processDataInFireFox.call(this)
-                //     DnbVxStore.dispatch('setCntProcess', -1)
-                //     return
-                // }
                 DnbVxStore.dispatch('setListTask', [
                     () => { return DnbVxStore.getters.getGoals() },
                     () => {
@@ -155,7 +140,6 @@ function newAppVue(mFlter) {
                             removeEmptyGoal.call(lstPath)
                             this.ListDataUI = lstPath;
                             setAppMsg.call(this, lstPath)
-                            DnbVxStore.dispatch('setCntProcess', -1)
                             DnbVxStore.dispatch('setListTask', [])
                         })
                     })
