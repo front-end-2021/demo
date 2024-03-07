@@ -61,18 +61,15 @@ Vue.component('mf-viewgoal', {
             DnbVxStore.dispatch('setCntProcess', -1)
             return
         }
-        window._mCtrlBackground = window._mCtrlBackground || new TaskController({ priority: 'background' });
         const task = () => {
             const lsActivity = DnbVxStore.getters.getActivities()
             this.ListActivity = genListActivity(goalId, lsActivity)
             DnbVxStore.dispatch('setCntProcess', -1)
         }
-        const lstTask = window._mSchedulerTasks
-        lstTask.push(task)
-        if (this.$root.CountGoal === lstTask.length) {
-            processTask(lstTask).then(() => {
-                delete window._mSchedulerTasks
-                delete window._mCtrlBackground
+        DnbVxStore.dispatch('pushTasks', [task])
+        if (this.$root.CountGoal === DnbVxStore.getters.getListTask().length) {
+            processTask(DnbVxStore.getters.getListTask()).then(() => {
+                DnbVxStore.dispatch('setListTask', [])
             })
         }
     },
@@ -114,7 +111,7 @@ function newAppVue(mFlter) {
                     DnbVxStore.dispatch('setCntProcess', -1)
                     return
                 }
-                processTask([
+                DnbVxStore.dispatch('setListTask', [
                     () => { return DnbVxStore.getters.getGoals() },
                     () => {
                         const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
@@ -123,19 +120,21 @@ function newAppVue(mFlter) {
                     },
                     () => { return DnbVxStore.getters.getDataPGroups(filter.ProductIds) },
                     () => { return getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds) }
-                ]).then((values) => {
+                ])
+                processTask(DnbVxStore.getters.getListTask()).then((values) => {
                     const lstGoal = values[0]
                     let lstPath = values[1]
                     const lstProductGrp = values[2]
                     const lstSubmarketId = values[3]
-                    processTask([
+                    DnbVxStore.dispatch('setListTask', [
                         () => {
                             addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
                         },
                         () => {
                             addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
                         }
-                    ]).then(() => {
+                    ])
+                    processTask(DnbVxStore.getters.getListTask()).finally(() => {
                         const fncsAddGoal = []
                         for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                             const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
@@ -143,12 +142,13 @@ function newAppVue(mFlter) {
                                 addGoalToList.call(item, lstGoal)
                             })
                         }
-                        processTask(fncsAddGoal).then(() => {
+                        DnbVxStore.dispatch('setListTask', fncsAddGoal)
+                        processTask(DnbVxStore.getters.getListTask()).finally(() => {
                             removeEmptyGoal.call(lstPath)
                             this.ListDataUI = lstPath;
-                            window._mSchedulerTasks = []
                             setAppMsg.call(this, lstPath)
                             DnbVxStore.dispatch('setCntProcess', -1)
+                            DnbVxStore.dispatch('setListTask', [])
                         })
                     })
                 })
@@ -363,7 +363,7 @@ function newAppVue(mFlter) {
                 }
                 return cGoal
             },
-            PageTab() { return DnbVxStore.getters.getPageTab() },
+            PageTab(val, old) { return DnbVxStore.getters.getPageTab() },
         },
         watch: {
             PageTab(val) {

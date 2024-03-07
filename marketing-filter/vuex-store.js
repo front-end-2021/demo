@@ -11,6 +11,7 @@ const DnbVxStore = Vuex.createStore({
             Goals: Goals,
             Activities: Activities,
             PageTab: 1,
+            ListTask: [],
             CntProcess: 0,
         }
     },
@@ -18,14 +19,27 @@ const DnbVxStore = Vuex.createStore({
         pushLand(context, land) { context.commit('pushLand', land) },
         pushRegion(context, region) { context.commit('pushRegion', region) },
         setPageTab(context, index) { context.commit('setPageTab', index) },
-        setPageTab(context, index) { context.commit('setPageTab', index) },
+        setListTask(context, lstFnc) { context.commit('setListTask', lstFnc) },
+        pushTasks(context, lstFnc) { context.commit('pushTasks', lstFnc) },
         setCntProcess(context, count) { context.commit('setCntProcess', count) },
     },
     mutations: { // Commit with Payload (https://vuex.vuejs.org/guide/mutations.html)
         pushLand(state, land) { state.ListLand.push(land) },
         pushRegion(state, region) { state.Regions.push(region) },
         setPageTab(state, index) { state.PageTab = index },
-        setCntProcess(state, count) { state.CntProcess += count },
+        setListTask(state, lstFnc) {
+            state.ListTask.splice(0)
+            lstFnc.forEach(fnc => { state.ListTask.push(fnc) })
+        },
+        pushTasks(state, lstFnc) {
+            lstFnc.forEach(fnc => { state.ListTask.push(fnc) })
+        },
+        setCntProcess(state, count) {
+            state.CntProcess += count
+            if (state.CntProcess != 0) {
+                document.body.style.cursor = 'wait'
+            } else document.body.style.cursor = ''
+        },
     },
     getters: {
         getAllLandId: (state) => () => { return state.ListLand.map(x => x.Id) },
@@ -74,6 +88,7 @@ const DnbVxStore = Vuex.createStore({
         getGoals: (state) => () => { return state.Goals },
         getActivities: (state) => () => { return state.Activities },
         getPageTab: (state) => () => { return state.PageTab },
+        getListTask: (state) => () => { return state.ListTask },
         getCntProcess: (state) => () => { return state.CntProcess },
     }
 });
