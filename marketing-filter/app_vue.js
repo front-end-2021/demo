@@ -115,7 +115,7 @@ function newAppVue(mFlter) {
                     return
                 }
                 processTask([
-                    () => { return DnbVxStore.getters.getRefGoals() },
+                    () => { return DnbVxStore.getters.getGoals() },
                     () => {
                         const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
                         const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
@@ -264,7 +264,7 @@ function newAppVue(mFlter) {
                     }
                 }
                 function processDataInFireFox() {
-                    const lstGoal = DnbVxStore.getters.getRefGoals()
+                    const lstGoal = DnbVxStore.getters.getGoals()
                     const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
                     const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
                     const lstPath = getPaths(lstLand, lstRegion)  // [{Land, Region}]
