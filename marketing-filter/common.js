@@ -16,6 +16,35 @@ Array.prototype.distinct = function () {
     }
     return this
 }
+Array.prototype.GroupBy = function (keyGetter) {
+    const map = new Map()
+    this.forEach(item => {
+        const key = keyGetter(item)
+        if (map.has(key)) {
+            map.get(key).push(item)
+        } else {
+            map.set(key, [item])
+        }
+    })
+    return map
+}
+Map.prototype.FilterGoals = function (submarketIds, productIds) {
+    if (submarketIds.includes(0) && productIds.includes(0)) return this
+    const map = new Map()
+    this.forEach((lstGoal, tSmpIds) => {
+        const lstSmkPrdId = tSmpIds.split('-')
+        const sId = parseInt(lstSmkPrdId[0])
+        const pId = parseInt(lstSmkPrdId[1])
+        let hasSpId = submarketIds.includes(0) && productIds.includes(pId)
+        if (!hasSpId) hasSpId = submarketIds.includes(sId) && productIds.includes(0)
+        if (!hasSpId) hasSpId = submarketIds.includes(sId) && productIds.includes(pId)
+        if (hasSpId) {
+            const collection = map.get(tSmpIds)
+            if (!collection) map.set(tSmpIds, lstGoal)
+        }
+    })
+    return map
+}
 function getBrowser() {
     let userAgent = navigator.userAgent;
     let browser = "Unknown";

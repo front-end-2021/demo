@@ -88,37 +88,9 @@ const DnbVxStore = Vuex.createStore({
         getMktSegments: (state) => () => { return state.MarketSegments },
         getSubMarkets: (state) => () => { return state.StakeholderGroups },
         getGoals: (state) => () => { return state.Goals },
-        getGoalsBy: (state) => (submarketIds, productIds) => {
-            if (submarketIds.includes(0) && productIds.includes(0)) return state.Goals
-            const lst = []
-            if (submarketIds.includes(0)) {
-                for (let gg = 0; gg < state.Goals.length; gg++) {
-                    const goal = state.Goals[gg]
-                    const lstSmkPrdId = goal.SubmarketProductId.split('-')
-                    let spId = parseInt(lstSmkPrdId[1])
-                    if (productIds.includes(spId)) lst.push(goal)
-                }
-                return lst
-            }
-            if (productIds.includes(0)) {
-                for (let gg = 0; gg < state.Goals.length; gg++) {
-                    const goal = state.Goals[gg]
-                    const lstSmkPrdId = goal.SubmarketProductId.split('-')
-                    let spId = parseInt(lstSmkPrdId[0])
-                    if (submarketIds.includes(spId)) lst.push(goal)
-                }
-                return lst
-            }
-            for (let gg = 0; gg < state.Goals.length; gg++) {
-                const goal = state.Goals[gg]
-                const lstSmkPrdId = goal.SubmarketProductId.split('-')
-                const sId = parseInt(lstSmkPrdId[0])
-                const pId = parseInt(lstSmkPrdId[1])
-                if (submarketIds.includes(sId) && productIds.includes(pId)) {
-                    lst.push(goal)
-                }
-            }
-            return lst
+        getMapGoals: (state) => (submarketIds, productIds) => {
+            const mapGoals = state.Goals.GroupBy(x => x.SubmarketProductId)
+            return mapGoals.FilterGoals(submarketIds, productIds)
         },
         getActivities: (state) => () => { return state.Activities },
         getPageTab: (state) => () => { return state.PageTab },
