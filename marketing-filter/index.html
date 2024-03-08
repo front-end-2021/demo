@@ -198,11 +198,11 @@
     <script src="modal.js"></script>
     <script src="vuex-store.js"></script>
     <script>
-        window._mFlter = new MktFilter([new Criterial(0, 1, [0, 0])])
+        DnbVxStore.dispatch('setMtFilter', [new MktFilter([new Criterial(0, 1, [0, 0])])])
         $(document).ready(function () {
             newAppVueNav()
-            const app = newAppVue(window._mFlter)
-            newAppVueDasboard(window._mFlter, app)
+            const app = newAppVue()
+            newAppVueDasboard(app)
            // console.log(app)
         })
     </script>

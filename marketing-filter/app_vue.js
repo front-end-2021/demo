@@ -90,7 +90,7 @@ async function processTask(arrFnc) {
     }
     return await Promise.all(lstTask)
 }
-function newAppVue(mFlter) {
+function newAppVue() {
     const app = new Vue({
         el: '#dnb-app-vue',
         name: 'DnbAppVue',
@@ -101,7 +101,7 @@ function newAppVue(mFlter) {
         },
         methods: {
             renderData() {
-                const filter = mFlter
+                const filter = DnbVxStore.getters.getMtFilter(0)
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
                 DnbVxStore.dispatch('setListTask', [
@@ -369,7 +369,7 @@ function newAppVue(mFlter) {
         // created() { },
         // updated() { },
     })
-    mFlter.setFilter = app.renderData
+    DnbVxStore.getters.getMtFilter(0).setFilter = app.renderData
     app.renderData()
     return app
 }
@@ -442,7 +442,7 @@ Vue.component('mf-dashgoal', {
         }
     },
 })
-function newAppVueDasboard(mFlter, app) {
+function newAppVueDasboard(app) {
     new Vue({
         el: '#dashboard',
         name: 'DnbAppDashboard',
@@ -495,7 +495,9 @@ function newAppVueDasboard(mFlter, app) {
                 else this.ExpandIds.splice(ii, 1)
             },
             showExpand(id) { return this.ExpandIds.includes(id) },
-            onChange() { mFlter.setDataSource() },
+            onChange() {
+                DnbVxStore.dispatch('runFncFilters', (f) => { f.setDataSource() })
+            },
             onChangeId(e, item, type) {
                 const target = e.target
                 const newVal = target.value
@@ -504,7 +506,7 @@ function newAppVueDasboard(mFlter, app) {
                 switch (type) {
                     case 1: // Region
                         item.LandId = newId;
-                        mFlter.setDataSource();
+                        DnbVxStore.dispatch('runFncFilters', (f) => { f.setDataSource() })
                         return;
                     case 2: // Activity
                         item.GoalId = newId;
@@ -528,7 +530,7 @@ function newAppVueDasboard(mFlter, app) {
                         break;
                     }
                 }
-                mFlter.setDataSource()
+                DnbVxStore.dispatch('runFncFilters', (f) => { f.setDataSource() })
                 function updateNewItem(arr) {
                     nItem.Id = getMaxFrom(arr.map(x => x.Id)) + 1
                     nItem.Name = ''

@@ -12,6 +12,7 @@ const DnbVxStore = Vuex.createStore({
             Activities: Activities,
             PageTab: 1,
             ListTask: [],
+            mtFilters: []
         }
     },
     actions: {
@@ -20,6 +21,9 @@ const DnbVxStore = Vuex.createStore({
         setPageTab(context, index) { context.commit('setPageTab', index) },
         setListTask(context, lstFnc) { context.commit('setListTask', lstFnc) },
         pushTasks(context, lstFnc) { context.commit('pushTasks', lstFnc) },
+        setMtFilter(context, flters) { context.commit('setMtFilter', flters) },
+        pushMtFilter(context, flter) { context.commit('pushMtFilter', flter) },
+        runFncFilters(context, fnc) { context.commit('runFncFilters', fnc) },
     },
     mutations: { // Commit with Payload (https://vuex.vuejs.org/guide/mutations.html)
         pushLand(state, land) { state.ListLand.push(land) },
@@ -32,6 +36,12 @@ const DnbVxStore = Vuex.createStore({
         pushTasks(state, lstFnc) {
             lstFnc.forEach(fnc => { state.ListTask.push(fnc) })
         },
+        setMtFilter(state, flters) {
+            state.mtFilters.splice(0)
+            flters.forEach(flter => { state.mtFilters.push(flter) })
+        },
+        pushMtFilter(state, flter) { state.mtFilters.push(flter) },
+        runFncFilters(state, fnc) { state.mtFilters.forEach(f => fnc(f)) },
     },
     getters: {
         getAllLandId: (state) => () => { return state.ListLand.map(x => x.Id) },
@@ -81,6 +91,7 @@ const DnbVxStore = Vuex.createStore({
         getActivities: (state) => () => { return state.Activities },
         getPageTab: (state) => () => { return state.PageTab },
         getListTask: (state) => () => { return state.ListTask },
+        getMtFilter: (state) => (i) => { return state.mtFilters[i] },
     }
 });
 Vue.use(Vuex);

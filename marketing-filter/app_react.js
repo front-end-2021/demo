@@ -9,8 +9,9 @@ function tasksReducer(blocks, action) {
             return [...blocks]
         }
         case 'deleted': {
-            blocks.splice(action.iRow, 1)
-            return [...blocks]
+            const blks = [...blocks]
+            blks.splice(action.iRow, 1)
+            return blks
         }
         default: {
             throw Error('Unknown action: ' + action.type);
@@ -62,9 +63,7 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
         }
         //  return () => { }
     }, [cIds])
-    const delRow = () => {
-        onDelRow(ii)
-    }
+    const delRow = () => { onDelRow(ii) }
     const onChangeOperand = (ii, obj) => {
         const newOperand = obj.value
         if (cOperand != newOperand) {
@@ -128,14 +127,15 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
         </div>
     )
 }
-const ReactFilter = ({ dfilter }) => {
+const ReactFilter = ({ ifilter }) => {
+    const dfilter = DnbVxStore.getters.getMtFilter(ifilter)
     const [blocks, dispatch] = useReducer(tasksReducer, dfilter.getBlocks());
     const onDelRow = (ii) => {
-        dfilter.removeBlock(ii)
         dispatch({
             type: 'deleted',
             iRow: ii
         });
+        dfilter.removeBlock(ii)
     }
     const addFilter = () => {
         const type = 0
@@ -183,7 +183,6 @@ const ReactFilter = ({ dfilter }) => {
         </section>
     )
 }
-
 ReactDOM.createRoot(document.getElementById('react-filter')).render(<StrictMode>
-    <ReactFilter dfilter={window._mFlter} />
+    <ReactFilter ifilter={0} />
 </StrictMode>);
