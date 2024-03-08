@@ -202,6 +202,7 @@ class MktFilter {
             lastI = ii
         }
         if (lastI < 0) {
+            if (this.LandIds.includes(0)) return [0]
             return getMarketsIn(this.LandIds, []).map(x => x.Id)
         }
         if (marketIds.includes(0)) return [0]
@@ -278,8 +279,8 @@ class MktFilter {
             lastI = ii
         }
         if (lastI < 0) {
-            const market_Ids = this.MarketIds
-            return getSubmarket(market_Ids, []).map(x => x.Id)
+            if (this.MarketIds.includes(0)) return [0]
+            return getSubmarket(this.MarketIds, []).map(x => x.Id)
         }
         if (subMrketIds.includes(0)) {
             return [0] //return getSubmarket([0], []).map(x => x.Id)
@@ -324,6 +325,7 @@ class MktFilter {
             continue
         }
         if (lastI < 0) {
+            if (this.RegionIds.includes(0)) return [0]
             const prdGrpIds = getProductGroups(this.RegionIds, []).map(x => x.Id)
             return getProductsIn(prdGrpIds, []).map(x => x.Id)
         }
@@ -486,7 +488,7 @@ function getSourceIds(index, ii, cType, cIds) {
             return lst
         case 7:    // User
             lst.push(lType[12])
-            for(let aa = 0; aa < ListAccount.length; aa++) {
+            for (let aa = 0; aa < ListAccount.length; aa++) {
                 const user = ListAccount[aa]
                 lst.push(user)
             }
@@ -617,9 +619,16 @@ function getMarketsIn(landIds, lst) {
 }
 function getMarkets(landId, lst) {
     if (landId < 0) return lst
+    if (0 == landId) {
+        for (let ii = 0; ii < MarketSegments.length; ii++) {
+            const mrk = MarketSegments[ii]
+            lst.push(mrk)
+        }
+        return lst
+    }
     for (let ii = 0; ii < MarketSegments.length; ii++) {
         const mrk = MarketSegments[ii]
-        if (landId == 0 || mrk.LandIds.includes(landId)) {
+        if (mrk.LandIds.includes(landId)) {
             lst.push(mrk)
         }
     }
@@ -680,9 +689,16 @@ function getProductsIn(prdGrpIds, lst) {
     return lst
 }
 function getProducts(prdGroupId, lst) {
+    if (0 == prdGroupId) {
+        for (let ii = 0; ii < Products.length; ii++) {
+            const prd = Products[ii]
+            lst.push(prd)
+        }
+        return lst
+    }
     for (let ii = 0; ii < Products.length; ii++) {
         const prd = Products[ii]
-        if (0 != prdGroupId && prdGroupId != prd.PrgId) continue
+        if (prdGroupId != prd.PrgId) continue
         lst.push(prd)
     }
     return lst

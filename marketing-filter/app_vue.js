@@ -105,7 +105,7 @@ function newAppVue() {
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
                 DnbVxStore.dispatch('setListTask', [
-                    () => { return DnbVxStore.getters.getGoals() },
+                    () => { return DnbVxStore.getters.getGoalsBy(filter.SubmarketIds, filter.ProductIds) },
                     () => {
                         const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
                         const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
@@ -255,23 +255,6 @@ function newAppVue() {
                         this.AppMsg = `Land > Region / Product group / Product / List goal (${cGoal}) / Activties`
                     }
                 }
-                // function processDataInFireFox() {
-                //     const lstGoal = DnbVxStore.getters.getGoals()
-                //     const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
-                //     const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
-                //     const lstPath = getPaths(lstLand, lstRegion)  // [{Land, Region}]
-                //     const lstProductGrp = DnbVxStore.getters.getDataPGroups(filter.ProductIds)
-                //     const lstSubmarketId = getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds)
-                //     addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
-                //     addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
-                //     for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                //         const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
-                //         addGoalToList.call(item, lstGoal)
-                //     }
-                //     removeEmptyGoal.call(lstPath)
-                //     this.ListDataUI = lstPath;
-                //     setAppMsg.call(this, lstPath)
-                // }
                 function removeEmptyGoal() {
                     const lstPath = this
                     for (let ii = lstPath.length - 1; -1 < ii; ii--) {

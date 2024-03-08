@@ -39,10 +39,10 @@
                 </div>
               </div>
         </section>
-        <section id="react-filter"></section>
         <section id="dnb-app-vue" style="padding: 6px;">
             <b v-if="PageTab == 1" class="text-success">View Data <span class="opacity-25">(Vuejs CDN)</span>: </b>
             <b v-if="PageTab == 2" class="text-success">View Board <span class="opacity-25">(Vuejs CDN)</span>: </b>
+            <section v-show="PageTab == 1" id="react-filter"></section>
             <ul v-if="PageTab == 1" class="list-group list-group-flush">
                 <li v-if="AppMsg" v-html="AppMsg"
                     class="text-black-50 fw-light fst-italic"></li>
