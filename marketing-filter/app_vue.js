@@ -2,7 +2,9 @@ function newAppVueNav() {
     new Vue({
         el: '#dnb-appvue-nav',
         name: 'DnbAppNav',
-        //data: {},
+        // data: {
+        //     PopModel: false,
+        // },
         computed: {
             PageTab() { return DnbVxStore.getters.getPageTab() },
         },
@@ -10,7 +12,7 @@ function newAppVueNav() {
             setTab(index) {
                 if (DnbVxStore.getters.getListTask().length > 0) return
                 DnbVxStore.dispatch('setPageTab', index)
-            },
+            }
         }
     })
 }
