@@ -105,7 +105,7 @@ function newAppVue() {
                     const lstProductGrp = values[2]
                     const lstSubmarketId = values[3]
                     DnbVxStore.dispatch('setListTask', [
-                        () => { return DnbVxStore.getters.getRefActv() },
+                        () => { return DnbVxStore.getters.getActivities() },
                         () => {
                             addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
                         },
@@ -283,9 +283,7 @@ function newAppVue() {
                                     const pId = parseInt(lstSmkPrdId[1])
                                     if (pId == product.Data.Id) {
                                         const lstActivity = genListActivity(goal.Id, activities)
-                                        product.ListGoal.push({
-                                            Item: goal, ListActivity: lstActivity
-                                        })
+                                        product.ListGoal.push({ Item: goal, ListActivity: lstActivity })
                                         countAct += lstActivity.length
                                     }
                                 }
@@ -296,7 +294,7 @@ function newAppVue() {
                 }
             },
             genListActivity() {
-                const lsActivity = DnbVxStore.getters.getRefActv()
+                const lsActivity = DnbVxStore.getters.getActivities()
                 this.$children.forEach(comp => {
                     const goalId = comp.entry.Item.Id
                     comp.entry.ListActivity = genListActivity(goalId, lsActivity)
