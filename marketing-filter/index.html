@@ -16,19 +16,6 @@
     <link async rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2/dist/semantic.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/semantic-ui-react/dist/umd/semantic-ui-react.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvasjs@1.8.3/dist/canvasjs.min.js"></script>
-    <script type="text/js-worker"> // This script WON'T be parsed by JS engines because its MIME type is text/js-worker.
-        onmessage = (event) => {
-            const data = JSON.parse(event.data)
-            console.log('on message', event)
-            switch(data.type) {
-                case 'getmapgoals': postMessage(data);
-                return;
-
-            }
-            postMessage('abc');
-        };
-        // Rest of your worker code goes here.
-      </script>
 </head>
 <body>
     <main class="dnb-view-100h">
@@ -53,12 +40,11 @@
               </div>
         </section>
         <section id="dnb-app-vue" style="padding: 6px;">
+            <section v-show="PageTab == 1" id="react-filter"></section>
             <b v-if="PageTab == 1" class="text-success">View Data <span class="opacity-25">(Vuejs CDN)</span>: </b>
             <b v-if="PageTab == 2" class="text-success">View Board <span class="opacity-25">(Vuejs CDN)</span>: </b>
-            <section v-show="PageTab == 1" id="react-filter"></section>
             <ul v-if="PageTab == 1" class="list-group list-group-flush">
-                <li v-if="AppMsg" class="text-black-50 fw-light fst-italic">
-                    <span v-html="AppMsg"></span><span v-if="CountAction != null"> ({{CountAction}})</span>
+                <li v-if="AppMsg" class="text-black-50 fw-light fst-italic" v-html="AppMsg">
                 </li>
                 <li v-for="wItem in ListDataUI" class="list-group-item ps-0" 
                     v-bind:id-land="'dnb-land_' + wItem.Land.Id"
@@ -75,22 +61,22 @@
                                     style="cursor: default;">{{prduct.Data.Name}}</h6>
                                 <ul v-if="isPrdExpand(prduct.Data.Id, pGrp.PGroup.Id, wItem.Region.Id)" class="dnb-goals">
                                     <mf-viewgoal inline-template v-for="goal in prduct.ListGoal" :entry="goal"
-                                        :key="'lnd'+wItem.Land.Id+'rg'+wItem.Region.Id+'prg'+pGrp.PGroup.Id+'p'+prduct.Data.Id+'gl'+goal.Id">
-                                        <li v-bind:id-goal="'dnb-goal_' + entry.Id" >
-                                            <p class="mb-0" v-bind:class="[entry.Finish ? 'text-black-50' : '']"
-                                                @click.stop="toggleExpand">{{entry.Name}} <span class="badge bg-secondary ms-3"
-                                                    v-bind:class="[entry.Finish ? 'text-white-50' : '']">{{ListActivity.length}}</span></p>
+                                        :key="'lnd'+wItem.Land.Id+'rg'+wItem.Region.Id+'prg'+pGrp.PGroup.Id+'p'+prduct.Data.Id+'gl'+goal.Item.Id">
+                                        <li v-bind:id-goal="'dnb-goal_' + entry.Item.Id" >
+                                            <p class="mb-0" v-bind:class="[entry.Item.Finish ? 'text-black-50' : '']"
+                                                @click.stop="toggleExpand">{{entry.Item.Name}} <span class="badge bg-secondary ms-3"
+                                                    v-bind:class="[entry.Item.Finish ? 'text-white-50' : '']">{{entry.ListActivity.length}}</span></p>
                                             <div v-if="IsExpand" class="mb-2 d-flex justify-content-start" 
-                                                v-bind:class="[entry.Finish ? 'text-black-50' : '']">
+                                                v-bind:class="[entry.Item.Finish ? 'text-black-50' : '']">
                                                 <span class="text-muted me-1">Finish: </span>
-                                                <input v-model="entry.Finish" type="checkbox"
+                                                <input v-model="entry.Item.Finish" type="checkbox"
                                                     class="form-check-input dnb-r14px" />
                                                 <small v-if="Start || End" class="bi bi-calendar-range ms-3 me-1"></small>
                                                 <small class="text-muted">{{Start}}</small>
                                                 <small v-if="End" class="text-muted">&nbsp;-&nbsp;{{End}}</small>
                                             </div>
                                             <article v-if="IsExpand" class="d-inline-block">
-                                                <div v-for="actv in ListActivity" 
+                                                <div v-for="actv in entry.ListActivity" 
                                                     class="d-inline-flex align-items-center m-1 py-1 px-2 bg-light rounded-3">
                                                     <input v-model="actv.Data.Finish" type="checkbox"
                                                             class="form-check-input dnb-r14px mt-0 me-1" />
@@ -213,24 +199,11 @@
     <script src="modal.js"></script>
     <script src="vuex-store.js"></script>
     <script>
-        const blob = new Blob( Array.prototype.map.call(
-            document.querySelectorAll("script[type='text\/js-worker']"),
-            (script) => script.textContent), 
-            { type: "text/javascript" },
-        );
-        document.worker = new Worker(window.URL.createObjectURL(blob));
-        document.worker.onmessage = (event) => {
-            const data = event.data
-            console.log('Received: ', data)
-        };
-
         DnbVxStore.dispatch('setMtFilter', [new MktFilter([new Criterial(0, 1, [0, 0])])])
-        // $(document).ready(function () { })
         window.onload = () => {
             newAppVueNav()
             const app = newAppVue()
             newAppVueDasboard(app)
-           // console.log(app)
         };
     </script>
     <script src="app_react.js" type="text/babel" data-presets="react,stage-3"></script>

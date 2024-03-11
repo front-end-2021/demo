@@ -22,54 +22,37 @@ Vue.component('mf-viewgoal', {
     //beforeCreate(){ },
     data() {
         return {
-            ListActivity: [],
             IsExpand: true
         }
     },
     computed: {
         Start() {
-            const start = this.entry.Start
+            const start = this.entry.Item.Start
             if (typeof start != 'string') return ''
             if (start.trim() == '') return ''
             return getDateStr(start, 'dd/MM/YYYY')
         },
         End() {
-            const end = this.entry.End
+            const end = this.entry.Item.End
             if (typeof end != 'string') return ''
             if (end.trim() == '') return ''
             return getDateStr(end, 'dd/MM/YYYY')
         },
     },
     methods: {
-        genListActivity(lsActivity) {
-            const goalId = this.entry.Id
-            this.ListActivity = genListActivity(goalId, lsActivity)
-        },
         toggleExpand() { this.IsExpand = !this.IsExpand },
     },
     watch: {
-        'entry.Finish'(val, old) {
+        'entry.Item.Finish'(val, old) {
             if (val && !this.entry.End) {
                 setStartEndNow.call(this, true)
             }
         },
     },
-    created() {
-        const goalId = this.entry.Id
-        const task = () => {
-            const lsActivity = DnbVxStore.getters.getActivities()
-            this.ListActivity = genListActivity(goalId, lsActivity)
-        }
-        DnbVxStore.dispatch('pushTasks', [task])
-        if (this.$root.CountGoal === DnbVxStore.getters.getListTask().length) {
-            processTask(DnbVxStore.getters.getListTask()).then(() => {
-                DnbVxStore.dispatch('setListTask', [])
-            })
-        }
-    },
-    beforeMount(){ this.$root.CountAction += this.ListActivity.length },
+    // created() { },
+    //beforeMount() { },
     //mounted() { },
-    beforeUpdate(){ this.$root.CountAction += this.ListActivity.length },
+    //beforeUpdate() { },
     //updated(){ },
     //beforeDestroy() { },
     //destroyed() { },
@@ -100,19 +83,12 @@ function newAppVue() {
             ListDataUI: [],
             CollapsePrdId: [],
             AppMsg: null,
-            CountAction: null,
         },
         methods: {
             renderData() {
                 const filter = DnbVxStore.getters.getMtFilter(0)
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
-                this.CountAction = null
-                document.worker.postMessage(JSON.stringify({
-                    type: 'getmapgoals',
-                    query: [filter.SubmarketIds, filter.ProductIds],
-                    store: DnbVxStore.getters.getGoals()
-                }));
                 DnbVxStore.dispatch('setListTask', [
                     () => { return DnbVxStore.getters.getMapGoals(filter.SubmarketIds, filter.ProductIds) },
                     () => {
@@ -129,6 +105,7 @@ function newAppVue() {
                     const lstProductGrp = values[2]
                     const lstSubmarketId = values[3]
                     DnbVxStore.dispatch('setListTask', [
+                        () => { return DnbVxStore.getters.getRefActv() },
                         () => {
                             addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
                         },
@@ -136,19 +113,23 @@ function newAppVue() {
                             addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
                         }
                     ])
-                    processTask(DnbVxStore.getters.getListTask()).finally(() => {
+                    processTask(DnbVxStore.getters.getListTask()).then((values) => {
+                        const lstActivity = values[0]
                         const fncsAddGoal = []
                         for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                             const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
                             fncsAddGoal.push(() => {
-                                addGoalToList.call(item, mapGoals)
+                                return addGoalToList.call(item, mapGoals, lstActivity)
                             })
                         }
                         DnbVxStore.dispatch('setListTask', fncsAddGoal)
-                        processTask(DnbVxStore.getters.getListTask()).finally(() => {
+                        processTask(DnbVxStore.getters.getListTask()).then((lstSumActv) => {
+                            const sumActv = lstSumActv.reduce(
+                                (accumulator, crtVal) => accumulator + crtVal, 0,
+                            );
                             removeEmptyGoal.call(lstPath)
                             this.ListDataUI = lstPath;
-                            setAppMsg.call(this, lstPath)
+                            setAppMsg.call(this, lstPath, sumActv)
                             DnbVxStore.dispatch('setListTask', [])
                         })
                     })
@@ -235,10 +216,10 @@ function newAppVue() {
                     }
                     return lstsMrkId
                 }
-                function setAppMsg(lstPath) {
+                function setAppMsg(lstPath, sumActv) {
                     if (!lstPath.length) this.AppMsg = 'No results'
                     else {
-                        let cGoal = 0, cAction = 0
+                        let cGoal = 0;
                         for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                             const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
                             for (let pp = 0; pp < item.PGroups.length; pp++) {
@@ -250,8 +231,7 @@ function newAppVue() {
                                 }
                             }
                         }
-                        this.AppMsg = `Land > Region / Product group / Product / List goal (${cGoal}) / Activties`
-                        this.CountAction = 0
+                        this.AppMsg = `Land > Region / Product group / Product / List goal (${cGoal}) / Activties (${sumActv})`
                     }
                 }
                 function removeEmptyGoal() {
@@ -281,9 +261,10 @@ function newAppVue() {
                         }
                     }
                 }
-                function addGoalToList(mapGoals) {
+                function addGoalToList(mapGoals, activities) {
                     const item = this
                     const idSubmarket = item.IdSubmarkets
+                    let countAct = 0
                     for (let pp = 0; pp < item.PGroups.length; pp++) {
                         const pGrp = item.PGroups[pp]
                         const idProducts = pGrp.Products.map(x => x.Data.Id)
@@ -300,17 +281,25 @@ function newAppVue() {
                                     const goal = goals[gg]
                                     const lstSmkPrdId = goal.SubmarketProductId.split('-')
                                     const pId = parseInt(lstSmkPrdId[1])
-                                    if (pId == product.Data.Id) product.ListGoal.push(goal)
+                                    if (pId == product.Data.Id) {
+                                        const lstActivity = genListActivity(goal.Id, activities)
+                                        product.ListGoal.push({
+                                            Item: goal, ListActivity: lstActivity
+                                        })
+                                        countAct += lstActivity.length
+                                    }
                                 }
                             }
                         }
                     }
+                    return countAct
                 }
             },
             genListActivity() {
-                const lsActivity = DnbVxStore.getters.getActivities()
+                const lsActivity = DnbVxStore.getters.getRefActv()
                 this.$children.forEach(comp => {
-                    comp.genListActivity(lsActivity)
+                    const goalId = comp.entry.Item.Id
+                    comp.entry.ListActivity = genListActivity(goalId, lsActivity)
                 })
             },
             isPrdExpand(id, pgId, rgId) { return !this.CollapsePrdId.includes(`${rgId}.${pgId}.${id}`) },

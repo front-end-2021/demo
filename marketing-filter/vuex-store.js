@@ -93,6 +93,26 @@ const DnbVxStore = Vuex.createStore({
             return mapGoals.FilterGoals(submarketIds, productIds)
         },
         getActivities: (state) => () => { return state.Activities },
+        getRefActv: (state) => (goalIds) => {
+            const lst = []
+            if(!Array.isArray(goalIds)) {
+                for (let aa = 0; aa < state.Activities.length; aa++) {
+                    const actv = state.Activities[aa]
+                    lst.push(actv)
+                }
+                return lst
+            }
+            const copyGoalIds = [...goalIds]
+            for (let aa = 0; aa < state.Activities.length; aa++) {
+                const actv = state.Activities[aa]
+                const ii = copyGoalIds.indexOf(actv.GoalId)
+                if (-1 < ii) {
+                    lst.push(actv)
+                    copyGoalIds.splice(ii, 1)
+                }
+            }
+            return lst
+        },
         getPageTab: (state) => () => { return state.PageTab },
         getListTask: (state) => () => { return state.ListTask },
         getMtFilter: (state) => (i) => { return state.mtFilters[i] },
