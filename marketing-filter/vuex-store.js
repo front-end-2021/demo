@@ -12,7 +12,7 @@ const DnbVxStore = Vuex.createStore({
             Activities: Activities,
             PageTab: 1,
             ListTask: [],
-            mtFilters: []
+            mtFilters: [],
         }
     },
     actions: {

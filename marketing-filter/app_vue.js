@@ -67,10 +67,10 @@ Vue.component('mf-viewgoal', {
             })
         }
     },
-    // beforeMount(){},
+    beforeMount(){ this.$root.CountAction += this.ListActivity.length },
     //mounted() { },
-    // beforeUpdate(){},
-    // updated(){},
+    beforeUpdate(){ this.$root.CountAction += this.ListActivity.length },
+    //updated(){ },
     //beforeDestroy() { },
     //destroyed() { },
 })
@@ -100,12 +100,14 @@ function newAppVue() {
             ListDataUI: [],
             CollapsePrdId: [],
             AppMsg: null,
+            CountAction: null,
         },
         methods: {
             renderData() {
                 const filter = DnbVxStore.getters.getMtFilter(0)
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
+                this.CountAction = null
                 DnbVxStore.dispatch('setListTask', [
                     () => { return DnbVxStore.getters.getMapGoals(filter.SubmarketIds, filter.ProductIds) },
                     () => {
@@ -244,6 +246,7 @@ function newAppVue() {
                             }
                         }
                         this.AppMsg = `Land > Region / Product group / Product / List goal (${cGoal}) / Activties`
+                        this.CountAction = 0
                     }
                 }
                 function removeEmptyGoal() {
@@ -343,7 +346,7 @@ function newAppVue() {
             },
         },
         // created() { },
-        // updated() { },
+        //updated() { },
     })
     DnbVxStore.getters.getMtFilter(0).setFilter = app.renderData
     app.renderData()

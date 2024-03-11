@@ -44,8 +44,9 @@
             <b v-if="PageTab == 2" class="text-success">View Board <span class="opacity-25">(Vuejs CDN)</span>: </b>
             <section v-show="PageTab == 1" id="react-filter"></section>
             <ul v-if="PageTab == 1" class="list-group list-group-flush">
-                <li v-if="AppMsg" v-html="AppMsg"
-                    class="text-black-50 fw-light fst-italic"></li>
+                <li v-if="AppMsg" class="text-black-50 fw-light fst-italic">
+                    <span v-html="AppMsg"></span><span v-if="CountAction != null"> ({{CountAction}})</span>
+                </li>
                 <li v-for="wItem in ListDataUI" class="list-group-item ps-0" 
                     v-bind:id-land="'dnb-land_' + wItem.Land.Id"
                     v-bind:id-region="'dnb-regn_' + wItem.Region.Id">
@@ -64,7 +65,8 @@
                                         :key="'lnd'+wItem.Land.Id+'rg'+wItem.Region.Id+'prg'+pGrp.PGroup.Id+'p'+prduct.Data.Id+'gl'+goal.Id">
                                         <li v-bind:id-goal="'dnb-goal_' + entry.Id" >
                                             <p class="mb-0" v-bind:class="[entry.Finish ? 'text-black-50' : '']"
-                                                @click.stop="toggleExpand">{{entry.Name}}</p>
+                                                @click.stop="toggleExpand">{{entry.Name}} <span class="badge bg-secondary ms-3"
+                                                    v-bind:class="[entry.Finish ? 'text-white-50' : '']">{{ListActivity.length}}</span></p>
                                             <div v-if="IsExpand" class="mb-2 d-flex justify-content-start" 
                                                 v-bind:class="[entry.Finish ? 'text-black-50' : '']">
                                                 <span class="text-muted me-1">Finish: </span>
