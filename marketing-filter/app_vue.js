@@ -108,6 +108,11 @@ function newAppVue() {
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
                 this.CountAction = null
+                document.worker.postMessage(JSON.stringify({
+                    type: 'getmapgoals',
+                    query: [filter.SubmarketIds, filter.ProductIds],
+                    store: DnbVxStore.getters.getGoals()
+                }));
                 DnbVxStore.dispatch('setListTask', [
                     () => { return DnbVxStore.getters.getMapGoals(filter.SubmarketIds, filter.ProductIds) },
                     () => {

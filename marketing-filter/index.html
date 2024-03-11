@@ -16,6 +16,19 @@
     <link async rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2/dist/semantic.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/semantic-ui-react/dist/umd/semantic-ui-react.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvasjs@1.8.3/dist/canvasjs.min.js"></script>
+    <script type="text/js-worker"> // This script WON'T be parsed by JS engines because its MIME type is text/js-worker.
+        onmessage = (event) => {
+            const data = JSON.parse(event.data)
+            console.log('on message', event)
+            switch(data.type) {
+                case 'getmapgoals': postMessage(data);
+                return;
+
+            }
+            postMessage('abc');
+        };
+        // Rest of your worker code goes here.
+      </script>
 </head>
 <body>
     <main class="dnb-view-100h">
@@ -200,13 +213,25 @@
     <script src="modal.js"></script>
     <script src="vuex-store.js"></script>
     <script>
+        const blob = new Blob( Array.prototype.map.call(
+            document.querySelectorAll("script[type='text\/js-worker']"),
+            (script) => script.textContent), 
+            { type: "text/javascript" },
+        );
+        document.worker = new Worker(window.URL.createObjectURL(blob));
+        document.worker.onmessage = (event) => {
+            const data = event.data
+            console.log('Received: ', data)
+        };
+
         DnbVxStore.dispatch('setMtFilter', [new MktFilter([new Criterial(0, 1, [0, 0])])])
-        $(document).ready(function () {
+        // $(document).ready(function () { })
+        window.onload = () => {
             newAppVueNav()
             const app = newAppVue()
             newAppVueDasboard(app)
            // console.log(app)
-        })
+        };
     </script>
     <script src="app_react.js" type="text/babel" data-presets="react,stage-3"></script>
     <script src="app_vue.js"></script>
