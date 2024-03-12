@@ -295,10 +295,30 @@ function newAppVue() {
             },
             genListActivity() {
                 const lsActivity = DnbVxStore.getters.getActivities()
-                this.$children.forEach(comp => {
-                    const goalId = comp.entry.Item.Id
-                    comp.entry.ListActivity = genListActivity(goalId, lsActivity)
-                })
+                const a = this.AppMsg
+                const iA = a.lastIndexOf(`(`)
+                if (iA < 0) return
+                const c = a.substring(iA);
+                const sumAct = parseInt(c.replace(`(`, '').replace(`)`, ''))
+                let smA = 0
+                for (let pt = 0; pt < this.ListDataUI.length; pt++) {
+                    const item = this.ListDataUI[pt]
+                    for (let pp = 0; pp < item.PGroups.length; pp++) {
+                        const pGrp = item.PGroups[pp]
+                        for (let pd = 0; pd < pGrp.Products.length; pd++) {
+                            const product = pGrp.Products[pd]           // { Data }
+                            for (let gg = 0; gg < product.ListGoal.length; gg++) {
+                                const gEntry = product.ListGoal[gg]
+                                gEntry.ListActivity = genListActivity(gEntry.Item.Id, lsActivity)
+                                smA += gEntry.ListActivity.length
+                            }
+                        }
+                    }
+                }
+                console.log(sumAct, smA)
+                if (sumAct != smA) {
+                    this.AppMsg.replace(`Activties (${sumAct})`, `Activties (${smA})`)
+                }
             },
             isPrdExpand(id, pgId, rgId) { return !this.CollapsePrdId.includes(`${rgId}.${pgId}.${id}`) },
             onTogglePrdExpand(id, pgId, rgId) {
