@@ -57,14 +57,33 @@ Vue.component('mf-viewgoal', {
     //beforeDestroy() { },
     //destroyed() { },
 })
+function performTask(items, numToProcess, processItem) {
+    let pos = 0;
+    function iteration() {
+        const j = Math.min(pos + numToProcess, items.length);
+        for (let i = pos; i < j; i++) { processItem(items, i) }
+        pos += numToProcess;
+        if (pos < items.length) {
+            setTimeout(iteration, 3); // Wait 3 ms to let the UI update.
+        }
+    }
+    iteration();
+}
 async function processTask(arrFnc) {
     const lstTask = []
     if (getBrowser() == 'Mozilla Firefox') {
+        const lst = []
         for (let ii = 0; ii < arrFnc.length; ii++) {
             const fnc = arrFnc[ii]
-            const pTsk = new Promise((resolve) => { resolve(fnc()) })
-            lstTask.push(pTsk)
+            lst.push(fnc())
         }
+        performTask(
+            lst,
+            arrFnc.length,
+            (items, index) => {
+                lstTask.push(new Promise(resv => resv(items[index])))
+            }
+        );
         return await Promise.all(lstTask)
     }
     //https://github.com/GoogleChromeLabs/scheduler-polyfill/blob/main/test/test.scheduler.js
