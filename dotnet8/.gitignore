@@ -12,3 +12,5 @@ account.db
 account.db-shm
 /account.db-wal
 account.db-wal
+/Migrations
+/Migrations/*
