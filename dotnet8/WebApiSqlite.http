@@ -1,0 +1,16 @@
+@WebApiSqlite_HostAddress = http://localhost:5251
+
+GET {{WebApiSqlite_HostAddress}}/users/
+Accept: application/json
+
+###
+
+GET {{WebApiSqlite_HostAddress}}/users/1
+Accept: application/json
+
+###
+
+POST {{WebApiSqlite_HostAddress}}/users/
+Accept: application/json
+
+###
