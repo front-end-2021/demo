@@ -16,9 +16,12 @@ RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
+ENV ASPNETCORE_HTTP_PORTS=8080
 COPY --from=build /app/account.db .
 COPY --from=build /app/out ./
-EXPOSE 80
 
 # Run the app
 ENTRYPOINT ["dotnet", "WebApiSqlite.dll"]
+
+#docker build -t dotnet-docker8-api .
+#docker run --rm -it -p 5000:8080 dotnet-docker8-api
