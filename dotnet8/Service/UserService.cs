@@ -15,6 +15,11 @@ namespace Web.Api.Services
             await _dbContext.SaveChangesAsync();
             return user;
         }
+        public async Task<List<Account>> AddUsers(List<Account> users) {
+            _dbContext.Accounts.AddRange(users);
+            await _dbContext.SaveChangesAsync();
+            return users;
+        }
         // private bool UserExists(long id) => _dbContext.Accounts.Any(e => e.Id == id);
         public async Task<int> Update(Account user)
         {

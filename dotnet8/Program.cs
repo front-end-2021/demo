@@ -9,35 +9,40 @@ var builder = WebApplication.CreateBuilder(args);
 var connStr = builder.Configuration.GetConnectionString("SqliteConnection");
 builder.Services.AddDbContext<SqliteContext>(x => x.UseSqlite(connStr));
 // DI
-builder.Services.AddTransient<UserService>();
+builder.Services.AddTransient<IUserService, UserService>();
 
 var app = builder.Build();
 
 var userGrp = "/users";
 var userApi = app.MapGroup(userGrp);
-userApi.MapGet("/", async (UserService uService) =>
+userApi.MapGet("/", async (IUserService uService) =>
 {
     var users = await uService.GetAll();
     return Results.Ok(users);
 });
-userApi.MapGet("/{id}", async (UserService uService, long id) =>
+userApi.MapGet("/{id}", async (IUserService uService, long id) =>
 {
     var user = await uService.GetById(id);
     if (user == null) return Results.NotFound("User does not exist");
     return Results.Ok(user);
 });
-userApi.MapPost("/", async (Account item, UserService uService) =>
+app.MapPost("user/", async (Account item, IUserService uService) =>
 {
     await uService.AddUser(item);
     return Results.Created($"/${userGrp}/{item.Id}", item);
 });
-userApi.MapPut("/{id}", async (long id, Account item, UserService uService) =>
+userApi.MapPost("/", async (List<Account> items, IUserService uService) =>
+{
+    await uService.AddUsers(items);
+    return Results.Created($"/${userGrp}", items);
+});
+userApi.MapPut("/{id}", async (long id, Account item, IUserService uService) =>
 {
     var status = await uService.Update(item);
     if (status == -404) return Results.NotFound();
     return Results.NoContent();
 });
-userApi.MapDelete("/{id}", async (long id, UserService uService) =>
+userApi.MapDelete("/{id}", async (long id, IUserService uService) =>
 {
     var status = await uService.Delete(id);
     if (status == -404) return Results.NotFound();
