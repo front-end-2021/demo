@@ -6,11 +6,11 @@
 /.vs/*
 /bin
 /bin/*
-/account.db
-account.db
-/account.db-shm
-account.db-shm
-/account.db-wal
-account.db-wal
+/todo.db
+todo.db
+/todo.db-shm
+todo.db-shm
+/todo.db-wal
+todo.db-wal
 /Migrations
 /Migrations/*
