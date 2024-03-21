@@ -6,10 +6,13 @@ using Web.Api.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Database
-var connStr = builder.Configuration.GetConnectionString("SqliteConnection");
-builder.Services.AddDbContext<SqliteContext>(x => x.UseSqlite(connStr));
+// dotnet ef migrations add InitialCreate
+//dotnet ef database update
+var connTodo = builder.Configuration.GetConnectionString("SqliteTodo");
+builder.Services.AddDbContext<SqliteTodo>(x => x.UseSqlite(connTodo));
 // DI
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<ITodoService, GoalActionService>();
 
 var app = builder.Build();
 
