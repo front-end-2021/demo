@@ -8,14 +8,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Database
 //dotnet ef migrations add IniCreate --context SqliteTodo --output-dir Migrations/SqliteTodos
-//dotnet ef migrations add IniCreate --context SqliteUser --output-dir Migrations/SqliteUser
+//dotnet ef migrations add IniCreate --context SqliteUser --output-dir Migrations/SqliteUsers
 //dotnet ef database update -c SqliteTodo
 //dotnet ef database update -c SqliteUser
 //dotnet ef dbcontext optimize --output-dir CompiledModels/Todos -c SqliteTodo --namespace CompiledModels.Todos
 //dotnet ef dbcontext optimize --output-dir CompiledModels/Users -c SqliteUser --namespace CompiledModels.Users
 var connTodo = builder.Configuration.GetConnectionString("SqliteTodo");
 builder.Services.AddDbContext<SqliteTodo>(options =>
-    options.UseModel(CompiledModels.Todos.SqliteTodoModel.Instance)
+    options
+    .UseModel(CompiledModels.Todos.SqliteTodoModel.Instance)
     .UseSqlite(
         connTodo,
         o => o.MigrationsHistoryTable(
@@ -23,7 +24,8 @@ builder.Services.AddDbContext<SqliteTodo>(options =>
             schema: "todo")));
 var connUser = builder.Configuration.GetConnectionString("SqliteUser");
 builder.Services.AddDbContext<SqliteUser>(options =>
-    options.UseModel(CompiledModels.Users.SqliteUserModel.Instance)
+    options
+    .UseModel(CompiledModels.Users.SqliteUserModel.Instance)
     .UseSqlite(
         connUser,
         o => o.MigrationsHistoryTable(
@@ -99,12 +101,12 @@ actionApi.MapGet("/", async (ITodoService service) =>
     var users = await service.GetAllAction();
     return Results.Ok(users);
 });
-actionApi.MapPost("/", async (List<Web.Api.Entries.Action> items, ITodoService service) =>
+actionApi.MapPost("/", async (List<TAction> items, ITodoService service) =>
 {
     await service.AddActions(items);
     return Results.Created($"/${actionGrp}", items);
 });
-actionApi.MapPut("/{id}", async (long id, Web.Api.Entries.Action item, ITodoService service) =>
+actionApi.MapPut("/{id}", async (long id, TAction item, ITodoService service) =>
 {
     var status = await service.UpdateAction(item);
     if (status == -404) return Results.NotFound();
@@ -151,12 +153,12 @@ activityApi.MapGet("/", async (ITodoService service) =>
     var users = await service.GetAllActivity();
     return Results.Ok(users);
 });
-activityApi.MapPost("/", async (List<Activite> items, ITodoService service) =>
+activityApi.MapPost("/", async (List<TActivity> items, ITodoService service) =>
 {
     await service.AddActivities(items);
     return Results.Created($"/${activityGrp}", items);
 });
-activityApi.MapPut("/{id}", async (long id, Activite item, ITodoService service) =>
+activityApi.MapPut("/{id}", async (long id, TActivity item, ITodoService service) =>
 {
     var status = await service.UpdateActivity(item);
     if (status == -404) return Results.NotFound();

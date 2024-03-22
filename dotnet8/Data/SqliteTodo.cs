@@ -6,10 +6,10 @@ namespace Web.Api.Data
     public class SqliteTodo : DbContext
     {
         public SqliteTodo(DbContextOptions<SqliteTodo> options) : base(options) { }
-        public virtual DbSet<Goal> Goals { get; set; }
-        public virtual DbSet<Entries.Action> Actions { get; set; }
-        public virtual DbSet<Todo> Todos { get; set; }
-        public virtual DbSet<Activite> Activites { get; set; }
+        public virtual DbSet<Goal> Goal { get; set; }
+        public virtual DbSet<TAction> TAction { get; set; }
+        public virtual DbSet<Todo> Todo { get; set; }
+        public virtual DbSet<TActivity> Activity { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("todo");
