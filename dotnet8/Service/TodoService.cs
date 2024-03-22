@@ -8,8 +8,13 @@ namespace Web.Api.Services
     public class GoalActionService(SqliteTodo dbCtx) : ITodoService
     {
         private readonly SqliteTodo _dbContext = dbCtx;
-        public async Task<IEnumerable<Goal>> GetAllGoal() => await _dbContext.Goals.ToListAsync();
-
+        public async Task<IEnumerable<Goal>> GetAllGoal() { 
+            var goals = await _dbContext.Goals.ToListAsync();
+            goals.ForEach(async goal => {
+                goal.Actions = await GetChilds(goal);
+            });
+            return goals;
+        }
         public async Task<List<Goal>> AddGoals(List<Goal> items)
         {
             if (items == null) return [];
@@ -42,7 +47,13 @@ namespace Web.Api.Services
             res = await _dbContext.SaveChangesAsync();
             return res;
         }
-        public async Task<IEnumerable<Entries.Action>> GetAllAction() => await _dbContext.Actions.ToListAsync();
+        public async Task<IEnumerable<Entries.Action>> GetAllAction() {
+            var actions = await _dbContext.Actions.ToListAsync();
+            Parallel.ForEach(actions, async action => {
+                action = await GetChilds(action);
+            });
+            return actions;
+        }
         public async Task<IEnumerable<Entries.Action>> AddActions() => await _dbContext.Actions.ToListAsync();
         public async Task<List<Entries.Action>> AddActions(List<Entries.Action> items)
         {
@@ -141,6 +152,29 @@ namespace Web.Api.Services
             _dbContext.Activites.Remove(item);
             res = await _dbContext.SaveChangesAsync();
             return res;
+        }
+        private async Task<List<Entries.Action>> GetChilds(Goal item)
+        {
+            var allActivity = await _dbContext.Activites.ToListAsync();
+            var allAction = await _dbContext.Actions.ToListAsync();
+            var allTodo = await _dbContext.Todos.ToListAsync();
+            var lstAction = allAction.Where(x => x.GoalId == item.Id).ToList();
+            Parallel.ForEach(lstAction, action =>
+            {
+                action.Activites = allActivity.Where(x => x.ActionId == action.Id).ToList();
+                action.Todos = allTodo.Where(x => x.ActionId == action.Id).ToList();
+            });
+            return lstAction;
+        }
+        private async Task<Entries.Action> GetChilds(Entries.Action item)
+        {
+            var allActivity = await _dbContext.Activites.ToListAsync();
+            var allTodo = await _dbContext.Todos.ToListAsync();
+            Parallel.Invoke(
+                () => item.Activites = allActivity.Where(x => x.ActionId == item.Id).ToList(),
+                () => item.Todos = allTodo.Where(x => x.ActionId == item.Id).ToList()
+            );
+            return item;
         }
     }
 }
