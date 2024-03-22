@@ -6,11 +6,5 @@
 /.vs/*
 /bin
 /bin/*
-/todo.db
-todo.db
-/todo.db-shm
-todo.db-shm
-/todo.db-wal
-todo.db-wal
 /Migrations
 /Migrations/*

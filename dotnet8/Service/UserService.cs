@@ -4,11 +4,10 @@ using Web.Api.Entries;
 
 namespace Web.Api.Services
 {
-    public class UserService(SqliteTodo dbCtx) : IUserService
+    public class UserService(SqliteUser dbCtx) : IUserService
     {
-        private readonly SqliteTodo _dbContext = dbCtx;
+        private readonly SqliteUser _dbContext = dbCtx;
         public async Task<IEnumerable<Account>> GetAll() => await _dbContext.Accounts.ToListAsync();
-        public async Task<Account> GetById(long id) => await _dbContext.Accounts.FindAsync(id);
         public async Task<Account> AddUser(Account user)
         {
             _dbContext.Accounts.Add(user);

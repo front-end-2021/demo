@@ -9,7 +9,6 @@ namespace Web.Api.Services
     {
         private readonly SqliteTodo _dbContext = dbCtx;
         public async Task<IEnumerable<Goal>> GetAllGoal() => await _dbContext.Goals.ToListAsync();
-        public async Task<Goal> GetGoalById(long id) => await _dbContext.Goals.FindAsync(id);
 
         public async Task<List<Goal>> AddGoals(List<Goal> items)
         {
@@ -44,7 +43,6 @@ namespace Web.Api.Services
             return res;
         }
         public async Task<IEnumerable<Entries.Action>> GetAllAction() => await _dbContext.Actions.ToListAsync();
-        public async Task<Entries.Action> GetActionById(long id) => await _dbContext.Actions.FindAsync(id);
         public async Task<IEnumerable<Entries.Action>> AddActions() => await _dbContext.Actions.ToListAsync();
         public async Task<List<Entries.Action>> AddActions(List<Entries.Action> items)
         {
@@ -79,7 +77,6 @@ namespace Web.Api.Services
             return res;
         }
         public async Task<IEnumerable<Todo>> GetAllTodo() => await _dbContext.Todos.ToListAsync();
-        public async Task<Todo> GetTodoById(long id) => await _dbContext.Todos.FindAsync(id);
         public async Task<List<Todo>> AddTodos(List<Todo> items)
         {
             if (items == null) return [];
@@ -109,6 +106,39 @@ namespace Web.Api.Services
             var res = -404;
             if (item == null) return res;
             _dbContext.Todos.Remove(item);
+            res = await _dbContext.SaveChangesAsync();
+            return res;
+        }
+        public async Task<IEnumerable<Activite>> GetAllActivity() => await _dbContext.Activites.ToListAsync();
+        public async Task<List<Activite>> AddActivities(List<Activite> items)
+        {
+            if (items == null) return [];
+            _dbContext.Activites.AddRange(items);
+            await _dbContext.SaveChangesAsync();
+            return items;
+        }
+        public async Task<int> UpdateActivity(Activite item)
+        {
+            var dItem = await _dbContext.Activites.FindAsync(item.Id);
+            var res = -404;
+            if (dItem == null) return res;
+            _dbContext.Entry(dItem).State = EntityState.Modified;
+            try
+            {
+                res = await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+            return res;
+        }
+        public async Task<int> DeleteActivity(long id)
+        {
+            var item = await _dbContext.Activites.FindAsync(id);
+            var res = -404;
+            if (item == null) return res;
+            _dbContext.Activites.Remove(item);
             res = await _dbContext.SaveChangesAsync();
             return res;
         }
