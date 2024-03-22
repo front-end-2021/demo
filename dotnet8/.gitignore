@@ -8,3 +8,5 @@
 /bin/*
 /Migrations
 /Migrations/*
+/CompiledModels
+/CompiledModels/*

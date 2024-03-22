@@ -11,16 +11,20 @@ var builder = WebApplication.CreateBuilder(args);
 //dotnet ef migrations add IniCreate --context SqliteUser --output-dir Migrations/SqliteUser
 //dotnet ef database update -c SqliteTodo
 //dotnet ef database update -c SqliteUser
+//dotnet ef dbcontext optimize --output-dir CompiledModels/Todos -c SqliteTodo --namespace CompiledModels.Todos
+//dotnet ef dbcontext optimize --output-dir CompiledModels/Users -c SqliteUser --namespace CompiledModels.Users
 var connTodo = builder.Configuration.GetConnectionString("SqliteTodo");
 builder.Services.AddDbContext<SqliteTodo>(options =>
-    options.UseSqlite(
+    options.UseModel(CompiledModels.Todos.SqliteTodoModel.Instance)
+    .UseSqlite(
         connTodo,
         o => o.MigrationsHistoryTable(
             tableName: HistoryRepository.DefaultTableName,
             schema: "todo")));
 var connUser = builder.Configuration.GetConnectionString("SqliteUser");
 builder.Services.AddDbContext<SqliteUser>(options =>
-    options.UseSqlite(
+    options.UseModel(CompiledModels.Users.SqliteUserModel.Instance)
+    .UseSqlite(
         connUser,
         o => o.MigrationsHistoryTable(
             tableName: HistoryRepository.DefaultTableName,
