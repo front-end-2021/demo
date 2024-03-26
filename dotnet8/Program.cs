@@ -36,6 +36,13 @@ builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<ITodoService, GoalActionService>();
 
 var app = builder.Build();
+app.MapGet("/alls", async (IUserService sUser, ITodoService sTodo) =>
+{
+    var goals = await sTodo.GetAllGoal();
+    var users = await sUser.GetAll();
+    AllInfo allInfo = new(goals, users);
+    return Results.Ok(allInfo);
+});
 #region User
 var userGrp = "/users";
 var userApi = app.MapGroup(userGrp);
@@ -72,8 +79,8 @@ var goalGrp = "/goals";
 var goalApi = app.MapGroup(goalGrp);
 goalApi.MapGet("/", async (ITodoService service) =>
 {
-    var users = await service.GetAllGoal();
-    return Results.Ok(users);
+    var goals = await service.GetAllGoal();
+    return Results.Ok(goals);
 });
 goalApi.MapPost("/", async (List<Goal> items, ITodoService service) =>
 {
@@ -98,8 +105,8 @@ var actionGrp = "/actions";
 var actionApi = app.MapGroup(actionGrp);
 actionApi.MapGet("/", async (ITodoService service) =>
 {
-    var users = await service.GetAllAction();
-    return Results.Ok(users);
+    var actions = await service.GetAllAction();
+    return Results.Ok(actions);
 });
 actionApi.MapPost("/", async (List<TAction> items, ITodoService service) =>
 {
@@ -124,8 +131,8 @@ var todoGrp = "/todos";
 var todoApi = app.MapGroup(todoGrp);
 todoApi.MapGet("/", async (ITodoService service) =>
 {
-    var users = await service.GetAllTodo();
-    return Results.Ok(users);
+    var todos = await service.GetAllTodo();
+    return Results.Ok(todos);
 });
 todoApi.MapPost("/", async (List<Todo> items, ITodoService service) =>
 {
@@ -150,8 +157,8 @@ var activityGrp = "/activities";
 var activityApi = app.MapGroup(activityGrp);
 activityApi.MapGet("/", async (ITodoService service) =>
 {
-    var users = await service.GetAllActivity();
-    return Results.Ok(users);
+    var activities = await service.GetAllActivity();
+    return Results.Ok(activities);
 });
 activityApi.MapPost("/", async (List<TActivity> items, ITodoService service) =>
 {
@@ -172,3 +179,5 @@ activityApi.MapDelete("/{id}", async (long id, ITodoService service) =>
 });
 #endregion
 app.Run();
+
+public record AllInfo(IEnumerable<Goal> Goals, IEnumerable<Account> Users);
