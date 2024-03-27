@@ -13,7 +13,9 @@ namespace Web.Api.Entries
         [ForeignKey("GoalId")]
         public ICollection<TAction>? Actions { get; set; }
     }
-
+// dotnet ef migrations add RenameTbAction --context SqliteTodo --output-dir Migrations/SqliteTodos
+// dotnet ef database update -c SqliteTodo
+// dotnet ef dbcontext optimize --output-dir CompiledModels/Todos -c SqliteTodo --namespace CompiledModels.Todos
     [Table("Action")]
     public class TAction
     {
