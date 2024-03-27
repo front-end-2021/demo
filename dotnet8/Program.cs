@@ -178,6 +178,13 @@ activityApi.MapDelete("/{id}", async (long id, ITodoService service) =>
     return Results.NoContent();
 });
 #endregion
+
+var assignGrp = "/assign";
+var assignApi = app.MapGroup(assignGrp);
+assignApi.MapGet("/user", async (IUserService sUser, ITodoService sTodo) => {
+    IUserAssign uAssign = new SvcUserAssign(sUser, sTodo);
+    return await uAssign.GetAllUserAssign();
+});
 app.Run();
 
 public record AllInfo(IEnumerable<Goal> Goals, IEnumerable<Account> Users);

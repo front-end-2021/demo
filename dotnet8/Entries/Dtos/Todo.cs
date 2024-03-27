@@ -5,14 +5,26 @@ namespace Web.Api.Dto
     public class UserAssignInfo
     {
         public long Id { get; set; }
-        public long AccountId { get; set; }
+        public long AccId { get; set; }
+        public string AccName { get; set; } = string.Empty;
+        public string AccEmail { get; set; } = string.Empty;
+        public string AccPhone { get; set; } = string.Empty;
+        public DateTime AccDoB { get; set; }
         public List<Goal> Goals { get; set; } = [];
         public UserAssignInfo(UserAssign userAssign, IEnumerable<Goal> allGoal, IEnumerable<TAction> allAction)
         {
+            Id = userAssign.Id;
             SetInfoGoalActions(userAssign, allGoal, allAction);
+        }
+        public void SetAccountInfo(Account account) {
+            AccName = account.Name;
+            AccEmail = account.Email;
+            AccPhone = account.Phone;
+            AccDoB = account.DoB;
         }
         public void SetInfoGoalActions(UserAssign userAssign, IEnumerable<Goal> allGoal, IEnumerable<TAction> allAction)
         {
+            AccId = userAssign.AccountId;
             var gIds = userAssign.GoalIds.Split(",");
             if (gIds != null && gIds.Length != 0)
             {
