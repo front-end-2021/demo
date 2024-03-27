@@ -48,23 +48,23 @@ namespace Web.Api.Services
             return res;
         }
         public async Task<IEnumerable<TAction>> GetAllAction() {
-            var actions = await _dbContext.TAction.ToListAsync();
+            var actions = await _dbContext.Action.ToListAsync();
             actions.ForEach(async action => {
                 action = await GetChilds(action);
             });
             return actions;
         }
-        public async Task<IEnumerable<TAction>> AddActions() => await _dbContext.TAction.ToListAsync();
+        public async Task<IEnumerable<TAction>> AddActions() => await _dbContext.Action.ToListAsync();
         public async Task<List<TAction>> AddActions(List<TAction> items)
         {
             if (items == null) return [];
-            _dbContext.TAction.AddRange(items);
+            _dbContext.Action.AddRange(items);
             await _dbContext.SaveChangesAsync();
             return items;
         }
         public async Task<int> UpdateAction(TAction item)
         {
-            var dItem = await _dbContext.TAction.FindAsync(item.Id);
+            var dItem = await _dbContext.Action.FindAsync(item.Id);
             var res = -404;
             if (dItem == null) return res;
             _dbContext.Entry(dItem).State = EntityState.Modified;
@@ -80,10 +80,10 @@ namespace Web.Api.Services
         }
         public async Task<int> DeleteAction(long id)
         {
-            var item = await _dbContext.TAction.FindAsync(id);
+            var item = await _dbContext.Action.FindAsync(id);
             var res = -404;
             if (item == null) return res;
-            _dbContext.TAction.Remove(item);
+            _dbContext.Action.Remove(item);
             res = await _dbContext.SaveChangesAsync();
             return res;
         }
@@ -156,7 +156,7 @@ namespace Web.Api.Services
         private async Task<List<TAction>> GetChilds(Goal item)
         {
             var allActivity = await _dbContext.Activity.ToListAsync();
-            var allAction = await _dbContext.TAction.ToListAsync();
+            var allAction = await _dbContext.Action.ToListAsync();
             var allTodo = await _dbContext.Todo.ToListAsync();
             var lstAction = allAction.Where(x => x.GoalId == item.Id).ToList();
             Parallel.ForEach(lstAction, action =>

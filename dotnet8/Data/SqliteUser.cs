@@ -7,6 +7,7 @@ namespace Web.Api.Data
     {
         public SqliteUser(DbContextOptions<SqliteUser> options) : base(options) { }
         public virtual DbSet<Account> Account { get; set; }
+        public virtual DbSet<Category> Category { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("user");

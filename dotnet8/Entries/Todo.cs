@@ -13,6 +13,8 @@ namespace Web.Api.Entries
         [ForeignKey("GoalId")]
         public ICollection<TAction>? Actions { get; set; }
     }
+
+    [Table("Action")]
     public class TAction
     {
         public long Id { get; set; }

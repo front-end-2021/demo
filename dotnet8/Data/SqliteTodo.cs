@@ -7,7 +7,7 @@ namespace Web.Api.Data
     {
         public SqliteTodo(DbContextOptions<SqliteTodo> options) : base(options) { }
         public virtual DbSet<Goal> Goal { get; set; }
-        public virtual DbSet<TAction> TAction { get; set; }
+        public virtual DbSet<TAction> Action { get; set; }
         public virtual DbSet<Todo> Todo { get; set; }
         public virtual DbSet<TActivity> Activity { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
