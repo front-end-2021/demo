@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Web.Api.Data;
+using Web.Api.Dto;
 using Web.Api.Entries;
 
 namespace Web.Api.Services
@@ -8,9 +9,12 @@ namespace Web.Api.Services
     public class GoalActionService(SqliteTodo dbCtx) : ITodoService
     {
         private readonly SqliteTodo _dbContext = dbCtx;
-        public async Task<IEnumerable<Goal>> GetAllGoal() { 
+        #region Goal
+        public async Task<IEnumerable<Goal>> GetAllGoal()
+        {
             var goals = await _dbContext.Goal.ToListAsync();
-            goals.ForEach(async goal => {
+            goals.ForEach(async goal =>
+            {
                 goal.Actions = await GetChilds(goal);
             });
             return goals;
@@ -47,9 +51,13 @@ namespace Web.Api.Services
             res = await _dbContext.SaveChangesAsync();
             return res;
         }
-        public async Task<IEnumerable<TAction>> GetAllAction() {
+        #endregion
+        #region Action
+        public async Task<IEnumerable<TAction>> GetAllAction()
+        {
             var actions = await _dbContext.Action.ToListAsync();
-            actions.ForEach(async action => {
+            actions.ForEach(async action =>
+            {
                 action = await GetChilds(action);
             });
             return actions;
@@ -87,6 +95,8 @@ namespace Web.Api.Services
             res = await _dbContext.SaveChangesAsync();
             return res;
         }
+        #endregion
+        #region Todo
         public async Task<IEnumerable<Todo>> GetAllTodo() => await _dbContext.Todo.ToListAsync();
         public async Task<List<Todo>> AddTodos(List<Todo> items)
         {
@@ -120,6 +130,8 @@ namespace Web.Api.Services
             res = await _dbContext.SaveChangesAsync();
             return res;
         }
+        #endregion
+        #region Activity
         public async Task<IEnumerable<TActivity>> GetAllActivity() => await _dbContext.Activity.ToListAsync();
         public async Task<List<TActivity>> AddActivities(List<TActivity> items)
         {
@@ -176,5 +188,7 @@ namespace Web.Api.Services
             );
             return item;
         }
+        #endregion
+        public async Task<IEnumerable<UserAssign>> GetAllUserAssign() => await _dbContext.UserAssign.ToListAsync();
     }
 }

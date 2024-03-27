@@ -45,4 +45,12 @@ namespace Web.Api.Entries
         public DateTime? End { get; set; }
         public long ActionId { get; set; }
     }
+
+    [Table("UserAssign")]
+    public class UserAssign{
+        public long Id { get; set; }
+        public long AccountId { get; set; }
+        public required string GoalIds { get; set; }
+        public required string ActionIds { get; set; }
+    }
 }

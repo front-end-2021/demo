@@ -24,5 +24,7 @@ namespace Web.Api.Services
         Task<List<TActivity>> AddActivities(List<TActivity> items);
         Task<int> UpdateActivity(TActivity item);
         Task<int> DeleteActivity(long id);
+
+        Task<IEnumerable<UserAssign>> GetAllUserAssign();
     }
 }

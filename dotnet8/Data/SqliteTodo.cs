@@ -10,6 +10,7 @@ namespace Web.Api.Data
         public virtual DbSet<TAction> Action { get; set; }
         public virtual DbSet<Todo> Todo { get; set; }
         public virtual DbSet<TActivity> Activity { get; set; }
+        public virtual DbSet<UserAssign> UserAssign { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("todo");
