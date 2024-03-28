@@ -1,7 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
 using Web.Api.Data;
-using Web.Api.Dto;
 using Web.Api.Entries;
 
 namespace Web.Api.Services

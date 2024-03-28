@@ -1,8 +1,7 @@
-using Web.Api.Dto;
+using Web.Api.Client.Entries;
 
 namespace Web.Api.Services {
     public interface IUserAssign {
-        Task<List<UserAssignInfo>> GetAllUserAssign();
-        Task<List<GoalAssignInfo>> GetGoalsAssign();
+        Task<List<GoalInfo>> GetGoalsAssign();
     }
 }

@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Web.Api.Data;
-using Web.Api.Dto;
 using Web.Api.Entries;
 using Web.Api.Services;
 
@@ -78,15 +77,31 @@ userApi.MapDelete("/{id}", async (long id, IUserService service) =>
 #region Goal
 var goalGrp = "/goals";
 var goalApi = app.MapGroup(goalGrp);
-goalApi.MapGet("/", async (ITodoService service) =>
+goalApi.MapGet("/", async (IUserService sUser, ITodoService sTodo) =>
 {
-    var goals = await service.GetAllGoal();
+    var uAssign = new SvcUserAssign(sUser, sTodo);
+    var goals = await uAssign.GetGoalsAssign();
     return Results.Ok(goals);
 });
-goalApi.MapPost("/", async (List<Goal> items, ITodoService service) =>
+goalApi.MapPost("/", async (List<EntryGoal> items, ITodoService service) =>
 {
-    await service.AddGoals(items);
-    return Results.Created($"/${goalGrp}", items);
+    var lstGoal = new List<Goal>();
+    //var userAssgns = new List<UserAssign>();
+    items.ForEach(item =>
+    {
+        if (!string.IsNullOrEmpty(item.Name))
+        {
+            lstGoal.Add(new Goal()
+            {
+                Name = item.Name,
+                Start = item.Start,
+                End = item.End
+            });
+        }
+    });
+    lstGoal = await service.AddGoals(lstGoal);
+    var newItems = lstGoal.Select(g => new EntryGoal(g)).ToList();
+    return Results.Created($"/${goalGrp}", newItems);
 });
 goalApi.MapPut("/{id}", async (long id, Goal item, ITodoService service) =>
 {
@@ -180,26 +195,6 @@ activityApi.MapDelete("/{id}", async (long id, ITodoService service) =>
 });
 #endregion
 
-var assignGrp = "/assign";
-var assignApi = app.MapGroup(assignGrp);
-assignApi.MapGet("/goals", async (IUserService sUser, ITodoService sTodo) =>
-{
-    var uAssign = new SvcUserAssign(sUser, sTodo);
-    return await uAssign.GetGoalsAssign();
-});
-assignApi.MapGet("/users", async (IUserService sUser, ITodoService sTodo) =>
-{
-    var uAssign = new SvcUserAssign(sUser, sTodo);
-    return await uAssign.GetAllUserAssign();
-});
-assignApi.MapPost("/users", async (List<Web.Api.Client.Entries.UserAssign> items, ITodoService sTodo, IUserService sUser) =>
-{
-    var res = await sTodo.AssignUsers(items);
-    if (res < 0) return Results.BadRequest();
-    var uAssign = new SvcUserAssign(sUser, sTodo);
-    var all = await uAssign.GetAllUserAssign();
-    return Results.Ok(all);
-});
 app.Run();
 
 public record AllInfo(IEnumerable<Goal> Goals, IEnumerable<Account> Users);
