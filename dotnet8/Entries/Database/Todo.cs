@@ -9,7 +9,6 @@ namespace Web.Api.Entries
         public DateTime? Start { get; set; }
         public DateTime? End { get; set; }
 
-
         [ForeignKey("GoalId")]
         public ICollection<TAction>? Actions { get; set; }
     }

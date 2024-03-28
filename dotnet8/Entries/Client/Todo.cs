@@ -7,4 +7,5 @@ namespace Web.Api.Client.Entries
         public List<long> GoalIds { get; set; } = [];
         public List<long> ActionIds { get; set; } = [];
     }
+    
 }

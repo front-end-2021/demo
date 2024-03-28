@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Web.Api.Data;
+using Web.Api.Dto;
 using Web.Api.Entries;
 using Web.Api.Services;
 
@@ -181,16 +182,21 @@ activityApi.MapDelete("/{id}", async (long id, ITodoService service) =>
 
 var assignGrp = "/assign";
 var assignApi = app.MapGroup(assignGrp);
-assignApi.MapGet("/user", async (IUserService sUser, ITodoService sTodo) =>
+assignApi.MapGet("/goals", async (IUserService sUser, ITodoService sTodo) =>
 {
-    IUserAssign uAssign = new SvcUserAssign(sUser, sTodo);
+    var uAssign = new SvcUserAssign(sUser, sTodo);
+    return await uAssign.GetGoalsAssign();
+});
+assignApi.MapGet("/users", async (IUserService sUser, ITodoService sTodo) =>
+{
+    var uAssign = new SvcUserAssign(sUser, sTodo);
     return await uAssign.GetAllUserAssign();
 });
-assignApi.MapPost("/user", async (List<Web.Api.Client.Entries.UserAssign> items, ITodoService sTodo, IUserService sUser) =>
+assignApi.MapPost("/users", async (List<Web.Api.Client.Entries.UserAssign> items, ITodoService sTodo, IUserService sUser) =>
 {
     var res = await sTodo.AssignUsers(items);
     if (res < 0) return Results.BadRequest();
-    IUserAssign uAssign = new SvcUserAssign(sUser, sTodo);
+    var uAssign = new SvcUserAssign(sUser, sTodo);
     var all = await uAssign.GetAllUserAssign();
     return Results.Ok(all);
 });

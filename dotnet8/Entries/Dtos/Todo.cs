@@ -62,4 +62,15 @@ namespace Web.Api.Dto
             }
         }
     }
+
+    public class GoalAssignInfo : Goal
+    {
+        public List<Account> Accounts { get; set; } = [];
+        public GoalAssignInfo(Goal goal) {
+            Id = goal.Id;
+            Start = goal.Start;
+            End = goal.End;
+            Actions = goal.Actions;
+        }
+    }
 }
