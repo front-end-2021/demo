@@ -190,5 +190,43 @@ namespace Web.Api.Services
         }
         #endregion
         public async Task<IEnumerable<UserAssign>> GetAllUserAssign() => await _dbContext.UserAssign.ToListAsync();
+        public async Task<int> AssignUsers(List<Client.Entries.UserAssign> items)
+        {
+            var res = -405;
+            if (items == null || items.Count < 1) return res;
+            items.ForEach(async item =>
+            {
+                var dItem = await _dbContext.UserAssign.FindAsync(item.Id);
+                if (dItem != null)
+                {
+                    if (0 < item.AccountId && item.AccountId != dItem.AccountId)
+                    {
+                        dItem.AccountId = item.AccountId;
+                    }
+                    dItem.GoalIds = string.Join(",", item.GoalIds);
+                    dItem.ActionIds = string.Join(",", item.ActionIds);
+                    _dbContext.Entry(dItem).State = EntityState.Modified;
+                }
+                else
+                {
+                    var entry = new UserAssign()
+                    {
+                        AccountId = item.AccountId,
+                        GoalIds = string.Join(",", item.GoalIds),
+                        ActionIds = string.Join(",", item.ActionIds)
+                    };
+                    _dbContext.UserAssign.Add(entry);
+                }
+            });
+            try
+            {
+                res = await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+            return res;
+        }
     }
 }
