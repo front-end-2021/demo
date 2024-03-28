@@ -6,8 +6,8 @@ namespace Web.Api.Client.Entries
     {
         public long Id { get; set; } = u.Id;
         public long AccountId { get; set; } = u.AccountId;
-        public List<long> GoalIds { get; set; } = u.GoalIds.Select(tId => (long)Convert.ToDouble(tId)).ToList();
-        public List<long> ActionIds { get; set; } = u.ActionIds.Select(tId => (long)Convert.ToDouble(tId)).ToList();
+        public List<long> GoalIds { get; set; } = u.GoalIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
+        public List<long> ActionIds { get; set; } = u.ActionIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
     }
     public class GoalInfo
     {

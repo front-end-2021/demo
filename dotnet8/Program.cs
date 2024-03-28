@@ -196,5 +196,4 @@ activityApi.MapDelete("/{id}", async (long id, ITodoService service) =>
 #endregion
 
 app.Run();
-
 public record AllInfo(IEnumerable<Goal> Goals, IEnumerable<Account> Users);
