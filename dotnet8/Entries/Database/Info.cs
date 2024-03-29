@@ -9,6 +9,10 @@ namespace Web.Api.Entries {
         public DateTime DoB { get; set; }
         public required string Password { get; set; }
     }
+    
+//dotnet ef migrations add UpdateAndAddTable --context SqliteUser --output-dir Migrations/SqliteUsers
+//dotnet ef database update -c SqliteUser
+//dotnet ef dbcontext optimize --output-dir CompiledModels/Users -c SqliteUser --namespace CompiledModels.Users
     public class Category{
         public long Id { get; set; }
         public required string Name { get; set; }

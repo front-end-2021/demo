@@ -14,26 +14,37 @@ namespace Web.Api.Services
             await _dbContext.SaveChangesAsync();
             return user;
         }
-        public async Task<List<Account>> AddUsers(List<Account> users) {
+        public async Task<List<Account>> AddUsers(List<Account> users)
+        {
             _dbContext.Account.AddRange(users);
             await _dbContext.SaveChangesAsync();
             return users;
         }
         // private bool UserExists(long id) => _dbContext.Account.Any(e => e.Id == id);
-        public async Task<int> Update(Account user)
+        public async Task<int> Update(EntryAccount user)
         {
+            var res = -404;
             var item = _dbContext.Account.FirstOrDefault(x => x.Id == user.Id);
-            if (item == null) return -404;
+            if (item == null || user == null) return res;
+            if (!string.IsNullOrEmpty(user.Name) && !item.Name.Equals(user.Name)) item.Name = user.Name;
+            if (!string.IsNullOrEmpty(user.Email) && !item.Email.Equals(user.Email)) item.Email = user.Email;
+            if (!string.IsNullOrEmpty(user.Phone) && !item.Phone.Equals(user.Phone)) item.Phone = user.Phone;
+            if (DateTime.Compare(item.DoB, user.DoB) != 0) item.DoB = user.DoB;
+            if (!string.IsNullOrEmpty(user.Password)) {
+                if(string.IsNullOrEmpty(item.Password) || !item.Password.Equals(user.Password)) {
+                    item.Password = user.Password;
+                }
+            }
             _dbContext.Entry(item).State = EntityState.Modified;
             try
             {
-                await _dbContext.SaveChangesAsync();
+                res = await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
                 throw;
             }
-            return 200;
+            return res;
         }
         public async Task<int> Delete(long id)
         {

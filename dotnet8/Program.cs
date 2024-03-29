@@ -61,8 +61,9 @@ userApi.MapPost("/", async (List<Account> items, IUserService service) =>
     await service.AddUsers(items);
     return Results.Created($"/${userGrp}", items);
 });
-userApi.MapPut("/{id}", async (long id, Account item, IUserService service) =>
+userApi.MapPut("/{id}", async (long id, EntryAccount item, IUserService service) =>
 {
+    item.Id = id;
     var status = await service.Update(item);
     if (status == -404) return Results.NotFound();
     return Results.NoContent();
