@@ -8,12 +8,12 @@ namespace Web.Api.Client.Entries
         public long AccountId { get; set; }
         public List<long> GoalIds { get; set; }
         public List<long> ActionIds { get; set; }
-        public UserAssign(long aId, List<long> goalIds)
-        {
-            AccountId = aId;
-            GoalIds = goalIds;
-            ActionIds = [];
-        }
+        // public UserAssign(long aId, List<long> goalIds)
+        // {
+        //     AccountId = aId;
+        //     GoalIds = goalIds;
+        //     ActionIds = [];
+        // }
         public UserAssign(Api.Entries.UserAssign u)
         {
             Id = u.Id;

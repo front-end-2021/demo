@@ -1,6 +1,5 @@
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.ObjectPool;
 using Web.Api.Data;
 using Web.Api.Entries;
 
