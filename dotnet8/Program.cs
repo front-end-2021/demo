@@ -89,8 +89,9 @@ goalApi.MapPost("/", async (List<EntryGoal> items, ITodoService service) =>
     var lstGoal = await service.AddGoals(items);
     return Results.Created($"/${goalGrp}", lstGoal);
 });
-goalApi.MapPut("/{id}", async (long id, Goal item, ITodoService service) =>
+goalApi.MapPut("/{id}", async (long id, EntryGoal item, ITodoService service) =>
 {
+    item.Id = id;
     var status = await service.UpdateGoal(item);
     if (status == -404) return Results.NotFound();
     return Results.NoContent();

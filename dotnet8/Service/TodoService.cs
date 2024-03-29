@@ -82,6 +82,21 @@ namespace Web.Api.Services
                 });
             });
             var allUserAssgn = await GetAllUserAssign();
+            if (lstUserAsgn.Count < 1)
+            {
+                foreach (var uAssgn in allUserAssgn)
+                {
+                    var oldGoalIds = uAssgn.GoalIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
+                    goals.ForEach(goal =>
+                    {
+                        if (!oldGoalIds.Contains(goal.Id)) return;   // continue ForEach
+                        var newGoalIds = oldGoalIds.Remove(goal.Id);
+                        uAssgn.GoalIds = string.Join(",", newGoalIds);
+                        _dbContext.Entry(uAssgn).State = EntityState.Modified;
+                        res++;
+                    });
+                }
+            }
             lstUserAsgn.ForEach(userAsgn =>
             {
                 var uAssgn = allUserAssgn.FirstOrDefault(x => x.AccountId == userAsgn.AccountId);
@@ -120,20 +135,58 @@ namespace Web.Api.Services
             }
             return res;
         }
-        public async Task<int> UpdateGoal(Goal item)
+        public async Task<int> UpdateGoal(EntryGoal item)
         {
             var dItem = await _dbContext.Goal.FindAsync(item.Id);
             var res = -404;
-            if (dItem == null) return res;
-            _dbContext.Entry(dItem).State = EntityState.Modified;
-            try
+            if (dItem == null || item == null) return res;
+            res = 0;
+            if (!string.IsNullOrEmpty(item.Name) && !dItem.Name.Equals(item.Name))
             {
-                res = await _dbContext.SaveChangesAsync();
+                dItem.Name = item.Name;
+                res++;
             }
-            catch (DbUpdateConcurrencyException)
+            #region Start-End
+            if (item.Start != null)
             {
-                throw;
+                if (dItem.Start == null)
+                {
+                    dItem.Start = item.Start;
+                    res++;
+                }
+                else if (DateTime.Compare(dItem.Start.Value, item.Start.Value) != 0)
+                {
+                    dItem.Start = item.Start;
+                    res++;
+                }
             }
+            if (item.End != null)
+            {
+                if (dItem.End == null)
+                {
+                    dItem.End = item.End;
+                    res++;
+                }
+                else if (DateTime.Compare(dItem.End.Value, item.End.Value) != 0)
+                {
+                    dItem.End = item.End;
+                    res++;
+                }
+            }
+            #endregion
+            if (0 < res)
+            {
+                _dbContext.Entry(dItem).State = EntityState.Modified;
+                try
+                {
+                    res = await _dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw;
+                }
+            }
+            await SetUserAssign([item]);
             return res;
         }
         public async Task<int> DeleteGoal(long id)
