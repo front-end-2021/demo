@@ -71,57 +71,65 @@ namespace Web.Api.Services
         private async Task<int> SetUserAssign(List<EntryGoal> goals)
         {
             int res = 0;
-            var lstUserAsgn = new List<Client.Entries.UserAssign>();
-            goals.ForEach(item =>
-            {
-                item.AccountIds.ForEach(aId =>
-                {
-                    var userAsgn = lstUserAsgn.FirstOrDefault(x => x.AccountId == aId);
-                    if (userAsgn == null) lstUserAsgn.Add(new Client.Entries.UserAssign(aId, [item.Id]));
-                    else userAsgn.GoalIds.Add(item.Id);
-                });
-            });
             var allUserAssgn = await GetAllUserAssign();
-            if (lstUserAsgn.Count < 1)
+            foreach (var uAssgn in allUserAssgn)
             {
-                foreach (var uAssgn in allUserAssgn)
+                var oldGoalIds = string.IsNullOrEmpty(uAssgn.GoalIds) ? [] : uAssgn.GoalIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
+                goals.ForEach(goal =>
                 {
-                    var oldGoalIds = uAssgn.GoalIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
-                    goals.ForEach(goal =>
+                    if (goal.AccountIds.Count < 1)
                     {
                         if (!oldGoalIds.Contains(goal.Id)) return;   // continue ForEach
-                        var newGoalIds = oldGoalIds.Remove(goal.Id);
-                        uAssgn.GoalIds = string.Join(",", newGoalIds);
-                        _dbContext.Entry(uAssgn).State = EntityState.Modified;
-                        res++;
-                    });
-                }
-            }
-            lstUserAsgn.ForEach(userAsgn =>
-            {
-                var uAssgn = allUserAssgn.FirstOrDefault(x => x.AccountId == userAsgn.AccountId);
-                if (uAssgn == null)
-                {
-                    _dbContext.UserAssign.Add(new UserAssign()
+                        if (oldGoalIds.Remove(goal.Id))
+                        {
+                            uAssgn.GoalIds = string.Join(",", oldGoalIds);
+                            _dbContext.Entry(uAssgn).State = EntityState.Modified;
+                            res++;
+                        }
+                        return;
+                    }
+                    if (goal.AccountIds.Contains(uAssgn.AccountId))
                     {
-                        AccountId = userAsgn.AccountId,
-                        GoalIds = string.Join(",", userAsgn.GoalIds),
-                        ActionIds = string.Join(",", userAsgn.ActionIds)
-                    });
-                    res++;
-                    return;  // continue
-                }
-                var oldGoalIds = uAssgn.GoalIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
-                oldGoalIds = [.. oldGoalIds.Order()];
-                var newGoalIds = userAsgn.GoalIds.Order().ToList();
-                var txtOldGoalIds = string.Join(",", oldGoalIds);
-                var txtNewGoalIds = string.Join(",", newGoalIds);
-                if (!txtNewGoalIds.Equals(txtOldGoalIds))
-                {
-                    _dbContext.Entry(uAssgn).State = EntityState.Modified;
-                    res++;
-                }
-            });
+                        if (!oldGoalIds.Contains(goal.Id))
+                        {
+                            oldGoalIds.Add(goal.Id);
+                            uAssgn.GoalIds = string.Join(",", oldGoalIds);
+                            _dbContext.Entry(uAssgn).State = EntityState.Modified;
+                            res++;
+                            return;
+                        }
+
+                        return;
+                    }
+                    if (oldGoalIds.Contains(goal.Id))
+                    {
+                        if (oldGoalIds.Remove(goal.Id))
+                        {
+                            uAssgn.GoalIds = string.Join(",", oldGoalIds);
+                            _dbContext.Entry(uAssgn).State = EntityState.Modified;
+                            res++;
+                        }
+                        return;
+                    }
+                    if (0 < oldGoalIds.Count)
+                    {
+                        var newGoalIds = oldGoalIds.Join(goal.AccountIds, oId => oId, nId => nId, (oId, nId) => oId).ToList();
+                        if (newGoalIds == null)
+                        {
+                            uAssgn.GoalIds = string.Empty;
+                            _dbContext.Entry(uAssgn).State = EntityState.Modified;
+                            res++;
+                            return;
+                        }
+                        if (newGoalIds.Count != oldGoalIds.Count)
+                        {
+                            uAssgn.GoalIds = string.Join(",", newGoalIds);
+                            _dbContext.Entry(uAssgn).State = EntityState.Modified;
+                            res++;
+                        }
+                    }
+                });
+            }
             if (0 < res)
             {
                 try

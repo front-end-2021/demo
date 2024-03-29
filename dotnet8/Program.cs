@@ -40,7 +40,8 @@ app.MapGet("/alls", async (IUserService sUser, ITodoService sTodo) =>
 {
     var goals = await sTodo.GetAllGoal();
     var users = await sUser.GetAll();
-    AllInfo allInfo = new(goals, users);
+    var userAsgn = await sTodo.GetAllUserAssign();
+    AllInfo allInfo = new(goals, users, userAsgn);
     return Results.Ok(allInfo);
 });
 #region User
@@ -183,4 +184,4 @@ activityApi.MapDelete("/{id}", async (long id, ITodoService service) =>
 #endregion
 
 app.Run();
-public record AllInfo(IEnumerable<Goal> Goals, IEnumerable<Account> Users);
+public record AllInfo(IEnumerable<Goal> Goals, IEnumerable<Account> Users, IEnumerable<UserAssign> UserAssigns);

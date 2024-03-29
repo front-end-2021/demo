@@ -18,8 +18,8 @@ namespace Web.Api.Client.Entries
         {
             Id = u.Id;
             AccountId = u.AccountId;
-            GoalIds = u.GoalIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
-            ActionIds = u.ActionIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
+            GoalIds = string.IsNullOrEmpty(u.GoalIds) ? [] : u.GoalIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
+            ActionIds = string.IsNullOrEmpty(u.ActionIds) ? [] : u.ActionIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
         }
     }
     public class GoalInfo
