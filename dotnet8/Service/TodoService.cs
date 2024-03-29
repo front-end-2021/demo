@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.ObjectPool;
 using Web.Api.Data;
 using Web.Api.Entries;
 
@@ -18,12 +19,106 @@ namespace Web.Api.Services
             });
             return goals;
         }
-        public async Task<List<Goal>> AddGoals(List<Goal> items)
+        public async Task<List<EntryGoal>> AddGoals(List<EntryGoal> items)
         {
             if (items == null) return [];
-            _dbContext.Goal.AddRange(items);
+            items = items.Where(x => !string.IsNullOrEmpty(x.Name)).ToList();
+            if (items.Count < 1) return [];
+            #region check equal name
+            for (var i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                int ix = 1;
+                for (var j = i + 1; j < items.Count; j++)
+                {
+                    var itemj = items[j];
+                    if (item.Name.Equals(itemj.Name))
+                    {
+                        itemj.Name += $" (${ix++})";
+                    }
+                }
+            }
+            #endregion
+            var lstGoal = items.Select(x => new Goal()
+            {
+                Name = x.Name,
+                Start = x.Start,
+                End = x.End
+            }).ToList();
+            _dbContext.Goal.AddRange(lstGoal);
             await _dbContext.SaveChangesAsync();
+            #region map Id from lstGoal to items
+            for (var i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                var goal = lstGoal[i];
+                if (goal == null)
+                {
+                    Console.WriteLine($"Parameter {i} is out of range list goal");
+                    continue;
+                }
+                if (!item.Name.Equals(goal.Name))
+                {
+                    Console.WriteLine($"Two items not match name");
+                    continue;
+                }
+                item.Id = goal.Id;
+            }
+            #endregion
+            var res = await SetUserAssign(items);
             return items;
+        }
+        private async Task<int> SetUserAssign(List<EntryGoal> goals)
+        {
+            int res = 0;
+            var lstUserAsgn = new List<Client.Entries.UserAssign>();
+            goals.ForEach(item =>
+            {
+                item.AccountIds.ForEach(aId =>
+                {
+                    var userAsgn = lstUserAsgn.FirstOrDefault(x => x.AccountId == aId);
+                    if (userAsgn == null) lstUserAsgn.Add(new Client.Entries.UserAssign(aId, [item.Id]));
+                    else userAsgn.GoalIds.Add(item.Id);
+                });
+            });
+            var allUserAssgn = await GetAllUserAssign();
+            lstUserAsgn.ForEach(userAsgn =>
+            {
+                var uAssgn = allUserAssgn.FirstOrDefault(x => x.AccountId == userAsgn.AccountId);
+                if (uAssgn == null)
+                {
+                    _dbContext.UserAssign.Add(new UserAssign()
+                    {
+                        AccountId = userAsgn.AccountId,
+                        GoalIds = string.Join(",", userAsgn.GoalIds),
+                        ActionIds = string.Join(",", userAsgn.ActionIds)
+                    });
+                    res++;
+                    return;  // continue
+                }
+                var oldGoalIds = uAssgn.GoalIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
+                oldGoalIds = [.. oldGoalIds.Order()];
+                var newGoalIds = userAsgn.GoalIds.Order().ToList();
+                var txtOldGoalIds = string.Join(",", oldGoalIds);
+                var txtNewGoalIds = string.Join(",", newGoalIds);
+                if (!txtNewGoalIds.Equals(txtOldGoalIds))
+                {
+                    _dbContext.Entry(uAssgn).State = EntityState.Modified;
+                    res++;
+                }
+            });
+            if (0 < res)
+            {
+                try
+                {
+                    res = await _dbContext.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw;
+                }
+            }
+            return res;
         }
         public async Task<int> UpdateGoal(Goal item)
         {

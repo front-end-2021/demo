@@ -85,23 +85,8 @@ goalApi.MapGet("/", async (IUserService sUser, ITodoService sTodo) =>
 });
 goalApi.MapPost("/", async (List<EntryGoal> items, ITodoService service) =>
 {
-    var lstGoal = new List<Goal>();
-    //var userAssgns = new List<UserAssign>();
-    items.ForEach(item =>
-    {
-        if (!string.IsNullOrEmpty(item.Name))
-        {
-            lstGoal.Add(new Goal()
-            {
-                Name = item.Name,
-                Start = item.Start,
-                End = item.End
-            });
-        }
-    });
-    lstGoal = await service.AddGoals(lstGoal);
-    var newItems = lstGoal.Select(g => new EntryGoal(g)).ToList();
-    return Results.Created($"/${goalGrp}", newItems);
+    var lstGoal = await service.AddGoals(items);
+    return Results.Created($"/${goalGrp}", lstGoal);
 });
 goalApi.MapPut("/{id}", async (long id, Goal item, ITodoService service) =>
 {

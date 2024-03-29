@@ -7,7 +7,7 @@ namespace Web.Api.Services
     {
         Task<IEnumerable<Goal>> GetAllGoal();
         Task<int> DeleteGoal(long id);
-        Task<List<Goal>> AddGoals(List<Goal> items);
+        Task<List<EntryGoal>> AddGoals(List<EntryGoal> items);
         Task<int> UpdateGoal(Goal item);
 
         Task<IEnumerable<TAction>> GetAllAction();

@@ -2,12 +2,25 @@ using Web.Api.Entries;
 
 namespace Web.Api.Client.Entries
 {
-    public class UserAssign(Api.Entries.UserAssign u)
+    public class UserAssign
     {
-        public long Id { get; set; } = u.Id;
-        public long AccountId { get; set; } = u.AccountId;
-        public List<long> GoalIds { get; set; } = u.GoalIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
-        public List<long> ActionIds { get; set; } = u.ActionIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
+        public long Id { get; set; }
+        public long AccountId { get; set; }
+        public List<long> GoalIds { get; set; }
+        public List<long> ActionIds { get; set; }
+        public UserAssign(long aId, List<long> goalIds)
+        {
+            AccountId = aId;
+            GoalIds = goalIds;
+            ActionIds = [];
+        }
+        public UserAssign(Api.Entries.UserAssign u)
+        {
+            Id = u.Id;
+            AccountId = u.AccountId;
+            GoalIds = u.GoalIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
+            ActionIds = u.ActionIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
+        }
     }
     public class GoalInfo
     {
