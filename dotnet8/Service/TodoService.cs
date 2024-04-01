@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using Web.Api.Common;
 using Web.Api.Data;
 using Web.Api.Entries;
 
@@ -73,7 +74,7 @@ namespace Web.Api.Services
             var allUserAssgn = await GetAllUserAssign();
             foreach (var uAssgn in allUserAssgn)
             {
-                var oldGoalIds = string.IsNullOrEmpty(uAssgn.GoalIds) ? [] : uAssgn.GoalIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
+                var oldGoalIds = uAssgn.GoalIds.IdsToList();
                 goals.ForEach(goal =>
                 {
                     if (goal.AccountIds.Count < 1)
@@ -81,7 +82,7 @@ namespace Web.Api.Services
                         if (!oldGoalIds.Contains(goal.Id)) return;   // continue ForEach
                         if (oldGoalIds.Remove(goal.Id))
                         {
-                            uAssgn.GoalIds = string.Join(",", oldGoalIds);
+                            uAssgn.GoalIds = oldGoalIds.ListToTxt();
                             _dbContext.Entry(uAssgn).State = EntityState.Modified;
                             res++;
                         }
@@ -92,7 +93,7 @@ namespace Web.Api.Services
                         if (!oldGoalIds.Contains(goal.Id))
                         {
                             oldGoalIds.Add(goal.Id);
-                            uAssgn.GoalIds = string.Join(",", oldGoalIds);
+                            uAssgn.GoalIds = oldGoalIds.ListToTxt();
                             _dbContext.Entry(uAssgn).State = EntityState.Modified;
                             res++;
                             return;
@@ -104,7 +105,7 @@ namespace Web.Api.Services
                     {
                         if (oldGoalIds.Remove(goal.Id))
                         {
-                            uAssgn.GoalIds = string.Join(",", oldGoalIds);
+                            uAssgn.GoalIds = oldGoalIds.ListToTxt();
                             _dbContext.Entry(uAssgn).State = EntityState.Modified;
                             res++;
                         }
@@ -122,7 +123,7 @@ namespace Web.Api.Services
                         }
                         if (newGoalIds.Count != oldGoalIds.Count)
                         {
-                            uAssgn.GoalIds = string.Join(",", newGoalIds);
+                            uAssgn.GoalIds = newGoalIds.ListToTxt();
                             _dbContext.Entry(uAssgn).State = EntityState.Modified;
                             res++;
                         }
@@ -202,10 +203,70 @@ namespace Web.Api.Services
             var res = -404;
             if (item == null) return res;
             _dbContext.Goal.Remove(item);
-            res = await _dbContext.SaveChangesAsync();
+            var allUserAssgn = await _dbContext.UserAssign.ToListAsync();
+            var allAction = await _dbContext.Action.ToListAsync();
+            var removeAcIds = new List<long>();
+            res = 1;
+            foreach (var action in allAction)
+            {
+                if (action.GoalId != id) continue;
+                _dbContext.Action.Remove(action);
+                removeAcIds.Add(action.Id);
+            }
+            if (0 < removeAcIds.Count)
+            {
+                res = await RemoveTodoActivityUserAssign(removeAcIds);
+                res++;
+            }
+            foreach (var uAssign in allUserAssgn)
+            {
+                var ids = uAssign.GoalIds.IdsToList();
+                if (0 < ids.Count && ids.Remove(id))
+                {
+                    uAssign.GoalIds = ids.ListToTxt();
+                    _dbContext.Entry(uAssign).State = EntityState.Modified;
+                    res++;
+                }
+            }
+            await _dbContext.SaveChangesAsync();
             return res;
         }
         #endregion
+        private async Task<int> RemoveTodoActivityUserAssign(IEnumerable<long> removeAcIds)
+        {
+            var res = 0;
+            var allTodo = await _dbContext.Todo.ToListAsync();
+            foreach (var todo in allTodo)
+            {
+                if (removeAcIds.Contains(todo.ActionId)) { _dbContext.Todo.Remove(todo); res++; }
+            }
+            var allActivity = await _dbContext.Activity.ToListAsync();
+            foreach (var activity in allActivity)
+            {
+                if (removeAcIds.Contains(activity.ActionId)) { _dbContext.Activity.Remove(activity); res++; }
+            }
+            var allUserAssgn = await _dbContext.UserAssign.ToListAsync();
+            foreach (var uAssign in allUserAssgn)
+            {
+                var ids = uAssign.ActionIds.IdsToList();
+                if (0 < ids.Count)
+                {
+                    var newIds = new List<long>();
+                    foreach (var rid in ids)
+                    {
+                        if (removeAcIds.Contains(rid)) continue;
+                        newIds.Add(rid);
+                    }
+                    if (newIds.Count != ids.Count)
+                    {
+                        uAssign.ActionIds = newIds.ListToTxt();
+                        _dbContext.Entry(uAssign).State = EntityState.Modified;
+                        res++;
+                    }
+                }
+            }
+            return res;
+        }
         #region Action
         public async Task<IEnumerable<TAction>> GetAllAction()
         {
@@ -246,8 +307,9 @@ namespace Web.Api.Services
             var res = -404;
             if (item == null) return res;
             _dbContext.Action.Remove(item);
-            res = await _dbContext.SaveChangesAsync();
-            return res;
+            res = await RemoveTodoActivityUserAssign(new List<long>() { id });
+            await _dbContext.SaveChangesAsync();
+            return ++res;
         }
         #endregion
         #region Todo
@@ -357,8 +419,8 @@ namespace Web.Api.Services
                     {
                         dItem.AccountId = item.AccountId;
                     }
-                    dItem.GoalIds = string.Join(",", item.GoalIds);
-                    dItem.ActionIds = string.Join(",", item.ActionIds);
+                    dItem.GoalIds = item.GoalIds.ListToTxt();
+                    dItem.ActionIds = item.ActionIds.ListToTxt();
                     _dbContext.Entry(dItem).State = EntityState.Modified;
                 }
                 else
@@ -366,8 +428,8 @@ namespace Web.Api.Services
                     var entry = new UserAssign()
                     {
                         AccountId = item.AccountId,
-                        GoalIds = string.Join(",", item.GoalIds),
-                        ActionIds = string.Join(",", item.ActionIds)
+                        GoalIds = item.GoalIds.ListToTxt(),
+                        ActionIds = item.ActionIds.ListToTxt()
                     };
                     _dbContext.UserAssign.Add(entry);
                 }

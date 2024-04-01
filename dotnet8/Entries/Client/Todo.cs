@@ -1,3 +1,4 @@
+using Web.Api.Common;
 using Web.Api.Entries;
 
 namespace Web.Api.Client.Entries
@@ -12,8 +13,8 @@ namespace Web.Api.Client.Entries
         {
             Id = u.Id;
             AccountId = u.AccountId;
-            GoalIds = string.IsNullOrEmpty(u.GoalIds) ? [] : u.GoalIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
-            ActionIds = string.IsNullOrEmpty(u.ActionIds) ? [] : u.ActionIds.Split(",").Select(tId => (long)Convert.ToDouble(tId)).ToList();
+            GoalIds = u.GoalIds.IdsToList();
+            ActionIds = u.ActionIds.IdsToList();
         }
     }
     public class GoalInfo : GoalActInfo
