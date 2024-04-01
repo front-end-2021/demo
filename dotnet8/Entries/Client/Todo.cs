@@ -36,10 +36,7 @@ namespace Web.Api.Client.Entries
             Parallel.ForEach(accIds, accId =>
             {
                 var acc = allAcc.FirstOrDefault(a => a.Id == accId);
-                if (acc != null)
-                {
-                    lstAcc.Add(acc);
-                }
+                if (acc != null) lstAcc.Add(acc);
             });
             Accounts = lstAcc;
             Parallel.ForEach(Actions, action =>
@@ -49,10 +46,7 @@ namespace Web.Api.Client.Entries
                 foreach (var accId in acIds)
                 {
                     var acc = allAcc.FirstOrDefault(a => a.Id == accId);
-                    if (acc != null)
-                    {
-                        action.Accounts.Add(acc);
-                    }
+                    if (acc != null) action.Accounts.Add(acc);
                 }
             });
         }
