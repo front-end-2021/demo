@@ -11,13 +11,15 @@ RUN dotnet restore
 COPY . ./
 RUN dotnet tool install --global dotnet-ef
 ENV PATH="$PATH:/root/.dotnet/tools"
-RUN dotnet ef database update
+RUN dotnet ef database update -c SqliteTodo
+RUN dotnet ef database update -c SqliteUser
 RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 ENV ASPNETCORE_HTTP_PORTS=8080
-COPY --from=build /app/account.db .
+COPY --from=build /app/todo.db .
+COPY --from=build /app/user.db .
 COPY --from=build /app/out ./
 
 # Run the app
