@@ -227,7 +227,6 @@ namespace Web.Api.Services
                 End = a.End,
                 AccountIds = a.AccountIds
             }).ToList());
-            await _dbContext.SaveChangesAsync();
             return items;
         }
         public async Task<int> UpdateAction(TAction item)
