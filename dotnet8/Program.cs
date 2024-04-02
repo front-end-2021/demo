@@ -112,7 +112,7 @@ actionApi.MapGet("/", async (ITodoService service) =>
     var actions = await service.GetAllAction();
     return Results.Ok(actions);
 });
-actionApi.MapPost("/", async (List<TAction> items, ITodoService service) =>
+actionApi.MapPost("/", async (List<EntryAction> items, ITodoService service) =>
 {
     await service.AddActions(items);
     return Results.Created($"/${actionGrp}", items);
@@ -163,11 +163,6 @@ activityApi.MapGet("/", async (ITodoService service) =>
 {
     var activities = await service.GetAllActivity();
     return Results.Ok(activities);
-});
-activityApi.MapPost("/", async (List<TActivity> items, ITodoService service) =>
-{
-    await service.AddActivities(items);
-    return Results.Created($"/${activityGrp}", items);
 });
 activityApi.MapPut("/{id}", async (long id, TActivity item, ITodoService service) =>
 {

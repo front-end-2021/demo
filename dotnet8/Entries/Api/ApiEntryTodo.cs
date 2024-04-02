@@ -8,4 +8,10 @@ namespace Web.Api.Entries
         public DateTime? End { get; set; }
         public List<long> AccountIds { get; set; }
     }
+    public class EntryAction : EntryGoal
+    {
+        public long GoalId { get; set; }
+        public ICollection<Todo>? Todos { get; set; }
+        public ICollection<TActivity>? Activities { get; set; }
+    }
 }

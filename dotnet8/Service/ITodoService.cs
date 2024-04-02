@@ -11,7 +11,7 @@ namespace Web.Api.Services
         Task<int> UpdateGoal(EntryGoal item);
 
         Task<IEnumerable<TAction>> GetAllAction();
-        Task<List<TAction>> AddActions(List<TAction> items);
+        Task<List<EntryAction>> AddActions(List<EntryAction> items);
         Task<int> UpdateAction(TAction item);
         Task<int> DeleteAction(long id);
 
@@ -21,7 +21,6 @@ namespace Web.Api.Services
         Task<int> DeleteTodo(long id);
 
         Task<IEnumerable<TActivity>> GetAllActivity();
-        Task<List<TActivity>> AddActivities(List<TActivity> items);
         Task<int> UpdateActivity(TActivity item);
         Task<int> DeleteActivity(long id);
 

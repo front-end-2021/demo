@@ -68,14 +68,14 @@ namespace Web.Api.Services
             var res = await SetUserAssign(items);
             return items;
         }
-        private async Task<int> SetUserAssign(List<EntryGoal> goals)
+        private async Task<int> SetUserAssign(List<EntryGoal> items)
         {
             int res = 0;
             var allUserAssgn = await GetAllUserAssign();
             foreach (var uAssgn in allUserAssgn)
             {
                 var oldGoalIds = uAssgn.GoalIds.IdsToList();
-                goals.ForEach(goal =>
+                items.ForEach(goal =>
                 {
                     if (goal.AccountIds.Count < 1)
                     {
@@ -277,11 +277,57 @@ namespace Web.Api.Services
             });
             return actions;
         }
-        public async Task<IEnumerable<TAction>> AddActions() => await _dbContext.Action.ToListAsync();
-        public async Task<List<TAction>> AddActions(List<TAction> items)
+        public async Task<List<EntryAction>> AddActions(List<EntryAction> items)
         {
             if (items == null) return [];
-            _dbContext.Action.AddRange(items);
+            items = items.Where(x => !string.IsNullOrEmpty(x.Name)).ToList();
+            var actions = items.Select(a => new TAction()
+            {
+                Name = a.Name,
+                Start = a.Start,
+                End = a.End,
+                GoalId = a.GoalId
+            }).ToList();
+            _dbContext.Action.AddRange(actions);
+            await _dbContext.SaveChangesAsync();    // insert action to DB => new id
+            Parallel.ForEach(items, item =>
+            {
+                var action = actions.FirstOrDefault(a => item.Name.Equals(a.Name));
+                if (action != null) item.Id = action.Id;
+            });
+            foreach (var item in items)
+            {
+                var actv = new TActivity()
+                {
+                    Name = $"New action: {item.Name}",
+                    Start = DateTime.UtcNow,
+                    End = item.End == null ? DateTime.UtcNow : item.End,
+                    ActionId = item.Id
+                };
+                _dbContext.Activity.Add(actv);
+                if (item.Todos == null) continue;
+                if (item.Todos.Count < 1) continue;
+                _dbContext.Todo.AddRange(item.Todos);
+                foreach (var todo in item.Todos)
+                {
+                    actv = new TActivity()
+                    {
+                        Name = $"New todo: {todo.Name}",
+                        Start = DateTime.UtcNow,
+                        End = todo.End == null ? DateTime.UtcNow : todo.End,
+                        ActionId = item.Id
+                    };
+                    _dbContext.Activity.Add(actv);
+                }
+            }
+            await SetUserAssign(items.Where(x => x.AccountIds != null && 0 < x.AccountIds.Count).Select(a => new EntryGoal()
+            {
+                Id = a.Id,
+                Name = a.Name,
+                Start = a.Start,
+                End = a.End,
+                AccountIds = a.AccountIds
+            }).ToList());
             await _dbContext.SaveChangesAsync();
             return items;
         }
@@ -349,13 +395,6 @@ namespace Web.Api.Services
         #endregion
         #region Activity
         public async Task<IEnumerable<TActivity>> GetAllActivity() => await _dbContext.Activity.ToListAsync();
-        public async Task<List<TActivity>> AddActivities(List<TActivity> items)
-        {
-            if (items == null) return [];
-            _dbContext.Activity.AddRange(items);
-            await _dbContext.SaveChangesAsync();
-            return items;
-        }
         public async Task<int> UpdateActivity(TActivity item)
         {
             var dItem = await _dbContext.Activity.FindAsync(item.Id);
