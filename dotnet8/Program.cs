@@ -7,12 +7,12 @@ using Web.Api.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Database
-//dotnet ef migrations add IniCreate --context SqliteTodo --output-dir Migrations/SqliteTodos
-//dotnet ef migrations add IniCreate --context SqliteUser --output-dir Migrations/SqliteUsers
+//dotnet ef migrations add IniCreate --context SqliteTodo --output-dir DataAccessLogic/Migrations/Todos
+//dotnet ef migrations add IniCreate --context SqliteUser --output-dir DataAccessLogic/Migrations/Users
 //dotnet ef database update -c SqliteTodo
 //dotnet ef database update -c SqliteUser
-//dotnet ef dbcontext optimize --output-dir CompiledModels/Todos -c SqliteTodo --namespace CompiledModels.Todos
-//dotnet ef dbcontext optimize --output-dir CompiledModels/Users -c SqliteUser --namespace CompiledModels.Users
+//dotnet ef dbcontext optimize --output-dir DataAccessLogic/CompiledModels/Todos -c SqliteTodo --namespace CompiledModels.Todos
+//dotnet ef dbcontext optimize --output-dir DataAccessLogic/CompiledModels/Users -c SqliteUser --namespace CompiledModels.Users
 var connTodo = builder.Configuration.GetConnectionString("SqliteTodo");
 builder.Services.AddDbContext<SqliteTodo>(options =>
     options

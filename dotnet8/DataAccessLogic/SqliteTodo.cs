@@ -5,14 +5,11 @@ namespace Web.Api.DAL
     public class SqliteTodo : DbContext
     {
         public SqliteTodo(DbContextOptions<SqliteTodo> options) : base(options) { }
-        public virtual DbSet<Goal> Goal { get; set; }
-        public virtual DbSet<TAction> Action { get; set; }
-        public virtual DbSet<Todo> Todo { get; set; }
-        public virtual DbSet<TActivity> Activity { get; set; }
-// dotnet ef migrations add NewTableUserAsgn --context SqliteTodo --output-dir Migrations/SqliteTodos
-// dotnet ef database update -c SqliteTodo
-// dotnet ef dbcontext optimize --output-dir CompiledModels/Todos -c SqliteTodo --namespace CompiledModels.Todos
-        public virtual DbSet<UserAssign> UserAssign { get; set; }
+        public virtual DbSet<Goal> Goals { get; set; }
+        public virtual DbSet<TAction> Actions { get; set; }
+        public virtual DbSet<Todo> Todos { get; set; }
+        public virtual DbSet<TActivity> Activities { get; set; }
+        public virtual DbSet<UserAssign> UserAssigns { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("todo");
