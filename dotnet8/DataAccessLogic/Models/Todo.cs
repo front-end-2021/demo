@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Web.Api.Entries
+namespace Web.Api.DAL
 {
     public class Goal
     {

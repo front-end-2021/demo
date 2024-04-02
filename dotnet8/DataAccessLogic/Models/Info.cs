@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Web.Api.Entries {
+namespace Web.Api.DAL {
     public class Account {
         public long Id { get; set; }
         public required string Name { get; set; }

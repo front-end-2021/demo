@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Web.Api.Entries;
 
-namespace Web.Api.Data
+namespace Web.Api.DAL
 {
     public class SqliteTodo : DbContext
     {

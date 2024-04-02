@@ -1,5 +1,5 @@
 using Web.Api.Common;
-using Web.Api.Entries;
+using Web.Api.DAL;
 
 namespace Web.Api.Client.Entries
 {
@@ -9,7 +9,7 @@ namespace Web.Api.Client.Entries
         public long AccountId { get; set; }
         public List<long> GoalIds { get; set; }
         public List<long> ActionIds { get; set; }
-        public UserAssign(Api.Entries.UserAssign u)
+        public UserAssign(DAL.UserAssign u)
         {
             Id = u.Id;
             AccountId = u.AccountId;

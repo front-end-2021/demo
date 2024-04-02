@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Web.Api.Data;
+using Web.Api.DAL;
 using Web.Api.Entries;
 using Web.Api.Services;
 

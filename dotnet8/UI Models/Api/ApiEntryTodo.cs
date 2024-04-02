@@ -1,3 +1,5 @@
+using Web.Api.DAL;
+
 namespace Web.Api.Entries
 {
     public class EntryGoal

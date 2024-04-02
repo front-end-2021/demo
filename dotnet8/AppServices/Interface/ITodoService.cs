@@ -1,4 +1,5 @@
 
+using Web.Api.DAL;
 using Web.Api.Entries;
 
 namespace Web.Api.Services
