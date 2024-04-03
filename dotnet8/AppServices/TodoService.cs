@@ -174,14 +174,14 @@ namespace Web.Api.Services
             var dateNow = DateTime.UtcNow;
             var actions = items.Select(a =>
             {
-                var acn = new TAction()
+                var acn = new TAction
                 {
                     Name = a.Name,
                     Start = a.Start,
                     End = a.End,
                     GoalId = a.GoalId,
                 };
-                acn.Activities?.Add(new TActivity()
+                acn.Activities?.Add(new TActivity
                 {
                     Name = $"New action: {a.Name}",
                     Start = dateNow,
@@ -191,13 +191,13 @@ namespace Web.Api.Services
                 {
                     foreach (var todo in a.Todos)
                     {
-                        acn.Todos?.Add(new Todo()
+                        acn.Todos?.Add(new Todo
                         {
                             Name = todo.Name,
                             Start = todo.Start,
                             End = todo.End,
                         });
-                        acn.Activities?.Add(new TActivity()
+                        acn.Activities?.Add(new TActivity
                         {
                             Name = $"New todo: {todo.Name}",
                             Start = dateNow,
@@ -219,7 +219,7 @@ namespace Web.Api.Services
                     item.Activities = action.Activities;
                 }
             });
-            await SetUserAssign(items.Where(x => x.AccountIds != null && 0 < x.AccountIds.Count).Select(a => new EntryGoal()
+            await SetUserAssign(items.Where(x => x.AccountIds != null && 0 < x.AccountIds.Count).Select(a => new EntryGoal
             {
                 Id = a.Id,
                 Name = a.Name,
