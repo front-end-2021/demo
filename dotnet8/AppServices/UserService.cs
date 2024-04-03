@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Web.Api.Common;
 using Web.Api.DAL;
 using Web.Api.Entries;
 
@@ -10,6 +11,20 @@ namespace Web.Api.Services
         public async Task<IEnumerable<Account>> GetAll() => await _dbContext.Account.ToListAsync();
         public async Task<Account> AddUser(Account user)
         {
+            var dUser = await _dbContext.Account.FirstOrDefaultAsync(u => u.Name.EqlNotSensitive(user.Name));
+            if (dUser != null)
+            {
+                dUser = await _dbContext.Account.FirstOrDefaultAsync(u => u.Email.EqlNotSensitive(user.Email));
+                if (dUser != null)
+                {
+                    dUser = await _dbContext.Account.FirstOrDefaultAsync(u => u.Phone.Equals(user.Phone));
+                    if (dUser != null)
+                    {
+                        user.Id = -dUser.Id;
+                        return user;
+                    }
+                }
+            }
             _dbContext.Account.Add(user);
             await _dbContext.SaveChangesAsync();
             return user;
@@ -30,8 +45,10 @@ namespace Web.Api.Services
             if (!string.IsNullOrEmpty(user.Email) && !item.Email.Equals(user.Email)) item.Email = user.Email;
             if (!string.IsNullOrEmpty(user.Phone) && !item.Phone.Equals(user.Phone)) item.Phone = user.Phone;
             if (DateTime.Compare(item.DoB, user.DoB) != 0) item.DoB = user.DoB;
-            if (!string.IsNullOrEmpty(user.Password)) {
-                if(string.IsNullOrEmpty(item.Password) || !item.Password.Equals(user.Password)) {
+            if (!string.IsNullOrEmpty(user.Password))
+            {
+                if (string.IsNullOrEmpty(item.Password) || !item.Password.Equals(user.Password))
+                {
                     item.Password = user.Password;
                 }
             }

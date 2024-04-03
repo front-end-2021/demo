@@ -13,5 +13,9 @@ namespace Web.Api.Common
             if (lstId == null) return string.Empty;
             return string.Join(",", lstId);
         }
+        public static bool EqlNotSensitive(this string txt1, string txt2)
+        {
+            return txt1.ToLower().Equals(txt2.ToLower());
+        }
     }
 }

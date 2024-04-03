@@ -54,7 +54,10 @@ userApi.MapGet("/", async (IUserService service) =>
 });
 app.MapPost("user/", async (Account item, IUserService service) =>
 {
-    await service.AddUser(item);
+    var dUser = await service.AddUser(item);
+    if(dUser != null && dUser.Id < 0) {
+        return Results.Conflict($"User already exists");
+    }
     return Results.Created($"/${userGrp}/{item.Id}", item);
 });
 userApi.MapPost("/", async (List<Account> items, IUserService service) =>
