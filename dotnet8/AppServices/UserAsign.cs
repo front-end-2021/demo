@@ -20,5 +20,10 @@ namespace Web.Api.Services
                 return gInfo;
             }).ToList();
         }
+        public async Task<string> GetJsonFile(){
+            var rootPath = AppContext.BaseDirectory;
+
+            return rootPath;
+        }
     }
 }
