@@ -41,8 +41,12 @@ app.MapGet("/alls", async (IUserService sUser, ITodoService sTodo) =>
     var goals = await sTodo.GetAllGoal();
     var users = await sUser.GetAll();
     var userAsgn = await sTodo.GetAllUserAssign();
-    AllInfo allInfo = new(goals, users, userAsgn);
-    return Results.Ok(allInfo);
+    return Results.Ok(new
+    {
+        Users = users,
+        UserAssigns = userAsgn,
+        Goals = goals
+    });
 });
 #region User
 var userGrp = "/users";
@@ -55,7 +59,8 @@ userApi.MapGet("/", async (IUserService service) =>
 app.MapPost("user/", async (Account item, IUserService service) =>
 {
     var dUser = await service.AddUser(item);
-    if(dUser != null && dUser.Id < 0) {
+    if (dUser != null && dUser.Id < 0)
+    {
         return Results.Conflict($"User already exists");
     }
     return Results.Created($"/${userGrp}/{item.Id}", item);
@@ -182,4 +187,3 @@ activityApi.MapDelete("/{id}", async (long id, ITodoService service) =>
 #endregion
 
 app.Run();
-public record AllInfo(IEnumerable<Goal> Goals, IEnumerable<Account> Users, IEnumerable<UserAssign> UserAssigns);
