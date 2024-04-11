@@ -139,7 +139,7 @@ class MktFilter {
             const crite = rows[ii]
             if (type != crite.Type) continue;
             const i_Id = crite.Ids[indexI]
-            if(typeof indexI != 'number') continue
+            if(typeof i_Id != 'number') continue
             if (i_Id < 0) continue
             if (!lstId.length) {        // 1st
                 lstId.push(i_Id)
@@ -184,6 +184,7 @@ class MktFilter {
             if (1 == row.Type) rwLandRegns.push(row)
         }
         if (!rwLandRegns.length) return [0]
+        // return this.getBlockIds(rwLandRegns, 1, 1)
         let lstId = []
         for (let ii = 0; ii < rwLandRegns.length; ii++) {
             const crite = rwLandRegns[ii]
