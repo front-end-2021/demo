@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exercise TFS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style/5.3.2_dist_css_bootstrap.min.css" />
+    <link rel="stylesheet" href="style/bowtie.css" />
+    <link rel="stylesheet" href="style/app_style.css" />
+
+    <script src="script/3rd/boots/jquery-3.7.1.min.js"></script>
+    <script src="script/3rd/boots/5.3.2_dist_js_bootstrap.bundle.min.js"></script>
+    <script src="script/3rd/vuejs/dev_vue@2_7_14.js"></script>
+    <script src="script/3rd/vuejs/vue-observe-visibility.min.js"></script>
+    <script src="script/3rd/vuejs/dnd/1.8.4_Sortable.min.js"></script>
+    <script src="script/3rd/vuejs/dnd/2.20.0_vuedraggable.umd.min.js"></script>
+</head>
+<body>
+    <main id="cv-app">
+        <b-filter inline-template v-if="Filter != null" :f-data="Filter">
+            <section>
+                <input type="text" :placeholder="PlaceholderKeyWord" v-model="Keyword"/>
+            </section>
+        </b-filter>
+        <section class="dnb-col-head d-flex">
+            <span >Collapse all</span>
+            <span >To Do</span>
+            <span >New</span>
+            <span >Appvored</span>
+            <span >In Progess</span>
+            <span >Commited</span>
+            <span >Done</span>
+        </section>
+        <b-backlog inline-template v-for="(backlog, b) in Backlogs" 
+            :f-data="Filter" :item="backlog" :key="'logitem-' + b">
+            <section class="d-flex">
+                <div class="card m-1">
+                    <div class="card-body">
+                      <b class="card-title">{{item.Name}}</b>
+                      <p class="card-subtitle mb-2 text-muted">{{item.User}}</p>
+                      <p class="card-text">{{item.Description}}</p>
+                      <a href="#" class="card-link">Card link</a>
+                      <a href="#" class="card-link">Another link</a>
+                    </div>
+                </div>
+                <div class="dnb-col-todo">
+                    <draggable :list="Todo"
+                        :group="'task-in-item'">
+                        <b-task v-for="(todo, t) in Todo" :key="'todoitem-' + t"
+                        :item="todo"></b-task>
+                    </draggable>
+                </div>
+                <div class="dnb-col-new">
+                    <draggable :list="New"
+                        :group="'task-in-item'">
+                        <b-task v-for="(cnew, t) in New" :key="'newitem-' + t"
+                        :item="cnew"></b-task>
+                    </draggable>
+                    
+                </div>
+            </section>
+        </b-backlog>
+    </main>
+
+    <script type="text/x-template" id="b-task-temp">
+        <div class="card m-1">
+            <div class="card-body">
+              <b class="card-title">{{item.Name}}</b>
+              <p class="card-subtitle mb-2 text-muted">{{item.User}}</p>
+              <p class="card-text">{{item.Description}}</p>
+              <a href="#" class="card-link">Card link</a>
+              <a href="#" class="card-link">Another link</a>
+            </div>
+        </div>
+    </script>
+    <script>
+        HTMLElement.prototype.offset = function () {
+            const el = this
+            const rect = el.getBoundingClientRect(),
+                scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+                scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+        }
+    </script>
+    <script src="script/repository/common.js"></script>
+    <script src="script/repository/mock-data.js"></script>
+
+    <script src="script/components.js"></script>
+    <script src="script/cv-app.js"></script>
+</body>
+</html>
