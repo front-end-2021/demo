@@ -1,10 +1,10 @@
 const cvApp = new Vue({
-    el: '#cv-app',
-    name: 'cv-app',
+    el: '#tfs-app',
+    name: 'tfs-app',
     data: {
         Filter: {Search: ''},
         CollapseIds: [],
-        Backlogs: [{Name: 'item 1', User: 'DaiNB'}],
+        Backlogs: [{Id: -Date.now(), Name: 'item 1', User: 'DaiNB'}],
         Menu: null,
 
     },

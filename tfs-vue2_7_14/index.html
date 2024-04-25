@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Exercise TFS</title>
     <meta charset="UTF-8">
@@ -15,62 +16,79 @@
     <script src="script/3rd/vuejs/dnd/1.8.4_Sortable.min.js"></script>
     <script src="script/3rd/vuejs/dnd/2.20.0_vuedraggable.umd.min.js"></script>
 </head>
+
 <body>
-    <main id="cv-app">
+    <main id="tfs-app">
         <b-filter inline-template v-if="Filter != null" :f-data="Filter">
             <section>
-                <input type="text" :placeholder="PlaceholderKeyWord" v-model="Keyword"/>
+                <input type="text" :placeholder="PlaceholderKeyWord" v-model="Keyword" />
             </section>
         </b-filter>
         <section class="dnb-col-head d-flex">
-            <span >Collapse all</span>
-            <span >To Do</span>
-            <span >New</span>
-            <span >Appvored</span>
-            <span >In Progess</span>
-            <span >Commited</span>
-            <span >Done</span>
+            <span>Collapse all</span>
+            <span>To Do</span>
+            <span>New</span>
+            <span>Appvored</span>
+            <span>In Progess</span>
+            <span>Commited</span>
+            <span>Done</span>
         </section>
-        <b-backlog inline-template v-for="(backlog, b) in Backlogs" 
-            :f-data="Filter" :item="backlog" :key="'logitem-' + b">
+        <b-backlog inline-template 
+            v-for="(backlog, b) in Backlogs" 
+            :f-data="Filter" :item="backlog"
+            :key="'logitem-' + b">
             <section class="d-flex">
-                <div class="card m-1">
-                    <div class="card-body">
-                      <b class="card-title">{{item.Name}}</b>
-                      <p class="card-subtitle mb-2 text-muted">{{item.User}}</p>
-                      <p class="card-text">{{item.Description}}</p>
-                      <a href="#" class="card-link">Card link</a>
-                      <a href="#" class="card-link">Another link</a>
-                    </div>
-                </div>
-                <div class="dnb-col-todo">
-                    <draggable :list="Todo"
-                        :group="'task-in-item'">
-                        <b-task v-for="(todo, t) in Todo" :key="'todoitem-' + t"
-                        :item="todo"></b-task>
-                    </draggable>
-                </div>
-                <div class="dnb-col-new">
-                    <draggable :list="New"
-                        :group="'task-in-item'">
-                        <b-task v-for="(cnew, t) in New" :key="'newitem-' + t"
-                        :item="cnew"></b-task>
-                    </draggable>
-                    
-                </div>
+                <b-item :item="item" :rwork="Time"></b-item>
+                <b-state-todo :items="Todo"></b-state-todo>
+                <b-state-new :items="New"></b-state-new>
+                <b-state-approve :items="Approved"></b-state-approve>
+                <b-state-inprogress :items="InProgess"></b-state-inprogress>
+                <b-state-commit :items="Commited"></b-state-commit>
+                <b-state-done :items="Done"></b-state-done>
             </section>
         </b-backlog>
     </main>
-
-    <script type="text/x-template" id="b-task-temp">
-        <div class="card m-1">
+    <script type="text/x-template" id="b-task-done-temp">
+        <div class="card m-1 dh-fitcontent">
             <div class="card-body">
               <b class="card-title">{{item.Name}}</b>
-              <p class="card-subtitle mb-2 text-muted">{{item.User}}</p>
-              <p class="card-text">{{item.Description}}</p>
-              <a href="#" class="card-link">Card link</a>
-              <a href="#" class="card-link">Another link</a>
+              <small class="card-subtitle text-muted d-block">{{item.User}}</small>
+              <small  class="card-text d-block">{{item.Description}}</small>
+              <slot></slot>
+              <a href="#" class="card-link"><small>Task link</small></a>
             </div>
+        </div>
+    </script>
+    <script type="text/x-template" id="b-item-temp">
+        <b-task-done :item="item">
+            <small class="card-text d-block">Remaining work: {{rwork}}</small>
+        </b-task-done>
+    </script>
+    <script type="text/x-template" id="b-task-temp">
+        <b-task-done :item="item">
+            <small class="card-text d-block">Remaining work: 
+                <input type="text" class="form-control w-25 d-inline-block" 
+                    v-model="RemainingWork"/>
+            </small>
+        </b-task-done>
+    </script>
+    <script type="text/x-template" id="b-state-temp">
+        <div class="dcol-state" v-bind:class=[ClassWrap]>
+            <draggable v-if="State == 6" 
+                :list="Items" :group="'task-in-item'" 
+                class="w-100 h-100">
+                <b-task-done
+                    v-for="task in Items" 
+                    :key="'task_' + task.Id"
+                    :item="task"></b-task-done>
+            </draggable>
+            <draggable v-else :list="Items" :group="'task-in-item'" 
+                class="w-100 h-100">
+                <b-task 
+                    v-for="task in Items" 
+                    :key="'task_' + task.Id"
+                    :item="task"></b-task>
+            </draggable>
         </div>
     </script>
     <script>
@@ -84,8 +102,9 @@
     </script>
     <script src="script/repository/common.js"></script>
     <script src="script/repository/mock-data.js"></script>
-
+    <script src="script/component-temp.js"></script>
     <script src="script/components.js"></script>
     <script src="script/cv-app.js"></script>
 </body>
+
 </html>
