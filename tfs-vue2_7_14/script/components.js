@@ -1,33 +1,37 @@
 Vue.component('b-filter', {
-    props: ['f-data'],      // this.fData {Search, }
+    //props: [],
     //inject: ['onChangeFilterByWord'],
     data() {
         return {
-            Keyword: this.fData.Search,
+            Keyword: TfsStore.getters.getSearch(),
         }
     },
     computed: {
         PlaceholderKeyWord() { return `Filter by keyword` },
     },
-    //watch: {},
+    watch: {
+        Keyword(val) {
+            TfsStore.dispatch('setFilterSearch', val)
+        },
+    },
     methods: {
 
     },
 })
 
 Vue.component('b-backlog', {
-    props: ['f-data', 'item'], // this.fData {Search, }
+    props: ['item'],
     //inject: ['onChangeFilterByWord'],
     data() {
         let dNow = Date.now()
         return {
-            Todo: [ {Id: -dNow, Name: 'Todo 1', User: 'DaiNB', RemainingWork: 1}
-                ],
-            New: [{Id: -(++dNow), Name: 'New 1', User: 'DaiNB', RemainingWork: 0}],
-            Approved: [{Id: -(++dNow), Name: 'Appr 1', User: 'DaiNB', RemainingWork: 0}],
-            InProgess: [{Id: -(++dNow), Name: 'InPrg 1', User: 'DaiNB', RemainingWork: 0}],
-            Commited: [{Id: -(++dNow), Name: 'Cmt 1', User: 'DaiNB', RemainingWork: 0}],
-            Done: [{Id: -(++dNow), Name: 'Done 1', User: 'DaiNB', RemainingWork: 0}],
+            Todo: [{ Id: -dNow, Name: 'Todo 1', User: 'DaiNB', RemainingWork: 1 }
+            ],
+            New: [{ Id: -(++dNow), Name: 'New 1', User: 'DaiNB', RemainingWork: 0 }],
+            Approved: [{ Id: -(++dNow), Name: 'Appr 1', User: 'DaiNB', RemainingWork: 0 }],
+            InProgess: [{ Id: -(++dNow), Name: 'InPrg 1', User: 'DaiNB', RemainingWork: 0 }],
+            Commited: [{ Id: -(++dNow), Name: 'Cmt 1', User: 'DaiNB', RemainingWork: 0 }],
+            Done: [{ Id: -(++dNow), Name: 'Done 1', User: 'DaiNB', RemainingWork: 0 }],
         }
     },
     computed: {
@@ -46,11 +50,24 @@ Vue.component('b-backlog', {
         },
     },
     watch: {
-        'item.Todo'(lst){
-            
+        'item.Todo'(lst) {
+
         },
     },
     methods: {
 
+    },
+    provide() {
+        return {
+            getTaskNames: () => {
+                const rTodo = this.Todo.map(x => x.Name);
+                const rNew = this.New.map(x => x.Name);
+                const rApp = this.Approved.map(x => x.Name);
+                const rIng = this.InProgess.map(x => x.Name);
+                const rCmt = this.Commited.map(x => x.Name);
+                const rDone = this.Done.map(x => x.Name);
+                return [...rTodo, ...rNew, ...rApp, ...rIng, ...rCmt, ...rDone]
+            },
+        }
     },
 })

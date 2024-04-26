@@ -12,6 +12,7 @@
     <script src="script/3rd/boots/jquery-3.7.1.min.js"></script>
     <script src="script/3rd/boots/5.3.2_dist_js_bootstrap.bundle.min.js"></script>
     <script src="script/3rd/vuejs/dev_vue@2_7_14.js"></script>
+    <script src="script/3rd/vuejs/vuex.global.js"></script>
     <script src="script/3rd/vuejs/vue-observe-visibility.min.js"></script>
     <script src="script/3rd/vuejs/dnd/1.8.4_Sortable.min.js"></script>
     <script src="script/3rd/vuejs/dnd/2.20.0_vuedraggable.umd.min.js"></script>
@@ -19,7 +20,7 @@
 
 <body>
     <main id="tfs-app">
-        <b-filter inline-template v-if="Filter != null" :f-data="Filter">
+        <b-filter inline-template v-if="IsShowFilter">
             <section>
                 <input type="text" :placeholder="PlaceholderKeyWord" v-model="Keyword" />
             </section>
@@ -34,8 +35,7 @@
             <span>Done</span>
         </section>
         <b-backlog inline-template 
-            v-for="(backlog, b) in Backlogs" 
-            :f-data="Filter" :item="backlog"
+            v-for="(backlog, b) in Backlogs" :item="backlog"
             :key="'logitem-' + b">
             <section class="d-flex">
                 <b-item :item="item" :rwork="Time"></b-item>
@@ -49,7 +49,7 @@
         </b-backlog>
     </main>
     <script type="text/x-template" id="b-task-done-temp">
-        <div class="card m-1 dh-fitcontent">
+        <div class="card m-1 dh-fitcontent" v-if="isShow || IsShow">
             <div class="card-body">
               <b class="card-title">{{item.Name}}</b>
               <small class="card-subtitle text-muted d-block">{{item.User}}</small>
@@ -60,12 +60,12 @@
         </div>
     </script>
     <script type="text/x-template" id="b-item-temp">
-        <b-task-done :item="item">
+        <b-task-done :item="item" :is-show="IsShow" v-show="IsShow">
             <small class="card-text d-block">Remaining work: {{rwork}}</small>
         </b-task-done>
     </script>
     <script type="text/x-template" id="b-task-temp">
-        <b-task-done :item="item">
+        <b-task-done :item="item" v-if="IsShow">
             <small class="card-text d-block">Remaining work: 
                 <input type="text" class="form-control w-25 d-inline-block" 
                     v-model="RemainingWork"/>
@@ -104,6 +104,7 @@
     </script>
     <script src="script/repository/common.js"></script>
     <script src="script/repository/mock-data.js"></script>
+    <script src="script/data-store.js"></script>
     <script src="script/component-temp.js"></script>
     <script src="script/components.js"></script>
     <script src="script/cv-app.js"></script>
