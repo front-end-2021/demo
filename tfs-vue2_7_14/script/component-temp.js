@@ -10,13 +10,47 @@ const mxCard = {
         },
     }
 }
+Vue.component('bi-editable', {
+    template: '#temp-item-edit',
+    mixins: [mxCard],
+    props: ['is-show'], // isShow
+    methods: {
+        onStartEdit(e, type) {
+            if (e.target.hasAttribute('contenteditable')) return;
+            this.$root.removeAllEditable()
+            e.target.setAttribute('contenteditable', true);
+            e.target.classList.add('dnbTxtEditable');
+            this.$root.EditItem = {
+                Data: this.item,
+                Type: type
+            }
+        },
+        onStartChange(e, type){
+            if(e.key === "Enter") e.preventDefault()
+        },
+        onEndChange(e, type) {
+            if (e.key === "Enter") {
+                let newTxt = e.target.innerText
+                switch (type) {
+                    case 1:
+                        this.$root.EditItem.Data.Name = newTxt
+                        break;
+                    default: break;
+                }
+            }
+            console.log(e)
+            console.log(e.target)
+
+        },
+    },
+})
 Vue.component('b-task-done', {
-    template: '#b-task-done-temp',
+    template: '#temp-task-done',
     mixins: [mxCard],
     props: ['is-show'], // isShow
 })
 Vue.component('b-task', {
-    template: '#b-task-temp',
+    template: '#temp-task',
     mixins: [mxCard],
     data() {
         return {
@@ -36,7 +70,7 @@ Vue.component('b-task', {
     },
 })
 Vue.component('b-item', {
-    template: '#b-item-temp',
+    template: '#temp-item',
     mixins: [mxCard],
     props: ['rwork'],
     inject: ['getTaskNames'],
@@ -46,7 +80,7 @@ Vue.component('b-item', {
             if (!txt.length) return true
             let name = this.item.Name
             let hasName = TfsStore.getters.inSearch(name)
-            if(hasName) return true;
+            if (hasName) return true;
             const taskNames = this.getTaskNames()
             return taskNames.filter(t => TfsStore.getters.inSearch(t)).length
         },
@@ -61,7 +95,7 @@ const mxState = {
         }
     },
     computed: {
-        State() { return 1 },
+        State() { return 2 },
     }
 }
 const mxDndSort = {
@@ -74,28 +108,35 @@ const mxDndSort = {
     }
 }
 Vue.component('b-state-todo', {
-    template: '#b-state-temp',
+    template: '#temp-state',
     mixins: [mxState, mxDndSort],
     computed: {
         ClassWrap() { return 'dnb-col-todo' },
-    }
+        State() { return 1 },
+    },
+    methods: {
+        onClkNewTask(e) {
+            const n = this.Items.length + 1
+            this.Items.push({ Id: -Date.now(), Name: `Todo (${n})`, User: '', RemainingWork: 1 })
+        }
+    },
 })
 Vue.component('b-state-new', {
-    template: '#b-state-temp',
+    template: '#temp-state',
     mixins: [mxState, mxDndSort],
     computed: {
         ClassWrap() { return 'dnb-col-new' },
     }
 })
 Vue.component('b-state-approve', {
-    template: '#b-state-temp',
+    template: '#temp-state',
     mixins: [mxState, mxDndSort],
     computed: {
         ClassWrap() { return 'dnb-col-approve' },
     }
 })
 Vue.component('b-state-inprogress', {
-    template: '#b-state-temp',
+    template: '#temp-state',
     mixins: [mxState, mxDndSort],
     computed: {
         ClassWrap() { return 'dnb-col-inprgress' },
@@ -111,14 +152,14 @@ const mxDndNotSort = {
     }
 }
 Vue.component('b-state-commit', {
-    template: '#b-state-temp',
+    template: '#temp-state',
     mixins: [mxState, mxDndNotSort],
     computed: {
         ClassWrap() { return 'dnb-col-commit' },
     }
 })
 Vue.component('b-state-done', {
-    template: '#b-state-temp',
+    template: '#temp-state',
     mixins: [mxState, mxDndNotSort],
     computed: {
         ClassWrap() { return 'dnb-col-done' },

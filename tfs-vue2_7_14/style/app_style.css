@@ -19,3 +19,13 @@
 }
 .dnb-col-done .card-body {opacity: 0.69}
 .dh-fitcontent {height: fit-content;}
+[contenteditable="true"] {
+    width: 100%;
+    display: block;
+    margin-bottom: 0;
+    border-width: 1px;
+    border-color: #868686;
+    border-style: solid;
+    padding-left: 3px;
+    padding-right: 3px;
+}
