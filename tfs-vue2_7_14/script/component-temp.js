@@ -1,11 +1,14 @@
+const mxCard = {
+    props: ['item'],
+}
 Vue.component('b-task-done', {
     template: '#b-task-done-temp',
-    props: ['item'],
+    mixins: [mxCard],
 
 })
 Vue.component('b-task', {
     template: '#b-task-temp',
-    props: ['item'],
+    mixins: [mxCard],
     data(){
         return {
             RemainingWork: this.item.RemainingWork
@@ -25,9 +28,11 @@ Vue.component('b-task', {
 })
 Vue.component('b-item', {
     template: '#b-item-temp',
-    props: ['item', 'rwork'],
+    mixins: [mxCard],
+    props: ['rwork'],
 
 })
+
 const mxState = {
     props: ['items'],
     data() {
