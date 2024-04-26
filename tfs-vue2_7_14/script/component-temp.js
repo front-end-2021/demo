@@ -44,46 +44,64 @@ const mxState = {
         State(){ return 1}, 
     }
 }
+const mxDndSort = {
+    computed: {
+        DnDOptions(){
+            return {
+                sort: true
+            }
+        },
+    }
+}
 Vue.component('b-state-todo', {
     template: '#b-state-temp',
-    mixins: [mxState],
+    mixins: [mxState, mxDndSort],
     computed: {
         ClassWrap(){ return 'dnb-col-todo'}, 
     }
 })
 Vue.component('b-state-new', {
     template: '#b-state-temp',
-    mixins: [mxState],
+    mixins: [mxState, mxDndSort],
     computed: {
         ClassWrap(){ return 'dnb-col-new'}, 
     }
 })
 Vue.component('b-state-approve', {
     template: '#b-state-temp',
-    mixins: [mxState],
+    mixins: [mxState, mxDndSort],
     computed: {
         ClassWrap(){ return 'dnb-col-approve'}, 
     }
 })
 Vue.component('b-state-inprogress', {
     template: '#b-state-temp',
-    mixins: [mxState],
+    mixins: [mxState, mxDndSort],
     computed: {
         ClassWrap(){ return 'dnb-col-inprgress'}, 
     }
 })
+const mxDndNotSort = {
+    computed: {
+        DnDOptions(){
+            return {
+                sort: false
+            }
+        },
+    }
+}
 Vue.component('b-state-commit', {
     template: '#b-state-temp',
-    mixins: [mxState],
+    mixins: [mxState, mxDndNotSort],
     computed: {
         ClassWrap(){ return 'dnb-col-commit'}, 
     }
 })
 Vue.component('b-state-done', {
     template: '#b-state-temp',
-    mixins: [mxState],
+    mixins: [mxState, mxDndNotSort],
     computed: {
         ClassWrap(){ return 'dnb-col-done'},
-        State(){ return 6}, 
+        State(){ return 6},
     }
 })

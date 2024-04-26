@@ -76,6 +76,7 @@
         <div class="dcol-state" v-bind:class=[ClassWrap]>
             <draggable v-if="State == 6" 
                 :list="Items" :group="'task-in-item'" 
+                v-bind="DnDOptions"
                 class="w-100 h-100">
                 <b-task-done
                     v-for="task in Items" 
@@ -83,6 +84,7 @@
                     :item="task"></b-task-done>
             </draggable>
             <draggable v-else :list="Items" :group="'task-in-item'" 
+                v-bind="DnDOptions"
                 class="w-100 h-100">
                 <b-task 
                     v-for="task in Items" 
