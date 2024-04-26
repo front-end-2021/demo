@@ -4,12 +4,12 @@ const cvApp = new Vue({
     data: {
         EditItem: null,
         CollapseIds: [],
-        Backlogs: [{Id: -Date.now(), Name: 'item 1', User: 'DaiNB'}],
+        Backlogs: [{ Id: -Date.now(), Name: 'item 1', User: 'DaiNB' }],
         Menu: null,
 
     },
     computed: {
-        IsShowFilter(){
+        IsShowFilter() {
             return TfsStore.getters.getFilter() != null;
         },
     },
@@ -19,7 +19,7 @@ const cvApp = new Vue({
         }
     },
     methods: {
-        removeAllEditable(){
+        removeAllEditable() {
             this.$el.querySelectorAll(`.dnbTxtEditable[contenteditable="true"]`).forEach(b => {
                 b.classList.remove('dnbTxtEditable')
                 b.removeAttribute('contenteditable')
@@ -27,19 +27,24 @@ const cvApp = new Vue({
         },
     },
     created() {
-        
+
     },
-    mounted(){
+    mounted() {
         const onClickWindow = (e) => {
-            console.log(e.className);
-            console.log(e.target);
+            console.log(e.target.tagName);
+            //console.log(e.target);
+            if (Object.is(this.EditItem, null)) {
+
+                return;
+            }
             this.removeAllEditable()
-            this.EditItem = null
+            this.EditItem.endChange()
+            this.EditItem = null;
         }
         window.addEventListener("click", onClickWindow);
 
     },
-    updated(){        
-        
+    updated() {
+
     },
 })

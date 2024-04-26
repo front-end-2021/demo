@@ -10,10 +10,16 @@ const mxCard = {
         },
     }
 }
-Vue.component('bi-editable', {
-    template: '#temp-item-edit',
-    mixins: [mxCard],
-    props: ['is-show'], // isShow
+function getNum(txt) {
+    let num = parseFloat(txt)
+    if (isNaN(num)) num = 0
+    if (txt.includes('.')) {
+        num = num.toFixed(2)
+        num = parseFloat(num)
+    }
+    return num
+}
+const mxEditable = {
     methods: {
         onStartEdit(e, type) {
             if (e.target.hasAttribute('contenteditable')) return;
@@ -24,25 +30,42 @@ Vue.component('bi-editable', {
                 Data: this.item,
                 Type: type
             }
-        },
-        onStartChange(e, type){
-            if(e.key === "Enter") e.preventDefault()
-        },
-        onEndChange(e, type) {
-            if (e.key === "Enter") {
-                let newTxt = e.target.innerText
+            this.$root.EditItem.endChange = () => {
+                let val = e.target.innerText
                 switch (type) {
                     case 1:
-                        this.$root.EditItem.Data.Name = newTxt
+                        this.$root.EditItem.Data.Name = val
+                        break;
+                    case 2:
+                        val = getNum(val)
+                        this.$root.EditItem.Data.RemainingWork = val
                         break;
                     default: break;
                 }
+
+            }
+        },
+        preventEnter(e) { if (e.key === "Enter") e.preventDefault() },
+        onStartChange(e, type) {
+            this.preventEnter(e)
+        },
+        onEndChange(e, type) {
+            if (e.key === "Enter") {
+                this.$root.removeAllEditable()
+                this.$root.EditItem.endChange()
+                this.$root.EditItem = null;
             }
             console.log(e)
             console.log(e.target)
 
         },
     },
+}
+Vue.component('bi-editable', {
+    template: '#temp-item-edit',
+    mixins: [mxCard, mxEditable],
+    props: ['is-show'], // isShow
+
 })
 Vue.component('b-task-done', {
     template: '#temp-task-done',
@@ -51,22 +74,27 @@ Vue.component('b-task-done', {
 })
 Vue.component('b-task', {
     template: '#temp-task',
-    mixins: [mxCard],
+    mixins: [mxCard, mxEditable],
     data() {
         return {
-            RemainingWork: this.item.RemainingWork
+
         }
     },
     watch: {
-        RemainingWork(val) {
-            let num = parseFloat(val)
-            if (isNaN(num)) num = 0
-            if (val.includes('.')) {
-                num = num.toFixed(2)
-                num = parseFloat(num)
+    },
+    methods: {
+        onStartChange(e, type) {
+            if (e.key == 'ArrowRight' || e.key == 'ArrowLeft'
+                || e.key == 'End' || e.key == 'Home') return
+            if (e.key == '.' || e.key == 'Backspace') return
+            let num = parseFloat(e.key)
+            if (isNaN(num)) {
+                e.preventDefault();
+                return;
             }
-            this.item.RemainingWork = num
-        }
+            console.log(e)
+            this.preventEnter(e)
+        },
     },
 })
 Vue.component('b-item', {

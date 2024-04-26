@@ -34,10 +34,8 @@
             <span>Commited</span>
             <span>Done</span>
         </section>
-        <b-backlog inline-template 
-            v-for="(backlog, b) in Backlogs" :item="backlog"
-            :key="'logitem-' + b">
-            <section class="d-flex">
+        <b-backlog inline-template v-for="(backlog, b) in Backlogs" :item="backlog" :key="'logitem-' + b">
+            <section class="dnb-colbody d-flex">
                 <b-item :item="item" :rwork="Time"></b-item>
                 <b-state-todo :items="Todo"></b-state-todo>
                 <b-state-new :items="New"></b-state-new>
@@ -81,8 +79,9 @@
     <script type="text/x-template" id="temp-task">
         <bi-editable :item="item" v-if="IsShow">
             <small class="card-text d-block">Remaining work: 
-                <input type="text" class="form-control w-25 d-inline-block" 
-                    v-model="RemainingWork"/>
+                <span @keydown="e => onStartChange(e, 2)"
+                    @keyup="e => onEndChange(e, 2)"
+                    @click.stop="e => onStartEdit(e, 2)">{{item.RemainingWork}}</span>
             </small>
         </bi-editable>
     </script>

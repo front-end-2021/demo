@@ -29,3 +29,6 @@
     padding-left: 3px;
     padding-right: 3px;
 }
+span[contenteditable="true"] {min-width: 24px;
+    display: inline-block; width: initial;}
+.dnb-colbody > .dnb-col-todo:first-child {margin-left: 15rem;;}
