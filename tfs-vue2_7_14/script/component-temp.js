@@ -31,7 +31,7 @@ const mxEditable = {
             }
             switch (type) {
                 case 3:
-                    this.$root.EditItem.Users = TfsStore.getters.getUsers();
+                    this.$root.EditItem.Users = TfsStore.getters.getUsersIgnore(this.item.User);
                     const eOffs = e.target.offset();
                     this.$root.EditItem.top = `${eOffs.top + 23}px`
                     this.$root.EditItem.left = `${eOffs.left}px`

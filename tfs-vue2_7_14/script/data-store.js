@@ -45,6 +45,10 @@ const TfsStore = Vuex.createStore({
             if (typeof name != 'string') return state.Users
             return state.Users.find(x => x.Name === name)
         },
+        getUsersIgnore: (state) => (name) => {
+            if (typeof name != 'string') return state.Users
+            return state.Users.filter(x => x.Name !== name)
+        }
     }
 });
 Vue.use(Vuex);

@@ -38,4 +38,13 @@ span[contenteditable="true"] {min-width: 24px;
 .dnb-lst-user > *:hover {
     background-color: white;
 }
-.dnbChangeUser {border: 1px solid #b9b9b9;}
+.dnbChangeUser {border: 1px solid #b9b9b9;position: relative;}
+.dnbChangeUser::after {
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 7px solid #969696;
+    position: absolute;
+    content: '';
+    right: 6px;
+    top: 7px;
+}
