@@ -5,7 +5,8 @@ new Vue({
         EditItem: null,
         CollapseIds: [],
         Backlogs: [{ Id: -Date.now(), Name: 'item 1', User: TfsStore.getters.getUsers()[0].Name }],
-        Menu: null,
+        AssignedTo: TfsStore.getters.getAssignsTo(),
+        MenuSelect: null,
 
     },
     computed: {
@@ -35,12 +36,15 @@ new Vue({
     mounted() {
         const onClickWindow = (e) => {
             console.log(e.target.tagName);
-            //console.log(e.target);
-            if (Object.is(this.EditItem, null)) {
-
-            } else {
+            if (!Object.is(this.MenuSelect, null)) {
+                this.$el.querySelectorAll(`.dnbShowMenuFilter`).forEach(b => {
+                    b.classList.remove('dnbShowMenuFilter')
+                })
+                this.MenuSelect = null;
+            }
+            if (!Object.is(this.EditItem, null)) {
                 this.removeAllEditable()
-                if(typeof this.EditItem.endChange == 'function') this.EditItem.endChange()
+                if (typeof this.EditItem.endChange == 'function') this.EditItem.endChange()
                 this.EditItem = null;
             }
         }

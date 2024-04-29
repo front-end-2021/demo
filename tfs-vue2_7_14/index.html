@@ -23,6 +23,9 @@
         <b-filter inline-template v-if="IsShowFilter">
             <section>
                 <input type="text" :placeholder="PlaceholderKeyWord" v-model="Keyword" />
+                <span @click.stop="e => filterByMenu(e, 2)" 
+                    class="d-inline-block"
+                    style="width:204px">{{LblAssigned}}</span>
             </section>
         </b-filter>
         <section class="dnb-col-head d-flex">
@@ -45,11 +48,24 @@
                 <b-state-done :items="Done"></b-state-done>
             </section>
         </b-backlog>
-        <div v-if="EditItem != null && EditItem.Type == 3"
-            class="d-inline-block position-fixed dnb-lst-user"
+        <div v-if="EditItem != null && (EditItem.Type == 3)" class="d-inline-block position-fixed dnb-lst-user"
             :style="{top: EditItem.top, left: EditItem.left}">
-            <div v-for="user in EditItem.Users"
-                @click="e => EditItem.onSelect(user.Name)">{{user.Name}}</div>
+            <div v-for="user in EditItem.Users" @click="e => EditItem.onSelect(user.Name)">{{user.Name}}</div>
+        </div>
+        <div v-if="MenuSelect != null"
+            class="d-inline-block position-fixed dnb-lst-user"
+            :style="{top: MenuSelect.top, left: MenuSelect.left}"
+            style="z-index: 1;">
+            <div v-if="MenuSelect.Type == 2"
+                @click.stop="e => MenuSelect.onSelect('Unassigned')">
+                <input class="form-check-input" value="Unassigned" v-model="AssignedTo"
+                    type="checkbox"><span class="ms-1">Unassigned</span>
+            </div>
+            <div v-for="item in MenuSelect.Items" 
+                @click.stop="e => MenuSelect.onSelect(item.Name)">
+                <input class="form-check-input" :value="item.Name" v-model="AssignedTo"
+                    type="checkbox"><span class="ms-1">{{item.Name}}</span>
+            </div>
         </div>
     </main>
     <script type="text/x-template" id="temp-task-done">

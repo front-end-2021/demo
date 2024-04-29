@@ -3,10 +3,30 @@ const mxCard = {
     //inject: [''],
     computed: {
         IsShow() {
+            const lstAssign = TfsStore.getters.getAssignsTo()
             let txt = TfsStore.getters.getSearch()
-            if (!txt.length) return true
+            let onShowAssign = false
+            if (lstAssign.length) {
+                let user = this.item.User
+                for (let ii = 0; ii < lstAssign.length; ii++) {
+                    const assgn = lstAssign[ii]
+                    if (!user && assgn == 'Unassigned') {
+                        onShowAssign = true
+                        break
+                    }
+                    if (user == assgn) {
+                        onShowAssign = true
+                        break
+                    }
+                }
+                if(!onShowAssign && !txt.length) return false
+            }
+            let onShowSearch = false
+            if (!txt.length) onShowSearch = true
             let name = this.item.Name
-            return TfsStore.getters.inSearch(name)
+            onShowSearch = TfsStore.getters.inSearch(name)
+            if(onShowSearch && lstAssign.length && !onShowAssign) return false
+            return onShowSearch 
         },
     }
 }

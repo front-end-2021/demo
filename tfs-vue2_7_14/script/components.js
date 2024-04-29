@@ -8,6 +8,12 @@ Vue.component('b-filter', {
     },
     computed: {
         PlaceholderKeyWord() { return `Filter by keyword` },
+        LblAssigned(){
+            const lstAssign = TfsStore.getters.getAssignsTo()
+            if(!lstAssign.length) return 'Assigned to';
+            if(lstAssign.length < 2) return lstAssign[0]
+            return `${lstAssign[0]} (+1)`
+        },
     },
     watch: {
         Keyword(val) {
@@ -15,7 +21,25 @@ Vue.component('b-filter', {
         },
     },
     methods: {
-
+        filterByMenu(e, type) {
+            if (e.target.classList.contains('dnbShowMenuFilter')) return;
+            this.$root.removeAllEditable()
+            e.target.classList.add('dnbShowMenuFilter');
+            this.$root.MenuSelect = {
+                Type: type
+            }
+            switch (type) {
+                case 2: // assigned to
+                    const eOffs = e.target.offset();
+                    this.$root.MenuSelect.top = `${eOffs.top + 23}px`
+                    this.$root.MenuSelect.left = `${eOffs.left}px`
+                    this.$root.MenuSelect.Items = TfsStore.getters.getUsers();
+                    this.$root.MenuSelect.onSelect = (name) => {
+                        TfsStore.dispatch('setAssignedTo', name)
+                    }
+                    break;
+            }
+        },
     },
 })
 

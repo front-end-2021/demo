@@ -1,7 +1,7 @@
 const TfsStore = Vuex.createStore({
     state() {
         return {
-            Filter: { Search: '' },
+            Filter: { Search: '', AssignedTo: [] },
             Users: [{ Id: -(Date.now()), Name: 'Bill Gate' },
             { Id: -(Date.now() + 10), Name: 'Ellon Musk' },
             { Id: -(Date.now() + 20), Name: 'Larry Page' },
@@ -11,6 +11,7 @@ const TfsStore = Vuex.createStore({
     },
     actions: {
         setFilterSearch(context, txt) { context.commit('setFSearch', txt) },
+        setAssignedTo(context, name) { context.commit('setAssigned', name) },
         removeFilter(context) { context.commit('removeFilter') },
         setFilter(context) { context.commit('setFilter') },
     },
@@ -25,6 +26,11 @@ const TfsStore = Vuex.createStore({
         },
         setFilter(state) {
             state.Filter = { Search: '' }
+        },
+        setAssigned(state, name) {
+            const ii = state.Filter.AssignedTo.indexOf(name)
+            if (ii < 0) state.Filter.AssignedTo.push(name)
+            else state.Filter.AssignedTo.splice(ii, 1)
         },
     },
     getters: {
@@ -48,7 +54,11 @@ const TfsStore = Vuex.createStore({
         getUsersIgnore: (state) => (name) => {
             if (typeof name != 'string') return state.Users
             return state.Users.filter(x => x.Name !== name)
-        }
+        },
+        getAssignsTo: (state) => (ii) => {
+            if(typeof ii != 'number') return state.Filter.AssignedTo 
+            state.Filter.AssignedTo[ii]
+        },
     }
 });
 Vue.use(Vuex);
