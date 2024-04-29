@@ -31,4 +31,11 @@
 }
 span[contenteditable="true"] {min-width: 24px;
     display: inline-block; width: initial;}
-.dnb-colbody > .dnb-col-todo:first-child {margin-left: 15rem;;}
+.dnb-colbody > .dnb-col-todo:first-child {margin-left: 15rem;}
+.dnb-lst-user { width: 204px;
+    background-color: #f6f6f6;}
+.dnb-lst-user > * {padding: 3px;cursor: default;}
+.dnb-lst-user > *:hover {
+    background-color: white;
+}
+.dnbChangeUser {border: 1px solid #b9b9b9;}

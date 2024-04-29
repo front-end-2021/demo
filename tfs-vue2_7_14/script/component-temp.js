@@ -21,6 +21,31 @@ function getNum(txt) {
 }
 const mxEditable = {
     methods: {
+        onChangeUser(e, type) {
+            if (e.target.classList.contains('dnbChangeUser')) return;
+            this.$root.removeAllEditable()
+            e.target.classList.add('dnbChangeUser');
+            this.$root.EditItem = {
+                Data: this.item,
+                Type: type
+            }
+            switch (type) {
+                case 3:
+                    this.$root.EditItem.Users = TfsStore.getters.getUsers();
+                    const eOffs = e.target.offset();
+                    this.$root.EditItem.top = `${eOffs.top + 23}px`
+                    this.$root.EditItem.left = `${eOffs.left}px`
+                    this.$root.EditItem.onSelect = (name) => {
+                        this.$root.EditItem.Data.User = name
+                        this.$root.EditItem = null
+                        e.target.removeAttribute('contenteditable')
+                        e.target.classList.remove('dnbTxtEditable')
+                        this.$root.removeAllEditable()
+                    }
+                    break;
+                default: break;
+            }
+        },
         onStartEdit(e, type) {
             if (e.target.hasAttribute('contenteditable')) return;
             this.$root.removeAllEditable()
@@ -40,9 +65,11 @@ const mxEditable = {
                         val = getNum(val)
                         this.$root.EditItem.Data.RemainingWork = val
                         break;
+                    case 3: // user
+
+                        break;
                     default: break;
                 }
-
             }
         },
         preventEnter(e) { if (e.key === "Enter") e.preventDefault() },
@@ -145,7 +172,10 @@ Vue.component('b-state-todo', {
     methods: {
         onClkNewTask(e) {
             const n = this.Items.length + 1
-            this.Items.push({ Id: -Date.now(), Name: `Todo (${n})`, User: '', RemainingWork: 1 })
+            this.Items.push({
+                Id: -Date.now(), Name: `Todo (${n})`,
+                User: TfsStore.getters.getUsers()[0].Name, RemainingWork: 1
+            })
         }
     },
 })

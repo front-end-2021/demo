@@ -23,15 +23,16 @@ Vue.component('b-backlog', {
     props: ['item'],
     //inject: ['onChangeFilterByWord'],
     data() {
-        let dNow = Date.now()
+        let dNow = Date.now();
+        const user = TfsStore.getters.getUsers()[0]
         return {
-            Todo: [{ Id: -dNow, Name: 'Todo 1', User: 'DaiNB', RemainingWork: 1 }
+            Todo: [{ Id: -dNow, Name: 'Todo 1', User: user.Name, RemainingWork: 1 }
             ],
-            New: [{ Id: -(++dNow), Name: 'New 1', User: 'DaiNB', RemainingWork: 0 }],
-            Approved: [{ Id: -(++dNow), Name: 'Appr 1', User: 'DaiNB', RemainingWork: 0 }],
-            InProgess: [{ Id: -(++dNow), Name: 'InPrg 1', User: 'DaiNB', RemainingWork: 0 }],
-            Commited: [{ Id: -(++dNow), Name: 'Cmt 1', User: 'DaiNB', RemainingWork: 0 }],
-            Done: [{ Id: -(++dNow), Name: 'Done 1', User: 'DaiNB', RemainingWork: 0 }],
+            New: [{ Id: -(++dNow), Name: 'New 1', User: user.Name, RemainingWork: 0 }],
+            Approved: [{ Id: -(++dNow), Name: 'Appr 1', User: user.Name, RemainingWork: 0 }],
+            InProgess: [{ Id: -(++dNow), Name: 'InPrg 1', User: user.Name, RemainingWork: 0 }],
+            Commited: [{ Id: -(++dNow), Name: 'Cmt 1', User: user.Name, RemainingWork: 0 }],
+            Done: [{ Id: -(++dNow), Name: 'Done 1', User: user.Name, RemainingWork: 0 }],
         }
     },
     computed: {

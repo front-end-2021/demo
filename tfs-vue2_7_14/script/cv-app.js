@@ -1,10 +1,10 @@
-const cvApp = new Vue({
+new Vue({
     el: '#tfs-app',
     name: 'tfs-app',
     data: {
         EditItem: null,
         CollapseIds: [],
-        Backlogs: [{ Id: -Date.now(), Name: 'item 1', User: 'DaiNB' }],
+        Backlogs: [{ Id: -Date.now(), Name: 'item 1', User: TfsStore.getters.getUsers()[0].Name }],
         Menu: null,
 
     },
@@ -24,6 +24,9 @@ const cvApp = new Vue({
                 b.classList.remove('dnbTxtEditable')
                 b.removeAttribute('contenteditable')
             })
+            this.$el.querySelectorAll(`.dnbChangeUser`).forEach(b => {
+                b.classList.remove('dnbChangeUser')
+            })
         },
     },
     created() {
@@ -35,14 +38,13 @@ const cvApp = new Vue({
             //console.log(e.target);
             if (Object.is(this.EditItem, null)) {
 
-                return;
+            } else {
+                this.removeAllEditable()
+                if(typeof this.EditItem.endChange == 'function') this.EditItem.endChange()
+                this.EditItem = null;
             }
-            this.removeAllEditable()
-            this.EditItem.endChange()
-            this.EditItem = null;
         }
         window.addEventListener("click", onClickWindow);
-
     },
     updated() {
 

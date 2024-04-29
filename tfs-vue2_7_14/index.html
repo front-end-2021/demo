@@ -45,6 +45,12 @@
                 <b-state-done :items="Done"></b-state-done>
             </section>
         </b-backlog>
+        <div v-if="EditItem != null && EditItem.Type == 3"
+            class="d-inline-block position-fixed dnb-lst-user"
+            :style="{top: EditItem.top, left: EditItem.left}">
+            <div v-for="user in EditItem.Users"
+                @click="e => EditItem.onSelect(user.Name)">{{user.Name}}</div>
+        </div>
     </main>
     <script type="text/x-template" id="temp-task-done">
         <div class="card m-1 dh-fitcontent" v-if="isShow || IsShow">
@@ -64,7 +70,9 @@
                 @keydown="e => onStartChange(e, 1)"
                 @keyup="e => onEndChange(e, 1)"
                 @click.stop="e => onStartEdit(e, 1)">{{item.Name}}</b>
-              <small class="card-subtitle text-muted d-block">{{item.User}}</small>
+              <small class="card-subtitle text-muted d-block"
+              @click.stop="e => onChangeUser(e, 3)"
+              >{{item.User}}</small>
               <small  class="card-text d-block">{{item.Description}}</small>
               <slot></slot>
               <a href="#" class="card-link"><small>Task link</small></a>
