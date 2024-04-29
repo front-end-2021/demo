@@ -25,9 +25,10 @@ const TfsStore = Vuex.createStore({
             state.Filter = null
         },
         setFilter(state) {
-            state.Filter = { Search: '' }
+            state.Filter = { Search: '', AssignedTo: [] }
         },
         setAssigned(state, name) {
+            if (Object.is(state.Filter, null)) return;
             const ii = state.Filter.AssignedTo.indexOf(name)
             if (ii < 0) state.Filter.AssignedTo.push(name)
             else state.Filter.AssignedTo.splice(ii, 1)
@@ -35,8 +36,12 @@ const TfsStore = Vuex.createStore({
     },
     getters: {
         getFilter: (state) => () => { return state.Filter },
-        getSearch: (state) => () => { return state.Filter.Search },
+        getSearch: (state) => () => {
+            if (Object.is(state.Filter, null)) return ''
+            return state.Filter.Search
+        },
         inSearch: (state) => (txt) => {
+            if (Object.is(state.Filter, null)) return true
             if (!state.Filter.Search.length) return true
             if (typeof txt != 'string') return false
             txt = txt.trim()
@@ -56,7 +61,8 @@ const TfsStore = Vuex.createStore({
             return state.Users.filter(x => x.Name !== name)
         },
         getAssignsTo: (state) => (ii) => {
-            if(typeof ii != 'number') return state.Filter.AssignedTo 
+            if (Object.is(state.Filter, null)) return null
+            if (typeof ii != 'number') return state.Filter.AssignedTo
             state.Filter.AssignedTo[ii]
         },
     }

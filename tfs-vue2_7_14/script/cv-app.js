@@ -11,7 +11,7 @@ new Vue({
     },
     computed: {
         IsShowFilter() {
-            return TfsStore.getters.getFilter() != null;
+            return !Object.is(TfsStore.getters.getFilter(), null)
         },
     },
     provide() {

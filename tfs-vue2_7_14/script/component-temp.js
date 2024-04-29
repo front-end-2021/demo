@@ -19,14 +19,14 @@ const mxCard = {
                         break
                     }
                 }
-                if(!onShowAssign && !txt.length) return false
+                if (!onShowAssign && !txt.length) return false
             }
             let onShowSearch = false
             if (!txt.length) onShowSearch = true
             let name = this.item.Name
             onShowSearch = TfsStore.getters.inSearch(name)
-            if(onShowSearch && lstAssign.length && !onShowAssign) return false
-            return onShowSearch 
+            if (onShowSearch && lstAssign.length && !onShowAssign) return false
+            return onShowSearch
         },
     }
 }
