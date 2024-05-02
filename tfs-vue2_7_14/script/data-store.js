@@ -1,7 +1,7 @@
 const TfsStore = Vuex.createStore({
     state() {
         return {
-            Filter: { Search: '', AssignedTo: [] },
+            Filter: { Search: '', AssignedTo: [], States: [] },
             Users: [{ Id: -(Date.now()), Name: 'Bill Gate' },
             { Id: -(Date.now() + 10), Name: 'Ellon Musk' },
             { Id: -(Date.now() + 20), Name: 'Larry Page' },
@@ -11,9 +11,9 @@ const TfsStore = Vuex.createStore({
     },
     actions: {
         setFilterSearch(context, txt) { context.commit('setFSearch', txt) },
-        setAssignedTo(context, name) { context.commit('setAssigned', name) },
         removeFilter(context) { context.commit('removeFilter') },
-        setFilter(context) { context.commit('setFilter') },
+        setFilterAssigns(context, type, txt) { context.commit('setFilterAssigns', type, txt) },
+        setFilterStates(context, type, txt) { context.commit('setFilterStates', type, txt) },
     },
     mutations: { // Commit with Payload (https://vuex.vuejs.org/guide/mutations.html)
         setFSearch(state, txt) {
@@ -24,14 +24,17 @@ const TfsStore = Vuex.createStore({
         removeFilter(state) {
             state.Filter = null
         },
-        setFilter(state) {
-            state.Filter = { Search: '', AssignedTo: [] }
-        },
-        setAssigned(state, name) {
+        setFilterAssigns(state, txt) {
             if (Object.is(state.Filter, null)) return;
-            const ii = state.Filter.AssignedTo.indexOf(name)
-            if (ii < 0) state.Filter.AssignedTo.push(name)
+            let ii = state.Filter.AssignedTo.indexOf(txt)
+            if (ii < 0) state.Filter.AssignedTo.push(txt)
             else state.Filter.AssignedTo.splice(ii, 1)
+        },
+        setFilterStates(state, txt) {
+            if (Object.is(state.Filter, null)) return;
+            let ii = state.Filter.States.indexOf(txt)
+            if (ii < 0) state.Filter.States.push(txt)
+            else state.Filter.States.splice(ii, 1)
         },
     },
     getters: {
@@ -54,16 +57,21 @@ const TfsStore = Vuex.createStore({
         },
         getUsers: (state) => (name) => {
             if (typeof name != 'string') return state.Users
-            return state.Users.find(x => x.Name === name)
+            return state.Users.filter(x => x.Name === name)
         },
         getUsersIgnore: (state) => (name) => {
             if (typeof name != 'string') return state.Users
             return state.Users.filter(x => x.Name !== name)
         },
         getAssignsTo: (state) => (ii) => {
-            if (Object.is(state.Filter, null)) return null
+            if (Object.is(state.Filter, null)) return []
             if (typeof ii != 'number') return state.Filter.AssignedTo
-            state.Filter.AssignedTo[ii]
+            return [state.Filter.AssignedTo[ii]]
+        },
+        getStates: (state) => (ii) => {
+            if (Object.is(state.Filter, null)) return []
+            if (typeof ii != 'number') return state.Filter.States
+            return [state.Filter.States[ii]]
         },
     }
 });

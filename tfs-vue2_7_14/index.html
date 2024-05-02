@@ -26,6 +26,9 @@
                 <span @click.stop="e => filterByMenu(e, 2)" 
                     class="d-inline-block"
                     style="width:204px">{{LblAssigned}}</span>
+                    <span @click.stop="e => filterByMenu(e, 3)" 
+                        class="d-inline-block"
+                        style="width:204px">{{LblStates}}</span>
             </section>
         </b-filter>
         <section class="dnb-col-head d-flex">
@@ -37,18 +40,20 @@
             <span>Commited</span>
             <span>Done</span>
         </section>
-        <b-backlog inline-template v-for="(backlog, b) in Backlogs" :item="backlog" :key="'logitem-' + b">
+        <b-backlog inline-template v-for="(backlog, b) in Backlogs" 
+            :item="backlog" :key="'logitem-' + b">
             <section class="dnb-colbody d-flex">
                 <b-item :item="item" :rwork="Time"></b-item>
-                <b-state-todo :items="Todo"></b-state-todo>
-                <b-state-new :items="New"></b-state-new>
-                <b-state-approve :items="Approved"></b-state-approve>
-                <b-state-inprogress :items="InProgess"></b-state-inprogress>
-                <b-state-commit :items="Commited"></b-state-commit>
-                <b-state-done :items="Done"></b-state-done>
+                <b-state-todo :items="Todo" :state="1"></b-state-todo>
+                <b-state-new :items="New" :state="2"></b-state-new>
+                <b-state-approve :items="Approved" :state="3"></b-state-approve>
+                <b-state-inprogress :items="InProgess" :state="4"></b-state-inprogress>
+                <b-state-commit :items="Commited" :state="5"></b-state-commit>
+                <b-state-done :items="Done" :state="6"></b-state-done>
             </section>
         </b-backlog>
-        <div v-if="EditItem != null && (EditItem.Type == 3)" class="d-inline-block position-fixed dnb-lst-user"
+        <div v-if="EditItem != null && (EditItem.Type == 3)" 
+            class="d-inline-block position-fixed dnb-lst-user"
             :style="{top: EditItem.top, left: EditItem.left}">
             <div v-for="user in EditItem.Users" @click="e => EditItem.onSelect(user.Name)">{{user.Name}}</div>
         </div>
@@ -56,14 +61,14 @@
             class="d-inline-block position-fixed dnb-lst-user"
             :style="{top: MenuSelect.top, left: MenuSelect.left}"
             style="z-index: 1;">
-            <div v-if="MenuSelect.Type == 2"
-                @click.stop="e => MenuSelect.onSelect('Unassigned')">
-                <input class="form-check-input" value="Unassigned" v-model="AssignedTo"
-                    type="checkbox"><span class="ms-1">Unassigned</span>
-            </div>
-            <div v-for="item in MenuSelect.Items" 
+            <div v-if="MenuSelect.Type == 2" v-for="item in MenuSelect.Items" 
                 @click.stop="e => MenuSelect.onSelect(item.Name)">
                 <input class="form-check-input" :value="item.Name" v-model="AssignedTo"
+                    type="checkbox"><span class="ms-1">{{item.Name}}</span>
+            </div>
+            <div v-if="MenuSelect.Type == 3" v-for="item in MenuSelect.Items" 
+                @click.stop="e => MenuSelect.onSelect(item.Name)">
+                <input class="form-check-input" :value="item.Name" v-model="States"
                     type="checkbox"><span class="ms-1">{{item.Name}}</span>
             </div>
         </div>
@@ -111,7 +116,7 @@
     </script>
     <script type="text/x-template" id="temp-state">
         <div class="dcol-state" v-bind:class=[ClassWrap]>
-            <draggable v-if="State == 6" 
+            <draggable v-if="state == 6" 
                 :list="Items" :group="'task-in-item'" 
                 v-bind="DnDOptions"
                 class="w-100 h-100">
@@ -128,7 +133,8 @@
                     :key="'task_' + task.Id"
                     :item="task"></b-task>
             </draggable>
-            <button v-if="State == 1" @click.stop="onClkNewTask"
+            <button v-if="state == 1 && IsShowBtnNwTask" 
+                @click.stop="onClkNewTask"
                 type="button" class="btn btn-primary">+ Task</button>
         </div>
     </script>

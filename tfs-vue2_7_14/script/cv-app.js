@@ -5,8 +5,9 @@ new Vue({
         EditItem: null,
         CollapseIds: [],
         Backlogs: [{ Id: -Date.now(), Name: 'item 1', User: TfsStore.getters.getUsers()[0].Name }],
-        AssignedTo: TfsStore.getters.getAssignsTo(),
         MenuSelect: null,
+        AssignedTo: TfsStore.getters.getAssignsTo(),
+        States: TfsStore.getters.getStates(),
 
     },
     computed: {
@@ -28,8 +29,24 @@ new Vue({
             this.$el.querySelectorAll(`.dnbChangeUser`).forEach(b => {
                 b.classList.remove('dnbChangeUser')
             })
+            this.$el.querySelectorAll(`.dnbShowMenuFilter`).forEach(b => {
+                b.classList.remove('dnbShowMenuFilter')
+            })
         },
-    },
+        setFloatOver(type, val){
+            switch(type) {
+                case 1:     // Edit Item
+                    this.EditItem = val
+                    this.MenuSelect = null
+                break;
+                case 2:     // MenuSelect
+                    this.MenuSelect = val
+                    this.EditItem = null
+                break;
+            }
+        },
+    },    
+    //watch: { },
     created() {
 
     },

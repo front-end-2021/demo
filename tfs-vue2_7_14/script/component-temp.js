@@ -1,6 +1,6 @@
 const mxCard = {
     props: ['item'],
-    //inject: [''],
+    inject: ['getColState'],
     computed: {
         IsShow() {
             const lstAssign = TfsStore.getters.getAssignsTo()
@@ -19,14 +19,32 @@ const mxCard = {
                         break
                     }
                 }
-                if (!onShowAssign && !txt.length) return false
-            }
+            } else onShowAssign = true
+            const lstStates = TfsStore.getters.getStates()
+            let onShowState = false
+            if (lstStates.length) {
+                switch (this.getColState()) {
+                    case 1:
+                        if (lstStates.includes('To Do')) onShowState = true
+                        break;
+                    case 2:
+                        if (lstStates.includes('New')) onShowState = true
+                        break;
+                    case 4:
+                        if (lstStates.includes('In Progress')) onShowState = true
+                        break;
+                    case 6:
+                        if (lstStates.includes('Done')) onShowState = true
+                        break;
+                    default: onShowState = true
+                        break;
+                }
+            } else onShowState = true
             let onShowSearch = false
-            if (!txt.length) onShowSearch = true
-            let name = this.item.Name
-            onShowSearch = TfsStore.getters.inSearch(name)
-            if (onShowSearch && lstAssign.length && !onShowAssign) return false
-            return onShowSearch
+            if (txt.length) {
+                onShowSearch = TfsStore.getters.inSearch(this.item.Name)
+            } else onShowSearch = true
+            return onShowSearch && onShowState && onShowAssign
         },
     }
 }
@@ -45,13 +63,14 @@ const mxEditable = {
             if (e.target.classList.contains('dnbChangeUser')) return;
             this.$root.removeAllEditable()
             e.target.classList.add('dnbChangeUser');
-            this.$root.EditItem = {
+            this.$root.setFloatOver(1, {
                 Data: this.item,
                 Type: type
-            }
+            })
             switch (type) {
                 case 3:
-                    this.$root.EditItem.Users = TfsStore.getters.getUsersIgnore(this.item.User);
+                    this.$root.EditItem.Users = [{ Name: 'Unassigned' },
+                    ...TfsStore.getters.getUsersIgnore(this.item.User)];
                     const eOffs = e.target.offset();
                     this.$root.EditItem.top = `${eOffs.top + 23}px`
                     this.$root.EditItem.left = `${eOffs.left}px`
@@ -71,11 +90,7 @@ const mxEditable = {
             this.$root.removeAllEditable()
             e.target.setAttribute('contenteditable', true);
             e.target.classList.add('dnbTxtEditable');
-            this.$root.EditItem = {
-                Data: this.item,
-                Type: type
-            }
-            this.$root.EditItem.endChange = () => {
+            const endChange = () => {
                 let val = e.target.innerText
                 switch (type) {
                     case 1:
@@ -91,6 +106,11 @@ const mxEditable = {
                     default: break;
                 }
             }
+            this.$root.setFloatOver(1, {
+                Data: this.item,
+                Type: type,
+                endChange
+            })
         },
         preventEnter(e) { if (e.key === "Enter") e.preventDefault() },
         onStartChange(e, type) {
@@ -163,15 +183,17 @@ Vue.component('b-item', {
 })
 
 const mxState = {
-    props: ['items'],
+    props: ['items', 'state'],
     data() {
         return {
             Items: this.items
         }
     },
-    computed: {
-        State() { return 2 },
-    }
+    provide() {
+        return {
+            getColState: () => { return this.state },
+        }
+    },
 }
 const mxDndSort = {
     computed: {
@@ -187,7 +209,12 @@ Vue.component('b-state-todo', {
     mixins: [mxState, mxDndSort],
     computed: {
         ClassWrap() { return 'dnb-col-todo' },
-        State() { return 1 },
+        IsShowBtnNwTask() {
+            let lst = TfsStore.getters.getStates()
+            if (!lst.length) return true
+            if (lst.includes('To Do')) return true
+            return false
+        },
     },
     methods: {
         onClkNewTask(e) {
@@ -241,6 +268,5 @@ Vue.component('b-state-done', {
     mixins: [mxState, mxDndNotSort],
     computed: {
         ClassWrap() { return 'dnb-col-done' },
-        State() { return 6 },
     }
 })

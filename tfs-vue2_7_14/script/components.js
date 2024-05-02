@@ -8,11 +8,17 @@ Vue.component('b-filter', {
     },
     computed: {
         PlaceholderKeyWord() { return `Filter by keyword` },
-        LblAssigned(){
-            const lstAssign = TfsStore.getters.getAssignsTo()
-            if(!lstAssign.length) return 'Assigned to';
-            if(lstAssign.length < 2) return lstAssign[0]
-            return `${lstAssign[0]} (+1)`
+        LblAssigned() {
+            const lst = TfsStore.getters.getAssignsTo()
+            if (!lst.length) return 'Assigned to';
+            if (lst.length < 2) return lst[0]
+            return `${lst[0]} (+1)`
+        },
+        LblStates() {
+            const lst = TfsStore.getters.getStates()
+            if(!lst.length) return 'States'
+            if (lst.length < 2) return lst[0]
+            return `${lst[0]} (+1)`
         },
     },
     watch: {
@@ -25,18 +31,33 @@ Vue.component('b-filter', {
             if (e.target.classList.contains('dnbShowMenuFilter')) return;
             this.$root.removeAllEditable()
             e.target.classList.add('dnbShowMenuFilter');
-            this.$root.MenuSelect = {
-                Type: type
-            }
+            const eOffs = e.target.offset();
+            this.$root.setFloatOver(2, {
+                Type: type,
+                top: `${eOffs.top + 23}px`,
+                left: `${eOffs.left}px`
+            })
             switch (type) {
                 case 2: // assigned to
-                    const eOffs = e.target.offset();
-                    this.$root.MenuSelect.top = `${eOffs.top + 23}px`
-                    this.$root.MenuSelect.left = `${eOffs.left}px`
-                    this.$root.MenuSelect.Items = TfsStore.getters.getUsers();
+                    this.$root.MenuSelect.Items = [
+                        { Name: 'Unassigned' },
+                        ...TfsStore.getters.getUsers()];
                     this.$root.MenuSelect.onSelect = (name) => {
-                        TfsStore.dispatch('setAssignedTo', name)
+                        TfsStore.dispatch('setFilterAssigns', name)
                     }
+                    break;
+                case 3:     // states
+                    this.$root.MenuSelect.Items = [
+                        { Name: 'Done' },
+                        { Name: 'In Progress' },
+                        { Name: 'New' },
+                        { Name: 'To Do' }
+                    ]
+                    this.$root.MenuSelect.onSelect = (name) => {
+                        TfsStore.dispatch('setFilterStates', name)
+                    }
+                    break;
+                default:
                     break;
             }
         },
@@ -93,6 +114,7 @@ Vue.component('b-backlog', {
                 const rDone = this.Done.map(x => x.Name);
                 return [...rTodo, ...rNew, ...rApp, ...rIng, ...rCmt, ...rDone]
             },
+            getColState: () => { return 0 },
         }
     },
 })
