@@ -15,7 +15,7 @@ Vue.component('b-filter', {
             return `${lst[0]} (+1)`
         },
         LblStates() {
-            const lst = TfsStore.getters.getStates()
+            const lst = TfsStore.getters.getFStates()
             if (!lst.length) return 'States'
             if (lst.length < 2) return lst[0]
             return `${lst[0]} (+1)`

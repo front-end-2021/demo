@@ -20,7 +20,7 @@ const mxCard = {
                     }
                 }
             } else onShowAssign = true
-            const lstStates = TfsStore.getters.getStates()
+            const lstStates = TfsStore.getters.getFStates()
             let onShowState = false
             if (lstStates.length) {
                 switch (this.getColState()) {
@@ -210,7 +210,7 @@ Vue.component('b-state-todo', {
     computed: {
         ClassWrap() { return 'dnb-col-todo' },
         IsShowBtnNwTask() {
-            let lst = TfsStore.getters.getStates()
+            let lst = TfsStore.getters.getFStates()
             if (!lst.length) return true
             if (lst.includes('To Do')) return true
             return false

@@ -4,14 +4,14 @@ new Vue({
     data: {
         EditItem: null,
         CollapseIds: [],
-        Backlogs: [{ Id: -Date.now(), Name: 'item 1', User: TfsStore.getters.getUsers()[0].Name }],
+        Backlogs: [{ Id: 1, Name: 'item 1', User: TfsStore.getters.getUsers()[0].Name }],
         MenuSelect: null,
         IsShowFilter: true,
 
     },
     computed: {
         AssignedTo() { return TfsStore.getters.getAssignsTo() },
-        States() { return TfsStore.getters.getStates() },
+        States() { return TfsStore.getters.getFStates() },
     },
     provide() {
         return {

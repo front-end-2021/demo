@@ -6,7 +6,8 @@ const TfsStore = Vuex.createStore({
             { Id: -(Date.now() + 10), Name: 'Ellon Musk' },
             { Id: -(Date.now() + 20), Name: 'Larry Page' },
             { Id: -(Date.now() + 30), Name: 'Segey Brin' },
-            { Id: -(Date.now() + 40), Name: 'Mark Zukerberc' }]
+            { Id: -(Date.now() + 40), Name: 'Mark Zukerberc' }],
+            States: ['New', 'Approved', 'Committed', 'Done', 'Removed'],
         }
     },
     actions: {
@@ -74,7 +75,7 @@ const TfsStore = Vuex.createStore({
             if (typeof ii != 'number') return state.Filter.AssignedTo
             return [state.Filter.AssignedTo[ii]]
         },
-        getStates: (state) => (ii) => {
+        getFStates: (state) => (ii) => {
             if (Object.is(state.Filter, null)) return []
             if (typeof ii != 'number') return state.Filter.States
             return [state.Filter.States[ii]]
