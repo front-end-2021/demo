@@ -6,14 +6,12 @@ new Vue({
         CollapseIds: [],
         Backlogs: [{ Id: -Date.now(), Name: 'item 1', User: TfsStore.getters.getUsers()[0].Name }],
         MenuSelect: null,
-        AssignedTo: TfsStore.getters.getAssignsTo(),
-        States: TfsStore.getters.getStates(),
+        IsShowFilter: true,
 
     },
     computed: {
-        IsShowFilter() {
-            return !Object.is(TfsStore.getters.getFilter(), null)
-        },
+        AssignedTo() { return TfsStore.getters.getAssignsTo() },
+        States() { return TfsStore.getters.getStates() },
     },
     provide() {
         return {
@@ -33,19 +31,20 @@ new Vue({
                 b.classList.remove('dnbShowMenuFilter')
             })
         },
-        setFloatOver(type, val){
-            switch(type) {
+        setFloatOver(type, val) {
+            switch (type) {
                 case 1:     // Edit Item
                     this.EditItem = val
                     this.MenuSelect = null
-                break;
+                    break;
                 case 2:     // MenuSelect
                     this.MenuSelect = val
                     this.EditItem = null
-                break;
+                    break;
             }
         },
-    },    
+        onShowFilter(e) { this.IsShowFilter = true },
+    },
     //watch: { },
     created() {
 

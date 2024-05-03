@@ -1,6 +1,6 @@
 Vue.component('b-filter', {
     //props: [],
-    //inject: ['onChangeFilterByWord'],
+    //inject: [],
     data() {
         return {
             Keyword: TfsStore.getters.getSearch(),
@@ -16,7 +16,7 @@ Vue.component('b-filter', {
         },
         LblStates() {
             const lst = TfsStore.getters.getStates()
-            if(!lst.length) return 'States'
+            if (!lst.length) return 'States'
             if (lst.length < 2) return lst[0]
             return `${lst[0]} (+1)`
         },
@@ -34,7 +34,7 @@ Vue.component('b-filter', {
             const eOffs = e.target.offset();
             this.$root.setFloatOver(2, {
                 Type: type,
-                top: `${eOffs.top + 23}px`,
+                top: `${eOffs.top + 33}px`,
                 left: `${eOffs.left}px`
             })
             switch (type) {
@@ -43,7 +43,7 @@ Vue.component('b-filter', {
                         { Name: 'Unassigned' },
                         ...TfsStore.getters.getUsers()];
                     this.$root.MenuSelect.onSelect = (name) => {
-                        TfsStore.dispatch('setFilterAssigns', name)
+                        TfsStore.dispatch('setFilterChecks', { name, type: 1 })
                     }
                     break;
                 case 3:     // states
@@ -54,19 +54,23 @@ Vue.component('b-filter', {
                         { Name: 'To Do' }
                     ]
                     this.$root.MenuSelect.onSelect = (name) => {
-                        TfsStore.dispatch('setFilterStates', name)
+                        TfsStore.dispatch('setFilterChecks', { name, type: 2 })
                     }
                     break;
                 default:
                     break;
             }
         },
+        onRmFilter() {
+            this.$root.IsShowFilter = false
+            TfsStore.dispatch('switchFilter', false)
+        },
     },
 })
 
 Vue.component('b-backlog', {
     props: ['item'],
-    //inject: ['onChangeFilterByWord'],
+    //inject: [],
     data() {
         let dNow = Date.now();
         const user = TfsStore.getters.getUsers()[0]

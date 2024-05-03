@@ -11,9 +11,8 @@ const TfsStore = Vuex.createStore({
     },
     actions: {
         setFilterSearch(context, txt) { context.commit('setFSearch', txt) },
-        removeFilter(context) { context.commit('removeFilter') },
-        setFilterAssigns(context, type, txt) { context.commit('setFilterAssigns', type, txt) },
-        setFilterStates(context, type, txt) { context.commit('setFilterStates', type, txt) },
+        switchFilter(context, isNew) { context.commit('switchFilter', isNew) },
+        setFilterChecks(context, data) { context.commit('setFilterChecks', data) },
     },
     mutations: { // Commit with Payload (https://vuex.vuejs.org/guide/mutations.html)
         setFSearch(state, txt) {
@@ -21,24 +20,31 @@ const TfsStore = Vuex.createStore({
             txt = txt.trim()
             state.Filter.Search = txt
         },
-        removeFilter(state) {
-            state.Filter = null
+        switchFilter(state, isNew) {
+            if (isNew) return;
+            state.Filter.Search = ''
+            state.Filter.AssignedTo.splice(0)
+            state.Filter.States.splice(0)
         },
-        setFilterAssigns(state, txt) {
+        setFilterChecks(state, data) {
             if (Object.is(state.Filter, null)) return;
-            let ii = state.Filter.AssignedTo.indexOf(txt)
-            if (ii < 0) state.Filter.AssignedTo.push(txt)
-            else state.Filter.AssignedTo.splice(ii, 1)
-        },
-        setFilterStates(state, txt) {
-            if (Object.is(state.Filter, null)) return;
-            let ii = state.Filter.States.indexOf(txt)
-            if (ii < 0) state.Filter.States.push(txt)
-            else state.Filter.States.splice(ii, 1)
+            let ii = -2
+            switch (data.type) {
+                case 1:         // Assigned to
+                    ii = state.Filter.AssignedTo.indexOf(data.name)
+                    if (ii < 0) state.Filter.AssignedTo.push(data.name)
+                    else state.Filter.AssignedTo.splice(ii, 1)
+                    break;
+                case 2:         // States
+                    ii = state.Filter.States.indexOf(data.name)
+                    if (ii < 0) state.Filter.States.push(data.name)
+                    else state.Filter.States.splice(ii, 1)
+                    break;
+                default: break;
+            }
         },
     },
     getters: {
-        getFilter: (state) => () => { return state.Filter },
         getSearch: (state) => () => {
             if (Object.is(state.Filter, null)) return ''
             return state.Filter.Search

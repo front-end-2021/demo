@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style/5.3.2_dist_css_bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="style/bowtie.css" />
     <link rel="stylesheet" href="style/app_style.css" />
 
@@ -21,16 +22,22 @@
 <body>
     <main id="tfs-app">
         <b-filter inline-template v-if="IsShowFilter">
-            <section>
-                <input type="text" :placeholder="PlaceholderKeyWord" v-model="Keyword" />
+            <section class="d-flex align-items-center m-2 bg-light rounded px-2" 
+                style="height: 45px;">
+                <input type="text" :placeholder="PlaceholderKeyWord" v-model="Keyword" 
+                    class="me-3" style="width: 450px;"/>
                 <span @click.stop="e => filterByMenu(e, 2)" 
-                    class="d-inline-block"
-                    style="width:204px">{{LblAssigned}}</span>
-                    <span @click.stop="e => filterByMenu(e, 3)" 
-                        class="d-inline-block"
-                        style="width:204px">{{LblStates}}</span>
+                    class="dnb-chevron-down d-inline-flex justify-content-between align-items-center me-3 bg-light px-2 rounded"
+                    style="width:204px;min-height: 30px;">{{LblAssigned}}</span>
+                <span @click.stop="e => filterByMenu(e, 3)" 
+                    class="dnb-chevron-down d-inline-flex justify-content-between align-items-center me-3 bg-light px-2 rounded"
+                    style="width:204px;min-height: 30px;">{{LblStates}}</span>
+                <button type="button" class="btn-close" aria-label="Close"
+                    @click="onRmFilter"></button>
             </section>
         </b-filter>
+        <button v-else type="button" class="btn btn-light m-2"
+                    @click="onShowFilter">Show <i class="bi bi-funnel"></i></button>
         <section class="dnb-col-head d-flex">
             <span>Collapse all</span>
             <span>To Do</span>
@@ -53,20 +60,20 @@
             </section>
         </b-backlog>
         <div v-if="EditItem != null && (EditItem.Type == 3)" 
-            class="d-inline-block position-fixed dnb-lst-user"
+            class="d-inline-block position-fixed dnb-lst-user shadow rounded-bottom"
             :style="{top: EditItem.top, left: EditItem.left}">
             <div v-for="user in EditItem.Users" @click="e => EditItem.onSelect(user.Name)">{{user.Name}}</div>
         </div>
         <div v-if="MenuSelect != null"
-            class="d-inline-block position-fixed dnb-lst-user"
+            class="d-inline-block position-fixed dnb-lst-user bg-light rounded shadow"
             :style="{top: MenuSelect.top, left: MenuSelect.left}"
             style="z-index: 1;">
-            <div v-if="MenuSelect.Type == 2" v-for="item in MenuSelect.Items" 
+            <div v-if="MenuSelect.Type == 2" v-for="item in MenuSelect.Items" class="px-2"
                 @click.stop="e => MenuSelect.onSelect(item.Name)">
                 <input class="form-check-input" :value="item.Name" v-model="AssignedTo"
                     type="checkbox"><span class="ms-1">{{item.Name}}</span>
             </div>
-            <div v-if="MenuSelect.Type == 3" v-for="item in MenuSelect.Items" 
+            <div v-if="MenuSelect.Type == 3" v-for="item in MenuSelect.Items" class="px-2"
                 @click.stop="e => MenuSelect.onSelect(item.Name)">
                 <input class="form-check-input" :value="item.Name" v-model="States"
                     type="checkbox"><span class="ms-1">{{item.Name}}</span>
