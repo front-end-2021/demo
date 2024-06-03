@@ -234,7 +234,7 @@ Vue.component('vw-overview', {
             return {
                 group: 'action',
                 swap: true,
-                handle: "p.a-name"
+                handle: ".dnb-act-time"
             }
         },
     },

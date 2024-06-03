@@ -4,7 +4,7 @@ const cvApp = new Vue({
     data: {
         NavBar: {
             Index: 0,
-            NavPages: ['Overview', 'Inventory', 'Customers', 'Products'],
+            NavPages: ['Overview', 'Inventory', 'Customers'],
             UserMenus: [
                 { id: 1, url: '#new-project', title: 'New project...' },
                 { id: 2, url: '#setting', title: 'Settings' },
