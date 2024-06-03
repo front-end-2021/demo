@@ -154,6 +154,16 @@ Vue.component('action-view', {
                 return date.stringFormat('dd/MM')
             }
         },
+        DueDate(){
+            if (!this.item) return
+            const item = this.item
+            if(!item.Start) return
+            if(item.End) {
+                let dT = item.End.getTime() - item.Start.getTime()
+                return dT / 24000 / 3600
+            }
+            return '-'
+        },
         End() {
             if (!this.item) return
             const item = this.item
