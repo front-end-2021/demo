@@ -105,6 +105,7 @@ function newAppVue() {
         },
         methods: {
             renderData() {
+                document.body.style.cursor = 'wait'
                 const filter = DnbVxStore.getters.getMtFilter(0)
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
@@ -236,6 +237,7 @@ function newAppVue() {
                     return lstsMrkId
                 }
                 function setAppMsg(lstPath, sumActv) {
+                    document.body.style.cursor = ''
                     if (!lstPath.length) this.AppMsg = 'No results'
                     else {
                         let cGoal = 0;
@@ -282,12 +284,11 @@ function newAppVue() {
                 }
                 function addGoalToList(mapGoals, activities) {
                     const item = this
-                    const idSubmarket = item.IdSubmarkets
                     let countAct = 0
                     for (let pp = 0; pp < item.PGroups.length; pp++) {
                         const pGrp = item.PGroups[pp]
                         const idProducts = pGrp.Products.map(x => x.Data.Id)
-                        const _mapG = mapGoals.FilterGoals(idSubmarket, idProducts)
+                        const _mapG = mapGoals.FilterGoals(item.IdSubmarkets, idProducts)
                         if (_mapG.size) {
                             const goals = []
                             _mapG.forEach((lstG) => {

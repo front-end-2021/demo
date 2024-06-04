@@ -26,22 +26,37 @@ Array.prototype.GroupBy = function (keyGetter) {
             map.set(key, [item])
         }
     })
-    return map
+    return map  // {key: SubmarketProductId, value: items}
 }
 Map.prototype.FilterGoals = function (submarketIds, productIds) {
-    if (submarketIds.includes(0) && productIds.includes(0)) return this
+    if (submarketIds.includes(0) && productIds.includes(0)) return this    
     const map = new Map()
+    if(submarketIds.includes(0)) {
+        this.forEach((lstGoal, tSmpIds) => {
+            const lstSmkPrdId = tSmpIds.split('-')
+            const pId = parseInt(lstSmkPrdId[1])
+            if (productIds.includes(pId) && !map.has(tSmpIds)) {
+                map.set(tSmpIds, lstGoal)
+            }
+        })
+        return map
+    }
+    if(productIds.includes(0)) {
+        this.forEach((lstGoal, tSmpIds) => {
+            const lstSmkPrdId = tSmpIds.split('-')
+            const sId = parseInt(lstSmkPrdId[0])
+            if (submarketIds.includes(sId) && !map.has(tSmpIds)) {
+                map.set(tSmpIds, lstGoal)
+            }
+        })
+        return map
+    }
     this.forEach((lstGoal, tSmpIds) => {
         const lstSmkPrdId = tSmpIds.split('-')
         const sId = parseInt(lstSmkPrdId[0])
         const pId = parseInt(lstSmkPrdId[1])
-        let hasSpId = submarketIds.includes(0) && productIds.includes(pId)
-        if (!hasSpId) hasSpId = submarketIds.includes(sId) && productIds.includes(0)
-        if (!hasSpId) hasSpId = submarketIds.includes(sId) && productIds.includes(pId)
-        if (hasSpId) {
-            const collection = map.get(tSmpIds)
-            if (!collection) map.set(tSmpIds, lstGoal)
-        }
+        let hasSpId = submarketIds.includes(sId) && productIds.includes(pId)
+        if (hasSpId && !map.has(tSmpIds)) { map.set(tSmpIds, lstGoal) }
     })
     return map
 }

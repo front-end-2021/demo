@@ -63,7 +63,7 @@
                                     <mf-viewgoal inline-template v-for="goal in prduct.ListGoal" :entry="goal"
                                         :key="'lnd'+wItem.Land.Id+'rg'+wItem.Region.Id+'prg'+pGrp.PGroup.Id+'p'+prduct.Data.Id+'gl'+goal.Item.Id">
                                         <li v-bind:id-goal="'dnb-goal_' + entry.Item.Id" >
-                                            <p class="mb-0" v-bind:class="[entry.Item.Finish ? 'text-black-50' : '']"
+                                            <p class="mb-0 d-inline-block" v-bind:class="[entry.Item.Finish ? 'text-black-50' : '']"
                                                 @click.stop="toggleExpand">{{entry.Item.Name}} <span class="badge bg-secondary ms-3"
                                                     v-bind:class="[entry.Item.Finish ? 'text-white-50' : '']">{{entry.ListActivity.length}}</span></p>
                                             <div v-if="IsExpand" class="mb-2 d-flex justify-content-start" 
