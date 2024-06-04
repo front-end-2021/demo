@@ -16,49 +16,56 @@ Array.prototype.distinct = function () {
     }
     return this
 }
-Array.prototype.GroupBy = function (keyGetter) {
-    const map = new Map()
-    this.forEach(item => {
-        const key = keyGetter(item)
-        if (map.has(key)) {
-            map.get(key).push(item)
-        } else {
-            map.set(key, [item])
+Array.prototype.getGoalsBy = function (submarketIds, productIds) {
+    if (submarketIds.includes(0) && productIds.includes(0)) return this
+    const lstI = new Array(this.length)
+    for (let i = 0; i < this.length; i++) lstI.fill(i, i);
+    const lstG = []
+    let ii = -1, goal
+    if (submarketIds.includes(0)) {
+        let smkPrdId, pId
+        for (let i = 0; i < lstI.length; i++) {
+            ii = lstI[i]
+            goal = this[ii]
+            smkPrdId = goal.SubmarketProductId.split('-')
+            pId = parseInt(smkPrdId[1])
+            if (productIds.includes(pId)) {
+                lstG.push(this[ii])
+                lstI.splice(i, 1)
+                i--
+            }
         }
-    })
-    return map  // {key: SubmarketProductId, value: items}
-}
-Map.prototype.FilterGoals = function (submarketIds, productIds) {
-    if (submarketIds.includes(0) && productIds.includes(0)) return this    
-    const map = new Map()
-    if(submarketIds.includes(0)) {
-        this.forEach((lstGoal, tSmpIds) => {
-            const lstSmkPrdId = tSmpIds.split('-')
-            const pId = parseInt(lstSmkPrdId[1])
-            if (productIds.includes(pId) && !map.has(tSmpIds)) {
-                map.set(tSmpIds, lstGoal)
-            }
-        })
-        return map
+        return lstG
     }
-    if(productIds.includes(0)) {
-        this.forEach((lstGoal, tSmpIds) => {
-            const lstSmkPrdId = tSmpIds.split('-')
-            const sId = parseInt(lstSmkPrdId[0])
-            if (submarketIds.includes(sId) && !map.has(tSmpIds)) {
-                map.set(tSmpIds, lstGoal)
+    if (productIds.includes(0)) {
+        let smkPrdId, sId
+        for (let i = 0; i < lstI.length; i++) {
+            ii = lstI[i]
+            goal = this[ii]
+            smkPrdId = goal.SubmarketProductId.split('-')
+            sId = parseInt(smkPrdId[0])
+            if (submarketIds.includes(sId)) {
+                lstG.push(this[ii])
+                lstI.splice(i, 1)
+                i--
             }
-        })
-        return map
+        }
+        return lstG
     }
-    this.forEach((lstGoal, tSmpIds) => {
-        const lstSmkPrdId = tSmpIds.split('-')
-        const sId = parseInt(lstSmkPrdId[0])
-        const pId = parseInt(lstSmkPrdId[1])
-        let hasSpId = submarketIds.includes(sId) && productIds.includes(pId)
-        if (hasSpId && !map.has(tSmpIds)) { map.set(tSmpIds, lstGoal) }
+    const sPids = []
+    submarketIds.forEach(sid => {
+        productIds.forEach(pid => { sPids.push(`${sid}-${pid}`) })
     })
-    return map
+    for (let i = 0; i < lstI.length; i++) {
+        ii = lstI[i]
+        goal = this[ii]
+        if (sPids.includes(goal.SubmarketProductId)) {
+            lstG.push(this[ii])
+            lstI.splice(i, 1)
+            i--
+        }
+    }
+    return lstG
 }
 function getBrowser() {
     let userAgent = navigator.userAgent;

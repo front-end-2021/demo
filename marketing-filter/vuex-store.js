@@ -88,9 +88,9 @@ const DnbVxStore = Vuex.createStore({
         getMktSegments: (state) => () => { return state.MarketSegments },
         getSubMarkets: (state) => () => { return state.StakeholderGroups },
         getGoals: (state) => () => { return state.Goals },
-        getMapGoals: (state) => (submarketIds, productIds) => {
-            const mapGoals = state.Goals.GroupBy(x => x.SubmarketProductId)
-            return mapGoals.FilterGoals(submarketIds, productIds)
+        filterGoals: (state) => (i) => {
+            const flt = state.mtFilters[i]
+            return state.Goals.getGoalsBy(flt.SubmarketIds, flt.ProductIds)
         },
         getActivities: (state) => () => { return state.Activities },
         getPageTab: (state) => () => { return state.PageTab },

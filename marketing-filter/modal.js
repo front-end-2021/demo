@@ -133,48 +133,6 @@ class MktFilter {
         if (ids.includes(0)) return [0]
         return ids
     }
-    getBlockIds(rows, type, indexI) {       // each block
-        let lstId = []
-        for (let ii = 0; ii < rows.length; ii++) {
-            const crite = rows[ii]
-            if (type != crite.Type) continue;
-            const i_Id = crite.Ids[indexI]
-            if(typeof i_Id != 'number') continue
-            if (i_Id < 0) continue
-            if (!lstId.length) {        // 1st
-                lstId.push(i_Id)
-                continue
-            }
-            if (i_Id == 0) {           // Select all
-                if (lstId.includes(0)) continue
-                if (1 == crite.Operand) {       // And
-                    continue
-                }
-                lstId = [0]
-                continue
-            }
-            // 0 < i_Id
-            if (1 == crite.Operand) {       // And
-                if (!lstId.includes(i_Id)) {
-                    if (lstId.includes(0)) {
-                        lstId = [i_Id]
-                        continue
-                    }
-                    lstId.splice(0)     // empty list
-                    continue
-                }
-                lstId = [i_Id]
-                continue
-            }
-            if (2 == crite.Operand) {        // Or
-                if (lstId.includes(i_Id)) continue
-                lstId.push(i_Id)
-                continue
-            }
-        }
-        if (lstId.includes(0)) return [0]
-        return lstId
-    }
     get RegionIds() {
         const rwLandRegns = []// this.#Blocks.filter(x => 1 == x.Type)
         for (let ii = 0; ii < this.ListBlock.length; ii++) {
@@ -184,7 +142,7 @@ class MktFilter {
             if (1 == row.Type) rwLandRegns.push(row)
         }
         if (!rwLandRegns.length) return [0]
-        // return this.getBlockIds(rwLandRegns, 1, 1)
+        
         let lstId = []
         for (let ii = 0; ii < rwLandRegns.length; ii++) {
             const crite = rwLandRegns[ii]

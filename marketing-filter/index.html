@@ -96,10 +96,10 @@
             </div>
         </section>
     </main>
-    <section id="dashboard" class="dnb-view-100h p-1">
+    <section id="dashboard" class="dnb-view-100h p-1" style="min-width: 495px;">
         <b class="text-success">View Dashboard <span class="opacity-25">(Vuejs CDN)</span>: </b>
         <div class="list-land">
-            <h6 @click.stop="e => toggleCollapse(1)">List Land: <b v-if="!showExpand(1)">&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(1)">Lands ({{Lands.length}}): <b v-if="!showExpand(1)">&#10010;</b></h6>
             <div v-for="item in Lands" v-if="showExpand(1)" class="lst-entry">
                 <span>Id: {{item.Id}}</span>
                 <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
@@ -111,7 +111,7 @@
             </div>
         </div>
         <div class="list-region">
-            <h6 @click.stop="e => toggleCollapse(2)">List Region: <b v-if="!showExpand(2)">&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(2)">Regions ({{Regions.length}}): <b v-if="!showExpand(2)">&#10010;</b></h6>
             <div v-if="showExpand(2)" class="lst-entry" v-for="item in Regions">
                 <span>Id: {{item.Id}}</span>
                 <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
@@ -129,42 +129,42 @@
             </div>
         </div>
         <div class="list-productgroup">
-            <h6 @click.stop="e => toggleCollapse(3)">List Product group: <b v-if="!showExpand(3)">&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(3)">Product groups ({{ProductGroups.length}}): <b v-if="!showExpand(3)">&#10010;</b></h6>
             <div v-if="showExpand(3)" class="lst-entry" v-for="item in ProductGroups">
                 <span>Id: {{item.Id}}</span>
                 <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
             </div>
         </div>
         <div class="list-product">
-            <h6 @click.stop="e => toggleCollapse(4)">List Product: <b v-if="!showExpand(4)">&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(4)">Products ({{Products.length}}): <b v-if="!showExpand(4)">&#10010;</b></h6>
             <div v-if="showExpand(4)" class="lst-entry" v-for="item in Products">
                 <span>Id: {{item.Id}}</span>
                 <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
             </div>
         </div>
         <div class="list-subproduct">
-            <h6 @click.stop="e => toggleCollapse(5)">List Sub product: <b v-if="!showExpand(5)">&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(5)">Sub products ({{SubProducts.length}}): <b v-if="!showExpand(5)">&#10010;</b></h6>
             <div v-if="showExpand(5)" class="lst-entry" v-for="item in SubProducts">
                 <span>Id: {{item.Id}}</span>
                 <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
             </div>
         </div>
         <div class="list-market">
-            <h6 @click.stop="e => toggleCollapse(6)">List Market: <b v-if="!showExpand(6)">&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(6)">Markets ({{MarketSegments.length}}): <b v-if="!showExpand(6)">&#10010;</b></h6>
             <div v-if="showExpand(6)" class="lst-entry" v-for="item in MarketSegments">
                 <span>Id: {{item.Id}}</span>
                 <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
             </div>
         </div>
         <div class="list-submarket">
-            <h6 @click.stop="e => toggleCollapse(7)">List sub market: <b v-if="!showExpand(7)">&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(7)">Sub market ({{StakeholderGroups.length}}): <b v-if="!showExpand(7)">&#10010;</b></h6>
             <div v-if="showExpand(7)" class="lst-entry" v-for="item in StakeholderGroups">
                 <span>Id: {{item.Id}}</span>
                 <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
             </div>
         </div>
         <div class="list-goal">
-            <h6 @click.stop="e => toggleCollapse(8)">List goal: <b v-if="!showExpand(8)">&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(8)">Goals ({{Goals.length}}): <b v-if="!showExpand(8)">&#10010;</b></h6>
             <mf-dashgoal inline-template v-for="item in Goals" v-if="showExpand(8)" :entry="item" :key="'goal_' + item.Id">
                 <div class="lst-entry">
                     <span>Id: {{entry.Id}}</span>
@@ -172,19 +172,21 @@
                     <span>Finish: <input v-model="entry.Finish" type="checkbox"
                             class="form-check-input dnb-r14px" /></span>
                     <span>
-                        <small>Start</small><input type="date" name="g-start" :value="Start" @change="changeStart"
-                            :max="End ? End : null" :disabled="entry.Finish ? true : false"/>
+                        <small style="margin-right: 3px;">Start</small><input type="date" name="g-start" :value="Start" @change="changeStart"
+                            :max="End ? End : null" :disabled="entry.Finish ? true : false"
+                            style="width: 93px;"/>
                     </span>
                     <span>
-                        <small>End</small><input type="date" name="g-end" :value="End" @change="changeEnd"
+                        <small style="margin-right: 3px;">End</small><input type="date" name="g-end" :value="End" @change="changeEnd"
                             :min="Start ? Start : null" 
-                            :disabled="entry.Finish ? true : (Start ? false : true)"/>
+                            :disabled="entry.Finish ? true : (Start ? false : true)"
+                            style="width: 93px;"/>
                     </span>
                 </div>
             </mf-dashgoal>
         </div>
         <div class="list-activity">
-            <h6 @click.stop="e => toggleCollapse(9)">List activity: <b v-if="!showExpand(9)">&#10010;</b></h6>
+            <h6 @click.stop="e => toggleCollapse(9)">Activities ({{Activities.length}}): <b v-if="!showExpand(9)">&#10010;</b></h6>
             <div v-if="showExpand(9)" class="lst-entry" v-for="item in Activities">
                 <span>Id: {{item.Id}}</span>
                 <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />

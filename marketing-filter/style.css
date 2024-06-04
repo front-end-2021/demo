@@ -37,7 +37,7 @@ main.dnb-view-100h {min-width: 1200px;}
 
 #dashboard [class|="list"]>.lst-entry {
     display: grid;
-    grid-template-columns: 42px 246px 81px 141px 141px;
+    grid-template-columns: 51px 246px 60px 126px 126px;
     grid-gap: 9px;
     margin-bottom: 9px;
     align-items: center;

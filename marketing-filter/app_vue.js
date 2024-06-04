@@ -110,7 +110,7 @@ function newAppVue() {
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
                 DnbVxStore.dispatch('setListTask', [
-                    () => { return DnbVxStore.getters.getMapGoals(filter.SubmarketIds, filter.ProductIds) },
+                    () => { return DnbVxStore.getters.filterGoals(0) },
                     () => {
                         const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
                         const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
@@ -120,18 +120,14 @@ function newAppVue() {
                     () => { return getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds) }
                 ])
                 processTask(DnbVxStore.getters.getListTask()).then((values) => {
-                    const mapGoals = values[0]
+                    const fGoals = values[0]
                     let lstPath = values[1]
                     const lstProductGrp = values[2]
                     const lstSubmarketId = values[3]
                     DnbVxStore.dispatch('setListTask', [
                         () => { return DnbVxStore.getters.getActivities() },
-                        () => {
-                            addProducts.call(lstPath, lstProductGrp)         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
-                        },
-                        () => {
-                            addSubmarketIds.call(lstPath, lstSubmarketId)           //  [{Land, Region, PGroup, IdSubmarkets}]
-                        }
+                        () => { addProducts.call(lstPath, lstProductGrp) },         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
+                        () => { addSubmarketIds.call(lstPath, lstSubmarketId) }           //  [{Land, Region, PGroup, IdSubmarkets}]
                     ])
                     processTask(DnbVxStore.getters.getListTask()).then((values) => {
                         const lstActivity = values[0]
@@ -139,7 +135,7 @@ function newAppVue() {
                         for (let ii = lstPath.length - 1; -1 < ii; ii--) {
                             const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
                             fncsAddGoal.push(() => {
-                                return addGoalToList.call(item, mapGoals, lstActivity)
+                                return addGoalToList.call(item, fGoals, lstActivity)
                             })
                         }
                         DnbVxStore.dispatch('setListTask', fncsAddGoal)
@@ -150,7 +146,7 @@ function newAppVue() {
                             removeEmptyGoal.call(lstPath)
                             this.ListDataUI = lstPath;
                             setAppMsg.call(this, lstPath, sumActv)
-                            DnbVxStore.dispatch('setListTask', [])
+                            DnbVxStore.dispatch('setListTask', [])      // remove array / clear memory
                         })
                     })
                 })
@@ -252,7 +248,7 @@ function newAppVue() {
                                 }
                             }
                         }
-                        this.AppMsg = `Land > Region / Product group / Product / List goal (${cGoal}) / Activties (${sumActv})`
+                        this.AppMsg = `Land > Region / Product group / Product / Goals (${cGoal}) / Activties (${sumActv})`
                     }
                 }
                 function removeEmptyGoal() {
@@ -282,30 +278,24 @@ function newAppVue() {
                         }
                     }
                 }
-                function addGoalToList(mapGoals, activities) {
+                function addGoalToList(lstGoal, activities) {
                     const item = this
-                    let countAct = 0
+                    let countAct = 0, pGrp, idProducts, goals, product, goal, lstSmkPrdId
                     for (let pp = 0; pp < item.PGroups.length; pp++) {
-                        const pGrp = item.PGroups[pp]
-                        const idProducts = pGrp.Products.map(x => x.Data.Id)
-                        const _mapG = mapGoals.FilterGoals(item.IdSubmarkets, idProducts)
-                        if (_mapG.size) {
-                            const goals = []
-                            _mapG.forEach((lstG) => {
-                                lstG.forEach(g => goals.push(g))
-                            })
-                            for (let pd = 0; pd < pGrp.Products.length; pd++) {
-                                const product = pGrp.Products[pd]           // { Data }
-                                product.ListGoal = []
-                                for (let gg = 0; gg < goals.length; gg++) {
-                                    const goal = goals[gg]
-                                    const lstSmkPrdId = goal.SubmarketProductId.split('-')
-                                    const pId = parseInt(lstSmkPrdId[1])
-                                    if (pId == product.Data.Id) {
-                                        const lstActivity = genListActivity(goal.Id, activities)
-                                        product.ListGoal.push({ Item: goal, ListActivity: lstActivity })
-                                        countAct += lstActivity.length
-                                    }
+                        pGrp = item.PGroups[pp]
+                        idProducts = pGrp.Products.map(x => x.Data.Id)
+                        goals = lstGoal.getGoalsBy(item.IdSubmarkets, idProducts)
+                        for (let pd = 0; pd < pGrp.Products.length; pd++) {
+                            product = pGrp.Products[pd]           // { Data }
+                            product.ListGoal = []
+                            for (let gg = 0; gg < goals.length; gg++) {
+                                goal = goals[gg]
+                                lstSmkPrdId = goal.SubmarketProductId.split('-')
+                                const pId = parseInt(lstSmkPrdId[1])
+                                if (pId == product.Data.Id) {
+                                    const lstActivity = genListActivity(goal.Id, activities)
+                                    product.ListGoal.push({ Item: goal, ListActivity: lstActivity })
+                                    countAct += lstActivity.length
                                 }
                             }
                         }
@@ -612,9 +602,17 @@ function setStartEndNow(notData) {
 }
 function genListActivity(goalId, lsActivity) {
     const lstA = []
-    for (let aa = 0; aa < lsActivity.length; aa++) {
-        const act = lsActivity[aa]
-        if (goalId == act.GoalId) lstA.push({ Data: act })
+    const lstI = new Array(lsActivity.length)
+    for (let i = 0; i < lsActivity.length; i++) lstI.fill(i, i);
+    let aa = -1, act
+    for (let i = 0; i < lstI.length; i++) {
+        aa = lstI[i]
+        act = lsActivity[aa]
+        if (goalId == act.GoalId) {
+            lstA.push({ Data: act })
+            lstI.splice(i, 1)
+            i--
+        }
     }
     return lstA
 }
