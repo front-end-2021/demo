@@ -458,7 +458,7 @@ class MktFilter {
             }
         }
     }
-    setDSource(ii) {
+    setEvtSource(ii) {
         for (let kk = 0; kk < this.#Events.length; kk++) {
             if (ii == kk) continue
             this.#Events[kk]()

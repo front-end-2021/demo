@@ -218,7 +218,7 @@ span[data-title]:hover::after {
     padding-top: 32px;
     display: grid;
 }
-
+.dnd-wrap_ {display: grid; row-gap: 0;}
 .dnb-act-time {
     max-height: 24px;
     width: 100%;
@@ -296,3 +296,4 @@ span[data-title]:hover::after {
 .vlist-action {
     width: calc(100vw - 2 * 288px - 53px);
 }
+.action-done > p.a-name {opacity: 0.69;}

@@ -154,21 +154,31 @@ Vue.component('action-view', {
                 return date.stringFormat('dd/MM')
             }
         },
+        DueDate(){
+            if (!this.item) return
+            const item = this.item
+            if(!item.Start) return
+            if(item.End) {
+                let dT = item.End.getTime() - item.Start.getTime()
+                return dT / 24000 / 3600
+            }
+            return '-'
+        },
         End() {
             if (!this.item) return
             const item = this.item
             if (!item.End && this.aIsDone(item.Id)) {
-                if (!item.Start) {
-                    return Date.now().stringFormat('dd/MM')
-                }
                 const dNow = new Date()
+                if (!item.Start) {
+                    return dNow.stringFormat('dd/MM')
+                }
                 dNow.setHours(0, 0, 0, 0)
                 const tNow = dNow.getTime()
                 const tStart = item.Start.getTime()
                 if (tStart < tNow) return dNow.stringFormat('dd/MM')
                 return item.Start.stringFormat('dd/MM')
             }
-            if (item.End) item.End.stringFormat('dd/MM')
+            if (item.End) return item.End.stringFormat('dd/MM')
         },
         YearStart() {
             if (!this.item) return
@@ -286,6 +296,7 @@ Vue.component('sub-view', {
                 group: 'action',
                 swap: true,
                 handle: "p.a-name",
+                filter: '.action-done',
             }
         },
         NeedSync() {

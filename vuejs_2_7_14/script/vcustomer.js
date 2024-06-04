@@ -137,8 +137,8 @@ Vue.component('vcustom-goal', {
                     return;
                 case 3:
                     const goalId = this.itemid
-                    iA = this.ListAction.findIndex(x => x.Id == gaId)
-                    if (iA > -1) this.ListAction.splice(iA, 1)
+                    iA = lstA.findIndex(x => x.Id == gaId)
+                    if (iA > -1) lstA.splice(iA, 1)
 
                     for (let ii = 0; ii < lstMapGa.length; ii++) {
                         const entry = lstMapGa[ii]

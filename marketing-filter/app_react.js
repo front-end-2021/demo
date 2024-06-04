@@ -9,9 +9,8 @@ function tasksReducer(blocks, action) {
             return [...blocks]
         }
         case 'deleted': {
-            const blks = [...blocks]
-            blks.splice(action.iRow, 1)
-            return blks
+            blocks.splice(action.iRow, 1)
+            return [...blocks]
         }
         default: {
             throw Error('Unknown action: ' + action.type);
@@ -81,7 +80,7 @@ const ReactFltRow = ({ ii, dfilter, onDelRow }) => {
             const newIds = getInitIds(newType);
             setCIds(newIds)
             row.Ids = newIds
-            dfilter.setDSource(ii)
+            dfilter.setEvtSource(ii)
         }
     }
     const onChangeId = (ii, jj, obj) => {
@@ -162,6 +161,11 @@ const ReactFilter = ({ ifilter }) => {
     const setFilter = () => {
         if (typeof dfilter.setFilter == 'function') dfilter.setFilter()
     }
+    const resetFilter = () => {
+        for(let ii = blocks.length - 1; 0 < ii; ii--) {
+            onDelRow(ii)
+        }
+    }
     return (
         <section className="mb-3">
             <b className="ms-2 text-success">Filter <span className="opacity-25">(React CDN)</span>: </b>
@@ -173,11 +177,12 @@ const ReactFilter = ({ ifilter }) => {
             <div className="list-button pt-1">
                 <button type="button" className="btn btn-primary btn-sm me-2"
                     onClick={() => setFilter()}><i className="bi bi-search"></i> Filter</button>
-                <button type="button" className="btn btn-secondary btn-sm me-2">
+                <button type="button" className="btn btn-secondary btn-sm me-2"
+                    onClick={resetFilter}>
                     <i className="bi bi-arrow-repeat"></i> Reset</button>
                 <button type="button" className="btn btn-primary btn-sm me-2"
                     onClick={() => addFilter()}><i className="bi bi-plus-circle"></i> Add</button>
-                <button type="button" className="btn btn-primary btn-sm">
+                <button type="button" className="btn btn-primary btn-sm" disabled>
                     <i className="bi bi-download"></i> Save filter</button>
             </div>
         </section>
