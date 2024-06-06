@@ -122,8 +122,8 @@ const mxEditable = {
                 this.$root.EditItem.endChange()
                 this.$root.EditItem = null;
             }
-            console.log(e)
-            console.log(e.target)
+         //   console.log(e)
+          //  console.log(e.target)
 
         },
     },
@@ -159,7 +159,7 @@ Vue.component('b-task', {
                 e.preventDefault();
                 return;
             }
-            console.log(e)
+         //   console.log(e)
             this.preventEnter(e)
         },
     },

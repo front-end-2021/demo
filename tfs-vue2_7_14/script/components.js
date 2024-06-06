@@ -42,9 +42,6 @@ Vue.component('b-filter', {
                     this.$root.MenuSelect.Items = [
                         { Name: 'Unassigned' },
                         ...TfsStore.getters.getUsers()];
-                    this.$root.MenuSelect.onSelect = (name) => {
-                        TfsStore.dispatch('setFilterChecks', { name, type: 1 })
-                    }
                     break;
                 case 3:     // states
                     this.$root.MenuSelect.Items = [
@@ -53,12 +50,15 @@ Vue.component('b-filter', {
                         { Name: 'New' },
                         { Name: 'To Do' }
                     ]
-                    this.$root.MenuSelect.onSelect = (name) => {
-                        TfsStore.dispatch('setFilterChecks', { name, type: 2 })
-                    }
                     break;
                 default:
                     break;
+            }
+            this.$root.MenuSelect.onSelect = (name) => {
+                TfsStore.dispatch('setFilterChecks', { name, type })
+            }
+            this.$root.MenuSelect.clearChecks = (type) => {
+                TfsStore.dispatch('clearFilterChecks', type)
             }
         },
         onRmFilter() {

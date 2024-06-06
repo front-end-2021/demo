@@ -205,7 +205,7 @@ span[data-title]::after {
 span[data-title]:hover::after {
     content: attr(data-title);
     position: absolute;
-    right: -45px;
+    right: -39px;
     top: -1px;
     display: inline-block;
     background-color: #000000cc;
@@ -230,7 +230,7 @@ span[data-title]:hover::after {
 }
 
 .sortable-chosen.sortable-ghost {
-    border-radius: 9px;
+    border-radius: 6px;
     background-color: #f3f3f3 !important;
     color: #ffffff96 !important;
     margin-top: 0 !important;

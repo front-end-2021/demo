@@ -12,7 +12,7 @@
 
     <script src="../3rd/jquery/jquery-3.7.1.min.js"></script>
     <script src="../3rd/bootstrap5/5.3.2_dist_js_bootstrap.bundle.min.js"></script>
-    <script src="../3rd/vuejs/dev_vue@2_7_14.js"></script>
+    <script src="../3rd/vuejs/dev_vue@2_7_16.js"></script>
     <script src="../3rd/vuejs/vuex.global.js"></script>
     <script src="../3rd/vuejs/vue-observe-visibility.min.js"></script>
     <script src="../3rd/dnd/1.8.4_Sortable.min.js"></script>
@@ -36,7 +36,7 @@
                     @click="onRmFilter"></button>
             </section>
         </b-filter>
-        <button v-else type="button" class="btn btn-light m-2"
+        <button v-else type="button" class="btn btn-light m-2 dnb-btn-light"
                     @click="onShowFilter">Show <i class="bi bi-funnel"></i></button>
         <section class="dnb-col-head d-flex">
             <span>Collapse all</span>
@@ -62,22 +62,26 @@
         <div v-if="EditItem != null && (EditItem.Type == 3)" 
             class="d-inline-block position-fixed dnb-lst-user shadow rounded-bottom"
             :style="{top: EditItem.top, left: EditItem.left}">
-            <div v-for="user in EditItem.Users" @click="e => EditItem.onSelect(user.Name)">{{user.Name}}</div>
+            <div v-for="user in EditItem.Users" 
+                @click="e => EditItem.onSelect(user.Name)">{{user.Name}}</div>
         </div>
         <div v-if="MenuSelect != null"
             class="d-inline-block position-fixed dnb-lst-user bg-light rounded shadow"
             :style="{top: MenuSelect.top, left: MenuSelect.left}"
             style="z-index: 1;">
-            <div v-if="MenuSelect.Type == 2" v-for="item in MenuSelect.Items" class="px-2"
-                @click.stop="e => MenuSelect.onSelect(item.Name)">
+            <div v-if="2 == MenuSelect.Type" v-for="item in MenuSelect.Items" class="px-2"
+                @click.stop="e => MenuSelect.onSelect(item.Name, 2)">
                 <input class="form-check-input" :value="item.Name" v-model="AssignedTo"
                     type="checkbox"><span class="ms-1">{{item.Name}}</span>
             </div>
-            <div v-if="MenuSelect.Type == 3" v-for="item in MenuSelect.Items" class="px-2"
-                @click.stop="e => MenuSelect.onSelect(item.Name)">
+            <div v-if="3 == MenuSelect.Type" v-for="item in MenuSelect.Items" class="px-2"
+                @click.stop="e => MenuSelect.onSelect(item.Name, 3)">
                 <input class="form-check-input" :value="item.Name" v-model="States"
                     type="checkbox"><span class="ms-1">{{item.Name}}</span>
             </div>
+            <button class="btn btn-light m-2 dnb-btn-light px-2" 
+                @click.stop="e => MenuSelect.clearChecks(MenuSelect.Type)" 
+                type="button">Clear <i class="bi bi-eraser"></i></button>
         </div>
     </main>
     <script type="text/x-template" id="temp-task-done">

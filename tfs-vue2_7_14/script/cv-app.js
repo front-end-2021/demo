@@ -51,7 +51,7 @@ new Vue({
     },
     mounted() {
         const onClickWindow = (e) => {
-            console.log(e.target.tagName);
+           // console.log(e.target.tagName);
             if (!Object.is(this.MenuSelect, null)) {
                 this.$el.querySelectorAll(`.dnbShowMenuFilter`).forEach(b => {
                     b.classList.remove('dnbShowMenuFilter')

@@ -14,6 +14,7 @@ const TfsStore = Vuex.createStore({
         setFilterSearch(context, txt) { context.commit('setFSearch', txt) },
         switchFilter(context, isNew) { context.commit('switchFilter', isNew) },
         setFilterChecks(context, data) { context.commit('setFilterChecks', data) },
+        clearFilterChecks(context, type) { context.commit('clearFilterChecks', type) },
     },
     mutations: { // Commit with Payload (https://vuex.vuejs.org/guide/mutations.html)
         setFSearch(state, txt) {
@@ -31,15 +32,27 @@ const TfsStore = Vuex.createStore({
             if (Object.is(state.Filter, null)) return;
             let ii = -2
             switch (data.type) {
-                case 1:         // Assigned to
+                case 2:         // Assigned to
                     ii = state.Filter.AssignedTo.indexOf(data.name)
                     if (ii < 0) state.Filter.AssignedTo.push(data.name)
                     else state.Filter.AssignedTo.splice(ii, 1)
                     break;
-                case 2:         // States
+                case 3:         // States
                     ii = state.Filter.States.indexOf(data.name)
                     if (ii < 0) state.Filter.States.push(data.name)
                     else state.Filter.States.splice(ii, 1)
+                    break;
+                default: break;
+            }
+        },
+        clearFilterChecks(state, type) {
+            if (Object.is(state.Filter, null)) return;
+            switch (type) {
+                case 2:         // Assigned to
+                    state.Filter.AssignedTo.splice(0)
+                    break;
+                case 3:         // States
+                    state.Filter.States.splice(0)
                     break;
                 default: break;
             }
