@@ -20,12 +20,14 @@
 <body>
   <main id="app">
     <section>
-      {{message}}
+      {{message}}: {{$store.state.count}} {{1 == $store.state.count ? 'time' : 'times'}}
     </section>
     <compnav></compnav>
   </main>
   <template id="tmp-comp-nav">
-    <button @click="upCount">You clicked me {{ count }} times.</button>
+    <button @click="upCount">You clicked me {{ count }} {{1 == count ? 'time' : 'times'}}.</button>
+    <br/>
+    <button @click="resetCount">Reset Count</button>
   </template>
   <script src="comp-nav.js"></script>
   <script src="main-app.js"></script>

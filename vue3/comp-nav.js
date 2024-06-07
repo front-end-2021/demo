@@ -9,7 +9,7 @@
 const { createStore } = Vuex
 const store = createStore({
     state: {
-        count: -1,
+        count: 0,
         message: 'Hello world'
     },
 
@@ -18,9 +18,8 @@ const store = createStore({
         message(state) { return state.message },
     },
     mutations: {
-        increment(state) {
-            state.count++
-        }
+        increment(state) { state.count++ },
+        resetCount(state) { state.count = 0 },
     }
 });
 const CompNav = {
@@ -30,5 +29,6 @@ const CompNav = {
     template: `#tmp-comp-nav`,
     methods: {
         upCount() { store.commit('increment') },
+        resetCount(){store.commit('resetCount')}
     },
 }
