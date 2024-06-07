@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en-US">
+
 <head>
     <link rel="stylesheet" href="../3rd/bootstrap5/bootstrap.min.css" />
     <link rel="stylesheet" href="../3rd/bootstrap5/bootstrap-icons.min.css" />
@@ -17,38 +18,34 @@
     <script src="https://cdn.jsdelivr.net/npm/semantic-ui-react/dist/umd/semantic-ui-react.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvasjs@1.8.3/dist/canvasjs.min.js"></script>
 </head>
+
 <body>
     <main class="dnb-view-100h">
         <section id="dnb-appvue-nav">
-            <div class="ui secondary  menu">
-                <a class="item" :class="[PageTab == 1 ? 'active' : '']"
-                    @click.stop="e => setTab(1)">Action Pln</a>
-                <a class="item" :class="[PageTab == 2 ? 'active' : '']"
-                @click.stop="e => setTab(2)">TeamBrnd</a>
-                <a class="item" :class="[PageTab == 3 ? 'active' : '']"
-                @click.stop="e => setTab(3)">Friends</a>
+            <div class="ui secondary menu">
+                <a class="item" :class="[1 == PageTab ? 'active' : '']" @click.stop="e => setTab(1)">Action Pln</a>
+                <a class="item" :class="[2 == PageTab ? 'active' : '']" @click.stop="e => setTab(2)">TeamBrnd</a>
+                <a class="item" :class="[3 == PageTab ? 'active' : '']" @click.stop="e => setTab(3)">Dashboard</a>
                 <div class="right menu">
-                  <div class="item">
-                    <div class="ui icon input">
-                      <input type="text" placeholder="Search..." disabled>
-                      <i class="search link icon"></i>
+                    <div class="item">
+                        <div class="ui icon input">
+                            <input type="text" placeholder="Search..." disabled>
+                            <i class="search link icon"></i>
+                        </div>
                     </div>
-                  </div>
-                  <a class="ui item" :class="[PageTab == 4 ? 'active' : '']"
-                  @click.stop="e => setTab(4)">Account</a>
+                    <a class="ui item" :class="[4 == PageTab ? 'active' : '']" @click.stop="e => setTab(4)">Account</a>
                 </div>
-              </div>
+            </div>
         </section>
         <section id="react-filter"></section>
         <section id="dnb-app-vue" style="padding: 6px;">
-            <b v-if="PageTab == 1" class="text-success">View Data <span class="opacity-25">(Vuejs CDN)</span>: </b>
-            <b v-if="PageTab == 2" class="text-success">View Board <span class="opacity-25">(Vuejs CDN)</span>: </b>
-            <ul v-if="PageTab == 1" class="list-group list-group-flush">
+            <b v-if="1 == PageTab" class="text-success">View Data <span class="opacity-25">(Vuejs CDN)</span>: </b>
+            <b v-if="2 == PageTab" class="text-success">View Board <span class="opacity-25">(Vuejs CDN)</span>: </b>
+            <ul v-if="1 == PageTab" class="list-group list-group-flush">
                 <li v-if="AppMsg" class="text-black-50 fw-light fst-italic" v-html="AppMsg">
                 </li>
-                <li v-for="wItem in ListDataUI" class="list-group-item ps-0" 
-                    v-bind:id-land="'dnb-land_' + wItem.Land.Id"
-                    v-bind:id-region="'dnb-regn_' + wItem.Region.Id">
+                <li v-for="wItem in ListDataUI" class="list-group-item ps-0"
+                    v-bind:id-land="'dnb-land_' + wItem.Land.Id" v-bind:id-region="'dnb-regn_' + wItem.Region.Id">
                     <i class="text-black-50">{{wItem.Land.Name}} > {{wItem.Region.Name}}</i>
                     <div v-for="pGrp in wItem.PGroups">
                         <div class="d-flex justify-content-start align-items-start">
@@ -57,29 +54,35 @@
                         </div>
                         <ol class="dnb-products">
                             <li v-for="prduct in pGrp.Products" v-bind:id-product="'dnb-product_' + prduct.Data.Id">
-                                <h6 class="mb-0 text-muted" @click="e => onTogglePrdExpand(prduct.Data.Id, pGrp.PGroup.Id, wItem.Region.Id)"
+                                <h6 class="mb-0 text-muted"
+                                    @click="e => onTogglePrdExpand(prduct.Data.Id, pGrp.PGroup.Id, wItem.Region.Id)"
                                     style="cursor: default;">{{prduct.Data.Name}}</h6>
-                                <ul v-if="isPrdExpand(prduct.Data.Id, pGrp.PGroup.Id, wItem.Region.Id)" class="dnb-goals">
+                                <ul v-if="isPrdExpand(prduct.Data.Id, pGrp.PGroup.Id, wItem.Region.Id)"
+                                    class="dnb-goals">
                                     <mf-viewgoal inline-template v-for="goal in prduct.ListGoal" :entry="goal"
                                         :key="'lnd'+wItem.Land.Id+'rg'+wItem.Region.Id+'prg'+pGrp.PGroup.Id+'p'+prduct.Data.Id+'gl'+goal.Item.Id">
-                                        <li v-bind:id-goal="'dnb-goal_' + entry.Item.Id" >
-                                            <p class="mb-0 d-inline-block" v-bind:class="[entry.Item.Finish ? 'text-black-50' : '']"
-                                                @click.stop="toggleExpand">{{entry.Item.Name}} <span class="badge bg-secondary ms-3"
-                                                    v-bind:class="[entry.Item.Finish ? 'text-white-50' : '']">{{entry.ListActivity.length}}</span></p>
-                                            <div v-if="IsExpand" class="mb-2 d-flex justify-content-start" 
+                                        <li v-bind:id-goal="'dnb-goal_' + entry.Item.Id">
+                                            <p class="mb-0 d-inline-block"
+                                                v-bind:class="[entry.Item.Finish ? 'text-black-50' : '']"
+                                                @click.stop="toggleExpand">{{entry.Item.Name}} <span
+                                                    class="badge bg-secondary ms-3"
+                                                    v-bind:class="[entry.Item.Finish ? 'text-white-50' : '']">{{entry.ListActivity.length}}</span>
+                                            </p>
+                                            <div v-if="IsExpand" class="mb-2 d-flex justify-content-start"
                                                 v-bind:class="[entry.Item.Finish ? 'text-black-50' : '']">
                                                 <span class="text-muted me-1">Finish: </span>
                                                 <input v-model="entry.Item.Finish" type="checkbox"
                                                     class="form-check-input dnb-r14px" />
-                                                <small v-if="Start || End" class="bi bi-calendar-range ms-3 me-1"></small>
+                                                <small v-if="Start || End"
+                                                    class="bi bi-calendar-range ms-3 me-1"></small>
                                                 <small class="text-muted">{{Start}}</small>
                                                 <small v-if="End" class="text-muted">&nbsp;-&nbsp;{{End}}</small>
                                             </div>
                                             <article v-if="IsExpand" class="d-inline-block">
-                                                <div v-for="actv in entry.ListActivity" 
+                                                <div v-for="actv in entry.ListActivity"
                                                     class="d-inline-flex align-items-center m-1 py-1 px-2 bg-light rounded-3">
                                                     <input v-model="actv.Data.Finish" type="checkbox"
-                                                            class="form-check-input dnb-r14px mt-0 me-1" />
+                                                        class="form-check-input dnb-r14px mt-0 me-1" />
                                                     <p class="mb-0">{{actv.Data.Name}}</p>
                                                 </div>
                                             </article>
@@ -91,117 +94,131 @@
                     </div>
                 </li>
             </ul>
-            <div v-if="PageTab == 2">
-                
-            </div>
+
+            <full-dashboard v-if="3 == PageTab"></full-dashboard>
         </section>
     </main>
-    <section id="dashboard" class="dnb-view-100h p-1" style="min-width: 495px;">
-        <b class="text-success">View Dashboard <span class="opacity-25">(Vuejs CDN)</span>: </b>
-        <div class="list-land">
-            <h6 @click.stop="e => toggleCollapse(1)">Lands ({{Lands.length}}): <b v-if="!showExpand(1)">&#10010;</b></h6>
-            <div v-for="item in Lands" v-if="showExpand(1)" class="lst-entry">
-                <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
-            </div>
-            <div class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
-                <span class="align-self-center w45px">Id: {{NewItems[0].Id}}</span>
-                <input class="form-control form-control-sm" type="text" v-model="NewItems[0].Name" />
-                <input class="btn btn-primary btn-sm" value="+ Land" type="button" @click="e => newItem(0)" />
-            </div>
-        </div>
-        <div class="list-region">
-            <h6 @click.stop="e => toggleCollapse(2)">Regions ({{Regions.length}}): <b v-if="!showExpand(2)">&#10010;</b></h6>
-            <div v-if="showExpand(2)" class="lst-entry" v-for="item in Regions">
-                <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
-                <span>LandId</span>
-                <input type="number" class="form-control form-control-sm" v-model="item.LandId" :min="MinLandId"
-                    :max="MaxLandId" @change="e => onChangeId(e, item, 1)" />
-            </div>
-            <div class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
-                <span class="align-self-center w45px">Id: {{NewItems[1].Id}}</span>
-                <input class="form-control form-control-sm" type="text" v-model="NewItems[1].Name" />
-                <span class="ms-1">LandId: </span>
-                <input class="form-control form-control-sm w45px" type="number" v-model="NewItems[1].LandId"
-                    :min="MinLandId" :max="MaxLandId" />
-                <input class="btn btn-primary btn-sm" value="+ Region" type="button" @click="e => newItem(1)" />
-            </div>
-        </div>
-        <div class="list-productgroup">
-            <h6 @click.stop="e => toggleCollapse(3)">Product groups ({{ProductGroups.length}}): <b v-if="!showExpand(3)">&#10010;</b></h6>
-            <div v-if="showExpand(3)" class="lst-entry" v-for="item in ProductGroups">
-                <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
-            </div>
-        </div>
-        <div class="list-product">
-            <h6 @click.stop="e => toggleCollapse(4)">Products ({{Products.length}}): <b v-if="!showExpand(4)">&#10010;</b></h6>
-            <div v-if="showExpand(4)" class="lst-entry" v-for="item in Products">
-                <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
-            </div>
-        </div>
-        <div class="list-subproduct">
-            <h6 @click.stop="e => toggleCollapse(5)">Sub products ({{SubProducts.length}}): <b v-if="!showExpand(5)">&#10010;</b></h6>
-            <div v-if="showExpand(5)" class="lst-entry" v-for="item in SubProducts">
-                <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
-            </div>
-        </div>
-        <div class="list-market">
-            <h6 @click.stop="e => toggleCollapse(6)">Markets ({{MarketSegments.length}}): <b v-if="!showExpand(6)">&#10010;</b></h6>
-            <div v-if="showExpand(6)" class="lst-entry" v-for="item in MarketSegments">
-                <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
-            </div>
-        </div>
-        <div class="list-submarket">
-            <h6 @click.stop="e => toggleCollapse(7)">Sub market ({{StakeholderGroups.length}}): <b v-if="!showExpand(7)">&#10010;</b></h6>
-            <div v-if="showExpand(7)" class="lst-entry" v-for="item in StakeholderGroups">
-                <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
-            </div>
-        </div>
-        <div class="list-goal">
-            <h6 @click.stop="e => toggleCollapse(8)">Goals ({{Goals.length}}): <b v-if="!showExpand(8)">&#10010;</b></h6>
-            <mf-dashgoal inline-template v-for="item in Goals" v-if="showExpand(8)" :entry="item" :key="'goal_' + item.Id">
-                <div class="lst-entry">
-                    <span>Id: {{entry.Id}}</span>
-                    <input type="text" class="form-control form-control-sm" v-model="entry.Name" @change="onChange" />
-                    <span>Finish: <input v-model="entry.Finish" type="checkbox"
-                            class="form-check-input dnb-r14px" /></span>
-                    <span>
-                        <small style="margin-right: 3px;">Start</small><input type="date" name="g-start" :value="Start" @change="changeStart"
-                            :max="End ? End : null" :disabled="entry.Finish ? true : false"
-                            style="width: 93px;"/>
-                    </span>
-                    <span>
-                        <small style="margin-right: 3px;">End</small><input type="date" name="g-end" :value="End" @change="changeEnd"
-                            :min="Start ? Start : null" 
-                            :disabled="entry.Finish ? true : (Start ? false : true)"
-                            style="width: 93px;"/>
-                    </span>
-                </div>
-            </mf-dashgoal>
-        </div>
-        <div class="list-activity">
-            <h6 @click.stop="e => toggleCollapse(9)">Activities ({{Activities.length}}): <b v-if="!showExpand(9)">&#10010;</b></h6>
-            <div v-if="showExpand(9)" class="lst-entry" v-for="item in Activities">
-                <span>Id: {{item.Id}}</span>
-                <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
-                <span>Finish: <input v-model="item.Finish" type="checkbox" class="form-check-input dnb-r14px" /></span>
-                <input type="number" class="form-control form-control-sm" v-model="item.GoalId" :min="MinGoalId"
-                    :max="MaxGoalId" @change="e => onChangeId(e, item, 2)" />
-            </div>
-        </div>
+    <section id="dashboard" :class="[3 == PageTab ? '' : 'dnb-view-100h p-1']" v-bind:style="{ 
+            minWidth: 3 == PageTab ? '' : '495px',
+            display: 3 == PageTab ? 'none' : ''
+        }">
+        <b v-if="3 != PageTab" class="text-success">Filter Dashboard <span class="opacity-25">(Vuejs CDN)</span>: </b>
+        <filter-dashboard v-if="3 != PageTab"></filter-dashboard>
     </section>
+
+    <script type="text/x-template" id="temp-dashboard">
+        <article :class="[1 == ViewType ? 'dnb-vfilter' : 'dnb-vfull']">
+            <div class="list-land">
+                <h6 @click.stop="e => toggleCollapse(1)">Lands ({{Lands.length}}): <b v-if="!showExpand(1)">&#10010;</b></h6>
+                <div v-for="item in Lands" v-if="showExpand(1)" class="lst-entry">
+                    <span>Id: {{item.Id}}</span>
+                    <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+                </div>
+                <div v-if="2 == ViewType" 
+                    class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
+                    <span class="align-self-center w45px">Id: {{NewItems[0].Id}}</span>
+                    <input class="form-control form-control-sm" type="text" v-model="NewItems[0].Name" />
+                    <input class="btn btn-primary btn-sm" value="+ Land" 
+                        type="button" @click="e => newItem(0)" />
+                </div>
+            </div>
+            <div class="list-region">
+                <h6 @click.stop="e => toggleCollapse(2)">Regions ({{Regions.length}}): <b v-if="!showExpand(2)">&#10010;</b></h6>
+                <div v-if="showExpand(2)" class="lst-entry" v-for="item in Regions">
+                    <span>Id: {{item.Id}}</span>
+                    <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+                    <span v-if="2 == ViewType">LandId</span>
+                    <input v-if="2 == ViewType" type="number" class="form-control form-control-sm" 
+                        v-model="item.LandId" :min="MinLandId"
+                        :max="MaxLandId" @change="e => onChangeId(e, item, 1)" />
+                </div>
+                <div v-if="2 == ViewType"
+                    class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
+                    <span class="align-self-center w45px">Id: {{NewItems[1].Id}}</span>
+                    <input class="form-control form-control-sm" type="text" v-model="NewItems[1].Name" />
+                    <span class="ms-1">LandId: </span>
+                    <input class="form-control form-control-sm w45px" type="number" v-model="NewItems[1].LandId"
+                        :min="MinLandId" :max="MaxLandId" />
+                    <input class="btn btn-primary btn-sm" value="+ Region" 
+                        type="button" @click="e => newItem(1)" />
+                </div>
+            </div>
+            <div class="list-productgroup">
+                <h6 @click.stop="e => toggleCollapse(3)">Product groups ({{ProductGroups.length}}): <b v-if="!showExpand(3)">&#10010;</b></h6>
+                <div v-if="showExpand(3)" class="lst-entry" v-for="item in ProductGroups">
+                    <span>Id: {{item.Id}}</span>
+                    <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+                </div>
+            </div>
+            <div class="list-product">
+                <h6 @click.stop="e => toggleCollapse(4)">Products ({{Products.length}}): <b v-if="!showExpand(4)">&#10010;</b></h6>
+                <div v-if="showExpand(4)" class="lst-entry" v-for="item in Products">
+                    <span>Id: {{item.Id}}</span>
+                    <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+                </div>
+            </div>
+            <div class="list-subproduct">
+                <h6 @click.stop="e => toggleCollapse(5)">Sub products ({{SubProducts.length}}): <b v-if="!showExpand(5)">&#10010;</b></h6>
+                <div v-if="showExpand(5)" class="lst-entry" v-for="item in SubProducts">
+                    <span>Id: {{item.Id}}</span>
+                    <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+                </div>
+            </div>
+            <div class="list-market">
+                <h6 @click.stop="e => toggleCollapse(6)">Markets ({{MarketSegments.length}}): <b v-if="!showExpand(6)">&#10010;</b></h6>
+                <div v-if="showExpand(6)" class="lst-entry" v-for="item in MarketSegments">
+                    <span>Id: {{item.Id}}</span>
+                    <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+                </div>
+            </div>
+            <div class="list-submarket">
+                <h6 @click.stop="e => toggleCollapse(7)">Sub market ({{StakeholderGroups.length}}): <b v-if="!showExpand(7)">&#10010;</b></h6>
+                <div v-if="showExpand(7)" class="lst-entry" v-for="item in StakeholderGroups">
+                    <span>Id: {{item.Id}}</span>
+                    <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+                </div>
+            </div>
+            <div class="list-goal">
+                <h6 @click.stop="e => toggleCollapse(8)">Goals ({{Goals.length}}): <b v-if="!showExpand(8)">&#10010;</b></h6>
+                <mf-dashgoal inline-template v-for="item in Goals" v-if="showExpand(8)" :entry="item" :key="'goal_' + item.Id">
+                    <div class="lst-entry">
+                        <span>Id: {{entry.Id}}</span>
+                        <input type="text" class="form-control form-control-sm" v-model="entry.Name" @change="onChange" />
+                        <span>Finish: <input v-model="entry.Finish" type="checkbox"
+                                class="form-check-input dnb-r14px" /></span>
+                        <span>
+                            <small style="margin-right: 3px;">Start</small><input type="date" name="g-start" :value="Start" @change="changeStart"
+                                :max="End ? End : null" :disabled="entry.Finish ? true : false"
+                                style="width: 93px;"/>
+                        </span>
+                        <span>
+                            <small style="margin-right: 3px;">End</small><input type="date" name="g-end" :value="End" @change="changeEnd"
+                                :min="Start ? Start : null" 
+                                :disabled="entry.Finish ? true : (Start ? false : true)"
+                                style="width: 93px;"/>
+                        </span>
+                    </div>
+                </mf-dashgoal>
+            </div>
+            <div class="list-activity">
+                <h6 @click.stop="e => toggleCollapse(9)">Activities ({{Activities.length}}): <b v-if="!showExpand(9)">&#10010;</b></h6>
+                <div v-if="showExpand(9)" class="lst-entry" v-for="item in Activities">
+                    <span>Id: {{item.Id}}</span>
+                    <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
+                    <span>Finish: <input v-model="item.Finish" type="checkbox" class="form-check-input dnb-r14px" /></span>
+                    <span class="dgid"><span>GoalId: </span><input v-if="2 == ViewType" type="number" class="form-control form-control-sm" v-model="item.GoalId" 
+                    :min="MinGoalId" :max="MaxGoalId" @change="e => onChangeId(e, item, 2)" /></span>
+                </div>
+            </div>
+        </article>
+    </script>
+
     <script src="common.js"></script>
     <script src="mock-data.js"></script>
     <script src="modal.js"></script>
     <script src="vuex-store.js"></script>
     <script>
-        DnbVxStore.dispatch('setMtFilter', [new MktFilter([new Criterial(0, 1, [0, 0])])])
+        DnbVxStore.commit('setMtFilter', [new MktFilter([new Criterial(0, 1, [0, 0])])])
         window.onload = () => {
             newAppVueNav()
             const app = newAppVue()
@@ -209,6 +226,8 @@
         };
     </script>
     <script src="app_react.js" type="text/babel" data-presets="react,stage-3"></script>
+    <script src="components.js"></script>
     <script src="app_vue.js"></script>
 </body>
+
 </html>

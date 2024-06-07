@@ -7,31 +7,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/vuex@4.1.0/dist/vuex.global.js"></script>
-  <!-- <script type="importmap">
-          {
-            "imports": {
-              "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
-              "vuex": "https://unpkg.com/vuex@4.1.0/dist/vuex.esm-browser.js"
-            }
-          }
-        </script> -->
+  <!-- <script type="importmap">{ "imports": { "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js" } }</script> -->
 </head>
 
 <body>
   <main id="app">
-    <section>
+    <section style="margin-bottom: 9px;">
       {{message}}: {{$store.state.count}} {{1 == $store.state.count ? 'time' : 'times'}}
     </section>
     <compnav></compnav>
   </main>
   <template id="tmp-comp-nav">
-    <button @click="upCount">You clicked me {{ count }} {{1 == count ? 'time' : 'times'}}.</button>
-    <br/>
-    <button @click="resetCount">Reset Count</button>
+    <button @click="upCount">Clicked {{ count }} {{1 == count ? 'time' : 'times'}}.</button>
+    <button @click="resetCount" style="margin-left:9px;">Reset Count</button>
   </template>
+  <script src="main-store.js"></script>
   <script src="comp-nav.js"></script>
   <script src="main-app.js"></script>
-  <!-- <script type="module" src="main-app.js"></script> -->
+  <!-- <script type="module">
+    import { createApp, ref } from 'vue'
+  </script> -->
 </body>
 
 </html>

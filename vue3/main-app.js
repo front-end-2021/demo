@@ -1,11 +1,7 @@
-// import { createApp, ref } from 'vue'
-// import CompNav from './comp-nav.js'
-//import { createStore } from 'vuex'
-
 const { createApp } = Vue
 const app = createApp({
     computed: {
-        message() { return store.getters.message }
+        message() { return dnbStore.getters.message }
     },
     methods: {
         increment() {
@@ -14,6 +10,6 @@ const app = createApp({
         }
     }
 })
-app.use(store)
+app.use(dnbStore)
 app.component('compnav', CompNav)
 app.mount('#app')

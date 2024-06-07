@@ -106,47 +106,52 @@ function newAppVue() {
         methods: {
             renderData() {
                 document.body.style.cursor = 'wait'
-                const filter = DnbVxStore.getters.getMtFilter(0)
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
-                DnbVxStore.dispatch('setListTask', [
-                    () => { return DnbVxStore.getters.filterGoals(0) },
-                    () => {
-                        const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
-                        const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
-                        return getPaths(lstLand, lstRegion)  // [{Land, Region}]
-                    },
-                    () => { return DnbVxStore.getters.getDataPGroups(filter.ProductIds) },
-                    () => { return getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds) }
-                ])
-                processTask(DnbVxStore.getters.getListTask()).then((values) => {
-                    const fGoals = values[0]
-                    let lstPath = values[1]
-                    const lstProductGrp = values[2]
-                    const lstSubmarketId = values[3]
+                DnbVxStore.dispatch('onFilter', 0).then(filter => {
                     DnbVxStore.dispatch('setListTask', [
-                        () => { return DnbVxStore.getters.getActivities() },
-                        () => { addProducts.call(lstPath, lstProductGrp) },         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
-                        () => { addSubmarketIds.call(lstPath, lstSubmarketId) }           //  [{Land, Region, PGroup, IdSubmarkets}]
-                    ])
-                    processTask(DnbVxStore.getters.getListTask()).then((values) => {
-                        const lstActivity = values[0]
-                        const fncsAddGoal = []
-                        for (let ii = lstPath.length - 1; -1 < ii; ii--) {
-                            const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
-                            fncsAddGoal.push(() => {
-                                return addGoalToList.call(item, fGoals, lstActivity)
+                        () => { return DnbVxStore.getters.getGoalByFids(0) },
+                        () => {
+                            const lstLand = DnbVxStore.getters.getLands(filter.LandIds)
+                            const lstRegion = DnbVxStore.getters.getRegions(filter.RegionIds)
+                            return getPaths(lstLand, lstRegion)  // [{Land, Region}]
+                        },
+                        () => { return DnbVxStore.getters.getDataPGroups(filter.ProductIds) },
+                        () => { return getSubmarketIds.call(this, filter.SubmarketIds, filter.LandIds) }
+                    ]).then(tasks => {
+                        processTask(tasks).then((values) => {
+                            const fGoals = values[0]
+                            let lstPath = values[1]
+                            const lstProductGrp = values[2]
+                            const lstSubmarketId = values[3]
+                            DnbVxStore.dispatch('setListTask', [
+                                () => { return DnbVxStore.getters.getActivities() },
+                                () => { addProducts.call(lstPath, lstProductGrp) },         // [{ Land, Region, PGroups: { PGroup, Products: [{ Data }] } }]
+                                () => { addSubmarketIds.call(lstPath, lstSubmarketId) }           //  [{Land, Region, PGroup, IdSubmarkets}]
+                            ]).then(tasks2 => {
+                                processTask(tasks2).then((values) => {
+                                    const lstActivity = values[0]
+                                    const fncsAddGoal = []
+                                    for (let ii = lstPath.length - 1; -1 < ii; ii--) {
+                                        const item = lstPath[ii]        // {Land, Region, PGroups: [{PGroup, Products: [{ Data }]}], IdSubmarkets}
+                                        fncsAddGoal.push(() => {
+                                            return addGoalToList.call(item, fGoals, lstActivity)
+                                        })
+                                    }
+                                    DnbVxStore.dispatch('setListTask', fncsAddGoal).then(tasks3 => {
+                                        processTask(tasks3).then((lstSumActv) => {
+                                            const sumActv = lstSumActv.reduce(
+                                                (accumulator, crtVal) => accumulator + crtVal, 0,
+                                            );
+                                            removeEmptyGoal.call(lstPath)
+                                            this.ListDataUI = lstPath;
+                                            setAppMsg.call(this, lstPath, sumActv)
+                                            DnbVxStore.dispatch('setListTask', [])      // remove array / clear memory
+                                        })
+                                    })
+                                })
                             })
-                        }
-                        DnbVxStore.dispatch('setListTask', fncsAddGoal)
-                        processTask(DnbVxStore.getters.getListTask()).then((lstSumActv) => {
-                            const sumActv = lstSumActv.reduce(
-                                (accumulator, crtVal) => accumulator + crtVal, 0,
-                            );
-                            removeEmptyGoal.call(lstPath)
-                            this.ListDataUI = lstPath;
-                            setAppMsg.call(this, lstPath, sumActv)
-                            DnbVxStore.dispatch('setListTask', [])      // remove array / clear memory
+
                         })
                     })
                 })
@@ -447,58 +452,17 @@ function newAppVueDasboard(app) {
     new Vue({
         el: '#dashboard',
         name: 'DnbAppDashboard',
-        data: {
-            ExpandIds: [],
-            NewItems: [],
-        },
         computed: {
-            Lands() { return DnbVxStore.getters.getLands([0]) },
-            Regions() { return DnbVxStore.getters.getRegions([0]) },
-            ProductGroups() { return DnbVxStore.getters.getPGroups() },
-            Products() { return DnbVxStore.getters.getProducts() },
-            SubProducts() { return DnbVxStore.getters.getSubPrdcts() },
-            MarketSegments() { return DnbVxStore.getters.getMktSegments() },
-            StakeholderGroups() { return DnbVxStore.getters.getSubMarkets() },
-            Goals() { return DnbVxStore.getters.getGoals() },
-            Activities() { return DnbVxStore.getters.getActivities() },
-            MinLandId() {
-                const ids = DnbVxStore.getters.getAllLandId()
-                return getMinFrom(ids)
-            },
-            MaxLandId() {
-                const ids = DnbVxStore.getters.getAllLandId()
-                return getMaxFrom(ids)
-            },
-            MinGoalId() {
-                const ids = this.Goals.map(x => x.Id)
-                return getMinFrom(ids)
-            },
-            MaxGoalId() {
-                const ids = this.Goals.map(x => x.Id)
-                return getMaxFrom(ids)
-            },
+            PageTab() { return DnbVxStore.getters.getPageTab() },
         },
-        beforeMount() {
-            let minId = getMinFrom(DnbVxStore.getters.getAllLandId())
-            let maxId = getMaxFrom(DnbVxStore.getters.getAllLandId())
-            this.NewItems.push({ Id: maxId + 1, Name: '' })    // Land
-
-            maxId = getMaxFrom(this.Regions.map(x => x.Id))
-            this.NewItems.push({ Id: maxId + 1, Name: '', LandId: minId })    // Region
-
-            maxId = getMaxFrom(DnbVxStore.getters.getPGroups().map(x => x.Id))
-            this.NewItems.push({ Id: maxId + 1, Name: '', RegionIds: [] })    // Product Group
+        updated() {
+            if (3 == this.PageTab) {
+                document.querySelector(`#react-filter`).style.display = 'none'
+            } else {
+                document.querySelector(`#react-filter`).style.display = ''
+            }
         },
         methods: {
-            toggleCollapse(id) {
-                const ii = this.ExpandIds.indexOf(id)
-                if (ii < 0) this.ExpandIds.push(id)
-                else this.ExpandIds.splice(ii, 1)
-            },
-            showExpand(id) { return this.ExpandIds.includes(id) },
-            onChange() {
-                DnbVxStore.dispatch('runFncFilters', (f) => { f.setDataSource() })
-            },
             onChangeId(e, item, type) {
                 const target = e.target
                 const newVal = target.value
@@ -515,33 +479,6 @@ function newAppVueDasboard(app) {
                         return;
                 }
             },
-            newItem(ii) {
-                const nItem = this.NewItems[ii]
-                if (!nItem) return
-                if (nItem.Name.trim() == '') return
-                switch (ii) {
-                    case 0: {
-                        DnbVxStore.dispatch('pushLand', Object.assign({}, nItem));
-                        updateNewItem(DnbVxStore.getters.getLands([0]))
-                        break;
-                    }
-                    case 1: {
-                        DnbVxStore.dispatch('pushRegion', Object.assign({}, nItem));
-                        updateNewItem(DnbVxStore.getters.getRegions([0]))
-                        break;
-                    }
-                }
-                DnbVxStore.dispatch('runFncFilters', (f) => { f.setDataSource() })
-                function updateNewItem(arr) {
-                    nItem.Id = getMaxFrom(arr.map(x => x.Id)) + 1
-                    nItem.Name = ''
-                }
-            }
-        },
-        provide() {
-            return {
-                onChange: this.onChange
-            }
         },
     })
 }
@@ -551,38 +488,21 @@ function anyIds(lstId1, lstId2) {
     }
     return false
 }
-function getMaxFrom(arr) { return arr.reduce((a, b) => Math.max(a, b), -Infinity); }
-function getMinFrom(arr) { return arr.reduce((a, b) => Math.min(a, b), Infinity); }
-function getDateStr(strDate, tFormat) {
-    const dS = new Date(strDate)
-    const year = dS.getFullYear()
-    const month = dS.getMonth() + 1
-    const day = dS.getDate()
-    let mm = month < 10 ? `0${month}` : month
-    let dd = day < 10 ? `0${day}` : day
-    switch (tFormat) {
-        case 'YYYY-MM-dd':
-            return `${year}-${mm}-${dd}`;
-        case 'dd/MM/YYYY':
-            return `${dd}/${mm}/${year}`;
+function genListActivity(goalId, lsActivity) {
+    const lstA = []
+    const lstI = new Array(lsActivity.length)
+    for (let i = 0; i < lsActivity.length; i++) lstI.fill(i, i);
+    let aa = -1, act
+    for (let i = 0; i < lstI.length; i++) {
+        aa = lstI[i]
+        act = lsActivity[aa]
+        if (goalId == act.GoalId) {
+            lstA.push({ Data: act })
+            lstI.splice(i, 1)
+            i--
+        }
     }
-    return ''
-}
-function isDateStr(str) {       // 'yyyy-mm-dd'
-    if (typeof str != 'string') return false;
-    str = str.trim()
-    if (str === '') return false
-    const arr = str.split('-')
-    if (arr.length < 3) return false
-    let nn = arr[0]
-    nn = parseInt(nn)
-    if (nn.toString().length < 4) return false
-    for (let ii = arr.length - 1; 0 < ii; ii--) {
-        nn = arr[ii]
-        nn = parseInt(nn)
-        if (isNaN(nn)) return false
-    }
-    return true;
+    return lstA
 }
 function setStartEndNow(notData) {
     if (!this.entry.Finish) return
@@ -600,19 +520,34 @@ function setStartEndNow(notData) {
         this.entry.Start = tE
     }
 }
-function genListActivity(goalId, lsActivity) {
-    const lstA = []
-    const lstI = new Array(lsActivity.length)
-    for (let i = 0; i < lsActivity.length; i++) lstI.fill(i, i);
-    let aa = -1, act
-    for (let i = 0; i < lstI.length; i++) {
-        aa = lstI[i]
-        act = lsActivity[aa]
-        if (goalId == act.GoalId) {
-            lstA.push({ Data: act })
-            lstI.splice(i, 1)
-            i--
-        }
+function isDateStr(str) {       // 'yyyy-mm-dd'
+    if (typeof str != 'string') return false;
+    str = str.trim()
+    if (str === '') return false
+    const arr = str.split('-')
+    if (arr.length < 3) return false
+    let nn = arr[0]
+    nn = parseInt(nn)
+    if (nn.toString().length < 4) return false
+    for (let ii = arr.length - 1; 0 < ii; ii--) {
+        nn = arr[ii]
+        nn = parseInt(nn)
+        if (isNaN(nn)) return false
     }
-    return lstA
+    return true;
+}
+function getDateStr(strDate, tFormat) {
+    const dS = new Date(strDate)
+    const year = dS.getFullYear()
+    const month = dS.getMonth() + 1
+    const day = dS.getDate()
+    let mm = month < 10 ? `0${month}` : month
+    let dd = day < 10 ? `0${day}` : day
+    switch (tFormat) {
+        case 'YYYY-MM-dd':
+            return `${year}-${mm}-${dd}`;
+        case 'dd/MM/YYYY':
+            return `${dd}/${mm}/${year}`;
+    }
+    return ''
 }

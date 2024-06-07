@@ -13,17 +13,30 @@ const DnbVxStore = Vuex.createStore({
             PageTab: 1,
             ListTask: [],
             mtFilters: [],
+
+            FilterIds: [],
         }
     },
     actions: {
-        pushLand(context, land) { context.commit('pushLand', land) },
-        pushRegion(context, region) { context.commit('pushRegion', region) },
+        pushLand({ commit, state }, land) {
+            commit('pushLand', land)
+            return state.ListLand
+        },
+        pushRegion({ commit, state }, region) {
+            commit('pushRegion', region)
+            return state.Regions
+        },
         setPageTab(context, index) { context.commit('setPageTab', index) },
-        setListTask(context, lstFnc) { context.commit('setListTask', lstFnc) },
-        pushTasks(context, lstFnc) { context.commit('pushTasks', lstFnc) },
-        setMtFilter(context, flters) { context.commit('setMtFilter', flters) },
+        setListTask({ commit, state }, lstFnc) {
+            commit('setListTask', lstFnc)
+            return state.ListTask
+        },
         pushMtFilter(context, flter) { context.commit('pushMtFilter', flter) },
         runFncFilters(context, fnc) { context.commit('runFncFilters', fnc) },
+        onFilter({commit, state}, ii) {
+            commit('onFilter', ii)
+            return state.FilterIds[ii]
+        },
     },
     mutations: { // Commit with Payload (https://vuex.vuejs.org/guide/mutations.html)
         pushLand(state, land) { state.ListLand.push(land) },
@@ -33,18 +46,42 @@ const DnbVxStore = Vuex.createStore({
             state.ListTask.splice(0)
             lstFnc.forEach(fnc => { state.ListTask.push(fnc) })
         },
-        pushTasks(state, lstFnc) {
-            lstFnc.forEach(fnc => { state.ListTask.push(fnc) })
-        },
         setMtFilter(state, flters) {
             state.mtFilters.splice(0)
-            flters.forEach(flter => { state.mtFilters.push(flter) })
+            flters.forEach(flter => {
+                state.mtFilters.push(flter)
+                state.FilterIds.push({
+                    LandIds: flter.LandIds,
+                    RegionIds: flter.RegionIds,
+                    ProductIds: flter.ProductIds,
+                    MarketIds: flter.MarketIds,
+                    SubmarketIds: flter.SubmarketIds,
+                })
+            })
         },
-        pushMtFilter(state, flter) { state.mtFilters.push(flter) },
+        pushMtFilter(state, flter) {
+            state.mtFilters.push(flter)
+            state.FilterIds.push({
+                LandIds: flter.LandIds,
+                RegionIds: flter.RegionIds,
+                ProductIds: flter.ProductIds,
+                MarketIds: flter.MarketIds,
+                SubmarketIds: flter.SubmarketIds,
+            })
+        },
         runFncFilters(state, fnc) { state.mtFilters.forEach(f => fnc(f)) },
+        onFilter(state, ii) {
+            const flt = state.mtFilters[ii]
+            state.FilterIds.splice(ii, 1, {
+                LandIds: flt.LandIds,
+                RegionIds: flt.RegionIds,
+                ProductIds: flt.ProductIds,
+                MarketIds: flt.MarketIds,
+                SubmarketIds: flt.SubmarketIds
+            })
+        },
     },
     getters: {
-        getAllLandId: (state) => () => { return state.ListLand.map(x => x.Id) },
         getLands: (state) => (land_Ids) => {
             const lstLand = state.ListLand
             if (land_Ids.includes(0)) return lstLand
@@ -82,20 +119,60 @@ const DnbVxStore = Vuex.createStore({
             return lst
         },
         getPGroups: (state) => () => { return state.ProductGroups },
-        getProducts: (state) => () => { return state.Products },
+        getProducts: (state) => (pIds) => {
+            if (!Array.isArray(pIds)) return state.Products
+            if (!pIds.length) return []
+            if (pIds.includes(0)) return state.Products
+            const lst = []
+            for (let ii = 0; ii < state.Products.length; ii++) {
+                const prd = state.Products[ii]
+                if (pIds.includes(prd.Id)) lst.push(prd)
+            }
+            return lst
+        },
         getSubPrdcts: (state) => () => { return state.SubProducts },
         getMktSegment: (state) => (id) => { return state.MarketSegments.find(x => x.Id == id) },
-        getMktSegments: (state) => () => { return state.MarketSegments },
-        getSubMarkets: (state) => () => { return state.StakeholderGroups },
-        getGoals: (state) => () => { return state.Goals },
-        filterGoals: (state) => (i) => {
-            const flt = state.mtFilters[i]
-            return state.Goals.getGoalsBy(flt.SubmarketIds, flt.ProductIds)
+        getMktSegments: (state) => (ids) => {
+            if (!Array.isArray(ids)) return state.MarketSegments
+            if (!ids.length) return []
+            if (ids.includes(0)) return state.MarketSegments
+            const lst = []
+            for (let ii = 0; ii < state.MarketSegments.length; ii++) {
+                const item = state.MarketSegments[ii]
+                if (ids.includes(item.Id)) lst.push(item)
+            }
+            return lst
         },
-        getActivities: (state) => () => { return state.Activities },
+        getSubMarkets: (state) => (ids) => {
+            if (!Array.isArray(ids)) return state.StakeholderGroups
+            if (!ids.length) return []
+            if (ids.includes(0)) return state.StakeholderGroups
+            const lst = []
+            for (let ii = 0; ii < state.StakeholderGroups.length; ii++) {
+                const item = state.StakeholderGroups[ii]
+                if (ids.includes(item.Id)) lst.push(item)
+            }
+            return lst
+        },
+        getGoals: (state) => () => { return state.Goals },
+        getActivities: (state) => (gIds) => {
+            if (!Array.isArray(gIds)) return state.Activities
+            if (!gIds.length) return []
+            const lst = []
+            for (let ii = 0; ii < state.Activities.length; ii++) {
+                const item = state.Activities[ii]
+                if (gIds.includes(item.GoalId)) lst.push(item)
+            }
+            return lst
+        },
         getPageTab: (state) => () => { return state.PageTab },
         getListTask: (state) => () => { return state.ListTask },
         getMtFilter: (state) => (i) => { return state.mtFilters[i] },
+        getFilterIds: (state) => (ii) => { return state.FilterIds[ii] },
+        getGoalByFids: (state) => (ii) => {
+            const flt = state.FilterIds[ii]
+            return state.Goals.getGoalsBy(flt.SubmarketIds, flt.ProductIds)
+        }
     }
 });
 Vue.use(Vuex);

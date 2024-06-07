@@ -70,62 +70,90 @@ const StakeholderGroups = [
     { Id: 4, Name: 'Wwin Mart Thanh Xuân', MarketId: 2 },
     { Id: 5, Name: 'Wwin Mart Hai Bà Trưng', MarketId: 2 },
 ]
+// 14. Table Account
+const ListAccount = [
+    { Id: 1, Name: 'Dai Nguyen Ba' },
+    { Id: 2, Name: 'Bill Gate' },
+    { Id: 3, Name: 'Ellon Musk' },
+    { Id: 4, Name: 'Larry Page' },
+    { Id: 5, Name: 'Segey Brin' },
+    { Id: 6, Name: 'Mark Zukerberc' },
+]
 // 10. Table Goal: Id (Bigint), Name (VARCHAR), SubmarketId (Bigint), ProductId (Bigint)
 const Goals = [
     {
         Id: 1, Name: 'Build 3 điểm bán sách', SubmarketProductId: '1-8',
-        Finish: true, Start: '2024-01-15T05:49:58.135Z', End: '2024-02-09T05:49:58.135Z'
+        Finish: true, Start: '2024-01-15T05:49:58.135Z', End: '2024-02-09T05:49:58.135Z',
+        Assigns: [ListAccount[0].Name]
     },
     {
         Id: 2, Name: 'Build 1 phòng live esport', SubmarketProductId: '3-2',
-        Finish: false, Start: '2024-02-18T05:49:58.135Z', End: null
+        Finish: false, Start: '2024-02-18T05:49:58.135Z', End: null,
+        Assigns: [ListAccount[1].Name, ListAccount[2].Name]
     },
     {
         Id: 3, Name: 'Build 2 phòng live stream', SubmarketProductId: '2-1',
-        Finish: false, Start: null, End: null
+        Finish: false, Start: null, End: null,
+        Assigns: [ListAccount[0].Name, ListAccount[2].Name]
     },
     {
         Id: 4, Name: 'Build 3 phòng live face', SubmarketProductId: '2-1',
-        Finish: false, Start: null, End: null
+        Finish: false, Start: null, End: null,
+        Assigns: [ListAccount[1].Name, ListAccount[3].Name]
     },
     {
         Id: 5, Name: 'Build 4 phòng shop online', SubmarketProductId: '4-10',
-        Finish: true, Start: '2024-02-03T05:49:58.135Z', End: '2024-02-27T05:49:58.135Z'
+        Finish: true, Start: '2024-02-03T05:49:58.135Z', End: '2024-02-27T05:49:58.135Z',
+        Assigns: [ListAccount[2].Name, ListAccount[4].Name]
     },
     {
         Id: 6, Name: 'Build 5 phòng live stream', SubmarketProductId: '2-1',
-        Finish: false, Start: null, End: null
+        Finish: false, Start: null, End: null,
+        Assigns: [ListAccount[4].Name, ListAccount[5].Name]
     },
     {
         Id: 7, Name: 'Build 6 phòng live tiktok', SubmarketProductId: '2-1',
-        Finish: false, Start: null, End: null
+        Finish: false, Start: null, End: null,
+        Assigns: [ListAccount[5].Name, ListAccount[2].Name]
     },
 ];
 for (let ii = 8; ii < 1111; ii++) {
     const gg = {
-        Id: ii, Name: `Test large data goal ${ii}`, SubmarketProductId: '1-8',
-        Finish: false, Start: '2024-01-15T05:49:58.135Z', End: null
+        Id: ii, Name: `Test large data goal ${ii}`, SubmarketProductId: getRandomSubmkPrdId(),//'1-8',
+        Finish: false, Start: '2024-01-15T05:49:58.135Z', End: null,
+        Assigns: []
     }
     Goals.push(gg)
+}
+function getRandomSubmkPrdId() {
+    return `${getRandomInt(1, 6)}-${getRandomInt(1, 11)}`
+}
+function getRandomInt(min, max) {
+    const minCeiled = Math.ceil(min);
+    const maxFloored = Math.floor(max);
+    return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
 }
 // 11. Table Activity: Id (Bigint), Name (VARCHAR), GoalId (Bigint)
 const Activities = [
     {
         Id: 1, Name: '1 điểm bán trong tháng 3', GoalId: 1,
-        Finish: false, Start: '2024-01-15T05:49:58.135Z', End: null
+        Finish: false, Start: '2024-01-15T05:49:58.135Z', End: null,
+        Assigns: []
     },
     {
         Id: 4, Name: '2 điểm bán trong tháng 6', GoalId: 1,
-        Finish: false, Start: null, End: null
+        Finish: false, Start: null, End: null,
+        Assigns: [ListAccount[0].Name]
     },
     {
         Id: 3, Name: '3 điểm bán trong tháng 9', GoalId: 1,
-        Finish: false, Start: null, End: null
+        Finish: false, Start: null, End: null,
+        Assigns: [ListAccount[0].Name]
     },
 ];
 for (let ii = 8; ii < 1009; ii++) {
     const aa = {
-        Id: ii, Name: `Test large data activity ${ii}`, GoalId: 2,
+        Id: ii, Name: `Test large data activity ${ii}`, GoalId: getRandomInt(1, 999),
         Finish: false, Start: '2024-01-15T05:49:58.135Z', End: null
     }
     Activities.push(aa)
@@ -141,16 +169,8 @@ const SubmarketProductIds = [
     { Id: 1, SubmarketId: 1, ProductId: 8 },
     { Id: 2, SubmarketId: 2, ProductId: 1 }
 ]
-// 14. Table Account
-const ListAccount = [
-    { Id: 1, Name: 'Dai Nguyen Ba' },
-    { Id: 2, Name: 'Bui Thanh Nhon' },
-    { Id: 3, Name: 'Trinh Van Quyet' },
-    { Id: 4, Name: 'Nguyen Hoai Nam' },
-    { Id: 5, Name: 'Ngo Ba Kha' },
-]
 // 15. Table Deparment
 const Deparments = [
-    { Id: 1, Name: 'Haiduong Agency', AccIds: [1, 3]},
-    { Id: 2, Name: 'Hanoi Agency', AccIds: [2, 4]},
+    { Id: 1, Name: 'Haiduong Agency', AccIds: [1, 3] },
+    { Id: 2, Name: 'Hanoi Agency', AccIds: [2, 4] },
 ]
