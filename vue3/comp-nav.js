@@ -15,7 +15,8 @@ const store = createStore({
     },
 
     getters: {
-        cCount(state) { return state.count }
+        count(state) { return state.count },
+        message(state) { return state.message },
     },
     mutations: {
         increment(state) {
@@ -25,7 +26,7 @@ const store = createStore({
 });
 const CompNav = {
     computed: {
-        count() { return store.getters.cCount }
+        count() { return store.getters.count }
     },
     template: `#tmp-comp-nav`,
     methods: {

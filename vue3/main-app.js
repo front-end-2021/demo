@@ -4,9 +4,8 @@
 
 const { createApp } = Vue
 const app = createApp({
-    setup() {
-        const message = ref('Hello world')
-        return { message }
+    computed: {
+        message() { return store.getters.message }
     },
     methods: {
         increment() {
