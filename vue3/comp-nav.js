@@ -6,7 +6,6 @@
 //     },
 //     template: `#tmp-comp-nav`,
 // }
-const { ref } = Vue
 const { createStore } = Vuex
 const store = createStore({
     state: {
