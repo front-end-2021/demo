@@ -1,19 +1,20 @@
-import { createApp, ref } from 'vue'
-//const { createApp, ref } = Vue
-import CompNav from './comp-nav.js'
+// import { createApp, ref } from 'vue'
+// import CompNav from './comp-nav.js'
 //import { createStore } from 'vuex'
-//const { createStore } = Vuex
-// const store = createStore({
-//     state: {
-//         counter: 0
-//     }
-// });
+
+const { createApp } = Vue
 const app = createApp({
     setup() {
         const message = ref('Hello world')
         return { message }
     },
+    methods: {
+        increment() {
+            this.$store.commit('increment')
+            console.log(this.$store.state.count)
+        }
+    }
 })
+app.use(store)
 app.component('compnav', CompNav)
 app.mount('#app')
-//app.use(store)

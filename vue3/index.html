@@ -5,16 +5,16 @@
   <title>Exercise Vue3</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="https://unpkg.com/vuex@4.1.0/dist/vuex.global.js"></script> -->
-  <script type="importmap">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/vuex@4.1.0/dist/vuex.global.js"></script>
+  <!-- <script type="importmap">
           {
             "imports": {
               "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
               "vuex": "https://unpkg.com/vuex@4.1.0/dist/vuex.esm-browser.js"
             }
           }
-        </script>
+        </script> -->
 </head>
 
 <body>
@@ -25,9 +25,11 @@
     <compnav></compnav>
   </main>
   <template id="tmp-comp-nav">
-    <button @click="count++">You clicked me {{ count }} times.</button>
+    <button @click="upCount">You clicked me {{ count }} times.</button>
   </template>
-  <script type="module" src="main-app.js"></script>
+  <script src="comp-nav.js"></script>
+  <script src="main-app.js"></script>
+  <!-- <script type="module" src="main-app.js"></script> -->
 </body>
 
 </html>
