@@ -1,5 +1,11 @@
+<!DOCTYPE html>
+<html>
+
 <head>
-    <script type="importmap">
+  <title>Exercise Vue3</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="importmap">
         {
           "imports": {
             "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
@@ -9,15 +15,16 @@
 </head>
 
 <body>
-    <main id="app">
-        <section>
-            {{message}}
-        </section>
-        <comp-nav></comp-nav>
-    </main>
-    <template id="tmp-comp-nav">
-        <button @click="count++">You clicked me {{ count }} times.</button>
-    </template>
+  <main id="app">
+    <section>
+      {{message}}
+    </section>
+    <comp-nav></comp-nav>
+  </main>
+  <template id="tmp-comp-nav">
+    <button @click="count++">You clicked me {{ count }} times.</button>
+  </template>
 
-    <script type="module" src="main-app.js"></script>
+  <script type="module" src="main-app.js"></script>
 </body>
+</html>
