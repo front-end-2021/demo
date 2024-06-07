@@ -7,9 +7,9 @@ export default {
     methods: {
         upCount() {
             dnbStore.dispatch('increment').then(a => {
-                console.log(a)
+              //  console.log(a)
             })
         },
-        resetCount() { dnbStore.commit('resetCount') }
+        resetCount() { dnbStore.dispatch('resetCount') }
     },
 }

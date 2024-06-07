@@ -7,21 +7,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/vuex@4.1.0/dist/vuex.global.js"></script>
- 
+  <link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/examples/assets/library/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
 </head>
 
 <body>
   <main id="app">
-    <section style="margin-bottom: 9px;">
-      {{message}}: {{$store.state.count}} {{1 == $store.state.count ? 'time' : 'times'}}
-    </section>
+    <section style="margin-bottom: 9px;">{{message}}</section>
     <compnav></compnav>
+
+    <div class="ui selection dropdown">
+      <input type="hidden" name="gender" :value="UserAssign">
+      <i class="dropdown icon"></i>
+      <div class="default text">Assign</div>
+      <div class="menu">
+        <div v-for="user in Users" class="item" :data-value="user"
+          :class="[user == UserAssign ? 'active selected' : '']">{{user}}</div>
+      </div>
+    </div>
   </main>
   <template id="tmp-comp-nav">
     <button @click="upCount">Clicked {{ count }} {{1 == count ? 'time' : 'times'}}.</button>
     <button @click="resetCount" style="margin-left:9px;">Reset Count</button>
   </template>
   <script type="module" src="main-app.js"></script>
+
 </body>
 
 </html>
