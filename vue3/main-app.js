@@ -1,3 +1,5 @@
+import CompNav from './comp-nav.js'
+import dnbStore from './main-store.js'
 const { createApp } = Vue
 const app = createApp({
     computed: {

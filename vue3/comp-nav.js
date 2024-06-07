@@ -1,4 +1,5 @@
-const CompNav = {
+import dnbStore from './main-store.js'
+export default {
     computed: {
         count() { return dnbStore.getters.count }
     },

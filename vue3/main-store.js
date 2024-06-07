@@ -1,5 +1,5 @@
 const { createStore } = Vuex
-const dnbStore = createStore({
+export default createStore({
     state: {
         count: 0,
         message: 'Hello world'
@@ -18,4 +18,4 @@ const dnbStore = createStore({
         increment(state) { state.count++ },
         resetCount(state) { state.count = 0 },
     }
-});
+})
