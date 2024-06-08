@@ -172,7 +172,7 @@ const DnbVxStore = Vuex.createStore({
         getGoalByFids: (state) => (ii) => {
             const flt = state.FilterIds[ii]
             return state.Goals.getGoalsBy(flt.SubmarketIds, flt.ProductIds)
-        }
+        },
     }
 });
 Vue.use(Vuex);

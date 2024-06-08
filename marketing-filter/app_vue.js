@@ -12,7 +12,7 @@ function newAppVueNav() {
             setTab(index) {
                 if (DnbVxStore.getters.getListTask().length > 0) return
                 DnbVxStore.dispatch('setPageTab', index)
-            }
+            },
         }
     })
 }
@@ -105,7 +105,7 @@ function newAppVue() {
         },
         methods: {
             renderData() {
-                document.body.style.cursor = 'wait'
+                document.body.classList.add('dnb-app-loading_')
                 this.AppMsg = 'Loadding ...'
                 this.ListDataUI.splice(0)
                 DnbVxStore.dispatch('onFilter', 0).then(filter => {
@@ -238,7 +238,6 @@ function newAppVue() {
                     return lstsMrkId
                 }
                 function setAppMsg(lstPath, sumActv) {
-                    document.body.style.cursor = ''
                     if (!lstPath.length) this.AppMsg = 'No results'
                     else {
                         let cGoal = 0;
@@ -255,6 +254,9 @@ function newAppVue() {
                         }
                         this.AppMsg = `Land > Region / Product group / Product / Goals (${cGoal}) / Activties (${sumActv})`
                     }
+                    this.$nextTick(() => {
+                        document.body.classList.remove('dnb-app-loading_')
+                    })
                 }
                 function removeEmptyGoal() {
                     const lstPath = this

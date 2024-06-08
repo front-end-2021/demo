@@ -21,11 +21,14 @@
 
 <body>
     <main class="dnb-view-100h">
-        <section id="dnb-appvue-nav">
+        <section id="dnb-appvue-nav" v-cloak>
             <div class="ui secondary menu">
-                <a class="item" :class="[1 == PageTab ? 'active' : '']" @click.stop="e => setTab(1)">Action Pln</a>
-                <a class="item" :class="[2 == PageTab ? 'active' : '']" @click.stop="e => setTab(2)">TeamBrnd</a>
-                <a class="item" :class="[3 == PageTab ? 'active' : '']" @click.stop="e => setTab(3)">Dashboard</a>
+                <a class="item" :class="[1 == PageTab ? 'active' : '']"
+                    @click.stop="e => setTab(1)">Action Pln</a>
+                <a class="item" :class="[2 == PageTab ? 'active' : '']"
+                    @click.stop="e => setTab(2)">TeamBrnd</a>
+                <a class="item" :class="[3 == PageTab ? 'active' : '']"
+                    @click.stop="e => setTab(3)">Dashboard</a>
                 <div class="right menu">
                     <div class="item">
                         <div class="ui icon input">
@@ -33,12 +36,13 @@
                             <i class="search link icon"></i>
                         </div>
                     </div>
-                    <a class="ui item" :class="[4 == PageTab ? 'active' : '']" @click.stop="e => setTab(4)">Account</a>
+                    <a class="ui item" :class="[4 == PageTab ? 'active' : '']" 
+                        @click.stop="e => setTab(4)">Account</a>
                 </div>
             </div>
         </section>
         <section id="react-filter"></section>
-        <section id="dnb-app-vue" style="padding: 6px;">
+        <section id="dnb-app-vue" style="padding: 6px;" v-cloak>
             <b v-if="1 == PageTab" class="text-success">View Data <span class="opacity-25">(Vuejs CDN)</span>: </b>
             <b v-if="2 == PageTab" class="text-success">View Board <span class="opacity-25">(Vuejs CDN)</span>: </b>
             <ul v-if="1 == PageTab" class="list-group list-group-flush">
@@ -98,7 +102,7 @@
             <full-dashboard v-if="3 == PageTab"></full-dashboard>
         </section>
     </main>
-    <section id="dashboard" :class="[3 == PageTab ? '' : 'dnb-view-100h p-1']" v-bind:style="{ 
+    <section id="dashboard" :class="[3 == PageTab ? '' : 'dnb-view-100h p-1']" v-cloak v-bind:style="{ 
             minWidth: 3 == PageTab ? '' : '495px',
             display: 3 == PageTab ? 'none' : ''
         }">

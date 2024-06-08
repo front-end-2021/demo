@@ -101,3 +101,11 @@ main.dnb-view-100h {
 .dnb-vfull .lst-entry .dgid input {
     width: 57px;display: inline-block;
 }
+.dnb-app-loading_ {
+    cursor: wait; 
+}
+.dnb-app-loading_ *,
+.dnb-app-loading_ a,
+.dnb-app-loading_ button {
+    pointer-events: none !important;
+}
