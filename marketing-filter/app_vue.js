@@ -408,7 +408,10 @@ function newAppVue() {
                 switch (val) {
                     case 1: this.renderData()
                         break;
-                    default: break;
+                    default: 
+                        this.ListDataUI.splice(0);
+                        this.AppMsg = null;
+                        break;
                 }
             },
         },
