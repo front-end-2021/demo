@@ -117,38 +117,38 @@
             </ul>
 
             <full-dashboard v-if="3 == PageTab" class="dnb-vfull">
-                <template v-slot:newland="slotProps" >
+                <template v-slot:newland="{newitem, onnewitem}" >
                     <div class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
-                        <span class="align-self-center w45px">Id: {{slotProps.newitem.Id}}</span>
-                        <input class="form-control form-control-sm" type="text" v-model="slotProps.newitem.Name" />
+                        <span class="align-self-center w45px">Id: {{newitem.Id}}</span>
+                        <input class="form-control form-control-sm" type="text" v-model="newitem.Name" />
                         <input class="btn btn-primary btn-sm" value="+ Land" 
-                            type="button" @click="e => slotProps.onnewitem(0)" />
+                            type="button" @click="e => onnewitem(0)" />
                     </div>
                 </template>
                 <template v-slot="tltlandid">
                     <span >LandId</span>
                 </template>
-                <template v-slot:inplandid="slotProps">
+                <template v-slot:inplandid="{ item, minlandid, maxlandid, onchangeid }">
                     <input type="number" class="form-control form-control-sm" 
-                        v-model="slotProps.item.LandId" :min="slotProps.minlandid" :max="slotProps.maxlandid" 
-                        @change="e => slotProps.onchangeid(e, slotProps.item, 1)" />
+                        v-model="item.LandId" :min="minlandid" :max="maxlandid" 
+                        @change="e => onchangeid(e, item, 1)" />
                 </template>
-                <template v-slot:newregion="slotProps">
+                <template v-slot:newregion="{ newitem, minlandid, maxlandid, onnewitem }">
                     <div class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
-                        <span class="align-self-center w45px">Id: {{slotProps.newitem.Id}}</span>
-                        <input class="form-control form-control-sm" type="text" v-model="slotProps.newitem.Name" />
+                        <span class="align-self-center w45px">Id: {{newitem.Id}}</span>
+                        <input class="form-control form-control-sm" type="text" v-model="newitem.Name" />
                         <span class="ms-1">LandId: </span>
-                        <input class="form-control form-control-sm w45px" type="number" v-model="slotProps.newitem.LandId"
-                            :min="slotProps.minlandid" :max="slotProps.maxlandid" />
+                        <input class="form-control form-control-sm w45px" type="number" v-model="newitem.LandId"
+                            :min="minlandid" :max="maxlandid" />
                         <input class="btn btn-primary btn-sm" value="+ Region" 
-                            type="button" @click="e => slotProps.onnewitem(1)" />
+                            type="button" @click="e => onnewitem(1)" />
                     </div>
                 </template>
-                <template v-slot:inpgoalid="slotProps">
+                <template v-slot:inpgoalid="{ item, mingoalid, maxgoalid, onchangeid }">
                     <input type="number" class="form-control form-control-sm" 
-                        v-model="slotProps.item.GoalId" 
-                        :min="slotProps.mingoalid" :max="slotProps.maxgoalid" 
-                        @change="e => slotProps.onchangeid(e, slotProps.item, 2)" />
+                        v-model="item.GoalId" 
+                        :min="mingoalid" :max="maxgoalid" 
+                        @change="e => onchangeid(e, item, 2)" />
                 </template>
             </full-dashboard>
         </section>
