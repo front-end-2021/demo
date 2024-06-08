@@ -10,6 +10,7 @@
     <script src="../3rd/jquery/jquery-ui.min.js"></script>
     <script src="../3rd/vuejs/dev_vue@2_7_16.js"></script>
     <script src="../3rd/vuejs/vuex.global.js"></script>
+    <script src="../3rd/vuejs/vue-observe-visibility.min.js"></script>
     <script src="../3rd/react18/react.development.js"></script>
     <script src="../3rd/react18/react-dom.development.js"></script>
     <script src="../3rd/babel.min.js"></script>
@@ -64,15 +65,23 @@
                                 <ul v-if="isPrdExpand(prduct.Data.Id, pGrp.PGroup.Id, wItem.Region.Id)"
                                     class="dnb-goals">
                                     <mf-viewgoal inline-template v-for="goal in prduct.ListGoal" :entry="goal"
-                                        :key="'lnd'+wItem.Land.Id+'rg'+wItem.Region.Id+'prg'+pGrp.PGroup.Id+'p'+prduct.Data.Id+'gl'+goal.Item.Id">
-                                        <li v-bind:id-goal="'dnb-goal_' + entry.Item.Id">
-                                            <p class="mb-0 d-inline-block"
+                                        :key="'l'+wItem.Land.Id+'r'+wItem.Region.Id+'gr'+pGrp.PGroup.Id+'p'+prduct.Data.Id+'g'+goal.Item.Id">
+                                        <li v-observe-visibility="{
+                                                callback: visibleChanged,
+                                                throttle: 0,
+                                                throttleOptions: { leading: false },
+                                                intersection: { threshold: 0 },
+                                                once: false,
+                                            }"
+                                            v-bind:id-goal="'dnb-goal_' + entry.Item.Id">
+                                            <p v-if="Isvisible"
+                                                class="mb-0 d-inline-block"
                                                 v-bind:class="[entry.Item.Finish ? 'text-black-50' : '']"
                                                 @click.stop="toggleExpand">{{entry.Item.Name}} <span
                                                     class="badge bg-secondary ms-3"
                                                     v-bind:class="[entry.Item.Finish ? 'text-white-50' : '']">{{entry.ListActivity.length}}</span>
                                             </p>
-                                            <div v-if="IsExpand" class="mb-2 d-flex justify-content-start"
+                                            <div v-if="IsExpand && Isvisible" class="mb-2 d-flex justify-content-start"
                                                 v-bind:class="[entry.Item.Finish ? 'text-black-50' : '']">
                                                 <span class="text-muted me-1">Finish: </span>
                                                 <input v-model="entry.Item.Finish" type="checkbox"
@@ -82,13 +91,21 @@
                                                 <small class="text-muted">{{Start}}</small>
                                                 <small v-if="End" class="text-muted">&nbsp;-&nbsp;{{End}}</small>
                                             </div>
-                                            <article v-if="IsExpand" class="d-inline-block">
-                                                <div v-for="actv in entry.ListActivity"
-                                                    class="d-inline-flex align-items-center m-1 py-1 px-2 bg-light rounded-3">
-                                                    <input v-model="actv.Data.Finish" type="checkbox"
-                                                        class="form-check-input dnb-r14px mt-0 me-1" />
-                                                    <p class="mb-0">{{actv.Data.Name}}</p>
-                                                </div>
+                                            <article v-if="IsExpand && Isvisible" class="d-inline-block">
+                                                <mf-vactivity inline-template v-for="actv in entry.ListActivity" :item="actv" :key="actv.Data.Id">
+                                                    <div class="d-inline-flex align-items-center m-1 py-1 px-2 bg-light rounded-3"
+                                                        v-observe-visibility="disabled ? false : {
+                                                            callback: visibleChanged,
+                                                            throttle: 0,
+                                                            throttleOptions: { leading: false },
+                                                            intersection: { threshold: 0 },
+                                                            once: false,
+                                                        }">
+                                                        <input v-if="Isvisible" v-model="item.Data.Finish" type="checkbox"
+                                                            class="form-check-input dnb-r14px mt-0 me-1" />
+                                                        <p v-if="Isvisible" class="mb-0">{{item.Data.Name}}</p>
+                                                    </div>
+                                                </mf-vactivity>
                                             </article>
                                         </li>
                                     </mf-viewgoal>

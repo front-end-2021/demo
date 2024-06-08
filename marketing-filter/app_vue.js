@@ -16,8 +16,44 @@ function newAppVueNav() {
         }
     })
 }
+const mxVisible = {
+    data() {
+        return {
+            Isvisible: true,
+        }
+    },
+    computed: {
+        disabled() {
+            if (!this.$root.AppMsg) return true
+            switch (this.$root.AppMsg) {
+                case 'No results':
+                case 'Loadding ...': return true;
+                default: return false
+            }
+        },
+    },
+    methods: {
+        visibleChanged(isVisible, entry) {
+            this.Isvisible = isVisible
+            // console.log('is visible:', isVisible, 'intersection:', Math.round(entry.intersectionRatio * 100) + '%')
+        },
+        styleSize() {
+            const stl = getComputedStyle(this.$el)
+            this.$el.style.width = `${stl.width}`
+            this.$el.style.height = `${stl.height}`
+        },
+    },
+    mounted() {
+        this.styleSize()
+    }
+}
+Vue.component('mf-vactivity', {
+    mixins: [mxVisible],
+    props: ['item'],
+})
 Vue.component('mf-viewgoal', {
     name: 'DnbViewGoal',
+    mixins: [mxVisible],
     props: ['entry'],
     //beforeCreate(){ },
     data() {
@@ -145,7 +181,7 @@ function newAppVue() {
                                             );
                                             removeEmptyGoal.call(lstPath)
                                             this.ListDataUI = lstPath;
-                                            setAppMsg.call(this, lstPath, sumActv)
+                                            setAppMess.call(this, lstPath, sumActv)
                                             DnbVxStore.dispatch('setListTask', [])      // remove array / clear memory
                                         })
                                     })
@@ -237,7 +273,7 @@ function newAppVue() {
                     }
                     return lstsMrkId
                 }
-                function setAppMsg(lstPath, sumActv) {
+                function setAppMess(lstPath, sumActv) {
                     if (!lstPath.length) this.AppMsg = 'No results'
                     else {
                         let cGoal = 0;
@@ -256,6 +292,7 @@ function newAppVue() {
                     }
                     this.$nextTick(() => {
                         document.body.classList.remove('dnb-app-loading_')
+                        //  console.log('on next tick')
                     })
                 }
                 function removeEmptyGoal() {
@@ -375,7 +412,7 @@ function newAppVue() {
             },
         },
         // created() { },
-        //updated() { },
+        // updated() { console.log('on update', this.AppMsg) },
     })
     DnbVxStore.getters.getMtFilter(0).setFilter = app.renderData
     app.renderData()
