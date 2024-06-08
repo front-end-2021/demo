@@ -133,10 +133,8 @@
                             type="button" @click="e => onnewitem(0)" />
                     </div>
                 </template>
-                <template v-slot="tltlandid">
-                    <span >LandId</span>
-                </template>
                 <template v-slot:inplandid="{ item, minlandid, maxlandid, onchangeid }">
+                    <span >LandId</span>
                     <input type="number" class="form-control form-control-sm" 
                         v-model="item.LandId" :min="minlandid" :max="maxlandid" 
                         @change="e => onchangeid(e, item, 1)" />
@@ -153,6 +151,7 @@
                     </div>
                 </template>
                 <template v-slot:inpgoalid="{ item, mingoalid, maxgoalid, onchangeid }">
+                    <span class="dgid"><span>GoalId: </span>
                     <input type="number" class="form-control form-control-sm" 
                         v-model="item.GoalId" 
                         :min="mingoalid" :max="maxgoalid" 
@@ -186,7 +185,6 @@
                 <div v-if="showExpand(2)" class="lst-entry" v-for="item in Regions">
                     <span>Id: {{item.Id}}</span>
                     <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
-                    <slot name="tltlandid"></slot>
                     <slot name="inplandid" 
                         :item="item"
                         :minlandid="MinLandId" 
@@ -262,7 +260,6 @@
                     <span>Id: {{item.Id}}</span>
                     <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
                     <span>Finish: <input v-model="item.Finish" type="checkbox" class="form-check-input dnb-r14px" /></span>
-                    <span class="dgid"><span>GoalId: </span>
                         <slot name="inpgoalid" 
                             :onchangeid="onChangeId"
                             :mingoalid="MinGoalId"
