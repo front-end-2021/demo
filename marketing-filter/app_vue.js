@@ -17,83 +17,6 @@ function newAppVueNav() {
         }
     })
 }
-const mxVisible = {
-    data() {
-        return {
-            Isvisible: true,
-        }
-    },
-    computed: {
-        disabled() {
-            if (!this.$root.AppMsg) return true
-            switch (this.$root.AppMsg) {
-                case 'No results':
-                case 'Loadding ...': return true;
-                default: return false
-            }
-        },
-    },
-    methods: {
-        visibleChanged(isVisible, entry) {
-            this.Isvisible = isVisible
-            // console.log('is visible:', isVisible, 'intersection:', Math.round(entry.intersectionRatio * 100) + '%')
-        },
-        styleSize() {
-            const stl = getComputedStyle(this.$el)
-            this.$el.style.width = `${stl.width}`
-            this.$el.style.height = `${stl.height}`
-        },
-    },
-    mounted() {
-        this.styleSize()
-    }
-}
-Vue.component('mf-vactivity', {
-    mixins: [mxVisible],
-    props: ['item'],
-})
-Vue.component('mf-viewgoal', {
-    name: 'DnbViewGoal',
-    mixins: [mxVisible],
-    props: ['entry'],
-    //beforeCreate(){ },
-    data() {
-        return {
-            IsExpand: true
-        }
-    },
-    computed: {
-        Start() {
-            const start = this.entry.Item.Start
-            if (typeof start != 'string') return ''
-            if (start.trim() == '') return ''
-            return getDateStr(start, 'dd/MM/YYYY')
-        },
-        End() {
-            const end = this.entry.Item.End
-            if (typeof end != 'string') return ''
-            if (end.trim() == '') return ''
-            return getDateStr(end, 'dd/MM/YYYY')
-        },
-    },
-    methods: {
-        toggleExpand() { this.IsExpand = !this.IsExpand },
-    },
-    watch: {
-        'entry.Item.Finish'(val, old) {
-            if (val && !this.entry.End) {
-                setStartEndNow.call(this, true)
-            }
-        },
-    },
-    // created() { },
-    //beforeMount() { },
-    //mounted() { },
-    //beforeUpdate() { },
-    //updated(){ },
-    //beforeDestroy() { },
-    //destroyed() { },
-})
 function performTask(items, numToProcess, processItem) {
     let pos = 0;
     function iteration() {
@@ -137,7 +60,6 @@ function newAppVue() {
         name: 'DnbAppVue',
         data: {
             ListDataUI: [],
-            CollapsePrdId: [],
             AppMsg: null,
         },
         methods: {
@@ -374,14 +296,6 @@ function newAppVue() {
                 if (sumAct != smA) {
                     this.AppMsg.replace(`Activties (${sumAct})`, `Activties (${smA})`)
                 }
-            },
-            isPrdExpand(id, pgId, rgId) { return !this.CollapsePrdId.includes(`${rgId}.${pgId}.${id}`) },
-            onTogglePrdExpand(id, pgId, rgId) {
-                const lstId = this.CollapsePrdId
-                const tId = `${rgId}.${pgId}.${id}`
-                const i = lstId.indexOf(tId)
-                if (i < 0) lstId.push(tId)
-                else lstId.splice(i, 1)
             },
         },
         computed: {
