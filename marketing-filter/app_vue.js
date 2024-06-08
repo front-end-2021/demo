@@ -1,3 +1,4 @@
+//Vue.config.performance = true;
 function newAppVueNav() {
     new Vue({
         el: '#dnb-appvue-nav',
