@@ -51,7 +51,6 @@ Vue.component('full-dashboard', {
     template: '#temp-dashboard',
     mixins: [mxDashboard],
     computed: {
-        ViewType() { return 2 },
         Lands() { return DnbVxStore.getters.getLands([0]) },
         Regions() { return DnbVxStore.getters.getRegions([0]) },
         ProductGroups() { return DnbVxStore.getters.getPGroups() },
@@ -93,8 +92,8 @@ Vue.component('full-dashboard', {
 })
 Vue.component('filter-dashboard', {
     template: '#temp-dashboard',
+    mixins: [mxDashboard],
     computed: {
-        ViewType() { return 1 },
         Lands() {
             const filter = DnbVxStore.getters.getFilterIds(0)
             return DnbVxStore.getters.getLands(filter.LandIds)
@@ -130,7 +129,6 @@ Vue.component('filter-dashboard', {
         MinGoalId() { return 0 },
         MaxGoalId() { return 0 },
     },
-    mixins: [mxDashboard],
     methods: {
         onChangeId(e, item, type) {
             this.$root.onChangeId(e, item, type)

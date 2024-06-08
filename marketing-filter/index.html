@@ -116,7 +116,41 @@
                 </li>
             </ul>
 
-            <full-dashboard v-if="3 == PageTab"></full-dashboard>
+            <full-dashboard v-if="3 == PageTab" class="dnb-vfull">
+                <template v-slot:newland="slotProps" >
+                    <div class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
+                        <span class="align-self-center w45px">Id: {{slotProps.newitem.Id}}</span>
+                        <input class="form-control form-control-sm" type="text" v-model="slotProps.newitem.Name" />
+                        <input class="btn btn-primary btn-sm" value="+ Land" 
+                            type="button" @click="e => slotProps.onnewitem(0)" />
+                    </div>
+                </template>
+                <template v-slot="tltlandid">
+                    <span >LandId</span>
+                </template>
+                <template v-slot:inplandid="slotProps">
+                    <input type="number" class="form-control form-control-sm" 
+                        v-model="slotProps.item.LandId" :min="slotProps.minlandid" :max="slotProps.maxlandid" 
+                        @change="e => slotProps.onchangeid(e, slotProps.item, 1)" />
+                </template>
+                <template v-slot:newregion="slotProps">
+                    <div class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
+                        <span class="align-self-center w45px">Id: {{slotProps.newitem.Id}}</span>
+                        <input class="form-control form-control-sm" type="text" v-model="slotProps.newitem.Name" />
+                        <span class="ms-1">LandId: </span>
+                        <input class="form-control form-control-sm w45px" type="number" v-model="slotProps.newitem.LandId"
+                            :min="slotProps.minlandid" :max="slotProps.maxlandid" />
+                        <input class="btn btn-primary btn-sm" value="+ Region" 
+                            type="button" @click="e => slotProps.onnewitem(1)" />
+                    </div>
+                </template>
+                <template v-slot:inpgoalid="slotProps">
+                    <input type="number" class="form-control form-control-sm" 
+                        v-model="slotProps.item.GoalId" 
+                        :min="slotProps.mingoalid" :max="slotProps.maxgoalid" 
+                        @change="e => slotProps.onchangeid(e, slotProps.item, 2)" />
+                </template>
+            </full-dashboard>
         </section>
     </main>
     <section id="dashboard" :class="[3 == PageTab ? '' : 'dnb-view-100h p-1']" v-cloak v-bind:style="{ 
@@ -124,45 +158,38 @@
             display: 3 == PageTab ? 'none' : ''
         }">
         <b v-if="3 != PageTab" class="text-success">Filter Dashboard <span class="opacity-25">(Vuejs CDN)</span>: </b>
-        <filter-dashboard v-if="3 != PageTab"></filter-dashboard>
+        <filter-dashboard v-if="3 != PageTab" class="dnb-vfilter"></filter-dashboard>
     </section>
 
     <script type="text/x-template" id="temp-dashboard">
-        <article :class="[1 == ViewType ? 'dnb-vfilter' : 'dnb-vfull']">
+        <article>
             <div class="list-land">
                 <h6 @click.stop="e => toggleCollapse(1)">Lands ({{Lands.length}}): <b v-if="!showExpand(1)">&#10010;</b></h6>
                 <div v-for="item in Lands" v-if="showExpand(1)" class="lst-entry">
                     <span>Id: {{item.Id}}</span>
                     <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
                 </div>
-                <div v-if="2 == ViewType" 
-                    class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
-                    <span class="align-self-center w45px">Id: {{NewItems[0].Id}}</span>
-                    <input class="form-control form-control-sm" type="text" v-model="NewItems[0].Name" />
-                    <input class="btn btn-primary btn-sm" value="+ Land" 
-                        type="button" @click="e => newItem(0)" />
-                </div>
+                <slot name="newland" 
+                    :newitem="NewItems[0]" 
+                    :onnewitem="newItem"></slot>
             </div>
             <div class="list-region">
                 <h6 @click.stop="e => toggleCollapse(2)">Regions ({{Regions.length}}): <b v-if="!showExpand(2)">&#10010;</b></h6>
                 <div v-if="showExpand(2)" class="lst-entry" v-for="item in Regions">
                     <span>Id: {{item.Id}}</span>
                     <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
-                    <span v-if="2 == ViewType">LandId</span>
-                    <input v-if="2 == ViewType" type="number" class="form-control form-control-sm" 
-                        v-model="item.LandId" :min="MinLandId"
-                        :max="MaxLandId" @change="e => onChangeId(e, item, 1)" />
+                    <slot name="tltlandid"></slot>
+                    <slot name="inplandid" 
+                        :item="item"
+                        :minlandid="MinLandId" 
+                        :maxlandid="MaxLandId"
+                        :onchangeid="onChangeId"></slot>
                 </div>
-                <div v-if="2 == ViewType"
-                    class="lstentry-new d-flex flex-row justify-content-start align-items-center flex-nowrap">
-                    <span class="align-self-center w45px">Id: {{NewItems[1].Id}}</span>
-                    <input class="form-control form-control-sm" type="text" v-model="NewItems[1].Name" />
-                    <span class="ms-1">LandId: </span>
-                    <input class="form-control form-control-sm w45px" type="number" v-model="NewItems[1].LandId"
-                        :min="MinLandId" :max="MaxLandId" />
-                    <input class="btn btn-primary btn-sm" value="+ Region" 
-                        type="button" @click="e => newItem(1)" />
-                </div>
+                <slot name="newregion" 
+                    :newitem="NewItems[1]" 
+                    :minlandid="MinLandId" 
+                    :maxlandid="MaxLandId"
+                    :onnewitem="newItem"></slot>
             </div>
             <div class="list-productgroup">
                 <h6 @click.stop="e => toggleCollapse(3)">Product groups ({{ProductGroups.length}}): <b v-if="!showExpand(3)">&#10010;</b></h6>
@@ -227,8 +254,13 @@
                     <span>Id: {{item.Id}}</span>
                     <input type="text" class="form-control form-control-sm" v-model="item.Name" @change="onChange" />
                     <span>Finish: <input v-model="item.Finish" type="checkbox" class="form-check-input dnb-r14px" /></span>
-                    <span class="dgid"><span>GoalId: </span><input v-if="2 == ViewType" type="number" class="form-control form-control-sm" v-model="item.GoalId" 
-                    :min="MinGoalId" :max="MaxGoalId" @change="e => onChangeId(e, item, 2)" /></span>
+                    <span class="dgid"><span>GoalId: </span>
+                        <slot name="inpgoalid" 
+                            :onchangeid="onChangeId"
+                            :mingoalid="MinGoalId"
+                            :maxgoalid="MaxGoalId"
+                            :item="item"></slot>
+                    </span>
                 </div>
             </div>
         </article>
