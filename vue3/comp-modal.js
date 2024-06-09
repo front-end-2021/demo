@@ -2,17 +2,25 @@ import dnbStore from './main-store.js'
 const { onUpdated } = Vue
 export default {
     template: `#tmp-app-modal`,
-    computed: {
-        MItem() { return this.$root.MItem },
+    data(){
+        return {
+            MItem: JSON.parse(JSON.stringify(this.$root.OriginItem))
+        }
     },
     methods: {
         onExitClose() {
             $(this.$el).modal('hide')
-            this.$root.onExitClose()
+            const onCancel = () => {
+                console.log('on cancel')
+             }
+            this.$root.onCloseModal(null, onCancel)
         },
         onSaveClose() {
             $(this.$el).modal('hide')
-            this.$root.onSaveClose()
+            const onOk = () => {
+                console.log('on ok')
+            }
+            this.$root.onCloseModal(onOk)
         },
     },
     mounted() {

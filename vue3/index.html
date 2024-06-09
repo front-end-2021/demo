@@ -35,7 +35,7 @@
     </div>
   </template>
   <section id="app-modal">
-    <comp-modal v-if="MItem"></comp-modal>
+    <comp-modal v-if="OriginItem"></comp-modal>
   </section>
   <template id="tmp-app-modal">
     <div class="ui modal">
@@ -47,7 +47,7 @@
         </div>
         <div class="description">
           <div class="ui header">{{MItem.description.head}}</div>
-          <p>{{MItem.description.content}}</p>
+          <p contenteditable="true">{{MItem.description.content}}</p>
         </div>
       </div>
       <div class="actions">

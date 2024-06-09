@@ -29,13 +29,16 @@ export default {
                     appModal = createApp({
                         name: `app-modal`,
                         computed: {
-                            MItem() { return dnbStore.getters.modal },
+                            OriginItem() { return dnbStore.getters.modal },
                         },
                         methods: {
-                            onExitClose() {
-                                dnbStore.dispatch('setModal', null)
-                            },
-                            onSaveClose() {
+                            onCloseModal(fncOk, fncCancel){
+                                if(typeof fncOk == 'function') {
+                                    fncOk(this.OriginItem)
+                                }
+                                if(typeof fncCancel == 'function') {
+                                    fncCancel(this.OriginItem)
+                                }
                                 dnbStore.dispatch('setModal', null)
                             },
                         },
