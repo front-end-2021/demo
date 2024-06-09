@@ -1,12 +1,19 @@
 import CompNav from './comp-nav.js'
 import dnbStore from './main-store.js'
-const { createApp } = Vue
+const { createApp, onBeforeMount } = Vue
 const app = createApp({
+    name: `app-main`,
     data() {
         return {
             Users: ['Unassigned', 'Bill Gate', 'Elon Musk', 'Larry Page'],
             UserAssign: ''
         }
+    },
+    setup() {
+        onBeforeMount(() => {
+            console.log('on before mount', this)
+        })
+        // return { }
     },
     computed: {
         message() { return dnbStore.getters.message },
@@ -16,6 +23,9 @@ const app = createApp({
             this.$store.commit('increment')
             console.log(this.$store.state.count)
         }
+    },
+    beforeMount() {
+        console.log('before mount', this)
     },
     mounted() {
         const onChangeUser = (value, text, $selectedItem) => {

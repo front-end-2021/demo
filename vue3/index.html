@@ -30,6 +30,34 @@
   <template id="tmp-comp-nav">
     <button @click="upCount">Clicked {{ count }} {{1 == count ? 'time' : 'times'}}.</button>
     <button @click="resetCount" style="margin-left:9px;">Reset Count</button>
+    <div>
+      <button @click="openModal" style="margin-left:9px;">Open modal</button>
+    </div>
+  </template>
+  <section id="app-modal">
+    <comp-modal v-if="MItem"></comp-modal>
+  </section>
+  <template id="tmp-app-modal">
+    <div class="ui modal">
+      <i class="close icon" @click.stop="onExitClose"></i>
+      <div class="header">{{MItem.header}}</div>
+      <div class="image content">
+        <div class="ui medium image">
+          <img :src="MItem.img">
+        </div>
+        <div class="description">
+          <div class="ui header">{{MItem.description.head}}</div>
+          <p>{{MItem.description.content}}</p>
+        </div>
+      </div>
+      <div class="actions">
+        <div class="ui black deny button" 
+          @click.stop="onExitClose">Nope</div>
+        <div class="ui positive right labeled icon button"
+          @click.stop="onSaveClose">Yep, that's me<i class="checkmark icon"></i>
+        </div>
+      </div>
+    </div>
   </template>
   <script type="module" src="main-app.js"></script>
 

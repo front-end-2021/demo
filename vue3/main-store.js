@@ -2,7 +2,8 @@ const { createStore } = Vuex
 export default createStore({
     state: {
         count: 0,
-        message: 'Hello world!'
+        message: 'Hello world!',
+        Modal: null,
     },
     actions: {
         increment({ commit, state }) {
@@ -18,10 +19,15 @@ export default createStore({
                 setMessCount.call(state)
             }
         },
+        setModal({ commit, state }, item) {
+            commit('setModal', item)
+            return state.Modal
+        },
     },
     getters: {
         count(state) { return state.count },
         message(state) { return state.message },
+        modal(state) { return state.Modal },
     },
     mutations: {
         increment(state) { state.count++ },
@@ -33,6 +39,7 @@ export default createStore({
             }
             state.message = `Hello ${name}!`
         },
+        setModal(state, item) { state.Modal = item },
     }
 })
 function setMessCount() {
