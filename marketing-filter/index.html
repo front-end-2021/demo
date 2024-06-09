@@ -58,7 +58,7 @@
                             <span class="badge bg-info rounded-pill text-white fw-normal">{{pGrp.SumGoal}}</span>
                         </div>
                         <ol class="dnb-products">
-                            <mf-vproduct inline-template v-for="product in pGrp.Products" :prduct="product"
+                            <mf-vproduct inline-template v-for="(product, ipr) in pGrp.Products" :prduct="product" :index="ipr"
                                 :key="'l'+wItem.Land.Id+'r'+wItem.Region.Id+'gr'+pGrp.PGroup.Id+'p'+product.Data.Id">
                                 <li v-bind:id-product="'dnb-product_' + prduct.Data.Id"
                                     v-observe-visibility="disabled ? false : {

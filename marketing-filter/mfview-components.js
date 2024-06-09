@@ -82,10 +82,10 @@ Vue.component('mf-viewgoal', {
 Vue.component('mf-vproduct', {
     name: 'DnbViewProduct',
     mixins: [mxVisible, mxExpand],
-    props: ['prduct'],
+    props: ['prduct', 'index'],
     data() {
         return {
-            Isvisible: false,
+            Isvisible: this.index < 1 ? true : false,
             disabled: false,
         }
     },
