@@ -1,6 +1,10 @@
+import { ListPrj, Langs } from './mock-data.js'
 const { createStore } = Vuex
 export default createStore({
     state: {
+        Projects: ListPrj,
+        Lang: Langs[0],
+
         count: 0,
         message: 'Hello world!',
         Modal: null,
@@ -28,6 +32,8 @@ export default createStore({
         count(state) { return state.count },
         message(state) { return state.message },
         modal(state) { return state.Modal },
+        projects(state) { return state.Projects },
+        language(state) { return state.Lang },
     },
     mutations: {
         increment(state) { state.count++ },
