@@ -4,7 +4,7 @@ export const DropSelect = {
     props: ['items', 'index', 'type'],
     inject: ['setIndex'],
     mounted() {
-        const onChangeUser = (value, text, $selectedItem) => {
+        const changeDrp = (value, text, $selectedItem) => {
             let newVal = value
             switch (this.type) {
                 case '1': newVal = parseInt(value);
@@ -14,7 +14,7 @@ export const DropSelect = {
             this.setIndex(newVal, this.type)
         }
         $(this.$el).dropdown({
-            onChange: onChangeUser
+            onChange: changeDrp
         })
     },
 }
