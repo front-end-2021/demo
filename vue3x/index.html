@@ -1,41 +1,75 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <title>Exercise Vue3</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
     integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
     crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
     integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
     crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./main-style.css">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/vuex@4.1.0/dist/vuex.global.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/examples/assets/library/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
 </head>
-
 <body>
   <main id="app" v-cloak>
+    <header class="p-3 bg-primary">
+      <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+          <div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <div class="d-inline-flex justify-content-start align-items-center">
+              <i class="bi bi-bootstrap-fill me-2 font24 cpointer text-white"></i><h2 class="me-3 my-0 text-white">Marketing</h2>
+            </div>
+            <drop-select :index="IProject" :items="projects"
+              @set:index="$event => setIndexProject($event)">
+              <template #default>
+                <div class="text">{{projects[IProject].Name}}</div>
+              </template>
+              <template #item="{ items, index, active }">
+                <div v-for="(item, ii) in items" class="item"
+                  :class="[item.Id == items[index].Id ? active : '']" 
+                  :data-value="ii">{{item.Name}}</div>
+              </template>
+            </drop-select>
+          </div>
+          <div class="col-12 col-lg-auto mb-3 mb-lg-0 d-inline-flex justify-content-start align-items-center">
+            <div class="d-inline-flex justify-content-start align-items-center">
+              <h4 class="d-inline text-white mb-0 me-1">Language: </h4>
+              <drop-select :index="ILang" :items="languages"
+                  @set:index="$event => setIndexLang($event)">
+                <template #default>
+                  <div class="text">{{languages[ILang].Name}}</div>
+                </template>
+                <template #item="{ items, index, active }">
+                  <div v-for="(item, ii) in items" class="item"
+                    :class="[item.Key == items[index].Key ? active : '']" 
+                    :data-value="ii">{{item.Name}}</div>
+                </template>
+              </drop-select>
+            </div>
+            <div class="d-inline-flex justify-content-start align-items-center">
+              <i class="bi bi-folder-fill mx-3 font24 cpointer text-white"></i>
+              <i class="bi bi-question-square-fill font24 cpointer text-white"></i>
+              <i class="bi bi-gear-fill font24 mx-3 cpointer text-white"></i>
+              <i class="bi bi-person-circle font24 cpointer text-white"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
     <nav class="d-flex p-2">
-      <div>
-        <h1 class="me-3">Marketing</h1>
-        <drop-select :index="IndexProject" :items="projects"
-            @set:index="$event => setIndex($event)">
-          <template #default>
-            <div class="text">{{projects[IndexProject].Name}}</div>
-          </template>
-          <template #item="{ items, index, active }">
-            <div v-for="(item, ii) in items" class="item"
-              :class="[item.Id == items[index].Id ? active : '']" 
-              :data-value="ii">{{item.Name}}</div>
-          </template>
-        </drop-select>
+      
+      <div class="d-inline-grid">
+        
       </div>
       
     </nav>

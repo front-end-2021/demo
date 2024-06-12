@@ -3,7 +3,9 @@ const { createStore } = Vuex
 export default createStore({
     state: {
         Projects: ListPrj,
-        Lang: Langs[0],
+        IndexProject: 0,
+        Languages: Langs,
+        IndexLang: 0,
 
         count: 0,
         message: 'Hello world!',
@@ -31,9 +33,18 @@ export default createStore({
     getters: {
         count(state) { return state.count },
         message(state) { return state.message },
+        
         modal(state) { return state.Modal },
+
         projects(state) { return state.Projects },
-        language(state) { return state.Lang },
+        iproject(state) { return state.IndexProject},
+        project: (state) => (id) => {
+            if (typeof id != 'number') return state.Projects[state.IndexProject]
+            return state.Projects.find(x => x.Id === id)
+        },
+        languages(state) { return state.Languages },
+        ilang(state) { return state.IndexLang},
+
     },
     mutations: {
         increment(state) { state.count++ },
@@ -46,6 +57,8 @@ export default createStore({
             state.message = `Hello ${name}!`
         },
         setModal(state, item) { state.Modal = item },
+        setIProject(state, ii) { state.IndexProject = ii },
+        setILang(state, ii) { state.IndexLang = ii },
     }
 })
 function setMessCount() {

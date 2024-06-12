@@ -12,24 +12,30 @@ const app = createApp({
     },
     data() {
         return {
-            IndexProject: 0,
-
+            
             Users: ['Unassigned', 'Bill Gate', 'Elon Musk', 'Larry Page'],
             UserAssign: ''
         }
     },
     computed: {
         message() { return dnbStore.getters.message },
+
         projects() { return dnbStore.getters.projects },
-        languages() { return Langs },
+        IProject(){ return dnbStore.getters.iproject},
+
+        languages() { return dnbStore.getters.languages  },
+        ILang(){ return dnbStore.getters.ilang },
     },
     methods: {
         increment() {
             this.$store.commit('increment')
           //  console.log(this.$store.state.count)
         },
-        setIndex(val) {
-            this.IndexProject = parseInt(val);
+        setIndexProject(val) {
+            this.$store.commit('setIProject', parseInt(val))
+        },
+        setIndexLang(val) {
+            this.$store.commit('setILang', parseInt(val))
         },
         setUserAssign(val) {
             this.UserAssign = val;
@@ -40,7 +46,7 @@ const app = createApp({
     //     return { }
     // },
     created() {
-        this.IndexProject = getRandomInt(0, this.projects.length)
+        this.$store.commit('setIProject', getRandomInt(0, this.projects.length))
     },
     beforeMount() {
        // console.log('before mount', this)
