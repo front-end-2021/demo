@@ -21,7 +21,7 @@
 </head>
 
 <body>
-  <main id="app">
+  <main id="app" v-cloak>
     <nav class="d-flex p-2">
       <div>
         <h1 class="me-3">Marketing</h1>
@@ -30,9 +30,9 @@
           <template #default>
             <div class="text">{{projects[IndexProject].Name}}</div>
           </template>
-          <template #item="{ items, index }">
+          <template #item="{ items, index, active }">
             <div v-for="(item, ii) in items" class="item"
-              :class="[item.Id == items[index].Id ? 'active selected' : '']" 
+              :class="[item.Id == items[index].Id ? active : '']" 
               :data-value="ii">{{item.Name}}</div>
           </template>
         </drop-select>
@@ -47,9 +47,9 @@
       <template #default>
         <div class="default text">Assign</div>
       </template>
-      <template #item="{ items, index }">
+      <template #item="{ items, index, active }">
         <div v-for="item in items" class="item" 
-          :class="[item == index ? 'active selected' : '']"
+          :class="[item == index ? active : '']"
           :data-value="item">{{item}}</div>
       </template>
     </drop-select>
@@ -61,7 +61,10 @@
       <i class="dropdown icon"></i>
       <slot name="default"></slot>
       <div class="menu">
-        <slot name="item" :items="items" :index="index"></slot>
+        <slot name="item" 
+          :items="items" 
+          active="active selected"
+          :index="index"></slot>
       </div>
     </div>
   </template>
