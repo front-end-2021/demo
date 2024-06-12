@@ -25,7 +25,8 @@
     <nav class="d-flex p-2">
       <div>
         <h1 class="me-3">Marketing</h1>
-        <drop-select type="1" :index="IndexProject" :items="projects">
+        <drop-select :index="IndexProject" :items="projects"
+            @set:index="$event => setIndex($event)">
           <template #default>
             <div class="text">{{projects[IndexProject].Name}}</div>
           </template>
@@ -36,14 +37,13 @@
           </template>
         </drop-select>
       </div>
-      <div>
-
-      </div>
+      
     </nav>
     <section style="margin-bottom: 9px;">{{message}}</section>
     <compnav></compnav>
 
-    <drop-select type="2" :index="UserAssign" :items="Users">
+    <drop-select :index="UserAssign" :items="Users"
+        @set:index="$event => setUserAssign($event)">
       <template #default>
         <div class="default text">Assign</div>
       </template>
@@ -53,15 +53,7 @@
           :data-value="item">{{item}}</div>
       </template>
     </drop-select>
-    <!-- <div class="ui selection dropdown">
-      <input type="hidden" name="gender" :value="UserAssign">
-      <i class="dropdown icon"></i>
-      <div class="default text">Assign</div>
-      <div class="menu">
-        <div v-for="user in Users" class="item" :data-value="user"
-          :class="[user == UserAssign ? 'active selected' : '']">{{user}}</div>
-      </div>
-    </div> -->
+    
   </main>
   <template id="tmp-comp-drop-select">
     <div class="ui selection dropdown" style="height: 38px;">

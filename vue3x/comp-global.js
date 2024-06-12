@@ -1,17 +1,11 @@
 
 export const DropSelect = {
     template: `#tmp-comp-drop-select`,
-    props: ['items', 'index', 'type'],
-    inject: ['setIndex'],
+    props: ['items', 'index'],
+    emits: ['set:index'],
     mounted() {
         const changeDrp = (value, text, $selectedItem) => {
-            let newVal = value
-            switch (this.type) {
-                case '1': newVal = parseInt(value);
-                    break;
-                default: break;
-            }
-            this.setIndex(newVal, this.type)
+            this.$emit('set:index', value)
         }
         $(this.$el).dropdown({
             onChange: changeDrp

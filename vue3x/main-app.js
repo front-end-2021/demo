@@ -3,7 +3,7 @@ import { Langs } from './mock-data.js'
 import CompNav from './comp-nav.js'
 import { DropSelect } from './comp-global.js'
 import dnbStore from './main-store.js'
-const { createApp, onBeforeMount } = Vue
+const { createApp } = Vue
 const app = createApp({
     name: `app-main`,
     components: {
@@ -18,13 +18,6 @@ const app = createApp({
             UserAssign: ''
         }
     },
-    setup() {
-        onBeforeMount(() => {
-
-            console.log('on before mount', this)
-        })
-        // return { }
-    },
     computed: {
         message() { return dnbStore.getters.message },
         projects() { return dnbStore.getters.projects },
@@ -33,30 +26,24 @@ const app = createApp({
     methods: {
         increment() {
             this.$store.commit('increment')
-            console.log(this.$store.state.count)
+          //  console.log(this.$store.state.count)
         },
-        setIndex(val, type) {
-            switch (type) {
-                case '1': this.IndexProject = val;
-                    break;
-                case '2': 
-                    this.UserAssign = val;
-                    dnbStore.commit('assignUser', val)
-                    break;
-                default: break;
-            }
+        setIndex(val) {
+            this.IndexProject = parseInt(val);
+        },
+        setUserAssign(val) {
+            this.UserAssign = val;
+            dnbStore.commit('assignUser', val)
         },
     },
-    provide() {
-        return {
-            setIndex: this.setIndex
-        }
-    },
+    // provide() {
+    //     return { }
+    // },
     created() {
         this.IndexProject = getRandomInt(0, this.projects.length)
     },
     beforeMount() {
-        console.log('before mount', this)
+       // console.log('before mount', this)
     },
     //mounted() { },
 })
