@@ -1,10 +1,10 @@
 import dnbStore from './main-store.js'
-const { onUpdated } = Vue
-export default {
+
+const CompModal = {
     template: `#tmp-app-modal`,
-    data(){
+    data() {
         return {
-            MItem: JSON.parse(JSON.stringify(this.$root.OriginItem))
+            MItem: JSON.parse(JSON.stringify(dnbStore.getters.modal))
         }
     },
     methods: {
@@ -12,7 +12,7 @@ export default {
             $(this.$el).modal('hide')
             const onCancel = () => {
                 console.log('on cancel')
-             }
+            }
             this.$root.onCloseModal(null, onCancel)
         },
         onSaveClose() {
@@ -24,6 +24,32 @@ export default {
         },
     },
     mounted() {
+        debugger
         $(this.$el).modal('show')
     },
+}
+export const AppModal = {
+    name: `app-modal`,
+    components: {
+        'comp-modal': CompModal
+    },
+    computed: {
+        OriginItem() { return dnbStore.getters.modal },
+    },
+    methods: {
+        onCloseModal(fncOk, fncCancel) {
+            if (typeof fncOk == 'function') {
+                fncOk(this.OriginItem)
+            }
+            if (typeof fncCancel == 'function') {
+                fncCancel(this.OriginItem)
+            }
+            dnbStore.dispatch('setModal', null)
+        },
+    },
+    watch: {
+        OriginItem(val, old) {
+
+        },
+    }
 }

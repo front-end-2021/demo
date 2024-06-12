@@ -1,7 +1,4 @@
 import dnbStore from './main-store.js'
-import CompModal from './comp-modal.js'
-const { createApp } = Vue
-let appModal
 export default {
     template: `#tmp-comp-nav`,
     computed: {
@@ -25,28 +22,7 @@ export default {
           <p>Is it okay to use this photo?`
                 }
             }).then(item => {
-                if (typeof appModal == 'undefined') {
-                    appModal = createApp({
-                        name: `app-modal`,
-                        computed: {
-                            OriginItem() { return dnbStore.getters.modal },
-                        },
-                        methods: {
-                            onCloseModal(fncOk, fncCancel){
-                                if(typeof fncOk == 'function') {
-                                    fncOk(this.OriginItem)
-                                }
-                                if(typeof fncCancel == 'function') {
-                                    fncCancel(this.OriginItem)
-                                }
-                                dnbStore.dispatch('setModal', null)
-                            },
-                        },
-                    })
-                    appModal.use(dnbStore)
-                    appModal.component('comp-modal', CompModal)
-                    appModal.mount(`#app-modal`)
-                }
+                
             })
         },
     },
