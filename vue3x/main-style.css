@@ -1,10 +1,28 @@
-.font24 {
-    font-size: 24px;
+.container-fluid {
+    width: 100%;
+    padding-right: 12px;
+    padding-left: 12px;
+    margin-right: auto;
+    margin-left: auto;
 }
+.d-inline-flex { display: inline-flex; }
+.justify-content-start  {justify-content: flex-start;}
+.align-items-center {align-items: center;}
+.bg-primary { background-color: #0d6efd; }
+.me-3 {margin-right: 1rem;}
+.me-2 {margin-right: .5rem;}
+.me-1 { margin-right: .25rem; }
+.my-0 {margin-top: 0; margin-bottom: 0;}
+.mx-3 {
+    margin-right: 1rem;
+    margin-left: 1rem;
+}
+.mb-0 {margin-bottom: 0;}
+.p-3 { padding: 1rem; }
+.text-white {color: white;}
+.font24 { font-size: 24px; }
 
-.cpointer {
-    cursor: pointer;
-}
+.cpointer { cursor: pointer; }
 
 .grp-prj {
     flex-grow: 1;
@@ -26,7 +44,10 @@
 .grp-dropdown-min.ui.selection.dropdown>.dropdown.icon {
     padding-top: 8px; padding-bottom: 5px;
 }
-
+.ui.modal.transition.visible.active {
+    width: 954px;
+    height: 618px;
+}
 @media screen and (max-width: 750px) {
     .grp-logo>h2:last-child {
         display: none;

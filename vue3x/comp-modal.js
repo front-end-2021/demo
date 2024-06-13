@@ -1,26 +1,25 @@
 import dnbStore from './main-store.js'
+import { deepCopy } from './common.js'
 
 const CompModal = {
-    template: `#tmp-app-modal`,
+    template: `#tmp-comp-modal`,
     data() {
+        const mit = deepCopy(dnbStore.getters.moItem)
         return {
-            MItem: JSON.parse(JSON.stringify(dnbStore.getters.modal))
+            MItem: mit,
         }
     },
     methods: {
         onExitClose() {
             $(this.$el).modal('hide')
-            const onCancel = () => {
-                console.log('on cancel')
-            }
-            this.$root.onCloseModal(null, onCancel)
+            dnbStore.commit('outModal', ['exit-close', deepCopy(this.MItem)])
         },
         onSaveClose() {
             $(this.$el).modal('hide')
-            const onOk = () => {
-                console.log('on ok')
-            }
-            this.$root.onCloseModal(onOk)
+            dnbStore.commit('outModal', ['save-close', deepCopy(this.MItem)])
+        },
+        onChangeDes(e) {
+            this.MItem.content.description = e.target.innerHTML
         },
     },
     mounted() {
@@ -33,17 +32,9 @@ export const AppModal = {
         'comp-modal': CompModal
     },
     computed: {
-        OriginItem() { return dnbStore.getters.modal },
+        OItem() { return dnbStore.getters.moItem },
     },
     methods: {
-        onCloseModal(fncOk, fncCancel) {
-            if (typeof fncOk == 'function') {
-                fncOk(this.OriginItem)
-            }
-            if (typeof fncCancel == 'function') {
-                fncCancel(this.OriginItem)
-            }
-            dnbStore.commit('setModal', null)
-        },
+
     },
 }

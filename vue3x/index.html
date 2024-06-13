@@ -52,7 +52,8 @@
           <i class="bi bi-folder-fill me-3 font24 cpointer text-white"></i>
           <i class="bi bi-question-square-fill font24 cpointer text-white"></i>
           <i class="bi bi-gear-fill font24 mx-3 cpointer text-white"></i>
-          <i class="bi bi-person-circle font24 cpointer text-white"></i>
+          <i class="bi bi-person-circle font24 cpointer text-white"
+            @click.stop="e => openForm(1)"></i>
         </div>
       </nav>
     </header>
@@ -64,7 +65,7 @@
 
     </nav>
     <section style="margin-bottom: 9px;">{{message}}</section>
-    <compnav></compnav>
+    <comp-nav></comp-nav>
 
     <drop-select :index="UserAssign" :items="Users" @set:index="$event => setUserAssign($event)">
       <template #default>
@@ -89,24 +90,24 @@
   <template id="tmp-comp-nav">
     <button @click="upCount">Clicked {{ count }} {{1 == count ? 'time' : 'times'}}.</button>
     <button @click="resetCount" style="margin-left:9px;">Reset Count</button>
-    <div>
-      <button @click="openModal" style="margin-left:9px;">Open modal</button>
-    </div>
+    
   </template>
   <section id="app-modal">
-    <comp-modal v-if="OriginItem">
+    <comp-modal v-if="OItem">
       <template #xbtn="{ onexit }">
         <i class="close icon" @click.stop="onexit"></i>
       </template>
-      <template #context="{ item }">
-        <div class="header">{{item.header}}</div>
+      <template #context="{ mitem, changedes }">
+        <div class="header">{{mitem.header}}</div>
         <div class="image content">
           <div class="ui medium image">
-            <img :src="item.img">
+            <img :src="mitem.img" style="border-radius: 8px;">
           </div>
           <div class="description">
-            <div class="ui header">{{item.description.head}}</div>
-            <p contenteditable="true">{{item.description.content}}</p>
+            <div class="ui header">{{mitem.content.head}}</div>
+            <p contenteditable="true" v-html="mitem.content.description"
+              @input="changedes"
+              style="min-height: 180px; width: 570px;"></p>
           </div>
         </div>
       </template>
@@ -120,10 +121,10 @@
       </template>
     </comp-modal>
   </section>
-  <template id="tmp-app-modal">
+  <template id="tmp-comp-modal">
     <div class="ui modal">
       <slot name="xbtn" :onexit="onExitClose"></slot>
-      <slot name="context" :item="MItem"></slot>
+      <slot name="context" :mitem="MItem" :changedes="onChangeDes"></slot>
       <div class="actions">
         <slot name="confirmno" :onexit="onExitClose"></slot>
         <slot name="confirmyes" :onsave="onSaveClose"></slot>
