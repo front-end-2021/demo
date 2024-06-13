@@ -25,10 +25,6 @@ export default createStore({
                 setMessCount.call(state)
             }
         },
-        setModal({ commit, state }, item) {
-            commit('setModal', item)
-            return state.Modal
-        },
     },
     getters: {
         count(state) { return state.count },

@@ -12,7 +12,7 @@ export default {
         },
         resetCount() { dnbStore.dispatch('resetCount') },
         openModal() {
-            dnbStore.dispatch('setModal', {
+            dnbStore.commit('setModal', {
                 img: `https://allimages.sgp1.digitaloceanspaces.com/tipeduvn/2022/01/1642393308_940_Hinh-Anh-Girl-Xinh-Viet-Nam-Dep-De-Thuong-Cute.jpg`,
                 header: `Profile Picture`,
                 description: {
@@ -21,8 +21,6 @@ export default {
             image associated with your registered e-mail address.</p>
           <p>Is it okay to use this photo?`
                 }
-            }).then(item => {
-                
             })
         },
     },

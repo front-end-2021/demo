@@ -24,7 +24,6 @@ const CompModal = {
         },
     },
     mounted() {
-        debugger
         $(this.$el).modal('show')
     },
 }
@@ -44,12 +43,7 @@ export const AppModal = {
             if (typeof fncCancel == 'function') {
                 fncCancel(this.OriginItem)
             }
-            dnbStore.dispatch('setModal', null)
+            dnbStore.commit('setModal', null)
         },
     },
-    watch: {
-        OriginItem(val, old) {
-
-        },
-    }
 }

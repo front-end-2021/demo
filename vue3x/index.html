@@ -1,59 +1,60 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Exercise Vue3</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./main-style.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
     integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
     crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
     integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
-    crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="./main-style.css">
+    crossorigin="anonymous"></script> -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/vuex@4.1.0/dist/vuex.global.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/examples/assets/library/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
 </head>
+
 <body>
   <main id="app" v-cloak>
     <header class="p-3 bg-primary">
       <nav class="container-fluid d-inline-flex justify-content-start align-items-center">
         <div class="d-inline-flex justify-content-start align-items-center grp-logo">
-          <i class="bi bi-bootstrap-fill me-2 font24 cpointer text-white"></i><h2 class="me-3 my-0 text-white">Marketing</h2>
+          <i class="bi bi-bootstrap-fill me-2 font24 cpointer text-white"></i>
+          <h2 class="me-3 my-0 text-white">Marketing</h2>
         </div>
         <div class="d-inline-flex justify-content-start align-items-center me-3 grp-prj">
           <drop-select :index="IProject" :items="projects" :class="['grp-dropdown-min']"
             @set:index="$event => setIndexProject($event)">
-          <template #default>
-            <div class="text">{{projects[IProject].Name}}</div>
-          </template>
-          <template #item="{ items, index, active }">
-            <div v-for="(item, ii) in items" class="item"
-              :class="[item.Id == items[index].Id ? active : '']" 
-              :data-value="ii">{{item.Name}}</div>
-          </template>
-        </drop-select>
+            <template #default>
+              <div class="text">{{projects[IProject].Name}}</div>
+            </template>
+            <template #item="{ items, index, active }">
+              <div v-for="(item, ii) in items" class="item" :class="[item.Id == items[index].Id ? active : '']"
+                :data-value="ii">{{item.Name}}</div>
+            </template>
+          </drop-select>
         </div>
         <div class="d-inline-flex justify-content-start align-items-center me-3 grp-lang">
-            <h4 class="text-white mb-0 me-1">Language: </h4>
-            <drop-select :index="ILang" :items="languages" :class="['grp-dropdown-min']"
-                style="min-width: 120px;"
-                @set:index="$event => setIndexLang($event)">
-              <template #default>
-                <div class="text">{{languages[ILang].Name}}</div>
-              </template>
-              <template #item="{ items, index, active }">
-                <div v-for="(item, ii) in items" class="item"
-                  :class="[item.Key == items[index].Key ? active : '']" 
-                  :data-value="ii">{{item.Name}}</div>
-              </template>
-            </drop-select>
+          <h4 class="text-white mb-0 me-1">Language: </h4>
+          <drop-select :index="ILang" :items="languages" :class="['grp-dropdown-min']" style="min-width: 120px;"
+            @set:index="$event => setIndexLang($event)">
+            <template #default>
+              <div class="text">{{languages[ILang].Name}}</div>
+            </template>
+            <template #item="{ items, index, active }">
+              <div v-for="(item, ii) in items" class="item" :class="[item.Key == items[index].Key ? active : '']"
+                :data-value="ii">{{item.Name}}</div>
+            </template>
+          </drop-select>
         </div>
         <div class="d-inline-flex justify-content-start align-items-center grp-options">
           <i class="bi bi-folder-fill me-3 font24 cpointer text-white"></i>
@@ -64,27 +65,24 @@
       </nav>
     </header>
     <nav class="d-flex p-2">
-      
+
       <div class="d-inline-grid">
-        
+
       </div>
-      
+
     </nav>
     <section style="margin-bottom: 9px;">{{message}}</section>
     <compnav></compnav>
 
-    <drop-select :index="UserAssign" :items="Users"
-        @set:index="$event => setUserAssign($event)">
+    <drop-select :index="UserAssign" :items="Users" @set:index="$event => setUserAssign($event)">
       <template #default>
         <div class="default text">Assign</div>
       </template>
       <template #item="{ items, index, active }">
-        <div v-for="item in items" class="item" 
-          :class="[item == index ? active : '']"
-          :data-value="item">{{item}}</div>
+        <div v-for="item in items" class="item" :class="[item == index ? active : '']" :data-value="item">{{item}}</div>
       </template>
     </drop-select>
-    
+
   </main>
   <template id="tmp-comp-drop-select">
     <div class="ui selection dropdown" style="height: 38px;">
@@ -92,10 +90,7 @@
       <i class="dropdown icon"></i>
       <slot name="default"></slot>
       <div class="menu">
-        <slot name="item" 
-          :items="items" 
-          active="active selected"
-          :index="index"></slot>
+        <slot name="item" :items="items" active="active selected" :index="index"></slot>
       </div>
     </div>
   </template>
