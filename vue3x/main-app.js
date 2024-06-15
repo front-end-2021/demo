@@ -1,9 +1,9 @@
-import { getRandomInt } from './common.js'
-import { Langs } from './mock-data.js'
+import { getRandomInt, getTxtBy } from './common.js'
 import CompNav from './comp-nav.js'
 import { DropSelect } from './comp-global.js'
 import dnbStore from './main-store.js'
 import { AppModal } from './comp-modal.js'
+import { MarketPage } from './comp-page.js'
 const { createApp } = Vue
 
 const appModal = createApp(AppModal)
@@ -13,7 +13,8 @@ appModal.mount(`#app-modal`)
 const app = createApp({
     name: `app-main`,
     components: {
-        'comp-nav': CompNav
+        'comp-nav': CompNav,
+        'page-market': MarketPage,
     },
     data() {
         return {
@@ -22,38 +23,53 @@ const app = createApp({
                 header: `Profile`,
                 content: {
                     head: `We've auto-chosen a profile image for you.`,
-                    description:  `We've grabbed the following image from the <a href="https://www.gravatar.com" target="_blank">gravatar</a>
+                    description: `We've grabbed the following image from the <a href="https://www.gravatar.com" target="_blank">gravatar</a>
                     image associated with your registered e-mail address.</p>
                   <p>Is it okay to use this photo?`
                 }
             },
             Users: ['Unassigned', 'Bill Gate', 'Elon Musk', 'Larry Page'],
-            UserAssign: ''
+            UserAssign: '',
+
+            IndexProject: 0,
+            IndexLang: 0,
+            IndexPage: 0,
         }
     },
     computed: {
-        message() { return dnbStore.getters.message },
+        TxtLang() { return getTxtBy(this.CLang.Key) },
+        CLang() {
+            const lng = this.$store.getters.languages[this.IndexLang]
+            if (typeof lng != 'object' || Object.is(lng, null)) return {}
+            return lng
+        },
+        CProject() {
+            const prj = this.$store.getters.projects[this.IndexProject]
+            if (typeof prj != 'object' || Object.is(prj, null)) return {}
+            return prj
+        },
+        CompPage() {
+            switch (this.IndexPage) {
+                case 0: return 'page-market';
+                default: break;
+            }
+        },
 
-        projects() { return dnbStore.getters.projects },
-        IProject() { return dnbStore.getters.iproject },
-
-        languages() { return dnbStore.getters.languages },
-        ILang() { return dnbStore.getters.ilang },
+        // #region trace dev
+        message() { return this.$store.getters.message },
+        // #endregion
     },
     methods: {
+        selectPage(index) { this.IndexPage = index },
         increment() {
             this.$store.commit('increment')
             //  console.log(this.$store.state.count)
         },
-        setIndexProject(val) {
-            this.$store.commit('setIProject', parseInt(val))
-        },
-        setIndexLang(val) {
-            this.$store.commit('setILang', parseInt(val))
-        },
+        setIndexProject(val) { this.IndexProject = parseInt(val) },
+        setIndexLang(val) { this.IndexLang = parseInt(val) },
         setUserAssign(val) {
             this.UserAssign = val;
-            dnbStore.commit('assignUser', val)
+            this.$store.commit('assignUser', val)
         },
         openForm(type) {
             switch (type) {
@@ -65,7 +81,7 @@ const app = createApp({
                     const exitClose = (mItem) => {
                         console.log('exit close', mItem)
                     }
-                    dnbStore.commit('setModal', [this.UserInfo, saveClose, exitClose])
+                    this.$store.commit('setModal', [this.UserInfo, saveClose, exitClose])
                     break;
             }
         }
@@ -74,7 +90,7 @@ const app = createApp({
     //     return { }
     // },
     created() {
-        this.$store.commit('setIProject', getRandomInt(0, this.projects.length))
+        this.IndexProject = getRandomInt(0, this.$store.getters.projects.length)
     },
     beforeMount() {
         // console.log('before mount', this)

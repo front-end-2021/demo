@@ -18,32 +18,36 @@
 <body>
   <main id="app" v-cloak>
     <header class="p-3 bg-primary">
-      <nav class="container-fluid d-inline-flex justify-content-start align-items-center">
+      <section class="container-fluid d-inline-flex justify-content-start align-items-center">
         <div class="d-inline-flex justify-content-start align-items-center grp-logo">
           <i class="bi bi-bootstrap-fill me-2 font24 cpointer text-white"></i>
           <h2 class="me-3 my-0 text-white">Marketing</h2>
         </div>
         <div class="d-inline-flex justify-content-start align-items-center me-3 grp-prj">
-          <drop-select :index="IProject" :items="projects" :class="['grp-dropdown-min']"
+          <drop-select :index="IndexProject" :items="$store.getters.projects" 
+            :class="['grp-dropdown-min dnbdropdown-primary']"
             @set:index="$event => setIndexProject($event)">
             <template #default>
-              <div class="text">{{projects[IProject].Name}}</div>
+              <div class="text">{{CProject.Name}}</div>
             </template>
             <template #item="{ items, index, active }">
-              <div v-for="(item, ii) in items" class="item" :class="[item.Id == items[index].Id ? active : '']"
+              <div v-for="(item, ii) in items" class="item" 
+                :class="[item.Id == items[index].Id ? active : '']"
                 :data-value="ii">{{item.Name}}</div>
             </template>
           </drop-select>
         </div>
         <div class="d-inline-flex justify-content-start align-items-center me-3 grp-lang">
           <h4 class="text-white mb-0 me-1">Language: </h4>
-          <drop-select :index="ILang" :items="languages" :class="['grp-dropdown-min']" style="min-width: 120px;"
+          <drop-select :index="IndexLang" :items="$store.getters.languages" 
+            :class="['grp-dropdown-min dnbdropdown-primary']" style="min-width: 120px;"
             @set:index="$event => setIndexLang($event)">
             <template #default>
-              <div class="text">{{languages[ILang].Name}}</div>
+              <div class="text">{{CLang.Name}}</div>
             </template>
             <template #item="{ items, index, active }">
-              <div v-for="(item, ii) in items" class="item" :class="[item.Key == items[index].Key ? active : '']"
+              <div v-for="(item, ii) in items" class="item" 
+                :class="[item.Key == items[index].Key ? active : '']"
                 :data-value="ii">{{item.Name}}</div>
             </template>
           </drop-select>
@@ -55,18 +59,17 @@
           <i class="bi bi-person-circle font24 cpointer text-white"
             @click.stop="e => openForm(1)"></i>
         </div>
-      </nav>
+      </section>
     </header>
-    <nav class="d-flex p-2">
-
-      <div class="d-inline-grid">
-
-      </div>
-
+    <nav class="dnb-nav d-flex align-items-center p-2 text-white">
+      <h4 v-for="(page, ipg) in $store.getters.pages"
+        class="my-0 mx-3 cpointer"
+        :class="[ ipg === IndexPage ? 'working' : '']"
+        @click.stop="e => selectPage(ipg)">{{page}}</h4>
     </nav>
-    <section style="margin-bottom: 9px;">{{message}}</section>
-    <comp-nav></comp-nav>
 
+    <section style="margin-bottom: 9px;">{{$store.getters.message}}</section>
+    <comp-nav></comp-nav>
     <drop-select :index="UserAssign" :items="Users" @set:index="$event => setUserAssign($event)">
       <template #default>
         <div class="default text">Assign</div>
@@ -76,7 +79,48 @@
       </template>
     </drop-select>
 
+    
+    <component :is="CompPage"></component>
+
   </main>
+  <template id="tmp-comp-market">
+    <section>
+      <div class="">
+        <h4>Filter</h4>
+        <drop-select :index="IndexLand" :items="ListLand" 
+          :class="['grp-dropdown-min']"
+          @set:index="$event => setIndexLand($event)">
+          <template #default>
+            <div class="default text">{{TxtLang.PleaseSelect}}</div>
+          </template>
+          <template #item="{ items, index, active }">
+            <div v-for="(item, ii) in items" class="item" 
+              :class="[item.Id == items[index].Id ? active : '']" 
+              :data-value="ii">{{item.Name}}</div>
+          </template>
+        </drop-select>
+       <div class="mt-2">
+        <button>Filter</button>
+        <button>Reset</button>
+        <button>Add filter</button>
+       </div>
+      </div>
+      <article>
+        <span>Eval markets</span>
+        <span>Eval submarkets</span>
+        <span>Strategy</span>
+        <span>Plan from submarkets</span>
+        <span>All criterials</span>
+        <div>
+          <h2>Market segments</h2>
+          <div><button>123</button></div>
+        </div>
+        <div>
+
+        </div>
+      </article>
+    </section>
+  </template>
   <template id="tmp-comp-drop-select">
     <div class="ui selection dropdown" style="height: 38px;">
       <input type="hidden" name="drp-select" :value="index">
@@ -93,7 +137,7 @@
     
   </template>
   <section id="app-modal">
-    <comp-modal v-if="OItem">
+    <comp-modal v-if="$store.getters.moItem">
       <template #xbtn="{ onexit }">
         <i class="close icon" @click.stop="onexit"></i>
       </template>

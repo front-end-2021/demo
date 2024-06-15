@@ -1,15 +1,15 @@
-import dnbStore from './main-store.js'
+
 export default {
     template: `#tmp-comp-nav`,
     computed: {
-        count() { return dnbStore.getters.count }
+        count() { return this.$store.getters.count }
     },
     methods: {
         upCount() {
-            dnbStore.dispatch('increment').then(a => {
+            this.$store.dispatch('increment').then(a => {
                 //  console.log(a)
             })
         },
-        resetCount() { dnbStore.dispatch('resetCount') },
+        resetCount() { this.$store.dispatch('resetCount') },
     },
 }

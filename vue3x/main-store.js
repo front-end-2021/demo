@@ -2,11 +2,19 @@ import { ListPrj, Langs } from './mock-data.js'
 const { createStore } = Vuex
 export default createStore({
     state: {
-        Projects: ListPrj,
-        IndexProject: 0,
-        Languages: Langs,
-        IndexLang: 0,
+        Projects: ListPrj,  // [{Id, Name}]
+        Languages: Langs,   // [{Key, Name}]
+        
+        Pages: ['Market segment strategy', `Sub-market/Product Strategy`, `Action plan`, 'Roadmap', `Team Board`],
 
+        Lands: [
+            { Id: 1, Name: 'Mien bac'},
+            { Id: 3, Name: 'Hanoi'},
+            { Id: 4, Name: 'Mien trung'},
+            { Id: 5, Name: 'Mien nam'},
+            { Id: 6, Name: 'TP.HoChiMinh'},
+        ],
+        
         count: 0,
         message: 'Hello world!',
         Modal: null,
@@ -36,14 +44,10 @@ export default createStore({
         },
 
         projects(state) { return state.Projects },
-        iproject(state) { return state.IndexProject },
-        project: (state) => (id) => {
-            if (typeof id != 'number') return state.Projects[state.IndexProject]
-            return state.Projects.find(x => x.Id === id)
-        },
         languages(state) { return state.Languages },
-        ilang(state) { return state.IndexLang },
 
+        pages(state) { return state.Pages },
+        lands(state) { return state.Lands },
     },
     mutations: {
         increment(state) { state.count++ },
@@ -55,6 +59,7 @@ export default createStore({
             }
             state.message = `Hello ${name}!`
         },
+
         setModal(state, [item, saveClose, exitClose]) {
             state.Modal = { item, saveClose, exitClose }
         },
@@ -72,8 +77,7 @@ export default createStore({
             }
             state.Modal = null
         },
-        setIProject(state, ii) { state.IndexProject = ii },
-        setILang(state, ii) { state.IndexLang = ii },
+
     }
 })
 function setMessCount() {

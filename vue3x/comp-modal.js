@@ -1,10 +1,9 @@
-import dnbStore from './main-store.js'
 import { deepCopy } from './common.js'
 
 const CompModal = {
     template: `#tmp-comp-modal`,
     data() {
-        const mit = deepCopy(dnbStore.getters.moItem)
+        const mit = deepCopy(this.$store.getters.moItem)
         return {
             MItem: mit,
         }
@@ -12,11 +11,11 @@ const CompModal = {
     methods: {
         onExitClose() {
             $(this.$el).modal('hide')
-            dnbStore.commit('outModal', ['exit-close', deepCopy(this.MItem)])
+            this.$store.commit('outModal', ['exit-close', deepCopy(this.MItem)])
         },
         onSaveClose() {
             $(this.$el).modal('hide')
-            dnbStore.commit('outModal', ['save-close', deepCopy(this.MItem)])
+            this.$store.commit('outModal', ['save-close', deepCopy(this.MItem)])
         },
         onChangeDes(e) {
             this.MItem.content.description = e.target.innerHTML
@@ -32,7 +31,9 @@ export const AppModal = {
         'comp-modal': CompModal
     },
     computed: {
-        OItem() { return dnbStore.getters.moItem },
+        // #region trace dev
+        OItem() { return this.$store.getters.moItem },
+       // #endregion
     },
     methods: {
 
