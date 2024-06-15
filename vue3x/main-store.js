@@ -1,20 +1,22 @@
-import { ListPrj, Langs } from './mock-data.js'
+import { ListPrj, Langs } from './mock-data.js';
+import { getTxtBy } from './common.js';
 const { createStore } = Vuex
 export default createStore({
     state: {
         Projects: ListPrj,  // [{Id, Name}]
         Languages: Langs,   // [{Key, Name}]
-        
+        IndexLang: 0,
+
         Pages: ['Market segment strategy', `Sub-market/Product Strategy`, `Action plan`, 'Roadmap', `Team Board`],
 
         Lands: [
-            { Id: 1, Name: 'Mien bac'},
-            { Id: 3, Name: 'Hanoi'},
-            { Id: 4, Name: 'Mien trung'},
-            { Id: 5, Name: 'Mien nam'},
-            { Id: 6, Name: 'TP.HoChiMinh'},
+            { Id: 1, Name: 'Mien bac' },
+            { Id: 3, Name: 'Hanoi' },
+            { Id: 4, Name: 'Mien trung' },
+            { Id: 5, Name: 'Mien nam' },
+            { Id: 6, Name: 'TP.HoChiMinh' },
         ],
-        
+
         count: 0,
         message: 'Hello world!',
         Modal: null,
@@ -43,11 +45,17 @@ export default createStore({
             return state.Modal.item
         },
 
-        projects(state) { return state.Projects },
-        languages(state) { return state.Languages },
+        activeLang(state) {
+            const lng = state.Languages[state.IndexLang]
+            if (typeof lng != 'object' || Object.is(lng, null)) return {}
+            return lng
+        },
 
-        pages(state) { return state.Pages },
-        lands(state) { return state.Lands },
+        txtLang(state) {
+            const lng = state.Languages[state.IndexLang]
+            if (lng) return getTxtBy(lng.Key);
+            return getTxtBy()
+        },
     },
     mutations: {
         increment(state) { state.count++ },
@@ -63,21 +71,22 @@ export default createStore({
         setModal(state, [item, saveClose, exitClose]) {
             state.Modal = { item, saveClose, exitClose }
         },
-        outModal(state, [fncTxt, data]){
+        outModal(state, [fncTxt, data]) {
             if (Object.is(state.Modal, null)) return
-            switch(fncTxt) {
+            switch (fncTxt) {
                 case 'save-close':
-                    if(typeof state.Modal.saveClose != 'function') return
+                    if (typeof state.Modal.saveClose != 'function') return
                     state.Modal.saveClose(data)
-                break;
+                    break;
                 case 'exit-close':
-                    if(typeof state.Modal.exitClose != 'function') return
+                    if (typeof state.Modal.exitClose != 'function') return
                     state.Modal.exitClose(data)
-                break;
+                    break;
             }
             state.Modal = null
         },
 
+        setILang(state, val) { state.IndexLang = val },
     }
 })
 function setMessCount() {

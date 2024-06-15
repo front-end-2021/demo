@@ -32,19 +32,13 @@ const app = createApp({
             UserAssign: '',
 
             IndexProject: 0,
-            IndexLang: 0,
             IndexPage: 0,
         }
     },
     computed: {
-        TxtLang() { return getTxtBy(this.CLang.Key) },
-        CLang() {
-            const lng = this.$store.getters.languages[this.IndexLang]
-            if (typeof lng != 'object' || Object.is(lng, null)) return {}
-            return lng
-        },
+        CLang() { return this.$store.getters.activeLang },
         CProject() {
-            const prj = this.$store.getters.projects[this.IndexProject]
+            const prj = this.$store.state.Projects[this.IndexProject]
             if (typeof prj != 'object' || Object.is(prj, null)) return {}
             return prj
         },
@@ -66,7 +60,7 @@ const app = createApp({
             //  console.log(this.$store.state.count)
         },
         setIndexProject(val) { this.IndexProject = parseInt(val) },
-        setIndexLang(val) { this.IndexLang = parseInt(val) },
+        setIndexLang(val) { this.$store.commit('setILang', parseInt(val)) },
         setUserAssign(val) {
             this.UserAssign = val;
             this.$store.commit('assignUser', val)
@@ -90,7 +84,7 @@ const app = createApp({
     //     return { }
     // },
     created() {
-        this.IndexProject = getRandomInt(0, this.$store.getters.projects.length)
+        this.IndexProject = getRandomInt(0, this.$store.state.Projects.length)
     },
     beforeMount() {
         // console.log('before mount', this)

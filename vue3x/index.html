@@ -24,7 +24,7 @@
           <h2 class="me-3 my-0 text-white">Marketing</h2>
         </div>
         <div class="d-inline-flex justify-content-start align-items-center me-3 grp-prj">
-          <drop-select :index="IndexProject" :items="$store.getters.projects" 
+          <drop-select :index="IndexProject" :items="$store.state.Projects" 
             :class="['grp-dropdown-min dnbdropdown-primary']"
             @set:index="$event => setIndexProject($event)">
             <template #default>
@@ -39,11 +39,11 @@
         </div>
         <div class="d-inline-flex justify-content-start align-items-center me-3 grp-lang">
           <h4 class="text-white mb-0 me-1">Language: </h4>
-          <drop-select :index="IndexLang" :items="$store.getters.languages" 
+          <drop-select :index="$store.state.IndexLang" :items="$store.state.Languages" 
             :class="['grp-dropdown-min dnbdropdown-primary']" style="min-width: 120px;"
             @set:index="$event => setIndexLang($event)">
             <template #default>
-              <div class="text">{{CLang.Name}}</div>
+              <div class="text">{{$store.getters.activeLang.Name}}</div>
             </template>
             <template #item="{ items, index, active }">
               <div v-for="(item, ii) in items" class="item" 
@@ -62,7 +62,7 @@
       </section>
     </header>
     <nav class="dnb-nav d-flex align-items-center p-2 text-white">
-      <h4 v-for="(page, ipg) in $store.getters.pages"
+      <h4 v-for="(page, ipg) in $store.state.Pages"
         class="my-0 mx-3 cpointer"
         :class="[ ipg === IndexPage ? 'working' : '']"
         @click.stop="e => selectPage(ipg)">{{page}}</h4>
@@ -91,7 +91,7 @@
           :class="['grp-dropdown-min']"
           @set:index="$event => setIndexLand($event)">
           <template #default>
-            <div class="default text">{{TxtLang.PleaseSelect}}</div>
+            <div class="default text">{{$store.getters.txtLang.PleaseSelect}}</div>
           </template>
           <template #item="{ items, index, active }">
             <div v-for="(item, ii) in items" class="item" 
@@ -106,20 +106,28 @@
        </div>
       </div>
       <article>
-        <span>Eval markets</span>
-        <span>Eval submarkets</span>
-        <span>Strategy</span>
-        <span>Plan from submarkets</span>
-        <span>All criterials</span>
+        <button>Eval markets</button>
+        <button>Eval submarkets</button>
+        <button>Strategy</button>
+        <button>Plan from submarkets</button>
+        <button>All criterials</button>
         <div>
           <h2>Market segments</h2>
-          <div><button>123</button></div>
+          <div>
+            <button>Market 1</button>
+            <button>Market 2</button>
+            <button>Market 3</button>
+          </div>
         </div>
         <div>
 
         </div>
       </article>
     </section>
+  </template>
+  <template id="tmp-comp-filter">
+    <h3></h3>
+
   </template>
   <template id="tmp-comp-drop-select">
     <div class="ui selection dropdown" style="height: 38px;">

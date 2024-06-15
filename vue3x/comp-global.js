@@ -12,3 +12,8 @@ export const DropSelect = {
         })
     },
 }
+
+export const MsFilter = {
+    template: `#tmp-comp-filter`,
+
+}
