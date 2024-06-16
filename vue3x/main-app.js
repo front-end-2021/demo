@@ -6,10 +6,6 @@ import { AppModal } from './comp-modal.js'
 import { MarketPage } from './comp-page.js'
 const { createApp } = Vue
 
-const appModal = createApp(AppModal)
-appModal.use(dnbStore)
-appModal.mount(`#app-modal`)
-
 const app = createApp({
     name: `app-main`,
     components: {
@@ -36,7 +32,7 @@ const app = createApp({
         }
     },
     computed: {
-        CLang() { return this.$store.getters.activeLang },
+      //  CLang() { return this.$store.getters.activeLang },
         CProject() {
             const prj = this.$store.state.Projects[this.IndexProject]
             if (typeof prj != 'object' || Object.is(prj, null)) return {}
@@ -94,3 +90,7 @@ const app = createApp({
 app.use(dnbStore)
 app.component('drop-select', DropSelect)
 app.mount('#app')
+
+const appModal = createApp(AppModal)
+appModal.use(dnbStore)
+appModal.mount(`#app-modal`)
