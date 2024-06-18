@@ -1,0 +1,41 @@
+<template id="tmp-comp-market">
+    <section>
+      <div class="">
+        <h4>Filter</h4>
+        <drop-select :index="IndexLand" :items="ListLand" 
+          :class="['grp-dropdown-min']"
+          @set:index="$event => setIndexLand($event)">
+          <template #default>
+            <div class="default text">{{$store.getters.txtLang.PleaseSelect}}</div>
+          </template>
+          <template #item="{ items, index, active }">
+            <div v-for="(item, ii) in items" class="item" 
+              :class="[item.Id == items[index].Id ? active : '']" 
+              :data-value="ii">{{item.Name}}</div>
+          </template>
+        </drop-select>
+       <div class="mt-2">
+        <comp-filter ></comp-filter>
+        
+       </div>
+      </div>
+      <article>
+        <button>Eval markets</button>
+        <button>Eval submarkets</button>
+        <button>Strategy</button>
+        <button>Plan from submarkets</button>
+        <button>All criterials</button>
+        <div>
+          <h2>Market segments</h2>
+          <div>
+            <button>Market 1</button>
+            <button>Market 2</button>
+            <button>Market 3</button>
+          </div>
+        </div>
+        <div>
+
+        </div>
+      </article>
+    </section>
+  </template>

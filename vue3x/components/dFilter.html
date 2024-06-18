@@ -1,0 +1,36 @@
+<template id="tmp-comp-criterial">
+    <drop-select v-if="initOperator != null" :index="initOperator.index" :items="initOperator.items"
+        :class="['grp-dropdown-min']" @set:index="$event => selectOperator($event)">
+        <template #item="{ items, index, active }">
+            <div v-for="(item, ii) in items" class="item" :class="[item == items[index] ? active : '']"
+                :data-value="ii">{{item}}</div>
+        </template>
+    </drop-select>
+    <drop-select v-if="initType != null" :index="initType.index" :items="initType.items" :class="['grp-dropdown-min']"
+        @set:index="$event => $emit('select:type', $event)">
+        <template #default>
+            <div class="text">{{initType.items[initType.index].Name}}</div>
+        </template>
+        <template #item="{ items, index, active }">
+            <div v-for="(item, ii) in items" class="item" :class="[item.Id == items[index].Id ? active : '']"
+                :data-value="ii">{{item.Name}}</div>
+        </template>
+    </drop-select>
+    <drop-select v-for="(id, iii) in initIds" :index="getIndex(id)" :items="sources[iii]" :class="['grp-dropdown-min']"
+        @set:index="$event => selectId($event, iii)">
+        <template #item="{ items, index, active }">
+            <div v-for="(item, ii) in items" class="item" :class="[item.Id == items[index].Id ? active : '']"
+                :data-value="item.Id">{{item.Name}}</div>
+        </template>
+    </drop-select>
+</template>
+<template id="tmp-comp-filter">
+    <h3>{{$store.getters.txtLang.Filter}}</h3>
+    <div>
+        <comp-criterial :init-operator="null" :init-type="{ index: $data.indexType, items: ListType }"
+            @select:type="$event => selectType($event)" @select:land="$event => selectLand($event)"></comp-criterial>
+    </div>
+    <button>{{$store.getters.txtLang.Filter}}</button>
+    <button>{{$store.getters.txtLang.Reset}}</button>
+    <button>{{$store.getters.txtLang.AddFilter}}</button>
+</template>
