@@ -6,8 +6,7 @@ import { AppModal } from './comp-modal.js'
 import { MarketPage } from './comp-page.js'
 const { createApp } = Vue
 
-const sPath = `./semantics.html`
-includeHTML(sPath).then(rText => {
+includeHTML(`./semantics.html`).then(({ path }) => {
     const app = createApp({
         name: `app-main`,
         components: {
@@ -87,9 +86,9 @@ includeHTML(sPath).then(rText => {
         beforeMount() {
             // console.log('before mount', this)
         },
-        mounted() { 
-            const pDom = document.querySelector(`.dnbimporthtml[dnbpath="${sPath}"]`)
-            if(pDom) pDom.remove()
+        mounted() {
+            const pDom = document.querySelector(`.dnbimporthtml[dnbpath="${path}"]`)
+            if (pDom) pDom.remove()
         },
     })
     app.use(dnbStore)

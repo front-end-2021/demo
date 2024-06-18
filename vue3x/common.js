@@ -86,7 +86,7 @@ export const includeHTML = (path) => {
         const file = elmnt.getAttribute("dnbpath");
         if (!file) continue
         if (file.trim() !== path) continue
-        
+
         const xhr = new XMLHttpRequest(); /* Make an HTTP request using the attribute value as the file name: */
         return new Promise((resolve, reject) => {
             xhr.onreadystatechange = () => {
@@ -94,7 +94,7 @@ export const includeHTML = (path) => {
                     if (xhr.status === 0 || (200 <= xhr.status && xhr.status < 400)) {
                         // The request has been completed successfully
                         document.body.innerHTML += `\n ${xhr.responseText}`
-                        resolve(xhr.responseText)
+                        resolve({ path, resText: xhr.responseText })
                     } else {
                         reject(xhr.status) // There has been an error with the request!
                     }
