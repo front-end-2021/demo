@@ -1,0 +1,10 @@
+<template id="tmp-comp-drop-select">
+    <div class="ui selection dropdown" style="height: 38px;">
+      <input type="hidden" name="drp-select" :value="index">
+      <i class="dropdown icon"></i>
+      <slot name="default"></slot>
+      <div class="menu">
+        <slot name="item" :items="items" active="active selected" :index="index"></slot>
+      </div>
+    </div>
+</template>
