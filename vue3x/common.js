@@ -79,7 +79,7 @@ export const CriterialType = [
     `Hidden elements`,
 ]
 export const includeHTML = (path) => {
-    const items = document.getElementsByClassName("dnbimporthtml");
+    const items = document.body.getElementsByClassName("dnbimporthtml");
     path = path.trim()
     for (let i = 0; i < items.length; i++) {
         const elmnt = items[i];   /*search for elements with a certain atrribute:*/

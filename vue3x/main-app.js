@@ -7,16 +7,12 @@ import { MarketPage } from './comp-page.js'
 const { createApp } = Vue
 
 Promise.all([
-    includeHTML(`./components/semantics.html`), 
+    includeHTML(`./components/semantics.html`),
     includeHTML(`./pages/MarketSegmentStrategy.html`),
     includeHTML(`./AppWindow.html`),
     includeHTML(`./components/dFilter.html`)
 ]).then((values) => {
-    const path = values[0].path
-    const pMSS = values[1].path
-    const pApWn = values[2].path
-    const pFlt = values[2].path
-    
+
     const app = createApp({
         name: `app-main`,
         components: {
@@ -97,17 +93,11 @@ Promise.all([
             // console.log('before mount', this)
         },
         mounted() {
-            let pDom = document.querySelector(`.dnbimporthtml[dnbpath="${path}"]`)
-            if (pDom) pDom.remove();
-
-            pDom = document.querySelector(`.dnbimporthtml[dnbpath="${pMSS}"]`)
-            if (pDom) pDom.remove();
-
-            pDom = document.querySelector(`.dnbimporthtml[dnbpath="${pApWn}"]`)
-            if (pDom) pDom.remove();
-
-            pDom = document.querySelector(`.dnbimporthtml[dnbpath="${pFlt}"]`)
-            if (pDom) pDom.remove();
+            values.forEach(({ path }) => {
+                console.log(path)
+                let pDom = document.body.querySelector(`.dnbimporthtml[dnbpath="${path}"]`)
+                if (pDom) pDom.remove();
+            })
         },
     })
     app.use(dnbStore)
