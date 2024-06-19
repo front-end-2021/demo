@@ -94,7 +94,7 @@ export const includeHTML = (path) => {
                     if (xhr.status === 0 || (200 <= xhr.status && xhr.status < 400)) {
                         // The request has been completed successfully
                         document.body.innerHTML += `\n ${xhr.responseText}`
-                        resolve({ path, resText: xhr.responseText })
+                        resolve(path, xhr.responseText)
                     } else {
                         reject(xhr.status) // There has been an error with the request!
                     }

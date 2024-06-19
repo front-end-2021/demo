@@ -93,8 +93,8 @@ Promise.all([
             // console.log('before mount', this)
         },
         mounted() {
-            values.forEach(({ path }) => {
-                console.log(path)
+            values.forEach((path, ii) => {
+               // console.log(path, ii)
                 let pDom = document.body.querySelector(`.dnbimporthtml[dnbpath="${path}"]`)
                 if (pDom) pDom.remove();
             })
