@@ -1,5 +1,4 @@
-import { FTypeId } from "./common.js";
-import { MsFilter } from "./comp-global.js";
+import { FTypeId, MsFilter } from "./components/dFilter.js";
 export const MarketPage = {
     template: `#tmp-comp-market`,
     components: {
