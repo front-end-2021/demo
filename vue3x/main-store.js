@@ -16,6 +16,13 @@ export default createStore({
             { Id: 5, Name: 'Mien nam' },
             { Id: 6, Name: 'TP.HoChiMinh' },
         ],
+        Regions: [
+            { Id: 1, Name: 'TP.Hanoi', LandId: 3 },
+            { Id: 3, Name: 'Haiphong', LandId: 1 },
+            { Id: 4, Name: 'Quang Ninh', LandId: 1 },
+            { Id: 5, Name: 'Hue', LandId: 4 },
+            { Id: 6, Name: 'TP.Can Tho', LandId: 6 },
+        ],
 
         count: 0,
         message: 'Hello world!',

@@ -10,12 +10,18 @@ export const getTxtBy = (lang) => {
     let Reset = `Zurücksetzen`
     let AddFilter = `Filter hinzufügen`
     let Marketsegments = `Marktsegmente`
+    let FilterBy = `Filtern by`
+    let And = `And`
+    let Or = `Or`
+    let SelectAll = `Wählen Sie Alle`
     if ('en' === lang) {
         PleaseSelect = `Please select`
         Filter = `Filter`
         Reset = `Reset`
         AddFilter = `Add filter`
         Marketsegments = `Market segments`
+        FilterBy = `Filter by`
+        SelectAll = `Select all`
     }
     return {
         PleaseSelect,
@@ -25,31 +31,10 @@ export const getTxtBy = (lang) => {
         Land: `Land`,
         Region: `Region`,
         Marketsegments,
+        FilterBy, And, Or,
+        SelectAll
     }
 }
-export const CriterialType = [
-    'Please select',
-    `Land/Region`,
-    `Product groups/Product`,
-    `Stakeholder groups/Contact Person`,
-    `Customer Journey Group`,
-    `Market segments/Stakeholder groups`,
-    `Task`,
-    `User`,
-    `Status`,
-    `Objective category`,
-    `Measure category`,
-    `Instruments`,
-    `Advertising material/Advertiser`,
-    `Superior objectives and measures`,
-    `Master goals`,
-    `Masterbudget`,
-    `Fibu/Cost center`,
-    `Department/Field`,
-    `Subject/thema`,
-    `Supplier`,
-    `Hidden elements`,
-]
 export const includeHTML = (path) => {
     const items = document.body.getElementsByClassName("dnbimporthtml");
     path = path.trim()

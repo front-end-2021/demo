@@ -24,11 +24,58 @@
         </template>
     </drop-select>
 </template>
+<template id="tmp-fcriterial">
+    <drop-select v-if="-2 < operator" 
+            :index="iOperator" 
+            :items="operators"
+            :class="[clssOperator]" 
+            @set:index="$event => selectOperator($event)"
+            style="min-width: 105px;margin-right: 6px;">
+        <template #default>
+            <div class="text">{{operators[iOperator]}}</div>
+        </template>
+        <template #item="{ items, index, active }">
+            <div v-for="(item, ii) in items" class="item" :class="[item == items[index] ? active : '']"
+                :data-value="ii">{{item}}</div>
+        </template>
+    </drop-select>
+    <drop-select 
+            :index="typeId" 
+            :items="SrcTypes"
+            :class="['grp-dropdown-min']" 
+            @set:index="$event => selectTypeId($event)"
+            style="margin-right: 6px;">
+        <template #default>
+            <div class="text">{{TypeSelectName}}</div>
+        </template>
+        <template #item="{ items, index, active }">
+            <div v-for="(item, ii) in items" class="item" :class="[item.Id == items[index] ? active : '']"
+                :data-value="item.Id">{{item.Name}}</div>
+        </template>
+    </drop-select>
+    <drop-select v-for="(id, iii) in listId"
+            :index="id" 
+            :items="getSrcId(iii)"
+            :class="['grp-dropdown-min']" 
+            @set:index="$event => selectId(iii, $event)"
+            :key="iii + 2"
+            style="margin-right: 6px;">
+        <template #default>
+            <div class="text">{{idSelectName(iii)}}</div>
+        </template>
+        <template #item="{ items, index, active }">
+            <div v-for="(item, ii) in items" class="item" :class="[item.Id == items[index] ? active : '']"
+                :data-value="item.Id">{{item.Name}}</div>
+        </template>
+    </drop-select>
+</template>
 <template id="tmp-comp-filter">
     <h3>{{$store.getters.txtLang.Filter}}</h3>
     <div>
-        <comp-criterial :init-operator="null" :init-type="{ index: $data.indexType, items: ListType }"
-            @select:type="$event => selectType($event)" @select:land="$event => selectLand($event)"></comp-criterial>
+        <f-criterial v-for="crts in Criterials"
+            :operator="crts[0]"
+            :filter-type="crts[1]"
+            :ids="crts[3]"></f-criterial>
     </div>
     <button>{{$store.getters.txtLang.Filter}}</button>
     <button>{{$store.getters.txtLang.Reset}}</button>
