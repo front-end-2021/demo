@@ -1,5 +1,6 @@
 import { ListPrj, Langs } from './mock-data.js';
 import { getTxtBy } from './common.js';
+import { FTypeId } from './components/dFilter.js';
 const { createStore } = Vuex
 export default createStore({
     state: {
@@ -62,6 +63,19 @@ export default createStore({
             const lng = state.Languages[state.IndexLang]
             if (lng) return getTxtBy(lng.Key);
             return getTxtBy()
+        },
+        txtFilter: (state) => (id) => {
+            const lng = state.Languages[state.IndexLang]
+            if(!lng) return ''
+            const txt = getTxtBy(lng.Key);
+            switch(id) {
+                case FTypeId.SelectAll:
+                    return txt.SelectAll;
+                case FTypeId.PleaseSelect:
+                    return txt.PleaseSelect;
+                default: break;
+            }
+            return ''
         },
     },
     mutations: {

@@ -4,7 +4,10 @@
       <i class="dropdown icon"></i>
       <slot name="default"></slot>
       <div class="menu">
-        <slot name="item" :items="items" active="active selected" :index="index"></slot>
+        <slot name="item" 
+          :items="items" 
+          active="active selected" 
+          :index="index"></slot>
       </div>
     </div>
 </template>

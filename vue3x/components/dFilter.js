@@ -51,14 +51,16 @@ export const FTypeId = {
     MarketSegments: -25
 }
 const KeyOperator = {
-    FilterBy: 0,
-    And: 1,
-    Or: 2
+    FilterBy: -1,
+    And: 0,
+    Or: 1
 }
 const FCriterial = {
     template: `#tmp-comp-criterial`,
     inject: ['srcTypes'],
+    emits: ['set:operator', 'set:typef', 'set:ids'],
     props: {
+        index: Number,
         operator: Number,
         filterType: Number,
         ids: {
@@ -68,83 +70,97 @@ const FCriterial = {
     },
     data() {
         let iOperator = this.operator
-        let typeId = this.filterType
+        if (iOperator < 0) iOperator = 0
+
         return {
             iOperator,
-            typeId,
-            listId: this.ids
         }
     },
     computed: {
         operators() {
+            if (this.index < 1) return [this.$store.getters.txtLang.FilterBy]
             return [
-                this.$store.getters.txtLang.FilterBy,
                 this.$store.getters.txtLang.And,
                 this.$store.getters.txtLang.Or,
             ]
         },
         SrcTypes() { return this.srcTypes() },
         clssOperator() {
-            if (this.operator < 1) return 'grp-dropdown-min disabled'
+            if (this.index < 1) return 'grp-dropdown-min disabled'
             return 'grp-dropdown-min'
         },
         TypeSelectName() {
-            let xt = this.SrcTypes.find(x => x.Id == this.typeId)
+            let xt = this.SrcTypes.find(x => x.Id == this.filterType)
             if (xt) return xt.Name
             return ''
         },
         ItemSelectAll() {
             return {
                 Id: FTypeId.SelectAll,
-                Name: this.$store.getters.txtLang.SelectAll
+                Name: this.$store.getters.txtFilter(FTypeId.SelectAll)
             }
         },
     },
     methods: {
-        selectOperator(oVal) { this.iOperator = parseInt(oVal) },
+        selectOperator(oVal) {
+            oVal = parseInt(oVal)
+            this.iOperator = oVal
+            this.$emit('set:operator', oVal)
+        },
         selectTypeId(type) {
             type = parseInt(type)
-            this.typeId = type
-            this.listId.splice(0)
+            this.$emit('set:typef', type)
+            const lstId = this.ids
+            lstId.splice(0)
             switch (type) {
                 case FTypeId.Land_Region:
-                    if (!this.listId.length) {
-                        this.listId.push(FTypeId.SelectAll)
+                    if (!lstId.length) {
+                        lstId.push(FTypeId.SelectAll)
                         //if(0 == this.$root.IndexPage)
-                        this.listId.push(FTypeId.SelectAll)
+                        lstId.push(FTypeId.SelectAll)
                     }
                     break;
                 default: break;
             }
         },
-        selectId(ii, id) {
-            this.listId[ii] = parseInt(id)
-            switch (this.typeId) {
+        selectId(ii, index) {
+            index = parseInt(index)
+            const item = this.getSrcId(ii)[index]
+            if (!item) return;
+
+            const id = item.Id
+            const lstId = this.ids
+            lstId.splice(ii, 1, id)
+            switch (this.filterType) {
                 case FTypeId.Land_Region:
                     if (0 < ii) break;
-                    if (this.listId.length - 1 === ii) {
-                        this.listId.push(FTypeId.SelectAll)
+                    if (lstId.length - 1 === ii) {
+                        lstId.push(FTypeId.SelectAll)
                     }
                     break;
                 case FTypeId.PleaseSelect:
                     break;
             }
+            if (0 < id && ii < lstId.length - 1) {
+                lstId.splice(ii + 1, lstId.length - ii - 1, 0)
+            }
+            this.$emit('set:ids', lstId)
         },
         idSelectName(ii) {
-            let items = this.getSrcId(ii)
-            const id = this.listId[ii]
-            let item = items.find(x => x.Id == id)
-            if (item) item
-            return {}
+            const id = this.ids[ii]
+            if (id < 1) return this.$store.getters.txtFilter(id);
+            let item = this.getSrcId(ii).find(x => id == x.Id)
+            if (item) return item.Name
+            return ''
         },
         getSrcId(ii) {
             let lst = []
-            switch (this.typeId) {
+            switch (this.filterType) {
                 case FTypeId.Land_Region:
                     lst.push(this.ItemSelectAll)
                     if (0 == ii) return [...lst, ...this.$store.state.Lands]
                     if (1 == ii) {
-                        const idLeft = this.listId[ii - 1]
+                        const idLeft = this.ids[ii - 1]
                         if (idLeft < 0) return lst
                         for (let rr = 0; rr < this.$store.state.Regions.length; rr++) {
                             const region = this.$store.state.Regions[rr]
@@ -164,6 +180,7 @@ const FCriterial = {
             }
             return []
         },
+        
     },
 }
 export const MsFilter = {
@@ -183,17 +200,28 @@ export const MsFilter = {
                 [KeyOperator.FilterBy, FTypeId.PleaseSelect, []],    // [Operator, Type, Ids]
             ],
 
-            indexType: 0
+
         }
     },
     computed: {
 
     },
     methods: {
-        selectLand(id) {
-
+        addFilter(e) {
+            this.Criterials.push([KeyOperator.And, FTypeId.PleaseSelect, []])
         },
-        selectType(index) { this.indexType = parseInt(index) },
+        setOperator(ii, val) {
+            const crts = this.Criterials[ii]
+            crts[0] = val
+        },
+        setTypeF(ii, val) {
+            const crts = this.Criterials[ii]
+            crts[1] = val
+        },
+        setIds(ii, ids) {
+            const crts = this.Criterials[ii]
+            crts[2] = ids
+        },
     },
     provide() {
         return {
