@@ -55,52 +55,9 @@ const KeyOperator = {
     And: 1,
     Or: 2
 }
-const MsCriterial = {
-    template: `#tmp-comp-criterial`,
-    props: {
-        initView: {
-            type: Array,
-            default: [-1, 1, 0] // operator, type, ids
-            // -1 (hide), 0 (hide/show), 1 (show), 2 (disable)
-        },
-        initOperator: {
-            type: Object,
-            default: {
-                index: 0,
-                items: []   // [name, name, ...]
-            }
-        },
-        initType: {
-            type: Object,
-            default: {
-                index: 0,
-                items: []   // [name, name, ...]
-            }
-        },
-        initIds: Array,
-        sources: Array
-    },
-    emits: ['select:type'],
-    computed: {
-        IsShowIds() {
-            if (0 < this.initView[2]) return true
-            if (this.initView[2] < 0) return false
-            return this.initView[2] < 0
-        }
-    },
-    methods: {
-        getIndex(id, iii) {
-            return this.sources[iii].findIndex(x => id == x.Id)
-        },
-        selectOperator(index) { },
-        selectId(id, iii) {
-            // this.initIds[iii] = parseInt(id)
-            // 
-        },
-    },
-}
 const FCriterial = {
-    template: `#tmp-fcriterial`,
+    template: `#tmp-comp-criterial`,
+    inject: ['srcTypes'],
     props: {
         operator: Number,
         filterType: Number,
@@ -126,22 +83,7 @@ const FCriterial = {
                 this.$store.getters.txtLang.Or,
             ]
         },
-        SrcTypes() {
-            const lst = []
-            let lName
-            switch (this.$root.IndexPage) {
-                case 0:
-                    lName = this.$store.getters.txtLang.PleaseSelect
-                    lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
-                    lName = `${this.$store.getters.txtLang.Land}/`
-                    lName += `${this.$store.getters.txtLang.Region}`
-                    lst.push({ Id: FTypeId.Land_Region, Name: lName })
-                    lName = this.$store.getters.txtLang.Marketsegments
-                    lst.push({ Id: FTypeId.MarketSegments, Name: lName })
-                    break;
-            }
-            return lst
-        },
+        SrcTypes() { return this.srcTypes() },
         clssOperator() {
             if (this.operator < 1) return 'grp-dropdown-min disabled'
             return 'grp-dropdown-min'
@@ -151,7 +93,12 @@ const FCriterial = {
             if (xt) return xt.Name
             return ''
         },
-
+        ItemSelectAll() {
+            return {
+                Id: FTypeId.SelectAll,
+                Name: this.$store.getters.txtLang.SelectAll
+            }
+        },
     },
     methods: {
         selectOperator(oVal) { this.iOperator = parseInt(oVal) },
@@ -164,7 +111,7 @@ const FCriterial = {
                     if (!this.listId.length) {
                         this.listId.push(FTypeId.SelectAll)
                         //if(0 == this.$root.IndexPage)
-                            this.listId.push(FTypeId.SelectAll)
+                        this.listId.push(FTypeId.SelectAll)
                     }
                     break;
                 default: break;
@@ -174,7 +121,7 @@ const FCriterial = {
             this.listId[ii] = parseInt(id)
             switch (this.typeId) {
                 case FTypeId.Land_Region:
-                    if(0 < ii) break;
+                    if (0 < ii) break;
                     if (this.listId.length - 1 === ii) {
                         this.listId.push(FTypeId.SelectAll)
                     }
@@ -184,18 +131,17 @@ const FCriterial = {
             }
         },
         idSelectName(ii) {
-            let item = this.getSrcId(ii)
-            if (item) item.Name
-            return ''
+            let items = this.getSrcId(ii)
+            const id = this.listId[ii]
+            let item = items.find(x => x.Id == id)
+            if (item) item
+            return {}
         },
         getSrcId(ii) {
             let lst = []
             switch (this.typeId) {
                 case FTypeId.Land_Region:
-                    lst.push({
-                        Id: FTypeId.SelectAll,
-                        Name: this.$store.getters.txtLang.SelectAll
-                    })
+                    lst.push(this.ItemSelectAll)
                     if (0 == ii) return [...lst, ...this.$store.state.Lands]
                     if (1 == ii) {
                         const idLeft = this.listId[ii - 1]
@@ -223,8 +169,7 @@ const FCriterial = {
 export const MsFilter = {
     template: `#tmp-comp-filter`,
     components: {
-        'comp-criterial': MsCriterial,
-        'f-criterial': FCriterial
+        'comp-criterial': FCriterial,
     },
     props: {
         pageType: {
@@ -249,5 +194,26 @@ export const MsFilter = {
 
         },
         selectType(index) { this.indexType = parseInt(index) },
+    },
+    provide() {
+        return {
+            srcTypes: () => {
+                const lst = []
+                let lName
+                switch (this.$root.IndexPage) {
+                    case 0:
+                        lName = this.$store.getters.txtLang.PleaseSelect
+                        lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
+                        lName = `${this.$store.getters.txtLang.Land}/`
+                        lName += `${this.$store.getters.txtLang.Region}`
+                        lst.push({ Id: FTypeId.Land_Region, Name: lName })
+                        lName = this.$store.getters.txtLang.Marketsegments
+                        lst.push({ Id: FTypeId.MarketSegments, Name: lName })
+                        break;
+                }
+                return lst
+            },
+
+        }
     },
 }

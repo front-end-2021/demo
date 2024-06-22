@@ -1,30 +1,4 @@
 <template id="tmp-comp-criterial">
-    <drop-select v-if="initOperator != null" :index="initOperator.index" :items="initOperator.items"
-        :class="['grp-dropdown-min']" @set:index="$event => selectOperator($event)">
-        <template #item="{ items, index, active }">
-            <div v-for="(item, ii) in items" class="item" :class="[item == items[index] ? active : '']"
-                :data-value="ii">{{item}}</div>
-        </template>
-    </drop-select>
-    <drop-select v-if="initType != null" :index="initType.index" :items="initType.items" :class="['grp-dropdown-min']"
-        @set:index="$event => $emit('select:type', $event)">
-        <template #default>
-            <div class="text">{{initType.items[initType.index].Name}}</div>
-        </template>
-        <template #item="{ items, index, active }">
-            <div v-for="(item, ii) in items" class="item" :class="[item.Id == items[index].Id ? active : '']"
-                :data-value="ii">{{item.Name}}</div>
-        </template>
-    </drop-select>
-    <drop-select v-for="(id, iii) in initIds" :index="getIndex(id)" :items="sources[iii]" :class="['grp-dropdown-min']"
-        @set:index="$event => selectId($event, iii)">
-        <template #item="{ items, index, active }">
-            <div v-for="(item, ii) in items" class="item" :class="[item.Id == items[index].Id ? active : '']"
-                :data-value="item.Id">{{item.Name}}</div>
-        </template>
-    </drop-select>
-</template>
-<template id="tmp-fcriterial">
     <drop-select v-if="-2 < operator" 
             :index="iOperator" 
             :items="operators"
@@ -61,7 +35,7 @@
             :key="iii + 2"
             style="margin-right: 6px;">
         <template #default>
-            <div class="text">{{idSelectName(iii)}}</div>
+            <div class="text">{{idSelectName(iii).Name}}</div>
         </template>
         <template #item="{ items, index, active }">
             <div v-for="(item, ii) in items" class="item" :class="[item.Id == items[index] ? active : '']"
@@ -72,10 +46,10 @@
 <template id="tmp-comp-filter">
     <h3>{{$store.getters.txtLang.Filter}}</h3>
     <div>
-        <f-criterial v-for="crts in Criterials"
+        <comp-criterial v-for="crts in Criterials"
             :operator="crts[0]"
             :filter-type="crts[1]"
-            :ids="crts[3]"></f-criterial>
+            :ids="crts[3]"></comp-criterial>
     </div>
     <button>{{$store.getters.txtLang.Filter}}</button>
     <button>{{$store.getters.txtLang.Reset}}</button>

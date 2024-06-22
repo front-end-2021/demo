@@ -83,9 +83,7 @@ Promise.all([
                 }
             }
         },
-        // provide() {
-        //     return { }
-        // },
+        
         created() {
             this.IndexProject = getRandomInt(0, this.$store.state.Projects.length)
         },
