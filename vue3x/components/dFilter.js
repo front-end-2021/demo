@@ -133,16 +133,12 @@ const FCriterial = {
             lstId.splice(ii, 1, id)
             switch (this.filterType) {
                 case FTypeId.Land_Region:
-                    if (0 < ii) break;
-                    if (lstId.length - 1 === ii) {
-                        lstId.push(FTypeId.SelectAll)
+                    for(let j = ii + 1; j < lstId.length; j++) {
+                        lstId.splice(j, 1, 0)
                     }
                     break;
                 case FTypeId.PleaseSelect:
                     break;
-            }
-            if (0 < id && ii < lstId.length - 1) {
-                lstId.splice(ii + 1, lstId.length - ii - 1, 0)
             }
             this.$emit('set:ids', lstId)
         },
@@ -220,7 +216,7 @@ export const MsFilter = {
         },
         setIds(ii, ids) {
             const crts = this.Criterials[ii]
-            crts[2] = ids
+            crts.splice(2, 1, ids)
         },
     },
     provide() {
