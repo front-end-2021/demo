@@ -48,39 +48,37 @@ export const FTypeId = {
     SelectLand_Region: -22,
     LastStatus: -23,
     Land_Region: -24,
-    MarketSegments: -25
+    MarketSegments: -25,
+    ProductGroups_Product: -26,
+    Submarkets_ContactPerson: -27,
+    MarketSegments_Submarket: -28,
+    SelectLand: -29,
 }
 const KeyOperator = {
     FilterBy: -1,
     And: 0,
     Or: 1
 }
-const FCriterial = {
-    template: `#tmp-comp-criterial`,
-    //inject: [''],
-    emits: ['set:operator', 'set:typef', 'set:ids'],
+function commSelectTypeId(index) {
+    index = parseInt(index)
+    let item = this.SrcTypes[index]
+    if (!item) return
+    const fId = item.Id
+    this.$emit('set:typef', fId)
+    this.ids.splice(0)
+    return fId
+}
+const MxFCriterial = {
+    emits: ['set:typef', 'set:ids'],
     props: {
         index: Number,
-        operator: Number,
         filterType: Number,
         ids: {
             type: Array,
             default: []
         }
     },
-    data() {
-        return {
-            iOperator: this.operator < 0 ? 0 : this.operator
-        }
-    },
     computed: {
-        operators() {
-            if (this.index < 1) return [this.$store.getters.txtLang.FilterBy]
-            return [
-                this.$store.getters.txtLang.And,
-                this.$store.getters.txtLang.Or,
-            ]
-        },
         SrcTypes() {
             const lst = []
             let lName
@@ -97,14 +95,171 @@ const FCriterial = {
             }
             return lst
         },
-        clssOperator() {
-            if (this.index < 1) return 'grp-dropdown-min disabled'
-            return 'grp-dropdown-min'
-        },
         TypeSelectName() {
             let xt = this.SrcTypes.find(x => x.Id == this.filterType)
             if (xt) return xt.Name
             return ''
+        },
+    },
+    methods: {
+        selectId(ii, index) {
+            index = parseInt(index)
+            const item = this.getSrcId(ii)[index]
+            if (!item) return;
+
+            const id = item.Id
+            const lstId = this.ids
+            lstId.splice(ii, 1, id)
+            this.$emit('set:ids', lstId)
+        },
+        idSelectName(ii) {
+            const id = this.ids[ii]
+            if (id < 1) return this.$store.getters.txtFilter(id);
+            let item = this.getSrcId(ii).find(x => id == x.Id)
+            if (item) return item.Name
+            return ''
+        },
+        getSrcId() {
+            switch (this.filterType) {
+                case FTypeId.Land_Region:
+                    return [this.ItemSelectLand, ...this.$store.state.Lands]
+                case FTypeId.MarketSegments:
+                    return [this.ItemSelectMarket, ...this.$store.state.Markets]
+                default: break;
+            }
+            return []
+        },
+    },
+}
+const FCriterialMarket = {
+    template: `#tmp-comp-criterial-market`,
+    mixins: [MxFCriterial],
+    computed: {
+        SrcTypes() {
+            const lst = []
+            let lName
+            switch (this.$root.IndexPage) {
+                case 0:
+                    lName = this.$store.getters.txtLang.PleaseSelect
+                    lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
+                    lName = `${this.$store.getters.txtLang.Land}/`
+                    lName += `${this.$store.getters.txtLang.Region}`
+                    lst.push({ Id: FTypeId.Land_Region, Name: lName })
+                    lName = this.$store.getters.txtLang.Marketsegments
+                    lst.push({ Id: FTypeId.MarketSegments, Name: lName })
+                    break;
+            }
+            return lst
+        },
+        ItemSelectLand() {
+            return {
+                Id: FTypeId.SelectLand,
+                Name: this.$store.getters.txtFilter(FTypeId.SelectLand)
+            }
+        },
+        ItemSelectMarket() {
+            return {
+                Id: FTypeId.SelectMarketSegments,
+                Name: this.$store.getters.txtFilter(FTypeId.SelectMarketSegments)
+            }
+        }
+    },
+    methods: {
+        selectTypeId(index) {
+            const fId = commSelectTypeId.call(this, index)
+            switch (fId) {
+                case FTypeId.Land_Region:
+                    this.ids.push(FTypeId.SelectLand)
+                    break;
+                case FTypeId.MarketSegments:
+                    this.ids.push(FTypeId.SelectMarketSegments)
+                    break;
+                default: break;
+            }
+        },
+        getSrcId() {
+            switch (this.filterType) {
+                case FTypeId.Land_Region:
+                    return [this.ItemSelectLand, ...this.$store.state.Lands]
+                case FTypeId.MarketSegments:
+                    return [this.ItemSelectMarket, ...this.$store.state.Markets]
+                default: break;
+            }
+            return []
+        },
+    },
+}
+export const MsFilterMarket = {
+    template: `#tmp-comp-filter-market`,
+    components: {
+        'comp-criterial-market': FCriterialMarket,
+    },
+    data() {
+        return {
+            Criterials: [
+                [FTypeId.PleaseSelect, []],    // [Type, Ids]
+            ],
+        }
+    },
+    methods: {
+        setTypeF(ii, val) {
+            const crts = this.Criterials[ii]
+            crts[0] = val
+        },
+        setIds(ii, ids) {
+            const crts = this.Criterials[ii]
+            crts.splice(1, 1, ids)
+        },
+        addFilter(e) { this.Criterials.push([FTypeId.PleaseSelect, []]) },
+    },
+}
+const FCriterial = {
+    template: `#tmp-comp-criterial`,
+    mixins: [MxFCriterial],
+    //inject: [''],
+    emits: ['set:operator'],
+    props: {
+        operator: Number,
+    },
+    data() {
+        return {
+            iOperator: this.operator < 0 ? 0 : this.operator
+        }
+    },
+    computed: {
+        operators() {
+            if (this.index < 1) return [this.$store.getters.txtLang.FilterBy]
+            return [
+                this.$store.getters.txtLang.And,
+                this.$store.getters.txtLang.Or,
+            ]
+        },
+        clssOperator() {
+            if (this.index < 1) return 'grp-dropdown-min disabled'
+            return 'grp-dropdown-min'
+        },
+        SrcTypes() {
+            const lst = []
+            let lName
+            switch (this.$root.IndexPage) {
+                case 0:
+                    lName = this.$store.getters.txtLang.PleaseSelect
+                    lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
+                    lName = `${this.$store.getters.txtLang.Land}/`
+                    lName += `${this.$store.getters.txtLang.Region}`
+                    lst.push({ Id: FTypeId.Land_Region, Name: lName })
+                    lName = `${this.$store.getters.txtLang.ProductGroups}/`
+                    lName += `${this.$store.getters.txtLang.Product}`
+                    lst.push({ Id: FTypeId.ProductGroups_Product, Name: lName })
+                    lName = `${this.$store.getters.txtLang.Submarkets}/`
+                    lName += `${this.$store.getters.txtLang.ContactPerson}`
+                    lst.push({ Id: FTypeId.Submarkets_ContactPerson, Name: lName })
+                    lName = `${this.$store.getters.txtLang.Marketsegments}/`
+                    lName += `${this.$store.getters.txtLang.Submarkets}`
+                    lst.push({ Id: FTypeId.MarketSegments_Submarket, Name: lName })
+                    break;
+            }
+            return lst
         },
         ItemSelectAll() {
             return {
@@ -120,20 +275,11 @@ const FCriterial = {
             this.$emit('set:operator', index)
         },
         selectTypeId(index) {
-            index = parseInt(index)
-            let item = this.SrcTypes[index]
-            if(!item) return
-            const fId = item.Id
-            this.$emit('set:typef', fId)
-            const lstId = this.ids
-            lstId.splice(0)
+            const fId = commSelectTypeId.call(this, index)
             switch (fId) {
                 case FTypeId.Land_Region:
-                    if (!lstId.length) {
-                        lstId.push(FTypeId.SelectAll)
-                        //if(0 == this.$root.IndexPage)
-                        lstId.push(FTypeId.SelectAll)
-                    }
+                    this.ids.push(FTypeId.SelectAll)
+                    this.ids.push(FTypeId.SelectAll)
                     break;
                 default: break;
             }
@@ -156,13 +302,6 @@ const FCriterial = {
                     break;
             }
             this.$emit('set:ids', lstId)
-        },
-        idSelectName(ii) {
-            const id = this.ids[ii]
-            if (id < 1) return this.$store.getters.txtFilter(id);
-            let item = this.getSrcId(ii).find(x => id == x.Id)
-            if (item) return item.Name
-            return ''
         },
         getSrcId(ii) {
             let lst = []
@@ -192,7 +331,6 @@ const FCriterial = {
             }
             return []
         },
-
     },
 }
 export const MsFilter = {
@@ -237,7 +375,7 @@ export const MsFilter = {
     },
     provide() {
         return {
-            
+
 
         }
     },

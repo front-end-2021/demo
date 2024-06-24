@@ -11,9 +11,15 @@ export const getTxtBy = (lang) => {
     let AddFilter = `Filter hinzufügen`
     let Marketsegments = `Marktsegmente`
     let FilterBy = `Filtern by`
-    let And = `And`
-    let Or = `Or`
+    let And = `Und`
+    let Or = `Oder`
     let SelectAll = `Wählen Sie Alle`
+    let SelectLand = `Wählen Sie Land`
+    let SelectMarketsegments = `Wählen Sie ${Marketsegments}`
+    let ProductGroups = `Produktegruppen`
+    let Product = `Produkt`
+    let Submarkets = `Anspruchsgruppen`
+    let ContactPerson = `Ansprechsperson`
     if ('en' === lang) {
         PleaseSelect = `Please select`
         Filter = `Filter`
@@ -22,6 +28,14 @@ export const getTxtBy = (lang) => {
         Marketsegments = `Market segments`
         FilterBy = `Filter by`
         SelectAll = `Select all`
+        SelectLand = `Select Land`
+        SelectMarketsegments = `Select ${Marketsegments}`
+        ProductGroups = `Product groups`
+        Product = `Product`
+        Submarkets = `Stakeholder groups`
+        ContactPerson = `Contact Person`
+        And = `And`
+        Or = `Or`
     }
     return {
         PleaseSelect,
@@ -32,7 +46,11 @@ export const getTxtBy = (lang) => {
         Region: `Region`,
         Marketsegments,
         FilterBy, And, Or,
-        SelectAll
+        SelectAll,
+        SelectLand,
+        SelectMarketsegments,
+        ProductGroups, Product,
+        Submarkets, ContactPerson
     }
 }
 export const includeHTML = (path) => {

@@ -24,6 +24,20 @@ export default createStore({
             { Id: 5, Name: 'Hue', LandId: 4 },
             { Id: 6, Name: 'TP.Can Tho', LandId: 6 },
         ],
+        Markets: [
+            { Id: 2, Name: 'Dong Xuan', LandId: 3 },
+            { Id: 3, Name: 'Sapa market', LandId: 1 },
+            { Id: 4, Name: 'Quang Ninh market', LandId: 1 },
+            { Id: 5, Name: 'Hue market', LandId: 4 },
+            { Id: 6, Name: 'Cai Rang market', LandId: 6 },
+        ],
+        Submarkets: [
+            { Id: 7, Name: 'Square 1', MarketId: 2 },
+            { Id: 3, Name: 'Cho Tinh', MarketId: 3 },
+            { Id: 4, Name: 'Hue submarket 1', MarketId: 5 },
+            { Id: 5, Name: 'Quangninh submarket 2', MarketId: 4 },
+            { Id: 6, Name: 'Cairang submarket 3', MarketId: 6 },
+        ],
 
         count: 0,
         message: 'Hello world!',
@@ -66,13 +80,17 @@ export default createStore({
         },
         txtFilter: (state) => (id) => {
             const lng = state.Languages[state.IndexLang]
-            if(!lng) return ''
+            if (!lng) return ''
             const txt = getTxtBy(lng.Key);
-            switch(id) {
+            switch (id) {
                 case FTypeId.SelectAll:
                     return txt.SelectAll;
                 case FTypeId.PleaseSelect:
                     return txt.PleaseSelect;
+                case FTypeId.SelectLand:
+                    return txt.SelectLand;
+                case FTypeId.SelectMarketSegments:
+                    return txt.SelectMarketsegments;
                 default: break;
             }
             return ''
