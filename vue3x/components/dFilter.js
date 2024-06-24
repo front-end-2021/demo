@@ -57,7 +57,7 @@ const KeyOperator = {
 }
 const FCriterial = {
     template: `#tmp-comp-criterial`,
-    inject: ['srcTypes'],
+    //inject: [''],
     emits: ['set:operator', 'set:typef', 'set:ids'],
     props: {
         index: Number,
@@ -69,11 +69,8 @@ const FCriterial = {
         }
     },
     data() {
-        let iOperator = this.operator
-        if (iOperator < 0) iOperator = 0
-
         return {
-            iOperator,
+            iOperator: this.operator < 0 ? 0 : this.operator
         }
     },
     computed: {
@@ -84,7 +81,22 @@ const FCriterial = {
                 this.$store.getters.txtLang.Or,
             ]
         },
-        SrcTypes() { return this.srcTypes() },
+        SrcTypes() {
+            const lst = []
+            let lName
+            switch (this.$root.IndexPage) {
+                case 0:
+                    lName = this.$store.getters.txtLang.PleaseSelect
+                    lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
+                    lName = `${this.$store.getters.txtLang.Land}/`
+                    lName += `${this.$store.getters.txtLang.Region}`
+                    lst.push({ Id: FTypeId.Land_Region, Name: lName })
+                    lName = this.$store.getters.txtLang.Marketsegments
+                    lst.push({ Id: FTypeId.MarketSegments, Name: lName })
+                    break;
+            }
+            return lst
+        },
         clssOperator() {
             if (this.index < 1) return 'grp-dropdown-min disabled'
             return 'grp-dropdown-min'
@@ -102,17 +114,20 @@ const FCriterial = {
         },
     },
     methods: {
-        selectOperator(oVal) {
-            oVal = parseInt(oVal)
-            this.iOperator = oVal
-            this.$emit('set:operator', oVal)
+        selectOperator(index) {
+            index = parseInt(index)
+            this.iOperator = index
+            this.$emit('set:operator', index)
         },
-        selectTypeId(type) {
-            type = parseInt(type)
-            this.$emit('set:typef', type)
+        selectTypeId(index) {
+            index = parseInt(index)
+            let item = this.SrcTypes[index]
+            if(!item) return
+            const fId = item.Id
+            this.$emit('set:typef', fId)
             const lstId = this.ids
             lstId.splice(0)
-            switch (type) {
+            switch (fId) {
                 case FTypeId.Land_Region:
                     if (!lstId.length) {
                         lstId.push(FTypeId.SelectAll)
@@ -133,7 +148,7 @@ const FCriterial = {
             lstId.splice(ii, 1, id)
             switch (this.filterType) {
                 case FTypeId.Land_Region:
-                    for(let j = ii + 1; j < lstId.length; j++) {
+                    for (let j = ii + 1; j < lstId.length; j++) {
                         lstId.splice(j, 1, 0)
                     }
                     break;
@@ -158,8 +173,9 @@ const FCriterial = {
                     if (1 == ii) {
                         const idLeft = this.ids[ii - 1]
                         if (idLeft < 0) return lst
-                        for (let rr = 0; rr < this.$store.state.Regions.length; rr++) {
-                            const region = this.$store.state.Regions[rr]
+                        const regions = this.$store.state.Regions
+                        for (let rr = 0; rr < regions.length; rr++) {
+                            const region = regions[rr]
                             if (0 == idLeft) {
                                 lst.push(region)
                             }
@@ -176,7 +192,7 @@ const FCriterial = {
             }
             return []
         },
-        
+
     },
 }
 export const MsFilter = {
@@ -221,22 +237,7 @@ export const MsFilter = {
     },
     provide() {
         return {
-            srcTypes: () => {
-                const lst = []
-                let lName
-                switch (this.$root.IndexPage) {
-                    case 0:
-                        lName = this.$store.getters.txtLang.PleaseSelect
-                        lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
-                        lName = `${this.$store.getters.txtLang.Land}/`
-                        lName += `${this.$store.getters.txtLang.Region}`
-                        lst.push({ Id: FTypeId.Land_Region, Name: lName })
-                        lName = this.$store.getters.txtLang.Marketsegments
-                        lst.push({ Id: FTypeId.MarketSegments, Name: lName })
-                        break;
-                }
-                return lst
-            },
+            
 
         }
     },

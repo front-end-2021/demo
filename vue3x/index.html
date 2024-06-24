@@ -24,31 +24,23 @@
           <h2 class="me-3 my-0 text-white">Marketing</h2>
         </div>
         <div class="d-inline-flex justify-content-start align-items-center me-3 grp-prj">
-          <drop-select :index="IndexProject" :items="$store.state.Projects" 
+          <drop-select :index="IndexProject" 
+            :items="$store.state.Projects" 
             :class="['grp-dropdown-min dnbdropdown-primary']"
             @set:index="$event => setIndexProject($event)">
             <template #default>
-              <div class="text">{{CProject.Name}}</div>
-            </template>
-            <template #item="{ items, index, active }">
-              <div v-for="(item, ii) in items" class="item" 
-                :class="[item.Id == items[index].Id ? active : '']"
-                :data-value="ii">{{item.Name}}</div>
+              <div class="text">{{$store.state.Projects[this.IndexProject].Name}}</div>
             </template>
           </drop-select>
         </div>
         <div class="d-inline-flex justify-content-start align-items-center me-3 grp-lang">
           <h4 class="text-white mb-0 me-1">Language: </h4>
-          <drop-select :index="$store.state.IndexLang" :items="$store.state.Languages" 
+          <drop-select :index="$store.state.IndexLang" 
+            :items="$store.state.Languages" 
             :class="['grp-dropdown-min dnbdropdown-primary']" style="min-width: 120px;"
             @set:index="$event => setIndexLang($event)">
             <template #default>
               <div class="text">{{$store.getters.activeLang.Name}}</div>
-            </template>
-            <template #item="{ items, index, active }">
-              <div v-for="(item, ii) in items" class="item" 
-                :class="[item.Key == items[index].Key ? active : '']"
-                :data-value="ii">{{item.Name}}</div>
             </template>
           </drop-select>
         </div>
@@ -70,15 +62,10 @@
 
     <section style="margin-bottom: 9px;">{{$store.getters.message}}</section>
     <comp-nav></comp-nav>
-    <drop-select :index="UserAssign" :items="Users" 
+    <drop-select :name="UserAssign" :items="Users" 
       @set:index="$event => setUserAssign($event)">
       <template #default>
         <div class="default text">Assign</div>
-      </template>
-      <template #item="{ items, index, active }">
-        <div v-for="item in items" class="item" 
-          :class="[item == index ? active : '']" 
-          :data-value="item">{{item}}</div>
       </template>
     </drop-select>
 

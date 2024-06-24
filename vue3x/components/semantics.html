@@ -4,10 +4,13 @@
       <i class="dropdown icon"></i>
       <slot name="default"></slot>
       <div class="menu">
-        <slot name="item" 
+        <!-- <slot name="item" 
           :items="items" 
           active="active selected" 
-          :index="index"></slot>
+          :index="index"></slot> -->
+          <div v-for="(item, ii) in items" class="item" 
+          :class="[isActive(ii) ? 'active selected' : '']" 
+          :data-value="ii">{{itemName(ii)}}</div>
       </div>
     </div>
 </template>

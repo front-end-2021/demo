@@ -64,7 +64,7 @@
 
 .grp-dropdown-min.ui.selection.dropdown {
     min-height: 30px; max-height: 30px;
-    padding-top: 6px; padding-bottom: 0;
+    padding-top: 7px; padding-bottom: 0;
 }
 
 .grp-dropdown-min.ui.selection.dropdown>.dropdown.icon {

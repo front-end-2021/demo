@@ -1,41 +1,32 @@
 <template id="tmp-comp-criterial">
-    <drop-select v-if="-2 < operator" :index="iOperator" 
+    <drop-select v-if="-2 < operator" :name="operators[iOperator]"
         :items="operators" :class="[clssOperator]"
         @set:index="$event => selectOperator($event)" 
         style="min-width: 105px;margin-right: 6px;">
         <template #default>
             <div class="text">{{operators[iOperator]}}</div>
         </template>
-        <template #item="{ items, index, active }">
+        <!-- <template #item="{ items, index, active }">
             <div v-for="(item, ii) in items" class="item" 
                 :class="[item == items[index] ? active : '']"
                 :data-value="ii">{{item}}</div>
-        </template>
+        </template> -->
     </drop-select>
-    <drop-select :index="filterType" :items="SrcTypes" 
+    <drop-select :f-id="filterType" 
+        :items="SrcTypes" 
         :class="['grp-dropdown-min']"
         @set:index="$event => selectTypeId($event)" 
             style="margin-right: 6px;">
         <template #default>
             <div class="text">{{TypeSelectName}}</div>
         </template>
-        <template #item="{ items, index, active }">
-            <div v-for="(item, ii) in items" class="item" 
-                :class="[item.Id == items[index] ? active : '']"
-                :data-value="item.Id">{{item.Name}}</div>
-        </template>
     </drop-select>
-    <drop-select v-for="(id, iii) in ids" :index="id" 
+    <drop-select v-for="(id, iii) in ids" :f-id="id" 
         :items="getSrcId(iii)" :class="['grp-dropdown-min']"
         @set:index="$event => selectId(iii, $event)" 
         :key="iii + 2" style="margin-right: 6px;">
         <template #default>
             <div class="text">{{idSelectName(iii)}}</div>
-        </template>
-        <template #item="{ items, aId, active }">
-            <div v-for="(item, ii) in items" class="item" 
-                :class="[item.Id == aId ? active : '']"
-                :data-value="ii">{{item.Name}}</div>
         </template>
     </drop-select>
     <br>

@@ -32,7 +32,7 @@ Promise.all([
                     }
                 },
                 Users: ['Unassigned', 'Bill Gate', 'Elon Musk', 'Larry Page'],
-                UserAssign: '',
+                UserAssign: 'Assign',
 
                 IndexProject: 0,
                 IndexPage: 0,
