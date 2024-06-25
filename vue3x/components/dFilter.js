@@ -81,18 +81,13 @@ const MxFCriterial = {
     computed: {
         SrcTypes() {
             const lst = []
-            let lName
-            switch (this.$root.IndexPage) {
-                case 0:
-                    lName = this.$store.getters.txtLang.PleaseSelect
-                    lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
-                    lName = `${this.$store.getters.txtLang.Land}/`
-                    lName += `${this.$store.getters.txtLang.Region}`
-                    lst.push({ Id: FTypeId.Land_Region, Name: lName })
-                    lName = this.$store.getters.txtLang.Marketsegments
-                    lst.push({ Id: FTypeId.MarketSegments, Name: lName })
-                    break;
-            }
+            let lName = this.$store.getters.txtLang.PleaseSelect
+            lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
+            lName = `${this.$store.getters.txtLang.Land}/`
+            lName += `${this.$store.getters.txtLang.Region}`
+            lst.push({ Id: FTypeId.Land_Region, Name: lName })
+            lName = this.$store.getters.txtLang.Marketsegments
+            lst.push({ Id: FTypeId.MarketSegments, Name: lName })
             return lst
         },
         TypeSelectName() {
@@ -135,31 +130,15 @@ const FCriterialMarket = {
     template: `#tmp-comp-criterial-market`,
     mixins: [MxFCriterial],
     computed: {
-        SrcTypes() {
-            const lst = []
-            let lName
-            switch (this.$root.IndexPage) {
-                case 0:
-                    lName = this.$store.getters.txtLang.PleaseSelect
-                    lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
-                    lName = `${this.$store.getters.txtLang.Land}/`
-                    lName += `${this.$store.getters.txtLang.Region}`
-                    lst.push({ Id: FTypeId.Land_Region, Name: lName })
-                    lName = this.$store.getters.txtLang.Marketsegments
-                    lst.push({ Id: FTypeId.MarketSegments, Name: lName })
-                    break;
-            }
-            return lst
-        },
         ItemSelectLand() {
             return {
-                Id: FTypeId.SelectLand,
+                Id: FTypeId.SelectLand, // -29
                 Name: this.$store.getters.txtFilter(FTypeId.SelectLand)
             }
         },
         ItemSelectMarket() {
             return {
-                Id: FTypeId.SelectMarketSegments,
+                Id: FTypeId.SelectMarketSegments,   // -10
                 Name: this.$store.getters.txtFilter(FTypeId.SelectMarketSegments)
             }
         }
@@ -194,6 +173,7 @@ export const MsFilterMarket = {
     components: {
         'comp-criterial-market': FCriterialMarket,
     },
+    emits: ['set:filter'],
     data() {
         return {
             Criterials: [
@@ -206,11 +186,48 @@ export const MsFilterMarket = {
             const crts = this.Criterials[ii]
             crts[0] = val
         },
-        setIds(ii, ids) {
-            const crts = this.Criterials[ii]
-            crts.splice(1, 1, ids)
-        },
+        setIds(ii, ids) { this.Criterials[ii].splice(1, 1, ids) },
         addFilter(e) { this.Criterials.push([FTypeId.PleaseSelect, []]) },
+        setFilter(e) {
+            let landIds = []
+            let marketIds = []
+            const cLen = this.Criterials.length
+            const typeSelect = -2024
+            for (let ii = 0; ii < cLen; ii++) {
+                const crt = this.Criterials[ii]
+                const type = crt[0]
+                const ids = crt[1]
+                processType(type, ids[0])
+            }
+            let lndIds = landIds.filter(l => 0 < l);
+            lndIds = lndIds.filter((v, i, self) => i == self.indexOf(v));// remove duplicate
+            if (lndIds.length) landIds = lndIds;
+            else landIds = [0];
+
+            let mrkIds = marketIds.filter(l => 0 < l)
+            mrkIds = mrkIds.filter((v, i, self) => i == self.indexOf(v));// remove duplicate
+            if (mrkIds.length) marketIds = mrkIds;
+            else marketIds = [0];
+            this.$emit('set:filter', [landIds, marketIds])
+            function processType(type, id) {
+                switch (type) {
+                    case FTypeId.PleaseSelect:
+                        landIds.push(typeSelect);
+                        marketIds.push(typeSelect);
+                        break;
+                    case FTypeId.Land_Region:
+                        if (id == FTypeId.SelectLand)
+                            landIds.push(0);
+                        else landIds.push(id)
+                        break;
+                    case FTypeId.MarketSegments:
+                        if (id == FTypeId.SelectMarketSegments)
+                            marketIds.push(0);
+                        else marketIds.push(id)
+                        break;
+                }
+            }
+        },
     },
 }
 const FCriterial = {
@@ -240,25 +257,20 @@ const FCriterial = {
         },
         SrcTypes() {
             const lst = []
-            let lName
-            switch (this.$root.IndexPage) {
-                case 0:
-                    lName = this.$store.getters.txtLang.PleaseSelect
-                    lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
-                    lName = `${this.$store.getters.txtLang.Land}/`
-                    lName += `${this.$store.getters.txtLang.Region}`
-                    lst.push({ Id: FTypeId.Land_Region, Name: lName })
-                    lName = `${this.$store.getters.txtLang.ProductGroups}/`
-                    lName += `${this.$store.getters.txtLang.Product}`
-                    lst.push({ Id: FTypeId.ProductGroups_Product, Name: lName })
-                    lName = `${this.$store.getters.txtLang.Submarkets}/`
-                    lName += `${this.$store.getters.txtLang.ContactPerson}`
-                    lst.push({ Id: FTypeId.Submarkets_ContactPerson, Name: lName })
-                    lName = `${this.$store.getters.txtLang.Marketsegments}/`
-                    lName += `${this.$store.getters.txtLang.Submarkets}`
-                    lst.push({ Id: FTypeId.MarketSegments_Submarket, Name: lName })
-                    break;
-            }
+            let lName = this.$store.getters.txtLang.PleaseSelect
+            lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
+            lName = `${this.$store.getters.txtLang.Land}/`
+            lName += `${this.$store.getters.txtLang.Region}`
+            lst.push({ Id: FTypeId.Land_Region, Name: lName })
+            lName = `${this.$store.getters.txtLang.ProductGroups}/`
+            lName += `${this.$store.getters.txtLang.Product}`
+            lst.push({ Id: FTypeId.ProductGroups_Product, Name: lName })
+            lName = `${this.$store.getters.txtLang.Submarkets}/`
+            lName += `${this.$store.getters.txtLang.ContactPerson}`
+            lst.push({ Id: FTypeId.Submarkets_ContactPerson, Name: lName })
+            lName = `${this.$store.getters.txtLang.Marketsegments}/`
+            lName += `${this.$store.getters.txtLang.Submarkets}`
+            lst.push({ Id: FTypeId.MarketSegments_Submarket, Name: lName })
             return lst
         },
         ItemSelectAll() {
@@ -368,10 +380,7 @@ export const MsFilter = {
             const crts = this.Criterials[ii]
             crts[1] = val
         },
-        setIds(ii, ids) {
-            const crts = this.Criterials[ii]
-            crts.splice(2, 1, ids)
-        },
+        setIds(ii, ids) { this.Criterials[ii].splice(2, 1, ids) },
     },
     provide() {
         return {

@@ -11,7 +11,9 @@
           </template>
         </drop-select>
        <div class="mt-2">
-        <comp-filter-market></comp-filter-market>
+        <comp-filter-market 
+          @set:filter="$event => setFilter($event)">
+        </comp-filter-market>
         <comp-filter></comp-filter>
         
        </div>

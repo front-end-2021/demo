@@ -9,9 +9,9 @@
         </template>
     </drop-select>
     <drop-select v-for="(id, iii) in ids" :f-id="id" 
-        :items="getSrcId()" :class="['grp-dropdown-min']"
+        :items="getSrcId(iii)" :class="['grp-dropdown-min']"
         @set:index="$event => selectId(iii, $event)" 
-        :key="iii + 1" style="margin-right: 6px;">
+        :key="iii + 2" style="margin-right: 6px;">
         <template #default>
             <div class="text">{{idSelectName(iii)}}</div>
         </template>
@@ -30,8 +30,9 @@
             @set:typef="$event => setTypeF(iic, $event)"
             @set:ids="$event => setIds(iic, $event)"></comp-criterial-market>
     </div>
-    <button>{{$store.getters.txtLang.Filter}}</button>
-    <button style="margin: 6px">{{$store.getters.txtLang.Reset}}</button>
+    <button @click.stop="setFilter">{{$store.getters.txtLang.Filter}}</button>
+    <button 
+        style="margin: 6px">{{$store.getters.txtLang.Reset}}</button>
     <button @click.stop="addFilter"
         >{{$store.getters.txtLang.AddFilter}}</button>
 </template>

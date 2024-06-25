@@ -3,7 +3,7 @@ import CompNav from './comp-nav.js'
 import { DropSelect } from './comp-global.js'
 import dnbStore from './main-store.js'
 import { AppModal } from './comp-modal.js'
-import { MarketPage } from './comp-page.js'
+import { MarketPage } from './pages/comp-page.js'
 const { createApp } = Vue
 
 Promise.all([
