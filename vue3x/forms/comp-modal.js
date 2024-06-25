@@ -31,21 +31,25 @@ const CompFormLand = {
     template: `#tmp-comp-form-land`,
     mixins: [MxModal],
     data() {
+        const land = this.$store.getters.moItem.data
         return {
-            item: this.$store.getters.moItem.data
+            item: land,
+            des: land.Description
         }
     },
     methods: {
         onExitClose() {
+            this.item.Description = this.des
             // $(this.$el).modal('hide')
             // this.$store.commit('outModal', ['exit-close', deepCopy(this.MItem)])
         },
         onSaveClose() {
+            this.item.Description = this.des
             // $(this.$el).modal('hide')
             // this.$store.commit('outModal', ['save-close', deepCopy(this.MItem)])
         },
         onChangeDes(e) {
-            this.item.Description = e.target.innerHTML
+            this.des = e.target.innerHTML
         },
     },
 }
