@@ -1,23 +1,12 @@
 <template id="tmp-comp-market">
     <section>
-      <div class="">
-        <h4>Filter</h4>
-        <drop-select :index="IndexLand" 
-          :items="ListLand" 
-          :class="['grp-dropdown-min']"
-          @set:index="$event => setIndexLand($event)">
-          <template #default>
-            <div class="default text">{{$store.getters.txtLang.PleaseSelect}}</div>
-          </template>
-        </drop-select>
-       <div class="mt-2">
+      <div class="mt-2">
         <comp-filter-market 
           @set:filter="$event => setFilter($event)">
         </comp-filter-market>
-        <comp-filter></comp-filter>
+        <!-- <comp-filter></comp-filter> -->
         
        </div>
-      </div>
       <article>
         <button>Eval markets</button>
         <button>Eval submarkets</button>
@@ -27,9 +16,9 @@
         <div>
           <h2>Market segments</h2>
           <div>
-            <button>Market 1</button>
-            <button>Market 2</button>
-            <button>Market 3</button>
+            <button v-for="land in Lands"
+              @dblclick="e => editLand(land)">{{land.Name}}</button>
+            <button>+</button>
           </div>
         </div>
         <div>

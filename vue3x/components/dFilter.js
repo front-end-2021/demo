@@ -117,7 +117,7 @@ const MxFCriterial = {
         getSrcId() {
             switch (this.filterType) {
                 case FTypeId.Land_Region:
-                    return [this.ItemSelectLand, ...this.$store.state.Lands]
+                    return [this.ItemSelectLand, ...this.$store.getters.LandsBy([0])]
                 case FTypeId.MarketSegments:
                     return [this.ItemSelectMarket, ...this.$store.state.Markets]
                 default: break;
@@ -159,7 +159,7 @@ const FCriterialMarket = {
         getSrcId() {
             switch (this.filterType) {
                 case FTypeId.Land_Region:
-                    return [this.ItemSelectLand, ...this.$store.state.Lands]
+                    return [this.ItemSelectLand, ...this.$store.getters.LandsBy([0])]
                 case FTypeId.MarketSegments:
                     return [this.ItemSelectMarket, ...this.$store.state.Markets]
                 default: break;
@@ -320,7 +320,7 @@ const FCriterial = {
             switch (this.filterType) {
                 case FTypeId.Land_Region:
                     lst.push(this.ItemSelectAll)
-                    if (0 == ii) return [...lst, ...this.$store.state.Lands]
+                    if (0 == ii) return [...lst, ...this.$store.getters.LandsBy([0])]
                     if (1 == ii) {
                         const idLeft = this.ids[ii - 1]
                         if (idLeft < 0) return lst

@@ -11,11 +11,11 @@ export default createStore({
         Pages: ['Market segment strategy', `Sub-market/Product Strategy`, `Action plan`, 'Roadmap', `Team Board`],
 
         Lands: [
-            { Id: 1, Name: 'Mien bac' },
-            { Id: 3, Name: 'Hanoi' },
-            { Id: 4, Name: 'Mien trung' },
-            { Id: 5, Name: 'Mien nam' },
-            { Id: 6, Name: 'TP.HoChiMinh' },
+            { Id: 1, Name: 'Mien bac', IsNew: false, Index: 2 },
+            { Id: 3, Name: 'Hanoi', IsNew: false, Index: 1 },
+            { Id: 4, Name: 'Mien trung', IsNew: false, Index: 3 },
+            { Id: 5, Name: 'Mien nam', IsNew: false, Index: 4 },
+            { Id: 6, Name: 'TP.HoChiMinh', IsNew: false, Index: 5 },
         ],
         Regions: [
             { Id: 1, Name: 'TP.Hanoi', LandId: 3 },
@@ -94,6 +94,17 @@ export default createStore({
                 default: break;
             }
             return ''
+        },
+        LandsBy: (state) => (ids) => {
+            const lst = []
+            let land
+            for (let ii = 0; ii < state.Lands.length; ii++) {
+                land = state.Lands[ii]
+                if (ids.includes(0)) lst.push(land)
+                else if (ids.includes(land.Id)) lst.push(land)
+            }
+            lst.sort((a, b) => a.Index - b.Index)
+            return lst
         },
     },
     mutations: {

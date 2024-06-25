@@ -1,15 +1,15 @@
 import { getRandomInt, includeHTML } from './common.js'
 import CompNav from './comp-nav.js'
-import { DropSelect } from './comp-global.js'
+import { DropSelect } from './components/comp-global.js'
 import dnbStore from './main-store.js'
-import { AppModal } from './comp-modal.js'
+import { AppModal } from './forms/comp-modal.js'
 import { MarketPage } from './pages/comp-page.js'
 const { createApp } = Vue
 
 Promise.all([
     includeHTML(`./components/semantics.html`),
     includeHTML(`./pages/MarketSegmentStrategy.html`),
-    includeHTML(`./AppWindow.html`),
+    includeHTML(`./forms/AppWindow.html`),
     includeHTML(`./components/dFilter.html`)
 ]).then((values) => {
 

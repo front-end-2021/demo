@@ -1,4 +1,4 @@
-import { deepCopy } from './common.js'
+import { deepCopy } from '../common.js'
 
 const CompModal = {
     template: `#tmp-comp-modal`,
