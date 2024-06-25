@@ -78,7 +78,11 @@ Promise.all([
                         const exitClose = (mItem) => {
                             console.log('exit close', mItem)
                         }
-                        this.$store.commit('setModal', [this.UserInfo, saveClose, exitClose])
+                        const item = {
+                            data: this.UserInfo,
+                            type: `comp-modal`
+                        }
+                        this.$store.commit('setModal', [item, saveClose, exitClose])
                         break;
                 }
             }

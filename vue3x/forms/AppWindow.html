@@ -1,8 +1,30 @@
 <template id="tmp-comp-form-land">
-
+    <div class="ui modal">
+        <i class="close icon" @click.stop="onExitClose"></i>
+        <div class="header">Edit {{item.Name}}</div>
+        <div class="image content">
+            <div class="description">
+                <p contenteditable="true" v-html="item.Description" 
+                    @mouseleave="onChangeDes"
+                    style="min-height: 180px; width: 570px;"></p>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button" 
+                @click.stop="onExitClose">Cancel</div>
+            <div class="ui positive right labeled icon button" 
+                @click.stop="onSaveClose">Save And Close<i
+                class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
 </template>
 <section id="app-modal">
-    <comp-modal v-if="$store.getters.moItem">
+    <component v-if="$store.getters.moItem"
+            :is="$store.getters.moItem.type"></component>
+    
+    
+    <!-- <comp-modal v-if="$store.getters.moItem">
         <template #xbtn="{ onexit }">
             <i class="close icon" @click.stop="onexit"></i>
         </template>
@@ -27,15 +49,35 @@
                     class="checkmark icon"></i>
             </div>
         </template>
-    </comp-modal>
+    </comp-modal> -->
 </section>
 <template id="tmp-comp-modal">
     <div class="ui modal">
-        <slot name="xbtn" :onexit="onExitClose"></slot>
-        <slot name="context" :mitem="MItem" :changedes="onChangeDes"></slot>
+        <!-- <slot name="xbtn" :onexit="onExitClose"></slot> -->
+        <i class="close icon" @click.stop="onExitClose"></i>
+
+        <!-- <slot name="context" :mitem="MItem" :changedes="onChangeDes"></slot> -->
+        <div class="header">{{MItem.header}}</div>
+        <div class="image content">
+            <div class="ui medium image">
+                <img :src="MItem.img" style="border-radius: 8px;">
+            </div>
+            <div class="description">
+                <div class="ui header">{{MItem.content.head}}</div>
+                <p contenteditable="true" v-html="MItem.content.description" 
+                    @input="onChangeDes"
+                    style="min-height: 180px; width: 570px;"></p>
+            </div>
+        </div>
         <div class="actions">
-            <slot name="confirmno" :onexit="onExitClose"></slot>
-            <slot name="confirmyes" :onsave="onSaveClose"></slot>
+            <!-- <slot name="confirmno" :onexit="onExitClose"></slot> -->
+            <div class="ui black deny button" @click.stop="onExitClose">Nope</div>
+
+            <!-- <slot name="confirmyes" :onsave="onSaveClose"></slot> -->
+            <div class="ui positive right labeled icon button" 
+                @click.stop="onSaveClose">Yep, that's me<i
+                class="checkmark icon"></i>
+            </div>
         </div>
     </div>
 </template>

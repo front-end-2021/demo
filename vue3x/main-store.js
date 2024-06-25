@@ -11,11 +11,11 @@ export default createStore({
         Pages: ['Market segment strategy', `Sub-market/Product Strategy`, `Action plan`, 'Roadmap', `Team Board`],
 
         Lands: [
-            { Id: 1, Name: 'Mien bac', IsNew: false, Index: 2 },
-            { Id: 3, Name: 'Hanoi', IsNew: false, Index: 1 },
-            { Id: 4, Name: 'Mien trung', IsNew: false, Index: 3 },
-            { Id: 5, Name: 'Mien nam', IsNew: false, Index: 4 },
-            { Id: 6, Name: 'TP.HoChiMinh', IsNew: false, Index: 5 },
+            { Id: 1, Name: 'Mien bac', IsNew: false, Index: 2, Description: '' },
+            { Id: 3, Name: 'Hanoi', IsNew: false, Index: 1, Description: '' },
+            { Id: 4, Name: 'Mien trung', IsNew: false, Index: 3, Description: '' },
+            { Id: 5, Name: 'Mien nam', IsNew: false, Index: 4, Description: '' },
+            { Id: 6, Name: 'TP.HoChiMinh', IsNew: false, Index: 5, Description: '' },
         ],
         Regions: [
             { Id: 1, Name: 'TP.Hanoi', LandId: 3 },
@@ -119,6 +119,7 @@ export default createStore({
         },
 
         setModal(state, [item, saveClose, exitClose]) {
+            console.log('set modal', item)
             state.Modal = { item, saveClose, exitClose }
         },
         outModal(state, [fncTxt, data]) {
