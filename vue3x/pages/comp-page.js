@@ -26,8 +26,8 @@ export const MarketPage = {
                 let mess = `Somethings deferences \n`
                 let ii = 1
                 for (const [key, value] of Object.entries(mLand)) {
-                    if (value === land[key]) {
-                        mess += `${ii++}. ${key} \n`
+                    if (value !== land[key]) {
+                        mess += `${ii++}. ${key}: ${land[key]} => ${value} \n`
                     }
                 }
                 console.log('on x close land', mLand)
