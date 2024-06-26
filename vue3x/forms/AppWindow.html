@@ -1,12 +1,19 @@
 <template id="tmp-comp-form-land">
-    <div class="ui modal">
+    <div class="ui modal" style="width: 344px;">
         <i class="close icon" @click.stop="onExitClose"></i>
-        <div class="header">Edit {{item.Name}}</div>
+        <div class="header">Edit Land</div>
         <div class="image content">
             <div class="description">
-                <p contenteditable="true" v-html="item.Description" 
+                <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
+                <span contenteditable="true" v-html="item.Name" 
+                    class="d-inline-block p-2" style="width: 234px;"
+                    @input="onChangeName"></span>
+                <br>
+                <strong class="d-inline-block w81px py-2 pe-2">Description: </strong>
+                <span contenteditable="true" v-html="item.Description" 
+                    class="d-inline-block p-2" style="width: 234px; height: 96px;"
                     @input="onChangeDes"
-                    style="min-height: 180px; width: 570px;"></p>
+                    style="min-height: 180px; width: 570px;"></span>
             </div>
         </div>
         <div class="actions">

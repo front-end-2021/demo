@@ -11,11 +11,11 @@ export default createStore({
         Pages: ['Market segment strategy', `Sub-market/Product Strategy`, `Action plan`, 'Roadmap', `Team Board`],
 
         Lands: [
-            { Id: 1, Name: 'Mien bac', IsNew: false, Index: 2, Description: '' },
-            { Id: 3, Name: 'Hanoi', IsNew: false, Index: 1, Description: '' },
-            { Id: 4, Name: 'Mien trung', IsNew: false, Index: 3, Description: '' },
-            { Id: 5, Name: 'Mien nam', IsNew: false, Index: 4, Description: '' },
-            { Id: 6, Name: 'TP.HoChiMinh', IsNew: false, Index: 5, Description: '' },
+            { Id: 1, Name: 'Mien bac', IsNew: false, iPos: 2, Description: '' },
+            { Id: 3, Name: 'Hanoi', IsNew: false, iPos: 1, Description: '' },
+            { Id: 4, Name: 'Mien trung', IsNew: false, iPos: 3, Description: '' },
+            { Id: 5, Name: 'Mien nam', IsNew: false, iPos: 5, Description: '' },
+            { Id: 6, Name: 'TP.HoChiMinh', IsNew: false, iPos: 4, Description: '' },
         ],
         Regions: [
             { Id: 1, Name: 'TP.Hanoi', LandId: 3 },
@@ -103,7 +103,7 @@ export default createStore({
                 if (ids.includes(0)) lst.push(land)
                 else if (ids.includes(land.Id)) lst.push(land)
             }
-            lst.sort((a, b) => a.Index - b.Index)
+            lst.sort((a, b) => a.iPos - b.iPos)
             return lst
         },
     },
@@ -119,7 +119,7 @@ export default createStore({
         },
 
         setModal(state, [item, saveClose, exitClose]) {
-            console.log('set modal', item)
+           // console.log('set modal', item)
             state.Modal = { item, saveClose, exitClose }
         },
         outModal(state, [fncTxt, data]) {

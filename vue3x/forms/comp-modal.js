@@ -34,23 +34,25 @@ const CompFormLand = {
         const land = this.$store.getters.moItem.data
         return {
             item: land,
+            name: land.Name,
             des: land.Description
         }
     },
     methods: {
         onExitClose() {
+            this.item.Name = this.name
             this.item.Description = this.des
             $(this.$el).modal('hide')
             this.$store.commit('outModal', ['exit-close', this.item])
         },
         onSaveClose() {
+            this.item.Name = this.name
             this.item.Description = this.des
             $(this.$el).modal('hide')
             this.$store.commit('outModal', ['save-close', this.item])
         },
-        onChangeDes(e) {
-            this.des = e.target.innerHTML
-        },
+        onChangeName(e) { this.name = e.target.innerHTML },
+        onChangeDes(e) { this.des = e.target.innerHTML },
     },
 }
 export const AppModal = {

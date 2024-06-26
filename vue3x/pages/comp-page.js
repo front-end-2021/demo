@@ -20,22 +20,29 @@ export const MarketPage = {
         },
         editLand(land) {
             const saveClose = (mLand) => {
-                console.log('on save close land', mLand)
+                mLand = JSON.parse(JSON.stringify(mLand))
+                for (const [key, value] of Object.entries(mLand)) {
+                    land[key] = value
+                }
             }
             const xClose = (mLand) => {
-                let mess = `Somethings deferences \n`
+                let mess = ''
                 let ii = 1
+                mLand = JSON.parse(JSON.stringify(mLand))
                 for (const [key, value] of Object.entries(mLand)) {
                     if (value !== land[key]) {
                         mess += `${ii++}. ${key}: ${land[key]} => ${value} \n`
                     }
                 }
-                console.log('on x close land', mLand)
-                if (confirm(mess)) {
-                    for (const [key, value] of Object.entries(mLand)) {
-                        land[key] = value
+                if (mess) {
+                    mess = `Somethings deferences \n` + mess
+                    if (confirm(mess)) {
+                        for (const [key, value] of Object.entries(mLand)) {
+                            land[key] = value
+                        }
                     }
                 }
+
             }
             const item = {
                 data: JSON.parse(JSON.stringify(land)),
