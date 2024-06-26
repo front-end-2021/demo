@@ -14,6 +14,12 @@
                     class="d-inline-block p-2" style="width: 234px; height: 96px;"
                     @input="onChangeDes"
                     style="min-height: 180px; width: 570px;"></span>
+                <br>
+                <label class="d-inline-block w81px py-2 pe-2"
+                    :for="'chbx-isnew-land-' + item.Id">Is New *</label><input 
+                    type="checkbox" 
+                    :id="'chbx-isnew-land-' + item.Id"
+                    v-model="item.IsNew" />
             </div>
         </div>
         <div class="actions">
