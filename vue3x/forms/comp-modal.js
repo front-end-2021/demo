@@ -40,13 +40,13 @@ const CompFormLand = {
     methods: {
         onExitClose() {
             this.item.Description = this.des
-            // $(this.$el).modal('hide')
-            // this.$store.commit('outModal', ['exit-close', deepCopy(this.MItem)])
+            $(this.$el).modal('hide')
+            this.$store.commit('outModal', ['exit-close', this.item])
         },
         onSaveClose() {
             this.item.Description = this.des
-            // $(this.$el).modal('hide')
-            // this.$store.commit('outModal', ['save-close', deepCopy(this.MItem)])
+            $(this.$el).modal('hide')
+            this.$store.commit('outModal', ['save-close', this.item])
         },
         onChangeDes(e) {
             this.des = e.target.innerHTML

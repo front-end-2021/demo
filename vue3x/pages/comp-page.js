@@ -11,7 +11,7 @@ export const MarketPage = {
         }
     },
     computed: {
-        
+
     },
     methods: {
         setFilter([landIds, marketIds]) {
@@ -23,7 +23,19 @@ export const MarketPage = {
                 console.log('on save close land', mLand)
             }
             const xClose = (mLand) => {
+                let mess = `Somethings deferences \n`
+                let ii = 1
+                for (const [key, value] of Object.entries(mLand)) {
+                    if (value === land[key]) {
+                        mess += `${ii++}. ${key} \n`
+                    }
+                }
                 console.log('on x close land', mLand)
+                if (confirm(mess)) {
+                    for (const [key, value] of Object.entries(mLand)) {
+                        land[key] = value
+                    }
+                }
             }
             const item = {
                 data: JSON.parse(JSON.stringify(land)),

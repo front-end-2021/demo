@@ -53,9 +53,7 @@ button { cursor: pointer; }
 
 .cpointer { cursor: pointer; }
 
-.grp-prj {
-    flex-grow: 1;
-}
+.grp-prj { flex-grow: 1; }
 
 .grp-logo,
 .grp-lang,
@@ -71,7 +69,7 @@ button { cursor: pointer; }
 .grp-dropdown-min.ui.selection.dropdown>.dropdown.icon {
     padding-top: 8px; padding-bottom: 5px;
 }
-.ui.modal.transition.visible.active {
+.edit-user.ui.modal.transition.visible.active {
     width: 954px;
     height: 618px;
 }

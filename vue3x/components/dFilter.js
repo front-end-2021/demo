@@ -129,6 +129,7 @@ const MxFCriterial = {
 const FCriterialMarket = {
     template: `#tmp-comp-criterial-market`,
     mixins: [MxFCriterial],
+    emits: ['remove:item'],
     computed: {
         ItemSelectLand() {
             return {
@@ -166,6 +167,7 @@ const FCriterialMarket = {
             }
             return []
         },
+
     },
 }
 export const MsFilterMarket = {
@@ -228,6 +230,7 @@ export const MsFilterMarket = {
                 }
             }
         },
+        removeCriterial(iic) { this.Criterials.splice(iic, 1) },
     },
 }
 const FCriterial = {
