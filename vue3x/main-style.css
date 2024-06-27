@@ -7,6 +7,7 @@ button { cursor: pointer; }
     margin-left: auto;
 }
 .d-inline-block { display: inline-block; }
+.d-inline-grid { display: inline-grid; }
 .d-flex {display: flex; }
 .d-inline-flex { display: inline-flex; }
 .justify-content-start  {justify-content: flex-start;}
@@ -49,6 +50,7 @@ button { cursor: pointer; }
 .pe-3 { padding-right: 1rem; }
 .text-white {color: white;}
 .font24 { font-size: 24px; }
+.text-center { text-align: center;}
 
 .w81px { width: 81px;}
 
@@ -79,6 +81,14 @@ button { cursor: pointer; }
     width: 954px;
     height: 618px;
 }
+
+.cell-evaluation {
+    display: inline-grid;
+    grid-template-columns: 163px 18px;
+}
+.col-market { width: 294px; }
+.col-region { width: 204px; }
+
 @media screen and (max-width: 750px) {
     .grp-logo>h2:last-child {
         display: none;

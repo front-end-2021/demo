@@ -20,6 +20,54 @@
               @dblclick="e => editLand(land)">{{land.Name}}</button>
             <button>+</button>
           </div>
+          <table class="ui celled definition table" style="width: initial;">
+            <thead>
+              <tr>
+                <th class="col-market">Marktsegmente</th>
+                <th class="col-region">Region 1</th>
+                <th class="col-region">region 2</th>
+                <th class="col-region single line">region 3</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>segment 1</td>
+                <td>Evaluatoin Market</td>
+                <td>
+                  723px
+                  <i class="circle help link icon" data-html="Maximum device width with two <code>1em</code> gutters and a <code>17px</code> scrollbar width. <div class='ui divider'></div> <code>768 - (14 * (1 * 2)) - 17</code>">
+                </i></td>
+                <td>
+                  933px
+                  <i class="circle help link icon" data-html="Maximum device width with two <code>1.5em</code> gutters and a <code>17px</code> scrollbar width. <div class='ui divider'></div> <code>992 - (14 * (1.5 * 2)) - 17</code>">
+                </i></td>
+              </tr>
+              <tr >
+                <td class="single line">segment 12</td>
+                <td><div class="cell-evaluation">
+                  <span class="text-center">8</span><i class="icon checkmark"></i></div>
+                </td>
+                <td><div class="cell-evaluation">
+                  <span class="text-center">18</span><i class="icon checkmark"></i></div>
+                </td>
+                <td><div class="cell-evaluation">
+                  <span class="text-center">81</span><i class="icon checkmark"></i></div>
+                </td>
+              </tr>
+              <tr>
+                <td>Variable</td>
+                <td><code>$largestMobileScreen</code></td>
+                <td><code>$mobileBreakpoint</code></td>
+                <td><code>$smallMonitorBreakpoint</code></td>
+              </tr>
+              <tr>
+                <td>Device Width</td>
+                <td>below 768px</td>
+                <td>768px - 991px</td>
+                <td>992px - 1200px</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div>
 
