@@ -11,25 +11,25 @@ export default createStore({
         Pages: ['Market segment strategy', `Sub-market/Product Strategy`, `Action plan`, 'Roadmap', `Team Board`],
 
         Lands: [
-            { Id: 1, Name: 'Mien bac', IsNew: false, iPos: 2, Description: '' },
-            { Id: 3, Name: 'Hanoi', IsNew: false, iPos: 1, Description: '' },
-            { Id: 4, Name: 'Mien trung', IsNew: false, iPos: 3, Description: '' },
-            { Id: 5, Name: 'Mien nam', IsNew: false, iPos: 5, Description: '' },
-            { Id: 6, Name: 'TP.HoChiMinh', IsNew: false, iPos: 4, Description: '' },
+            { Id: 1, Name: 'Mien bac', IsNew: false, ASort: 2, Description: '' },
+            { Id: 3, Name: 'Hanoi', IsNew: false, ASort: 1, Description: '' },
+            { Id: 4, Name: 'Mien trung', IsNew: false, ASort: 3, Description: '' },
+            { Id: 5, Name: 'Mien nam', IsNew: false, ASort: 5, Description: '' },
+            { Id: 6, Name: 'TP.HoChiMinh', IsNew: false, ASort: 4, Description: '' },
         ],
         Regions: [
-            { Id: 1, Name: 'TP.Hanoi', LandId: 3 },
-            { Id: 3, Name: 'Haiphong', LandId: 1 },
-            { Id: 4, Name: 'Quang Ninh', LandId: 1 },
-            { Id: 5, Name: 'Hue', LandId: 4 },
-            { Id: 6, Name: 'TP.Can Tho', LandId: 6 },
+            { Id: 1, Name: 'TP.Hanoi', LandId: 3, ASort: 1 },
+            { Id: 3, Name: 'Haiphong', LandId: 1, ASort: 3 },
+            { Id: 4, Name: 'TP.Can Tho', LandId: 6, ASort: 5 },
+            { Id: 5, Name: 'Hue', LandId: 4, ASort: 4 },
+            { Id: 7, Name: 'Quang Ninh', LandId: 1, ASort: 2 },
         ],
         Markets: [
-            { Id: 2, Name: 'Dong Xuan', LandId: 3 },
-            { Id: 3, Name: 'Sapa market', LandId: 1 },
-            { Id: 4, Name: 'Quang Ninh market', LandId: 1 },
-            { Id: 5, Name: 'Hue market', LandId: 4 },
-            { Id: 6, Name: 'Cai Rang market', LandId: 6 },
+            { Id: 2, Name: 'Dong Xuan', LandId: 3, ASort: 3 },
+            { Id: 3, Name: 'Sapa market', LandId: 1, ASort: 1 },
+            { Id: 4, Name: 'Quang Ninh market', LandId: 1, ASort: 2 },
+            { Id: 5, Name: 'Hue market', LandId: 4, ASort: 4 },
+            { Id: 6, Name: 'Cai Rang market', LandId: 6, ASort: 5 },
         ],
         Submarkets: [
             { Id: 7, Name: 'Square 1', MarketId: 2 },
@@ -103,7 +103,18 @@ export default createStore({
                 if (ids.includes(0)) lst.push(land)
                 else if (ids.includes(land.Id)) lst.push(land)
             }
-            lst.sort((a, b) => a.iPos - b.iPos)
+            lst.sort((a, b) => a.ASort - b.ASort)
+            return lst
+        },
+        MarketsBy: (state) => (ids) => {
+            const lst = []
+            let item
+            for (let ii = 0; ii < state.Markets.length; ii++) {
+                item = state.Markets[ii]
+                if (ids.includes(0)) lst.push(item)
+                else if (ids.includes(item.Id)) lst.push(item)
+            }
+            lst.sort((a, b) => a.ASort - b.ASort)
             return lst
         },
     },

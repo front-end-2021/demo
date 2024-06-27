@@ -119,7 +119,7 @@ const MxFCriterial = {
                 case FTypeId.Land_Region:
                     return [this.ItemSelectLand, ...this.$store.getters.LandsBy([0])]
                 case FTypeId.MarketSegments:
-                    return [this.ItemSelectMarket, ...this.$store.state.Markets]
+                    return [this.ItemSelectMarket, ...this.$store.getters.MarketsBy([0])]
                 default: break;
             }
             return []
@@ -162,7 +162,7 @@ const FCriterialMarket = {
                 case FTypeId.Land_Region:
                     return [this.ItemSelectLand, ...this.$store.getters.LandsBy([0])]
                 case FTypeId.MarketSegments:
-                    return [this.ItemSelectMarket, ...this.$store.state.Markets]
+                    return [this.ItemSelectMarket, ...this.$store.getters.MarketsBy([0])]
                 default: break;
             }
             return []
