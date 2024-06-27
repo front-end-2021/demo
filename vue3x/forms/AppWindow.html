@@ -7,6 +7,7 @@
                 <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
                 <span contenteditable="true" v-html="item.Name" 
                     class="d-inline-block p-2" style="width: 234px;"
+                    @keypress="onKeyPressName"
                     @input="onChangeName"></span>
                 <br>
                 <strong class="d-inline-block w81px py-2 pe-2">Description: </strong>

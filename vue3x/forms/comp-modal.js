@@ -51,7 +51,12 @@ const CompFormLand = {
             $(this.$el).modal('hide')
             this.$store.commit('outModal', ['save-close', this.item])
         },
-        onChangeName(e) { this.name = e.target.innerHTML },
+        onChangeName(e) { this.name = e.target.innerText },
+        onKeyPressName(e) {
+            if (e.which === 13) {
+                e.preventDefault(); // prevent enter
+            }
+        },
         onChangeDes(e) { this.des = e.target.innerHTML },
     },
 }
