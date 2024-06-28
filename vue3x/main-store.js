@@ -95,6 +95,7 @@ export default createStore({
             }
             return ''
         },
+
         LandsBy: (state) => (ids) => {
             const lst = []
             let land
@@ -102,6 +103,16 @@ export default createStore({
                 land = state.Lands[ii]
                 if (ids.includes(0)) lst.push(land)
                 else if (ids.includes(land.Id)) lst.push(land)
+            }
+            lst.sort((a, b) => a.ASort - b.ASort)
+            return lst
+        },
+        RegionByLands: (state) => (landIds) => {
+            const lst = []
+            for (let rr = 0; rr < state.Regions.length; rr++) {
+                let region = state.Regions[rr]
+                if (landIds.includes(0)) lst.push(region)
+                else if (landIds.includes(region.LandId)) lst.push(region)
             }
             lst.sort((a, b) => a.ASort - b.ASort)
             return lst
@@ -130,7 +141,7 @@ export default createStore({
         },
 
         setModal(state, [item, saveClose, exitClose]) {
-           // console.log('set modal', item)
+            // console.log('set modal', item)
             state.Modal = { item, saveClose, exitClose }
         },
         outModal(state, [fncTxt, data]) {

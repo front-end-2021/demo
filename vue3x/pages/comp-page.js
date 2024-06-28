@@ -8,6 +8,8 @@ export const MarketPage = {
     data() {
         return {
             Lands: this.$store.getters.LandsBy([0]),
+            Regions: this.$store.getters.RegionByLands([0]),
+            Markets: this.$store.getters.MarketsBy([0]),
         }
     },
     computed: {
@@ -17,6 +19,11 @@ export const MarketPage = {
         setFilter([landIds, marketIds]) {
             this.Lands.splice(0)
             this.Lands = this.$store.getters.LandsBy(landIds)
+            this.Regions.splice(0)
+            this.Regions = this.$store.getters.RegionByLands(landIds)
+            
+            this.Markets.splice(0)
+            this.Markets = this.$store.getters.MarketsBy(marketIds)
         },
         editLand(land) {
             const saveClose = (mLand) => {
@@ -49,6 +56,16 @@ export const MarketPage = {
                 type: `comp-form-land`
             }
             this.$store.commit('setModal', [item, saveClose, xClose])
+        },
+        getEvaluation(iMarket, iRegion){
+            if(iMarket == 0 && iRegion == 0) return `Evaluatoin Market`
+            
+            if(iMarket == 2 && iRegion == 0) return `933px
+                  <i class="circle help link icon" data-html="Maximum device width with two <code>1em</code> gutters and a <code>17px</code> scrollbar width. <div class='ui divider'></div> <code>768 - (14 * (1 * 2)) - 17</code>">
+                </i>`
+            if(iMarket == 1 && iRegion == 0) return `<div class="cell-evaluation">
+                  <span class="text-center">8</span><i class="icon checkmark"></i></div>`
+            return ``
         },
     }
 }
