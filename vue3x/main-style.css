@@ -48,6 +48,7 @@ button { cursor: pointer; }
 .py-3 { padding-top: 1rem; padding-bottom: 1rem; }
 .ps-3 { padding-left: 1rem; }
 .pe-3 { padding-right: 1rem; }
+.p6px {padding: 6px !important;}
 .text-white {color: white;}
 .font24 { font-size: 24px; }
 .text-center { text-align: center;}
@@ -82,12 +83,29 @@ button { cursor: pointer; }
     height: 618px;
 }
 
-.cell-evaluation {
+.cell-valuation {
     display: inline-grid;
-    grid-template-columns: 163px 18px;
+    grid-template-columns: 141px 24px 24px;
+    height: 30px; width: 100%;
+    align-items: center;
+    position: relative;
 }
 .col-market { width: 294px; }
 .col-region { width: 204px; }
+
+.cell-valuation:hover {
+    background-color: #c1c1c1;
+}
+
+.menu-valuation {
+    position:absolute;
+    top: 30px; left: 0; z-index: 1;
+    background-color: #e1eaf0;
+    width: 220px; flex-direction: column;
+}
+.menu-valuation>*:hover {
+    background-color: #cfdae1;
+}
 
 @media screen and (max-width: 750px) {
     .grp-logo>h2:last-child {

@@ -10,6 +10,9 @@ export const MarketPage = {
             Lands: this.$store.getters.LandsBy([0]),
             Regions: this.$store.getters.RegionByLands([0]),
             Markets: this.$store.getters.MarketsBy([0]),
+
+            MarketRegions: [],
+            MenuValuation: [],
         }
     },
     computed: {
@@ -21,7 +24,7 @@ export const MarketPage = {
             this.Lands = this.$store.getters.LandsBy(landIds)
             this.Regions.splice(0)
             this.Regions = this.$store.getters.RegionByLands(landIds)
-            
+
             this.Markets.splice(0)
             this.Markets = this.$store.getters.MarketsBy(marketIds)
         },
@@ -57,15 +60,57 @@ export const MarketPage = {
             }
             this.$store.commit('setModal', [item, saveClose, xClose])
         },
-        getEvaluation(iMarket, iRegion){
-            if(iMarket == 0 && iRegion == 0) return `Evaluatoin Market`
-            
-            if(iMarket == 2 && iRegion == 0) return `933px
-                  <i class="circle help link icon" data-html="Maximum device width with two <code>1em</code> gutters and a <code>17px</code> scrollbar width. <div class='ui divider'></div> <code>768 - (14 * (1 * 2)) - 17</code>">
-                </i>`
-            if(iMarket == 1 && iRegion == 0) return `<div class="cell-evaluation">
-                  <span class="text-center">8</span><i class="icon checkmark"></i></div>`
-            return ``
+        getValuation(mId, rId) {
+            const item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+            if (!item) return;
+            return 1
+        },
+        mouseOverValuation(iMarket, iRegion) {
+            //Criteria
+        },
+        toggleMenuValuation(imk, irg) {
+            if (1 < this.MenuValuation.length) {
+                if (imk == this.MenuValuation[0] && irg == this.MenuValuation[1]) {
+                    this.MenuValuation.splice(0)
+                    return
+                }
+            }
+            this.MenuValuation.splice(0, 1, imk)
+            this.MenuValuation.splice(1, 1, irg)
+        },
+        activeValuation(MarketId, RegionId) {
+            const ii = this.MarketRegions.findIndex(x => MarketId == x.MarketId && RegionId == x.RegionId);
+            this.MenuValuation.splice(0)
+            if (ii < 0) {
+                this.MarketRegions.push({
+                    MarketId, RegionId,
+                    Criteria: []
+                })
+                return
+            }
+            this.MarketRegions.splice(ii, 1)        // remove
+        },
+        clssCheckMark(mId, rId) {
+            const item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+            if (item) return `checkmark`
+            return
+        },
+        classSquare(mId, rId) {
+            const item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+            if (item) return `bi-check2-square`
+            return `bi-square`
+        },
+        openFormValuation(mId, rId) {
+            this.MenuValuation.splice(0)
+            const item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+            if (!item) return;
+            const saveClose = (mItem) => {
+                console.log('save close', mItem)
+            }
+            this.$store.commit('setModal', [{
+                data: JSON.parse(JSON.stringify(item)),
+                type: `comp-form-valuation`
+            }, saveClose, () => { }])
         },
     }
 }

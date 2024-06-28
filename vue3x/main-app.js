@@ -2,17 +2,20 @@ import { getRandomInt, includeHTML } from './common.js'
 import CompNav from './comp-nav.js'
 import { DropSelect } from './components/comp-global.js'
 import dnbStore from './main-store.js'
-import { AppModal } from './forms/comp-modal.js'
+import {
+    CompModal, CompFormLand,
+    CompFormValuation
+} from './forms/comp-modal.js'
 import { MarketPage } from './pages/comp-page.js'
 const { createApp } = Vue
 
 Promise.all([
     includeHTML(`./components/semantics.html`),
     includeHTML(`./pages/MarketSegmentStrategy.html`),
+    includeHTML(`./components/dFilter.html`),
+    includeHTML(`./forms/form-land.html`),
     includeHTML(`./forms/AppWindow.html`),
-    includeHTML(`./components/dFilter.html`)
 ]).then((values) => {
-
     const app = createApp({
         name: `app-main`,
         components: {
@@ -87,7 +90,7 @@ Promise.all([
                 }
             }
         },
-        
+
         created() {
             this.IndexProject = getRandomInt(0, this.$store.state.Projects.length)
         },
@@ -96,7 +99,7 @@ Promise.all([
         },
         mounted() {
             values.forEach((path, ii) => {
-               // console.log(path, ii)
+                // console.log(path, ii)
                 let pDom = document.body.querySelector(`.dnbimporthtml[dnbpath="${path}"]`)
                 if (pDom) pDom.remove();
             })
@@ -106,9 +109,23 @@ Promise.all([
     app.component('drop-select', DropSelect)
     app.mount('#app')
 
-    const appModal = createApp(AppModal)
+    const appModal = createApp({
+        name: `app-modal`,
+        components: {
+            'comp-modal': CompModal,
+            'comp-form-land': CompFormLand,
+            'comp-form-valuation': CompFormValuation
+        },
+        computed: {
+            // #region trace dev
+            OItem() { return this.$store.getters.moItem },
+            // #endregion
+        },
+        methods: {
+
+        },
+
+    })
     appModal.use(dnbStore)
     appModal.mount(`#app-modal`)
-}).catch(errStatus => {
-    console.log('Woop!', errStatus)
-})
+}).catch(errStatus => { console.log('Woop!', errStatus) })

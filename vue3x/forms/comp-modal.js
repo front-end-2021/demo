@@ -1,10 +1,14 @@
 import { deepCopy } from '../common.js'
 const MxModal = {
     mounted() {
-        $(this.$el).modal('show')
+        const $modal = $(this.$el)
+        $modal.modal({
+            closable: false
+        })
+        $modal.modal('show')
     },
 }
-const CompModal = {
+export const CompModal = {
     template: `#tmp-comp-modal`,
     mixins: [MxModal],
     data() {
@@ -27,7 +31,7 @@ const CompModal = {
         },
     },
 }
-const CompFormLand = {
+export const CompFormLand = {
     template: `#tmp-comp-form-land`,
     mixins: [MxModal],
     data() {
@@ -60,18 +64,21 @@ const CompFormLand = {
         onChangeDes(e) { this.des = e.target.innerHTML },
     },
 }
-export const AppModal = {
-    name: `app-modal`,
-    components: {
-        'comp-modal': CompModal,
-        'comp-form-land': CompFormLand
-    },
-    computed: {
-        // #region trace dev
-        OItem() { return this.$store.getters.moItem },
-        // #endregion
+export const CompFormValuation = {
+    template: `#tmp-comp-form-valuation`,
+    mixins: [MxModal],
+    data() {
+        const valuation = this.$store.getters.moItem.data
+        return {
+            item: valuation,
+            isActive: true,
+        }
     },
     methods: {
+        onSaveClose() {
+            $(this.$el).modal('hide')
+            this.$store.commit('outModal', ['save-close', this.item])
+        },
 
     },
 }

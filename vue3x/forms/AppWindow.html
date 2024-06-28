@@ -1,38 +1,3 @@
-<template id="tmp-comp-form-land">
-    <div class="ui modal" style="width: 344px;">
-        <i class="close icon" @click.stop="onExitClose"></i>
-        <div class="header">Edit Land</div>
-        <div class="image content">
-            <div class="description">
-                <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
-                <span contenteditable="true" v-html="item.Name" 
-                    class="d-inline-block p-2" style="width: 234px;"
-                    @keypress="onKeyPressName"
-                    @input="onChangeName"></span>
-                <br>
-                <strong class="d-inline-block w81px py-2 pe-2">Description: </strong>
-                <span contenteditable="true" v-html="item.Description" 
-                    class="d-inline-block p-2" style="width: 234px; height: 96px;"
-                    @input="onChangeDes"
-                    style="min-height: 180px; width: 570px;"></span>
-                <br>
-                <label class="d-inline-block w81px py-2 pe-2"
-                    :for="'chbx-isnew-land-' + item.Id">Is New *</label><input 
-                    type="checkbox" 
-                    :id="'chbx-isnew-land-' + item.Id"
-                    v-model="item.IsNew" />
-            </div>
-        </div>
-        <div class="actions">
-            <div class="ui black deny button" 
-                @click.stop="onExitClose">Cancel</div>
-            <div class="ui positive right labeled icon button" 
-                @click.stop="onSaveClose">Save And Close<i
-                class="checkmark icon"></i>
-            </div>
-        </div>
-    </div>
-</template>
 <section id="app-modal">
     <component v-if="$store.getters.moItem"
             :is="$store.getters.moItem.type"></component>
