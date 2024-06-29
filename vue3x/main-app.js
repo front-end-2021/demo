@@ -1,6 +1,8 @@
 import { getRandomInt, includeHTML } from './common.js'
 import CompNav from './comp-nav.js'
-import { DropSelect } from './components/comp-global.js'
+import {
+    DropSelect,
+} from './components/comp-global.js'
 import dnbStore from './main-store.js'
 import {
     CompModal, CompFormLand,
@@ -127,5 +129,6 @@ Promise.all([
 
     })
     appModal.use(dnbStore)
+    appModal.component('drop-select', DropSelect)
     appModal.mount(`#app-modal`)
 }).catch(errStatus => { console.log('Woop!', errStatus) })

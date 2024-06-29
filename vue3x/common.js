@@ -20,6 +20,12 @@ export const getTxtBy = (lang) => {
     let Product = `Produkt`
     let Submarkets = `Anspruchsgruppen`
     let ContactPerson = `Ansprechsperson`
+    let Weighting = `Gewichtung`
+    let Criteria = `Criteria`
+    let Valuation = `Bewertung`
+    let Productstrategy = `Produktstrategie`
+    let Active = `Aktiv`
+    let Sub_market = `Teilmarkt`
     if ('en' === lang) {
         PleaseSelect = `Please select`
         Filter = `Filter`
@@ -36,6 +42,12 @@ export const getTxtBy = (lang) => {
         ContactPerson = `Contact Person`
         And = `And`
         Or = `Or`
+        Weighting = `Weighting`
+        Criteria = `Kriterien`
+        Valuation = `Valuation`
+        Active = `Active`
+        Productstrategy = `Product Strategy`
+        Sub_market = `Sub-market`
     }
     return {
         PleaseSelect,
@@ -50,7 +62,10 @@ export const getTxtBy = (lang) => {
         SelectLand,
         SelectMarketsegments,
         ProductGroups, Product,
-        Submarkets, ContactPerson
+        Submarkets, ContactPerson,
+        Weighting, Criteria, Valuation, 
+        Active, Productstrategy,
+        Sub_market
     }
 }
 export const includeHTML = (path) => {

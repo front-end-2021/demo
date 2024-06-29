@@ -71,14 +71,48 @@ export const CompFormValuation = {
         const valuation = this.$store.getters.moItem.data
         return {
             item: valuation,
-            isActive: true,
+            comment: valuation.Comment
         }
+    },
+    computed: {
+        Weights() {
+            const lst = []
+            for (let ii = 10; -11 < ii; ii--)
+                lst.push(ii)
+            return lst;
+        },
+        TotalValue() {
+            if (!this.item.Criterias.length) return
+            const lstCrt = this.item.Criterias.map(x => x.Value * x.Weight)
+            const sum = lstCrt.reduce((a, b) => a + b, 0)
+            return Math.round(sum / lstCrt.length)
+        },
     },
     methods: {
         onSaveClose() {
             $(this.$el).modal('hide')
+            const regex = /<br>/g;
+            this.item.Comment = this.comment.replace(regex, '\n')
             this.$store.commit('outModal', ['save-close', this.item])
         },
+        deleteCriteria(ii) {
+            this.item.Criterias.splice(ii, 1)
+        },
+        setWeight(item, index) {
+            const val = this.Weights[index]
+            item.Weight = val
+        },
+        setValue(item, e) {
+            item.Value = parseInt(e.target.value)
+        },
+        newCriteria() {
+            this.item.Criterias.push({
+                Name: this.$store.getters.txtLang.Criteria,
+                Weight: 0, Value: 0
 
+            })
+        },
+        editComment(e) { this.comment = e.target.innerHTML },
+        toggleActive() { this.item.Active = !this.item.Active }
     },
 }

@@ -35,13 +35,13 @@
 </template>
 <template id="tmp-comp-form-valuation">
     <div class="ui modal">
-        <div class="header">Valuation</div>
-        <div class="image content">
-            <div class="d-flex">
-                <h1>MARKET / LAND / REGION</h1>
-                <span><i class="bi" 
-                    :class="isActive ? 'bi-check2-square' : 'bi-square'"
-                    ></i>Active</span>
+        <div class="header">{{$store.getters.txtLang.Valuation}}</div>
+        <div class="content" style="flex-direction: column;">
+            <div class="d-flex" style="justify-content: space-between;">
+                <h1>{{$store.getters.moItem.path}}</h1>
+                <span @click.stop="toggleActive" style="cursor: default;"
+                    ><i class="bi" :class="item.Active ? 'bi-check2-square' : 'bi-square'"
+                    ></i> {{$store.getters.txtLang.Active}}</span>
             </div>
             <div class="description">
                 <div class="d-flex">
@@ -51,7 +51,43 @@
                     <span>Dropdown</span>
                     <button>Import template</button>
                 </div>
-                
+                <div class="d-grid row-crite">
+                    <strong>{{$store.getters.txtLang.Criteria}}</strong>
+                    <strong>{{$store.getters.txtLang.Weighting}}</strong>
+                    <strong>{{$store.getters.txtLang.Valuation}}</strong>
+                    <span></span>
+                </div>
+                <div v-for="(cri, ci) in item.Criterias" 
+                    class="d-grid row-crite">
+                    <span>{{cri.Name}}</span>
+                    <drop-select :name="cri.Weight.toString()" :items="Weights" 
+                        @set:index="$event => setWeight(cri, $event)"
+                        style="min-width: 96px;max-width: 96px;">
+                        <template #default>
+                            <div class="text">{{cri.Weight}}</div>
+                        </template>
+                    </drop-select>
+                    <div class="d-grid row-crite">
+                        <input type="range" name="crite-value" list="criteria-value" 
+                            @change="e => setValue(cri, e)"
+                            min="-10" max="10" step="1" :value="cri.Value"/>
+                        <span>({{cri.Value}})</span>
+                    </div>
+                    <datalist id="criteria-value">
+                        <option v-for="wgh in Weights" :value="wgh"></option>
+                    </datalist>
+                    <span @click.stop="e => deleteCriteria(ci)">Delete</span>
+                </div>
+                <div class="d-grid row-crite">
+                    <strong @click.stop="newCriteria">+ Criteria</strong>
+                    <strong>Total: {{TotalValue}}</strong>
+                </div>
+            </div>
+            <div>
+                Comments:
+                <div contenteditable="true" v-html="item.Comment" 
+                    @input="editComment"
+                    style="min-height: 90px;"></div>
             </div>
         </div>
         <div class="actions">
