@@ -20,10 +20,19 @@ export const MarketPage = {
     },
     methods: {
         setFilter([landIds, marketIds]) {
+            const rootLandIds = this.$root.LandIds
+            rootLandIds.splice(0)
+            landIds.forEach(id => rootLandIds.push(id))
+
             this.Lands.splice(0)
             this.Lands = this.$store.getters.LandsBy(landIds)
             this.Regions.splice(0)
             this.Regions = this.$store.getters.RegionByLands(landIds)
+
+            const rootMarketIds = this.$root.MarketIds
+            rootMarketIds.splice(0)
+            marketIds.forEach(id => rootMarketIds.push(id))
+
             this.Markets.splice(0)
             this.Markets = this.$store.getters.MarketsBy(marketIds)
         },
@@ -59,8 +68,8 @@ export const MarketPage = {
             }
             this.$store.commit('setModal', [item, saveClose, xClose])
         },
-        getValuation(mId, rId) {
-            const item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+        getValuation(mId, rId, item) {
+            if (!item) item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
             if (!item) return;
             return getTotal(item.Criterias)
             function getTotal(items) {
@@ -71,8 +80,13 @@ export const MarketPage = {
             }
         },
         getBackgroundColor(mId, rId) {
-            const total = this.getValuation(mId, rId)
+            const item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+            if (!item) return
+            if (!item.Active) return { backgroundColor: `#eaeaea`, color: `#fff` }
+
+            const total = this.getValuation(mId, rId, item)
             if (0 == total) return { backgroundColor: `#f0de4f`, color: `#fff` }
+            
             if (-11 < total && total < 0) return { backgroundColor: `#f9bb51`, color: `#fff` }
             if (-21 < total && total < -10) return { backgroundColor: `#f2ad4d`, color: `#fff` }
             if (-31 < total && total < -20) return { backgroundColor: `#e99c49`, color: `#fff` }
@@ -127,8 +141,16 @@ export const MarketPage = {
         },
         classSquare(mId, rId) {
             const item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
-            if (item) return `bi-check2-square`
+            if (!item) return `bi-square`
+            if (item.Active) return `bi-check2-square`
             return `bi-square`
+        },
+        dblclOpenFormValue(market, region) {
+            const mId = market.Id
+            const rId = region.Id
+            const item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+            if (!item) return
+            this.openFormValuation(market, region)
         },
         openFormValuation(market, region) {
             const landId = region.LandId
@@ -154,5 +176,12 @@ export const MarketPage = {
                 type: `comp-form-valuation`
             }, saveClose, () => { }])
         },
-    }
+        onClickTab(e) {
+            //console.log('on click tab', e.target, e)
+            this.MenuValuation.splice(0)
+        },
+    },
+    mounted() {
+
+    },
 }

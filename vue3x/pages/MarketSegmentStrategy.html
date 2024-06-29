@@ -1,5 +1,5 @@
 <template id="tmp-comp-market">
-    <section>
+    <section @click="onClickTab" style="padding-bottom: 169px;">
       <div class="mt-2">
         <comp-filter-market 
           @set:filter="$event => setFilter($event)">
@@ -34,6 +34,7 @@
                 <td class="p6px">{{market.Name}}</td>
                 <td v-for="(region, ii) in Regions" class="p6px" style="height: 36px;">
                   <div class="cell-valuation" 
+                    @dblclick="e => dblclOpenFormValue(market, region)"
                     :style="[getBackgroundColor(market.Id, region.Id)]"
                     @mouseover="e => mouseOverValuation(imk, ii)">
                     <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>

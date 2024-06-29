@@ -38,7 +38,7 @@
             @set:ids="$event => setIds(iic, $event)"></comp-criterial-market>
     </div>
     <button @click.stop="setFilter">{{$store.getters.txtLang.Filter}}</button>
-    <button 
+    <button @click.stop="resetFilter"
         style="margin: 6px">{{$store.getters.txtLang.Reset}}</button>
     <button @click.stop="addFilter"
         >{{$store.getters.txtLang.AddFilter}}</button>

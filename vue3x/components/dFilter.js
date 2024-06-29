@@ -230,6 +230,18 @@ export const MsFilterMarket = {
                 }
             }
         },
+        resetFilter(e){
+            const lstC = this.Criterials
+            for(let cc = lstC.length - 1; 0 < cc; cc--) {
+                const items = lstC[cc]
+                items[1].splice(0)
+                items.splice(0)
+                lstC.splice(cc, 1)
+            }
+            lstC[0][1].splice(0)
+            lstC[0].splice(0, 1, FTypeId.PleaseSelect)
+            this.setFilter()
+        },
         removeCriterial(iic) { this.Criterials.splice(iic, 1) },
     },
 }
