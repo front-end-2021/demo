@@ -1,17 +1,15 @@
-import { MsFilter, MsFilterMarket } from "../components/dFilter.js";
-export const MarketPage = {
+import { MsFilterMarket } from "../components/dFilter.js";
+export default {
     template: `#tmp-comp-market`,
     components: {
         'comp-filter-market': MsFilterMarket,
-        //'comp-filter': MsFilter,
     },
     data() {
         return {
-            Lands: this.$store.getters.LandsBy([0]),
-            Regions: this.$store.getters.RegionByLands([0]),
-            Markets: this.$store.getters.MarketsBy([0]),
+            Lands: [],
+            Regions: [],
+            Markets: [],
 
-            MarketRegions: [],
             MenuValuation: [],
         }
     },
@@ -34,6 +32,14 @@ export const MarketPage = {
             marketIds.forEach(id => rootMarketIds.push(id))
 
             this.Markets.splice(0)
+            this.Markets = this.$store.getters.MarketsBy(marketIds)
+        },
+        setLandRegionMarket() {
+            const landIds = this.$root.LandIds
+            this.Lands = this.$store.getters.LandsBy(landIds)
+            this.Regions = this.$store.getters.RegionByLands(landIds)
+
+            const marketIds = this.$root.MarketIds
             this.Markets = this.$store.getters.MarketsBy(marketIds)
         },
         editLand(land) {
@@ -63,13 +69,44 @@ export const MarketPage = {
 
             }
             const item = {
+                title: `Edit Land`,
+                data: JSON.parse(JSON.stringify(land)),
+                type: `comp-form-land`
+            }
+            this.$store.commit('setModal', [item, saveClose, xClose])
+        },
+        newLand() {
+            const land = {
+                Id: this.$store.getters.newId(1),
+                Name: '', IsNew: false, Description: '',
+                ASort: this.$store.getters.newASort(1)
+            }
+            const saveClose = (mLand) => {
+                mLand = JSON.parse(JSON.stringify(mLand))
+                for (const [key, value] of Object.entries(mLand)) {
+                    land[key] = value
+                }
+                this.$store.state.Lands.push(land)
+                this.setLandRegionMarket()
+            }
+            const xClose = (mLand) => {
+                if (typeof mLand.Name != 'string') return
+                if (!mLand.Name.length) return
+
+                let mess = `Do you want to save?`
+                if (confirm(mess)) {
+                    saveClose(mLand)
+                }
+            }
+            const item = {
+                title: `New Land`,
                 data: JSON.parse(JSON.stringify(land)),
                 type: `comp-form-land`
             }
             this.$store.commit('setModal', [item, saveClose, xClose])
         },
         getValuation(mId, rId, item) {
-            if (!item) item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+            if (!item) item = this.$store.getters.MarketRegionBy([mId, rId])
             if (!item) return;
             return getTotal(item.Criterias)
             function getTotal(items) {
@@ -80,13 +117,13 @@ export const MarketPage = {
             }
         },
         getBackgroundColor(mId, rId) {
-            const item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+            const item = this.$store.getters.MarketRegionBy([mId, rId])
             if (!item) return
             if (!item.Active) return { backgroundColor: `#eaeaea`, color: `#fff` }
 
             const total = this.getValuation(mId, rId, item)
             if (0 == total) return { backgroundColor: `#f0de4f`, color: `#fff` }
-            
+
             if (-11 < total && total < 0) return { backgroundColor: `#f9bb51`, color: `#fff` }
             if (-21 < total && total < -10) return { backgroundColor: `#f2ad4d`, color: `#fff` }
             if (-31 < total && total < -20) return { backgroundColor: `#e99c49`, color: `#fff` }
@@ -122,10 +159,10 @@ export const MarketPage = {
             this.MenuValuation.splice(1, 1, irg)
         },
         activeValuation(MarketId, RegionId) {
-            const item = this.MarketRegions.find(x => MarketId == x.MarketId && RegionId == x.RegionId);
+            const item = this.$store.getters.MarketRegionBy([MarketId, RegionId])
             //  this.MenuValuation.splice(0)
             if (!item) {
-                this.MarketRegions.push({
+                this.$store.state.MarketRegions.push({
                     MarketId, RegionId,
                     Criterias: [], Active: true,
                     Comment: ``
@@ -135,20 +172,20 @@ export const MarketPage = {
             item.Active = !item.Active
         },
         clssCheckMark(mId, rId) {
-            const item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+            const item = this.$store.getters.MarketRegionBy([mId, rId])
             if (!item) return
             if (item.Active) return `checkmark`
         },
         classSquare(mId, rId) {
-            const item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+            const item = this.$store.getters.MarketRegionBy([mId, rId])
             if (!item) return `bi-square`
             if (item.Active) return `bi-check2-square`
             return `bi-square`
         },
         dblclOpenFormValue(market, region) {
             const mId = market.Id
-            const rId = region.Id
-            const item = this.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+            const rId = region.Id;
+            const item = this.$store.getters.MarketRegionBy([mId, rId])
             if (!item) return
             this.openFormValuation(market, region)
         },
@@ -158,28 +195,45 @@ export const MarketPage = {
             if (land) {
                 land = land.Name + (land.IsNew ? ' *' : '')
             } else land = 'LAND'
-            const mId = market.Id
-            const rId = region.Id
-            this.MenuValuation.splice(0)
-            const ii = this.MarketRegions.findIndex(x => mId == x.MarketId && rId == x.RegionId);
-            if (ii < 0) return;
-            let item = JSON.parse(JSON.stringify(this.MarketRegions[ii]))
-            const saveClose = (mItem) => {
-                //console.log('save close', mItem)
-                item = Object.assign(item, mItem)
-                this.MarketRegions.splice(ii, 1, item)
-            }
 
-            this.$store.commit('setModal', [{
-                data: item,
-                path: `${market.Name} / ${land} / ${region.Name}`,
-                type: `comp-form-valuation`
-            }, saveClose, () => { }])
+            this.MenuValuation.splice(0)
+            this.$store.dispatch('openFormValue',
+                [market.Id, region.Id]).then(([ii, itemCopy]) => {
+                    if (ii < 0) return;
+                    const saveClose = (mItem) => {
+                        itemCopy = Object.assign(itemCopy, mItem)
+                        this.$store.state.MarketRegions.splice(ii, 1, itemCopy)
+                    }
+                    this.$store.commit('setModal', [{
+                        data: itemCopy,
+                        path: `${market.Name} / ${land} / ${region.Name}`,
+                        type: `comp-form-valuation`
+                    }, saveClose, () => { }])
+                })
+
         },
         onClickTab(e) {
             //console.log('on click tab', e.target, e)
             this.MenuValuation.splice(0)
         },
+        newMarket() {
+            const market = {
+                Id: this.$store.getters.newId(3),
+                Name: '', Description: '', LandId: -12,
+                ASort: this.$store.getters.newASort(3)
+            }
+            const saveClose = (mMarket) => {
+
+            }
+            const xClose = (mMarket) => {
+
+            }
+
+            this.$store.commit('setModal', [market, saveClose, xClose])
+        },
+    },
+    created() {
+        this.setLandRegionMarket()
     },
     mounted() {
 

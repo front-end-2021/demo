@@ -60,30 +60,17 @@
         @click.stop="e => selectPage(ipg)">{{page}}</h4>
     </nav>
 
-    <section style="margin-bottom: 9px;">{{$store.getters.message}}</section>
-    <comp-nav></comp-nav>
-    <drop-select :name="UserAssign" :items="Users" 
-      @set:index="$event => setUserAssign($event)">
-      <template #default>
-        <div class="default text">Assign</div>
-      </template>
-    </drop-select>
-
-    
     <component :is="CompPage" v-cloak></component>
 
   </main>
 
 
-  <template id="tmp-comp-nav">
-    <button @click="upCount">Clicked {{ count }} {{1 == count ? 'time' : 'times'}}.</button>
-    <button @click="resetCount" style="margin-left:9px;">Reset Count</button>
-    
-  </template>
 
   <span class="dnbimporthtml" dnbpath="./components/dFilter.html"></span>
   <span class="dnbimporthtml" dnbpath="./components/semantics.html"></span>
   <span class="dnbimporthtml" dnbpath="./pages/MarketSegmentStrategy.html"></span>
+  <span class="dnbimporthtml" dnbpath="./pages/SubmarketProduct.html"></span>
+  <span class="dnbimporthtml" dnbpath="./pages/ActionPlan.html"></span>
   <span class="dnbimporthtml" dnbpath="./forms/form-land.html"></span>
   <span class="dnbimporthtml" dnbpath="./forms/AppWindow.html"></span>
 

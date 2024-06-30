@@ -42,6 +42,9 @@ export const CompFormLand = {
             des: land.Description
         }
     },
+    computed: {
+        Title() { return this.$store.getters.moItem.title }
+    },
     methods: {
         onExitClose() {
             this.item.Name = this.name

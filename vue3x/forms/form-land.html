@@ -1,7 +1,7 @@
 <template id="tmp-comp-form-land">
     <div class="ui modal" style="width: 344px;">
         <i class="close icon" @click.stop="onExitClose"></i>
-        <div class="header">Edit Land</div>
+        <div class="header">{{Title}}</div>
         <div class="image content">
             <div class="description">
                 <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
@@ -44,11 +44,11 @@
                     ></i> {{$store.getters.txtLang.Active}}</span>
             </div>
             <div class="description">
-                <div class="d-flex">
-                    <button>New</button>
-                    <button>Update</button>
-                    <button>Delete</button>
-                    <span>Dropdown</span>
+                <div class="d-flex my-3">
+                    <button class="me-2">New</button>
+                    <button class="me-2">Update</button>
+                    <button class="me-2">Delete</button>
+                    <span class="me-2">Dropdown</span>
                     <button>Import template</button>
                 </div>
                 <div class="d-grid row-crite">

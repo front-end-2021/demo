@@ -25,11 +25,11 @@ export default createStore({
             { Id: 7, Name: 'Quang Ninh', LandId: 1, ASort: 2 },
         ],
         Markets: [
-            { Id: 2, Name: 'Dong Xuan', LandId: 3, ASort: 3 },
-            { Id: 3, Name: 'Sapa market', LandId: 1, ASort: 1 },
-            { Id: 4, Name: 'Quang Ninh market', LandId: 1, ASort: 2 },
-            { Id: 5, Name: 'Hue market', LandId: 4, ASort: 4 },
-            { Id: 6, Name: 'Cai Rang market', LandId: 6, ASort: 5 },
+            { Id: 2, Name: 'Dong Xuan', LandId: 3, ASort: 3, Description: '' },
+            { Id: 3, Name: 'Sapa market', LandId: 1, ASort: 1, Description: '' },
+            { Id: 4, Name: 'Quang Ninh market', LandId: 1, ASort: 2, Description: '' },
+            { Id: 5, Name: 'Hue market', LandId: 4, ASort: 4, Description: '' },
+            { Id: 6, Name: 'Cai Rang market', LandId: 6, ASort: 5, Description: '' },
         ],
         Submarkets: [
             { Id: 7, Name: 'Square 1', MarketId: 2 },
@@ -39,29 +39,18 @@ export default createStore({
             { Id: 6, Name: 'Cairang submarket 3', MarketId: 6 },
         ],
 
+        MarketRegions: [], // [{MarketId, RegionId, Criterias [], Active, Comment}]
         count: 0,
-        message: 'Hello world!',
         Modal: null,
     },
     actions: {
-        increment({ commit, state }) {
-            commit('increment')
-            if (state.message.includes('world')) {
-                setMessCount.call(state)
-            }
-            return state.count
-        },
-        resetCount({ commit, state }) {
-            commit('resetCount')
-            if (state.message.includes('world')) {
-                setMessCount.call(state)
-            }
+        // resetCount({ commit, state }) { commit('resetCount'); return state.Project; },
+        openFormValue({ commit, state }, [mId, rId]) {
+            const ii = state.MarketRegions.findIndex(x => mId == x.MarketId && rId == x.RegionId);
+            return [ii, JSON.parse(JSON.stringify(state.MarketRegions[ii]))]
         },
     },
     getters: {
-        count(state) { return state.count },
-        message(state) { return state.message },
-
         moItem(state) {
             if (Object.is(state.Modal, null)) return null
             return state.Modal.item
@@ -72,7 +61,6 @@ export default createStore({
             if (typeof lng != 'object' || Object.is(lng, null)) return {}
             return lng
         },
-
         txtLang(state) {
             const lng = state.Languages[state.IndexLang]
             if (lng) return getTxtBy(lng.Key);
@@ -96,6 +84,34 @@ export default createStore({
             return ''
         },
 
+        newId: (state) => (type) => {
+            let lst = []
+            switch(type) {
+                case 1: lst = state.Lands.map(x => x.Id)
+                break;
+                case 2: lst = state.Regions.map(x => x.Id)
+                break;
+                case 3: lst = state.Markets.map(x => x.Id)
+                break;
+            }
+            if(!lst.length) return 1;
+            lst.sort((a, b) => b - a)
+            return lst[0] + 1
+        },
+        newASort: (state) => (type) => {
+            let lst = []
+            switch(type) {
+                case 1: lst = state.Lands.map(x => x.ASort)
+                break;
+                case 2: lst = state.Regions.map(x => x.ASort)
+                break;
+                case 3: lst = state.Markets.map(x => x.ASort)
+                break;
+            }
+            if(!lst.length) return 1;
+            lst.sort((a, b) => b - a)
+            return lst[0] + 1
+        },
         LandsBy: (state) => (ids) => {
             const lst = []
             let land
@@ -128,18 +144,11 @@ export default createStore({
             lst.sort((a, b) => a.ASort - b.ASort)
             return lst
         },
+        MarketRegionBy: (state) => ([mId, rId]) => {
+            return state.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
+        },
     },
     mutations: {
-        increment(state) { state.count++ },
-        resetCount(state) { state.count = 0 },
-        assignUser(state, name) {
-            if (!name || 'Unassigned' == name) {
-                setMessCount.call(state)
-                return
-            }
-            state.message = `Hello ${name}!`
-        },
-
         setModal(state, [item, saveClose, exitClose]) {
             // console.log('set modal', item)
             state.Modal = { item, saveClose, exitClose }
@@ -162,7 +171,3 @@ export default createStore({
         setILang(state, val) { state.IndexLang = val },
     }
 })
-function setMessCount() {
-    const state = this
-    state.message = `Hello world: ${state.count} ${1 == state.count ? 'time' : 'times'}`
-}

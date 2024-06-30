@@ -176,11 +176,33 @@ export const MsFilterMarket = {
         'comp-criterial-market': FCriterialMarket,
     },
     emits: ['set:filter'],
+    props: {
+        landIds: {
+            type: Array,
+            default: [0]
+        },
+        marketIds: {
+            type: Array,
+            default: [0]
+        },
+    },
     data() {
+        let id, lstCrite = []
+        if (!this.landIds.includes(0)) {
+            for (let ll = 0; ll < this.landIds.length; ll++) {
+                id = this.landIds[ll]
+                lstCrite.push([FTypeId.Land_Region, [id]])
+            }
+        }
+        if (!this.marketIds.includes(0)) {
+            for (let mm = 0; mm < this.marketIds.length; mm++) {
+                id = this.marketIds[mm]
+                lstCrite.push([FTypeId.MarketSegments, [id]])
+            }
+        }
+        if (!lstCrite.length) lstCrite.push([FTypeId.PleaseSelect, []])    // [Type, Ids]
         return {
-            Criterials: [
-                [FTypeId.PleaseSelect, []],    // [Type, Ids]
-            ],
+            Criterials: lstCrite,
         }
     },
     methods: {
@@ -230,9 +252,9 @@ export const MsFilterMarket = {
                 }
             }
         },
-        resetFilter(e){
+        resetFilter(e) {
             const lstC = this.Criterials
-            for(let cc = lstC.length - 1; 0 < cc; cc--) {
+            for (let cc = lstC.length - 1; 0 < cc; cc--) {
                 const items = lstC[cc]
                 items[1].splice(0)
                 items.splice(0)

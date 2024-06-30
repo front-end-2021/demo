@@ -1,0 +1,11 @@
+<template id="tmp-comp-action-plan">
+    <section>
+        <drop-select :name="UserAssign" :items="Users" 
+            @set:index="$event => setUserAssign($event)">
+            <template #default>
+                <div class="default text">Assign</div>
+            </template>
+            </drop-select>
+    </section>
+    <h1>Action Plan</h1>
+</template>
