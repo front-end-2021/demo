@@ -34,6 +34,7 @@ Promise.all([
                 IndexPage: 0,
 
                 LandIds: [0],
+                ActiveLandId: 0,
                 MarketIds: [0],
             }
         },

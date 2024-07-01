@@ -42,6 +42,7 @@ export default {
             const marketIds = this.$root.MarketIds
             this.Markets = this.$store.getters.MarketsBy(marketIds)
         },
+        activeLand(land){ this.$root.ActiveLandId = land.Id },
         editLand(land) {
             const saveClose = (mLand) => {
                 mLand = JSON.parse(JSON.stringify(mLand))

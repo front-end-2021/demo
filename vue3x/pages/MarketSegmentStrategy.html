@@ -16,9 +16,13 @@
       <div>
         <h2 style="margin-top: 18px;">Market segments</h2>
         <div>
-          <button v-for="land in Lands" style="margin-right: 6px;"
-            @dblclick="e => editLand(land)">{{land.Name}}</button>
-          <button @click.stop="newLand">+ Land</button>
+          <div class="d-inline-block"
+            v-for="land in Lands" style="margin-right: 6px;"
+            :class="[$root.ActiveLandId == land.Id ? 'active' : '']"
+            @dblclick="e => editLand(land)">
+              <div class="d-inline-block" @click.stop="e => activeLand(land)">{{land.Name}}</div>
+          </div>
+          <div class="d-inline-block" @click.stop="newLand">+ Land</div>
         </div>
         <table class="ui celled definition table" style="width: initial;">
           <thead>
