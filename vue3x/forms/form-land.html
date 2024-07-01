@@ -67,15 +67,8 @@
                             <div class="text">{{cri.Weight}}</div>
                         </template>
                     </drop-select>
-                    <div class="d-grid row-crite">
-                        <input type="range" name="crite-value" list="criteria-value" 
-                            @change="e => setValue(cri, e)"
-                            min="-10" max="10" step="1" :value="cri.Value"/>
-                        <span>({{cri.Value}})</span>
-                    </div>
-                    <datalist id="criteria-value">
-                        <option v-for="wgh in Weights" :value="wgh"></option>
-                    </datalist>
+                    <s-range :start="cri.Value" 
+                        @set:value="$event => setValue(cri, $event)"></s-range>
                     <span @click.stop="e => deleteCriteria(ci)">Delete</span>
                 </div>
                 <div class="d-grid row-crite">

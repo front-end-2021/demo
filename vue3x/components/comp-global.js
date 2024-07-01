@@ -45,3 +45,40 @@ export const DropSelect = {
     // index(val) { },
     //},
 }
+export const SRange = {
+    template: `#tmp-comp-s-range`,
+    props: {
+        min: {
+            type: Number,
+            default: -10
+        },
+        max: {
+            type: Number,
+            default: 10
+        },
+        start: Number,
+        labelType: {
+            type: String,
+            default: 'number'//'letter
+        },
+        step: {
+            type: Number,
+            default: 1
+        }
+    },
+    emits: ['set:value'],
+    //methods: {},
+    mounted() {
+        const min = this.min,
+            max = this.max,
+            start = this.start;
+        let labelType = this.labelType
+        const onChange = (value) => {
+            this.$emit('set:value', value)
+        }
+        $(this.$el).range({
+            min, max, start, labelType,
+            onChange
+        });
+    },
+}

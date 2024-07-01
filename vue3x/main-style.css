@@ -245,7 +245,7 @@ button {
 }
 
 .row-crite {
-    grid-template-columns: 247px 105px 277px auto;
+    grid-template-columns: 300px 105px 366px 54px;
     align-items: center;
     margin-bottom: 9px;
 }

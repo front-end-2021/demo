@@ -80,8 +80,7 @@ export const CompFormValuation = {
     computed: {
         Weights() {
             const lst = []
-            for (let ii = 10; -11 < ii; ii--)
-                lst.push(ii)
+            for (let ii = 10; -11 < ii; ii--) lst.push(ii);
             return lst;
         },
         TotalValue() {
@@ -98,16 +97,12 @@ export const CompFormValuation = {
             this.item.Comment = this.comment.replace(regex, '\n')
             this.$store.commit('outModal', ['save-close', this.item])
         },
-        deleteCriteria(ii) {
-            this.item.Criterias.splice(ii, 1)
-        },
+        deleteCriteria(ii) { this.item.Criterias.splice(ii, 1) },
         setWeight(item, index) {
             const val = this.Weights[index]
             item.Weight = val
         },
-        setValue(item, e) {
-            item.Value = parseInt(e.target.value)
-        },
+        setValue(item, value) { item.Value = parseInt(value) },
         newCriteria() {
             this.item.Criterias.push({
                 Name: this.$store.getters.txtLang.Criteria,
@@ -117,5 +112,13 @@ export const CompFormValuation = {
         },
         editComment(e) { this.comment = e.target.innerHTML },
         toggleActive() { this.item.Active = !this.item.Active }
+    },
+    mounted() {
+        $('#range-0').range({
+            min: 0,
+            max: 10,
+            start: 5,
+            labelType: 'letter'
+        });
     },
 }

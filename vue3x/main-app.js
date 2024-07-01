@@ -1,6 +1,6 @@
 import { getRandomInt, includeHTML } from './common.js'
 import {
-    DropSelect,
+    DropSelect, SRange
 } from './components/comp-global.js'
 import dnbStore from './main-store.js'
 import {
@@ -99,5 +99,6 @@ Promise.all([
     })
     appModal.use(dnbStore)
     appModal.component('drop-select', DropSelect)
+    appModal.component('s-range', SRange)
     appModal.mount(`#app-modal`)
 }).catch(errStatus => { console.log('Woop!', errStatus) })

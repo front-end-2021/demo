@@ -175,7 +175,7 @@ export default {
         clssCheckMark(mId, rId) {
             const item = this.$store.getters.MarketRegionBy([mId, rId])
             if (!item) return
-            if (item.Active) return `checkmark`
+            if (item.Active) return `bi-check`
         },
         classSquare(mId, rId) {
             const item = this.$store.getters.MarketRegionBy([mId, rId])
