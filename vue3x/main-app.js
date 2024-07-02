@@ -5,7 +5,7 @@ import {
 import dnbStore from './main-store.js'
 import {
     CompModal, CompFormLand,
-    CompFormValuation
+    CompFormValuation, CompMessNewLand
 } from './forms/comp-modal.js'
 import MarketSegmentStrategy from './pages/MarketSegmentStrategy.js'
 import SubmarketProduct from './pages/SubmarketProduct.js'
@@ -85,7 +85,8 @@ Promise.all([
         components: {
             'comp-modal': CompModal,
             'comp-form-land': CompFormLand,
-            'comp-form-valuation': CompFormValuation
+            'comp-form-valuation': CompFormValuation,
+            'comp-mess-newland': CompMessNewLand
         },
         computed: {
             // #region trace dev

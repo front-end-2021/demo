@@ -122,3 +122,7 @@ export const CompFormValuation = {
         });
     },
 }
+export const CompMessNewLand = {
+    template: `#tmp-comp-mess-newland`,
+    mixins: [MxModal],
+}

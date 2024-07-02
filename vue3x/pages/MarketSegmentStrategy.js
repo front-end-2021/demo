@@ -94,18 +94,19 @@ export default {
                     let mess = `New Land has not in filter result. Do you want?`
                     // reset filter or add new land in filter criterial
                     const rootLandIds = this.$root.LandIds
-                    const resetFilter = () => {
-
+                    const resetLands = () => {
+                        rootLandIds.splice(0)
+                        rootLandIds.push(0)
                     }
                     const filterNewLand = () => {
-
+                        rootLandIds.push(mLand.Id)
                     }
                     let item = {
-                        type: '',
+                        type: 'comp-mess-newland',
                         title: mess,
                         data: null
                     }
-                 //   this.$store.commit('setModal', [item, filterNewLand, resetFilter])
+                    this.$store.commit('setModal', [item, filterNewLand, resetLands])
                 }
             }
             const xClose = (mLand) => {

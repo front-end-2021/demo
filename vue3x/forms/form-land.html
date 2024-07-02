@@ -91,3 +91,19 @@
         </div>
     </div>
 </template>
+<template id="tmp-comp-mess-newland">
+    <div class="ui modal">
+        <div class="header">{{$store.getters.moItem.title}}</div>
+        <div class="content">
+            <div class="description"></div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button" 
+                @click.stop="onExitClose">Reset Filter Land</div>
+            <div class="ui positive right labeled icon button" 
+                @click.stop="onSaveClose">Filter Contain New Land<i
+                class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+</template>

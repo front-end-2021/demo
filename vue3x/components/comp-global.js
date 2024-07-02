@@ -41,9 +41,7 @@ export const DropSelect = {
             }
         },
     },
-    //watch: {
-    // index(val) { },
-    //},
+    
 }
 export const SRange = {
     template: `#tmp-comp-s-range`,
