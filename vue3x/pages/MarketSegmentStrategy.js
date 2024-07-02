@@ -88,7 +88,25 @@ export default {
                     land[key] = value
                 }
                 this.$store.state.Lands.push(land)
-                this.setLandRegionMarket()
+                const landIds = this.$root.LandIds
+                if(landIds.includes(0)) this.setLandRegionMarket()
+                else {
+                    let mess = `New Land has not in filter result. Do you want?`
+                    // reset filter or add new land in filter criterial
+                    const rootLandIds = this.$root.LandIds
+                    const resetFilter = () => {
+
+                    }
+                    const filterNewLand = () => {
+
+                    }
+                    let item = {
+                        type: '',
+                        title: mess,
+                        data: null
+                    }
+                 //   this.$store.commit('setModal', [item, filterNewLand, resetFilter])
+                }
             }
             const xClose = (mLand) => {
                 if (typeof mLand.Name != 'string') return
