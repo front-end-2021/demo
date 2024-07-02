@@ -186,14 +186,6 @@ export const MsFilterMarket = {
             default: [0]
         },
     },
-    setup(props) {
-        Vue.watch(
-            () => props.landIds,
-            (ids, olds) => {
-                console.log(ids, olds)
-            }
-        )
-    },
     data() {
         let id, lstCrite = []
         if (!this.landIds.includes(0)) {

@@ -56,13 +56,14 @@ Promise.all([
         },
         methods: {
             selectPage(index) { this.IndexPage = index },
-            
+
             setIndexProject(val) { this.IndexProject = parseInt(val) },
             setIndexLang(val) { this.$store.commit('setILang', parseInt(val)) },
-           
-            
+
+
         },
         created() {
+            
             this.IndexProject = getRandomInt(0, this.$store.state.Projects.length)
         },
         beforeMount() {

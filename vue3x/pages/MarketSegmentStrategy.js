@@ -18,18 +18,15 @@ export default {
     },
     methods: {
         setFilter([landIds, marketIds]) {
-            const rootLandIds = this.$root.LandIds
-            rootLandIds.splice(0)
-            landIds.forEach(id => rootLandIds.push(id))
-
+            this.$root.LandIds.splice(0)
+            this.$root.LandIds = landIds
             this.Lands.splice(0)
             this.Lands = this.$store.getters.LandsBy(landIds)
             this.Regions.splice(0)
             this.Regions = this.$store.getters.RegionByLands(landIds)
 
-            const rootMarketIds = this.$root.MarketIds
-            rootMarketIds.splice(0)
-            marketIds.forEach(id => rootMarketIds.push(id))
+            this.$root.MarketIds.splice(0)
+            this.$root.MarketIds = marketIds
 
             this.Markets.splice(0)
             this.Markets = this.$store.getters.MarketsBy(marketIds)
@@ -87,18 +84,21 @@ export default {
                 for (const [key, value] of Object.entries(mLand)) {
                     land[key] = value
                 }
-                this.$store.state.Lands.push(land)
+                this.$store.state.Lands.push(land);
+                debugger
                 const landIds = this.$root.LandIds
                 if(landIds.includes(0)) this.setLandRegionMarket()
                 else {
                     let mess = `New Land has not in filter result. Do you want?`
                     // reset filter or add new land in filter criterial
-                    const rootLandIds = this.$root.LandIds
                     const resetLands = () => {
-                        rootLandIds.splice(0)
-                        rootLandIds.push(0)
+                        debugger
+                        landIds.splice(0)
+                        this.$root.LandIds = [0]
                     }
                     const filterNewLand = () => {
+                        debugger
+                        const rootLandIds = this.$root.LandIds
                         rootLandIds.push(mLand.Id)
                     }
                     let item = {
