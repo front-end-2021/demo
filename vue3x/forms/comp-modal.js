@@ -1,5 +1,8 @@
 import { deepCopy } from '../common.js'
 const MxModal = {
+    props: {
+        moItem: Object
+    },
     mounted() {
         const $modal = $(this.$el)
         $modal.modal({
@@ -12,22 +15,22 @@ export const CompModal = {
     template: `#tmp-comp-modal`,
     mixins: [MxModal],
     data() {
-        const mit = deepCopy(this.$store.getters.moItem.data)
+        const mit = deepCopy(this.moItem.data)
         return {
-            MItem: mit,
+            item: mit,
         }
     },
     methods: {
         onExitClose() {
             $(this.$el).modal('hide')
-            this.$store.commit('outModal', ['exit-close', deepCopy(this.MItem)])
+            this.$store.commit('outModal', ['exit-close', deepCopy(this.item)])
         },
         onSaveClose() {
             $(this.$el).modal('hide')
-            this.$store.commit('outModal', ['save-close', deepCopy(this.MItem)])
+            this.$store.commit('outModal', ['save-close', deepCopy(this.item)])
         },
         onChangeDes(e) {
-            this.MItem.content.description = e.target.innerHTML
+            this.item.content.description = e.target.innerHTML
         },
     },
 }
@@ -35,7 +38,7 @@ export const CompFormLand = {
     template: `#tmp-comp-form-land`,
     mixins: [MxModal],
     data() {
-        const land = this.$store.getters.moItem.data
+        const land = this.moItem.data
         return {
             item: land,
             name: land.Name,
@@ -43,7 +46,7 @@ export const CompFormLand = {
         }
     },
     computed: {
-        Title() { return this.$store.getters.moItem.title }
+        Title() { return this.moItem.title }
     },
     methods: {
         onExitClose() {
@@ -71,7 +74,7 @@ export const CompFormValuation = {
     template: `#tmp-comp-form-valuation`,
     mixins: [MxModal],
     data() {
-        const valuation = this.$store.getters.moItem.data
+        const valuation = this.moItem.data
         return {
             item: valuation,
             comment: valuation.Comment
@@ -125,4 +128,14 @@ export const CompFormValuation = {
 export const CompMessNewLand = {
     template: `#tmp-comp-mess-newland`,
     mixins: [MxModal],
+    methods: {
+        onExitClose() {
+            $(this.$el).modal('hide')
+            this.$store.commit('outModal', ['exit-close', undefined])
+        },
+        onSaveClose() {
+            $(this.$el).modal('hide')
+            this.$store.commit('outModal', ['save-close', undefined])
+        },
+    },
 }

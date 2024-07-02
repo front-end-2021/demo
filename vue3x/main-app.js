@@ -34,7 +34,7 @@ Promise.all([
                 IndexPage: 0,
 
                 LandIds: [0],
-                ActiveLandId: 0,
+                ActiveLandIds: [3],
                 MarketIds: [0],
             }
         },
@@ -91,7 +91,7 @@ Promise.all([
         },
         computed: {
             // #region trace dev
-            OItem() { return this.$store.getters.moItem },
+            Items() { return this.$store.state.Modals },
             // #endregion
         },
         methods: {

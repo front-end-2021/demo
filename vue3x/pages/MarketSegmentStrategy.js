@@ -13,22 +13,34 @@ export default {
             MenuValuation: [],
         }
     },
-    computed: {
-
+    watch: {
+        '$root.ActiveLandIds'(ids) {
+            const rootIdLands = this.$root.LandIds
+            let mergeIdLands = ids
+            if (!rootIdLands.includes(0)) {
+                mergeIdLands = ids.filter(id => rootIdLands.includes(id))
+            }
+            this.Regions = this.$store.getters.RegionByLands(mergeIdLands)
+        }
     },
     methods: {
         setFilter([landIds, marketIds]) {
-            this.$root.LandIds.splice(0)
-            this.$root.LandIds = landIds
-            this.Lands.splice(0)
+            const rootIdLands = this.$root.LandIds
+            rootIdLands.splice(0)                           // not watch
+            landIds.forEach(id => rootIdLands.push(id))     // not watch
+
             this.Lands = this.$store.getters.LandsBy(landIds)
-            this.Regions.splice(0)
-            this.Regions = this.$store.getters.RegionByLands(landIds)
 
-            this.$root.MarketIds.splice(0)
-            this.$root.MarketIds = marketIds
+            let mergeIdLands = this.$root.ActiveLandIds
+            if (!landIds.includes(0)) {
+                mergeIdLands = mergeIdLands.filter(id => landIds.includes(id))
+            }
+            this.Regions = this.$store.getters.RegionByLands(mergeIdLands)
 
-            this.Markets.splice(0)
+            const rootIdMarkets = this.$root.MarketIds
+            rootIdMarkets.splice(0)                         // not watch
+            marketIds.forEach(id => rootIdMarkets.push(id)) // not watch
+
             this.Markets = this.$store.getters.MarketsBy(marketIds)
         },
         setLandRegionMarket() {
@@ -39,7 +51,13 @@ export default {
             const marketIds = this.$root.MarketIds
             this.Markets = this.$store.getters.MarketsBy(marketIds)
         },
-        activeLand(land){ this.$root.ActiveLandId = land.Id },
+        activeLand(land) {
+            const rootActiveIdLands = this.$root.ActiveLandIds.map(id => id)
+            const ii = rootActiveIdLands.indexOf(land.Id)
+            if (ii < 0) rootActiveIdLands.push(land.Id)
+            else rootActiveIdLands.splice(ii, 1)
+            this.$root.ActiveLandIds = rootActiveIdLands
+        },
         editLand(land) {
             const saveClose = (mLand) => {
                 mLand = JSON.parse(JSON.stringify(mLand))
@@ -85,21 +103,19 @@ export default {
                     land[key] = value
                 }
                 this.$store.state.Lands.push(land);
-                debugger
                 const landIds = this.$root.LandIds
-                if(landIds.includes(0)) this.setLandRegionMarket()
+                if (landIds.includes(0)) this.setLandRegionMarket()
                 else {
                     let mess = `New Land has not in filter result. Do you want?`
                     // reset filter or add new land in filter criterial
                     const resetLands = () => {
-                        debugger
                         landIds.splice(0)
                         this.$root.LandIds = [0]
                     }
                     const filterNewLand = () => {
-                        debugger
-                        const rootLandIds = this.$root.LandIds
+                        const rootLandIds = this.$root.LandIds.map(id => id);
                         rootLandIds.push(mLand.Id)
+                        this.$root.LandIds = rootLandIds
                     }
                     let item = {
                         type: 'comp-mess-newland',
@@ -164,9 +180,6 @@ export default {
             if (70 < total && total < 81) return { backgroundColor: `#668125`, color: `#fff` }
             if (80 < total && total < 91) return { backgroundColor: `#597623`, color: `#fff` }
             if (90 < total && total < 101) return { backgroundColor: `#4e6d22`, color: `#fff` }
-        },
-        mouseOverValuation(iMarket, iRegion) {
-            //Criteria
         },
         toggleMenuValuation(imk, irg) {
             if (1 < this.MenuValuation.length) {

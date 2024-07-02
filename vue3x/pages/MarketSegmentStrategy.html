@@ -16,13 +16,14 @@
       <div>
         <h2 style="margin-top: 18px;">Market segments</h2>
         <div>
-          <div class="d-inline-block"
-            v-for="land in Lands" style="margin-right: 6px;"
-            :class="[$root.ActiveLandId == land.Id ? 'active' : '']"
+          <div class="d-inline-block ui button"
+            v-for="land in Lands" style="margin-right: 6px; padding: 0;"
+            :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']"
             @dblclick="e => editLand(land)">
-              <div class="d-inline-block" @click.stop="e => activeLand(land)">{{land.Name}}</div>
+              <div class="d-inline-block" style="padding: .78571429em 1.5em;"
+                @click.stop="e => activeLand(land)">{{land.Name}}</div>
           </div>
-          <div class="d-inline-block" @click.stop="newLand">+ Land</div>
+          <div class="d-inline-block ui primary button" @click.stop="newLand">+ Land</div>
         </div>
         <table class="ui celled definition table" style="width: initial;">
           <thead>
@@ -39,8 +40,7 @@
               <td v-for="(region, ii) in Regions" class="p6px" style="height: 36px;">
                 <div class="cell-valuation" 
                   @dblclick="e => dblclOpenFormValue(market, region)"
-                  :style="[getBackgroundColor(market.Id, region.Id)]"
-                  @mouseover="e => mouseOverValuation(imk, ii)">
+                  :style="[getBackgroundColor(market.Id, region.Id)]">
                   <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
                   <i class="bi bi-gear btn-menu-valuation" 
                     @click.stop="e => toggleMenuValuation(imk, ii)"></i>

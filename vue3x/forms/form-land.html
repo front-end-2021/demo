@@ -38,7 +38,7 @@
         <div class="header">{{$store.getters.txtLang.Valuation}}</div>
         <div class="content" style="flex-direction: column;">
             <div class="d-flex" style="justify-content: space-between;">
-                <h1>{{$store.getters.moItem.path}}</h1>
+                <h1>{{moItem.path}}</h1>
                 <span @click.stop="toggleActive" style="cursor: default;"
                     ><i class="bi" :class="item.Active ? 'bi-check2-square' : 'bi-square'"
                     ></i> {{$store.getters.txtLang.Active}}</span>
@@ -92,8 +92,8 @@
     </div>
 </template>
 <template id="tmp-comp-mess-newland">
-    <div class="ui modal">
-        <div class="header">{{$store.getters.moItem.title}}</div>
+    <div class="ui modal" style="width: 460px;">
+        <div class="header">{{moItem.title}}</div>
         <div class="content">
             <div class="description"></div>
         </div>
@@ -101,9 +101,8 @@
             <div class="ui black deny button" 
                 @click.stop="onExitClose">Reset Filter Land</div>
             <div class="ui positive right labeled icon button" 
-                @click.stop="onSaveClose">Filter Contain New Land<i
-                class="checkmark icon"></i>
-            </div>
+                style="padding-right: 21px !important;"
+                @click.stop="onSaveClose">Filter Contain New Land</div>
         </div>
     </div>
 </template>

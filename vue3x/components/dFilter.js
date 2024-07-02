@@ -207,39 +207,43 @@ export const MsFilterMarket = {
     },
     watch: {
         '$root.LandIds'(ids, olds) {
-            console.log(ids, olds)
-            if (ids.includes(0) && !olds.includes(0)) {
+            let isSetFilter = false
+            if (ids.includes(0)) {
                 // filter reset Lands (after add new Land)
-                if (olds.length < ids.length) {
-                    const newIds = ids.filter(id => olds.indexOf(id) < 0);
-                    for (let ll = 0; ll < newIds.length; ll++) {
-                        let id = newIds[ll]
-                        this.Criterials.push([FTypeId.Land_Region, [id]])
+                const lstC = this.Criterials
+                if (lstC.filter(x => x[0] === FTypeId.Land_Region).length) {
+                    for (let cc = lstC.length - 1; -1 < cc; cc--) {
+                        const crites = lstC[cc]
+                        if (crites[0] === FTypeId.Land_Region) {
+                            const id = crites[1][0]
+                            if (0 < id) {
+                                lstC.splice(cc, 1)      // remove
+                                isSetFilter = true
+                            }
+                        }
                     }
+                    if(!lstC.length) {
+                        lstC.push([FTypeId.Land_Region, [0]])
+                    }
+                    if(isSetFilter) this.setFilter()
                     return
                 }
             }
             if (!ids.includes(0) && !olds.includes(0)) {
                 // add new land in filter criterial
-                if (ids.length < olds.length) {
-                    const removeIds = olds.filter(id => ids.indexOf(id) < 0);
-                    const lstC = this.Criterials
-                    for (let cc = 0; cc < lstC.length; cc++) {
-                        let crites = lstC[cc]
-                        if (crites[0] === FTypeId.Land_Region) {
-                            const id = crites[1][0]
-                            if (removeIds.includes(id)) {
-                                lstC.splice(cc, 1)      // remove
-                            }
-                        }
+                if (olds.length < ids.length) {
+                    for (let ll = 0; ll < ids.length; ll++) {
+                        const id = ids[ll]
+                        if (olds.includes(id)) continue;
+                        this.Criterials.push([FTypeId.Land_Region, [id]])
+                        isSetFilter = true
                     }
+                    if(isSetFilter) this.setFilter()
                     return
                 }
             }
         },
-        Criterials(val) {
-            console.log('criterials', val)
-        }
+        
     },
     methods: {
         setTypeF(ii, val) {

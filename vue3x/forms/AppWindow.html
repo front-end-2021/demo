@@ -1,58 +1,28 @@
 <section id="app-modal">
-    <component v-if="$store.getters.moItem"
-            :is="$store.getters.moItem.type"></component>
     
+    <component v-for="entry in $store.getters.ListModal"
+        :is="entry.item.type" :mo-item="entry.item"></component>
     
-    <!-- <comp-modal v-if="$store.getters.moItem">
-        <template #xbtn="{ onexit }">
-            <i class="close icon" @click.stop="onexit"></i>
-        </template>
-        <template #context="{ mitem, changedes }">
-            <div class="header">{{mitem.header}}</div>
-            <div class="image content">
-                <div class="ui medium image">
-                    <img :src="mitem.img" style="border-radius: 8px;">
-                </div>
-                <div class="description">
-                    <div class="ui header">{{mitem.content.head}}</div>
-                    <p contenteditable="true" v-html="mitem.content.description" @input="changedes"
-                        style="min-height: 180px; width: 570px;"></p>
-                </div>
-            </div>
-        </template>
-        <template #confirmno="{ onexit }">
-            <div class="ui black deny button" @click.stop="onexit">Nope</div>
-        </template>
-        <template #confirmyes="{ onsave }">
-            <div class="ui positive right labeled icon button" @click.stop="onsave">Yep, that's me<i
-                    class="checkmark icon"></i>
-            </div>
-        </template>
-    </comp-modal> -->
 </section>
 <template id="tmp-comp-modal">
     <div class="ui modal edit-user">
-        <!-- <slot name="xbtn" :onexit="onExitClose"></slot> -->
         <i class="close icon" @click.stop="onExitClose"></i>
 
-        <!-- <slot name="context" :mitem="MItem" :changedes="onChangeDes"></slot> -->
-        <div class="header">{{MItem.header}}</div>
+        <div class="header">{{item.header}}</div>
         <div class="image content">
             <div class="ui medium image">
-                <img :src="MItem.img" style="border-radius: 8px;">
+                <img :src="item.img" style="border-radius: 8px;">
             </div>
             <div class="description">
-                <div class="ui header">{{MItem.content.head}}</div>
-                <p contenteditable="true" v-html="MItem.content.description" 
+                <div class="ui header">{{item.content.head}}</div>
+                <p contenteditable="true" v-html="item.content.description" 
                     @input="onChangeDes"
                     style="min-height: 180px; width: 570px;"></p>
             </div>
         </div>
         <div class="actions">
-            <!-- <slot name="confirmno" :onexit="onExitClose"></slot> -->
             <div class="ui black deny button" @click.stop="onExitClose">Nope</div>
 
-            <!-- <slot name="confirmyes" :onsave="onSaveClose"></slot> -->
             <div class="ui positive right labeled icon button" 
                 @click.stop="onSaveClose">Yep, that's me<i
                 class="checkmark icon"></i>

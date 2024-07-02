@@ -41,7 +41,7 @@ export default createStore({
 
         MarketRegions: [], // [{MarketId, RegionId, Criterias [], Active, Comment}]
         count: 0,
-        Modal: null,
+        Modals: [],
     },
     actions: {
         // resetCount({ commit, state }) { commit('resetCount'); return state.Project; },
@@ -51,10 +51,7 @@ export default createStore({
         },
     },
     getters: {
-        moItem(state) {
-            if (Object.is(state.Modal, null)) return null
-            return state.Modal.item
-        },
+        ListModal(state) { return state.Modals },
 
         activeLang(state) {
             const lng = state.Languages[state.IndexLang]
@@ -86,29 +83,29 @@ export default createStore({
 
         newId: (state) => (type) => {
             let lst = []
-            switch(type) {
+            switch (type) {
                 case 1: lst = state.Lands.map(x => x.Id)
-                break;
+                    break;
                 case 2: lst = state.Regions.map(x => x.Id)
-                break;
+                    break;
                 case 3: lst = state.Markets.map(x => x.Id)
-                break;
+                    break;
             }
-            if(!lst.length) return 1;
+            if (!lst.length) return 1;
             lst.sort((a, b) => b - a)
             return lst[0] + 1
         },
         newASort: (state) => (type) => {
             let lst = []
-            switch(type) {
+            switch (type) {
                 case 1: lst = state.Lands.map(x => x.ASort)
-                break;
+                    break;
                 case 2: lst = state.Regions.map(x => x.ASort)
-                break;
+                    break;
                 case 3: lst = state.Markets.map(x => x.ASort)
-                break;
+                    break;
             }
-            if(!lst.length) return 1;
+            if (!lst.length) return 1;
             lst.sort((a, b) => b - a)
             return lst[0] + 1
         },
@@ -149,23 +146,21 @@ export default createStore({
         },
     },
     mutations: {
-        setModal(state, [item, saveClose, exitClose]) {
-            // console.log('set modal', item)
-            state.Modal = { item, saveClose, exitClose }
-        },
+        setModal(state, [item, saveClose, exitClose]) { state.Modals.push({ item, saveClose, exitClose }) },
         outModal(state, [fncTxt, data]) {
-            if (Object.is(state.Modal, null)) return
+            if (!state.Modals.length) return
+            let lastItem = state.Modals.pop()
+            if (Object.is(lastItem, null)) return null
             switch (fncTxt) {
                 case 'save-close':
-                    if (typeof state.Modal.saveClose != 'function') return
-                    state.Modal.saveClose(data)
+                    if (typeof lastItem.saveClose != 'function') return
+                    lastItem.saveClose(data)
                     break;
                 case 'exit-close':
-                    if (typeof state.Modal.exitClose != 'function') return
-                    state.Modal.exitClose(data)
+                    if (typeof lastItem.exitClose != 'function') return
+                    lastItem.exitClose(data)
                     break;
             }
-            state.Modal = null
         },
 
         setILang(state, val) { state.IndexLang = val },
