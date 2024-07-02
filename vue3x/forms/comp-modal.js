@@ -80,7 +80,7 @@ export const CompFormValuation = {
     computed: {
         Weights() {
             const lst = []
-            for (let ii = 10; -11 < ii; ii--) lst.push(ii);
+            for (let ii = 10; -1 < ii; ii--) lst.push(ii);
             return lst;
         },
         TotalValue() {
