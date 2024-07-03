@@ -7,14 +7,14 @@ import {
     CompModal, CompFormLand,
     CompFormValuation, CompMessNewLand
 } from './forms/comp-modal.js'
-import MarketSegmentStrategy from './pages/MarketSegmentStrategy.js'
+import MarketSegment from './pages/MarketSegment.js'
 import SubmarketProduct from './pages/SubmarketProduct.js'
 import ActionPlan from './pages/ActionPlan.js'
 const { createApp } = Vue
 
 Promise.all([
     includeHTML(`./components/semantics.html`),
-    includeHTML(`./pages/MarketSegmentStrategy.html`),
+    includeHTML(`./pages/MarketSegment.html`),
     includeHTML(`./pages/SubmarketProduct.html`),
     includeHTML(`./pages/ActionPlan.html`),
     includeHTML(`./components/dFilter.html`),
@@ -24,7 +24,7 @@ Promise.all([
     const app = createApp({
         name: `app-main`,
         components: {
-            'page-market': MarketSegmentStrategy,
+            'page-market': MarketSegment,
             'page-sub-market': SubmarketProduct,
             'page-action-plan': ActionPlan,
         },
