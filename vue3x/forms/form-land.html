@@ -67,7 +67,7 @@
                             <div class="text">{{cri.Weight}}</div>
                         </template>
                     </drop-select>
-                    <s-range :start="cri.Value" 
+                    <s-range :start="cri.Value" :style="{ width: '366px' }"
                         @set:value="$event => setValue(cri, $event)"></s-range>
                     <span @click.stop="e => deleteCriteria(ci)">Delete</span>
                 </div>

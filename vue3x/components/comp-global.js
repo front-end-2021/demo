@@ -41,7 +41,7 @@ export const DropSelect = {
             }
         },
     },
-    
+
 }
 export const SRange = {
     template: `#tmp-comp-s-range`,
@@ -62,6 +62,10 @@ export const SRange = {
         step: {
             type: Number,
             default: 1
+        },
+        style: {
+            type: Object,
+            default: { width: '120px' }
         }
     },
     emits: ['set:value'],
@@ -74,9 +78,12 @@ export const SRange = {
         const onChange = (value) => {
             this.$emit('set:value', value)
         }
-        $(this.$el).range({
-            min, max, start, labelType,
-            onChange
-        });
+        this.$nextTick(function () {
+            $(this.$el).range({
+                min, max, start, labelType,
+                onChange
+            });
+        })
     },
+    //beforeUnmount() { },
 }

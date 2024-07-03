@@ -1,32 +1,33 @@
 <template id="tmp-comp-criterial-market">
-    <drop-select :f-id="filterType" 
-        :items="SrcTypes" 
-        :class="['grp-dropdown-min']"
-        @set:index="$event => selectTypeId($event)" 
-            style="margin-right: 6px;">
-        <template #default>
-            <div class="text">{{TypeSelectName}}</div>
-        </template>
-    </drop-select>
-    <drop-select v-for="(id, iii) in ids" 
-        :f-id="id" 
-        :items="getSrcId(iii)" 
-        :class="['grp-dropdown-min']"
-        @set:index="$event => selectId(iii, $event)" 
-        :key="iii + 2" 
-            style="margin-right: 6px;">
-        <template #default>
-            <div class="text">{{idSelectName(iii)}}</div>
-        </template>
-    </drop-select>
-    <button v-if="0 < index"
-        style="width: 28px; height: 28px;"
-        @click.stop="e => $emit('remove:item')"> - </button>
-    <br>
+    <div class="d-inline-block mb-2">
+        <drop-select :f-id="filterType" 
+            :items="SrcTypes" 
+            :class="['grp-dropdown-min']"
+            @set:index="$event => selectTypeId($event)" 
+                style="margin-right: 6px;">
+            <template #default>
+                <div class="text">{{TypeSelectName}}</div>
+            </template>
+        </drop-select>
+        <drop-select v-for="(id, iii) in ids" 
+            :f-id="id" 
+            :items="getSrcId(iii)" 
+            :class="['grp-dropdown-min']"
+            @set:index="$event => selectId(iii, $event)" 
+            :key="iii + 2" 
+                style="margin-right: 6px;">
+            <template #default>
+                <div class="text">{{idSelectName(iii)}}</div>
+            </template>
+        </drop-select>
+        <button v-if="0 < index"
+            style="width: 28px; height: 28px;"
+            @click.stop="e => $emit('remove:item')"> - </button>
+    </div>
 </template>
 <template id="tmp-comp-filter-market">
     <h3>{{$store.getters.txtLang.Filter}} market</h3>
-    <div>
+    <div class="d-flex" style="flex-direction: column;">
         <comp-criterial-market 
             v-for="(crts, iic) in Criterials" 
             :key="iic"

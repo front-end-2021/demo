@@ -46,7 +46,12 @@ export default {
         setLandRegionMarket() {
             const landIds = this.$root.LandIds
             this.Lands = this.$store.getters.LandsBy(landIds)
-            this.Regions = this.$store.getters.RegionByLands(landIds)
+
+            let mergeIdLands = this.$root.ActiveLandIds
+            if (!landIds.includes(0)) {
+                mergeIdLands = mergeIdLands.filter(id => landIds.includes(id))
+            }
+            this.Regions = this.$store.getters.RegionByLands(mergeIdLands)
 
             const marketIds = this.$root.MarketIds
             this.Markets = this.$store.getters.MarketsBy(marketIds)
