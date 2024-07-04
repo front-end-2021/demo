@@ -63,7 +63,7 @@ export default {
             else rootActiveIdLands.splice(ii, 1)
             this.$root.ActiveLandIds = rootActiveIdLands
         },
-        editLand(land) {
+        openFormEditLand(land) {
             const saveClose = (mLand) => {
                 mLand = JSON.parse(JSON.stringify(mLand))
                 for (const [key, value] of Object.entries(mLand)) {
@@ -96,7 +96,7 @@ export default {
             }
             this.$store.commit('setModal', [item, saveClose, xClose])
         },
-        newLand() {
+        openFormNewLand() {
             const land = {
                 Id: this.$store.getters.newId(1),
                 Name: '', IsNew: false, Description: '',
@@ -236,14 +236,14 @@ export default {
 
             this.MenuValuation.splice(0)
             this.$store.dispatch('openFormValue',
-                [market.Id, region.Id]).then(([ii, itemCopy]) => {
+                [market.Id, region.Id]).then(([ii, item]) => {
                     if (ii < 0) return;
                     const saveClose = (mItem) => {
-                        itemCopy = Object.assign(itemCopy, mItem)
+                        const itemCopy = Object.assign(item, mItem)
                         this.$store.state.MarketRegions.splice(ii, 1, itemCopy)
                     }
                     this.$store.commit('setModal', [{
-                        data: itemCopy,
+                        data: item,
                         path: `${market.Name} / ${land} / ${region.Name}`,
                         type: `comp-form-valuation`
                     }, saveClose, () => { }])
@@ -254,7 +254,7 @@ export default {
             //console.log('on click tab', e.target, e)
             this.MenuValuation.splice(0)
         },
-        newMarket() {
+        openFormNewMarket() {
             const market = {
                 Id: this.$store.getters.newId(3),
                 Name: '', Description: '', LandId: -12,

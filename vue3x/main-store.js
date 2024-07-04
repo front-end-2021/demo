@@ -47,7 +47,7 @@ export default createStore({
         // resetCount({ commit, state }) { commit('resetCount'); return state.Project; },
         openFormValue({ commit, state }, [mId, rId]) {
             const ii = state.MarketRegions.findIndex(x => mId == x.MarketId && rId == x.RegionId);
-            return [ii, JSON.parse(JSON.stringify(state.MarketRegions[ii]))]
+            return [ii, state.MarketRegions[ii]]
         },
     },
     getters: {

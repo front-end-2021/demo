@@ -19,11 +19,11 @@
           <div class="d-inline-block ui button"
             v-for="land in Lands" style="margin-right: 6px; padding: 0;"
             :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']"
-            @dblclick="e => editLand(land)">
+            @dblclick="e => openFormEditLand(land)">
               <div class="d-inline-block" style="padding: .78571429em 1.5em;"
                 @click.stop="e => activeLand(land)">{{land.Name}}</div>
           </div>
-          <div class="d-inline-block ui primary button" @click.stop="newLand">+ Land</div>
+          <div class="d-inline-block ui primary button" @click.stop="openFormNewLand">+ Land</div>
         </div>
         <table class="ui celled definition table" style="width: initial;">
           <thead>
@@ -64,7 +64,7 @@
             </tr>
             <tr>
               <td>
-                <div @click.stop="newMarket">+ Market<i class="circle help link icon" 
+                <div @click.stop="openFormNewMarket">+ Market<i class="circle help link icon" 
                       data-html="Maximum device width with two <code
                       >1.5em</code> gutters and a <code>17px</code> scrollbar width. <div 
                       class='ui divider'></div> <code>992 - (14 * (1.5 * 2)) - 17</code>">

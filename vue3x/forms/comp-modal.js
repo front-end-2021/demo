@@ -116,14 +116,7 @@ export const CompFormValuation = {
         editComment(e) { this.comment = e.target.innerHTML },
         toggleActive() { this.item.Active = !this.item.Active }
     },
-    mounted() {
-        $('#range-0').range({
-            min: 0,
-            max: 10,
-            start: 5,
-            labelType: 'letter'
-        });
-    },
+    //mounted() { },
 }
 export const CompMessNewLand = {
     template: `#tmp-comp-mess-newland`,
