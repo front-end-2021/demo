@@ -106,3 +106,57 @@
         </div>
     </div>
 </template>
+<template id="tmp-comp-form-region">
+    <div class="ui modal" style="width: 344px;">
+        <i class="close icon" @click.stop="onExitClose"></i>
+        <div class="header">{{Title}}</div>
+        <div class="image content">
+            <div class="description">
+                <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
+                <span contenteditable="true" v-html="item.Name" 
+                    class="d-inline-block p-2" style="width: 234px;"
+                    @keypress="onKeyPressName"
+                    @input="onChangeName"></span>
+                <br>
+                <strong class="d-inline-block w81px py-2 pe-2">Description: </strong>
+                <span contenteditable="true" v-html="item.Description" 
+                    class="d-inline-block p-2" style="width: 234px; height: 96px;"
+                    @input="onChangeDes"
+                    style="min-height: 180px; width: 570px;"></span>
+                <br>
+                <strong class="d-inline-block w81px py-2 pe-2">Land*</strong>
+                <drop-select :f-id="LandActiveId" 
+                    :items="LandActives" 
+                    @set:index="$event => setLandFromActive($event)"
+                    :class="['grp-dropdown-min']">
+                    <template #default>
+                        <div class="text">{{LandActiveName}}</div>
+                    </template>
+                </drop-select>
+                <br>
+                <strong class="d-inline-block w81px py-2 pe-2">Currency*</strong>
+                <drop-select :name="Currency" :items="Currencies" 
+                    @set:index="$event => setCurrency($event)"
+                    style="min-width: 96px;max-width: 96px;">
+                    <template #default>
+                        <div class="text">{{Currency}}</div>
+                    </template>
+                </drop-select>
+                <br>
+                <label class="d-inline-block w81px py-2 pe-2"
+                    :for="'chbx-isnew-land-' + item.Id">New *</label><input 
+                    type="checkbox" 
+                    :id="'chbx-isnew-land-' + item.Id"
+                    v-model="item.IsNew" />
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button" 
+                @click.stop="onExitClose">Cancel</div>
+            <div class="ui positive right labeled icon button" 
+                @click.stop="onSaveClose">Save And Close<i
+                class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+</template>

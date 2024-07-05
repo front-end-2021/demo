@@ -34,9 +34,7 @@ export const CompModal = {
         },
     },
 }
-export const CompFormLand = {
-    template: `#tmp-comp-form-land`,
-    mixins: [MxModal],
+const MxFormLandRegion = {
     data() {
         const land = this.moItem.data
         return {
@@ -69,6 +67,10 @@ export const CompFormLand = {
         },
         onChangeDes(e) { this.des = e.target.innerHTML },
     },
+}
+export const CompFormLand = {
+    template: `#tmp-comp-form-land`,
+    mixins: [MxModal, MxFormLandRegion]
 }
 export const CompFormValuation = {
     template: `#tmp-comp-form-valuation`,
@@ -129,6 +131,33 @@ export const CompMessNewLand = {
         onSaveClose() {
             $(this.$el).modal('hide')
             this.$store.commit('outModal', ['save-close', undefined])
+        },
+    },
+}
+export const CompFormRegion = {
+    template: `#tmp-comp-form-region`,
+    mixins: [MxModal, MxFormLandRegion],
+    data() {
+        let landId = this.$root.ActiveLandIds[0]
+        return {
+            Currency: 'CHF',
+            LandActiveId: landId,
+        }
+    },
+    computed: {
+        Currencies() {
+            return ['CHF', 'USD', 'VND']
+        },
+        LandActives() { return this.$store.getters.LandsBy(this.$root.ActiveLandIds) },
+        LandActiveName() {
+            return this.LandActives.find(x => x.Id == this.LandActiveId)
+        },
+    },
+    methods: {
+        setCurrency(value) { this.Currency = value },
+        setLandFromActive(id) {
+            console.log('set land from active', id, typeof id)
+            this.LandActiveId = parseInt(id)
         },
     },
 }
