@@ -63,7 +63,59 @@ export default {
             else rootActiveIdLands.splice(ii, 1)
             this.$root.ActiveLandIds = rootActiveIdLands
         },
-        openFormEditLand(land) {
+        openFormLand(land) {
+            if (!land) {        // add new
+                land = {
+                    Id: this.$store.getters.newId(1),
+                    Name: '', IsNew: false, Description: '',
+                    ASort: this.$store.getters.newASort(1)
+                }
+                const saveClose = (mLand) => {
+                    mLand = JSON.parse(JSON.stringify(mLand))
+                    for (const [key, value] of Object.entries(mLand)) {
+                        land[key] = value
+                    }
+                    this.$store.state.Lands.push(land);
+                    const landIds = this.$root.LandIds
+                    if (landIds.includes(0)) this.setLandRegionMarket()
+                    else {
+                        let mess = `New Land has not in filter result. Do you want?`
+                        // reset filter or add new land in filter criterial
+                        const resetLands = () => {
+                            landIds.splice(0)
+                            this.$root.LandIds = [0]
+                        }
+                        const filterNewLand = () => {
+                            const rootLandIds = this.$root.LandIds.map(id => id);
+                            rootLandIds.push(mLand.Id)
+                            this.$root.LandIds = rootLandIds
+                        }
+                        let item = {
+                            type: 'comp-mess-newland',
+                            title: mess,
+                            data: null
+                        }
+                        this.$store.commit('setModal', [item, filterNewLand, resetLands])
+                    }
+                }
+                const xClose = (mLand) => {
+                    if (typeof mLand.Name != 'string') return
+                    if (!mLand.Name.length) return
+
+                    let mess = `Do you want to save?`
+                    if (confirm(mess)) {
+                        saveClose(mLand)
+                    }
+                }
+                const item = {
+                    title: `New Land`,
+                    data: JSON.parse(JSON.stringify(land)),
+                    type: `comp-form-land`
+                }
+                this.$store.commit('setModal', [item, saveClose, xClose])
+                return
+            }
+            // edit
             const saveClose = (mLand) => {
                 mLand = JSON.parse(JSON.stringify(mLand))
                 for (const [key, value] of Object.entries(mLand)) {
@@ -71,76 +123,16 @@ export default {
                 }
             }
             const xClose = (mLand) => {
-                let mess = ''
-                let ii = 1
-                mLand = JSON.parse(JSON.stringify(mLand))
-                for (const [key, value] of Object.entries(mLand)) {
-                    if (value !== land[key]) {
-                        mess += `${ii++}. ${key}: ${land[key]} => ${value} \n`
+                let mess = getMessCompare(land, mLand)
+                if (mess && confirm(mess)) {
+                    mLand = JSON.parse(JSON.stringify(mLand))
+                    for (const [key, value] of Object.entries(mLand)) {
+                        land[key] = value
                     }
                 }
-                if (mess) {
-                    mess = `Somethings deferences \n` + mess
-                    if (confirm(mess)) {
-                        for (const [key, value] of Object.entries(mLand)) {
-                            land[key] = value
-                        }
-                    }
-                }
-
             }
             const item = {
                 title: `Edit Land`,
-                data: JSON.parse(JSON.stringify(land)),
-                type: `comp-form-land`
-            }
-            this.$store.commit('setModal', [item, saveClose, xClose])
-        },
-        openFormNewLand() {
-            const land = {
-                Id: this.$store.getters.newId(1),
-                Name: '', IsNew: false, Description: '',
-                ASort: this.$store.getters.newASort(1)
-            }
-            const saveClose = (mLand) => {
-                mLand = JSON.parse(JSON.stringify(mLand))
-                for (const [key, value] of Object.entries(mLand)) {
-                    land[key] = value
-                }
-                this.$store.state.Lands.push(land);
-                const landIds = this.$root.LandIds
-                if (landIds.includes(0)) this.setLandRegionMarket()
-                else {
-                    let mess = `New Land has not in filter result. Do you want?`
-                    // reset filter or add new land in filter criterial
-                    const resetLands = () => {
-                        landIds.splice(0)
-                        this.$root.LandIds = [0]
-                    }
-                    const filterNewLand = () => {
-                        const rootLandIds = this.$root.LandIds.map(id => id);
-                        rootLandIds.push(mLand.Id)
-                        this.$root.LandIds = rootLandIds
-                    }
-                    let item = {
-                        type: 'comp-mess-newland',
-                        title: mess,
-                        data: null
-                    }
-                    this.$store.commit('setModal', [item, filterNewLand, resetLands])
-                }
-            }
-            const xClose = (mLand) => {
-                if (typeof mLand.Name != 'string') return
-                if (!mLand.Name.length) return
-
-                let mess = `Do you want to save?`
-                if (confirm(mess)) {
-                    saveClose(mLand)
-                }
-            }
-            const item = {
-                title: `New Land`,
                 data: JSON.parse(JSON.stringify(land)),
                 type: `comp-form-land`
             }
@@ -269,6 +261,35 @@ export default {
 
             this.$store.commit('setModal', [market, saveClose, xClose])
         },
+        openFormRegion(region) {
+            if (!region) {
+                // add new
+
+                return
+            }
+            // edit
+            const saveClose = (mRegion) => {
+                mRegion = JSON.parse(JSON.stringify(mRegion))
+                for (const [key, value] of Object.entries(mRegion)) {
+                    region[key] = value
+                }
+            }
+            const xClose = (mRegion) => {
+                let mess = getMessCompare(region, mRegion)
+                if (mess && confirm(mess)) {
+                    mRegion = JSON.parse(JSON.stringify(mRegion))
+                    for (const [key, value] of Object.entries(mRegion)) {
+                        region[key] = value
+                    }
+                }
+            }
+            const item = {
+                title: `Edit Region`,
+                data: JSON.parse(JSON.stringify(region)),
+                type: `comp-form-region`
+            }
+            this.$store.commit('setModal', [item, saveClose, xClose])
+        },
     },
     created() {
         this.setLandRegionMarket()
@@ -276,4 +297,17 @@ export default {
     mounted() {
 
     },
+}
+function getMessCompare(item, mItem) {
+    let mess = ''
+    let ii = 1
+    mItem = JSON.parse(JSON.stringify(mItem))
+    item = JSON.parse(JSON.stringify(item))
+    for (const [key, value] of Object.entries(mItem)) {
+        if (value !== item[key]) {
+            mess += `${ii++}. ${key}: ${item[key]} => ${value} \n`
+        }
+    }
+    if (!mess) return
+    return `Somethings deferences \n${mess}`
 }

@@ -19,19 +19,22 @@
           <div class="d-inline-block ui button"
             v-for="land in Lands" style="margin-right: 6px; padding: 0;"
             :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']"
-            @dblclick="e => openFormEditLand(land)">
+            @dblclick="e => openFormLand(land)">
               <div class="d-inline-block" style="padding: .78571429em 1.5em;"
                 @click.stop="e => activeLand(land)">{{land.Name}}</div>
           </div>
-          <div class="d-inline-block ui primary button" @click.stop="openFormNewLand">+ Land</div>
+          <div class="d-inline-block ui primary button" 
+            @click.stop="e => openFormLand()">+ Land</div>
         </div>
         <table class="ui celled definition table" style="width: initial;">
           <thead>
             <tr>
               <th class="col-market p6px">{{$store.getters.txtLang.Marketsegments}}\Region</th>
               <th v-for="region in Regions"
-                class="col-region p6px">{{region.Name}}</th>
-              <th class="col-region single line p6px">+ Region</th>
+                class="col-region p6px"
+                @dblclick="e => openFormRegion(region)">{{region.Name}}</th>
+              <th class="col-region single line p6px"
+                @click.stop="e => openFormRegion()">+ Region</th>
             </tr>
           </thead>
           <tbody>
