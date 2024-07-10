@@ -29,7 +29,7 @@
     <h3>{{$store.getters.txtLang.Filter}} market</h3>
     <div class="d-flex" style="flex-direction: column;">
         <comp-criterial-market 
-            v-for="(crts, iic) in $root.MarketCriterias" 
+            v-for="(crts, iic) in Criterials" 
             :key="iic"
             :index="iic"
             :filter-type="crts[0]"

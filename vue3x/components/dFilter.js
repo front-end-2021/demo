@@ -186,16 +186,21 @@ export const MsFilterMarket = {
             default: [0]
         },
     },
-    beforeCreate(){
-        const rootCriterias = this.$root.MarketCriterias
-        if(!rootCriterias.length) {
-            rootCriterias.push([FTypeId.PleaseSelect, []])    // [Type, Ids]
+    beforeCreate() {
+        const rootCrs = this.$root.MarketCriterias
+        if (!rootCrs.length) {
+            rootCrs.push([FTypeId.PleaseSelect, []])    // [Type, Ids]
+        }
+    },
+    data(){
+        return {
+            Criterials: JSON.parse(JSON.stringify(this.$root.MarketCriterias))
         }
     },
     watch: {
         '$root.LandIds'(ids, olds) {
-            let isSetFilter = false
-            const lstC = this.$root.MarketCriterias
+            let isSetFt = false
+            const lstC = this.Criterials
             if (ids.includes(0)) {
                 // filter reset Lands (after add new Land)
                 if (lstC.filter(x => x[0] === FTypeId.Land_Region).length) {
@@ -205,14 +210,14 @@ export const MsFilterMarket = {
                             const id = crites[1][0]
                             if (0 < id) {
                                 lstC.splice(cc, 1)      // remove
-                                isSetFilter = true
+                                isSetFt = true
                             }
                         }
                     }
-                    if(!lstC.length) {
+                    if (!lstC.length) {
                         lstC.push([FTypeId.Land_Region, [0]])
                     }
-                    if(isSetFilter) this.setFilter()
+                    if (isSetFt) this.setFilter()
                     return
                 }
             }
@@ -223,26 +228,32 @@ export const MsFilterMarket = {
                         const id = ids[ll]
                         if (olds.includes(id)) continue;
                         lstC.push([FTypeId.Land_Region, [id]])
-                        isSetFilter = true
+                        isSetFt = true
                     }
-                    if(isSetFilter) this.setFilter()
+                    if (isSetFt) this.setFilter()
                     return
                 }
             }
         },
-        
+
+    },
+    created() {
+        const rootCrs = this.$root.MarketCriterias
+        if (1 < rootCrs.length || rootCrs[0][0] != FTypeId.PleaseSelect) {
+            this.setFilter()
+        }
     },
     methods: {
         setTypeF(ii, val) {
-            const crts = this.$root.MarketCriterias[ii]
+            const crts = this.Criterials[ii]
             crts[0] = val
         },
-        setIds(ii, ids) { this.$root.MarketCriterias[ii].splice(1, 1, ids) },
-        addFilter(e) { this.$root.MarketCriterias.push([FTypeId.PleaseSelect, []]) },
+        setIds(ii, ids) { this.Criterials[ii].splice(1, 1, ids) },
+        addFilter(e) { this.Criterials.push([FTypeId.PleaseSelect, []]) },
         setFilter(e) {
             let landIds = []
             let marketIds = []
-            const lstC = this.$root.MarketCriterias
+            const lstC = this.Criterials
             const cLen = lstC.length
             const typeSelect = -2024
             for (let ii = 0; ii < cLen; ii++) {
@@ -261,6 +272,7 @@ export const MsFilterMarket = {
             if (mrkIds.length) marketIds = mrkIds;
             else marketIds = [0];
             this.$emit('set:filter', [landIds, marketIds])
+            this.$root.MarketCriterias = JSON.parse(JSON.stringify(lstC))
             function processType(type, id) {
                 switch (type) {
                     case FTypeId.PleaseSelect:
@@ -281,7 +293,7 @@ export const MsFilterMarket = {
             }
         },
         resetFilter(e) {
-            const lstC = this.$root.MarketCriterias
+            const lstC = this.Criterials
             for (let cc = lstC.length - 1; 0 < cc; cc--) {
                 const items = lstC[cc]
                 items[1].splice(0)
@@ -292,7 +304,7 @@ export const MsFilterMarket = {
             lstC[0].splice(0, 1, FTypeId.PleaseSelect)
             this.setFilter()
         },
-        removeCriterial(iic) { this.$root.MarketCriterias.splice(iic, 1) },
+        removeCriterial(iic) { this.Criterials.splice(iic, 1) },
     },
 }
 const FCriterial = {
