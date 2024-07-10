@@ -71,10 +71,7 @@ export default {
                     ASort: this.$store.getters.newASort(1)
                 }
                 const saveClose = (mLand) => {
-                    mLand = JSON.parse(JSON.stringify(mLand))
-                    for (const [key, value] of Object.entries(mLand)) {
-                        land[key] = value
-                    }
+                    overrideItem.call(land, mLand)
                     this.$store.state.Lands.push(land);
                     const landIds = this.$root.LandIds
                     if (landIds.includes(0)) this.setLandRegionMarket()
@@ -101,34 +98,25 @@ export default {
                 const xClose = (mLand) => {
                     if (typeof mLand.Name != 'string') return
                     if (!mLand.Name.length) return
-
                     let mess = `Do you want to save?`
-                    if (confirm(mess)) {
-                        saveClose(mLand)
-                    }
+                    if (confirm(mess)) saveClose(mLand)
                 }
                 const item = {
                     title: `New Land`,
-                    data: JSON.parse(JSON.stringify(land)),
+                    data: land,
                     type: `comp-form-land`
                 }
                 this.$store.commit('setModal', [item, saveClose, xClose])
                 return
             }
-            // edit
+            // #region edit Land
             const saveClose = (mLand) => {
-                mLand = JSON.parse(JSON.stringify(mLand))
-                for (const [key, value] of Object.entries(mLand)) {
-                    land[key] = value
-                }
+                overrideItem.call(land, mLand)
             }
             const xClose = (mLand) => {
                 let mess = getMessCompare(land, mLand)
                 if (mess && confirm(mess)) {
-                    mLand = JSON.parse(JSON.stringify(mLand))
-                    for (const [key, value] of Object.entries(mLand)) {
-                        land[key] = value
-                    }
+                    overrideItem.call(land, mLand)
                 }
             }
             const item = {
@@ -136,6 +124,7 @@ export default {
                 data: JSON.parse(JSON.stringify(land)),
                 type: `comp-form-land`
             }
+            // #endregion
             this.$store.commit('setModal', [item, saveClose, xClose])
         },
         getValuation(mId, rId, item) {
@@ -264,23 +253,37 @@ export default {
         openFormRegion(region) {
             if (!region) {
                 // add new
+                region = {
+                    Id: this.$store.getters.newId(2),
+                    Name: '', Description: '',
+                    LandId: 0,
+                    ASort: this.$store.getters.newASort(2)
+                }
+                const saveClose = (mRegion) => {
 
+                }
+                const xClose = (mRegion) => {
+                    if (typeof mRegion.Name != 'string') return
+                    if (!mRegion.Name.length) return
+                    let mess = `Do you want to save?`
+                    if (confirm(mess)) saveClose(mRegion)
+                }
+                const item = {
+                    title: `New REgion`,
+                    data: region,
+                    type: `comp-form-region`
+                }
+                this.$store.commit('setModal', [item, saveClose, xClose])
                 return
             }
             // edit
             const saveClose = (mRegion) => {
-                mRegion = JSON.parse(JSON.stringify(mRegion))
-                for (const [key, value] of Object.entries(mRegion)) {
-                    region[key] = value
-                }
+                overrideItem.call(region, mRegion)
             }
             const xClose = (mRegion) => {
                 let mess = getMessCompare(region, mRegion)
                 if (mess && confirm(mess)) {
-                    mRegion = JSON.parse(JSON.stringify(mRegion))
-                    for (const [key, value] of Object.entries(mRegion)) {
-                        region[key] = value
-                    }
+                    overrideItem.call(region, mRegion)
                 }
             }
             const item = {
@@ -310,4 +313,11 @@ function getMessCompare(item, mItem) {
     }
     if (!mess) return
     return `Somethings deferences \n${mess}`
+}
+function overrideItem(mItem) {
+    const item = this
+    mItem = JSON.parse(JSON.stringify(mItem))
+    for (const [key, value] of Object.entries(mItem)) {
+        item[key] = value
+    }
 }

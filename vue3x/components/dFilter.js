@@ -170,6 +170,46 @@ const FCriterialMarket = {
 
     },
 }
+const getLandMarketIds = (lstC) => {
+    let landIds = []
+    let marketIds = []
+    const cLen = lstC.length
+    const typeSelect = -2024
+    for (let ii = 0; ii < cLen; ii++) {
+        const crt = lstC[ii]
+        const type = crt[0]
+        const ids = crt[1]
+        processType(type, ids[0])
+    }
+    let lndIds = landIds.filter(l => 0 < l);
+    lndIds = lndIds.filter((v, i, self) => i == self.indexOf(v));// remove duplicate
+    if (lndIds.length) landIds = lndIds;
+    else landIds = [0];
+
+    let mrkIds = marketIds.filter(l => 0 < l)
+    mrkIds = mrkIds.filter((v, i, self) => i == self.indexOf(v));// remove duplicate
+    if (mrkIds.length) marketIds = mrkIds;
+    else marketIds = [0];
+    return [landIds, marketIds]
+    function processType(type, id) {
+        switch (type) {
+            case FTypeId.PleaseSelect:
+                landIds.push(typeSelect);
+                marketIds.push(typeSelect);
+                break;
+            case FTypeId.Land_Region:
+                if (id == FTypeId.SelectLand)
+                    landIds.push(0);
+                else landIds.push(id)
+                break;
+            case FTypeId.MarketSegments:
+                if (id == FTypeId.SelectMarketSegments)
+                    marketIds.push(0);
+                else marketIds.push(id)
+                break;
+        }
+    }
+}
 export const MsFilterMarket = {
     template: `#tmp-comp-filter-market`,
     components: {
@@ -192,7 +232,7 @@ export const MsFilterMarket = {
             rootCrs.push([FTypeId.PleaseSelect, []])    // [Type, Ids]
         }
     },
-    data(){
+    data() {
         return {
             Criterials: JSON.parse(JSON.stringify(this.$root.MarketCriterias))
         }
@@ -251,46 +291,10 @@ export const MsFilterMarket = {
         setIds(ii, ids) { this.Criterials[ii].splice(1, 1, ids) },
         addFilter(e) { this.Criterials.push([FTypeId.PleaseSelect, []]) },
         setFilter(e) {
-            let landIds = []
-            let marketIds = []
             const lstC = this.Criterials
-            const cLen = lstC.length
-            const typeSelect = -2024
-            for (let ii = 0; ii < cLen; ii++) {
-                const crt = lstC[ii]
-                const type = crt[0]
-                const ids = crt[1]
-                processType(type, ids[0])
-            }
-            let lndIds = landIds.filter(l => 0 < l);
-            lndIds = lndIds.filter((v, i, self) => i == self.indexOf(v));// remove duplicate
-            if (lndIds.length) landIds = lndIds;
-            else landIds = [0];
-
-            let mrkIds = marketIds.filter(l => 0 < l)
-            mrkIds = mrkIds.filter((v, i, self) => i == self.indexOf(v));// remove duplicate
-            if (mrkIds.length) marketIds = mrkIds;
-            else marketIds = [0];
+            const [landIds, marketIds] = getLandMarketIds(lstC)
             this.$emit('set:filter', [landIds, marketIds])
             this.$root.MarketCriterias = JSON.parse(JSON.stringify(lstC))
-            function processType(type, id) {
-                switch (type) {
-                    case FTypeId.PleaseSelect:
-                        landIds.push(typeSelect);
-                        marketIds.push(typeSelect);
-                        break;
-                    case FTypeId.Land_Region:
-                        if (id == FTypeId.SelectLand)
-                            landIds.push(0);
-                        else landIds.push(id)
-                        break;
-                    case FTypeId.MarketSegments:
-                        if (id == FTypeId.SelectMarketSegments)
-                            marketIds.push(0);
-                        else marketIds.push(id)
-                        break;
-                }
-            }
         },
         resetFilter(e) {
             const lstC = this.Criterials
@@ -307,6 +311,7 @@ export const MsFilterMarket = {
         removeCriterial(iic) { this.Criterials.splice(iic, 1) },
     },
 }
+
 const FCriterial = {
     template: `#tmp-comp-criterial`,
     mixins: [MxFCriterial],

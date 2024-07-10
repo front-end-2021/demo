@@ -138,26 +138,29 @@ export const CompFormRegion = {
     template: `#tmp-comp-form-region`,
     mixins: [MxModal, MxFormLandRegion],
     data() {
-        let landId = this.$root.ActiveLandIds[0]
+
         return {
             Currency: 'CHF',
-            LandActiveId: landId,
+            //  LandActiveId: this.moItem.data.LandId,
         }
     },
     computed: {
         Currencies() {
             return ['CHF', 'USD', 'VND']
         },
-        LandActives() { return this.$store.getters.LandsBy(this.$root.ActiveLandIds) },
-        LandActiveName() {
-            return this.LandActives.find(x => x.Id == this.LandActiveId)
-        },
+        // LandActives() {
+        //     let landId = this.moItem.data.LandId
+        //     return this.$store.getters.LandsBy([landId])
+        // },
+        // LandActiveName() {
+        //     return this.LandActives.find(x => x.Id == this.LandActiveId)
+        // },
     },
     methods: {
-        setCurrency(value) { this.Currency = value },
-        setLandFromActive(id) {
-            console.log('set land from active', id, typeof id)
-            this.LandActiveId = parseInt(id)
-        },
+        setCurrency(value) { this.Currency = this.Currencies[value] },
+        // setLandFromActive(id) {
+        //     console.log('set land from active', id, typeof id)
+        //     this.LandActiveId = parseInt(id)
+        // },
     },
 }

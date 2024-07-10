@@ -18,11 +18,11 @@ export default createStore({
             { Id: 6, Name: 'TP.HoChiMinh', IsNew: false, ASort: 4, Description: '' },
         ],
         Regions: [
-            { Id: 1, Name: 'TP.Hanoi', LandId: 3, ASort: 1 },
-            { Id: 3, Name: 'Haiphong', LandId: 1, ASort: 3 },
-            { Id: 4, Name: 'TP.Can Tho', LandId: 6, ASort: 5 },
-            { Id: 5, Name: 'Hue', LandId: 4, ASort: 4 },
-            { Id: 7, Name: 'Quang Ninh', LandId: 1, ASort: 2 },
+            { Id: 1, Name: 'TP.Hanoi', LandId: 3, ASort: 1, Description: '' },
+            { Id: 3, Name: 'Haiphong', LandId: 1, ASort: 3, Description: '' },
+            { Id: 4, Name: 'TP.Can Tho', LandId: 6, ASort: 5, Description: '' },
+            { Id: 5, Name: 'Hue', LandId: 4, ASort: 4, Description: '' },
+            { Id: 7, Name: 'Quang Ninh', LandId: 1, ASort: 2, Description: '' },
         ],
         Markets: [
             { Id: 2, Name: 'Dong Xuan', LandId: 3, ASort: 3, Description: '' },
@@ -32,11 +32,11 @@ export default createStore({
             { Id: 6, Name: 'Cai Rang market', LandId: 6, ASort: 5, Description: '' },
         ],
         Submarkets: [
-            { Id: 7, Name: 'Square 1', MarketId: 2 },
-            { Id: 3, Name: 'Cho Tinh', MarketId: 3 },
-            { Id: 4, Name: 'Hue submarket 1', MarketId: 5 },
-            { Id: 5, Name: 'Quangninh submarket 2', MarketId: 4 },
-            { Id: 6, Name: 'Cairang submarket 3', MarketId: 6 },
+            { Id: 7, Name: 'Square 1', MarketId: 2, Description: '' },
+            { Id: 3, Name: 'Cho Tinh', MarketId: 3, Description: '' },
+            { Id: 4, Name: 'Hue submarket 1', MarketId: 5, Description: '' },
+            { Id: 5, Name: 'Quangninh submarket 2', MarketId: 4, Description: '' },
+            { Id: 6, Name: 'Cairang submarket 3', MarketId: 6, Description: '' },
         ],
 
         MarketRegions: [], // [{MarketId, RegionId, Criterias [], Active, Comment}]
