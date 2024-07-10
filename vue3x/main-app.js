@@ -36,6 +36,7 @@ Promise.all([
                 LandIds: [0],
                 ActiveLandIds: [3],
                 MarketIds: [0],
+                MarketCriterias: [],
             }
         },
         computed: {

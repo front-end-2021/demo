@@ -186,31 +186,18 @@ export const MsFilterMarket = {
             default: [0]
         },
     },
-    data() {
-        let id, lstCrite = []
-        if (!this.landIds.includes(0)) {
-            for (let ll = 0; ll < this.landIds.length; ll++) {
-                id = this.landIds[ll]
-                lstCrite.push([FTypeId.Land_Region, [id]])
-            }
-        }
-        if (!this.marketIds.includes(0)) {
-            for (let mm = 0; mm < this.marketIds.length; mm++) {
-                id = this.marketIds[mm]
-                lstCrite.push([FTypeId.MarketSegments, [id]])
-            }
-        }
-        if (!lstCrite.length) lstCrite.push([FTypeId.PleaseSelect, []])    // [Type, Ids]
-        return {
-            Criterials: lstCrite,
+    beforeCreate(){
+        const rootCriterias = this.$root.MarketCriterias
+        if(!rootCriterias.length) {
+            rootCriterias.push([FTypeId.PleaseSelect, []])    // [Type, Ids]
         }
     },
     watch: {
         '$root.LandIds'(ids, olds) {
             let isSetFilter = false
+            const lstC = this.$root.MarketCriterias
             if (ids.includes(0)) {
                 // filter reset Lands (after add new Land)
-                const lstC = this.Criterials
                 if (lstC.filter(x => x[0] === FTypeId.Land_Region).length) {
                     for (let cc = lstC.length - 1; -1 < cc; cc--) {
                         const crites = lstC[cc]
@@ -235,7 +222,7 @@ export const MsFilterMarket = {
                     for (let ll = 0; ll < ids.length; ll++) {
                         const id = ids[ll]
                         if (olds.includes(id)) continue;
-                        this.Criterials.push([FTypeId.Land_Region, [id]])
+                        lstC.push([FTypeId.Land_Region, [id]])
                         isSetFilter = true
                     }
                     if(isSetFilter) this.setFilter()
@@ -247,18 +234,19 @@ export const MsFilterMarket = {
     },
     methods: {
         setTypeF(ii, val) {
-            const crts = this.Criterials[ii]
+            const crts = this.$root.MarketCriterias[ii]
             crts[0] = val
         },
-        setIds(ii, ids) { this.Criterials[ii].splice(1, 1, ids) },
-        addFilter(e) { this.Criterials.push([FTypeId.PleaseSelect, []]) },
+        setIds(ii, ids) { this.$root.MarketCriterias[ii].splice(1, 1, ids) },
+        addFilter(e) { this.$root.MarketCriterias.push([FTypeId.PleaseSelect, []]) },
         setFilter(e) {
             let landIds = []
             let marketIds = []
-            const cLen = this.Criterials.length
+            const lstC = this.$root.MarketCriterias
+            const cLen = lstC.length
             const typeSelect = -2024
             for (let ii = 0; ii < cLen; ii++) {
-                const crt = this.Criterials[ii]
+                const crt = lstC[ii]
                 const type = crt[0]
                 const ids = crt[1]
                 processType(type, ids[0])
@@ -293,7 +281,7 @@ export const MsFilterMarket = {
             }
         },
         resetFilter(e) {
-            const lstC = this.Criterials
+            const lstC = this.$root.MarketCriterias
             for (let cc = lstC.length - 1; 0 < cc; cc--) {
                 const items = lstC[cc]
                 items[1].splice(0)
@@ -304,7 +292,7 @@ export const MsFilterMarket = {
             lstC[0].splice(0, 1, FTypeId.PleaseSelect)
             this.setFilter()
         },
-        removeCriterial(iic) { this.Criterials.splice(iic, 1) },
+        removeCriterial(iic) { this.$root.MarketCriterias.splice(iic, 1) },
     },
 }
 const FCriterial = {
