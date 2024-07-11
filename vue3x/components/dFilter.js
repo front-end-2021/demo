@@ -294,7 +294,62 @@ export const MsFilterMarket = {
             const lstC = this.Criterials
             const [landIds, marketIds] = getLandMarketIds(lstC)
             this.$emit('set:filter', [landIds, marketIds])
-            this.$root.MarketCriterias = JSON.parse(JSON.stringify(lstC))
+            //this.$root.MarketCriterias = JSON.parse(JSON.stringify(lstC))
+            const rLstC = this.$root.MarketCriterias
+            spliceRootCrites.call(this)
+            addToRootCrites.call(this)
+            function spliceRootCrites() {
+                for (let ii = 0; ii < rLstC.length; ii++) {
+                    const rCrite = rLstC[ii]
+                    const crite = lstC[ii]
+                    if (rCrite[0] != crite[0]) {
+                        ii = removeAt(ii)
+                        continue
+                    }
+                    const rIds = rCrite[1]
+                    const ids = crite[1]
+                    if (rIds.length != ids.length) {
+                        ii = removeAt(ii)
+                        continue
+                    }
+                    for (let jj = 0; jj < rIds.length; jj++) {
+                        if (rIds[jj] != ids[jj]) {
+                            ii = removeAt(ii)
+                            break;
+                        }
+                    }
+                }
+                function removeAt(ii) {
+                    rLstC.splice(ii, 1) // remove at ii
+                    return --ii
+                }
+            }
+            function addToRootCrites() {
+                for (let ii = 0; ii < lstC.length; ii++) {
+                    const rCrite = rLstC[ii]
+                    const crite = lstC[ii]
+                    if (!rCrite) {
+                        rLstC.push(crite)
+                        continue
+                    }
+                    if (rCrite[0] != crite[0]) {
+                        rLstC.push(crite)
+                        continue
+                    }
+                    const rIds = rCrite[1]
+                    const ids = crite[1]
+                    if (rIds.length != ids.length) {
+                        rLstC.push(crite)
+                        continue
+                    }
+                    for (let jj = 0; jj < rIds.length; jj++) {
+                        if (rIds[jj] != ids[jj]) {
+                            rLstC.push(crite)
+                            break;
+                        }
+                    }
+                }
+            }
         },
         resetFilter(e) {
             const lstC = this.Criterials

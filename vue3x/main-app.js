@@ -55,6 +55,9 @@ Promise.all([
                 }
             },
         },
+        watch: {
+            MarketCriterias(val) { console.log('watch market crites', val) }
+        },
         methods: {
             selectPage(index) { this.IndexPage = index },
 
@@ -64,7 +67,7 @@ Promise.all([
 
         },
         created() {
-            
+
             this.IndexProject = getRandomInt(0, this.$store.state.Projects.length)
         },
         beforeMount() {
