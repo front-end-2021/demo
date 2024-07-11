@@ -1,11 +1,14 @@
 <template id="tmp-comp-market">
   <section @click="onClickTab" style="padding-bottom: 169px;padding-left: 20px;">
     <div class="mt-2">
-      <comp-filter-market :land-ids="$root.LandIds"
+      <!-- <comp-filter-market :land-ids="$root.LandIds"
         :market-ids="$root.MarketIds"
         @set:filter="$event => setFilter($event)">
-      </comp-filter-market>
-      
+      </comp-filter-market> -->
+      <comp-filter-market
+      :market-ids="$root.MarketIds"
+      @set:filter="$event => setFilter($event)">
+    </comp-filter-market>
       </div>
     <article>
       <button>Eval markets</button>

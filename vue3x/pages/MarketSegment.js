@@ -1,4 +1,5 @@
-import { MsFilterMarket } from "../components/dFilter.js";
+import { MsFilterMarket, getLandMarketIds } from "../components/dFilter.js";
+
 export default {
     template: `#tmp-comp-market`,
     components: {
@@ -15,19 +16,21 @@ export default {
     },
     watch: {
         '$root.ActiveLandIds'(ids) {
-            const rootIdLands = this.$root.LandIds
+            let lstC = this.$root.MarketCriterias
+            const [landIds] = getLandMarketIds(lstC)
+            // const landIds = this.$root.LandIds
             let mergeIdLands = ids
-            if (!rootIdLands.includes(0)) {
-                mergeIdLands = ids.filter(id => rootIdLands.includes(id))
+            if (!landIds.includes(0)) {
+                mergeIdLands = ids.filter(id => landIds.includes(id))
             }
             this.Regions = this.$store.getters.RegionByLands(mergeIdLands)
         }
     },
     methods: {
         setFilter([landIds, marketIds]) {
-            const rootIdLands = this.$root.LandIds
-            rootIdLands.splice(0)                           // not watch
-            landIds.forEach(id => rootIdLands.push(id))     // not watch
+            // const rootIdLands = this.$root.LandIds
+            // rootIdLands.splice(0)                           // not watch
+            // landIds.forEach(id => rootIdLands.push(id))     // not watch
 
             this.Lands = this.$store.getters.LandsBy(landIds)
 
@@ -44,7 +47,9 @@ export default {
             this.Markets = this.$store.getters.MarketsBy(marketIds)
         },
         setLandRegionMarket() {
-            const landIds = this.$root.LandIds
+            let lstC = this.$root.MarketCriterias
+            const [landIds] = getLandMarketIds(lstC)
+            //const landIds = this.$root.LandIds
             this.Lands = this.$store.getters.LandsBy(landIds)
 
             let mergeIdLands = this.$root.ActiveLandIds
@@ -73,19 +78,47 @@ export default {
                 const saveClose = (mLand) => {
                     overrideItem.call(land, mLand)
                     this.$store.state.Lands.push(land);
-                    const landIds = this.$root.LandIds
+                    //  const landIds = this.$root.LandIds
+                    let lstC = this.$root.MarketCriterias
+                    const [landIds, marketIds] = getLandMarketIds(lstC)
                     if (landIds.includes(0)) this.setLandRegionMarket()
                     else {
                         let mess = `New Land has not in filter result. Do you want?`
                         // reset filter or add new land in filter criterial
                         const resetLands = () => {
-                            landIds.splice(0)
-                            this.$root.LandIds = [0]
+                            // landIds.splice(0)
+                            // this.$root.LandIds = [0]
+
+                            lstC = JSON.parse(JSON.stringify(lstC))
+                            if (lstC.filter(x => x[0] === FTypeId.Land_Region).length) {
+                                for (let cc = lstC.length - 1; -1 < cc; cc--) {
+                                    const crites = lstC[cc]
+                                    if (crites[0] === FTypeId.Land_Region) {
+                                        const id = crites[1][0]
+                                        if (0 < id) {
+                                            lstC.splice(cc, 1)      // remove
+                                        }
+                                    }
+                                }
+                                if (!lstC.length) {
+                                    lstC.push([FTypeId.Land_Region, [0]])
+                                }
+                                this.$root.MarketCriterias = lstC
+                            }
+
                         }
                         const filterNewLand = () => {
-                            const rootLandIds = this.$root.LandIds.map(id => id);
-                            rootLandIds.push(mLand.Id)
-                            this.$root.LandIds = rootLandIds
+                            // const rootLandIds = this.$root.LandIds.map(id => id);
+                            // rootLandIds.push(mLand.Id)
+                            // this.$root.LandIds = rootLandIds
+
+                            lstC = JSON.parse(JSON.stringify(lstC))
+                            for (let ll = 0; ll < ids.length; ll++) {
+                                const id = ids[ll]
+                                if (olds.includes(id)) continue;
+                                lstC.push([FTypeId.Land_Region, [id]])
+                                this.$root.MarketCriterias = lstC
+                            }
                         }
                         let item = {
                             type: 'comp-mess-newland',
