@@ -52,11 +52,6 @@
         <template #default>
             <div class="text">{{operators[iOperator]}}</div>
         </template>
-        <!-- <template #item="{ items, index, active }">
-            <div v-for="(item, ii) in items" class="item" 
-                :class="[item == items[index] ? active : '']"
-                :data-value="ii">{{item}}</div>
-        </template> -->
     </drop-select>
     <drop-select :f-id="filterType" 
         :items="SrcTypes" 
