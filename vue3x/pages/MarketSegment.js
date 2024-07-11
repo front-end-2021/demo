@@ -24,7 +24,13 @@ export default {
                 mergeIdLands = ids.filter(id => landIds.includes(id))
             }
             this.Regions = this.$store.getters.RegionByLands(mergeIdLands)
-        }
+        },
+        '$root.IndexProject'(iPrj) {
+            let lstC = this.$root.MarketCriterias
+            const [landIds, marketIds] = getLandMarketIds(lstC)
+            //   console.log('watch Index Project', iPrj, landIds, marketIds)
+            this.setFilter([landIds, marketIds])
+        },
     },
     methods: {
         setFilter([landIds, marketIds]) {
@@ -69,6 +75,7 @@ export default {
             this.$root.ActiveLandIds = rootActiveIdLands
         },
         openFormLand(land) {
+            const iProject = this.$root.IndexProject
             if (!land) {        // add new
                 land = {
                     Id: this.$store.getters.newId(1),
@@ -77,7 +84,7 @@ export default {
                 }
                 const saveClose = (mLand) => {
                     overrideItem.call(land, mLand)
-                    this.$store.state.Lands.push(land);
+                    this.$store.commit('addUpdateLocal', [1, land, iProject])
                     //  const landIds = this.$root.LandIds
                     let lstC = this.$root.MarketCriterias
                     const [landIds, marketIds] = getLandMarketIds(lstC)
@@ -145,12 +152,11 @@ export default {
             // #region edit Land
             const saveClose = (mLand) => {
                 overrideItem.call(land, mLand)
+                this.$store.commit('addUpdateLocal', [1, land, iProject])
             }
             const xClose = (mLand) => {
                 let mess = getMessCompare(land, mLand)
-                if (mess && confirm(mess)) {
-                    overrideItem.call(land, mLand)
-                }
+                if (mess && confirm(mess)) saveClose(mLand)
             }
             const item = {
                 title: `Edit Land`,
@@ -284,6 +290,7 @@ export default {
             this.$store.commit('setModal', [market, saveClose, xClose])
         },
         openFormRegion(region) {
+            const iProject = this.$root.IndexProject
             if (!region) {
                 // add new
                 region = {
@@ -309,21 +316,21 @@ export default {
                 this.$store.commit('setModal', [item, saveClose, xClose])
                 return
             }
-            // edit
+            // #region edit
             const saveClose = (mRegion) => {
                 overrideItem.call(region, mRegion)
+                this.$store.commit('addUpdateLocal', [2, region, iProject])
             }
             const xClose = (mRegion) => {
                 let mess = getMessCompare(region, mRegion)
-                if (mess && confirm(mess)) {
-                    overrideItem.call(region, mRegion)
-                }
+                if (mess && confirm(mess)) saveClose(mRegion)
             }
             const item = {
                 title: `Edit Region`,
                 data: JSON.parse(JSON.stringify(region)),
                 type: `comp-form-region`
             }
+            // #endregion
             this.$store.commit('setModal', [item, saveClose, xClose])
         },
     },

@@ -20,17 +20,14 @@ const projectList = [
     `Community Connector`, `Tranquil Trails`, `Local Link`, `Unity Hub`, `Social Circle`, `Harmonious Haven`,
     `Civic Connect`, `Neighborly Nexus`, `Harmony Zone`, `Unified Society`, `Insightful Ideas`, `Opinion Tracker`
 ]
-const ListPrj = []
+const ListPrj = [{ Id: 1, Name: 'Demo' }, { Id: 2, Name: 'Local Storage' }, { Id: 3, Name: 'Clear Local' }]
 const PLen = 6
-for (let pp = 1; pp < PLen + 1; pp++) {
+for (let pp = 5; pp < PLen + 5; pp++) {
     let name = genRandName(projectList)
-    while(ListPrj.find(x => name == x.Name)) {
+    while (ListPrj.find(x => name == x.Name)) {
         name = genRandName(projectList)
     }
-    ListPrj.push({
-        Id: pp,
-        Name: name,
-    })
+    ListPrj.push({ Id: pp, Name: name })
 }
 
 const Mains = []
@@ -69,8 +66,83 @@ const Langs = [
     { Key: 'de', Name: 'German' },
     { Key: 'pm', Name: 'PM' }
 ]
+const DemoLands = [
+    { Id: 1, Name: 'Mien bac', IsNew: false, ASort: 2, Description: '' },
+    { Id: 3, Name: 'Hanoi', IsNew: false, ASort: 1, Description: '' },
+    { Id: 4, Name: 'Mien trung', IsNew: false, ASort: 3, Description: '' },
+    { Id: 5, Name: 'Mien nam', IsNew: false, ASort: 5, Description: '' },
+    { Id: 6, Name: 'TP.HoChiMinh', IsNew: false, ASort: 4, Description: '' },
+]
+const DemoRegions = [
+    { Id: 1, Name: 'TP.Hanoi', LandId: 3, ASort: 1, Description: '' },
+    { Id: 3, Name: 'Haiphong', LandId: 1, ASort: 3, Description: '' },
+    { Id: 4, Name: 'TP.Can Tho', LandId: 6, ASort: 5, Description: '' },
+    { Id: 5, Name: 'Hue', LandId: 4, ASort: 4, Description: '' },
+    { Id: 7, Name: 'Quang Ninh', LandId: 1, ASort: 2, Description: '' },
+]
+const DemoMarkets = [
+    { Id: 2, Name: 'Dong Xuan', LandId: 3, ASort: 3, Description: '' },
+    { Id: 3, Name: 'Sapa market', LandId: 1, ASort: 1, Description: '' },
+    { Id: 4, Name: 'Quang Ninh market', LandId: 1, ASort: 2, Description: '' },
+    { Id: 5, Name: 'Hue market', LandId: 4, ASort: 4, Description: '' },
+    { Id: 6, Name: 'Cai Rang market', LandId: 6, ASort: 5, Description: '' },
+]
+const DemoSubmarkets = [
+    { Id: 7, Name: 'Square 1', MarketId: 2, Description: '' },
+    { Id: 3, Name: 'Cho Tinh', MarketId: 3, Description: '' },
+    { Id: 4, Name: 'Hue submarket 1', MarketId: 5, Description: '' },
+    { Id: 5, Name: 'Quangninh submarket 2', MarketId: 4, Description: '' },
+    { Id: 6, Name: 'Cairang submarket 3', MarketId: 6, Description: '' },
+]
+const getLocal = (type) => {
+    let jsonItems
+    switch (type) {
+        case 1:     // Lands
+            jsonItems = localStorage.getItem("Lands");
+            break;
+        case 2:     // Regions
+            jsonItems = localStorage.getItem("Regions");
+            break;
+        case 3:     // Markets
+            jsonItems = localStorage.getItem("Markets");
+            break;
+        case 4:     // Submarkets
+            jsonItems = localStorage.getItem("Submarkets");
+            break;
+    }
+    if (!jsonItems) return []
+    return JSON.parse(jsonItems)
+}
+const setLocal = (type, items) => {
+    let jsonItems
+    switch (type) {
+        case 1:     // Lands
+            jsonItems = localStorage.getItem("Lands");
+            if (jsonItems) localStorage.removeItem("Lands");
+            localStorage.setItem("Lands", JSON.stringify(items))
+            return;
+        case 2:     // Regions
+            jsonItems = localStorage.getItem("Regions");
+            if (jsonItems) localStorage.removeItem("Regions");
+            localStorage.setItem("Regions", JSON.stringify(items))
+            return;
+        case 3:     // Markets
+            jsonItems = localStorage.getItem("Markets");
+            if (jsonItems) localStorage.removeItem("Markets");
+            localStorage.setItem("Markets", JSON.stringify(items))
+            return;
+        case 4:     // Submarkets
+            jsonItems = localStorage.getItem("Submarkets");
+            if (jsonItems) localStorage.removeItem("Submarkets");
+            localStorage.setItem("Submarkets", JSON.stringify(items))
+            return;
+    }
+}
+
 export {
-    Mains, ListPrj, Langs
+    Mains, ListPrj, Langs,
+    DemoLands, DemoRegions, DemoMarkets, DemoSubmarkets,
+    getLocal, setLocal,
 }
 
 function newItem() {

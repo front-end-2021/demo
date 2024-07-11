@@ -1,4 +1,8 @@
-import { ListPrj, Langs } from './mock-data.js';
+import {
+    ListPrj, Langs,
+    DemoLands, DemoRegions, DemoMarkets, DemoSubmarkets,
+    getLocal, setLocal,
+} from './mock-data.js';
 import { getTxtBy } from './common.js';
 import { FTypeId } from './components/dFilter.js';
 const { createStore } = Vuex
@@ -10,41 +14,16 @@ export default createStore({
 
         Pages: ['Market segment strategy', `Sub-market/Product Strategy`, `Action plan`, 'Roadmap', `Team Board`],
 
-        Lands: [
-            { Id: 1, Name: 'Mien bac', IsNew: false, ASort: 2, Description: '' },
-            { Id: 3, Name: 'Hanoi', IsNew: false, ASort: 1, Description: '' },
-            { Id: 4, Name: 'Mien trung', IsNew: false, ASort: 3, Description: '' },
-            { Id: 5, Name: 'Mien nam', IsNew: false, ASort: 5, Description: '' },
-            { Id: 6, Name: 'TP.HoChiMinh', IsNew: false, ASort: 4, Description: '' },
-        ],
-        Regions: [
-            { Id: 1, Name: 'TP.Hanoi', LandId: 3, ASort: 1, Description: '' },
-            { Id: 3, Name: 'Haiphong', LandId: 1, ASort: 3, Description: '' },
-            { Id: 4, Name: 'TP.Can Tho', LandId: 6, ASort: 5, Description: '' },
-            { Id: 5, Name: 'Hue', LandId: 4, ASort: 4, Description: '' },
-            { Id: 7, Name: 'Quang Ninh', LandId: 1, ASort: 2, Description: '' },
-        ],
-        Markets: [
-            { Id: 2, Name: 'Dong Xuan', LandId: 3, ASort: 3, Description: '' },
-            { Id: 3, Name: 'Sapa market', LandId: 1, ASort: 1, Description: '' },
-            { Id: 4, Name: 'Quang Ninh market', LandId: 1, ASort: 2, Description: '' },
-            { Id: 5, Name: 'Hue market', LandId: 4, ASort: 4, Description: '' },
-            { Id: 6, Name: 'Cai Rang market', LandId: 6, ASort: 5, Description: '' },
-        ],
-        Submarkets: [
-            { Id: 7, Name: 'Square 1', MarketId: 2, Description: '' },
-            { Id: 3, Name: 'Cho Tinh', MarketId: 3, Description: '' },
-            { Id: 4, Name: 'Hue submarket 1', MarketId: 5, Description: '' },
-            { Id: 5, Name: 'Quangninh submarket 2', MarketId: 4, Description: '' },
-            { Id: 6, Name: 'Cairang submarket 3', MarketId: 6, Description: '' },
-        ],
+        Lands: DemoLands,
+        Regions: DemoRegions,
+        Markets: DemoMarkets,
+        Submarkets: DemoSubmarkets,
 
         MarketRegions: [], // [{MarketId, RegionId, Criterias [], Active, Comment}]
         count: 0,
         Modals: [],
     },
     actions: {
-        // resetCount({ commit, state }) { commit('resetCount'); return state.Project; },
         openFormValue({ commit, state }, [mId, rId]) {
             const ii = state.MarketRegions.findIndex(x => mId == x.MarketId && rId == x.RegionId);
             return [ii, state.MarketRegions[ii]]
@@ -164,5 +143,51 @@ export default createStore({
         },
 
         setILang(state, val) { state.IndexLang = val },
+        setDataProject(state, iProject) {
+            const prj = state.Projects[iProject]
+            if (!prj) return
+            switch (prj.Id) {
+                case 1:     // Demo
+                    state.Lands = DemoLands
+                    state.Regions = DemoRegions
+                    state.Markets = DemoMarkets
+                    state.Submarkets = DemoSubmarkets
+                    return;
+                case 2:     // localStorage
+                    state.Lands = getLocal(1)
+                    state.Regions = getLocal(2)
+                    state.Markets = getLocal(3)
+                    state.Submarkets = getLocal(4)
+                    return;
+                case 3:     // Clear local storage
+                    localStorage.clear();
+                    break;
+                default:
+                    break;
+            }
+            state.Lands = []
+            state.Regions = []
+            state.Markets = []
+            state.Submarkets = []
+        },
+        addUpdateLocal(state, [type, item, iProject]) {
+            const prj = state.Projects[iProject]
+            if (!prj) return
+            switch (type) {
+                case 1:     // Lands
+                    state.Lands.push(item);
+                    break;;
+                case 2:     // Regions
+                    state.Regions.push(item);
+                    break;
+                case 3:     // Markets
+                    state.Markets.push(item);
+                    break;
+                case 4:     // Submarkets
+                    state.Submarkets.push(item);
+                    break;
+            }
+            setLocal(type, state.Lands)
+        },
     }
 })

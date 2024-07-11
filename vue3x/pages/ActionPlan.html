@@ -1,9 +1,9 @@
 <template id="tmp-comp-action-plan">
     <section>
-        <drop-select :name="UserAssign" :items="Users" 
+        <drop-select :name="$root.UserAssign" :items="$root.Users" 
             @set:index="$event => setUserAssign($event)">
             <template #default>
-                <div class="default text">Assign</div>
+                <div class="default text">{{$root.UserAssign}}</div>
             </template>
             </drop-select>
     </section>
