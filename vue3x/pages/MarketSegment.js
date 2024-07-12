@@ -1,4 +1,5 @@
 import { MsFilterMarket, getLandMarketIds } from "../components/dFilter.js";
+import { FTypeId } from "../components/dFilter.js";
 
 export default {
     template: `#tmp-comp-market`,
@@ -102,9 +103,7 @@ export default {
                                     const crites = lstC[cc]
                                     if (crites[0] === FTypeId.Land_Region) {
                                         const id = crites[1][0]
-                                        if (0 < id) {
-                                            lstC.splice(cc, 1)      // remove
-                                        }
+                                        if (0 < id) lstC.splice(cc, 1)      // remove at cc
                                     }
                                 }
                                 if (!lstC.length) {
@@ -114,25 +113,20 @@ export default {
                             }
 
                         }
-                        const filterNewLand = () => {
+                        const filterContainNewLand = () => {
                             // const rootLandIds = this.$root.LandIds.map(id => id);
                             // rootLandIds.push(mLand.Id)
                             // this.$root.LandIds = rootLandIds
-
-                            lstC = JSON.parse(JSON.stringify(lstC))
-                            for (let ll = 0; ll < ids.length; ll++) {
-                                const id = ids[ll]
-                                if (olds.includes(id)) continue;
-                                lstC.push([FTypeId.Land_Region, [id]])
-                                this.$root.MarketCriterias = lstC
-                            }
+                            lstC = JSON.parse(JSON.stringify(lstC));
+                            lstC.push([FTypeId.Land_Region, [land.Id]])
+                            this.$root.MarketCriterias = lstC
                         }
                         let item = {
                             type: 'comp-mess-newland',
                             title: mess,
                             data: null
                         }
-                        this.$store.commit('setModal', [item, filterNewLand, resetLands])
+                        this.$store.commit('setModal', [item, filterContainNewLand, resetLands])
                     }
                 }
                 const xClose = (mLand) => {

@@ -299,9 +299,9 @@ export const MsFilterMarket = {
             this.$emit('set:filter', [landIds, marketIds])
             //this.$root.MarketCriterias = JSON.parse(JSON.stringify(lstC))
             const rLstC = this.$root.MarketCriterias
-            spliceRootCrites.call(this)
+            removeRootCrites.call(this)
             addToRootCrites.call(this)
-            function spliceRootCrites() {
+            function removeRootCrites() {
                 for (let ii = 0; ii < rLstC.length; ii++) {
                     const rCrite = rLstC[ii]
                     const crite = lstC[ii]
@@ -329,25 +329,25 @@ export const MsFilterMarket = {
             }
             function addToRootCrites() {
                 for (let ii = 0; ii < lstC.length; ii++) {
-                    const rCrite = rLstC[ii]
+                    const rCrite = rLstC[ii]        // [type, ids]
                     const crite = lstC[ii]
                     if (!rCrite) {
-                        rLstC.push(crite)
+                        rLstC.splice(ii, 0, crite);     // add at ii
                         continue
                     }
                     if (rCrite[0] != crite[0]) {
-                        rLstC.push(crite)
+                        rLstC.splice(ii, 0, crite);     // add at ii
                         continue
                     }
                     const rIds = rCrite[1]
                     const ids = crite[1]
                     if (rIds.length != ids.length) {
-                        rLstC.push(crite)
+                        rLstC.splice(ii, 0, crite);     // add at ii
                         continue
                     }
                     for (let jj = 0; jj < rIds.length; jj++) {
                         if (rIds[jj] != ids[jj]) {
-                            rLstC.push(crite)
+                            rLstC.splice(ii, 0, crite);     // add at ii
                             break;
                         }
                     }
