@@ -99,6 +99,28 @@ export default createStore({
             lst.sort((a, b) => a.ASort - b.ASort)
             return lst
         },
+        LandsMarketsExept: (state) => ([type, ignoreIds]) => {
+            const lst = []
+            let item
+            switch (type) {
+                case 1:     // Land
+                    for (let ii = 0; ii < state.Lands.length; ii++) {
+                        item = state.Lands[ii]
+                        if (ignoreIds.includes(item.Id)) continue
+                        lst.push(item)
+                    }
+                    break;
+                case 2:     // Market
+                    for (let ii = 0; ii < state.Markets.length; ii++) {
+                        item = state.Markets[ii]
+                        if (ignoreIds.includes(item.Id)) continue
+                        lst.push(item)
+                    }
+                    break
+            }
+            lst.sort((a, b) => a.ASort - b.ASort)
+            return lst
+        },
         RegionByLands: (state) => (landIds) => {
             const lst = []
             for (let rr = 0; rr < state.Regions.length; rr++) {

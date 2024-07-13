@@ -130,6 +130,7 @@ const FCriterialMarket = {
     template: `#tmp-comp-criterial-market`,
     mixins: [MxFCriterial],
     emits: ['remove:item'],
+    inject: ['ignoreIds'],
     computed: {
         ItemSelectLand() {
             return {
@@ -158,11 +159,14 @@ const FCriterialMarket = {
             }
         },
         getSrcId() {
+            let ignIds
             switch (this.filterType) {
                 case FTypeId.Land_Region:
-                    return [this.ItemSelectLand, ...this.$store.getters.LandsBy([0])]
+                    ignIds = this.ignoreIds(this.index, 1)
+                    return [this.ItemSelectLand, ...this.$store.getters.LandsMarketsExept([1, ignIds])]
                 case FTypeId.MarketSegments:
-                    return [this.ItemSelectMarket, ...this.$store.getters.MarketsBy([0])]
+                    ignIds = this.ignoreIds(this.index, 2)
+                    return [this.ItemSelectMarket, ...this.$store.getters.LandsMarketsExept([2, ignIds])]
                 default: break;
             }
             return []
@@ -280,6 +284,38 @@ export const MsFilterMarket = {
             this.setFilter()
         },
     },
+    provide() {
+        return {
+            ignoreIds: (index, type) => {
+                const lst = []
+                switch (type) {
+                    case 1: // Land
+                        for (let ii = index - 1; -1 < ii; ii--) {
+                            const crite = this.Criterials[ii]
+                            if (crite[0] == FTypeId.PleaseSelect) continue
+                            if (crite[0] == FTypeId.MarketSegments) continue
+                            const id = crite[1][0]
+                            if (id < 1) continue
+                            lst.push(id)
+                        }
+                        if (!lst.length) return [-1989]
+                        return lst
+                    case 2:         // Market
+                        for (let ii = index - 1; -1 < ii; ii--) {
+                            const crite = this.Criterials[ii]
+                            if (crite[0] == FTypeId.PleaseSelect) continue
+                            if (crite[0] == FTypeId.Land_Region) continue
+                            const id = crite[1][0]
+                            if (id < 1) continue
+                            lst.push(id)
+                        }
+                        if (!lst.length) return [-1989]
+                        return lst;
+                }
+                return [-1989];
+            },
+        }
+    },
     created() {
         const rootCrs = this.$root.MarketCriterias
         if (1 < rootCrs.length || rootCrs[0][0] != FTypeId.PleaseSelect) {
@@ -373,7 +409,6 @@ export const MsFilterMarket = {
 const FCriterial = {
     template: `#tmp-comp-criterial`,
     mixins: [MxFCriterial],
-    //inject: [''],
     emits: ['set:operator'],
     props: {
         operator: Number,
@@ -521,11 +556,5 @@ export const MsFilter = {
             crts[1] = val
         },
         setIds(ii, ids) { this.Criterials[ii].splice(2, 1, ids) },
-    },
-    provide() {
-        return {
-
-
-        }
     },
 }
