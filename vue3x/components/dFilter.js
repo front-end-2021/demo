@@ -221,10 +221,6 @@ export const MsFilterMarket = {
     },
     emits: ['set:filter'],
     props: {
-        // landIds: {
-        //     type: Array,
-        //     default: [0]
-        // },
         marketIds: {
             type: Array,
             default: [0]
@@ -242,43 +238,6 @@ export const MsFilterMarket = {
         }
     },
     watch: {
-        // '$root.LandIds'(ids, olds) {
-        //     let isSetFt = false
-        //     const lstC = this.Criterials
-        //     if (ids.includes(0)) {
-        //         // filter reset Lands (after add new Land)
-        //         // if (lstC.filter(x => x[0] === FTypeId.Land_Region).length) {
-        //         //     for (let cc = lstC.length - 1; -1 < cc; cc--) {
-        //         //         const crites = lstC[cc]
-        //         //         if (crites[0] === FTypeId.Land_Region) {
-        //         //             const id = crites[1][0]
-        //         //             if (0 < id) {
-        //         //                 lstC.splice(cc, 1)      // remove
-        //         //                 isSetFt = true
-        //         //             }
-        //         //         }
-        //         //     }
-        //         //     if (!lstC.length) {
-        //         //         lstC.push([FTypeId.Land_Region, [0]])
-        //         //     }
-        //         //     if (isSetFt) this.setFilter()
-        //         //     return
-        //         // }
-        //     }
-        //     if (!ids.includes(0) && !olds.includes(0)) {
-        //         // add new land in filter criterial
-        //         // if (olds.length < ids.length) {
-        //         //     for (let ll = 0; ll < ids.length; ll++) {
-        //         //         const id = ids[ll]
-        //         //         if (olds.includes(id)) continue;
-        //         //         lstC.push([FTypeId.Land_Region, [id]])
-        //         //         isSetFt = true
-        //         //     }
-        //         //     if (isSetFt) this.setFilter()
-        //         //     return
-        //         // }
-        //     }
-        // },
         '$root.MarketCriterias'(lstC) {
             this.Criterials = JSON.parse(JSON.stringify(lstC))
             this.setFilter()
@@ -335,7 +294,7 @@ export const MsFilterMarket = {
             const lstC = this.Criterials
             const [landIds, marketIds] = getLandMarketIds(lstC)
             this.$emit('set:filter', [landIds, marketIds])
-            //this.$root.MarketCriterias = JSON.parse(JSON.stringify(lstC))
+            
             const rLstC = this.$root.MarketCriterias
             removeRootCrites.call(this)
             addToRootCrites.call(this)

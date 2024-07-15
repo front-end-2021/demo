@@ -33,7 +33,6 @@ Promise.all([
                 IndexProject: 0,
                 IndexPage: 0,
 
-             //   LandIds: [0],
                 ActiveLandIds: [3],
                 MarketIds: [0],
                 MarketCriterias: [],

@@ -19,7 +19,7 @@ export default {
         '$root.ActiveLandIds'(ids) {
             let lstC = this.$root.MarketCriterias
             const [landIds] = getLandMarketIds(lstC)
-            // const landIds = this.$root.LandIds
+            
             let mergeIdLands = ids
             if (!landIds.includes(0)) {
                 mergeIdLands = ids.filter(id => landIds.includes(id))
@@ -35,10 +35,7 @@ export default {
     },
     methods: {
         setFilter([landIds, marketIds]) {
-            // const rootIdLands = this.$root.LandIds
-            // rootIdLands.splice(0)                           // not watch
-            // landIds.forEach(id => rootIdLands.push(id))     // not watch
-
+            
             this.Lands = this.$store.getters.LandsBy(landIds)
 
             let mergeIdLands = this.$root.ActiveLandIds
@@ -56,7 +53,7 @@ export default {
         setLandRegionMarket() {
             let lstC = this.$root.MarketCriterias
             const [landIds] = getLandMarketIds(lstC)
-            //const landIds = this.$root.LandIds
+            
             this.Lands = this.$store.getters.LandsBy(landIds)
 
             let mergeIdLands = this.$root.ActiveLandIds
@@ -86,7 +83,7 @@ export default {
                 const saveClose = (mLand) => {
                     overrideItem.call(land, mLand)
                     this.$store.commit('addUpdateLocal', [1, land, iProject])
-                    //  const landIds = this.$root.LandIds
+                    
                     let lstC = this.$root.MarketCriterias
                     const [landIds, marketIds] = getLandMarketIds(lstC)
                     if (landIds.includes(0)) this.setLandRegionMarket()
@@ -94,9 +91,6 @@ export default {
                         let mess = `New Land has not in filter result. Do you want?`
                         // reset filter or add new land in filter criterial
                         const resetLands = () => {
-                            // landIds.splice(0)
-                            // this.$root.LandIds = [0]
-
                             lstC = JSON.parse(JSON.stringify(lstC))
                             if (lstC.filter(x => x[0] === FTypeId.Land_Region).length) {
                                 for (let cc = lstC.length - 1; -1 < cc; cc--) {
@@ -114,9 +108,6 @@ export default {
 
                         }
                         const filterContainNewLand = () => {
-                            // const rootLandIds = this.$root.LandIds.map(id => id);
-                            // rootLandIds.push(mLand.Id)
-                            // this.$root.LandIds = rootLandIds
                             lstC = JSON.parse(JSON.stringify(lstC));
                             lstC.push([FTypeId.Land_Region, [land.Id]])
                             this.$root.MarketCriterias = lstC
