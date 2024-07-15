@@ -140,7 +140,6 @@ export const CompFormRegion = {
     data() {
 
         return {
-            Currency: 'CHF',
             //  LandActiveId: this.moItem.data.LandId,
         }
     },
@@ -157,10 +156,20 @@ export const CompFormRegion = {
         // },
     },
     methods: {
-        setCurrency(value) { this.Currency = this.Currencies[value] },
+        setCurrency(value) {
+            this.moItem.data.Currency = this.Currencies[value]
+        },
         // setLandFromActive(id) {
         //     console.log('set land from active', id, typeof id)
         //     this.LandActiveId = parseInt(id)
         // },
+    },
+    mounted(){ console.log('mounted')
+        this.$nextTick(() => {
+            this.$el.querySelector(`.dnbRegionName`).focus()
+        })
+    },
+    updated(){
+        console.log('upated')
     },
 }

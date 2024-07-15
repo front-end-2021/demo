@@ -63,7 +63,7 @@ export default {
             this.Regions = this.$store.getters.RegionByLands(mergeIdLands)
 
             const marketIds = this.$root.MarketIds
-            this.Markets = this.$store.getters.MarketsBy([2, marketIds])
+            this.Markets = this.$store.getters.LandsMarketsBy([2, marketIds])
         },
         activeLand(land) {
             const rootActiveIdLands = this.$root.ActiveLandIds.map(id => id)
@@ -281,7 +281,7 @@ export default {
                 region = {
                     Id: this.$store.getters.newId(2),
                     Name: '', Description: '',
-                    LandId: 0,
+                    LandId: 0, Currency: 'USD',
                     ASort: this.$store.getters.newASort(2)
                 }
                 const saveClose = (mRegion) => {
