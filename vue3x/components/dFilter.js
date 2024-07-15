@@ -258,8 +258,7 @@ export const MsFilterMarket = {
                             if (id < 1) continue
                             lst.push(id)
                         }
-                        if (!lst.length) return [-1989]
-                        return lst
+                        break;
                     case 2:         // Market
                         for (let ii = this.Criterials.length - 1; -1 < ii; ii--) {
                             if (ii == index) continue
@@ -270,10 +269,10 @@ export const MsFilterMarket = {
                             if (id < 1) continue
                             lst.push(id)
                         }
-                        if (!lst.length) return [-1989]
-                        return lst;
+                        break;
                 }
-                return [-1989];
+                if (!lst.length) return [-1989]
+                return lst
             },
         }
     },
