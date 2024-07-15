@@ -290,7 +290,8 @@ export const MsFilterMarket = {
                 const lst = []
                 switch (type) {
                     case 1: // Land
-                        for (let ii = index - 1; -1 < ii; ii--) {
+                        for (let ii = this.Criterials.length - 1; -1 < ii; ii--) {
+                            if (ii == index) continue
                             const crite = this.Criterials[ii]
                             if (crite[0] == FTypeId.PleaseSelect) continue
                             if (crite[0] == FTypeId.MarketSegments) continue
@@ -301,7 +302,8 @@ export const MsFilterMarket = {
                         if (!lst.length) return [-1989]
                         return lst
                     case 2:         // Market
-                        for (let ii = index - 1; -1 < ii; ii--) {
+                        for (let ii = this.Criterials.length - 1; -1 < ii; ii--) {
+                            if (ii == index) continue
                             const crite = this.Criterials[ii]
                             if (crite[0] == FTypeId.PleaseSelect) continue
                             if (crite[0] == FTypeId.Land_Region) continue
