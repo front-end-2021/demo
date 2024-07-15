@@ -88,13 +88,46 @@ export default createStore({
             lst.sort((a, b) => b - a)
             return lst[0] + 1
         },
-        LandsBy: (state) => (ids) => {
+        // LandsBy: (state) => (ids) => {
+        //     const lst = []
+        //     let land
+        //     for (let ii = 0; ii < state.Lands.length; ii++) {
+        //         land = state.Lands[ii]
+        //         if (ids.includes(0)) lst.push(land)
+        //         else if (ids.includes(land.Id)) lst.push(land)
+        //     }
+        //     lst.sort((a, b) => a.ASort - b.ASort)
+        //     return lst
+        // },
+        // MarketsBy: (state) => (ids) => {
+        //     const lst = []
+        //     let item
+        //     for (let ii = 0; ii < state.Markets.length; ii++) {
+        //         item = state.Markets[ii]
+        //         if (ids.includes(0)) lst.push(item)
+        //         else if (ids.includes(item.Id)) lst.push(item)
+        //     }
+        //     lst.sort((a, b) => a.ASort - b.ASort)
+        //     return lst
+        // },
+        LandsMarketsBy: (state) => ([type, ids]) => {
             const lst = []
-            let land
-            for (let ii = 0; ii < state.Lands.length; ii++) {
-                land = state.Lands[ii]
-                if (ids.includes(0)) lst.push(land)
-                else if (ids.includes(land.Id)) lst.push(land)
+            let item
+            switch (type) {
+                case 1:     // Land
+                    for (let ii = 0; ii < state.Lands.length; ii++) {
+                        item = state.Lands[ii]
+                        if (ids.includes(0)) lst.push(item)
+                        else if (ids.includes(item.Id)) lst.push(item)
+                    }
+                    break;
+                case 2:     // Market
+                    for (let ii = 0; ii < state.Markets.length; ii++) {
+                        item = state.Markets[ii]
+                        if (ids.includes(0)) lst.push(item)
+                        else if (ids.includes(item.Id)) lst.push(item)
+                    }
+                    break
             }
             lst.sort((a, b) => a.ASort - b.ASort)
             return lst
@@ -127,17 +160,6 @@ export default createStore({
                 let region = state.Regions[rr]
                 if (landIds.includes(0)) lst.push(region)
                 else if (landIds.includes(region.LandId)) lst.push(region)
-            }
-            lst.sort((a, b) => a.ASort - b.ASort)
-            return lst
-        },
-        MarketsBy: (state) => (ids) => {
-            const lst = []
-            let item
-            for (let ii = 0; ii < state.Markets.length; ii++) {
-                item = state.Markets[ii]
-                if (ids.includes(0)) lst.push(item)
-                else if (ids.includes(item.Id)) lst.push(item)
             }
             lst.sort((a, b) => a.ASort - b.ASort)
             return lst

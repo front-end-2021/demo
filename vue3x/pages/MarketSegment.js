@@ -36,7 +36,7 @@ export default {
     methods: {
         setFilter([landIds, marketIds]) {
             
-            this.Lands = this.$store.getters.LandsBy(landIds)
+            this.Lands = this.$store.getters.LandsMarketsBy([1, landIds])
 
             let mergeIdLands = this.$root.ActiveLandIds
             if (!landIds.includes(0)) {
@@ -48,13 +48,13 @@ export default {
             rootIdMarkets.splice(0)                         // not watch
             marketIds.forEach(id => rootIdMarkets.push(id)) // not watch
 
-            this.Markets = this.$store.getters.MarketsBy(marketIds)
+            this.Markets = this.$store.getters.LandsMarketsBy([2, marketIds])
         },
         setLandRegionMarket() {
             let lstC = this.$root.MarketCriterias
             const [landIds] = getLandMarketIds(lstC)
             
-            this.Lands = this.$store.getters.LandsBy(landIds)
+            this.Lands = this.$store.getters.LandsMarketsBy([1, landIds])
 
             let mergeIdLands = this.$root.ActiveLandIds
             if (!landIds.includes(0)) {
@@ -63,7 +63,7 @@ export default {
             this.Regions = this.$store.getters.RegionByLands(mergeIdLands)
 
             const marketIds = this.$root.MarketIds
-            this.Markets = this.$store.getters.MarketsBy(marketIds)
+            this.Markets = this.$store.getters.MarketsBy([2, marketIds])
         },
         activeLand(land) {
             const rootActiveIdLands = this.$root.ActiveLandIds.map(id => id)

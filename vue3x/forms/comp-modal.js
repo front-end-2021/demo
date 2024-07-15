@@ -150,7 +150,7 @@ export const CompFormRegion = {
         },
         // LandActives() {
         //     let landId = this.moItem.data.LandId
-        //     return this.$store.getters.LandsBy([landId])
+        //     return this.$store.getters.LandsMarketsBy([1, [landId]])
         // },
         // LandActiveName() {
         //     return this.LandActives.find(x => x.Id == this.LandActiveId)
