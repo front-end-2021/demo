@@ -124,16 +124,16 @@
                     class="d-inline-block p-2" style="width: 234px; height: 96px;"
                     @input="onChangeDes"
                     style="min-height: 180px; width: 570px;"></span>
-                <!-- <br>
+                <br>
                 <strong class="d-inline-block w81px py-2 pe-2">Land*</strong>
-                <drop-select :f-id="LandActiveId" 
+                <drop-select :f-id="moItem.data.LandId" 
                     :items="LandActives" 
-                    @set:index="$event => setLandFromActive($event)"
+                    @set:index="$event => setLandInActive($event)"
                     :class="['grp-dropdown-min']">
                     <template #default>
                         <div class="text">{{LandActiveName}}</div>
                     </template>
-                </drop-select> -->
+                </drop-select>
                 <br>
                 <strong class="d-inline-block w81px py-2 pe-2">Currency*</strong>
                 <drop-select :name="moItem.data.Currency" 

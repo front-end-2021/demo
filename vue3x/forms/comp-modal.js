@@ -137,39 +137,42 @@ export const CompMessNewLand = {
 export const CompFormRegion = {
     template: `#tmp-comp-form-region`,
     mixins: [MxModal, MxFormLandRegion],
-    data() {
 
-        return {
-            //  LandActiveId: this.moItem.data.LandId,
-        }
-    },
     computed: {
         Currencies() {
             return ['CHF', 'USD', 'VND']
         },
-        // LandActives() {
-        //     let landId = this.moItem.data.LandId
-        //     return this.$store.getters.LandsMarketsBy([1, [landId]])
-        // },
-        // LandActiveName() {
-        //     return this.LandActives.find(x => x.Id == this.LandActiveId)
-        // },
+        LandActives() {
+            let landIds = this.moItem.landActiveIds
+            return this.$store.getters.LandsMarketsBy([1, landIds])
+        },
+        LandActiveName() {
+            const id = this.moItem.data.LandId
+            const land = this.LandActives.find(x => x.Id == id)
+            if (land) return land.Name
+            return `Please Select`
+        },
     },
     methods: {
         setCurrency(value) {
             this.moItem.data.Currency = this.Currencies[value]
         },
-        // setLandFromActive(id) {
-        //     console.log('set land from active', id, typeof id)
-        //     this.LandActiveId = parseInt(id)
-        // },
+        setLandInActive(ii) {
+            ii = parseInt(ii)
+            let land = this.LandActives[ii]
+            if (!land) land = this.LandActives[0]
+            this.moItem.data.LandId = land.Id
+        },
     },
-    mounted(){ console.log('mounted')
+    mounted() {
+        console.log('mounted')
         this.$nextTick(() => {
-            this.$el.querySelector(`.dnbRegionName`).focus()
+            setTimeout(() => {
+                this.$el.querySelector(`.dnbRegionName`).focus()
+            }, 1234)
         })
     },
-    updated(){
+    updated() {
         console.log('upated')
     },
 }

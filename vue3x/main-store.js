@@ -197,19 +197,38 @@ export default createStore({
             if (!prj) return
             switch (type) {
                 case 1:     // Lands
-                    state.Lands.push(item);
+                    if (!state.Lands.find(x => x.Id == item.Id))
+                        state.Lands.push(item);
                     break;;
                 case 2:     // Regions
-                    state.Regions.push(item);
+                    if (!state.Regions.find(x => x.Id == item.Id))
+                        state.Regions.push(item);
                     break;
                 case 3:     // Markets
-                    state.Markets.push(item);
+                    if (!state.Markets.find(x => x.Id == item.Id))
+                        state.Markets.push(item);
                     break;
                 case 4:     // Submarkets
-                    state.Submarkets.push(item);
+                    if (!state.Submarkets.find(x => x.Id == item.Id))
+                        state.Submarkets.push(item);
                     break;
             }
-            setLocal(type, state.Lands)
+            if (2 == prj.Id) {          //localStorage
+                switch (type) {
+                    case 1:     // Lands
+                        setLocal(type, state.Lands)
+                        break;;
+                    case 2:     // Regions
+                        setLocal(type, state.Regions)
+                        break;
+                    case 3:     // Markets
+                        setLocal(type, state.Markets)
+                        break;
+                    case 4:     // Submarkets
+                        setLocal(type, state.Submarkets)
+                        break;
+                }
+            }
         },
     }
 })
