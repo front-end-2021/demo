@@ -141,7 +141,7 @@ export default {
             // #region edit Land
             const saveClose = (mLand) => {
                 overrideItem.call(land, mLand)
-                this.$store.commit('addUpdateLocal', [1, land, iProject])
+                this.$store.commit('addUpdateLocal', [1, null, iProject])
             }
             const xClose = (mLand) => {
                 let mess = getMessCompare(land, mLand)
@@ -295,7 +295,8 @@ export default {
                     ASort: this.$store.getters.newASort(2)
                 }
                 const saveClose = (mRegion) => {
-                    this.$store.commit('addUpdateLocal', [2, mRegion, iProject])
+                    overrideItem.call(region, mRegion)
+                    this.$store.commit('addUpdateLocal', [2, region, iProject])
                     resetRegion()
                 }
                 const xClose = (mRegion) => {
@@ -316,7 +317,7 @@ export default {
             // #region edit
             const saveClose = (mRegion) => {
                 overrideItem.call(region, mRegion)
-                this.$store.commit('addUpdateLocal', [2, region, iProject])
+                this.$store.commit('addUpdateLocal', [2, null, iProject])
                 resetRegion()
             }
             const xClose = (mRegion) => {

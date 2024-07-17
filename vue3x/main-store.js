@@ -195,23 +195,21 @@ export default createStore({
         addUpdateLocal(state, [type, item, iProject]) {
             const prj = state.Projects[iProject]
             if (!prj) return
-            switch (type) {
-                case 1:     // Lands
-                    if (!state.Lands.find(x => x.Id == item.Id))
+            if (!Object.is(item, null)) {
+                switch (type) {
+                    case 1:     // Lands
                         state.Lands.push(item);
-                    break;;
-                case 2:     // Regions
-                    if (!state.Regions.find(x => x.Id == item.Id))
+                        break;;
+                    case 2:     // Regions
                         state.Regions.push(item);
-                    break;
-                case 3:     // Markets
-                    if (!state.Markets.find(x => x.Id == item.Id))
+                        break;
+                    case 3:     // Markets
                         state.Markets.push(item);
-                    break;
-                case 4:     // Submarkets
-                    if (!state.Submarkets.find(x => x.Id == item.Id))
+                        break;
+                    case 4:     // Submarkets
                         state.Submarkets.push(item);
-                    break;
+                        break;
+                }
             }
             if (2 == prj.Id) {          //localStorage
                 switch (type) {
