@@ -1,5 +1,6 @@
 import { MsFilterMarket, getLandMarketIds } from "../components/dFilter.js";
 import { FTypeId } from "../components/dFilter.js";
+import { newIntId } from "../common.js";
 
 export default {
     template: `#tmp-comp-market`,
@@ -80,7 +81,7 @@ export default {
             const iProject = this.$root.IndexProject
             if (!land) {        // add new
                 land = {
-                    Id: this.$store.getters.newId(1),
+                    Id: newIntId(),
                     Name: '', IsNew: false, Description: '',
                     ASort: this.$store.getters.newASort(1)
                 }
@@ -265,7 +266,7 @@ export default {
         },
         openFormNewMarket() {
             const market = {
-                Id: this.$store.getters.newId(3),
+                Id: newIntId(),
                 Name: '', Description: '', LandId: -12,
                 ASort: this.$store.getters.newASort(3)
             }
@@ -289,7 +290,7 @@ export default {
             if (!region) {
                 // add new
                 region = {
-                    Id: this.$store.getters.newId(2),
+                    Id: newIntId(),
                     Name: '', Description: '',
                     LandId: landActiveIds[0], Currency: 'USD',
                     ASort: this.$store.getters.newASort(2)

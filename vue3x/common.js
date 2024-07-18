@@ -63,7 +63,7 @@ export const getTxtBy = (lang) => {
         SelectMarketsegments,
         ProductGroups, Product,
         Submarkets, ContactPerson,
-        Weighting, Criteria, Valuation, 
+        Weighting, Criteria, Valuation,
         Active, Productstrategy,
         Sub_market
     }
@@ -95,4 +95,9 @@ export const includeHTML = (path) => {
             xhr.send();
         })
     }
+}
+export const newIntId = () => {
+    let s = new Date(2024, 6, 18, 0, 0, 0)
+    s = Date.now() - s.getTime()
+    return Math.floor(s / 1000)
 }

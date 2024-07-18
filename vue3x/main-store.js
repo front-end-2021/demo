@@ -59,21 +59,6 @@ export default createStore({
             }
             return ''
         },
-
-        newId: (state) => (type) => {
-            let lst = []
-            switch (type) {
-                case 1: lst = state.Lands.map(x => x.Id)
-                    break;
-                case 2: lst = state.Regions.map(x => x.Id)
-                    break;
-                case 3: lst = state.Markets.map(x => x.Id)
-                    break;
-            }
-            if (!lst.length) return 1;
-            lst.sort((a, b) => b - a)
-            return lst[0] + 1
-        },
         newASort: (state) => (type) => {
             let lst = []
             switch (type) {
