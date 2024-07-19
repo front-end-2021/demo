@@ -97,7 +97,7 @@ export const includeHTML = (path) => {
     }
 }
 export const newIntId = () => {
-    let s = new Date(2024, 6, 18, 0, 0, 0)
+    let s = new Date(2024, 6, 19, 8, 20, 0)        // 7/19/2024 08:20
     s = Date.now() - s.getTime()
     return Math.floor(s / 1000)
 }
