@@ -10,6 +10,9 @@ const MxModal = {
         })
         $modal.modal('show')
     },
+    methods: {
+        hideModal() { $(this.$el).modal('hide') },
+    },
 }
 export const CompModal = {
     template: `#tmp-comp-modal`,
@@ -22,11 +25,11 @@ export const CompModal = {
     },
     methods: {
         onExitClose() {
-            $(this.$el).modal('hide')
+            this.hideModal()
             this.$store.commit('outModal', ['exit-close', deepCopy(this.item)])
         },
         onSaveClose() {
-            $(this.$el).modal('hide')
+            this.hideModal()
             this.$store.commit('outModal', ['save-close', deepCopy(this.item)])
         },
         onChangeDes(e) {
@@ -47,16 +50,18 @@ const MxFormLandRegion = {
         Title() { return this.moItem.title }
     },
     methods: {
-        onExitClose() {
+        setNameAndDes() {
             this.item.Name = this.name
             this.item.Description = this.des
-            $(this.$el).modal('hide')
+        },
+        onExitClose() {
+            this.setNameAndDes()
+            this.hideModal()
             this.$store.commit('outModal', ['exit-close', this.item])
         },
         onSaveClose() {
-            this.item.Name = this.name
-            this.item.Description = this.des
-            $(this.$el).modal('hide')
+            this.setNameAndDes()
+            this.hideModal()
             this.$store.commit('outModal', ['save-close', this.item])
         },
         onChangeName(e) { this.name = e.target.innerText },
@@ -134,14 +139,8 @@ export const CompMessNewLand = {
         },
     },
 }
-export const CompFormRegion = {
-    template: `#tmp-comp-form-region`,
-    mixins: [MxModal, MxFormLandRegion],
-
+const MxMarketRegion = {
     computed: {
-        Currencies() {
-            return ['CHF', 'USD', 'VND']
-        },
         LandActives() {
             let landIds = this.moItem.landActiveIds
             return this.$store.getters.LandsMarketsBy([1, landIds])
@@ -154,9 +153,6 @@ export const CompFormRegion = {
         },
     },
     methods: {
-        setCurrency(value) {
-            this.moItem.data.Currency = this.Currencies[value]
-        },
         setLandInActive(ii) {
             ii = parseInt(ii)
             let land = this.LandActives[ii]
@@ -174,5 +170,48 @@ export const CompFormRegion = {
     },
     updated() {
         console.log('upated')
+    },
+}
+export const CompFormMarket = {
+    template: `#tmp-comp-form-region`,
+    mixins: [MxModal, MxFormLandRegion, MxMarketRegion],
+    methods: {
+        onExitClose() {
+            this.setNameAndDes()
+            this.$store.dispatch('outConfirmModal', ['exit-close', deepCopy(this.item),
+                this.$el.querySelector('.dnbRegionName')
+            ]).then(state => {
+                if (typeof state == 'boolean') return;
+                if (typeof state != 'object') return;
+                state.Modals.pop()
+                this.hideModal()
+            })
+        },
+        onSaveClose() {
+            this.setNameAndDes()
+            this.$store.dispatch('outConfirmModal', ['save-close', deepCopy(this.item),
+                this.$el.querySelector('.dnbRegionName')
+            ]).then(state => {
+                if (typeof state == 'boolean') return;
+                if (typeof state != 'object') return;
+                state.Modals.pop()
+                this.hideModal()
+            })
+        },
+    },
+}
+export const CompFormRegion = {
+    template: `#tmp-comp-form-region`,
+    mixins: [MxModal, MxFormLandRegion, MxMarketRegion],
+
+    computed: {
+        Currencies() {
+            return ['CHF', 'USD', 'VND']
+        },
+    },
+    methods: {
+        setCurrency(value) {
+            this.moItem.data.Currency = this.Currencies[value]
+        },
     },
 }

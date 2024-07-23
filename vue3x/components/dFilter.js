@@ -174,7 +174,7 @@ const FCriterialMarket = {
 
     },
 }
-export const getLandMarketIds = (lstC) => {
+export const getLandMarketIds = (lstC, outputType) => {
     let landIds = []
     let marketIds = []
     const cLen = lstC.length
@@ -194,6 +194,11 @@ export const getLandMarketIds = (lstC) => {
     mrkIds = mrkIds.filter((v, i, self) => i == self.indexOf(v));// remove duplicate
     if (mrkIds.length) marketIds = mrkIds;
     else marketIds = [0];
+    switch(outputType) {
+        case 'land': return landIds;
+        case 'market': return marketIds;
+        default: break;
+    }
     return [landIds, marketIds]
     function processType(type, id) {
         switch (type) {
@@ -301,6 +306,8 @@ export const MsFilterMarket = {
                 for (let ii = 0; ii < rLstC.length; ii++) {
                     const rCrite = rLstC[ii]
                     const crite = lstC[ii]
+                    if(!crite) continue;
+                    
                     if (rCrite[0] != crite[0]) {
                         ii = removeAt(ii)
                         continue

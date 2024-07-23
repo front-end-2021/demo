@@ -28,6 +28,24 @@ export default createStore({
             const ii = state.MarketRegions.findIndex(x => mId == x.MarketId && rId == x.RegionId);
             return [ii, state.MarketRegions[ii]]
         },
+        outConfirmModal({ commit, state }, [fncTxt, data, elDom]) {
+            if (!state.Modals.length) return
+            const lastMdl = state.Modals[state.Modals.length - 1]
+            if (Object.is(lastMdl, null)) return null;
+            let isOut = false
+            switch (fncTxt) {
+                case 'save-close':
+                    if (typeof lastMdl.saveClose != 'function') return
+                    isOut = lastMdl.saveClose(data, elDom)
+                    break;
+                case 'exit-close':
+                    if (typeof lastMdl.exitClose != 'function') return
+                    isOut = lastMdl.exitClose(data, elDom)
+                    break;
+            }
+            if (!isOut) return false;
+            return state
+        },
     },
     getters: {
         ListModal(state) { return state.Modals },
@@ -135,16 +153,16 @@ export default createStore({
         setModal(state, [item, saveClose, exitClose]) { state.Modals.push({ item, saveClose, exitClose }) },
         outModal(state, [fncTxt, data]) {
             if (!state.Modals.length) return
-            let lastItem = state.Modals.pop()
-            if (Object.is(lastItem, null)) return null
+            let lastMdl = state.Modals.pop()
+            if (Object.is(lastMdl, null)) return null
             switch (fncTxt) {
                 case 'save-close':
-                    if (typeof lastItem.saveClose != 'function') return
-                    lastItem.saveClose(data)
+                    if (typeof lastMdl.saveClose != 'function') return
+                    lastMdl.saveClose(data)
                     break;
                 case 'exit-close':
-                    if (typeof lastItem.exitClose != 'function') return
-                    lastItem.exitClose(data)
+                    if (typeof lastMdl.exitClose != 'function') return
+                    lastMdl.exitClose(data)
                     break;
             }
         },

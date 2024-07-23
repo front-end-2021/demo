@@ -4,7 +4,7 @@ import {
 } from './components/comp-global.js'
 import dnbStore from './main-store.js'
 import {
-    CompModal, CompFormLand, CompFormRegion,
+    CompModal, CompFormLand, CompFormRegion, CompFormMarket,
     CompFormValuation, CompMessNewLand
 } from './forms/comp-modal.js'
 import MarketSegment from './pages/MarketSegment.js'
@@ -34,7 +34,6 @@ Promise.all([
                 IndexPage: 0,
 
                 ActiveLandIds: [3],
-                MarketIds: [0],
                 MarketCriterias: [],
 
                 UserInfo: {
@@ -113,6 +112,7 @@ Promise.all([
             'comp-form-land': CompFormLand,
             'comp-form-valuation': CompFormValuation,
             'comp-mess-newland': CompMessNewLand,
+            'comp-form-market': CompFormMarket,
             'comp-form-region': CompFormRegion,
         },
         computed: {

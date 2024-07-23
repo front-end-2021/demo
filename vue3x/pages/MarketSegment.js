@@ -19,7 +19,7 @@ export default {
     watch: {
         '$root.ActiveLandIds'(ids) {
             let lstC = this.$root.MarketCriterias
-            const [landIds] = getLandMarketIds(lstC)
+            const landIds = getLandMarketIds(lstC, 'land')
 
             let mergeIdLands = ids
             if (!landIds.includes(0)) {
@@ -40,21 +40,16 @@ export default {
 
             this.setRegions(landIds)
 
-            const rootIdMarkets = this.$root.MarketIds
-            rootIdMarkets.splice(0)                         // not watch
-            marketIds.forEach(id => rootIdMarkets.push(id)) // not watch
-
             this.Markets = this.$store.getters.LandsMarketsBy([2, marketIds])
         },
         setLandRegionMarket() {
             let lstC = this.$root.MarketCriterias
-            const [landIds] = getLandMarketIds(lstC)
+            const [landIds, marketIds] = getLandMarketIds(lstC)
 
             this.Lands = this.$store.getters.LandsMarketsBy([1, landIds])
 
             this.setRegions(landIds)
 
-            const marketIds = this.$root.MarketIds
             this.Markets = this.$store.getters.LandsMarketsBy([2, marketIds])
         },
         setRegions(landIds) {
@@ -90,7 +85,7 @@ export default {
                     this.$store.commit('addUpdateLocal', [1, land, iProject])
 
                     let lstC = this.$root.MarketCriterias
-                    const [landIds, marketIds] = getLandMarketIds(lstC)
+                    const landIds = getLandMarketIds(lstC, 'land')
                     if (landIds.includes(0)) this.setLandRegionMarket()
                     else {
                         let mess = `New Land has not in filter result. Do you want?`
@@ -264,27 +259,58 @@ export default {
             //console.log('on click tab', e.target, e)
             this.MenuValuation.splice(0)
         },
-        openFormNewMarket() {
-            const market = {
-                Id: newIntId(),
-                Name: '', Description: '', LandId: -12,
-                ASort: this.$store.getters.newASort(3)
-            }
-            const saveClose = (mMarket) => {
+        openFormMarket(market) {
+            const iProject = this.$root.IndexProject
+            const landActiveIds = this.$root.ActiveLandIds
+            const isDuplicateName = (mMarket, elName) => {
+                const allMarket = this.$store.getters.LandsMarketsBy([2, [0]])
+                if (!allMarket.length) return false;
+                const mNames = allMarket.map(x => x.Name)
 
+                if (mNames.includes(mMarket.Name)) {
+                    $(elName).popup('show');
+                    return true
+                }
+                return false;
             }
-            const xClose = (mMarket) => {
-
+            if (!market) {
+                // add new
+                market = {
+                    Id: newIntId(),
+                    Name: '', Description: '', LandId: landActiveIds[0],
+                    ASort: this.$store.getters.newASort(3)
+                }
+                const saveClose = (mMarket, elName) => {
+                    if (isDuplicateName(mMarket, elName)) {
+                        return false
+                    }
+                    overrideItem.call(market, mMarket)
+                    this.$store.commit('addUpdateLocal', [3, market, iProject])
+                    this.setLandRegionMarket()
+                    return true
+                }
+                const xClose = (mMarket, elName) => {
+                    if (typeof mMarket.Name != 'string') return true;
+                    if (!mMarket.Name.length) return true;
+                    let mess = `Do you want to save?`
+                    if (confirm(mess)) return saveClose(mMarket, elName);
+                    return true;
+                }
+                const item = {
+                    title: `New Market`,
+                    data: market,
+                    landActiveIds,
+                    type: `comp-form-market`
+                }
+                this.$store.commit('setModal', [item, saveClose, xClose])
             }
-
-            this.$store.commit('setModal', [market, saveClose, xClose])
         },
         openFormRegion(region) {
             const iProject = this.$root.IndexProject
             const landActiveIds = this.$root.ActiveLandIds
             const resetRegion = () => {
                 let lstC = this.$root.MarketCriterias
-                const [landIds] = getLandMarketIds(lstC)
+                const landIds = getLandMarketIds(lstC, 'land')
                 this.setRegions(landIds)
             }
             if (!region) {

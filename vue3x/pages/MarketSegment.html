@@ -39,7 +39,8 @@
           </thead>
           <tbody>
             <tr v-for="(market, imk) in Markets">
-              <td class="p6px">{{market.Name}}</td>
+              <td class="p6px" 
+                @dblclick="e => openFormMarket(market)">{{market.Name}}</td>
               <td v-for="(region, ii) in Regions" class="p6px" style="height: 36px;">
                 <div class="cell-valuation" 
                   @dblclick="e => dblclOpenFormValue(market, region)"
@@ -67,7 +68,7 @@
             </tr>
             <tr>
               <td>
-                <div @click.stop="openFormNewMarket">+ Market<i class="circle help link icon" 
+                <div @click.stop="e => openFormMarket()">+ Market<i class="circle help link icon" 
                       data-html="Maximum device width with two <code
                       >1.5em</code> gutters and a <code>17px</code> scrollbar width. <div 
                       class='ui divider'></div> <code>992 - (14 * (1.5 * 2)) - 17</code>">
