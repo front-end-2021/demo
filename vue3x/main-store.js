@@ -32,18 +32,17 @@ export default createStore({
             if (!state.Modals.length) return
             const lastMdl = state.Modals[state.Modals.length - 1]
             if (Object.is(lastMdl, null)) return null;
-            let isOut = false
+
             switch (fncTxt) {
                 case 'save-close':
-                    if (typeof lastMdl.saveClose != 'function') return
-                    isOut = lastMdl.saveClose(data, elDom)
+                    if (typeof lastMdl.saveClose != 'function') return;
+                    if (!lastMdl.saveClose(data, elDom)) return false;
                     break;
                 case 'exit-close':
                     if (typeof lastMdl.exitClose != 'function') return
-                    isOut = lastMdl.exitClose(data, elDom)
+                    if (!lastMdl.exitClose(data, elDom)) return false
                     break;
             }
-            if (!isOut) return false;
             return state
         },
     },

@@ -51,8 +51,8 @@ const MxFormLandRegion = {
     },
     methods: {
         setNameAndDes() {
-            this.item.Name = this.name
-            this.item.Description = this.des
+            this.item.Name = this.name.trim()
+            this.item.Description = this.des.trim()
         },
         onExitClose() {
             this.setNameAndDes()
