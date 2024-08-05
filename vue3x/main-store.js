@@ -148,29 +148,24 @@ export default createStore({
             return state.MarketRegions.find(x => mId == x.MarketId && rId == x.RegionId);
         },
         newNumId: (state) => (type) => {
-            let demoIds = [],
-                localIds = [],
-                allIds = []
+            let demoIds = [];
             switch (type) {
                 case 1: // Land
                     demoIds = DemoLands.map(x => x.Id)
-                    localIds = getLocal(1).map(x => x.Id)
                     break;
                 case 2: // Region
                     demoIds = DemoRegions.map(x => x.Id)
-                    localIds = getLocal(2).map(x => x.Id)
                     break;
                 case 3: // Market
                     demoIds = DemoMarkets.map(x => x.Id)
-                    localIds = getLocal(3).map(x => x.Id)
                     break;
                 case 4: // Submarket
                     demoIds = DemoSubmarkets.map(x => x.Id)
-                    localIds = getLocal(4).map(x => x.Id)
                     break;
                 default: return 1989;
             }
-            allIds = [...demoIds, ...localIds];
+            const localIds = getLocal(type).map(x => x.Id)
+            const allIds = [...demoIds, ...localIds];
             if (!allIds.length) return 1;
             allIds.sort((a, b) => b - a)        // decrease
             return allIds[0] + 1;
