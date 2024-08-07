@@ -97,14 +97,15 @@ export const includeHTML = (path) => {
         })
     }
 }
+const admin = {
+    name: 'DaiNB'
+}
 export const addHistoryState = (oEntry) => {
     const url = new URL(location);
     Object.keys(oEntry).forEach(tKey => {
         url.searchParams.set(tKey, oEntry[tKey]);
     })
-    history.pushState({
-        name: 'DaiNB'
-    }, "", url);
+    history.pushState(admin, "", url);
 }
 const originHistory = () => {
 
