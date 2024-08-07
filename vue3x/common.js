@@ -102,10 +102,12 @@ export const addHistoryState = (oEntry) => {
     Object.keys(oEntry).forEach(tKey => {
         url.searchParams.set(tKey, oEntry[tKey]);
     })
-    history.pushState(localStorage, "", url);
+    history.pushState({
+        name: 'DaiNB'
+    }, "", url);
 }
 const originHistory = () => {
-    
+
 }
 export const setLastState = (type, id) => {
     switch (type) {
