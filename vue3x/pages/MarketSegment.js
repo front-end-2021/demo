@@ -1,5 +1,6 @@
 import { MsFilterMarket, getLandMarketIds } from "../components/dFilter.js";
 import { FTypeId } from "../components/dFilter.js";
+import { setLastState } from "../common.js";
 
 export default {
     template: `#tmp-comp-market`,
@@ -135,10 +136,12 @@ export default {
             }
             // #region edit Land
             const saveClose = (mLand) => {
+                setLastState(1, 0)
                 overrideItem.call(land, mLand)
                 this.$store.commit('addUpdateLocal', [1, null, iProject])
             }
             const xClose = (mLand) => {
+                setLastState(1, 0)
                 let mess = getMessCompare(land, mLand)
                 if (mess && confirm(mess)) saveClose(mLand)
             }
@@ -149,6 +152,7 @@ export default {
             }
             // #endregion
             this.$store.commit('setModal', [item, saveClose, xClose])
+            setLastState(1, land.Id)
         },
         getValuation(mId, rId, item) {
             if (!item) item = this.$store.getters.MarketRegionBy([mId, rId])
@@ -272,17 +276,16 @@ export default {
                 }
                 return false;
             }
+            // add new
             if (!market) {
-                // add new
                 market = {
                     Id: this.$store.getters.newNumId(3),
                     Name: '', Description: '', LandId: landActiveIds[0],
                     ASort: this.$store.getters.newASort(3)
                 }
                 const saveClose = (mMarket, elName) => {
-                    if (isDuplicateName(mMarket, elName)) {
-                        return false
-                    }
+                    if (isDuplicateName(mMarket, elName)) return false
+
                     overrideItem.call(market, mMarket)
                     this.$store.commit('addUpdateLocal', [3, market, iProject])
                     this.setLandRegionMarket()
@@ -302,7 +305,32 @@ export default {
                     type: `comp-form-market`
                 }
                 this.$store.commit('setModal', [item, saveClose, xClose])
+                return;
             }
+            // Edit
+            const saveClose = (mMarket, elName) => {
+                if (isDuplicateName(mMarket, elName)) return false
+                overrideItem.call(region, mRegion)
+                this.$store.commit('addUpdateLocal', [3, null, iProject])
+                this.setLandRegionMarket()
+                setLastState(3, 0)
+                return true
+            }
+            const xClose = (mMarket) => {
+                if (!mMarket.Name.length) return false;
+                let mess = getMessCompare(market, mMarket)
+                if (mess && confirm(mess)) return saveClose(mMarket)
+                setLastState(3, 0)
+                return true;
+            }
+            const item = {
+                title: `Edit Market`,
+                data: JSON.parse(JSON.stringify(market)),
+                landActiveIds,
+                type: `comp-form-market`
+            }
+            this.$store.commit('setModal', [item, saveClose, xClose])
+            setLastState(3, market.Id)
         },
         openFormRegion(region) {
             const iProject = this.$root.IndexProject
@@ -312,8 +340,8 @@ export default {
                 const landIds = getLandMarketIds(lstC, 'land')
                 this.setRegions(landIds)
             }
+            // add new
             if (!region) {
-                // add new
                 region = {
                     Id: this.$store.getters.newNumId(2),
                     Name: '', Description: '',
@@ -342,6 +370,7 @@ export default {
             }
             // #region edit
             const saveClose = (mRegion) => {
+                setLastState(2, 0)
                 overrideItem.call(region, mRegion)
                 this.$store.commit('addUpdateLocal', [2, null, iProject])
                 resetRegion()
@@ -349,6 +378,7 @@ export default {
             const xClose = (mRegion) => {
                 let mess = getMessCompare(region, mRegion)
                 if (mess && confirm(mess)) saveClose(mRegion)
+                else setLastState(2, 0)
             }
             const item = {
                 title: `Edit Region`,
@@ -358,6 +388,7 @@ export default {
             }
             // #endregion
             this.$store.commit('setModal', [item, saveClose, xClose])
+            setLastState(2, region.Id)
         },
     },
     created() {

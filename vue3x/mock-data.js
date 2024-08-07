@@ -94,67 +94,11 @@ const DemoSubmarkets = [
     { Id: 5, Name: 'Quangninh submarket 2', MarketId: 4, Description: '' },
     { Id: 6, Name: 'Cairang submarket 3', MarketId: 6, Description: '' },
 ]
-const getLocal = (type) => {
-    if (storageAvailable("localStorage")) {
-        let jsonItems
-        switch (type) {
-            case 1:     // Lands
-                jsonItems = localStorage.getItem("Lands");
-                break;
-            case 2:     // Regions
-                jsonItems = localStorage.getItem("Regions");
-                break;
-            case 3:     // Markets
-                jsonItems = localStorage.getItem("Markets");
-                break;
-            case 4:     // Submarkets
-                jsonItems = localStorage.getItem("Submarkets");
-                break;
-        }
-        if (!jsonItems) return []
-        return JSON.parse(jsonItems)
-    } else {
-        switch (type) {
-            case 1:
-            case 2:
-            case 3:
-            case 4: return []
-            default: return
-        }
-    }
-}
-const setLocal = (type, items) => {
-    if (storageAvailable("localStorage")) {
-        let jsonItems
-        switch (type) {
-            case 1:     // Lands
-                jsonItems = localStorage.getItem("Lands");
-                if (jsonItems) localStorage.removeItem("Lands");
-                localStorage.setItem("Lands", JSON.stringify(items))
-                return;
-            case 2:     // Regions
-                jsonItems = localStorage.getItem("Regions");
-                if (jsonItems) localStorage.removeItem("Regions");
-                localStorage.setItem("Regions", JSON.stringify(items))
-                return;
-            case 3:     // Markets
-                jsonItems = localStorage.getItem("Markets");
-                if (jsonItems) localStorage.removeItem("Markets");
-                localStorage.setItem("Markets", JSON.stringify(items))
-                return;
-            case 4:     // Submarkets
-                jsonItems = localStorage.getItem("Submarkets");
-                if (jsonItems) localStorage.removeItem("Submarkets");
-                localStorage.setItem("Submarkets", JSON.stringify(items))
-                return;
-        }
-    }
-}
 
 export {
     Mains, ListPrj, Langs,
-    DemoLands, DemoRegions, DemoMarkets, DemoSubmarkets,
-    getLocal, setLocal,
+    DemoLands, DemoRegions,
+    DemoMarkets, DemoSubmarkets,
 }
 
 function newItem() {
@@ -184,22 +128,4 @@ function genRandomDateStr(start) {
     if (28 < date) date = 28
     let day = getRandomInt(date, 29)
     return `${year}-${month}-${day}T00:00:00.000Z`   //YYYY-MM-DDTHH:mm:ss.sssZ
-}
-function storageAvailable(type) {
-    let storage;
-    try {
-        storage = window[type];
-        const x = "__storage_test__";
-        storage.setItem(x, x);
-        storage.removeItem(x);
-        return true;
-    } catch (e) {
-        return (
-            e instanceof DOMException &&
-            e.name === "QuotaExceededError" &&
-            // acknowledge QuotaExceededError only if there's something already stored
-            storage &&
-            storage.length !== 0
-        );
-    }
 }

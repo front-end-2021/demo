@@ -1,9 +1,9 @@
 import {
     ListPrj, Langs,
-    DemoLands, DemoRegions, DemoMarkets, DemoSubmarkets,
-    getLocal, setLocal,
+    DemoLands, DemoRegions,
+    DemoMarkets, DemoSubmarkets,
 } from './mock-data.js';
-import { getTxtBy } from './common.js';
+import { getTxtBy, getLocal, setLocal } from './common.js';
 import { FTypeId } from './components/dFilter.js';
 const { createStore } = Vuex
 export default createStore({

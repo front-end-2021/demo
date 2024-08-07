@@ -1,3 +1,4 @@
+
 export const getRandomInt = (min, max) => {
     const minCeiled = Math.ceil(min);
     const maxFloored = Math.floor(max);
@@ -94,6 +95,104 @@ export const includeHTML = (path) => {
             xhr.open("GET", file, true);
             xhr.send();
         })
+    }
+}
+export const setLastState = (type, id) => {
+    switch (type) {
+        case 1:     // Edit Land
+        case 2:     // Edit Region
+        case 3:     // Edit Market
+            if (0 == id) setLocal(5)
+            else setLocal(5, { type, id })
+            return;
+        case 4:     // Edit Submarket
+            break;
+    }
+}
+export const getLocal = (type) => {
+    if (storageAvailable("localStorage")) {
+        let jData
+        switch (type) {
+            case 1:     // Lands
+                jData = localStorage.getItem("Lands");
+                break;
+            case 2:     // Regions
+                jData = localStorage.getItem("Regions");
+                break;
+            case 3:     // Markets
+                jData = localStorage.getItem("Markets");
+                break;
+            case 4:     // Submarkets
+                jData = localStorage.getItem("Submarkets");
+                break;
+        }
+        if (!jData) return []
+        return JSON.parse(jData)
+    } else {
+        switch (type) {
+            case 1:
+            case 2:
+            case 3:
+            case 4: return []
+            default: return
+        }
+    }
+}
+export const setLocal = (type, oData) => {
+    const isRemove = Object.is(oData, null) || (typeof oData == 'undefined')
+    if (storageAvailable("localStorage")) {
+        let jData
+        switch (type) {
+            case 1:     // Lands
+                jData = localStorage.getItem("Lands");
+                if (jData) localStorage.removeItem("Lands");
+                if (isRemove) return;
+                localStorage.setItem("Lands", JSON.stringify(oData))
+                return;
+            case 2:     // Regions
+                jData = localStorage.getItem("Regions");
+                if (jData) localStorage.removeItem("Regions");
+                if (isRemove) return;
+                localStorage.setItem("Regions", JSON.stringify(oData))
+                return;
+            case 3:     // Markets
+                jData = localStorage.getItem("Markets");
+                if (jData) localStorage.removeItem("Markets");
+                if (isRemove) return;
+                localStorage.setItem("Markets", JSON.stringify(oData))
+                return;
+            case 4:     // Submarkets
+                jData = localStorage.getItem("Submarkets");
+                if (jData) localStorage.removeItem("Submarkets");
+                if (isRemove) return;
+                localStorage.setItem("Submarkets", JSON.stringify(oData))
+                return;
+            case 5:     // last state
+                jData = localStorage.getItem("LastState");
+                if (jData) localStorage.removeItem("LastState");
+                if (isRemove) return;
+                localStorage.setItem("LastState", JSON.stringify(oData))
+                return;
+        }
+    }
+}
+
+function storageAvailable(type) {
+    let storage;
+    try {
+        storage = window[type];
+        const x = "__storage_test__";
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    } catch (e) {
+        return (
+            e instanceof DOMException &&
+            e.name === "QuotaExceededError" &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            storage &&
+            storage.length !== 0
+        );
     }
 }
 // export const newIntId = () => {
