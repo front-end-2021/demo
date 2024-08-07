@@ -97,6 +97,16 @@ export const includeHTML = (path) => {
         })
     }
 }
+export const addHistoryState = (oEntry) => {
+    const url = new URL(location);
+    Object.keys(oEntry).forEach(tKey => {
+        url.searchParams.set(tKey, oEntry[tKey]);
+    })
+    history.pushState(localStorage, "", url);
+}
+const originHistory = () => {
+    
+}
 export const setLastState = (type, id) => {
     switch (type) {
         case 1:     // Edit Land
