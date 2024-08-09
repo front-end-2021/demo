@@ -98,19 +98,47 @@ export const includeHTML = (path) => {
     }
 }
 const admin = {
-    name: 'DaiNB'
+    user: 'DaiNB'
 }
-export const addHistoryState = (oEntry) => {
+const addHistoryState = (oEntry, isPush) => {
     const url = new URL(location);
     Object.keys(oEntry).forEach(tKey => {
         url.searchParams.set(tKey, oEntry[tKey]);
     })
-    history.pushState(admin, "", url);
+    if (isPush) history.pushState(admin, "", url);
+    else history.replaceState(admin, "", url);
 }
 const originHistory = () => {
-
+    const url = new URL(location.origin);
+    delete admin.action
+    history.replaceState(admin, "", url);
+}
+export const getLastState = () => {
+    const url = new URL(location.href);
+    const oParams = url.searchParams
+    const oData = {}
+    const type = parseInt(oParams.get('type'))
+    if (!isNaN(type)) oData.type = type;
+    const id = parseInt(oParams.get('id'))
+    if (!isNaN(id)) oData.id = id;
+    return new Promise((resolve, reject) => {
+        resolve(oData);
+    })
 }
 export const setLastState = (type, id) => {
+    switch (type) {
+        case 1:     // Edit Land
+            admin.action = 'Edit Land'
+            break;
+        case 2:     // Edit Region
+            admin.action = 'Edit Region'
+            break;
+        case 3:     // Edit Market
+            admin.action = 'Edit Market'
+            break;
+        case 4:     // Edit Submarket
+            break;
+    }
     switch (type) {
         case 1:     // Edit Land
         case 2:     // Edit Region
@@ -183,8 +211,12 @@ export const setLocal = (type, oData) => {
             case 5:     // last state
                 jData = localStorage.getItem("LastState");
                 if (jData) localStorage.removeItem("LastState");
-                if (isRemove) return;
+                if (isRemove) {
+                    originHistory()
+                    return;
+                }
                 localStorage.setItem("LastState", JSON.stringify(oData))
+                addHistoryState(oData)
                 return;
         }
     }
