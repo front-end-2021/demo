@@ -8,16 +8,16 @@ import { FTypeId } from './components/dFilter.js';
 const { createStore } = Vuex
 export default createStore({
     state: {
-        Projects: ListPrj,  // [{Id, Name}]
-        Languages: Langs,   // [{Key, Name}]
+        Projects: [],// ListPrj,  // [{Id, Name}]
+        Languages: [], // Langs,   // [{Key, Name}]
         IndexLang: 0,
 
         Pages: ['Market segment strategy', `Sub-market/Product Strategy`, `Action plan`, 'Roadmap', `Team Board`],
 
-        Lands: DemoLands,
-        Regions: DemoRegions,
-        Markets: DemoMarkets,
-        Submarkets: DemoSubmarkets,
+        Lands: [], // DemoLands,
+        Regions: [], // DemoRegions,
+        Markets: [], // DemoMarkets,
+        Submarkets: [], // DemoSubmarkets,
 
         MarketRegions: [], // [{MarketId, RegionId, Criterias [], Active, Comment}]
         count: 0,

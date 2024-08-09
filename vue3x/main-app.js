@@ -1,4 +1,5 @@
 import { getRandomInt, includeHTML } from './common.js'
+import { getData } from './repo-services.js'
 import {
     DropSelect, SRange
 } from './components/comp-global.js'
@@ -30,10 +31,10 @@ Promise.all([
         },
         data() {
             return {
-                IndexProject: 0,
-                IndexPage: 0,
+                IndexProject: -1,
+                IndexPage: -1,
 
-                ActiveLandIds: [3],
+                ActiveLandIds: [],
                 MarketCriterias: [],
 
                 UserInfo: {
@@ -58,6 +59,11 @@ Promise.all([
                     case 2: return 'page-action-plan';
                     default: break;
                 }
+            },
+            ProjectName() {
+                const iPrj = this.IndexProject
+                if (iPrj < 0) return ''
+                return this.$store.state.Projects[iPrj].Name
             },
         },
         watch: {
@@ -91,7 +97,28 @@ Promise.all([
                 }
             }
         },
-        //created() { },
+        created() {
+            Promise.all([
+                getData(1),
+                getData(2),
+                getData(3),
+                getData(4),
+                getData(5),
+                getData(6),
+            ]).then((values) => {
+                const [projects, langs, lands, regions, markets, subMarkets] = values
+                this.$store.state.Projects = projects
+                this.$store.state.Languages = langs
+                this.$store.state.Lands = lands
+                this.$store.state.Regions = regions
+                this.$store.state.Markets = markets
+                this.$store.state.Submarkets = subMarkets
+                this.ActiveLandIds = [3]
+                this.IndexProject = 0
+                this.IndexPage = 0
+            })
+
+        },
         //beforeMount() { console.log('before mount', this) },
         mounted() {
             values.forEach((path, ii) => {

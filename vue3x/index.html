@@ -30,7 +30,7 @@
             :class="['grp-dropdown-min dnbdropdown-primary']"
             @set:index="$event => setIndexProject($event)">
             <template #default>
-              <div class="text">{{$store.state.Projects[this.IndexProject].Name}}</div>
+              <div class="text">{{ProjectName}}</div>
             </template>
           </drop-select>
         </div>
