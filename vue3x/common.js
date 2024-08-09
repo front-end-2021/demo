@@ -116,13 +116,12 @@ const originHistory = () => {
 export const getLastState = () => {
     const url = new URL(location.href);
     const oParams = url.searchParams
-    const oData = {}
+    
     const type = parseInt(oParams.get('type'))
-    if (!isNaN(type)) oData.type = type;
     const id = parseInt(oParams.get('id'))
-    if (!isNaN(id)) oData.id = id;
+
     return new Promise((resolve, reject) => {
-        resolve(oData);
+        resolve(type, id);
     })
 }
 export const setLastState = (type, id) => {
