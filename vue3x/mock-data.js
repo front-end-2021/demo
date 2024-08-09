@@ -95,10 +95,32 @@ const DemoSubmarkets = [
     { Id: 6, Name: 'Cairang submarket 3', MarketId: 6, Description: '' },
 ]
 
+function getMessCompare(item, mItem) {
+    let mess = ''
+    let ii = 1
+    mItem = JSON.parse(JSON.stringify(mItem))
+    item = JSON.parse(JSON.stringify(item))
+    for (const [key, value] of Object.entries(mItem)) {
+        if (value !== item[key]) {
+            mess += `${ii++}. ${key}: ${item[key]} => ${value} \n`
+        }
+    }
+    if (!mess) return
+    return `Somethings deferences \n${mess}`
+}
+function overrideItem(mItem) {
+    const item = this
+    mItem = JSON.parse(JSON.stringify(mItem))
+    for (const [key, value] of Object.entries(mItem)) {
+        item[key] = value
+    }
+}
 export {
     Mains, ListPrj, Langs,
     DemoLands, DemoRegions,
     DemoMarkets, DemoSubmarkets,
+    getMessCompare,
+    overrideItem
 }
 
 function newItem() {

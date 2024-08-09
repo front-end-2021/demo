@@ -1,8 +1,9 @@
-import { getRandomInt, includeHTML } from './common.js'
+import { getLastState, includeHTML, setLastState } from './common.js'
 import { getData } from './repo-services.js'
 import {
     DropSelect, SRange
 } from './components/comp-global.js'
+import { getMessCompare, overrideItem } from './mock-data.js'
 import dnbStore from './main-store.js'
 import {
     CompModal, CompFormLand, CompFormRegion, CompFormMarket,
@@ -77,7 +78,6 @@ Promise.all([
                 this.$store.commit('setDataProject', val)
             },
             setIndexLang(val) { this.$store.commit('setILang', parseInt(val)) },
-
             openForm(type) {
                 switch (type) {
                     case 1:     // user
@@ -95,7 +95,26 @@ Promise.all([
                         this.$store.commit('setModal', [item, saveClose, exitClose])
                         break;
                 }
-            }
+            },
+            openFormEditLand(land) {
+                const iProject = this.IndexProject
+                const saveClose = (mLand) => {
+                    setLastState(1, 0)
+                    overrideItem.call(land, mLand)
+                    this.$store.commit('addUpdateLocal', [1, null, iProject])
+                }
+                const xClose = (mLand) => {
+                    setLastState(1, 0)
+                    let mess = getMessCompare(land, mLand)
+                    if (mess && confirm(mess)) saveClose(mLand)
+                }
+                const item = {
+                    title: `Edit Land`,
+                    data: JSON.parse(JSON.stringify(land)),
+                    type: `comp-form-land`
+                }
+                this.$store.commit('setModal', [item, saveClose, xClose])
+            },
         },
         created() {
             Promise.all([
@@ -113,9 +132,34 @@ Promise.all([
                 this.$store.state.Regions = regions
                 this.$store.state.Markets = markets
                 this.$store.state.Submarkets = subMarkets
-                this.ActiveLandIds = [3]
-                this.IndexProject = 0
-                this.IndexPage = 0
+                this.ActiveLandIds = [3];
+                this.IndexProject = 0;
+                this.IndexPage = 0;
+
+                this.$nextTick(() => {
+                    getLastState().then((oData) => {
+                        let sItem;
+
+                        switch (oData.type) {
+                            case 1:     // Edit Land
+                                sItem = this.$store.getters.ItemBy([1, oData.id])
+                                if (sItem) {
+                                    this.openFormEditLand(sItem)
+                                }
+                                break;
+                            case 2:     // Edit Region
+                                console.log('edit region')
+                                break;
+                            case 3:     // Edit Market
+                                console.log('edit market')
+                                break;
+                            case 4:     // Edit Submarket
+                                console.log('edit sub market')
+                                break;
+                        }
+                        console.log(oData)
+                    })
+                })
             })
 
         },

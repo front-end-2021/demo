@@ -116,12 +116,12 @@ const originHistory = () => {
 export const getLastState = () => {
     const url = new URL(location.href);
     const oParams = url.searchParams
-    
+
     const type = parseInt(oParams.get('type'))
     const id = parseInt(oParams.get('id'))
 
     return new Promise((resolve, reject) => {
-        resolve(type, id);
+        resolve({ type, id });
     })
 }
 export const setLastState = (type, id) => {

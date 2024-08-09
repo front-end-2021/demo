@@ -112,6 +112,14 @@ export default createStore({
             lst.sort((a, b) => a.ASort - b.ASort)
             return lst
         },
+        ItemBy: (state) => ([type, id]) => {
+            switch (type) {
+                case 1:     // Land
+                    return state.Lands.find(x => x.Id == id);
+                case 2:     // Market
+                    return state.Markets.find(x => x.Id == id);
+            }
+        },
         LandsMarketsExept: (state) => ([type, ignoreIds]) => {
             const lst = []
             let item

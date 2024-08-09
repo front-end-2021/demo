@@ -1,6 +1,7 @@
 import { MsFilterMarket, getLandMarketIds } from "../components/dFilter.js";
 import { FTypeId } from "../components/dFilter.js";
 import { setLastState } from "../common.js";
+import { getMessCompare, overrideItem } from "../mock-data.js";
 
 export default {
     template: `#tmp-comp-market`,
@@ -135,23 +136,8 @@ export default {
                 return
             }
             // #region edit Land
-            const saveClose = (mLand) => {
-                setLastState(1, 0)
-                overrideItem.call(land, mLand)
-                this.$store.commit('addUpdateLocal', [1, null, iProject])
-            }
-            const xClose = (mLand) => {
-                setLastState(1, 0)
-                let mess = getMessCompare(land, mLand)
-                if (mess && confirm(mess)) saveClose(mLand)
-            }
-            const item = {
-                title: `Edit Land`,
-                data: JSON.parse(JSON.stringify(land)),
-                type: `comp-form-land`
-            }
+            this.$root.openFormEditLand(land)
             // #endregion
-            this.$store.commit('setModal', [item, saveClose, xClose])
             setLastState(1, land.Id)
         },
         getValuation(mId, rId, item) {
@@ -397,24 +383,4 @@ export default {
     mounted() {
 
     },
-}
-function getMessCompare(item, mItem) {
-    let mess = ''
-    let ii = 1
-    mItem = JSON.parse(JSON.stringify(mItem))
-    item = JSON.parse(JSON.stringify(item))
-    for (const [key, value] of Object.entries(mItem)) {
-        if (value !== item[key]) {
-            mess += `${ii++}. ${key}: ${item[key]} => ${value} \n`
-        }
-    }
-    if (!mess) return
-    return `Somethings deferences \n${mess}`
-}
-function overrideItem(mItem) {
-    const item = this
-    mItem = JSON.parse(JSON.stringify(mItem))
-    for (const [key, value] of Object.entries(mItem)) {
-        item[key] = value
-    }
 }
