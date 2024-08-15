@@ -182,7 +182,7 @@ export const getLocal = (type) => {
             case 6:     // Index Page
                 jData = parseInt(jData)
                 if (isNaN(jData)) jData = 0;
-                break;
+                return jData;
         }
         return JSON.parse(jData)
     } else {
