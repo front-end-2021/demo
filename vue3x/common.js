@@ -147,6 +147,7 @@ export const setLastState = (type, id) => {
             return;
         case 4:     // Edit Submarket
             break;
+
     }
 }
 export const getLocal = (type) => {
@@ -155,9 +156,11 @@ export const getLocal = (type) => {
         switch (type) {
             case 1:     // Lands
                 jData = localStorage.getItem("Lands");
+                if (!jData) return []
                 break;
             case 2:     // Regions
                 jData = localStorage.getItem("Regions");
+                if (!jData) return []
                 break;
             case 3:     // Markets
                 jData = localStorage.getItem("Markets");
@@ -165,8 +168,22 @@ export const getLocal = (type) => {
             case 4:     // Submarkets
                 jData = localStorage.getItem("Submarkets");
                 break;
+            case 6:     // Index Page
+                jData = localStorage.getItem("IndexPage");
+                break;
         }
-        if (!jData) return []
+        switch (type) {
+            case 1:     // Lands
+            case 2:     // Regions
+            case 3:     // Markets
+            case 4:     // Submarkets
+                if (!jData) return []
+                break;
+            case 6:     // Index Page
+                jData = parseInt(jData)
+                if (isNaN(jData)) jData = 0;
+                break;
+        }
         return JSON.parse(jData)
     } else {
         switch (type) {
@@ -216,6 +233,11 @@ export const setLocal = (type, oData) => {
                 }
                 localStorage.setItem("LastState", JSON.stringify(oData))
                 addHistoryState(oData)
+                return;
+            case 6:     // index page
+                jData = localStorage.getItem("IndexPage");
+                if (jData) localStorage.removeItem("IndexPage");
+                localStorage.setItem("IndexPage", oData)
                 return;
         }
     }

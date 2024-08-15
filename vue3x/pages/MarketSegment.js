@@ -1,7 +1,8 @@
 import { MsFilterMarket, getLandMarketIds } from "../components/dFilter.js";
 import { FTypeId } from "../components/dFilter.js";
-import { setLastState } from "../common.js";
+import { setLastState, getLastState } from "../common.js";
 import { getMessCompare, overrideItem } from "../mock-data.js";
+import { getData } from "../repo-services.js";
 
 export default {
     template: `#tmp-comp-market`,
@@ -377,10 +378,54 @@ export default {
             setLastState(2, region.Id)
         },
     },
+    beforeCreate() {
+        Promise.all([
+            getData(1),
+            getData(2),
+            getData(3),
+            getData(4),
+            getData(5),
+            getData(6),
+        ]).then((values) => {
+            const [projects, langs, lands, regions, markets, subMarkets] = values
+            this.$store.state.Projects = projects
+            this.$store.state.Languages = langs
+            this.$store.state.Lands = lands
+            this.$store.state.Regions = regions
+            this.$store.state.Markets = markets
+            this.$store.state.Submarkets = subMarkets;
+
+            this.$root.ActiveLandIds = [3];
+            this.$root.IndexProject = 0;
+
+            this.$nextTick(() => {
+                getLastState().then(oData => {
+                    let sItem;
+
+                    switch (oData.type) {
+                        case 1:     // Edit Land
+                            sItem = this.$store.getters.ItemBy([1, oData.id])
+                            if (sItem) {
+                                this.$root.openFormEditLand(sItem)
+                            }
+                            break;
+                        case 2:     // Edit Region
+                            console.log('edit region')
+                            break;
+                        case 3:     // Edit Market
+                            console.log('edit market')
+                            break;
+                        case 4:     // Edit Submarket
+                            console.log('edit sub market')
+                            break;
+                    }
+                    console.log(oData)
+                })
+            })
+        })
+    },
     created() {
         this.setLandRegionMarket()
     },
-    mounted() {
-
-    },
+   // mounted() {  },
 }

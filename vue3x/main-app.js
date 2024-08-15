@@ -1,5 +1,7 @@
-import { getLastState, includeHTML, setLastState } from './common.js'
-import { getData } from './repo-services.js'
+import {
+    includeHTML, setLastState,
+    getLocal, setLocal
+} from './common.js'
 import {
     DropSelect, SRange
 } from './components/comp-global.js'
@@ -33,7 +35,7 @@ Promise.all([
         data() {
             return {
                 IndexProject: -1,
-                IndexPage: -1,
+                IndexPage: 0,
 
                 ActiveLandIds: [],
                 MarketCriterias: [],
@@ -68,6 +70,7 @@ Promise.all([
             },
         },
         watch: {
+            IndexPage(val) { setLocal(6, val) },
             MarketCriterias(val) { console.log('watch market crites', val) }
         },
         methods: {
@@ -116,52 +119,9 @@ Promise.all([
                 this.$store.commit('setModal', [item, saveClose, xClose])
             },
         },
-        created() {
-            Promise.all([
-                getData(1),
-                getData(2),
-                getData(3),
-                getData(4),
-                getData(5),
-                getData(6),
-            ]).then((values) => {
-                const [projects, langs, lands, regions, markets, subMarkets] = values
-                this.$store.state.Projects = projects
-                this.$store.state.Languages = langs
-                this.$store.state.Lands = lands
-                this.$store.state.Regions = regions
-                this.$store.state.Markets = markets
-                this.$store.state.Submarkets = subMarkets
-                this.ActiveLandIds = [3];
-                this.IndexProject = 0;
-                this.IndexPage = 0;
-
-                this.$nextTick(() => {
-                    getLastState().then((oData) => {
-                        let sItem;
-
-                        switch (oData.type) {
-                            case 1:     // Edit Land
-                                sItem = this.$store.getters.ItemBy([1, oData.id])
-                                if (sItem) {
-                                    this.openFormEditLand(sItem)
-                                }
-                                break;
-                            case 2:     // Edit Region
-                                console.log('edit region')
-                                break;
-                            case 3:     // Edit Market
-                                console.log('edit market')
-                                break;
-                            case 4:     // Edit Submarket
-                                console.log('edit sub market')
-                                break;
-                        }
-                        console.log(oData)
-                    })
-                })
-            })
-
+        //beforeCreate() { },
+        created() { 
+            this.IndexPage = getLocal(6)
         },
         //beforeMount() { console.log('before mount', this) },
         mounted() {
