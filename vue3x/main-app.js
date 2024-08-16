@@ -40,6 +40,8 @@ Promise.all([
                 ActiveLandIds: [],
                 MarketCriterias: [],
 
+                PopupMenu: null,
+
                 UserInfo: {
                     img: `https://allimages.sgp1.digitaloceanspaces.com/tipeduvn/2022/01/1642393308_940_Hinh-Anh-Girl-Xinh-Viet-Nam-Dep-De-Thuong-Cute.jpg`,
                     header: `Profile`,
@@ -118,9 +120,21 @@ Promise.all([
                 }
                 this.$store.commit('setModal', [item, saveClose, xClose])
             },
+            clearPopupMenu(type) {
+                const popMenu = this.$root.PopupMenu
+                if (Object.is(popMenu, null)) return;
+                switch (type) {
+                    case 1:     // Menu valuation
+                        if (typeof popMenu != 'object') return;
+                        if (popMenu.type != 1) return;
+                        this.$root.PopupMenu = null;
+                        break;
+                    default: break;
+                }
+            },
         },
         //beforeCreate() { },
-        created() { 
+        created() {
             this.IndexPage = getLocal(6)
         },
         //beforeMount() { console.log('before mount', this) },

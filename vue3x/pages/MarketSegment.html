@@ -1,12 +1,28 @@
+<template id="tmp-comp-cell-valuation">
+  <div class="cell-valuation" @dblclick="e => dblclOpenFormValue(market, region)"
+    :style="[getBgColor(market.Id, region.Id)]">
+    <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
+    <i class="bi bi-gear btn-menu-valuation" 
+      @click.stop="e => toggleMenuValuation(imarket, iregion)"></i>
+    <div v-if="IsShowMenu"
+      class="menu-valuation d-inline-flex">
+      <div class="p6px cpointer" @click.stop="e => openFormValuation(market, region)"><i class="bi bi-sliders2"></i>
+        {{$store.getters.txtLang.Valuation}}</div>
+      <div @click.stop="e => activeValuation(market.Id, region.Id)" class="p6px cpointer"><i class="bi"
+          :class="classSquare(market.Id, region.Id)"></i> {{$store.getters.txtLang.Active}}</div>
+      <div class="p6px cpointer"><i class="bi bi-box-arrow-in-right"></i>
+        {{$store.getters.txtLang.Sub_market}}/{{$store.getters.txtLang.Productstrategy}}</div>
+    </div>
+    <i class="bi" :class="clssCheckMark(market.Id, region.Id)" style="font-size: 24px;"></i>
+  </div>
+</template>
 <template id="tmp-comp-market">
   <section @click="onClickTab" style="padding-bottom: 169px;padding-left: 20px;">
     <div class="mt-2">
-      
-      <comp-filter-market
-      :market-ids="$root.MarketIds"
-      @set:filter="$event => setFilter($event)">
-    </comp-filter-market>
-      </div>
+
+      <comp-filter-market :market-ids="$root.MarketIds" @set:filter="$event => setFilter($event)">
+      </comp-filter-market>
+    </div>
     <article>
       <button>Eval markets</button>
       <button>Eval submarkets</button>
@@ -16,60 +32,39 @@
       <div>
         <h2 style="margin-top: 18px;">Market segments</h2>
         <div>
-          <div class="d-inline-block ui button"
-            v-for="land in Lands" style="margin-right: 6px; padding: 0;"
-            :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']"
-            @dblclick="e => openFormLand(land)">
-              <div class="d-inline-block" style="padding: .78571429em 1.5em;"
-                @click.stop="e => activeLand(land)">{{land.Name}}</div>
+          <div class="d-inline-block ui button" v-for="land in Lands" style="margin-right: 6px; padding: 0;"
+            :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']" @dblclick="e => openFormLand(land)">
+            <div class="d-inline-block" style="padding: .78571429em 1.5em;" @click.stop="e => activeLand(land)">
+              {{land.Name}}</div>
           </div>
-          <div class="d-inline-block ui primary button" 
-            @click.stop="e => openFormLand()">+ Land</div>
+          <div class="d-inline-block ui primary button" @click.stop="e => openFormLand()">+ Land</div>
         </div>
         <table class="ui celled definition table" style="width: initial;">
           <thead>
             <tr>
               <th class="col-market p6px">{{$store.getters.txtLang.Marketsegments}}\Region</th>
-              <th v-for="region in Regions"
-                class="col-region p6px cpointer prevent-select"
+              <th v-for="region in Regions" class="col-region p6px cpointer prevent-select"
                 @dblclick="e => openFormRegion(region)">{{region.Name}}</th>
-              <th class="col-region single line p6px cpointer prevent-select"
-                @click.stop="e => openFormRegion()">+ Region</th>
+              <th class="col-region single line p6px cpointer prevent-select" @click.stop="e => openFormRegion()">+
+                Region</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(market, imk) in Markets">
-              <td class="p6px" 
-                @dblclick="e => openFormMarket(market)">{{market.Name}}</td>
+              <td class="p6px" @dblclick="e => openFormMarket(market)">{{market.Name}}</td>
               <td v-for="(region, ii) in Regions" class="p6px" style="height: 36px;">
-                <div class="cell-valuation" 
-                  @dblclick="e => dblclOpenFormValue(market, region)"
-                  :style="[getBackgroundColor(market.Id, region.Id)]">
-                  <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
-                  <i class="bi bi-gear btn-menu-valuation" 
-                    @click.stop="e => toggleMenuValuation(imk, ii)"></i>
-                  <div v-if="1 < MenuValuation.length && imk == MenuValuation[0] && ii == MenuValuation[1]" 
-                    class="menu-valuation d-inline-flex">
-                    <div class="p6px cpointer" 
-                      @click.stop="e => openFormValuation(market, region)"
-                        ><i class="bi bi-sliders2"></i> {{$store.getters.txtLang.Valuation}}</div>
-                    <div @click.stop="e => activeValuation(market.Id, region.Id)"
-                      class="p6px cpointer"><i class="bi" 
-                      :class="classSquare(market.Id, region.Id)"></i> {{$store.getters.txtLang.Active}}</div>
-                    <div class="p6px cpointer"><i class="bi bi-box-arrow-in-right"
-                      ></i> {{$store.getters.txtLang.Sub_market}}/{{$store.getters.txtLang.Productstrategy}}</div>
-                  </div>
-                  <i class="bi" :class="clssCheckMark(market.Id, region.Id)"
-                    style="font-size: 24px;"></i>
-                </div>
+
+                <cell-valuation :market="market" :imarket="imk" :region="region"
+                  :iregion="ii"></comp-cell-valuation>
+
               </td>
               <td class="p6px">{{getValuation(0, 0)}}</td>
-              
+
             </tr>
             <tr>
               <td>
                 <div @click.stop="e => openFormMarket()">+ Market<i class="circle help link icon" 
-                      data-html="Maximum device width with two <code
+                  data-html="Maximum device width with two <code
                       >1.5em</code> gutters and a <code>17px</code> scrollbar width. <div 
                       class='ui divider'></div> <code>992 - (14 * (1.5 * 2)) - 17</code>">
                   </i>
