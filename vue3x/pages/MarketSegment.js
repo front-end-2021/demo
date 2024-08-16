@@ -160,11 +160,7 @@ export default {
             let lstC = this.$root.MarketCriterias
             const [landIds, marketIds] = getLandMarketIds(lstC)
 
-            this.Lands = this.$store.getters.LandsMarketsBy([1, landIds])
-
-            this.setRegions(landIds)
-
-            this.Markets = this.$store.getters.LandsMarketsBy([2, marketIds])
+            this.setFilter([landIds, marketIds])
         },
         setRegions(landIds) {
             let mergeIdLands = this.$root.ActiveLandIds
@@ -453,10 +449,10 @@ export default {
                     console.log(oData)
                 })
             })
+
+            this.setLandRegionMarket()
         })
     },
-    created() {
-        this.setLandRegionMarket()
-    },
+    //created() { },
     // mounted() {  },
 }
