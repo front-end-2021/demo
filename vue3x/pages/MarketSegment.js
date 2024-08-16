@@ -410,7 +410,8 @@ export default {
             getValuation: this.getValuation
         }
     },
-    beforeCreate() {
+    //beforeCreate() { },
+    created() {
         Promise.all([
             getData(3),
             getData(4),
@@ -453,6 +454,5 @@ export default {
             this.setLandRegionMarket()
         })
     },
-    //created() { },
     // mounted() {  },
 }
