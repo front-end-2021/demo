@@ -133,9 +133,16 @@ Promise.all([
                 }
             },
         },
-        //beforeCreate() { },
+        //  beforeCreate() { },
         created() {
-            this.IndexPage = getLocal(6)
+            Promise.all([getData(1), getData(2)]).then((values) => {
+                const [projects, langs] = values
+                this.$store.state.Projects = projects
+                this.$store.state.Languages = langs
+
+                this.$root.IndexProject = 0;
+                this.IndexPage = getLocal(6)
+            })
         },
         //beforeMount() { console.log('before mount', this) },
         mounted() {

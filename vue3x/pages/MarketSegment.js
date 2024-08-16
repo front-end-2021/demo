@@ -416,24 +416,19 @@ export default {
     },
     beforeCreate() {
         Promise.all([
-            getData(1),
-            getData(2),
             getData(3),
             getData(4),
             getData(5),
             getData(6),
         ]).then((values) => {
-            const [projects, langs, lands, regions, markets, subMarkets] = values
-            this.$store.state.Projects = projects
-            this.$store.state.Languages = langs
+            const [lands, regions, markets, subMarkets] = values
+
             this.$store.state.Lands = lands
             this.$store.state.Regions = regions
             this.$store.state.Markets = markets
             this.$store.state.Submarkets = subMarkets;
 
             this.$root.ActiveLandIds = [3];
-            this.$root.IndexProject = 0;
-
             this.$nextTick(() => {
                 getLastState().then(oData => {
                     let sItem;
