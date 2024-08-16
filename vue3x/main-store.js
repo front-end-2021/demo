@@ -118,6 +118,8 @@ export default createStore({
                     return state.Lands.find(x => x.Id == id);
                 case 2:     // Market
                     return state.Markets.find(x => x.Id == id);
+                case 3:     // Region
+                    return state.Regions.find(x => x.Id == id);
             }
         },
         LandsMarketsExept: (state) => ([type, ignoreIds]) => {

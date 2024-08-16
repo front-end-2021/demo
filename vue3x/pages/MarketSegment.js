@@ -5,7 +5,7 @@ import { getMessCompare, overrideItem } from "../mock-data.js";
 import { getData } from "../repo-services.js";
 const CellValuation = {
     template: `#tmp-comp-cell-valuation`,
-    inject: ['listLand', 'getValuation', ],
+    inject: ['listLand', 'getValuation',],
     props: {
         market: Object,
         region: Object,
@@ -13,13 +13,13 @@ const CellValuation = {
         iregion: Number
     },
     computed: {
-        IsShowMenu(){
+        IsShowMenu() {
             const popMenu = this.$root.PopupMenu
-            if(Object.is(popMenu, null)) return false;
-            if(typeof popMenu != 'object') return false;
-            if(popMenu.type != 1) return false;
-            if(popMenu.imarket != this.imarket) return false;
-            if(popMenu.iregion != this.iregion) return false;
+            if (Object.is(popMenu, null)) return false;
+            if (typeof popMenu != 'object') return false;
+            if (popMenu.type != 1) return false;
+            if (popMenu.imarket != this.imarket) return false;
+            if (popMenu.iregion != this.iregion) return false;
             return true;
         },
     },
@@ -39,7 +39,7 @@ const CellValuation = {
             } else land = 'LAND'
 
             this.$root.clearPopupMenu(1)
-            
+
             this.$store.dispatch('openFormValue',
                 [market.Id, region.Id]).then(([ii, item]) => {
                     if (ii < 0) return;
@@ -248,9 +248,8 @@ export default {
                 this.$store.commit('setModal', [item, saveClose, xClose])
                 return
             }
-            // #region edit Land
+            // edit
             this.$root.openFormEditLand(land)
-            // #endregion
             setLastState(1, land.Id)
         },
         getValuation(mId, rId, item) {
@@ -268,20 +267,20 @@ export default {
             //console.log('on click tab', e.target, e)
             this.$root.clearPopupMenu(1)
         },
+        hasExistMarketName(mMarket, elName) {
+            const allMarket = this.$store.getters.LandsMarketsBy([2, [0]])
+            if (!allMarket.length) return false;
+            const mNames = allMarket.map(x => x.Name)
+
+            if (mNames.includes(mMarket.Name)) {
+                $(elName).popup('show');
+                return true
+            }
+            return false;
+        },
         openFormMarket(market) {
             const iProject = this.$root.IndexProject
             const landActiveIds = this.$root.ActiveLandIds
-            const isDuplicateName = (mMarket, elName) => {
-                const allMarket = this.$store.getters.LandsMarketsBy([2, [0]])
-                if (!allMarket.length) return false;
-                const mNames = allMarket.map(x => x.Name)
-
-                if (mNames.includes(mMarket.Name)) {
-                    $(elName).popup('show');
-                    return true
-                }
-                return false;
-            }
             // add new
             if (!market) {
                 market = {
@@ -290,7 +289,7 @@ export default {
                     ASort: this.$store.getters.newASort(3)
                 }
                 const saveClose = (mMarket, elName) => {
-                    if (isDuplicateName(mMarket, elName)) return false
+                    if (this.hasExistMarketName(mMarket, elName)) return false
 
                     overrideItem.call(market, mMarket)
                     this.$store.commit('addUpdateLocal', [3, market, iProject])
@@ -314,38 +313,17 @@ export default {
                 return;
             }
             // Edit
-            const saveClose = (mMarket, elName) => {
-                if (isDuplicateName(mMarket, elName)) return false
-                overrideItem.call(region, mRegion)
-                this.$store.commit('addUpdateLocal', [3, null, iProject])
-                this.setLandRegionMarket()
-                setLastState(3, 0)
-                return true
-            }
-            const xClose = (mMarket) => {
-                if (!mMarket.Name.length) return false;
-                let mess = getMessCompare(market, mMarket)
-                if (mess && confirm(mess)) return saveClose(mMarket)
-                setLastState(3, 0)
-                return true;
-            }
-            const item = {
-                title: `Edit Market`,
-                data: JSON.parse(JSON.stringify(market)),
-                landActiveIds,
-                type: `comp-form-market`
-            }
-            this.$store.commit('setModal', [item, saveClose, xClose])
+            this.openFormEdit(3, market)
             setLastState(3, market.Id)
+        },
+        resetRegion() {
+            let lstC = this.$root.MarketCriterias
+            const landIds = getLandMarketIds(lstC, 'land')
+            this.setRegions(landIds)
         },
         openFormRegion(region) {
             const iProject = this.$root.IndexProject
             const landActiveIds = this.$root.ActiveLandIds
-            const resetRegion = () => {
-                let lstC = this.$root.MarketCriterias
-                const landIds = getLandMarketIds(lstC, 'land')
-                this.setRegions(landIds)
-            }
             // add new
             if (!region) {
                 region = {
@@ -357,7 +335,7 @@ export default {
                 const saveClose = (mRegion) => {
                     overrideItem.call(region, mRegion)
                     this.$store.commit('addUpdateLocal', [2, region, iProject])
-                    resetRegion()
+                    this.resetRegion()
                 }
                 const xClose = (mRegion) => {
                     if (typeof mRegion.Name != 'string') return
@@ -374,27 +352,60 @@ export default {
                 this.$store.commit('setModal', [item, saveClose, xClose])
                 return
             }
-            // #region edit
-            const saveClose = (mRegion) => {
-                setLastState(2, 0)
-                overrideItem.call(region, mRegion)
-                this.$store.commit('addUpdateLocal', [2, null, iProject])
-                resetRegion()
-            }
-            const xClose = (mRegion) => {
-                let mess = getMessCompare(region, mRegion)
-                if (mess && confirm(mess)) saveClose(mRegion)
-                else setLastState(2, 0)
-            }
-            const item = {
-                title: `Edit Region`,
-                data: JSON.parse(JSON.stringify(region)),
-                landActiveIds,
-                type: `comp-form-region`
-            }
-            // #endregion
-            this.$store.commit('setModal', [item, saveClose, xClose])
+            // edit
+            this.openFormEdit(2, region)
             setLastState(2, region.Id)
+        },
+        openFormEdit(type, dItem) {
+            const iProject = this.$root.IndexProject
+            const landActiveIds = this.$root.ActiveLandIds
+            let saveClose, xClose, item
+            switch (type) {
+                case 2:     // Region
+                    saveClose = (mRegion) => {
+                        setLastState(2, 0)
+                        overrideItem.call(dItem, mRegion)
+                        this.$store.commit('addUpdateLocal', [2, null, iProject])
+                        this.resetRegion()
+                    }
+                    xClose = (mRegion) => {
+                        let mess = getMessCompare(dItem, mRegion)
+                        if (mess && confirm(mess)) saveClose(mRegion)
+                        else setLastState(2, 0)
+                    }
+                    item = {
+                        title: `Edit Region`,
+                        data: JSON.parse(JSON.stringify(dItem)),
+                        landActiveIds,
+                        type: `comp-form-region`
+                    }
+                    break;
+                case 3:     // Market
+                    saveClose = (mMarket, elName) => {
+                        if (this.hasExistMarketName(mMarket, elName)) return false
+                        overrideItem.call(dItem, mMarket)
+                        this.$store.commit('addUpdateLocal', [3, null, iProject])
+                        this.setLandRegionMarket()
+                        setLastState(3, 0)
+                        return true
+                    }
+                    xClose = (mMarket) => {
+                        if (!mMarket.Name.length) return false;
+                        let mess = getMessCompare(dItem, mMarket)
+                        if (mess && confirm(mess)) return saveClose(mMarket)
+                        setLastState(3, 0)
+                        return true;
+                    }
+                    item = {
+                        title: `Edit Market`,
+                        data: JSON.parse(JSON.stringify(dItem)),
+                        landActiveIds,
+                        type: `comp-form-market`
+                    }
+                    break;
+                default: return;
+            }
+            this.$store.commit('setModal', [item, saveClose, xClose])
         },
     },
     provide() {
@@ -430,15 +441,15 @@ export default {
                     switch (oData.type) {
                         case 1:     // Edit Land
                             sItem = this.$store.getters.ItemBy([1, oData.id])
-                            if (sItem) {
-                                this.$root.openFormEditLand(sItem)
-                            }
+                            if (sItem) this.$root.openFormEditLand(sItem);
                             break;
                         case 2:     // Edit Region
-                            console.log('edit region')
+                            sItem = this.$store.getters.ItemBy([3, oData.id])
+                            if (sItem) this.openFormEdit(2, sItem);
                             break;
                         case 3:     // Edit Market
-                            console.log('edit market')
+                            sItem = this.$store.getters.ItemBy([2, oData.id])
+                            if (sItem) this.openFormEdit(3, sItem);
                             break;
                         case 4:     // Edit Submarket
                             console.log('edit sub market')
