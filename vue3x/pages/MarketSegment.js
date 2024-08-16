@@ -5,7 +5,7 @@ import { getMessCompare, overrideItem } from "../mock-data.js";
 import { getData } from "../repo-services.js";
 const CellValuation = {
     template: `#tmp-comp-cell-valuation`,
-    inject: ['listLand', 'getValuation',],
+    inject: ['getValuation',],
     props: {
         market: Object,
         region: Object,
@@ -33,7 +33,7 @@ const CellValuation = {
         },
         openFormValuation(market, region) {
             const landId = region.LandId
-            let land = this.listLand.find(l => landId == l.Id)
+            let land = this.$store.getters.ItemBy([1, landId])
             if (land) {
                 land = land.Name + (land.IsNew ? ' *' : '')
             } else land = 'LAND'
@@ -406,7 +406,6 @@ export default {
     },
     provide() {
         return {
-            listLand: this.Lands,
             getValuation: this.getValuation
         }
     },

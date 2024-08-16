@@ -11,6 +11,7 @@ import {
     CompModal, CompFormLand, CompFormRegion, CompFormMarket,
     CompFormValuation, CompMessNewLand
 } from './forms/comp-modal.js'
+import { getData } from './repo-services.js'
 import MarketSegment from './pages/MarketSegment.js'
 import SubmarketProduct from './pages/SubmarketProduct.js'
 import ActionPlan from './pages/ActionPlan.js'
