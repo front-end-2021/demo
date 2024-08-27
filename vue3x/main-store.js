@@ -5,7 +5,7 @@ import {
 } from './mock-data.js';
 import { getTxtBy, getLocal, setLocal } from './common.js';
 import { FTypeId } from './components/dFilter.js';
-const { createStore } = Vuex
+import { createStore } from 'vuex'
 export default createStore({
     state: {
         Projects: [],// ListPrj,  // [{Id, Name}]

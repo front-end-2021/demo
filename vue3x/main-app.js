@@ -15,7 +15,7 @@ import { getData } from './repo-services.js'
 import MarketSegment from './pages/MarketSegment.js'
 import SubmarketProduct from './pages/SubmarketProduct.js'
 import ActionPlan from './pages/ActionPlan.js'
-const { createApp } = Vue
+import { createApp } from 'vue'
 
 Promise.all([
     includeHTML(`./components/semantics.html`),

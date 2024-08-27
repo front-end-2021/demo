@@ -32,11 +32,20 @@
       <div>
         <h2 style="margin-top: 18px;">Market segments</h2>
         <div>
-          <div class="d-inline-block ui button" v-for="land in Lands" style="margin-right: 6px; padding: 0;"
-            :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']" @dblclick="e => openFormLand(land)">
-            <div class="d-inline-block" style="padding: .78571429em 1.5em;" @click.stop="e => activeLand(land)">
-              {{land.Name}}</div>
-          </div>
+          <draggable v-model="Lands" v-bind="dragOptions" 
+            class="d-inline-block">
+            <transition-group>
+              <div v-for="land in Lands" 
+                :key="land.Id"
+                class="d-inline-block ui button"
+                style="margin-right: 6px; padding: 0;"
+                :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']" 
+                @dblclick="e => openFormLand(land)">
+              <div class="d-inline-block" style="padding: .78571429em 1.5em;" 
+                @click.stop="e => activeLand(land)">{{land.Name}}</div>
+            </div>
+            </transition-group>
+          </draggable>
           <div class="d-inline-block ui primary button" @click.stop="e => openFormLand()">+ Land</div>
         </div>
         <table class="ui celled definition table" style="width: initial;">

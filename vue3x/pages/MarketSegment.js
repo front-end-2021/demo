@@ -3,6 +3,9 @@ import { FTypeId } from "../components/dFilter.js";
 import { setLastState, getLastState } from "../common.js";
 import { getMessCompare, overrideItem } from "../mock-data.js";
 import { getData } from "../repo-services.js";
+
+import { VueDraggableNext } from 'vue-draggable-next'
+
 const CellValuation = {
     template: `#tmp-comp-cell-valuation`,
     inject: ['getValuation',],
@@ -121,7 +124,8 @@ export default {
     template: `#tmp-comp-market`,
     components: {
         'comp-filter-market': MsFilterMarket,
-        'cell-valuation': CellValuation
+        'cell-valuation': CellValuation,
+        draggable: VueDraggableNext
     },
     data() {
         return {
@@ -129,6 +133,16 @@ export default {
             Regions: [],
             Markets: [],
         }
+    },
+    computed: {
+        dragOptions() {
+            return {
+                animation: 200,
+                group: "description",
+                disabled: false,
+                ghostClass: "ghost"
+            }
+        },
     },
     watch: {
         '$root.ActiveLandIds'(ids) {
