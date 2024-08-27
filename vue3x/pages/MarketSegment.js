@@ -161,6 +161,21 @@ export default {
             //   console.log('watch Index Project', iPrj, landIds, marketIds)
             this.setFilter([landIds, marketIds])
         },
+        Lands(lst, oldLst) {
+            const oldIds = oldLst.map(l => l.Id)
+            const newIds = lst.map(l => l.Id)
+            console.log('watch lands id', oldIds, newIds)
+            if (0 < oldIds.length && oldIds.length === newIds.length) {
+                // drag/drop
+                this.$store.dispatch('updateAsort', [1, oldIds, newIds]).then(lands => {
+                    for (let ll = 0; ll < this.Lands.length; ll++) {
+                        const land = this.Lands[ll]
+                        const nLand = lands.find(ld => ld.Id == land.Id)
+                        land.ASort = nLand.ASort
+                    }
+                })
+            }
+        },
     },
     methods: {
         setFilter([landIds, marketIds]) {

@@ -45,6 +45,23 @@ export default createStore({
             }
             return state
         },
+        updateAsort({ commit, state }, [type, oldIds, newIds]) {
+            const lstNewSort = []
+            switch (type) {
+                case 1:     // Lands
+                    newIds.forEach((nId, ii) => {
+                        const oId = oldIds[ii]
+                        const oLand = state.Lands.find(l => l.Id == oId)
+                        lstNewSort.push([nId, oLand.ASort])
+                    })
+                    lstNewSort.forEach(([nId, nSort]) => {
+                        const land = state.Lands.find(l => l.Id == nId)
+                        land.ASort = nSort
+                    })
+                    break;
+            }
+            return state.Lands
+        },
     },
     getters: {
         ListModal(state) { return state.Modals },
