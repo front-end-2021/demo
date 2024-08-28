@@ -8,7 +8,7 @@ import { VueDraggableNext } from 'vue-draggable-next'
 
 const CellValuation = {
     template: `#tmp-comp-cell-valuation`,
-    inject: ['getValuation',],
+    inject: ['getValuation', 'getBgColor', 'clssCheckMark'],
     props: {
         market: Object,
         region: Object,
@@ -130,7 +130,7 @@ export default {
         Lands(lst, oldLst) {
             const oldIds = oldLst.map(l => l.Id)
             const newIds = lst.map(l => l.Id)
-           // console.log('watch lands id', oldIds, newIds)
+            // console.log('watch lands id', oldIds, newIds)
             if (isDnd(oldIds, newIds)) {
                 // drag/drop
                 this.$store.dispatch('updateAsort', [1, oldIds, newIds]).then(lands => {
@@ -398,6 +398,24 @@ export default {
             }
             this.$store.commit('setModal', [item, saveClose, xClose])
         },
+        initDragDrop(type) {
+            const dnd = {
+                type,
+                options: {
+                    animation: 200,
+                    disabled: false,
+                    ghostClass: "ghost"
+                },
+            }
+            switch(type) {
+                case 3:  // Market
+                dnd.direct = 'y'
+                dnd.options.group = "market"
+                break;
+            }
+            this.$root.DragDrop = dnd
+        },
+        finishDragDrop() { this.$root.DragDrop = null },
         getValuation(mId, rId, item) {
             if (!item) item = this.$store.getters.MarketRegionBy([mId, rId])
             if (!item) return;
@@ -495,17 +513,5 @@ export default {
             this.setLandRegionMarket()
         })
     },
-     mounted() {  
-        this.$root.DragDrop = {
-            direct: 'y',
-            options: {
-                animation: 200,
-                group: "market",
-                disabled: false,
-                ghostClass: "ghost"
-            },
-            type: 3     // market
-        }
-
-     },
+     mounted() { this.initDragDrop(3) },
 }

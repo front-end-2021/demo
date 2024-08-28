@@ -47,87 +47,54 @@ button { cursor: pointer; }
 }
 
 .me-3 { margin-right: 1rem; }
-
 .me-2 { margin-right: .5rem; }
-
 .me-1 { margin-right: .25rem; }
-
 .mt-2 { margin-top: .5rem; }
 .mb-2 { margin-bottom: .5rem; }
-
 .mt-3 { margin-top: 1rem; }
-
 .my-0 {
     margin-top: 0;
     margin-bottom: 0;
 }
-
 .mx-3 {
     margin-right: 1rem;
     margin-left: 1rem;
 }
-
 .my-3 {
     margin-top: 1rem;
     margin-bottom: 1rem;
 }
-
 .mb-0 { margin-bottom: 0; }
-
 .p-2 { padding: .5rem; }
-
 .py-2 {
     padding-top: .5rem;
     padding-bottom: .5rem;
 }
-
 .ps-2 { padding-left: .5rem; }
-
 .pe-2 { padding-right: .5rem; }
-
 .p-3 { padding: 1rem; }
-
 .py-3 {
     padding-top: 1rem;
     padding-bottom: 1rem;
 }
-
 .ps-3 { padding-left: 1rem; }
-
 .pe-3 { padding-right: 1rem; }
-
 .p6px { padding: 6px !important; }
-
 .text-white { color: white; }
-
 .font24 { font-size: 24px; }
-
 .text-center { text-align: center; }
-
 .w81px { width: 81px; }
-
 .dnb-nav {
     background-color: #006bb9;
     height: 39px;
 }
 .h42 { height: 42px; }
-.dnb-nav>* {
-    color: #66b8ff;
-}
-
-.dnb-nav>*:hover {
-    color: #ddefff;
-}
-
-.dnb-nav>*.working {
-    color: white;
-}
-
+.dnb-nav>* { color: #66b8ff; }
+.dnb-nav>*:hover { color: #ddefff; }
+.dnb-nav>*.working { color: white; }
 .cpointer { cursor: pointer; }
-
-.grp-prj {
-    flex-grow: 1;
-}
+.cdefault {cursor: default;}
+.grp-prj { flex-grow: 1; }
 
 .grp-logo,
 .grp-lang,
@@ -151,23 +118,18 @@ button { cursor: pointer; }
     width: 954px;
     height: 618px;
 }
-
+.pos-relative {position: relative;}
+.pos-absolute {position: absolute;}
 .cell-valuation {
     display: inline-grid;
     grid-template-columns: 141px 24px 24px;
     height: 30px; border-radius: 4px;
     width: 100%;
     align-items: center;
-    position: relative;
 }
-
-.col-market {
-    width: 294px;
-}
-
-.col-region {
-    width: 204px;
-}
+.fb700 {font-weight: 700;}
+.col-market { width: 294px; }
+.col-region { width: 204px; }
 
 .cell-valuation:hover {
     background-color: #c1c1c1;
@@ -194,14 +156,11 @@ button { cursor: pointer; }
     margin-bottom: 9px;
 }
 
-.ui.definition.table tr td:first-child:not(.ignored),
-.ui.table thead th,
 .bg-008ff8 {
     background-color: #008ff8;
     color: white;
 }
 
-.ui.definition.table thead:not(.full-width) th:first-child,
 .bg-006bb9 {
     background: #006bb9;
     color: white;
@@ -219,6 +178,20 @@ button { cursor: pointer; }
 .border-r1-0384e3 { border-right: 1px solid #0384e3; }
 .border-r1-e8e9e9 { border-right: 1px solid #e8e9e9; }
 .border-b1-e8e9e9 { border-bottom: 1px solid #e8e9e9; }
+.vw-marketsegment .row-market .col-market .dnd-ic-market {
+    display: none;
+    right: 6px;
+    width: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+.vw-marketsegment .row-market .col-market:hover .dnd-ic-market {
+    display: initial;
+}
+.vw-marketsegment .row-market .col-market:hover .dnd-ic-market:hover {
+    background-color: #006bb9;
+    border-radius: 4px;
+}
 
 @media screen and (max-width: 750px) {
     .grp-logo>h2:last-child {
@@ -294,18 +267,9 @@ button { cursor: pointer; }
         margin-bottom: 9px;
     }
 
-    .grp-logo>h2:last-child {
-        display: initial;
-    }
-
-    .grp-prj {
-        order: 3;
-    }
-
-    .grp-lang {
-        order: 4;
-    }
-
+    .grp-logo>h2:last-child { display: initial; }
+    .grp-prj { order: 3; }
+    .grp-lang { order: 4; }
     .grp-options {
         order: 2;
         flex-grow: 1;
@@ -327,9 +291,7 @@ button { cursor: pointer; }
         display: none;
     }
 
-    .grp-logo {
-        order: 1;
-    }
+    .grp-logo { order: 1; }
 
     .grp-prj {
         order: 3;

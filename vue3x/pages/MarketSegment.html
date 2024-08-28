@@ -1,5 +1,6 @@
 <template id="tmp-comp-cell-valuation">
-  <div class="cell-valuation" @dblclick="e => dblclOpenFormValue(market, region)"
+  <div class="cell-valuation pos-relative" 
+    @dblclick="e => dblclOpenFormValue(market, region)"
     :style="[getBgColor(market.Id, region.Id)]">
     <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
     <i class="bi bi-gear btn-menu-valuation" 
@@ -17,7 +18,8 @@
   </div>
 </template>
 <template id="tmp-comp-market">
-  <section @click="onClickTab" style="padding-bottom: 169px;padding-left: 20px;">
+  <section @click="onClickTab" style="padding-bottom: 169px;padding-left: 20px;"
+    class="vw-marketsegment">
     <div class="mt-2">
 
       <comp-filter-market :market-ids="$root.MarketIds" @set:filter="$event => setFilter($event)">
@@ -48,18 +50,20 @@
           </draggable>
           <div class="d-inline-block ui primary button" @click.stop="e => openFormLand()">+ Land</div>
         </div>
-        <div v-if="$root.DragDrop == null" class="d-flex">
-          <div class="col-market p6px bg-006bb9">{{$store.getters.txtLang.Marketsegments}}\Region</div>
+        <div v-if="$root.DragDrop == null" class="d-flex mt-3">
+          <div class="col-market p6px bg-006bb9 cdefault">{{$store.getters.txtLang.Marketsegments}}\Region</div>
           <div v-for="region in Regions" 
-            class="col-region p6px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3"
+            class="col-region p6px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700"
             @dblclick="e => openFormRegion(region)">{{region.Name}}</div>
-          <div class="col-region single line p6px cpointer prevent-select bg-008ff8" 
+          <div class="col-region single line p6px cpointer prevent-select bg-008ff8 fb700" 
             @click.stop="e => openFormRegion()">+ Region</div>
         </div>
         <div v-if="$root.DragDrop == null"
-          v-for="(market, imk) in Markets" class="d-flex">
-          <div class="p6px bg-008ff8 col-market" 
-            @dblclick="e => openFormMarket(market)">{{market.Name}}</div>
+          v-for="(market, imk) in Markets" class="row-market d-flex">
+          <div class="p6px bg-008ff8 col-market pos-relative fb700 cdefault" 
+            @dblclick="e => openFormMarket(market)">{{market.Name}}
+              <i class="bi bi-arrows-vertical dnd-ic-market pos-absolute"
+                @click.stop="e => initDragDrop(3)"></i></div>
           <div v-for="(region, ii) in Regions" 
             class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42" >
               <cell-valuation :market="market" :imarket="imk" :region="region"
@@ -68,7 +72,7 @@
           <div class="p6px col-region border-box border-r1-e8e9e9">{{getValuation(0, 0)}}</div>
         </div>
         <div v-if="$root.DragDrop == null" class="d-flex">
-          <div class="p6px bg-008ff8 col-market"
+          <div class="p6px bg-008ff8 col-market fb700"
             @click.stop="e => openFormMarket()">+ Market<i class="circle help link icon" 
             data-html="Maximum device width with two <code
                 >1.5em</code> gutters and a <code>17px</code> scrollbar width. <div 
@@ -81,21 +85,21 @@
 
         <!-- Drag and drop Y -->
         <div v-if="$root.DragDrop != null" class="dnd-market">
-          <div class="d-flex">
+          <div class="d-flex mt-3">
             <div class="col-market p6px bg-006bb9">{{$store.getters.txtLang.Marketsegments}}\Region</div>
-            <div class="col-region p6px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3"
+            <div class="col-region p6px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700"
               v-for="region in Regions">{{region.Name}}</div>
-            <div class="col-region single line p6px cpointer prevent-select bg-008ff8">+ Region</div>
+            <div class="col-region single line p6px cpointer prevent-select bg-008ff8 fb700">+ Region</div>
           </div>
           <draggable v-model="Markets" v-bind="$root.DragDrop.options">
             <transition-group>
               <div v-for="(market, imk) in Markets" 
                 :key="market.Id"
                 class="d-flex">
-                <div class="p6px bg-008ff8 col-market">{{market.Name}}</div>
+                <div class="p6px bg-008ff8 col-market fb700 cdefault">{{market.Name}}</div>
                 <div v-for="(region, ii) in Regions" 
                   class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42" >
-                    <div class="cell-valuation" 
+                    <div class="cell-valuation pos-relative" 
                       :mkid="market.Id" :rnid="region.Id"
                       :x="ii" :y="imk"
                       :style="[getBgColor(market.Id, region.Id)]">
@@ -109,18 +113,17 @@
             </transition-group>
           </draggable>
           <div class="d-flex">
-            <div class="p6px bg-008ff8 col-market">+ Market<i class="circle help link icon" 
-              data-html="Maximum device width with two <code
-                  >1.5em</code> gutters and a <code>17px</code> scrollbar width. <div 
-                  class='ui divider'></div> <code>992 - (14 * (1.5 * 2)) - 17</code>">
-              </i>
-            </div>
+            <div class="p6px col-market bg-008ff8" >
+                <div class="d-inline-block py-2 ps-3 pe-3 cpointer bg-006bb9"
+                  style="border-radius: 6px"
+                  @click.stop="finishDragDrop">Finish Drag drop Market</div>
+              </div>
             <div v-for="ii in Regions.length + 1"
               class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
           </div>
         </div>
 
-        <!-- <table class="ui celled definition table" style="width: initial;">
+        <table class="ui celled definition table" style="width: initial;">
           <thead>
             <tr>
               <th class="col-market p6px">{{$store.getters.txtLang.Marketsegments}}\Region</th>
@@ -154,7 +157,7 @@
               <td v-for="ii in Regions.length + 1"></td>
             </tr>
           </tbody>
-        </table> -->
+        </table>
       </div>
       <div>
 
