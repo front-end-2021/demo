@@ -164,8 +164,8 @@ export default {
         Lands(lst, oldLst) {
             const oldIds = oldLst.map(l => l.Id)
             const newIds = lst.map(l => l.Id)
-            console.log('watch lands id', oldIds, newIds)
-            if (0 < oldIds.length && oldIds.length === newIds.length) {
+           // console.log('watch lands id', oldIds, newIds)
+            if (isDnd(oldIds, newIds)) {
                 // drag/drop
                 this.$store.dispatch('updateAsort', [1, oldIds, newIds]).then(lands => {
                     for (let ll = 0; ll < this.Lands.length; ll++) {
@@ -174,6 +174,17 @@ export default {
                         land.ASort = nLand.ASort
                     }
                 })
+            }
+
+            function isDnd(oIds, nIds) {
+                if (oIds.length != nIds.length) return false;
+                if (nIds.length < 2) return false;
+                const cOids = [...oIds]
+                const cNids = [...nIds]
+                cOids.sort((a, b) => a - b)
+                cNids.sort((a, b) => a - b)
+                if (cOids.join('') != cNids.join('')) return false;
+                return true;
             }
         },
     },
