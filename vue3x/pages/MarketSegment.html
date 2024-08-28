@@ -48,7 +48,7 @@
           </draggable>
           <div class="d-inline-block ui primary button" @click.stop="e => openFormLand()">+ Land</div>
         </div>
-        <div class="d-flex">
+        <div v-if="$root.DragDrop == null" class="d-flex">
           <div class="col-market p6px bg-006bb9">{{$store.getters.txtLang.Marketsegments}}\Region</div>
           <div v-for="region in Regions" 
             class="col-region p6px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3"
@@ -56,7 +56,8 @@
           <div class="col-region single line p6px cpointer prevent-select bg-008ff8" 
             @click.stop="e => openFormRegion()">+ Region</div>
         </div>
-        <div v-for="(market, imk) in Markets" class="d-flex">
+        <div v-if="$root.DragDrop == null"
+          v-for="(market, imk) in Markets" class="d-flex">
           <div class="p6px bg-008ff8 col-market" 
             @dblclick="e => openFormMarket(market)">{{market.Name}}</div>
           <div v-for="(region, ii) in Regions" 
@@ -66,7 +67,7 @@
           </div>
           <div class="p6px col-region border-box border-r1-e8e9e9">{{getValuation(0, 0)}}</div>
         </div>
-        <div class="d-flex">
+        <div v-if="$root.DragDrop == null" class="d-flex">
           <div class="p6px bg-008ff8 col-market"
             @click.stop="e => openFormMarket()">+ Market<i class="circle help link icon" 
             data-html="Maximum device width with two <code
@@ -78,7 +79,39 @@
             class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
         </div>
 
-        <table class="ui celled definition table" style="width: initial;">
+        <div v-if="$root.DragDrop != null">
+          <div class="d-flex">
+            <div class="col-market p6px bg-006bb9">{{$store.getters.txtLang.Marketsegments}}\Region</div>
+            <div v-for="region in Regions" 
+              class="col-region p6px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3"
+              @dblclick="e => openFormRegion(region)">{{region.Name}}</div>
+            <div class="col-region single line p6px cpointer prevent-select bg-008ff8" 
+              @click.stop="e => openFormRegion()">+ Region</div>
+          </div>
+          <div v-for="(market, imk) in Markets" class="d-flex">
+            <div class="p6px bg-008ff8 col-market" 
+              @dblclick="e => openFormMarket(market)">{{market.Name}}</div>
+            <div v-for="(region, ii) in Regions" 
+              class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42" >
+                <cell-valuation :market="market" :imarket="imk" :region="region"
+                :iregion="ii"></comp-cell-valuation>
+            </div>
+            <div class="p6px col-region border-box border-r1-e8e9e9">{{getValuation(0, 0)}}</div>
+          </div>
+          <div class="d-flex">
+            <div class="p6px bg-008ff8 col-market"
+              @click.stop="e => openFormMarket()">+ Market<i class="circle help link icon" 
+              data-html="Maximum device width with two <code
+                  >1.5em</code> gutters and a <code>17px</code> scrollbar width. <div 
+                  class='ui divider'></div> <code>992 - (14 * (1.5 * 2)) - 17</code>">
+              </i>
+            </div>
+            <div v-for="ii in Regions.length + 1"
+              class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
+          </div>
+        </div>
+
+        <!-- <table class="ui celled definition table" style="width: initial;">
           <thead>
             <tr>
               <th class="col-market p6px">{{$store.getters.txtLang.Marketsegments}}\Region</th>
@@ -112,7 +145,7 @@
               <td v-for="ii in Regions.length + 1"></td>
             </tr>
           </tbody>
-        </table>
+        </table> -->
       </div>
       <div>
 
