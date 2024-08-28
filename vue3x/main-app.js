@@ -42,6 +42,7 @@ Promise.all([
                 MarketCriterias: [],
 
                 PopupMenu: null,
+                DragDrop: null,
 
                 UserInfo: {
                     img: `https://allimages.sgp1.digitaloceanspaces.com/tipeduvn/2022/01/1642393308_940_Hinh-Anh-Girl-Xinh-Viet-Nam-Dep-De-Thuong-Cute.jpg`,
