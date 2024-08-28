@@ -407,11 +407,15 @@ export default {
                     ghostClass: "ghost"
                 },
             }
-            switch(type) {
+            switch (type) {
+                case 2:     // region
+                    dnd.direct = 'x'
+                    dnd.options.group = "region"
+                    break;
                 case 3:  // Market
-                dnd.direct = 'y'
-                dnd.options.group = "market"
-                break;
+                    dnd.direct = 'y'
+                    dnd.options.group = "market"
+                    break;
             }
             this.$root.DragDrop = dnd
         },
@@ -513,5 +517,5 @@ export default {
             this.setLandRegionMarket()
         })
     },
-     mounted() { this.initDragDrop(3) },
+    mounted() { this.initDragDrop(2) },
 }

@@ -53,8 +53,11 @@
         <div v-if="$root.DragDrop == null" class="d-flex mt-3">
           <div class="col-market p6px bg-006bb9 cdefault">{{$store.getters.txtLang.Marketsegments}}\Region</div>
           <div v-for="region in Regions" 
-            class="col-region p6px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700"
-            @dblclick="e => openFormRegion(region)">{{region.Name}}</div>
+            class="col-region p6px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700 pos-relative"
+            @dblclick="e => openFormRegion(region)">{{region.Name}}
+              <i v-if="1 < Regions.length"
+                class="bi bi-arrows dnd-ic-region pos-absolute"
+              @click.stop="e => initDragDrop(2)"></i></div>
           <div class="col-region single line p6px cpointer prevent-select bg-008ff8 fb700" 
             @click.stop="e => openFormRegion()">+ Region</div>
         </div>
@@ -62,7 +65,8 @@
           v-for="(market, imk) in Markets" class="row-market d-flex">
           <div class="p6px bg-008ff8 col-market pos-relative fb700 cdefault" 
             @dblclick="e => openFormMarket(market)">{{market.Name}}
-              <i class="bi bi-arrows-vertical dnd-ic-market pos-absolute"
+              <i v-if="1 < Markets.length"
+                class="bi bi-arrows-vertical dnd-ic-market pos-absolute"
                 @click.stop="e => initDragDrop(3)"></i></div>
           <div v-for="(region, ii) in Regions" 
             class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42" >
@@ -84,7 +88,7 @@
         </div>
 
         <!-- Drag and drop Y -->
-        <div v-if="$root.DragDrop != null" class="dnd-market">
+        <div v-if="$root.DragDrop != null && $root.DragDrop.type == 3" class="dnd-market">
           <div class="d-flex mt-3">
             <div class="col-market p6px bg-006bb9">{{$store.getters.txtLang.Marketsegments}}\Region</div>
             <div class="col-region p6px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700"
@@ -120,6 +124,54 @@
               </div>
             <div v-for="ii in Regions.length + 1"
               class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
+          </div>
+        </div>
+        <!-- Drag and drop X -->
+        <div v-if="$root.DragDrop != null && $root.DragDrop.type == 2" 
+          class="dnd-region d-flex mt-3">
+          <div class="rgn-first-col">
+            <div class="col-market p6px bg-006bb9 h32">{{$store.getters.txtLang.Marketsegments}}\Region</div>
+            <div v-for="(market, imk) in Markets" 
+              class="p6px bg-008ff8 col-market fb700 cdefault h42">{{market.Name}}</div>
+            <div class="p6px col-market bg-008ff8 h42" >+ Market<i class="circle help link icon" 
+              data-html="Maximum device width with two <code
+                  >1.5em</code> gutters and a <code>17px</code> scrollbar width. <div 
+                  class='ui divider'></div> <code>992 - (14 * (1.5 * 2)) - 17</code>">
+              </i></div>
+          </div>
+          <div class="rgn-dnd-cols">
+            <draggable v-model="Regions" v-bind="$root.DragDrop.options" 
+              class="d-flex">
+              <transition-group>
+                <div v-for="(region, ii) in Regions" 
+                  :key="region.Id"
+                  style="background-color: white;">
+                  <div class="col-region p6px bg-006bb9 fb700 h32">{{region.Name}}</div>
+                  <div v-for="(market, imk) in Markets" 
+                      class="p6px col-region fb700 cdefault border-box border-r1-e8e9e9 border-b1-e8e9e9 h42">
+                      <div class="cell-valuation pos-relative" 
+                        :mkid="market.Id" :rnid="region.Id"
+                        :x="ii" :y="imk"
+                        :style="[getBgColor(market.Id, region.Id)]">
+                        <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
+                        <i class="bi bi-gear btn-menu-valuation" ></i>
+                        <i class="bi" :class="clssCheckMark(market.Id, region.Id)" style="font-size: 24px;"></i>
+                      </div>
+                  </div>
+                  <div class="p6px col-region cdefault border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
+                </div>
+              </transition-group>
+            </draggable>
+          </div>
+          
+          <div class="rgn-last-col">
+            <div class="col-region bg-006bb9 h32 d-inline-flex align-items-center justify-content-cent">
+              <div class="d-inline-block py-1 ps-3 pe-3 cpointer bg-008ff8"
+              style="border-radius: 6px"
+              @click.stop="finishDragDrop">Finish Drag drop Region</div>
+            </div>
+            <div v-for="ii in Markets.length + 1" 
+            class="p6px col-region fb700 cdefault border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
           </div>
         </div>
 
