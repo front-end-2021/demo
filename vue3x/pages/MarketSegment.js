@@ -409,11 +409,11 @@ export default {
             }
             switch (type) {
                 case 2:     // region
-                    dnd.direct = 'x'
+                    dnd.options.direction = 'horizontal'
                     dnd.options.group = "region"
                     break;
                 case 3:  // Market
-                    dnd.direct = 'y'
+                    dnd.options.direction = 'vertical'
                     dnd.options.group = "market"
                     break;
             }
