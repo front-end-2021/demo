@@ -70,7 +70,8 @@
 
     <component :is="CompPage" v-cloak></component>
 
-    <div v-if="0 == ProcessState" class="ui segment">
+    <div v-if="0 == ProcessState" 
+      class="ui segment" style="height: 100px; border: none; box-shadow: none;">
       <div class="ui active inverted dimmer">
         <div class="ui text loader">Loading</div>
       </div>
