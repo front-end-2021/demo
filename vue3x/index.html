@@ -70,9 +70,13 @@
 
     <component :is="CompPage" v-cloak></component>
 
+    <div v-if="0 == ProcessState" class="ui segment">
+      <div class="ui active inverted dimmer">
+        <div class="ui text loader">Loading</div>
+      </div>
+      <p></p>
+    </div>
   </main>
-
-
 
   <span class="dnbimporthtml" dnbpath="./components/dFilter.html"></span>
   <span class="dnbimporthtml" dnbpath="./components/semantics.html"></span>

@@ -473,7 +473,9 @@ export default {
             getBgColor: this.getBgColor,
         }
     },
-    //beforeCreate() { },
+    beforeCreate() {
+        this.$root.ProcessState = 0     // loading
+    },
     created() {
         Promise.all([
             getData(3),
@@ -481,6 +483,7 @@ export default {
             getData(5),
             getData(6),
         ]).then((values) => {
+            this.$root.ProcessState = 1     // success
             const [lands, regions, markets, subMarkets] = values
 
             this.$store.state.Lands = lands

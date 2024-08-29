@@ -40,7 +40,7 @@ Promise.all([
 
                 ActiveLandIds: [],
                 MarketCriterias: [],
-
+                ProcessState: 0,    // loading, success
                 PopupMenu: null,
                 DragDrop: null,
 

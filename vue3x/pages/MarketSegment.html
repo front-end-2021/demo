@@ -18,14 +18,15 @@
   </div>
 </template>
 <template id="tmp-comp-market">
-  <section @click="onClickTab" style="padding-bottom: 169px;padding-left: 20px;"
+  <section @click="onClickTab" 
+    style="padding-bottom: 169px;padding-left: 20px;"
     class="vw-marketsegment">
     <div class="mt-2">
 
       <comp-filter-market :market-ids="$root.MarketIds" @set:filter="$event => setFilter($event)">
       </comp-filter-market>
     </div>
-    <article>
+    <article v-if="1 == $root.ProcessState">
       <button>Eval markets</button>
       <button>Eval submarkets</button>
       <button>Strategy</button>
@@ -172,46 +173,8 @@
             class="p6px col-region fb700 cdefault border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
           </div>
         </div>
-
-        <table class="ui celled definition table" style="width: initial;">
-          <thead>
-            <tr>
-              <th class="col-market p6px">{{$store.getters.txtLang.Marketsegments}}\Region</th>
-              <th v-for="region in Regions" class="col-region p6px cpointer prevent-select"
-                @dblclick="e => openFormRegion(region)">{{region.Name}}</th>
-              <th class="col-region single line p6px cpointer prevent-select" @click.stop="e => openFormRegion()">+
-                Region</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(market, imk) in Markets">
-              <td class="p6px" @dblclick="e => openFormMarket(market)">{{market.Name}}</td>
-              <td v-for="(region, ii) in Regions" class="p6px" style="height: 36px;">
-
-                <cell-valuation :market="market" :imarket="imk" :region="region"
-                  :iregion="ii"></comp-cell-valuation>
-
-              </td>
-              <td class="p6px">{{getValuation(0, 0)}}</td>
-
-            </tr>
-            <tr>
-              <td>
-                <div @click.stop="e => openFormMarket()">+ Market<i class="circle help link icon" 
-                  data-html="Maximum device width with two <code
-                      >1.5em</code> gutters and a <code>17px</code> scrollbar width. <div 
-                      class='ui divider'></div> <code>992 - (14 * (1.5 * 2)) - 17</code>">
-                  </i>
-                </div>
-              </td>
-              <td v-for="ii in Regions.length + 1"></td>
-            </tr>
-          </tbody>
-        </table>
       </div>
-      <div>
-
-      </div>
+      
     </article>
   </section>
 </template>
