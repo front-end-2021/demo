@@ -53,22 +53,27 @@
         </div>
         <div v-if="$root.DragDrop == null" class="d-flex mt-3">
           <div class="col-market p6px bg-006bb9 cdefault">{{$store.getters.txtLang.Marketsegments}}\Region</div>
-          <div v-for="region in Regions" 
-            class="col-region p6px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700 pos-relative"
+          <div v-for="region in Regions"
+            class="col-region p6px pe48px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700 pos-relative"
             @dblclick="e => openFormRegion(region)">{{region.Name}}
-              <i v-if="1 < Regions.length"
-                class="bi bi-arrows dnd-ic-region pos-absolute"
-              @click.stop="e => initDragDrop(2)"></i></div>
+              <i v-if="1 < Regions.length" class="bi bi-arrows dnd-ic-region pos-absolute"
+              @click.stop="e => initDragDrop(2)"></i>
+              <i class="bi bi-gear dnd-ic-region pos-absolute" 
+                style="right: 6px;"></i>
+            </div>
           <div class="col-region single line p6px cpointer prevent-select bg-008ff8 fb700" 
             @click.stop="e => openFormRegion()">+ Region</div>
         </div>
         <div v-if="$root.DragDrop == null"
-          v-for="(market, imk) in Markets" class="row-market d-flex">
+            v-for="(market, imk) in Markets" class="row-market d-flex">
           <div class="p6px bg-008ff8 col-market pos-relative fb700 cdefault" 
             @dblclick="e => openFormMarket(market)">{{market.Name}}
-              <i v-if="1 < Markets.length"
-                class="bi bi-arrows-vertical dnd-ic-market pos-absolute"
-                @click.stop="e => initDragDrop(3)"></i></div>
+            <i v-if="1 < Markets.length"
+              class="bi bi-arrows-vertical dnd-ic-market pos-absolute"
+              @click.stop="e => initDragDrop(3)"></i>
+            <i class="bi bi-gear dnd-ic-market pos-absolute" 
+            style="right: 6px;"></i>
+          </div>
           <div v-for="(region, ii) in Regions" 
             class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42" >
               <cell-valuation :market="market" :imarket="imk" :region="region"
@@ -110,7 +115,7 @@
                       :x="ii" :y="imk"
                       :style="[getBgColor(market.Id, region.Id)]">
                       <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
-                      <i class="bi bi-gear btn-menu-valuation" ></i>
+                      <i class="bi bi-gear" ></i>
                       <i class="bi" :class="clssCheckMark(market.Id, region.Id)" style="font-size: 24px;"></i>
                     </div>
                 </div>
@@ -155,7 +160,7 @@
                       :x="ii" :y="imk"
                       :style="[getBgColor(market.Id, region.Id)]">
                       <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
-                      <i class="bi bi-gear btn-menu-valuation" ></i>
+                      <i class="bi bi-gear" ></i>
                       <i class="bi" :class="clssCheckMark(market.Id, region.Id)" style="font-size: 24px;"></i>
                     </div>
                 </div>

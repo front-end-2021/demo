@@ -520,5 +520,5 @@ export default {
             this.setLandRegionMarket()
         })
     },
-    mounted() { this.initDragDrop(2) },
+    //mounted() { this.initDragDrop(2) },
 }
