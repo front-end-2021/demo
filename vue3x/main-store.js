@@ -47,20 +47,43 @@ export default createStore({
         },
         updateAsort({ commit, state }, [type, oldIds, newIds]) {
             const lstNewSort = []
+            let oId, oItem, item
             switch (type) {
                 case 1:     // Lands
                     newIds.forEach((nId, ii) => {
-                        const oId = oldIds[ii]
-                        const oLand = state.Lands.find(l => l.Id == oId)
-                        lstNewSort.push([nId, oLand.ASort])
-                    })
+                        oId = oldIds[ii]
+                        oItem = state.Lands.find(l => l.Id == oId)
+                        lstNewSort.push([nId, oItem.ASort])
+                    });
                     lstNewSort.forEach(([nId, nSort]) => {
-                        const land = state.Lands.find(l => l.Id == nId)
-                        land.ASort = nSort
-                    })
-                    break;
+                        item = state.Lands.find(l => l.Id == nId)
+                        item.ASort = nSort
+                    });
+                    return state.Lands;
+                case 2:     // Region
+                    newIds.forEach((nId, ii) => {
+                        oId = oldIds[ii]
+                        oItem = state.Regions.find(l => l.Id == oId)
+                        lstNewSort.push([nId, oItem.ASort])
+                    });
+                    lstNewSort.forEach(([nId, nSort]) => {
+                        item = state.Regions.find(l => l.Id == nId)
+                        item.ASort = nSort
+                    });
+                    return state.Regions;
+                case 3:     // Market
+                    newIds.forEach((nId, ii) => {
+                        oId = oldIds[ii]
+                        oItem = state.Markets.find(l => l.Id == oId)
+                        lstNewSort.push([nId, oItem.ASort])
+                    });
+                    lstNewSort.forEach(([nId, nSort]) => {
+                        item = state.Markets.find(l => l.Id == nId)
+                        item.ASort = nSort
+                    });
+                    return state.Markets;
             }
-            return state.Lands
+            return []
         },
     },
     getters: {

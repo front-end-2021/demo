@@ -152,7 +152,7 @@
               <div v-for="(region, ii) in Regions" 
                 :key="region.Id"
                 style="background-color: white;">
-                <div class="col-region p6px bg-006bb9 fb700 h32">{{region.Name}}</div>
+                <div class="col-region p6px bg-008ff8 fb700 h32">{{region.Name}}</div>
                 <div v-for="(market, imk) in Markets" 
                     class="p6px col-region fb700 cdefault border-box border-r1-e8e9e9 border-b1-e8e9e9 h42">
                     <div class="cell-valuation pos-relative" 
@@ -169,8 +169,8 @@
             </transition-group>
           </draggable>
           <div class="rgn-last-col">
-            <div class="col-region bg-006bb9 h32 d-inline-flex align-items-center justify-content-cent">
-              <div class="d-inline-block py-1 ps-3 pe-3 cpointer bg-008ff8"
+            <div class="col-region bg-008ff8 h32 d-inline-flex align-items-center justify-content-cent">
+              <div class="d-inline-block py-1 ps-3 pe-3 cpointer bg-006bb9"
               style="border-radius: 6px"
               @click.stop="finishDragDrop">Finish Drag drop Region</div>
             </div>

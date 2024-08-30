@@ -1,6 +1,6 @@
 import { MsFilterMarket, getLandMarketIds } from "../components/dFilter.js";
 import { FTypeId } from "../components/dFilter.js";
-import { setLastState, getLastState } from "../common.js";
+import { setLastState, getLastState, isDragDrop } from "../common.js";
 import { getMessCompare, overrideItem } from "../mock-data.js";
 import { getData } from "../repo-services.js";
 
@@ -128,30 +128,13 @@ export default {
             this.setFilter([landIds, marketIds])
         },
         Lands(lst, oldLst) {
-            const oldIds = oldLst.map(l => l.Id)
-            const newIds = lst.map(l => l.Id)
-            // console.log('watch lands id', oldIds, newIds)
-            if (isDnd(oldIds, newIds)) {
-                // drag/drop
-                this.$store.dispatch('updateAsort', [1, oldIds, newIds]).then(lands => {
-                    for (let ll = 0; ll < this.Lands.length; ll++) {
-                        const land = this.Lands[ll]
-                        const nLand = lands.find(ld => ld.Id == land.Id)
-                        land.ASort = nLand.ASort
-                    }
-                })
-            }
-
-            function isDnd(oIds, nIds) {
-                if (oIds.length != nIds.length) return false;
-                if (nIds.length < 2) return false;
-                const cOids = [...oIds]
-                const cNids = [...nIds]
-                cOids.sort((a, b) => a - b)
-                cNids.sort((a, b) => a - b)
-                if (cOids.join('') != cNids.join('')) return false;
-                return true;
-            }
+            this.updateAsort(1, lst, oldLst)
+        },
+        Regions(lst, oldLst) {
+            this.updateAsort(2, lst, oldLst)
+        },
+        Markets(lst, oldLst) {
+            this.updateAsort(3, lst, oldLst)
         },
     },
     methods: {
@@ -399,6 +382,14 @@ export default {
             this.$store.commit('setModal', [item, saveClose, xClose])
         },
         initDragDrop(type) {
+            switch (type) {
+                case 2: // region
+                    if (this.Regions.length < 2) return;
+                    break;
+                case 3: // market
+                    if (this.Markets.length < 2) return;
+                    break;
+            }
             const dnd = {
                 type,
                 options: {
@@ -465,6 +456,37 @@ export default {
             if (80 < total && total < 91) return { backgroundColor: `#597623`, color: `#fff` }
             if (90 < total && total < 101) return { backgroundColor: `#4e6d22`, color: `#fff` }
         },
+        updateAsort(type, newLst, oldLst) {
+            const oldIds = oldLst.map(l => l.Id)
+            const newIds = newLst.map(l => l.Id)
+            if (isDragDrop(oldIds, newIds)) {
+                this.$store.dispatch('updateAsort', [type, oldIds, newIds]).then(items => {
+                    switch (type) {
+                        case 1:     // Land
+                            for (let ll = 0; ll < this.Lands.length; ll++) {
+                                const land = this.Lands[ll]
+                                const nLand = items.find(ld => ld.Id == land.Id)
+                                land.ASort = nLand.ASort
+                            }
+                            return;
+                        case 2:     // Region
+                            for (let ll = 0; ll < this.Regions.length; ll++) {
+                                const rItem = this.Regions[ll]
+                                const itemR = items.find(ld => ld.Id == rItem.Id)
+                                rItem.ASort = itemR.ASort
+                            }
+                            return;
+                        case 3:     // Market
+                            for (let ll = 0; ll < this.Markets.length; ll++) {
+                                const rItem = this.Markets[ll]
+                                const itemR = items.find(ld => ld.Id == rItem.Id)
+                                rItem.ASort = itemR.ASort
+                            }
+                            return;
+                    }
+                })
+            }
+        },
     },
     provide() {
         return {
@@ -520,5 +542,5 @@ export default {
             this.setLandRegionMarket()
         })
     },
-    //mounted() { this.initDragDrop(2) },
+    mounted() { this.initDragDrop(2) },
 }
