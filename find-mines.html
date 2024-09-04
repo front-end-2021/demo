@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<head>
+    <title>Find mines</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <div id="view-board"></div>
+    <canvas id="canvas" width="1920" height="720"></canvas>
+    <script>
+        let boards = [
+            [1, 1, 2, 2, 2, 1, 1, 1],
+            [1, 2, 1, 1, 2, 2, 1, 2],
+            [2, 1, 1, 1, 1, 1, 2, 2],
+            [1, 1, 2, 2, 2, 1, 1, 1],
+            [1, 1, 2, 2, 2, 1, 1, 1],
+            [1, 2, 1, 1, 2, 2, 1, 2],
+            [2, 1, 1, 1, 1, 1, 2, 2],
+            [1, 1, 2, 2, 2, 1, 1, 1],
+        ]
+        let Size = 7;
+        Size = 666
+        // Size = 798
+        boards = getBoard(Size)
+
+        let elemLeft, elemTop
+        let w = 20, h = 20
+        let listRect = []
+
+        render(Size)
+        // testBigSize()
+        function getPoints(x, y, boards) {
+            let point = boards[y][x]
+            if (!point) return []
+            const lstPoint = [[x, y]]
+            let lstArround = getArrounds(lstPoint)
+            const Size = boards.length
+            let count = Size * Size
+            while (lstArround.length) {
+                removeExists(lstPoint, lstArround)
+                if (lstArround.length) {
+                    lstArround.forEach(axy => lstPoint.push(axy))
+                } else break;
+                lstArround = getArrounds(lstPoint)
+                if (count-- < 0) break;
+            }
+            lstPoint.sort((a1, a2) => {
+                if (a1[0] < a2[0]) return -1; // increase
+                if (a1[0] > a2[0]) return 1; // increase
+                if (a1[1] < a2[1]) return -1; // increase
+                if (a1[1] > a2[1]) return 1; // increase
+                return 0;
+            })
+            return lstPoint;
+        }
+        function removeExists(lstPoint, lstArround) {
+            if (lstPoint.length < 2) return;
+            for (let ii = lstArround.length - 1; -1 < ii; ii--) {
+                const ap = lstArround[ii]
+                const point = lstPoint.find(xp => isEqualPoint(xp, ap))
+                if (point) lstArround.splice(ii, 1)
+            }
+        }
+        function getArrounds(lstPoint) {
+            const lstA = []
+            lstPoint.forEach(([x, y]) => {
+                const point = boards[y][x]
+                let lstArround = getArround(x, y, point)
+                lstArround.forEach(axy => {
+                    if (!lstA.find(aaxy => isEqualPoint(aaxy, axy)))
+                        lstA.push(axy)
+                })
+            })
+            return lstA;
+        }
+        function isEqualPoint(p1, p2) {
+            if (p1[0] != p2[0]) return false;
+            if (p1[1] != p2[1]) return false;
+            return true;
+        }
+        function getArround(x, y, point) {
+            let lstA = []
+            let rowUp = boards[y - 1]
+            if (rowUp) {
+                let aUp = rowUp[x]
+                if (aUp == point) lstA.push([x, y - 1])
+            }
+            let rowDown = boards[y + 1]
+            if (rowDown) {
+                let aDown = rowDown[x]
+                if (aDown == point) lstA.push([x, y + 1])
+            }
+            let aLeft = boards[y][x - 1]
+            if (aLeft && aLeft == point) lstA.push([x - 1, y])
+            let aRight = boards[y][x + 1]
+            if (aRight && aRight == point) lstA.push([x + 1, y])
+            return lstA;
+        }
+        function getBoard(size) {
+            let arrBoard = []
+            for (let y = 0; y < size; y++) {
+                let arrX = []
+                for (let x = 0; x < size; x++) {
+                    arrX.push(getRandomInt(1, 3))
+                }
+                arrBoard.push(arrX)
+            }
+            return arrBoard;
+        }
+        function getRandomInt(min, max) {
+            // The maximum is exclusive and the minimum is inclusive
+            const minCeiled = Math.ceil(min);
+            const maxFloored = Math.floor(max);
+            return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
+        }
+
+        function testBigSize() {
+            let boards = getBoard(9000)
+            console.log(getPoints(3, 3, boards))
+        }
+
+        function render(Size) {
+            const canvas = document.getElementById("canvas");
+            if (canvas.getContext) {
+                canvas.setAttribute('width', Size * w + 9)
+                canvas.setAttribute('height', Size * w + 9)
+
+                elemLeft = canvas.offsetLeft + canvas.clientLeft;
+                elemTop = canvas.offsetTop + canvas.clientTop;
+                f = 12
+                const ctx = canvas.getContext("2d");
+                ctx.font = `${f}px Arial`;
+                ctx.textAlign = "center";
+
+                canvas.addEventListener('click', function (event) {
+                    let nx = event.pageX - elemLeft,
+                        ny = event.pageY - elemTop;
+                    const [x, y] = getPos(nx, ny)
+
+                    listRect.forEach(([nx, ny, w, h, t]) => {
+                        drawCell.call(ctx, nx, ny, w, h, f, t)
+                    })
+                    const listPoint = getPoints(x, y, boards)       // [[x, y]]
+                    listRect = getListRect(listPoint, boards)
+
+                    listRect.forEach(([nx, ny, w, h, t]) => {
+                        highLightCell.call(ctx, nx, ny, w, h, f, t)
+                    })
+                }, false);
+
+                initDraw(ctx)
+            }
+
+        }
+        function getListRect(listPoint, boards) {
+            const lst = []
+            listPoint.forEach(([x, y]) => {
+                const [nx, ny, w, h] = getRect(x, y)
+                const val = boards[y][x]
+                lst.push([nx, ny, w, h, val])
+            })
+            return lst;
+        }
+        function initDraw(ctx) {
+            boards.forEach((arrX, y) => {
+                arrX.forEach((val, x) => {
+                    const [nx, ny, w, h] = getRect(x, y)
+                    drawCell.call(ctx, nx, ny, w, h, f, val)
+                })
+            })
+        }
+        function getPos(nx, ny) {
+            let x = Math.floor(nx / (w + 0))
+            let y = Math.floor(ny / (h + 0))
+            return [x, y]
+        }
+        function getRect(x, y) {
+            let nx = w * x;
+            let ny = h * y;
+            return [nx, ny, w, h]
+        }
+        function drawCell(x, y, w, h, f, t) {
+            const ctx = this
+            ctx.fillStyle = "white";
+            ctx.fillRect(x, y, w, h);
+            ctx.strokeRect(x, y, w, h);
+            ctx.fillStyle = "black";
+            ctx.fillText(`${t}`, x + w / 2, y + h / 2 + f / 3);
+        }
+        function highLightCell(x, y, w, h, f, t) {
+            const ctx = this
+            ctx.fillStyle = "black";
+            ctx.fillRect(x, y, w, h);
+            ctx.fillStyle = "white";
+            ctx.fillText(`${t}`, x + w / 2, y + h / 2 + f / 3);
+        }
+    </script>
+</body>
+
+</html>
