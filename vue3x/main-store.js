@@ -47,43 +47,37 @@ export default createStore({
         },
         updateAsort({ commit, state }, [type, oldIds, newIds]) {
             const lstNewSort = []
-            let oId, oItem, item
+            let oId, oItem, item;
+            const items = [];
             switch (type) {
                 case 1:     // Lands
-                    newIds.forEach((nId, ii) => {
-                        oId = oldIds[ii]
-                        oItem = state.Lands.find(l => l.Id == oId)
-                        lstNewSort.push([nId, oItem.ASort])
-                    });
-                    lstNewSort.forEach(([nId, nSort]) => {
-                        item = state.Lands.find(l => l.Id == nId)
-                        item.ASort = nSort
-                    });
-                    return state.Lands;
+                    buildItems(state.Lands)
+                    break;
                 case 2:     // Region
-                    newIds.forEach((nId, ii) => {
-                        oId = oldIds[ii]
-                        oItem = state.Regions.find(l => l.Id == oId)
-                        lstNewSort.push([nId, oItem.ASort])
-                    });
-                    lstNewSort.forEach(([nId, nSort]) => {
-                        item = state.Regions.find(l => l.Id == nId)
-                        item.ASort = nSort
-                    });
-                    return state.Regions;
+                    buildItems(state.Regions);
+                    break;
                 case 3:     // Market
-                    newIds.forEach((nId, ii) => {
-                        oId = oldIds[ii]
-                        oItem = state.Markets.find(l => l.Id == oId)
-                        lstNewSort.push([nId, oItem.ASort])
-                    });
-                    lstNewSort.forEach(([nId, nSort]) => {
-                        item = state.Markets.find(l => l.Id == nId)
-                        item.ASort = nSort
-                    });
-                    return state.Markets;
+                    buildItems(state.Markets)
+                    break;
+                default: return items;
             }
-            return []
+            newIds.forEach((nId, ii) => {
+                oId = oldIds[ii]
+                oItem = items.find(l => l.Id == oId)
+                lstNewSort.push([nId, oItem.ASort])
+            });
+            lstNewSort.forEach(([nId, nSort]) => {
+                item = items.find(l => l.Id == nId)
+                item.ASort = nSort
+            });
+            return items;
+
+            function buildItems(lstItem) {
+                for (let ii = 0; ii < lstItem.length; ii++) {
+                    const ll = lstItem[ii]
+                    if (newIds.includes(ll.Id)) items.push(ll)
+                }
+            }
         },
     },
     getters: {
