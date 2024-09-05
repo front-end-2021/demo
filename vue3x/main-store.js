@@ -6,6 +6,16 @@ import {
 import { getTxtBy, getLocal, setLocal } from './common.js';
 import { FTypeId } from './components/dFilter.js';
 import { createStore } from 'vuex'
+
+function buildListBy(ids, fnc) {
+    const lst = []
+    for (let ii = 0, item; ii < this.length; ii++) {
+        item = this[ii]
+        if (ids.includes(0)) lst.push(item)
+        else if (fnc(item)) lst.push(item)
+    }
+    return lst
+}
 export default createStore({
     state: {
         Projects: [],// ListPrj,  // [{Id, Name}]
@@ -125,28 +135,21 @@ export default createStore({
             return lst[0] + 1
         },
         LandsMarketsBy: (state) => ([type, ids]) => {
-            const lst = []
+            let lst = []
             switch (type) {
                 case 1:     // Land
-                    buildList(state.Lands)
+                    lst = buildListBy.call(state.Lands, ids, (itm) => ids.includes(itm.Id))
                     // for (let ii = 0, item; ii < state.Lands.length; ii++) { item = state.Lands[ii];
                     //     if (ids.includes(0)) lst.push(item); else if (ids.includes(item.Id)) lst.push(item); }
                     break;
                 case 2:     // Market
-                    buildList(state.Markets)
+                    lst = buildListBy.call(state.Markets, ids, (itm) => ids.includes(itm.Id))
                     // for (let ii = 0, item; ii < state.Markets.length; ii++) { item = state.Markets[ii];
                     //     if (ids.includes(0)) lst.push(item); else if (ids.includes(item.Id)) lst.push(item); }
                     break
             }
             lst.sort((a, b) => a.ASort - b.ASort)
             return lst
-            function buildList(lstItem) {
-                for (let ii = 0, item; ii < lstItem.length; ii++) {
-                    item = lstItem[ii]
-                    if (ids.includes(0)) lst.push(item)
-                    else if (ids.includes(item.Id)) lst.push(item)
-                }
-            }
         },
         ItemBy: (state) => ([type, id]) => {
             switch (type) {
@@ -182,12 +185,9 @@ export default createStore({
             }
         },
         RegionByLands: (state) => (landIds) => {
-            const lst = []
-            for (let rr = 0, region; rr < state.Regions.length; rr++) {
-                region = state.Regions[rr]
-                if (landIds.includes(0)) lst.push(region)
-                else if (landIds.includes(region.LandId)) lst.push(region)
-            }
+            const lst = buildListBy.call(state.Regions, landIds, (itm) => landIds.includes(itm.LandId))
+            // for (let rr = 0, region; rr < state.Regions.length; rr++) { region = state.Regions[rr];
+            //     if (landIds.includes(0)) lst.push(region); else if (landIds.includes(region.LandId)) lst.push(region); }
             lst.sort((a, b) => a.ASort - b.ASort)
             return lst
         },
