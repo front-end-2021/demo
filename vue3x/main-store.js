@@ -74,8 +74,8 @@ export default createStore({
 
             function buildItems(lstItem) {
                 for (let ii = 0; ii < lstItem.length; ii++) {
-                    const ll = lstItem[ii]
-                    if (newIds.includes(ll.Id)) items.push(ll)
+                    item = lstItem[ii]
+                    if (newIds.includes(item.Id)) items.push(item)
                 }
             }
         },

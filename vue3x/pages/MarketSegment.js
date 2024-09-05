@@ -463,28 +463,23 @@ export default {
                 this.$store.dispatch('updateAsort', [type, oldIds, newIds]).then(items => {
                     switch (type) {
                         case 1:     // Land
-                            for (let ll = 0; ll < this.Lands.length; ll++) {
-                                const land = this.Lands[ll]
-                                const nLand = items.find(ld => ld.Id == land.Id)
-                                land.ASort = nLand.ASort
-                            }
+                            setAsort.call(this.Lands, items)
                             return;
                         case 2:     // Region
-                            for (let ll = 0; ll < this.Regions.length; ll++) {
-                                const rItem = this.Regions[ll]
-                                const itemR = items.find(ld => ld.Id == rItem.Id)
-                                rItem.ASort = itemR.ASort
-                            }
+                            setAsort.call(this.Regions, items)
                             return;
                         case 3:     // Market
-                            for (let ll = 0; ll < this.Markets.length; ll++) {
-                                const rItem = this.Markets[ll]
-                                const itemR = items.find(ld => ld.Id == rItem.Id)
-                                rItem.ASort = itemR.ASort
-                            }
+                            setAsort.call(this.Markets, items)
                             return;
                     }
                 })
+                function setAsort(items) {
+                    for (let ll = 0, itm, nItm; ll < this.length; ll++) {
+                        itm = this[ll]
+                        nItm = items.find(ld => ld.Id == itm.Id)
+                        itm.ASort = nItm.ASort
+                    }
+                }
             }
         },
     },
