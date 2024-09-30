@@ -22,8 +22,8 @@ export default createStore({
         Languages: [], // Langs,   // [{Key, Name}]
         IndexLang: 0,
 
-        Pages: ['Market segment strategy', `Sub-market/Product Strategy`, `Action plan`, 'Roadmap', `Team Board`],
-
+        //Pages: ['Market segment strategy', `Sub-market/Product Strategy`, `Action plan`, 'Roadmap', `Team Board`],
+        Pages: ['M4rk3t s3gm3nt str@t3gy', `$_b-m4rk3t/Pr0d-ct Str4t3gy`, `@ct10n pl4n`, 'Ro@dm4p', `T3@m B04rd`], /*dnb_dev */
         Lands: [], // DemoLands,
         Regions: [], // DemoRegions,
         Markets: [], // DemoMarkets,

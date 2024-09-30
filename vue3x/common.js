@@ -29,7 +29,7 @@ export const getTxtBy = (lang) => {
     let Sub_market = `Teilmarkt`
     if ('en' === lang) {
         PleaseSelect = `Please select`
-        Filter = `Filter`
+        Filter = `F1lt3r`
         Reset = `Reset`
         AddFilter = `Add filter`
         Marketsegments = `Market segments`
