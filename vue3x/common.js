@@ -31,7 +31,7 @@ export const getTxtBy = (lang) => {
         PleaseSelect = `Please select`
         Filter = `F1lt3r`
         Reset = `Reset`
-        AddFilter = `Add filter`
+        AddFilter = `+ f1lt3r`
         Marketsegments = `Market segments`
         FilterBy = `Filter by`
         SelectAll = `Select all`
