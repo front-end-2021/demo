@@ -11,7 +11,10 @@ button { cursor: pointer; }
     margin-right: auto;
     margin-left: auto;
 }
-
+.ui.positive.button, .ui.positive.buttons .button { background-color: #a6a6a6; } /*dnb_dev */
+.ui.primary.button, .ui.primary.buttons .button,
+.ui.positive.button:hover, .ui.positive.buttons .button:hover,
+.ui.primary.button:hover, .ui.primary.buttons .button:hover {background-color: #606060;} /*dnb_dev */
 .d-inline-block { display: inline-block; }
 .d-grid { display: grid; }
 .d-inline-grid { display: inline-grid; }
@@ -21,11 +24,12 @@ button { cursor: pointer; }
 .justify-content-cent { justify-content: center; }
 .align-items-center { align-items: center; }
 .bg-primary { background-color: #008ff8; }
+.bg-primary { background-color: #565656;  } /*dnb_dev */
 .border-box { box-sizing: border-box; }
 .dnbdropdown-primary.ui.selection.dropdown {
-    background-color: #0080dd;
-    border-color: #0080dd;
+    background-color: #0080dd; border-color: #0080dd;
     color: white;
+    background-color: #3c3c3c; border-color: #3c3c3c; /*dnb_dev */
 }
 
 .dnbdropdown-primary.ui.selection.visible.dropdown>.text:not(.default) {
@@ -33,18 +37,18 @@ button { cursor: pointer; }
 }
 
 .dnbdropdown-primary.ui.selection.active.dropdown .menu {
-    border-color: #008ff8;
-    background-color: #008ff8;
+    border-color: #008ff8; background-color: #008ff8; 
+    border-color: #565656; background-color: #565656; /*dnb_dev */
 }
 
 .dnbdropdown-primary.ui.selection.dropdown .menu>.item {
-    border-color: #008ff8;
-    color: white;
+    border-color: #008ff8; color: white;
+    border-color: #565656; /*dnb_dev */
 }
 
 .dnbdropdown-primary.ui.active.selection.dropdown {
-    background-color: #008ff8;
-    border-color: #008ff8;
+    background-color: #008ff8; border-color: #008ff8; 
+    background-color: #565656; border-color: #565656; /*dnb_dev */
 }
 
 .me-3 { margin-right: 1rem; }
@@ -88,13 +92,15 @@ button { cursor: pointer; }
 .text-center { text-align: center; }
 .w81px { width: 81px; }
 .dnb-nav {
-    background-color: #006bb9;
-    height: 39px;
+    background-color: #006bb9; height: 39px;
+    background-color: #656565; /*dnb_dev */
 }
 .h42 { height: 42px; }
 .h32 {height: 32px;}
 .dnb-nav>* { color: #66b8ff; }
+.dnb-nav>* { color: #9b9b9b; } /*dnb_dev */
 .dnb-nav>*:hover { color: #ddefff; }
+.dnb-nav>*:hover { color: #c9c9c9; }  /*dnb_dev */
 .dnb-nav>*.working { color: white; }
 .cpointer { cursor: pointer; }
 .cdefault {cursor: default;}
@@ -144,14 +150,15 @@ button { cursor: pointer; }
     top: 30px;
     left: 0;
     z-index: 1;
-    background-color: #1b83c9;
-    color: white;
     width: 220px;
     flex-direction: column;
+    background-color: #1b83c9; color: white;
+    background-color: #868686;  /*dnb_dev */
 }
 
 .menu-valuation>*:hover {
     background-color: #0f3551;
+    background-color: #808080;  /*dnb_dev */
 }
 
 .row-crite {
@@ -161,13 +168,13 @@ button { cursor: pointer; }
 }
 
 .bg-008ff8 {
-    background-color: #008ff8;
-    color: white;
+    background-color: #008ff8; color: white;
+    background-color: #565656;
 }
 
 .bg-006bb9 {
-    background: #006bb9;
-    color: white;
+    background-color: #006bb9; color: white;
+    background-color: #656565;  /*dnb_dev */
 }
 
 .row-crite .ui.selection.dropdown {
@@ -180,6 +187,7 @@ button { cursor: pointer; }
 .row-crite .ui.selection.dropdown>.dropdown.icon { padding-top: 7px; }
 .row-crite .ui.selection.dropdown .menu>.item { padding: 8px !important;}
 .border-r1-0384e3 { border-right: 1px solid #0384e3; }
+.border-r1-0384e3 { border-right: 1px solid #6f6f6f; }   /*dnb_dev */
 .border-r1-e8e9e9 { border-right: 1px solid #e8e9e9; }
 .border-b1-e8e9e9 { border-bottom: 1px solid #e8e9e9; }
 .vw-marketsegment .col-region .dnd-ic-region,
@@ -198,10 +206,11 @@ button { cursor: pointer; }
 .vw-marketsegment .col-region:hover .dnd-ic-region:hover,
 .btn-menu-valuation:hover,
 .vw-marketsegment .row-market .col-market:hover .dnd-ic-market:hover {
-    background-color: #006bb9;
     border-radius: 4px;
     cursor: pointer;
     color:white;
+    background-color: #006bb9;
+    background-color: #656565;  /*dnb_dev */
 }
 
 @media screen and (max-width: 750px) {
