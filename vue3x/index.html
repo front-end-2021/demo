@@ -25,48 +25,42 @@
 
 <body>
   <main id="app" v-cloak>
-    <header class="p-3 bg-primary">
-      <section class="container-fluid d-inline-flex justify-content-start align-items-center">
-        <div class="d-inline-flex justify-content-start align-items-center grp-logo">
-          <i class="bi bi-bootstrap-fill me-2 font24 cpointer text-white"></i>
-          <h2 class="me-3 my-0 text-white">Tasks</h2>
-        </div>
-        <div class="d-inline-flex justify-content-start align-items-center me-3 grp-prj">
-          <drop-select :index="IndexProject" 
+    <header class="dapp-header bg-primary d-flex px22px py-3">
+      <section class="d-inline-flex align-items-center">
+        <i class="bi bi-bootstrap-fill me-2 font24 cpointer text-white"></i>
+        <h2 class="me-3 my-0 text-white">Tasks</h2>
+        <drop-select :index="IndexProject" 
             :items="$store.state.Projects" 
             :class="['grp-dropdown-min dnbdropdown-primary']"
             @set:index="$event => setIndexProject($event)">
             <template #default>
               <div class="text">{{ProjectName}}</div>
             </template>
-          </drop-select>
-        </div>
-        <div class="d-inline-flex justify-content-start align-items-center me-3 grp-lang">
-          <h4 class="text-white mb-0 me-1">Language: </h4>
-          <drop-select :index="$store.state.IndexLang" 
+        </drop-select>
+      </section>
+      <nav class="dnb-nav d-inline-flex align-items-center px22px text-white border-r4px">
+        <h4 v-for="(page, ipg) in $store.state.Pages"
+          class="my-0 mx-3 cpointer"
+          :class="[ ipg === IndexPage ? 'working' : '']"
+          @click.stop="e => selectPage(ipg)">{{page}}</h4>
+      </nav>
+      <section class="d-inline-flex align-items-center">
+        <h4 class="text-white mb-0 me-2">Language: </h4>
+        <drop-select :index="$store.state.IndexLang" 
             :items="$store.state.Languages" 
             :class="['grp-dropdown-min dnbdropdown-primary']" style="min-width: 120px;"
             @set:index="$event => setIndexLang($event)">
             <template #default>
               <div class="text">{{$store.getters.activeLang.Name}}</div>
             </template>
-          </drop-select>
-        </div>
-        <div class="d-inline-flex justify-content-start align-items-center grp-options">
-          <i class="bi bi-folder-fill me-3 font24 cpointer text-white"></i>
-          <i class="bi bi-question-square-fill font24 cpointer text-white"></i>
-          <i class="bi bi-gear-fill font24 mx-3 cpointer text-white"></i>
-          <i class="bi bi-person-circle font24 cpointer text-white"
-            @click.stop="e => openForm(1)"></i>
-        </div>
+        </drop-select>
+        <i class="bi bi-folder-fill mx-3 font24 cpointer text-white"></i>
+        <i class="bi bi-question-square-fill font24 cpointer text-white"></i>
+        <i class="bi bi-gear-fill font24 mx-3 cpointer text-white"></i>
+        <i class="bi bi-person-circle font24 cpointer text-white"
+          @click.stop="e => openForm(1)"></i>
       </section>
     </header>
-    <nav class="dnb-nav d-flex align-items-center p-2 text-white">
-      <h4 v-for="(page, ipg) in $store.state.Pages"
-        class="my-0 mx-3 cpointer"
-        :class="[ ipg === IndexPage ? 'working' : '']"
-        @click.stop="e => selectPage(ipg)">{{page}}</h4>
-    </nav>
 
     <component :is="CompPage" v-cloak></component>
 

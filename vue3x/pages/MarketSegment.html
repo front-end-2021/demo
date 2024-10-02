@@ -1,5 +1,5 @@
 <template id="tmp-comp-cell-valuation">
-  <div class="cell-valuation pos-relative" 
+  <div class="cell-valuation pos-relative border-r4px" 
     @dblclick="e => dblclOpenFormValue(market, region)"
     :style="[getBgColor(market.Id, region.Id)]">
     <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
@@ -110,7 +110,7 @@
                 <div class="p6px bg-008ff8 col-market fb700 cdefault">{{market.Name}}</div>
                 <div v-for="(region, ii) in Regions" 
                   class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42" >
-                    <div class="cell-valuation pos-relative" 
+                    <div class="cell-valuation pos-relative border-r4px" 
                       :mkid="market.Id" :rnid="region.Id"
                       :x="ii" :y="imk"
                       :style="[getBgColor(market.Id, region.Id)]">
@@ -155,7 +155,7 @@
                 <div class="col-region p6px bg-008ff8 fb700 h32">{{region.Name}}</div>
                 <div v-for="(market, imk) in Markets" 
                     class="p6px col-region fb700 cdefault border-box border-r1-e8e9e9 border-b1-e8e9e9 h42">
-                    <div class="cell-valuation pos-relative" 
+                    <div class="cell-valuation pos-relative border-r4px" 
                       :mkid="market.Id" :rnid="region.Id"
                       :x="ii" :y="imk"
                       :style="[getBgColor(market.Id, region.Id)]">
