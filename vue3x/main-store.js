@@ -21,7 +21,7 @@ export default createStore({
         Projects: [],// ListPrj,  // [{Id, Name}]
         Languages: [], // Langs,   // [{Key, Name}]
         IndexLang: 0,
-
+        ContextLang: getTxtBy('en'),
         //Pages: ['Market segment strategy', `Sub-market/Product Strategy`, `Action plan`, 'Roadmap', `Team Board`],
         Pages: ['M4rk3t s3gm3nt str@t3gy', `$_b-m4rk3t/Pr0d-ct Str4t3gy`, `@ct10n pl4n`, 'Ro@dm4p', `T3@m B04rd`], /*dnb_dev */
         Lands: [], // DemoLands,
@@ -98,15 +98,9 @@ export default createStore({
             if (typeof lng != 'object' || Object.is(lng, null)) return {}
             return lng
         },
-        txtLang(state) {
-            const lng = state.Languages[state.IndexLang]
-            if (lng) return getTxtBy(lng.Key);
-            return getTxtBy()
-        },
         txtFilter: (state) => (id) => {
-            const lng = state.Languages[state.IndexLang]
-            if (!lng) return ''
-            const txt = getTxtBy(lng.Key);
+            const txt = state.ContextLang;
+            if(!txt) return;
             switch (id) {
                 case FTypeId.SelectAll:
                     return txt.SelectAll;
@@ -139,13 +133,11 @@ export default createStore({
             switch (type) {
                 case 1:     // Land
                     lst = buildListBy.call(state.Lands, ids, (itm) => ids.includes(itm.Id))
-                    // for (let ii = 0, item; ii < state.Lands.length; ii++) { item = state.Lands[ii];
-                    //     if (ids.includes(0)) lst.push(item); else if (ids.includes(item.Id)) lst.push(item); }
+                    
                     break;
                 case 2:     // Market
                     lst = buildListBy.call(state.Markets, ids, (itm) => ids.includes(itm.Id))
-                    // for (let ii = 0, item; ii < state.Markets.length; ii++) { item = state.Markets[ii];
-                    //     if (ids.includes(0)) lst.push(item); else if (ids.includes(item.Id)) lst.push(item); }
+                    
                     break
             }
             lst.sort((a, b) => a.ASort - b.ASort)
@@ -166,13 +158,11 @@ export default createStore({
             switch (type) {
                 case 1:     // Land
                     buildList(state.Lands)
-                    // for (let ii = 0, item; ii < state.Lands.length; ii++) {
-                    //     item = state.Lands[ii]; if (!ignoreIds.includes(item.Id)) lst.push(item); }
+                    
                     break;
                 case 2:     // Market
                     buildList(state.Markets)
-                    // for (let ii = 0, item; ii < state.Markets.length; ii++) {
-                    //     item = state.Markets[ii]; if (!ignoreIds.includes(item.Id)) lst.push(item); }
+                    
                     break
             }
             lst.sort((a, b) => a.ASort - b.ASort)
@@ -186,8 +176,7 @@ export default createStore({
         },
         RegionByLands: (state) => (landIds) => {
             const lst = buildListBy.call(state.Regions, landIds, (itm) => landIds.includes(itm.LandId))
-            // for (let rr = 0, region; rr < state.Regions.length; rr++) { region = state.Regions[rr];
-            //     if (landIds.includes(0)) lst.push(region); else if (landIds.includes(region.LandId)) lst.push(region); }
+            
             lst.sort((a, b) => a.ASort - b.ASort)
             return lst
         },
@@ -236,7 +225,12 @@ export default createStore({
             }
         },
 
-        setILang(state, val) { state.IndexLang = val },
+        setILang(state, val) { 
+            state.IndexLang = val 
+            const lng = state.Languages[val]
+            if (lng) state.ContextLang = getTxtBy(lng.Key);
+            else state.ContextLang = getTxtBy()
+        },
         setDataProject(state, iProject) {
             const prj = state.Projects[iProject]
             if (!prj) return

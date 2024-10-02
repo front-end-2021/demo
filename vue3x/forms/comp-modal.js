@@ -115,7 +115,7 @@ export const CompFormValuation = {
         setValue(item, value) { item.Value = parseInt(value) },
         newCriteria() {
             this.item.Criterias.push({
-                Name: this.$store.getters.txtLang.Criteria,
+                Name: this.$store.state.ContextLang.Criteria,
                 Weight: 0, Value: 0
 
             })

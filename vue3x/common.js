@@ -22,33 +22,35 @@ export const getTxtBy = (lang) => {
     let Submarkets = `Anspruchsgruppen`
     let ContactPerson = `Ansprechsperson`
     let Weighting = `Gewichtung`
-    let Criteria = `Criteria`
+    let Criteria = `Kriterien`
     let Valuation = `Bewertung`
     let Productstrategy = `Produktstrategie`
     let Active = `Aktiv`
     let Sub_market = `Teilmarkt`
+    let TxtPr0ject = `Projekt`
     if ('en' === lang) {
-        PleaseSelect = `Please select`
+        PleaseSelect = `Ple@se s3lect`
         Filter = `F1lt3r`
         Reset = `Reset`
         AddFilter = `+ f1lt3r`
-        Marketsegments = `Market segments`
-        FilterBy = `Filter by`
-        SelectAll = `Select all`
-        SelectLand = `Select Land`
-        SelectMarketsegments = `Select ${Marketsegments}`
-        ProductGroups = `Product groups`
-        Product = `Product`
-        Submarkets = `Stakeholder groups`
-        ContactPerson = `Contact Person`
-        And = `And`
+        Marketsegments = `M@rket s3gments`
+        FilterBy = `Filt3r by`
+        SelectAll = `Sel3ct @ll`
+        SelectLand = `S3lect L@nd`
+        SelectMarketsegments = `Sel3ct ${Marketsegments}`
+        ProductGroups = `Pr0duct gr0ups`
+        Product = `Pr0duct`
+        Submarkets = `St@keh0lder gr0ups`
+        ContactPerson = `C0nt@ct P3rson`
+        And = `@nd`
         Or = `Or`
         Weighting = `Weighting`
-        Criteria = `Kriterien`
-        Valuation = `Valuation`
-        Active = `Active`
-        Productstrategy = `Product Strategy`
-        Sub_market = `Sub-market`
+        Criteria = `Criteria`
+        Valuation = `Valu@tion`
+        Active = `Activ3`
+        Productstrategy = `Pr0duct Str@tegy`
+        Sub_market = `Sub-m@rket`
+        TxtPr0ject = `Pr0j3ct`
     }
     return {
         PleaseSelect,
@@ -66,7 +68,8 @@ export const getTxtBy = (lang) => {
         Submarkets, ContactPerson,
         Weighting, Criteria, Valuation,
         Active, Productstrategy,
-        Sub_market
+        Sub_market,
+        TxtPr0ject
     }
 }
 export const includeHTML = (path) => {

@@ -8,11 +8,11 @@
     <div v-if="IsShowMenu"
       class="menu-valuation d-inline-flex">
       <div class="p6px cpointer" @click.stop="e => openFormValuation(market, region)"><i class="bi bi-sliders2"></i>
-        {{$store.getters.txtLang.Valuation}}</div>
+        {{$store.state.ContextLang.Valuation}}</div>
       <div @click.stop="e => activeValuation(market.Id, region.Id)" class="p6px cpointer"><i class="bi"
-          :class="classSquare(market.Id, region.Id)"></i> {{$store.getters.txtLang.Active}}</div>
+          :class="classSquare(market.Id, region.Id)"></i> {{$store.state.ContextLang.Active}}</div>
       <div class="p6px cpointer"><i class="bi bi-box-arrow-in-right"></i>
-        {{$store.getters.txtLang.Sub_market}}/{{$store.getters.txtLang.Productstrategy}}</div>
+        {{$store.state.ContextLang.Sub_market}}/{{$store.state.ContextLang.Productstrategy}}</div>
     </div>
     <i class="bi" :class="clssCheckMark(market.Id, region.Id)" style="font-size: 24px;"></i>
   </div>
@@ -52,7 +52,7 @@
           <div class="d-inline-block ui primary button" @click.stop="e => openFormLand()">+ Land</div>
         </div>
         <div v-if="$root.DragDrop == null" class="d-flex mt-3">
-          <div class="col-market p6px bg-006bb9 cdefault">{{$store.getters.txtLang.Marketsegments}}\Region</div>
+          <div class="col-market p6px bg-006bb9 cdefault">{{$store.state.ContextLang.Marketsegments}}\Region</div>
           <div v-for="region in Regions"
             class="col-region p6px pe48px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700 pos-relative"
             @dblclick="e => openFormRegion(region)">{{region.Name}}
@@ -97,7 +97,7 @@
         <div v-if="$root.DragDrop != null && $root.DragDrop.type == 3" 
           class="dnd-market mt-3">
           <div class="d-flex">
-            <div class="col-market p6px bg-006bb9">{{$store.getters.txtLang.Marketsegments}}\Region</div>
+            <div class="col-market p6px bg-006bb9">{{$store.state.ContextLang.Marketsegments}}\Region</div>
             <div class="col-region p6px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700"
               v-for="region in Regions">{{region.Name}}</div>
             <div class="col-region single line p6px cpointer prevent-select bg-008ff8 fb700">+ Region</div>
@@ -137,7 +137,7 @@
         <div v-if="$root.DragDrop != null && $root.DragDrop.type == 2" 
           class="dnd-region d-flex mt-3">
           <div class="rgn-first-col">
-            <div class="col-market p6px bg-006bb9 h32">{{$store.getters.txtLang.Marketsegments}}\Region</div>
+            <div class="col-market p6px bg-006bb9 h32">{{$store.state.ContextLang.Marketsegments}}\Region</div>
             <div v-for="(market, imk) in Markets" 
               class="p6px bg-008ff8 col-market fb700 cdefault h42">{{market.Name}}</div>
             <div class="p6px col-market bg-008ff8 h42" >+ Market<i class="circle help link icon" 

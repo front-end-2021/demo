@@ -35,13 +35,13 @@
 </template>
 <template id="tmp-comp-form-valuation">
     <div class="ui modal">
-        <div class="header">{{$store.getters.txtLang.Valuation}}</div>
+        <div class="header">{{$store.state.ContextLang.Valuation}}</div>
         <div class="content" style="flex-direction: column;">
             <div class="d-flex" style="justify-content: space-between;">
                 <h1>{{moItem.path}}</h1>
                 <span @click.stop="toggleActive" style="cursor: default;"
                     ><i class="bi" :class="item.Active ? 'bi-check2-square' : 'bi-square'"
-                    ></i> {{$store.getters.txtLang.Active}}</span>
+                    ></i> {{$store.state.ContextLang.Active}}</span>
             </div>
             <div class="description">
                 <div class="d-flex my-3">
@@ -52,9 +52,9 @@
                     <button>Import template</button>
                 </div>
                 <div class="d-grid row-crite">
-                    <strong>{{$store.getters.txtLang.Criteria}}</strong>
-                    <strong>{{$store.getters.txtLang.Weighting}}</strong>
-                    <strong>{{$store.getters.txtLang.Valuation}}</strong>
+                    <strong>{{$store.state.ContextLang.Criteria}}</strong>
+                    <strong>{{$store.state.ContextLang.Weighting}}</strong>
+                    <strong>{{$store.state.ContextLang.Valuation}}</strong>
                     <span></span>
                 </div>
                 <div v-for="(cri, ci) in item.Criterias" 

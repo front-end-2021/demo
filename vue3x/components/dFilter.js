@@ -81,12 +81,12 @@ const MxFCriterial = {
     computed: {
         SrcTypes() {
             const lst = []
-            let lName = this.$store.getters.txtLang.PleaseSelect
+            let lName = this.$store.state.ContextLang.PleaseSelect
             lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
-            lName = `${this.$store.getters.txtLang.Land}/`
-            lName += `${this.$store.getters.txtLang.Region}`
+            lName = `${this.$store.state.ContextLang.Land}/`
+            lName += `${this.$store.state.ContextLang.Region}`
             lst.push({ Id: FTypeId.Land_Region, Name: lName })
-            lName = this.$store.getters.txtLang.Marketsegments
+            lName = this.$store.state.ContextLang.Marketsegments
             lst.push({ Id: FTypeId.MarketSegments, Name: lName })
             return lst
         },
@@ -387,10 +387,10 @@ const FCriterial = {
     },
     computed: {
         operators() {
-            if (this.index < 1) return [this.$store.getters.txtLang.FilterBy]
+            if (this.index < 1) return [this.$store.state.ContextLang.FilterBy]
             return [
-                this.$store.getters.txtLang.And,
-                this.$store.getters.txtLang.Or,
+                this.$store.state.ContextLang.And,
+                this.$store.state.ContextLang.Or,
             ]
         },
         clssOperator() {
@@ -399,19 +399,19 @@ const FCriterial = {
         },
         SrcTypes() {
             const lst = []
-            let lName = this.$store.getters.txtLang.PleaseSelect
+            let lName = this.$store.state.ContextLang.PleaseSelect
             lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
-            lName = `${this.$store.getters.txtLang.Land}/`
-            lName += `${this.$store.getters.txtLang.Region}`
+            lName = `${this.$store.state.ContextLang.Land}/`
+            lName += `${this.$store.state.ContextLang.Region}`
             lst.push({ Id: FTypeId.Land_Region, Name: lName })
-            lName = `${this.$store.getters.txtLang.ProductGroups}/`
-            lName += `${this.$store.getters.txtLang.Product}`
+            lName = `${this.$store.state.ContextLang.ProductGroups}/`
+            lName += `${this.$store.state.ContextLang.Product}`
             lst.push({ Id: FTypeId.ProductGroups_Product, Name: lName })
-            lName = `${this.$store.getters.txtLang.Submarkets}/`
-            lName += `${this.$store.getters.txtLang.ContactPerson}`
+            lName = `${this.$store.state.ContextLang.Submarkets}/`
+            lName += `${this.$store.state.ContextLang.ContactPerson}`
             lst.push({ Id: FTypeId.Submarkets_ContactPerson, Name: lName })
-            lName = `${this.$store.getters.txtLang.Marketsegments}/`
-            lName += `${this.$store.getters.txtLang.Submarkets}`
+            lName = `${this.$store.state.ContextLang.Marketsegments}/`
+            lName += `${this.$store.state.ContextLang.Submarkets}`
             lst.push({ Id: FTypeId.MarketSegments_Submarket, Name: lName })
             return lst
         },

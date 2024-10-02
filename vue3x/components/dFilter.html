@@ -26,7 +26,7 @@
     </div>
 </template>
 <template id="tmp-comp-filter-market">
-    <h3>{{$store.getters.txtLang.Filter}} m4rk3t</h3>
+    <h3>{{$store.state.ContextLang.Filter}} m4rk3t</h3>
     <div class="d-flex" style="flex-direction: column;">
         <comp-criterial-market 
             v-for="(crts, iic) in Criterials" 
@@ -38,11 +38,11 @@
             @set:typef="$event => setTypeF(iic, $event)"
             @set:ids="$event => setIds(iic, $event)"></comp-criterial-market>
     </div>
-    <button @click.stop="setFilter">{{$store.getters.txtLang.Filter}}</button>
+    <button @click.stop="setFilter">{{$store.state.ContextLang.Filter}}</button>
     <button @click.stop="resetFilter"
-        style="margin: 6px">{{$store.getters.txtLang.Reset}}</button>
+        style="margin: 6px">{{$store.state.ContextLang.Reset}}</button>
     <button @click.stop="addFilter"
-        >{{$store.getters.txtLang.AddFilter}}</button>
+        >{{$store.state.ContextLang.AddFilter}}</button>
 </template>
 <template id="tmp-comp-criterial">
     <drop-select v-if="-2 < operator" :name="operators[iOperator]"
@@ -73,7 +73,7 @@
     <br>
 </template>
 <template id="tmp-comp-filter">
-    <h3>{{$store.getters.txtLang.Filter}}</h3>
+    <h3>{{$store.state.ContextLang.Filter}}</h3>
     <div>
         <comp-criterial v-for="(crts, iic) in Criterials" 
             :key="iic"
@@ -85,8 +85,8 @@
             @set:typef="$event => setTypeF(iic, $event)"
             @set:ids="$event => setIds(iic, $event)"></comp-criterial>
     </div>
-    <button>{{$store.getters.txtLang.Filter}}</button>
-    <button style="margin: 6px">{{$store.getters.txtLang.Reset}}</button>
+    <button>{{$store.state.ContextLang.Filter}}</button>
+    <button style="margin: 6px">{{$store.state.ContextLang.Reset}}</button>
     <button @click.stop="addFilter"
-        >{{$store.getters.txtLang.AddFilter}}</button>
+        >{{$store.state.ContextLang.AddFilter}}</button>
 </template>
