@@ -348,7 +348,7 @@ export default {
                         else setLastState(2, 0)
                     }
                     item = {
-                        title: `Edit Region`,
+                        title: this.$store.state.ContextLang.TxtEdtRegion,  // Edit Region
                         data: JSON.parse(JSON.stringify(dItem)),
                         landActiveIds,
                         type: `comp-form-region`

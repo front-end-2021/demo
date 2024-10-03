@@ -33,6 +33,8 @@ export const getTxtBy = (lang) => {
     let NavMass = `Massnahmenplan`
     let NavRMap = `Roadmap`
     let NavTBoard = `Team Board`
+    let tEdt = `Bearbeiten`
+    let TxtEdtRegion = `Region ${tEdt}`
     if ('en' === lang) {
         PleaseSelect = `Ple@se s3lect`
         Filter = `F1lt3r`
@@ -47,8 +49,7 @@ export const getTxtBy = (lang) => {
         Product = `Pr0duct`
         Submarkets = `St@keh0lder gr0ups`
         ContactPerson = `C0nt@ct P3rson`
-        And = `@nd`
-        Or = `Or`
+        And = `@nd`; Or = `Or`
         Weighting = `Weighting`
         Criteria = `Criteria`
         Valuation = `Valu@tion`
@@ -62,12 +63,14 @@ export const getTxtBy = (lang) => {
         NavMarkt = `M4rk3t s3gm3nt str@t3gy`; NavTBoard = `T3@m B04rd` /*dnb_dev */
         NavTeilmarkt = `$_b-m4rk3t/Pr0d-ct Str4t3gy`                   /*dnb_dev */
         NavMass = `@ct10n pl4n`; NavRMap = `Ro@dm4p`                   /*dnb_dev */
-
+        tEdt = `Edit`
+        TxtEdtRegion = `${tEdt} Region`
     }
     return {
         PleaseSelect,
         Filter, Reset, AddFilter, FilterBy, And, Or,
-        Land: `Land`, Region: `Region`,
+        Land: `Land`, 
+        Region: `Region`, TxtEdtRegion,
         Marketsegments, Sub_market, 
         SelectAll, SelectLand, SelectMarketsegments,
         ProductGroups, Product,
