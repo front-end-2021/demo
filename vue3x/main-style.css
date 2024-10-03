@@ -209,7 +209,20 @@ button { cursor: pointer; }
     background-color: #006bb9;
     background-color: #656565;  /*dnb_dev */
 }
-
+.dnd_view:hover > * { opacity: 0.69}
+.dnd_view .dnd_market_y:hover,
+.dnd_view .dnd_region_x { opacity: 1; }
+.dnd_view .dnd_market_y:hover > *,
+.dnd_view .dnd_region_x:hover > * { 
+    box-sizing: border-box;
+    border: 1px solid red; 
+}
+.dnd_view .dnd_market_y:hover > * { border-right: none; border-left: none; }
+.dnd_view .dnd_region_x:hover > * { border-top: none; border-bottom: none; }
+.dnd_view .dnd_market_y:hover > *:first-child {border-left: 1px solid red;}
+.dnd_view .dnd_market_y:hover > *:last-child {border-right: 1px solid red;}
+.dnd_view .dnd_region_x:hover > *:first-child {border-top: 1px solid red;}
+.dnd_view .dnd_region_x:hover > *:last-child {border-bottom: 1px solid red;}
 @media screen and (max-width: 558px) {
     nav.container-fluid {
         flex-wrap: wrap;

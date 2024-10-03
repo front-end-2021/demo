@@ -106,11 +106,11 @@
               v-for="region in Regions">{{region.Name}}</div>
             <div class="col-region single line p6px cpointer prevent-select bg-008ff8 fb700">+ Region</div>
           </div>
-          <draggable v-model="Markets" v-bind="$root.DragDrop.options">
+          <draggable v-model="Markets" v-bind="$root.DragDrop.options" class="dnd_view">
             <transition-group>
               <div v-for="(market, imk) in Markets" 
                 :key="market.Id"
-                class="d-flex">
+                class="d-flex dnd_market_y">
                 <div class="p6px bg-008ff8 col-market fb700 cdefault">{{market.Name}}</div>
                 <div v-for="(region, ii) in Regions" 
                   class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42" >
@@ -151,10 +151,11 @@
               </i></div>
           </div>
           <draggable v-model="Regions" v-bind="$root.DragDrop.options" 
-            class="rgn-dnd-cols d-flex">
+            class="rgn-dnd-cols dnd_view d-flex">
             <transition-group>
               <div v-for="(region, ii) in Regions" 
                 :key="region.Id"
+                class="dnd_region_x"
                 style="background-color: white;">
                 <div class="col-region p6px bg-008ff8 fb700 h32">{{region.Name}}</div>
                 <div v-for="(market, imk) in Markets" 
