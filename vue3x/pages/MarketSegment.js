@@ -491,51 +491,64 @@ export default {
         }
     },
     beforeCreate() {
-        this.$root.ProcessState = 0     // loading
+        switch (this.$root.TabStatus[0]) {
+            case 0:
+                break;
+            default: this.$root.ProcessState = 0     // loading
+                break;
+        }
+        
     },
     created() {
-        Promise.all([
-            getData(3),
-            getData(4),
-            getData(5),
-            getData(6),
-        ]).then((values) => {
-            this.$root.ProcessState = 1     // success
-            const [lands, regions, markets, subMarkets] = values
+        switch (this.$root.TabStatus[0]) {
+            case 1:
+                Promise.all([
+                    getData(3),
+                    getData(4),
+                    getData(5),
+                    getData(6),
+                ]).then((values) => {
+                    this.$root.ProcessState = 1     // success
+                    const [lands, regions, markets, subMarkets] = values
 
-            this.$store.state.Lands = lands
-            this.$store.state.Regions = regions
-            this.$store.state.Markets = markets
-            this.$store.state.Submarkets = subMarkets;
+                    this.$store.state.Lands = lands
+                    this.$store.state.Regions = regions
+                    this.$store.state.Markets = markets
+                    this.$store.state.Submarkets = subMarkets;
 
-            this.$root.ActiveLandIds = [3];
-            this.$nextTick(() => {
-                getLastState().then(oData => {
-                    let sItem;
-
-                    switch (oData.type) {
-                        case 1:     // Edit Land
-                            sItem = this.$store.getters.ItemBy([1, oData.id])
-                            if (sItem) this.$root.openFormEditLand(sItem);
-                            break;
-                        case 2:     // Edit Region
-                            sItem = this.$store.getters.ItemBy([3, oData.id])
-                            if (sItem) this.openFormEdit(2, sItem);
-                            break;
-                        case 3:     // Edit Market
-                            sItem = this.$store.getters.ItemBy([2, oData.id])
-                            if (sItem) this.openFormEdit(3, sItem);
-                            break;
-                        case 4:     // Edit Submarket
-                            console.log('edit sub market')
-                            break;
-                    }
-                    console.log(oData)
+                    this.$root.ActiveLandIds = [3];
+                    this.$nextTick(() => {
+                        getLastState().then(oData => {
+                            let sItem;
+                            switch (oData.type) {
+                                case 1:     // Edit Land
+                                    sItem = this.$store.getters.ItemBy([1, oData.id])
+                                    if (sItem) this.$root.openFormEditLand(sItem);
+                                    break;
+                                case 2:     // Edit Region
+                                    sItem = this.$store.getters.ItemBy([3, oData.id])
+                                    if (sItem) this.openFormEdit(2, sItem);
+                                    break;
+                                case 3:     // Edit Market
+                                    sItem = this.$store.getters.ItemBy([2, oData.id])
+                                    if (sItem) this.openFormEdit(3, sItem);
+                                    break;
+                                case 4:     // Edit Submarket
+                                    console.log('edit sub market')
+                                    break;
+                            }
+                            this.$root.TabStatus[0] = 0
+                            // console.log(oData)
+                        })
+                    })
+                    this.setLandRegionMarket()
                 })
-            })
+                break;
+            default:
+                this.setLandRegionMarket()
+                break;
+        }
 
-            this.setLandRegionMarket()
-        })
     },
     mounted() { this.initDragDrop(2) },
 }

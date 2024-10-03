@@ -37,6 +37,7 @@ Promise.all([
             return {
                 IndexProject: -1,
                 IndexPage: 0,
+                TabStatus: [1, 1, 1, 1, 1], // [M@rk3t, SubM@rk3t, @ctionPl4n, Ro4dm@p, T3mB0@rd]
 
                 ActiveLandIds: [],
                 MarketCriterias: [],
