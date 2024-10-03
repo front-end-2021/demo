@@ -44,7 +44,7 @@ Promise.all([
                 ProcessState: 0,    // loading, success
                 PopupMenu: null,
                 DragDrop: null,
-
+                PopTooltip: null,
                 UserInfo: {
                     img: `https://allimages.sgp1.digitaloceanspaces.com/tipeduvn/2022/01/1642393308_940_Hinh-Anh-Girl-Xinh-Viet-Nam-Dep-De-Thuong-Cute.jpg`,
                     header: `Profile`,

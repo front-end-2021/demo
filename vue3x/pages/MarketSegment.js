@@ -482,6 +482,20 @@ export default {
                 }
             }
         },
+        onMouseEnter(e) {
+            if (!e.target.getAttribute('data-content')) return;
+            $(e.target).popup('show')
+        },
+        viewName(name, type) {
+            switch (type) {
+                case 1: // land
+                case 2: // region
+                    if (18 < name.length) return `${name.slice(0, 18)} ...`
+                    break;
+                default: break;
+            }
+            return name;
+        },
     },
     provide() {
         return {
@@ -497,7 +511,7 @@ export default {
             default: this.$root.ProcessState = 0     // loading
                 break;
         }
-        
+
     },
     created() {
         switch (this.$root.TabStatus[0]) {
