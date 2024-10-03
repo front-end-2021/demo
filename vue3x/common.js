@@ -28,6 +28,11 @@ export const getTxtBy = (lang) => {
     let Active = `Aktiv`
     let Sub_market = `Teilmarkt`
     let TxtPr0ject = `Projekt`
+    let NavMarkt = `Markt Marktsegmentstrategie`
+    let NavTeilmarkt = `Teilmarkt / Produktstrategie`
+    let NavMass = `Massnahmenplan`
+    let NavRMap = `Roadmap`
+    let NavTBoard = `Team Board`
     if ('en' === lang) {
         PleaseSelect = `Ple@se s3lect`
         Filter = `F1lt3r`
@@ -51,25 +56,26 @@ export const getTxtBy = (lang) => {
         Productstrategy = `Pr0duct Str@tegy`
         Sub_market = `Sub-m@rket`
         TxtPr0ject = `Pr0j3ct`
+        NavMarkt = `Market segment strategy`
+        NavTeilmarkt = `Sub-market/Product Strategy`
+        NavMass = `Action plan`
+        NavMarkt = `M4rk3t s3gm3nt str@t3gy`; NavTBoard = `T3@m B04rd` /*dnb_dev */
+        NavTeilmarkt = `$_b-m4rk3t/Pr0d-ct Str4t3gy`                   /*dnb_dev */
+        NavMass = `@ct10n pl4n`; NavRMap = `Ro@dm4p`                   /*dnb_dev */
+
     }
     return {
         PleaseSelect,
-        Filter,
-        Reset,
-        AddFilter,
-        Land: `Land`,
-        Region: `Region`,
-        Marketsegments,
-        FilterBy, And, Or,
-        SelectAll,
-        SelectLand,
-        SelectMarketsegments,
+        Filter, Reset, AddFilter, FilterBy, And, Or,
+        Land: `Land`, Region: `Region`,
+        Marketsegments, Sub_market, 
+        SelectAll, SelectLand, SelectMarketsegments,
         ProductGroups, Product,
         Submarkets, ContactPerson,
         Weighting, Criteria, Valuation,
         Active, Productstrategy,
-        Sub_market,
-        TxtPr0ject
+        TxtPr0ject, 
+        NavMarkt, NavTeilmarkt, NavMass, NavRMap, NavTBoard,
     }
 }
 export const includeHTML = (path) => {
