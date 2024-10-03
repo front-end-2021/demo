@@ -45,6 +45,8 @@
                 :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']" 
                 @dblclick="e => openFormLand(land)">
               <div class="d-inline-block" style="padding: .78571429em 1.5em;" 
+                :data-content="18 < land.Name.length ? land.Name : null"
+                @mouseenter="onMouseEnter"
                 @click.stop="e => activeLand(land)">{{viewName(land.Name, 1)}}</div>
             </div>
             </transition-group>
