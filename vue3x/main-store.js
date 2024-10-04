@@ -130,21 +130,70 @@ export default createStore({
             lst.sort((a, b) => b - a)
             return lst[0] + 1
         },
-        LandsMarketsBy: (state) => ([type, ids]) => {
+        SortedItems: (state) => ([type, ids, ignoreIds]) => {
+            if(!ids.length && !ignoreIds.length) return []
             let lst = []
-            switch (type) {
-                case 1:     // Land
-                    lst = buildListBy.call(state.Lands, ids, (itm) => ids.includes(itm.Id))
-                    
-                    break;
-                case 2:     // Market
-                    lst = buildListBy.call(state.Markets, ids, (itm) => ids.includes(itm.Id))
-                    
-                    break
+            if(ids.length) {
+                switch (type) {
+                    case 1:     // Land
+                        lst = buildListBy.call(state.Lands, ids, (itm) => ids.includes(itm.Id))
+                        break;
+                    case 2:     // Market
+                        lst = buildListBy.call(state.Markets, ids, (itm) => ids.includes(itm.Id))
+                        break
+                }
+            } else {
+                switch (type) {
+                    case 1: lst = state.Lands;
+                        break;
+                    case 2: lst = state.Markets;
+                        break
+                }
+            }
+            if(ignoreIds.length) {
+                switch (type) {
+                    case 1:     // Land
+                    case 2:     // Market
+                        lst = buildList(lst)
+                        break
+                }
+                function buildList(srItems) {
+                    const dItems = []
+                    for (let ii = 0, item; ii < srItems.length; ii++) {
+                        item = srItems[ii]
+                        if (!ignoreIds.includes(item.Id)) dItems.push(item)
+                    }
+                    return dItems
+                }
             }
             lst.sort((a, b) => a.ASort - b.ASort)
             return lst
         },
+        // LandsMarketsBy: (state) => ([type, ids]) => { let lst = [];
+        //     switch (type) {
+        //         case 1: lst = buildListBy.call(state.Lands, ids, (itm) => ids.includes(itm.Id))
+        //             break;
+        //         case 2: lst = buildListBy.call(state.Markets, ids, (itm) => ids.includes(itm.Id))
+        //             break
+        //     }
+        //     lst.sort((a, b) => a.ASort - b.ASort)
+        //     return lst
+        // },
+        // LandsMarketsExept: (state) => ([type, ignoreIds]) => { const lst = [];
+        //     switch (type) {
+        //         case 1: buildList(state.Lands)
+        //             break;
+        //         case 2: buildList(state.Markets)
+        //             break
+        //     }
+        //     lst.sort((a, b) => a.ASort - b.ASort)
+        //     return lst
+        //     function buildList(lstItem) {
+        //         for (let ii = 0, item; ii < lstItem.length; ii++) { item = lstItem[ii];
+        //             if (!ignoreIds.includes(item.Id)) lst.push(item)
+        //         }
+        //     }
+        // },
         ItemBy: (state) => ([type, id]) => {
             switch (type) {
                 case 1:     // Land
@@ -153,27 +202,6 @@ export default createStore({
                     return state.Markets.find(x => x.Id == id);
                 case 3:     // Region
                     return state.Regions.find(x => x.Id == id);
-            }
-        },
-        LandsMarketsExept: (state) => ([type, ignoreIds]) => {
-            const lst = []
-            switch (type) {
-                case 1:     // Land
-                    buildList(state.Lands)
-                    
-                    break;
-                case 2:     // Market
-                    buildList(state.Markets)
-                    
-                    break
-            }
-            lst.sort((a, b) => a.ASort - b.ASort)
-            return lst
-            function buildList(lstItem) {
-                for (let ii = 0, item; ii < lstItem.length; ii++) {
-                    item = lstItem[ii]
-                    if (!ignoreIds.includes(item.Id)) lst.push(item)
-                }
             }
         },
         RegionByLands: (state) => (landIds) => {

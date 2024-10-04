@@ -122,10 +122,10 @@ const FCriterialMarket = {
             switch (this.filterType) {
                 case FTypeId.Land_Region:
                     ignIds = this.ignoreIds(this.index, 1)
-                    return [this.ItemSelectLand, ...this.$store.getters.LandsMarketsExept([1, ignIds])]
+                    return [this.ItemSelectLand, ...this.$store.getters.SortedItems([1, [], ignIds])]
                 case FTypeId.MarketSegments:
                     ignIds = this.ignoreIds(this.index, 2)
-                    return [this.ItemSelectMarket, ...this.$store.getters.LandsMarketsExept([2, ignIds])]
+                    return [this.ItemSelectMarket, ...this.$store.getters.SortedItems([2, [], ignIds])]
                 default: break;
             }
             return []
@@ -339,11 +339,11 @@ export default {
     },
     methods: {
         setFilter([landIds, marketIds]) {
-            this.Lands = this.$store.getters.LandsMarketsBy([1, landIds])
+            this.Lands = this.$store.getters.SortedItems([1, landIds, []])
 
             this.setRegions(landIds)
 
-            this.Markets = this.$store.getters.LandsMarketsBy([2, marketIds])
+            this.Markets = this.$store.getters.SortedItems([2, marketIds, []])
         },
         setLandRegionMarket() {
             let lstC = this.$root.MarketCriterias
@@ -442,7 +442,7 @@ export default {
             this.$root.clearPopupMenu(1)
         },
         hasExistMarketName(mMarket, elName) {
-            const allMarket = this.$store.getters.LandsMarketsBy([2, [0]])
+            const allMarket = this.$store.getters.SortedItems([2, [0], []])
             if (!allMarket.length) return false;
             const mNames = allMarket.map(x => x.Name)
 

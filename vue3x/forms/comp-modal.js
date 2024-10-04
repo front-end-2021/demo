@@ -143,7 +143,7 @@ const MxMarketRegion = {
     computed: {
         LandActives() {
             let landIds = this.moItem.landActiveIds
-            return this.$store.getters.LandsMarketsBy([1, landIds])
+            return this.$store.getters.SortedItems([1, landIds, []])
         },
         LandActiveName() {
             const id = this.moItem.data.LandId
