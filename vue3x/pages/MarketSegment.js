@@ -1,5 +1,5 @@
-import { MsFilterMarket, getLandMarketIds } from "../components/dFilter.js";
-import { FTypeId } from "../components/dFilter.js";
+import { FTypeId, MxFCriterial,
+    getLandMarketIds, commSelectTypeId } from "../components/dFilter.js";
 import { setLastState, getLastState, isDragDrop } from "../common.js";
 import { getMessCompare, overrideItem } from "../mock-data.js";
 import { getData } from "../repo-services.js";
@@ -85,7 +85,207 @@ const CellValuation = {
         },
     },
 }
+const FCriterialMarket = {
+    template: `#tmp-comp-criterial-market`,
+    mixins: [MxFCriterial],
+    emits: ['remove:item'],
+    inject: ['ignoreIds'],
+    computed: {
+        ItemSelectLand() {
+            return {
+                Id: FTypeId.SelectLand, // -29
+                Name: this.$store.getters.txtFilter(FTypeId.SelectLand)
+            }
+        },
+        ItemSelectMarket() {
+            return {
+                Id: FTypeId.SelectMarketSegments,   // -10
+                Name: this.$store.getters.txtFilter(FTypeId.SelectMarketSegments)
+            }
+        }
+    },
+    methods: {
+        selectTypeId(index) {
+            const fId = commSelectTypeId(this, index)
+            switch (fId) {
+                case FTypeId.Land_Region:
+                    this.ids.push(FTypeId.SelectLand)
+                    break;
+                case FTypeId.MarketSegments:
+                    this.ids.push(FTypeId.SelectMarketSegments)
+                    break;
+                default: break;
+            }
+        },
+        getSrcId() {
+            let ignIds
+            switch (this.filterType) {
+                case FTypeId.Land_Region:
+                    ignIds = this.ignoreIds(this.index, 1)
+                    return [this.ItemSelectLand, ...this.$store.getters.LandsMarketsExept([1, ignIds])]
+                case FTypeId.MarketSegments:
+                    ignIds = this.ignoreIds(this.index, 2)
+                    return [this.ItemSelectMarket, ...this.$store.getters.LandsMarketsExept([2, ignIds])]
+                default: break;
+            }
+            return []
+        },
 
+    },
+}
+const MsFilterMarket = {
+    template: `#tmp-comp-filter-market`,
+    components: {
+        'comp-criterial-market': FCriterialMarket,
+    },
+    emits: ['set:filter'],
+    props: {
+        marketIds: {
+            type: Array,
+            default: [0]
+        },
+    },
+    beforeCreate() {
+        const rootCrs = this.$root.MarketCriterias
+        if (!rootCrs.length) {
+            rootCrs.push([FTypeId.PleaseSelect, []])    // [Type, Ids]
+        }
+    },
+    data() {
+        return {
+            Criterials: JSON.parse(JSON.stringify(this.$root.MarketCriterias))
+        }
+    },
+    watch: {
+        '$root.MarketCriterias'(lstC) {
+            this.Criterials = JSON.parse(JSON.stringify(lstC))
+            this.setFilter()
+        },
+    },
+    provide() {
+        return {
+            ignoreIds: (index, type) => {
+                const lst = []
+                switch (type) {
+                    case 1: // Land
+                        for (let ii = this.Criterials.length - 1; -1 < ii; ii--) {
+                            if (ii == index) continue
+                            const crite = this.Criterials[ii]
+                            if (crite[0] == FTypeId.PleaseSelect) continue
+                            if (crite[0] == FTypeId.MarketSegments) continue
+                            const id = crite[1][0]
+                            if (id < 1) continue
+                            lst.push(id)
+                        }
+                        break;
+                    case 2:         // Market
+                        for (let ii = this.Criterials.length - 1; -1 < ii; ii--) {
+                            if (ii == index) continue
+                            const crite = this.Criterials[ii]
+                            if (crite[0] == FTypeId.PleaseSelect) continue
+                            if (crite[0] == FTypeId.Land_Region) continue
+                            const id = crite[1][0]
+                            if (id < 1) continue
+                            lst.push(id)
+                        }
+                        break;
+                }
+                if (!lst.length) return [-1989]
+                return lst
+            },
+        }
+    },
+    created() {
+        const rootCrs = this.$root.MarketCriterias
+        if (1 < rootCrs.length || rootCrs[0][0] != FTypeId.PleaseSelect) {
+            this.setFilter()
+        }
+    },
+    methods: {
+        setTypeF(ii, val) {
+            const crts = this.Criterials[ii]
+            crts[0] = val
+        },
+        setIds(ii, ids) { this.Criterials[ii].splice(1, 1, ids) },
+        addFilter(e) { this.Criterials.push([FTypeId.PleaseSelect, []]) },
+        setFilter(e) {
+            const lstC = this.Criterials
+            const [landIds, marketIds] = getLandMarketIds(lstC)
+            this.$emit('set:filter', [landIds, marketIds])
+
+            const rLstC = this.$root.MarketCriterias
+            removeRootCrites.call(this)
+            addToRootCrites.call(this)
+            function removeRootCrites() {
+                for (let ii = 0; ii < rLstC.length; ii++) {
+                    const rCrite = rLstC[ii]
+                    const crite = lstC[ii]
+                    if(!crite) continue;
+                    
+                    if (rCrite[0] != crite[0]) {
+                        ii = removeAt(ii)
+                        continue
+                    }
+                    const rIds = rCrite[1]
+                    const ids = crite[1]
+                    if (rIds.length != ids.length) {
+                        ii = removeAt(ii)
+                        continue
+                    }
+                    for (let jj = 0; jj < rIds.length; jj++) {
+                        if (rIds[jj] != ids[jj]) {
+                            ii = removeAt(ii)
+                            break;
+                        }
+                    }
+                }
+                function removeAt(ii) {
+                    rLstC.splice(ii, 1) // remove at ii
+                    return --ii
+                }
+            }
+            function addToRootCrites() {
+                for (let ii = 0; ii < lstC.length; ii++) {
+                    const rCrite = rLstC[ii]        // [type, ids]
+                    const crite = lstC[ii]
+                    if (!rCrite) {
+                        rLstC.splice(ii, 0, crite);     // add at ii
+                        continue
+                    }
+                    if (rCrite[0] != crite[0]) {
+                        rLstC.splice(ii, 0, crite);     // add at ii
+                        continue
+                    }
+                    const rIds = rCrite[1]
+                    const ids = crite[1]
+                    if (rIds.length != ids.length) {
+                        rLstC.splice(ii, 0, crite);     // add at ii
+                        continue
+                    }
+                    for (let jj = 0; jj < rIds.length; jj++) {
+                        if (rIds[jj] != ids[jj]) {
+                            rLstC.splice(ii, 0, crite);     // add at ii
+                            break;
+                        }
+                    }
+                }
+            }
+        },
+        resetFilter(e) {
+            const lstC = this.Criterials
+            for (let cc = lstC.length - 1; 0 < cc; cc--) {
+                const items = lstC[cc]
+                items[1].splice(0)
+                items.splice(0)
+                lstC.splice(cc, 1)
+            }
+            lstC[0][1].splice(0)
+            lstC[0].splice(0, 1, FTypeId.PleaseSelect)
+            this.setFilter()
+        },
+        removeCriterial(iic) { this.Criterials.splice(iic, 1) },
+    },
+}
 export default {
     template: `#tmp-comp-market`,
     components: {
@@ -564,5 +764,7 @@ export default {
         }
 
     },
-    mounted() { this.initDragDrop(2) },
+    mounted() { 
+        //this.initDragDrop(2) 
+    },
 }

@@ -31,7 +31,10 @@ button { cursor: pointer; }
     color: white;
     background-color: #3c3c3c; border-color: #3c3c3c; /*dnb_dev */
 }
-
+.ui.dropdown>.text {
+    max-width: 150px; white-space: pre;
+    overflow: hidden; text-overflow: ellipsis;
+}
 .dnbdropdown-primary.ui.selection.visible.dropdown>.text:not(.default) {
     color: white;
 }
