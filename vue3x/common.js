@@ -69,15 +69,15 @@ export const getTxtBy = (lang) => {
     return {
         PleaseSelect,
         Filter, Reset, AddFilter, FilterBy, And, Or,
-        Land: `Land`, 
+        Land: `Land`,
         Region: `Region`, TxtEdtRegion,
-        Marketsegments, Sub_market, 
+        Marketsegments, Sub_market,
         SelectAll, SelectLand, SelectMarketsegments,
         ProductGroups, Product,
         Submarkets, ContactPerson,
         Weighting, Criteria, Valuation,
         Active, Productstrategy,
-        TxtPr0ject, 
+        TxtPr0ject,
         NavMarkt, NavTeilmarkt, NavMass, NavRMap, NavTBoard,
     }
 }
@@ -166,22 +166,23 @@ export const getLocal = (type) => {
     if (storageAvailable("localStorage")) {
         let jData
         switch (type) {
-            case 1:     // Lands
-                jData = localStorage.getItem("Lands");
+            case 1: jData = localStorage.getItem("Lands");
                 if (!jData) return []
                 break;
-            case 2:     // Regions
-                jData = localStorage.getItem("Regions");
+            case 2: jData = localStorage.getItem("Regions");
                 if (!jData) return []
                 break;
-            case 3:     // Markets
-                jData = localStorage.getItem("Markets");
+            case 3: jData = localStorage.getItem("Markets");
                 break;
             case 4:     // Submarkets
                 jData = localStorage.getItem("Submarkets");
                 break;
             case 6:     // Index Page
                 jData = localStorage.getItem("IndexPage");
+                break;
+            case 7:     // Product group
+                jData = localStorage.getItem("PrdGroups");
+                if (!jData) return []
                 break;
         }
         switch (type) {
@@ -199,10 +200,12 @@ export const getLocal = (type) => {
         return JSON.parse(jData)
     } else {
         switch (type) {
-            case 1:
-            case 2:
-            case 3:
-            case 4: return []
+            case 1:     // Lands
+            case 2:     // Regions
+            case 3:     // Markets
+            case 4:     // Submarkets
+            case 7:     // Product group
+                return []
             default: return
         }
     }
@@ -251,6 +254,11 @@ export const setLocal = (type, oData) => {
                 if (jData) localStorage.removeItem("IndexPage");
                 localStorage.setItem("IndexPage", oData)
                 return;
+            case 7:     // Product group
+                jData = localStorage.getItem("PrdGroups");
+                if (jData) localStorage.removeItem("PrdGroups");
+                if (isRemove) return;
+                localStorage.setItem("PrdGroups", JSON.stringify(oData))
         }
     }
 }

@@ -38,7 +38,7 @@ Promise.all([
                 IndexProject: -1,
                 IndexPage: 0,
                 TabStatus: [1, 1, 1, 1, 1], // [M@rk3t, SubM@rk3t, @ctionPl4n, Ro4dm@p, T3mB0@rd]
-
+                ActviePrGrpIds: [],
                 ActiveLandIds: [],
                 MarketCriterias: [],
                 ProcessState: 0,    // loading, success
@@ -134,6 +134,48 @@ Promise.all([
                         break;
                     default: break;
                 }
+            },
+            viewName(name, type) {
+                switch (type) {
+                    case 1: // land
+                    case 2: // region
+                        if (18 < name.length) return `${name.slice(0, 18)} ...`
+                        break;
+                    default: break;
+                }
+                return name;
+            },
+            activeItem(type, item) {
+                let acIds, ii;
+                switch (type) {
+                    case 1: // Land
+                        acIds = this.ActiveLandIds.map(id => id)
+                        ii = acIds.indexOf(item.Id)
+                        if (ii < 0) {
+                            acIds.push(item.Id)
+                            this.ActiveLandIds = acIds  // set to run watcher
+                            return
+                        }
+                        if (1 < acIds.length) {
+                            acIds.splice(ii, 1);
+                            this.ActiveLandIds = acIds  // set to run watcher
+                        }
+                        break;
+                    case 5: // Product group
+                        acIds = this.ActviePrGrpIds.map(id => id)
+                        ii = acIds.indexOf(item.Id)
+                        if (ii < 0) {
+                            acIds.push(item.Id)
+                            this.ActviePrGrpIds = acIds  // set to run watcher
+                            return
+                        }
+                        if (1 < acIds.length) {
+                            acIds.splice(ii, 1);
+                            this.ActiveLandIds = acIds  // set to run watcher
+                        }
+                        break;
+                }
+
             },
         },
         //  beforeCreate() { },

@@ -94,7 +94,13 @@ const DemoSubmarkets = [
     { Id: 5, Name: 'Quangninh submarket 2', MarketId: 4, Description: '' },
     { Id: 6, Name: 'Cairang submarket 3', MarketId: 6, Description: '' },
 ]
-
+const DemoPrdGroups = [
+    { Id: 3, Name: `Truyen trinh tham`, RegionId: 1, ASort: 2, Description: '' },
+    { Id: 2, Name: `Truyen thieu nhi`, RegionId: 7, ASort: 3, Description: '' },
+    { Id: 4, Name: `Sach khoa hoc`, RegionId: 5, ASort: 1, Description: '' },
+    { Id: 1, Name: `The thao`, RegionId: 7, ASort: 5, Description: '' },
+    { Id: 5, Name: `Sach giao khoa`, RegionId: 1, ASort: 4, Description: '' },
+]
 function getMessCompare(item, mItem) {
     let mess = ''
     let ii = 1
@@ -117,7 +123,7 @@ function overrideItem(mItem) {
 }
 export {
     Mains, ListPrj, Langs,
-    DemoLands, DemoRegions,
+    DemoLands, DemoRegions, DemoPrdGroups,
     DemoMarkets, DemoSubmarkets,
     getMessCompare,
     overrideItem

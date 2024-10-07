@@ -358,19 +358,6 @@ export default {
             }
             this.Regions = this.$store.getters.RegionByLands(mergeIdLands)
         },
-        activeLand(land) {
-            const rLandIds = this.$root.ActiveLandIds.map(id => id)
-            const ii = rLandIds.indexOf(land.Id)
-            if (ii < 0) {
-                rLandIds.push(land.Id)
-                this.$root.ActiveLandIds = rLandIds
-                return
-            }
-            if (1 < rLandIds.length) {
-                rLandIds.splice(ii, 1);
-                this.$root.ActiveLandIds = rLandIds
-            }
-        },
         openFormLand(land) {
             const iProject = this.$root.IndexProject
             if (!land) {        // add new
@@ -685,16 +672,6 @@ export default {
         onMouseEnter(e) {
             if (!e.target.getAttribute('data-content')) return;
             $(e.target).popup('show')
-        },
-        viewName(name, type) {
-            switch (type) {
-                case 1: // land
-                case 2: // region
-                    if (18 < name.length) return `${name.slice(0, 18)} ...`
-                    break;
-                default: break;
-            }
-            return name;
         },
     },
     provide() {

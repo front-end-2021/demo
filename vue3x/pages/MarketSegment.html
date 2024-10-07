@@ -47,7 +47,7 @@
               <div class="d-inline-block" style="padding: .78571429em 1.5em;" 
                 :data-content="18 < land.Name.length ? land.Name : null"
                 @mouseenter="onMouseEnter"
-                @click.stop="e => activeLand(land)">{{viewName(land.Name, 1)}}</div>
+                @click.stop="e => $root.activeItem(1, land)">{{$root.viewName(land.Name, 1)}}</div>
             </div>
             </transition-group>
           </draggable>
@@ -59,7 +59,7 @@
             :data-content="18 < region.Name.length ? region.Name : null"
             @mouseenter="onMouseEnter"
             class="col-region p6px pe48px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700 pos-relative"
-            @dblclick="e => openFormRegion(region)">{{viewName(region.Name, 2)}}
+            @dblclick="e => openFormRegion(region)">{{$root.viewName(region.Name, 2)}}
               <i v-if="1 < Regions.length" class="bi bi-arrows dnd-ic-region pos-absolute"
               @click.stop="e => initDragDrop(2)"></i>
               <i class="bi bi-gear dnd-ic-region pos-absolute" 
