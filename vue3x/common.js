@@ -16,6 +16,7 @@ export const getTxtBy = (lang) => {
     let Or = `Oder`
     let SelectAll = `Wählen Sie Alle`
     let SelectLand = `Wählen Sie Land`
+    let SelectRegion = `Wählen Sie Region`
     let SelectMarketsegments = `Wählen Sie ${Marketsegments}`
     let ProductGroups = `Produktegruppen`
     let Product = `Produkt`
@@ -44,6 +45,7 @@ export const getTxtBy = (lang) => {
         FilterBy = `Filt3r by`
         SelectAll = `Sel3ct @ll`
         SelectLand = `S3lect L@nd`
+        SelectRegion = `S3lect Region`
         SelectMarketsegments = `Sel3ct ${Marketsegments}`
         ProductGroups = `Pr0duct gr0ups`
         Product = `Pr0duct`
@@ -72,7 +74,7 @@ export const getTxtBy = (lang) => {
         Land: `Land`,
         Region: `Region`, TxtEdtRegion,
         Marketsegments, Sub_market,
-        SelectAll, SelectLand, SelectMarketsegments,
+        SelectAll, SelectLand, SelectMarketsegments, SelectRegion,
         ProductGroups, Product,
         Submarkets, ContactPerson,
         Weighting, Criteria, Valuation,

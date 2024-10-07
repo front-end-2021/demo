@@ -40,7 +40,8 @@ Promise.all([
                 TabStatus: [1, 1, 1, 1, 1], // [M@rk3t, SubM@rk3t, @ctionPl4n, Ro4dm@p, T3mB0@rd]
                 ActviePrGrpIds: [],
                 ActiveLandIds: [],
-                MarketCriterias: [],
+                MarketCriterias: [],    // [Type, Ids]
+                SubMarketCrites: [],    // [Type, Ids]
                 ProcessState: 0,    // loading, success
                 PopupMenu: null,
                 DragDrop: null,

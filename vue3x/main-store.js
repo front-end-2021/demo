@@ -113,6 +113,8 @@ export default createStore({
                     return txt.SelectLand;
                 case FTypeId.SelectMarketSegments:
                     return txt.SelectMarketsegments;
+                case FTypeId.SelectRegion:
+                    return txt.SelectRegion;
                 default: break;
             }
             return ''
@@ -127,7 +129,7 @@ export default createStore({
                 case 3: lst = state.Markets.map(x => x.ASort)
                     break;
                 case 5: lst = state.ProductGroups.map(x => x.ASort)
-                break;
+                    break;
             }
             if (!lst.length) return 1;
             lst.sort((a, b) => b - a)
@@ -144,6 +146,9 @@ export default createStore({
                     case 2:     // Market
                         lst = buildListBy.call(state.Markets, ids, (itm) => ids.includes(itm.Id))
                         break
+                    case 3:     // Region
+                        lst = buildListBy.call(state.Regions, ids, (itm) => ids.includes(itm.Id))
+                        break
                 }
             } else {
                 switch (type) {
@@ -151,12 +156,15 @@ export default createStore({
                         break;
                     case 2: lst = state.Markets;
                         break
+                    case 3: lst = state.Regions;
+                        break
                 }
             }
             if (ignoreIds.length) {
                 switch (type) {
                     case 1:     // Land
                     case 2:     // Market
+                    case 3:     // Region
                         lst = buildList(lst)
                         break
                 }
@@ -286,7 +294,7 @@ export default createStore({
                         state.Submarkets.push(item);
                         break;
                     case 5:     // Product group
-                    state.ProductGroups.push(item);
+                        state.ProductGroups.push(item);
                         break;
                 }
             }
@@ -305,7 +313,7 @@ export default createStore({
                         setLocal(type, state.Submarkets)
                         break;
                     case 5:     // Product group
-                    setLocal(7, state.ProductGroups)
+                        setLocal(7, state.ProductGroups)
                         break;
                 }
             }

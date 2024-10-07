@@ -53,6 +53,7 @@ export const FTypeId = {
     Submarkets_ContactPerson: -27,
     MarketSegments_Submarket: -28,
     SelectLand: -29,
+    SelectRegion: -30,
 }
 const KeyOperator = {
     FilterBy: -1,
@@ -120,6 +121,8 @@ export const MxFCriterial = {
                     return [this.ItemSelectLand, ...this.$store.getters.SortedItems([1, [0], []])]
                 case FTypeId.MarketSegments:
                     return [this.ItemSelectMarket, ...this.$store.getters.SortedItems([2, [0], []])]
+                case FTypeId.Region:
+                    return [this.ItemSelectMarket, ...this.$store.getters.SortedItems([2, [0], []])]
                 default: break;
             }
             return []
@@ -147,7 +150,7 @@ export const getLandMarketIds = (lstC, outputType) => {
     mrkIds = mrkIds.filter((v, i, self) => i == self.indexOf(v));// remove duplicate
     if (mrkIds.length) marketIds = mrkIds;
     else marketIds = [0];
-    switch(outputType) {
+    switch (outputType) {
         case 'land': return landIds;
         case 'market': return marketIds;
         default: break;

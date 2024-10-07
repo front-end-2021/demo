@@ -1,8 +1,48 @@
-<template id="tmp-comp-filter-submarket">
+<template id="tmp-comp-criterial-smarket"></template>
+    <div class="d-inline-block mb-2">
+        <drop-select :f-id="filterType" 
+            :items="SrcTypes" 
+            :class="['grp-dropdown-min']"
+            @set:index="$event => selectTypeId($event)" 
+                style="margin-right: 6px;">
+            <template #default>
+                <div class="text">{{TypeSelectName}}</div>
+            </template>
+        </drop-select>
+        <drop-select v-for="(id, iii) in ids" 
+            :f-id="id" 
+            :items="getSrcId(iii)" 
+            :class="['grp-dropdown-min']"
+            @set:index="$event => selectId(iii, $event)" 
+            :key="iii + 2" 
+                style="margin-right: 6px;">
+            <template #default>
+                <div class="text">{{idSelectName(iii)}}</div>
+            </template>
+        </drop-select>
+        <button v-if="0 < index"
+            style="width: 28px; height: 28px;"
+            @click.stop="e => $emit('remove:item')"> - </button>
+    </div>
+</template>
+<template id="tmp-comp-filter-smarket"></template>
     <h3>{{$store.state.ContextLang.Filter}} m4rk3t</h3>
     <div class="d-flex" style="flex-direction: column;">
-
+        <comp-criterial-smarket 
+            v-for="(crts, iic) in Criterials" 
+            :key="iic"
+            :index="iic"
+            :filter-type="crts[0]"
+            :ids="crts[1]"
+            @remove:item="removeCriterial(iic)"
+            @set:typef="$event => setTypeF(iic, $event)"
+            @set:ids="$event => setIds(iic, $event)"></comp-criterial-smarket>
     </div>
+    <button @click.stop="setFilter">{{$store.state.ContextLang.Filter}}</button>
+    <button @click.stop="resetFilter"
+        style="margin: 6px">{{$store.state.ContextLang.Reset}}</button>
+    <button @click.stop="addFilter"
+        >{{$store.state.ContextLang.AddFilter}}</button>
 </template>
 <template id="tmp-comp-submarket">
     <section class="mt-2"
