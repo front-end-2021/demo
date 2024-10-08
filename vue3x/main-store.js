@@ -115,6 +115,8 @@ export default createStore({
                     return txt.SelectMarketsegments;
                 case FTypeId.SelectRegion:
                     return txt.SelectRegion;
+                case FTypeId.Land_Region:
+                    return `${txt.Land}/${txt.Region}`;
                 default: break;
             }
             return ''

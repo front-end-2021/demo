@@ -1,4 +1,4 @@
-<template id="tmp-comp-criterial-smarket"></template>
+<template id="tmp-comp-criterial-smarket">
     <div class="d-inline-block mb-2">
         <drop-select :f-id="filterType" 
             :items="SrcTypes" 
@@ -25,7 +25,7 @@
             @click.stop="e => $emit('remove:item')"> - </button>
     </div>
 </template>
-<template id="tmp-comp-filter-smarket"></template>
+<template id="tmp-comp-filter-smarket">
     <h3>{{$store.state.ContextLang.Filter}} m4rk3t</h3>
     <div class="d-flex" style="flex-direction: column;">
         <comp-criterial-smarket 
@@ -45,8 +45,8 @@
         >{{$store.state.ContextLang.AddFilter}}</button>
 </template>
 <template id="tmp-comp-submarket">
-    <section class="mt-2"
-        style="padding-bottom: 169px;padding-left: 20px;">
+    <section class="mt-2" style="padding-bottom: 169px;padding-left: 20px;">
+        <comp-filter-smarket @set:filter="$event => setFilter($event)"></comp-filter-smarket>
         <h1>{{$store.state.ContextLang.ProductGroups}}</h1>
         <draggable v-model="ProductGroups" v-bind="dragOptions" 
             class="d-inline-block"> 
