@@ -35,6 +35,7 @@ button { cursor: pointer; }
     max-width: 150px; white-space: pre;
     overflow: hidden; text-overflow: ellipsis;
 }
+.ui.dropdown>div.text {height: 18px;}
 .dnbdropdown-primary.ui.selection.visible.dropdown>.text:not(.default) {
     color: white;
 }
