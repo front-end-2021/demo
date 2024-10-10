@@ -7,17 +7,15 @@ const FCriterialSmk = {
     mixins: [MxFCriterial],
     emits: ['remove:item'],
     computed: {
-        ItemLandRegion() {
-            return {
-                Id: FTypeId.Land_Region, // -12
-                Name: this.$store.getters.txtFilter(FTypeId.Land_Region)
-            }
-        },
-        ItemPleaseSelect() {
-            return {
-                Id: FTypeId.PleaseSelect, // -12
-                Name: this.$store.getters.txtFilter(FTypeId.PleaseSelect)
-            }
+        SrcTypes() {
+            const lst = []
+            let lName = this.$store.state.ContextLang.PleaseSelect
+            lst.push({ Id: FTypeId.PleaseSelect, Name: lName })
+            lName = this.$store.getters.txtFilter(FTypeId.ProductGroups_Product)
+            lst.push({ Id: FTypeId.ProductGroups_Product, Name: lName })
+            lName = this.$store.getters.txtFilter(FTypeId.MarketSegments_Submarket)
+            lst.push({ Id: FTypeId.MarketSegments_Submarket, Name: lName })
+            return lst
         },
         ItemSelectLand() {
             return {
@@ -33,23 +31,34 @@ const FCriterialSmk = {
         },
     },
     methods: {
+        idSelectName(id, ii) {
+            let item = this.getSrcId(ii).find(x => id == x.Id)
+            if (item) return item.Name
+            return this.SrcTypes[0].Name
+        },
         selectTypeId(index) {
             const fId = commSelectTypeId(this, index)
             switch (fId) {
-                case FTypeId.Land_Region:
+                case FTypeId.PleaseSelect:
                     this.ids.push(FTypeId.SelectLand, FTypeId.SelectRegion)
                     break;
 
                 default: break;
             }
         },
-        getSrcId() {
+        getSrcId(iii) {
+            if (0 == this.index) {
+                if (0 == iii) return [this.ItemSelectLand, ...this.$store.getters.SortedItems([1, [0], []])]
+                if (1 == iii) return [this.ItemSelectRegion, ...this.$store.getters.SortedItems([3, [0], []])]
+                return []
+            }
             let ignIds
             switch (this.filterType) {
-                case FTypeId.SelectLand:
-                    return [this.ItemSelectLand, ...this.$store.getters.SortedItems([1, [], []])]
-                case FTypeId.SelectRegion:
-                    return [this.ItemSelectRegion, ...this.$store.getters.SortedItems([3, [], []])]
+                case FTypeId.PleaseSelect: return []
+                case FTypeId.ProductGroups_Product:
+                    return []
+                case FTypeId.MarketSegments_Submarket:
+                    return []
                 default: break;
             }
             return []
@@ -66,7 +75,7 @@ const MsFilterSubMarket = {
     beforeCreate() {
         const rootCrs = this.$root.SubMarketCrites
         if (!rootCrs.length) {
-            rootCrs.push([FTypeId.Land_Region, [FTypeId.PleaseSelect, FTypeId.PleaseSelect]])
+            rootCrs.push([FTypeId.PleaseSelect, [FTypeId.SelectLand, FTypeId.SelectRegion]])
         }
     },
     data() {
@@ -75,14 +84,34 @@ const MsFilterSubMarket = {
         }
     },
     methods: {
-        setTypeF(){},
-        setIds(){},
-        removeCriterial(){},
-        setFilter(){
-            this.$emit('set:filter', [landIds, marketIds])
+        setTypeF(ii, val) {
+            console.log('set type f ', ii, val)
         },
-        resetFilter(){},
-        addFilter(){},
+        setIds(ii, ids) { this.Criterials[ii].splice(1, 1, ids) },
+        removeCriterial() { },
+        setFilter() {
+            const rCrites = this.$root.SubMarketCrites
+            const cCrites = this.Criterials
+            if(!isChange.call(this)) return;
+            this.$root.SubMarketCrites = JSON.parse(JSON.stringify(cCrites))
+            //this.$emit('set:filter', [landIds, marketIds])
+            console.log('set filter')
+            function isChange() {
+                if (rCrites.length != cCrites.length) return true;
+                for (let cc = 0, lstR, rLstR; cc < cCrites.length; cc++) {
+                    lstR = cCrites[cc]
+                    rLstR = rCrites[cc]
+                    if (lstR.length != rLstR.length) return true;
+                    for (let rr = 0, itm, rItm; rr < lstR.length; rr++) {
+                        rItm = rLstR[rr]; itm = lstR[rr]
+                        if (itm.toString() != rItm.toString()) return true;
+                    }
+                }
+                return false;
+            }
+        },
+        resetFilter() { },
+        addFilter() { },
     },
 }
 export default {
@@ -143,7 +172,7 @@ export default {
             }
 
         },
-        setFilter(){
+        setFilter() {
 
         },
     },

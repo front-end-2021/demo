@@ -2,7 +2,7 @@
     <div class="d-inline-block mb-2">
         <drop-select :f-id="filterType" 
             :items="SrcTypes" 
-            :class="['grp-dropdown-min']"
+            :class="['grp-dropdown-min', 0 == index ? 'disabled' : '']"
             @set:index="$event => selectTypeId($event)" 
                 style="margin-right: 6px;">
             <template #default>
@@ -17,7 +17,7 @@
             :key="iii + 2" 
                 style="margin-right: 6px;">
             <template #default>
-                <div class="text">{{idSelectName(iii)}}</div>
+                <div class="text">{{idSelectName(id, iii)}}</div>
             </template>
         </drop-select>
         <button v-if="0 < index"
