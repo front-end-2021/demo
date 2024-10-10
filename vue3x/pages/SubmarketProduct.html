@@ -11,7 +11,7 @@
         </drop-select>
         <drop-select v-for="(id, iii) in ids" 
             :f-id="id" 
-            :items="getSrcId(iii)" 
+            :items="SrcIds[iii]" 
             :class="['grp-dropdown-min']"
             @set:index="$event => selectId(iii, $event)" 
             :key="iii + 2" 

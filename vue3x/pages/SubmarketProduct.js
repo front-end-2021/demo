@@ -18,6 +18,47 @@ const FCriterialSmk = {
             lst.push({ Id: FTypeId.MarketSegments_Submarket, Name: lName })
             return lst
         },
+        SrcIds() {
+            let ignIds = []
+            let lst1 = [], lst2 = []
+            if (0 == this.index) {
+                ignIds = this.ignoreIds(this.filterType, 0)
+                lst1 = this.$store.getters.SortedItems([1, [0], ignIds])
+                lst1.unshift({ Id: FTypeId.SelectLand, Name: this.$store.getters.txtFilter(FTypeId.SelectLand) })
+
+                ignIds = this.ignoreIds(this.filterType, 1)
+                lst2 = this.$store.getters.SortedItems([3, [0], ignIds])
+                lst2.unshift({ Id: FTypeId.SelectRegion, Name: this.$store.getters.txtFilter(FTypeId.SelectRegion) })
+                return [lst1, lst2]
+            } else {
+                const itmSelctAll = {
+                    Id: FTypeId.SelectAll, // 0
+                    Name: this.$store.getters.txtFilter(FTypeId.SelectAll)
+                }
+                switch (this.filterType) {
+                    case FTypeId.ProductGroups_Product:
+                        ignIds = this.ignoreIds(this.filterType, 0)
+                        lst1 = this.$store.getters.SortedItems([5, [0], ignIds])
+                        lst1.unshift(itmSelctAll)
+
+                        ignIds = this.ignoreIds(this.filterType, 1)
+                        lst2 = this.$store.getters.SortedItems([8, [0], ignIds])
+                        lst2.unshift(itmSelctAll)
+                        return [lst1, lst2]
+                    case FTypeId.MarketSegments_Submarket:
+                        ignIds = this.ignoreIds(this.filterType, 0)
+                        lst1 = this.$store.getters.SortedItems([2, [0], ignIds])
+                        lst1.unshift(itmSelctAll)
+
+                        ignIds = this.ignoreIds(this.filterType, 1)
+                        lst2 = this.$store.getters.SortedItems([4, [0], ignIds])
+                        lst2.unshift(itmSelctAll)
+                        return [lst1, lst2]
+                    default: break;
+                }
+            }
+            return []
+        },
         ItemSelectLand() {
             return {
                 Id: FTypeId.SelectLand, // -29
@@ -39,7 +80,7 @@ const FCriterialSmk = {
     },
     methods: {
         idSelectName(id, ii) {
-            let item = this.getSrcId(ii).find(x => id == x.Id)
+            let item = this.SrcIds[ii].find(x => id == x.Id)
             if (item) return item.Name
             return this.SrcTypes[0].Name
         },
@@ -51,33 +92,20 @@ const FCriterialSmk = {
                 return
             }
             const fId = commSelectTypeId(this, index)
-            if(fId == FTypeId.PleaseSelect) return;
+            if (fId == FTypeId.PleaseSelect) return;
             this.ids.push(FTypeId.SelectAll)
             this.ids.push(FTypeId.SelectAll)
         },
-        getSrcId(iii) {
-            if (0 == this.index) {
-                if (0 == iii) return [this.ItemSelectLand, ...this.$store.getters.SortedItems([1, [0], []])]
-                if (1 == iii) return [this.ItemSelectRegion, ...this.$store.getters.SortedItems([3, [0], []])]
-                return []
-            }
-            let ignIds = this.ignoreIds(this.filterType, iii)
-            console.log('get src ids ', ignIds, this.filterType)
-            switch (this.filterType) {
-                case FTypeId.PleaseSelect: return []
-                case FTypeId.ProductGroups_Product:
-                    if (0 == iii) return [this.ItemSelectAll, ...this.$store.getters.SortedItems([5, [0], ignIds])]
-                    if (1 == iii) return [this.ItemSelectAll, ...this.$store.getters.SortedItems([8, [0], ignIds])]
-                    return []
-                case FTypeId.MarketSegments_Submarket:
-                    if (0 == iii) return [this.ItemSelectAll, ...this.$store.getters.SortedItems([2, [0], ignIds])]
-                    if (1 == iii) return [this.ItemSelectAll, ...this.$store.getters.SortedItems([4, [0], ignIds])]
-                    return []
-                default: break;
-            }
-            return []
-        },
+        selectId(ii, index) {
+            index = parseInt(index)
+            const item = this.SrcIds[ii][index]
+            if (!item) return;
 
+            const id = item.Id
+            const lstId = this.ids
+            lstId.splice(ii, 1, id)
+            this.$emit('set:ids', lstId)
+        },        
     },
 }
 const MsFilterSubMarket = {
