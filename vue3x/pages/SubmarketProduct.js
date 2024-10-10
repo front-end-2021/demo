@@ -44,14 +44,16 @@ const FCriterialSmk = {
             return this.SrcTypes[0].Name
         },
         selectTypeId(index) {
-            const fId = commSelectTypeId(this, index)
-            switch (fId) {
-                case FTypeId.PleaseSelect:
-                    this.ids.push(FTypeId.SelectLand, FTypeId.SelectRegion)
-                    break;
-
-                default: break;
+            this.ids.splice(0)
+            if (0 == this.index) {
+                this.ids.push(FTypeId.SelectLand)
+                this.ids.push(FTypeId.SelectRegion)
+                return
             }
+            const fId = commSelectTypeId(this, index)
+            if(fId == FTypeId.PleaseSelect) return;
+            this.ids.push(FTypeId.SelectAll)
+            this.ids.push(FTypeId.SelectAll)
         },
         getSrcId(iii) {
             if (0 == this.index) {
@@ -60,6 +62,7 @@ const FCriterialSmk = {
                 return []
             }
             let ignIds = this.ignoreIds(this.filterType, iii)
+            console.log('get src ids ', ignIds, this.filterType)
             switch (this.filterType) {
                 case FTypeId.PleaseSelect: return []
                 case FTypeId.ProductGroups_Product:
@@ -67,6 +70,8 @@ const FCriterialSmk = {
                     if (1 == iii) return [this.ItemSelectAll, ...this.$store.getters.SortedItems([8, [0], ignIds])]
                     return []
                 case FTypeId.MarketSegments_Submarket:
+                    if (0 == iii) return [this.ItemSelectAll, ...this.$store.getters.SortedItems([2, [0], ignIds])]
+                    if (1 == iii) return [this.ItemSelectAll, ...this.$store.getters.SortedItems([4, [0], ignIds])]
                     return []
                 default: break;
             }
@@ -109,7 +114,8 @@ const MsFilterSubMarket = {
     },
     methods: {
         setTypeF(ii, val) {
-            console.log('set type f ', ii, val)
+            const crts = this.Criterials[ii]
+            crts[0] = val
         },
         setIds(ii, ids) { this.Criterials[ii].splice(1, 1, ids) },
         removeCriterial() { },
@@ -135,7 +141,7 @@ const MsFilterSubMarket = {
             }
         },
         resetFilter() { },
-        addFilter() { },
+        addFilter() { this.Criterials.push([FTypeId.ProductGroups_Product, [FTypeId.SelectAll, FTypeId.SelectAll]]) },
     },
 }
 export default {

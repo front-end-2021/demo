@@ -238,6 +238,8 @@ const FCriterial = {
                     this.ids.push(FTypeId.SelectAll)
                     this.ids.push(FTypeId.SelectAll)
                     break;
+                case FTypeId.PleaseSelect:
+                    this.ids.splice(0)
                 default: break;
             }
         },

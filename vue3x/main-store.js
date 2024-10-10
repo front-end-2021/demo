@@ -1,6 +1,7 @@
 import {
     ListPrj, Langs,
-    DemoLands, DemoRegions, DemoPrdGroups,
+    DemoLands, DemoRegions, 
+    DemoPrdGroups, DemoProducts,
     DemoMarkets, DemoSubmarkets,
 } from './mock-data.js';
 import { getTxtBy, getLocal, setLocal } from './common.js';
@@ -27,8 +28,8 @@ export default createStore({
         Regions: [], // DemoRegions,
         Markets: [], // DemoMarkets,
         Submarkets: [], // DemoSubmarkets,
-        ProductGroups: [], // DemoPrdGroups,
-        Products: [],   // DemoProducts
+        ProductGroups: DemoPrdGroups,
+        Products: DemoProducts,
 
         MarketRegions: [], // [{MarketId, RegionId, Criterias [], Active, Comment}]
         count: 0,
@@ -158,6 +159,9 @@ export default createStore({
                     case 3:     // Region
                         lst = buildListBy.call(state.Regions, ids, (itm) => ids.includes(itm.Id))
                         break
+                    case 4: //Submarkets
+                        lst = buildListBy.call(state.Submarkets, ids, (itm) => ids.includes(itm.Id))
+                        break
                     case 5:     // Product Groups
                         lst = buildListBy.call(state.ProductGroups, ids, (itm) => ids.includes(itm.Id))
                         break
@@ -172,6 +176,8 @@ export default createStore({
                     case 2: lst = state.Markets;
                         break
                     case 3: lst = state.Regions;
+                        break
+                    case 4: lst = state.Submarkets;
                         break
                     case 5: lst = state.ProductGroups;
                         break
