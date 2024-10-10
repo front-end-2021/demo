@@ -101,6 +101,14 @@ const DemoPrdGroups = [
     { Id: 1, Name: `The thao`, RegionId: 7, ASort: 5, Description: '' },
     { Id: 5, Name: `Sach giao khoa`, RegionId: 1, ASort: 4, Description: '' },
 ]
+const DemoProducts = [
+    { Id: 5, Name: `Conan - Chap 1`, PrdGroupId: 3, ASort: 3, Description: '' },
+    { Id: 3, Name: `Conan - Chap 2`, PrdGroupId: 3, ASort: 2, Description: '' },
+    { Id: 4, Name: `Conan - Chap 3`, PrdGroupId: 3, ASort: 1, Description: '' },
+    { Id: 6, Name: `Tieng Viet Lop 2`, PrdGroupId: 5, ASort: 4, Description: '' },
+    { Id: 9, Name: `Toan Lop 1`, PrdGroupId: 5, ASort: 5, Description: '' },
+    { Id: 7, Name: `De men phieu luu ky - Chap 1`, PrdGroupId: 2, ASort: 6, Description: '' },
+]
 function getMessCompare(item, mItem) {
     let mess = ''
     let ii = 1
@@ -123,7 +131,8 @@ function overrideItem(mItem) {
 }
 export {
     Mains, ListPrj, Langs,
-    DemoLands, DemoRegions, DemoPrdGroups,
+    DemoLands, DemoRegions, 
+    DemoPrdGroups, DemoProducts,
     DemoMarkets, DemoSubmarkets,
     getMessCompare,
     overrideItem

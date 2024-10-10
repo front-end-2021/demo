@@ -28,6 +28,7 @@ export default createStore({
         Markets: [], // DemoMarkets,
         Submarkets: [], // DemoSubmarkets,
         ProductGroups: [], // DemoPrdGroups,
+        Products: [],   // DemoProducts
 
         MarketRegions: [], // [{MarketId, RegionId, Criterias [], Active, Comment}]
         count: 0,
@@ -136,6 +137,8 @@ export default createStore({
                     break;
                 case 5: lst = state.ProductGroups.map(x => x.ASort)
                     break;
+                case 8: lst = state.Products.map(x => x.ASort)
+                    break;
             }
             if (!lst.length) return 1;
             lst.sort((a, b) => b - a)
@@ -155,6 +158,12 @@ export default createStore({
                     case 3:     // Region
                         lst = buildListBy.call(state.Regions, ids, (itm) => ids.includes(itm.Id))
                         break
+                    case 5:     // Product Groups
+                        lst = buildListBy.call(state.ProductGroups, ids, (itm) => ids.includes(itm.Id))
+                        break
+                    case 8:     // Products
+                        lst = buildListBy.call(state.Products, ids, (itm) => ids.includes(itm.Id))
+                        break
                 }
             } else {
                 switch (type) {
@@ -164,16 +173,14 @@ export default createStore({
                         break
                     case 3: lst = state.Regions;
                         break
+                    case 5: lst = state.ProductGroups;
+                        break
+                    case 8: lst = state.Products;
+                        break
                 }
             }
             if (ignoreIds.length) {
-                switch (type) {
-                    case 1:     // Land
-                    case 2:     // Market
-                    case 3:     // Region
-                        lst = buildList(lst)
-                        break
-                }
+                lst = buildList(lst)
                 function buildList(srItems) {
                     const dItems = []
                     for (let ii = 0, item; ii < srItems.length; ii++) {
@@ -183,6 +190,7 @@ export default createStore({
                     return dItems
                 }
             }
+            if (lst.length < 2) return lst;
             lst.sort((a, b) => a.ASort - b.ASort)
             return lst
         },
@@ -262,6 +270,7 @@ export default createStore({
                     state.Markets = DemoMarkets
                     state.Submarkets = DemoSubmarkets
                     state.ProductGroups = DemoPrdGroups
+                    state.Products = DemoProducts
                     return;
                 case 2:     // localStorage
                     state.Lands = getLocal(1)
@@ -269,6 +278,7 @@ export default createStore({
                     state.Markets = getLocal(3)
                     state.Submarkets = getLocal(4)
                     state.ProductGroups = getLocal(7)
+                    state.Products = getLocal(8)
                     return;
                 case 3:     // Clear local storage
                     localStorage.clear();
@@ -281,45 +291,40 @@ export default createStore({
             state.Markets = []
             state.Submarkets = []
             state.ProductGroups = []
+            state.Products = []
         },
         addUpdateLocal(state, [type, item, iProject]) {
             const prj = state.Projects[iProject]
             if (!prj) return
             if (!Object.is(item, null)) {
                 switch (type) {
-                    case 1:     // Lands
-                        state.Lands.push(item);
+                    case 1: state.Lands.push(item);
                         break;;
-                    case 2:     // Regions
-                        state.Regions.push(item);
+                    case 2: state.Regions.push(item);
                         break;
-                    case 3:     // Markets
-                        state.Markets.push(item);
+                    case 3: state.Markets.push(item);
                         break;
-                    case 4:     // Submarkets
-                        state.Submarkets.push(item);
+                    case 4: state.Submarkets.push(item);
                         break;
-                    case 5:     // Product group
-                        state.ProductGroups.push(item);
+                    case 5: state.ProductGroups.push(item);
+                        break;
+                    case 8: state.Products.push(item);
                         break;
                 }
             }
             if (2 == prj.Id) {          //localStorage
                 switch (type) {
-                    case 1:     // Lands
-                        setLocal(type, state.Lands)
+                    case 1: setLocal(type, state.Lands)
                         break;;
-                    case 2:     // Regions
-                        setLocal(type, state.Regions)
+                    case 2: setLocal(type, state.Regions)
                         break;
-                    case 3:     // Markets
-                        setLocal(type, state.Markets)
+                    case 3: setLocal(type, state.Markets)
                         break;
-                    case 4:     // Submarkets
-                        setLocal(type, state.Submarkets)
+                    case 4: setLocal(type, state.Submarkets)
                         break;
-                    case 5:     // Product group
-                        setLocal(7, state.ProductGroups)
+                    case 5: setLocal(7, state.ProductGroups)
+                        break;
+                    case 8: setLocal(8, state.ProductGroups)
                         break;
                 }
             }

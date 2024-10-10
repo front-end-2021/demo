@@ -6,6 +6,7 @@ const FCriterialSmk = {
     template: `#tmp-comp-criterial-smarket`,
     mixins: [MxFCriterial],
     emits: ['remove:item'],
+    inject: ['ignoreIds'],
     computed: {
         SrcTypes() {
             const lst = []
@@ -27,6 +28,12 @@ const FCriterialSmk = {
             return {
                 Id: FTypeId.SelectRegion, // -30
                 Name: this.$store.getters.txtFilter(FTypeId.SelectRegion)
+            }
+        },
+        ItemSelectAll() {
+            return {
+                Id: FTypeId.SelectAll, // 0
+                Name: this.$store.getters.txtFilter(FTypeId.SelectAll)
             }
         },
     },
@@ -52,10 +59,12 @@ const FCriterialSmk = {
                 if (1 == iii) return [this.ItemSelectRegion, ...this.$store.getters.SortedItems([3, [0], []])]
                 return []
             }
-            let ignIds
+            let ignIds = this.ignoreIds(this.filterType, iii)
             switch (this.filterType) {
                 case FTypeId.PleaseSelect: return []
                 case FTypeId.ProductGroups_Product:
+                    if (0 == iii) return [this.ItemSelectAll, ...this.$store.getters.SortedItems([5, [0], ignIds])]
+                    if (1 == iii) return [this.ItemSelectAll, ...this.$store.getters.SortedItems([8, [0], ignIds])]
                     return []
                 case FTypeId.MarketSegments_Submarket:
                     return []
@@ -83,6 +92,21 @@ const MsFilterSubMarket = {
             Criterials: JSON.parse(JSON.stringify(this.$root.SubMarketCrites)),    // [Type, Ids]
         }
     },
+    provide() {
+        return {
+            ignoreIds: (type, iii) => {
+                let lstCrit = this.Criterials.filter(xxs => xxs[0] == type)
+                if (!lstCrit.length) return []
+                lstCrit = lstCrit.map(xxs => { return xxs[1][iii] })
+                lstCrit = lstCrit.filter(id => 0 <= id)
+                if (!lstCrit.length) return []
+                for (let ll = lstCrit.length - 1; -1 < ll; ll--) {
+                    if (0 == lstCrit[ll]) lstCrit.splice(ll, 1)
+                }
+                return lstCrit
+            },
+        }
+    },
     methods: {
         setTypeF(ii, val) {
             console.log('set type f ', ii, val)
@@ -92,7 +116,7 @@ const MsFilterSubMarket = {
         setFilter() {
             const rCrites = this.$root.SubMarketCrites
             const cCrites = this.Criterials
-            if(!isChange.call(this)) return;
+            if (!isChange.call(this)) return;
             this.$root.SubMarketCrites = JSON.parse(JSON.stringify(cCrites))
             //this.$emit('set:filter', [landIds, marketIds])
             console.log('set filter')

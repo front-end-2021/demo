@@ -169,22 +169,19 @@ export const getLocal = (type) => {
         let jData
         switch (type) {
             case 1: jData = localStorage.getItem("Lands");
-                if (!jData) return []
                 break;
             case 2: jData = localStorage.getItem("Regions");
-                if (!jData) return []
                 break;
             case 3: jData = localStorage.getItem("Markets");
                 break;
-            case 4:     // Submarkets
-                jData = localStorage.getItem("Submarkets");
+            case 4: jData = localStorage.getItem("Submarkets");
                 break;
             case 6:     // Index Page
                 jData = localStorage.getItem("IndexPage");
                 break;
             case 7:     // Product group
                 jData = localStorage.getItem("PrdGroups");
-                if (!jData) return []
+            case 8: jData = localStorage.getItem("Products");
                 break;
         }
         switch (type) {
@@ -192,6 +189,8 @@ export const getLocal = (type) => {
             case 2:     // Regions
             case 3:     // Markets
             case 4:     // Submarkets
+            case 7:     // Product groups
+            case 8:     // Products
                 if (!jData) return []
                 break;
             case 6:     // Index Page
@@ -207,6 +206,7 @@ export const getLocal = (type) => {
             case 3:     // Markets
             case 4:     // Submarkets
             case 7:     // Product group
+            case 8:     // Products
                 return []
             default: return
         }
@@ -261,6 +261,11 @@ export const setLocal = (type, oData) => {
                 if (jData) localStorage.removeItem("PrdGroups");
                 if (isRemove) return;
                 localStorage.setItem("PrdGroups", JSON.stringify(oData))
+            case 8:     // Products
+                jData = localStorage.getItem("Products");
+                if (jData) localStorage.removeItem("Products");
+                if (isRemove) return;
+                localStorage.setItem("Products", JSON.stringify(oData))
         }
     }
 }
