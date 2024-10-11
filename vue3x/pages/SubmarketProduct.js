@@ -158,7 +158,8 @@ const MsFilterSubMarket = {
             ignoreIds: (type, iid, ipos) => {
                 if(ipos < 1) return []
                 let lstCrit = []
-                for(let iii = ipos - 1, cri; 0 < iii; iii--) {
+                for(let iii = this.Criterials.length - 1, cri; 0 < iii; iii--) {
+                    if(iii == ipos) continue;
                     cri = this.Criterials[iii]
                     if(type != cri[0]) continue;
                     lstCrit.push(cri[1][iid])
