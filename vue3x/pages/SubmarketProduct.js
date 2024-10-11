@@ -53,20 +53,20 @@ const FCriterialSmk = {
                 }
                 switch (this.indexType) {
                     case 1: // ProductGroups/Product:
-                        ignIds = this.ignoreIds(FTypeId.ProductGroups_Product, 0)
+                        ignIds = this.ignoreIds(FTypeId.ProductGroups_Product, 0, this.index)
                         lst1 = this.$store.getters.SortedItems([5, [0], ignIds])
                         lst1.unshift(itmSelctAll)
 
-                        ignIds = this.ignoreIds(FTypeId.ProductGroups_Product, 1)
+                        ignIds = this.ignoreIds(FTypeId.ProductGroups_Product, 1, this.index)
                         lst2 = this.$store.getters.SortedItems([8, [0], ignIds])
                         lst2.unshift(itmSelctAll)
                         return [lst1, lst2]
                     case 2:  //MarketSegments/Submarket:
-                        ignIds = this.ignoreIds(FTypeId.MarketSegments_Submarket, 0)
+                        ignIds = this.ignoreIds(FTypeId.MarketSegments_Submarket, 0, this.index)
                         lst1 = this.$store.getters.SortedItems([2, [0], ignIds])
                         lst1.unshift(itmSelctAll)
 
-                        ignIds = this.ignoreIds(FTypeId.MarketSegments_Submarket, 1)
+                        ignIds = this.ignoreIds(FTypeId.MarketSegments_Submarket, 1, this.index)
                         lst2 = this.$store.getters.SortedItems([4, [0], ignIds])
                         lst2.unshift(itmSelctAll)
                         return [lst1, lst2]
@@ -155,10 +155,15 @@ const MsFilterSubMarket = {
     },
     provide() {
         return {
-            ignoreIds: (type, iii) => {
-                let lstCrit = this.Criterials.filter(xxs => xxs[0] == type)
+            ignoreIds: (type, iid, ipos) => {
+                if(ipos < 1) return []
+                let lstCrit = []
+                for(let iii = ipos - 1, cri; 0 < iii; iii--) {
+                    cri = this.Criterials[iii]
+                    if(type != cri[0]) continue;
+                    lstCrit.push(cri[1][iid])
+                }
                 if (!lstCrit.length) return []
-                lstCrit = lstCrit.map(xxs => { return xxs[1][iii] })
                 lstCrit = lstCrit.filter(id => 0 <= id)
                 if (!lstCrit.length) return []
                 for (let ll = lstCrit.length - 1; -1 < ll; ll--) {
