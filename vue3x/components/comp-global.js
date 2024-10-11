@@ -87,7 +87,9 @@ export const DropSelection = {
         SelectView(){
             let item = this.items[this.index]
             if(item) return item.Name
-            return 'Dropdown Selection'
+            this.$emit('set:index', 0)
+            if(!this.items.length) return 'Dropdown Selection'
+            return this.items[0].Name
         },
     },
     mounted() {

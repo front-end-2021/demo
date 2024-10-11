@@ -116,7 +116,7 @@ const FCriterialSmk = {
             this.indexIds[ii] = index
             const item = this.SrcIds[ii][index]
             if (!item) return;
-            console.log('select id ', item, index, ii)
+           // console.log('select id ', item, index, ii)
             const lstId = this.typeIds[1]
             lstId[ii] = item.Id
             this.$emit('set:typeids', this.index, [this.SrcTypes[this.indexType].Id, lstId])
