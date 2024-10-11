@@ -4,20 +4,20 @@
             :class="['grp-dropdown-min', 0 == index ? 'disabled' : '']"
             name="f-crite-type"
             :items="SrcTypes"
-            :index="indexType"
-            @set:index="$event => selectTypeId($event)" 
+            :id="typeId"
+            @set:id="$event => selectTypeId($event)" 
             style="margin-right: 6px;"></drop-selection>
         <drop-selection v-for="(lstSrc, ii) in SrcIds"
             :class="['grp-dropdown-min']"
             :name="'f-crite-id_ ' +  ii"
             :items="lstSrc"
-            :index="indexIds[ii]"
+            :id="listId[ii]"
             :key="ii + 2"
-            @set:index="$event => selectId($event, ii)" 
+            @set:id="$event => selectId($event, ii)" 
             style="margin-right: 6px;"></drop-selection>
         <button v-if="0 < index"
             style="width: 28px; height: 28px;"
-            @click.stop="e => $emit('remove:item')"> - </button>
+            @click.stop="e => $emit('remove:item', index)"> - </button>
     </div>
 </template>
 <template id="tmp-comp-filter-smarket">
@@ -25,7 +25,7 @@
     <div class="d-flex" style="flex-direction: column;">
         <comp-criterial-smarket 
             v-for="(crts, iic) in Criterials" 
-            @remove:item="removeCriterial(iic)"
+            @remove:item="$event => removeCriterial($event)"
             @set:typeids="$event => setTypeIds(iic, $event)"
             :index="iic"
             :type-ids="crts"

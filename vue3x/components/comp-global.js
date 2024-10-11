@@ -80,27 +80,29 @@ export const DropSelection = {
     props: {
         name: { type: String, default: '' },
         items: Array,   // [{ Id, Name }]
-        index: { type: Number, default: 0 },
+        id: Number,
     },
-    emits: ['set:index'],
+    emits: ['set:id'],
     computed: { 
         SelectView(){
-            let item = this.items[this.index]
+            let item = this.items.find(x => x.Id == this.id)
             if(item) return item.Name
-            this.$emit('set:index', 0)
             if(!this.items.length) return 'Dropdown Selection'
+            this.$emit('set:id', this.items[0].Id)
             return this.items[0].Name
         },
     },
     mounted() {
         const changeDrp = (value, text, $selectedItem) => {
-            this.$emit('set:index', parseInt(value))
+            this.$emit('set:id', parseInt(value))
         }
         $(this.$el).dropdown({
             onChange: changeDrp
         })
     },
     // watch: {
-    //     items(nwLst) { },
+    //     items(nwLst) {
+
+    //      },
     // },
 }

@@ -20,8 +20,8 @@ const FCriterialSmk = {
     },
     data() {
         return {
-            indexType: 0,
-            indexIds: [],
+            typeId: -1,
+            listId: [],
         }
     },
     computed: {
@@ -46,13 +46,12 @@ const FCriterialSmk = {
                 lst2.unshift({ Id: FTypeId.SelectRegion, Name: this.$store.getters.txtFilter(FTypeId.SelectRegion) })
                 return [lst1, lst2]
             } else {
-                if (this.indexType < 1) return []
+                if (FTypeId.PleaseSelect == this.typeId) return []
                 const itmSelctAll = {
-                    Id: FTypeId.SelectAll, // 0
-                    Name: this.$store.getters.txtFilter(FTypeId.SelectAll)
+                    Id: FTypeId.SelectAll, Name: this.$store.getters.txtFilter(FTypeId.SelectAll)
                 }
-                switch (this.indexType) {
-                    case 1: // ProductGroups/Product:
+                switch (this.typeId) {
+                    case FTypeId.ProductGroups_Product:
                         ignIds = this.ignoreIds(FTypeId.ProductGroups_Product, 0, this.index)
                         lst1 = this.$store.getters.SortedItems([5, [0], ignIds])
                         lst1.unshift(itmSelctAll)
@@ -61,7 +60,7 @@ const FCriterialSmk = {
                         lst2 = this.$store.getters.SortedItems([8, [0], ignIds])
                         lst2.unshift(itmSelctAll)
                         return [lst1, lst2]
-                    case 2:  //MarketSegments/Submarket:
+                    case FTypeId.MarketSegments_Submarket:
                         ignIds = this.ignoreIds(FTypeId.MarketSegments_Submarket, 0, this.index)
                         lst1 = this.$store.getters.SortedItems([2, [0], ignIds])
                         lst1.unshift(itmSelctAll)
@@ -95,46 +94,40 @@ const FCriterialSmk = {
         },
     },
     methods: {
-        selectTypeId(index) {
-            if (0 == this.index) return;
-            this.indexType = index
-            switch (index) {
-                case 0: this.indexIds = []
+        selectTypeId(tId) {      // Number
+            if (this.index < 1) return; // crites[0]
+            this.typeId = tId
+            switch (tId) {
+                case FTypeId.PleaseSelect: this.listId = []
                     break;
-                default: this.indexIds = [0, 0]
+                default: this.listId = [0, 0]
                     break;
             }
-            let ids = []
-            if (index < 1) {
-                this.$emit('set:typeids', this.index, [FTypeId.PleaseSelect, ids])
-                return;
-            }
-            ids = [FTypeId.SelectAll, FTypeId.SelectAll]
-            this.$emit('set:typeids', this.index, [this.SrcTypes[index].Id, ids])
+            this.$emit('set:typeids', [tId, this.listId])
         },
-        selectId(index, ii) {
-            this.indexIds[ii] = index
-            const item = this.SrcIds[ii][index]
-            if (!item) return;
-           // console.log('select id ', item, index, ii)
-            const lstId = this.typeIds[1]
-            lstId[ii] = item.Id
-            this.$emit('set:typeids', this.index, [this.SrcTypes[this.indexType].Id, lstId])
+        selectId(id, ii) {
+            this.listId[ii] = id
+            this.$emit('set:typeids', [this.typeId, this.listId])
         },
     },
     beforeMount() {
-        this.indexType = this.SrcTypes.findIndex(x => x.Id == this.typeIds[0])
-        const ids = this.typeIds[1]
-        for (let ii = 0, index; ii < ids.length; ii++) {
-            index = this.SrcIds[ii]
-            if (!index) break;
-            const id = ids[ii]
-            index = index.findIndex(x => x.Id == id)
-            if (-1 < index) {
-                this.indexIds.push(index)
-            }
+        if(this.typeIds.length) this.typeId = this.typeIds[0]
+        if(1 < this.typeIds.length) {
+            if(Array.isArray(this.typeIds[1])) this.listId = this.typeIds[1]
         }
+    }, 
+    watch: {
+        typeIds(nwLst, olLst) {
+            const nTyp = nwLst[0]
+            const oTyp = olLst[0]
+            if(nTyp != oTyp) {
+                this.typeId = nTyp
+            }
+        },
     },
+    // beforeUnmount(){
+    //     console.log('before unmouted', this.index)
+    // },
 }
 const MsFilterSubMarket = {
     template: `#tmp-comp-filter-smarket`,
@@ -175,10 +168,14 @@ const MsFilterSubMarket = {
         }
     },
     methods: {
-        setTypeIds(iic, typeIds) { 
-          //  this.Criterials.splice(iic, 1, typeIds) 
+        setTypeIds(iic, typeIds) { this.Criterials.splice(iic, 1, typeIds) },
+        removeCriterial(iic) { this.Criterials.splice(iic, 1); return;
+            const cpCrites = JSON.parse(JSON.stringify(this.Criterials))
+            console.log('remove ', JSON.parse(JSON.stringify(cpCrites)))
+            cpCrites.splice(iic, 1) 
+            console.log('remove 2 ', cpCrites)
+            this.Criterials = cpCrites
         },
-        removeCriterial() { },
         setFilter() {
             const rCrites = this.$root.SubMarketCrites
             const cCrites = this.Criterials
