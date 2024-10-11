@@ -3,7 +3,7 @@ import {
     getLocal, setLocal
 } from './common.js'
 import {
-    DropSelect, SRange
+    DropSelect, SRange, 
 } from './components/comp-global.js'
 import { getMessCompare, overrideItem } from './mock-data.js'
 import dnbStore from './main-store.js'

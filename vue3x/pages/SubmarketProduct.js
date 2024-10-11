@@ -1,12 +1,29 @@
 import { FTypeId, commSelectTypeId, MxFCriterial } from "../components/dFilter.js";
 import { overrideItem } from "../mock-data.js";
+import { DropSelection } from "../components/comp-global.js";
 import { VueDraggableNext } from 'vue-draggable-next'
 
 const FCriterialSmk = {
     template: `#tmp-comp-criterial-smarket`,
-    mixins: [MxFCriterial],
-    emits: ['remove:item'],
+    components: {
+        'drop-selection': DropSelection,
+    },
+    //mixins: [MxFCriterial],
+    emits: ['remove:item', 'set:typeids'],
     inject: ['ignoreIds'],
+    props: {
+        index: Number,
+        typeIds: {
+            type: Array,
+            default: []
+        }
+    },
+    data() {
+        return {
+            indexType: 0,
+            indexIds: [],
+        }
+    },
     computed: {
         SrcTypes() {
             const lst = []
@@ -22,35 +39,34 @@ const FCriterialSmk = {
             let ignIds = []
             let lst1 = [], lst2 = []
             if (0 == this.index) {
-                ignIds = this.ignoreIds(this.filterType, 0)
                 lst1 = this.$store.getters.SortedItems([1, [0], ignIds])
                 lst1.unshift({ Id: FTypeId.SelectLand, Name: this.$store.getters.txtFilter(FTypeId.SelectLand) })
 
-                ignIds = this.ignoreIds(this.filterType, 1)
                 lst2 = this.$store.getters.SortedItems([3, [0], ignIds])
                 lst2.unshift({ Id: FTypeId.SelectRegion, Name: this.$store.getters.txtFilter(FTypeId.SelectRegion) })
                 return [lst1, lst2]
             } else {
+                if (this.indexType < 1) return []
                 const itmSelctAll = {
                     Id: FTypeId.SelectAll, // 0
                     Name: this.$store.getters.txtFilter(FTypeId.SelectAll)
                 }
-                switch (this.filterType) {
-                    case FTypeId.ProductGroups_Product:
-                        ignIds = this.ignoreIds(this.filterType, 0)
+                switch (this.indexType) {
+                    case 1: // ProductGroups/Product:
+                        ignIds = this.ignoreIds(FTypeId.ProductGroups_Product, 0)
                         lst1 = this.$store.getters.SortedItems([5, [0], ignIds])
                         lst1.unshift(itmSelctAll)
 
-                        ignIds = this.ignoreIds(this.filterType, 1)
+                        ignIds = this.ignoreIds(FTypeId.ProductGroups_Product, 1)
                         lst2 = this.$store.getters.SortedItems([8, [0], ignIds])
                         lst2.unshift(itmSelctAll)
                         return [lst1, lst2]
-                    case FTypeId.MarketSegments_Submarket:
-                        ignIds = this.ignoreIds(this.filterType, 0)
+                    case 2:  //MarketSegments/Submarket:
+                        ignIds = this.ignoreIds(FTypeId.MarketSegments_Submarket, 0)
                         lst1 = this.$store.getters.SortedItems([2, [0], ignIds])
                         lst1.unshift(itmSelctAll)
 
-                        ignIds = this.ignoreIds(this.filterType, 1)
+                        ignIds = this.ignoreIds(FTypeId.MarketSegments_Submarket, 1)
                         lst2 = this.$store.getters.SortedItems([4, [0], ignIds])
                         lst2.unshift(itmSelctAll)
                         return [lst1, lst2]
@@ -79,33 +95,45 @@ const FCriterialSmk = {
         },
     },
     methods: {
-        idSelectName(id, ii) {
-            let item = this.SrcIds[ii].find(x => id == x.Id)
-            if (item) return item.Name
-            return this.SrcTypes[0].Name
-        },
         selectTypeId(index) {
-            this.ids.splice(0)
-            if (0 == this.index) {
-                this.ids.push(FTypeId.SelectLand)
-                this.ids.push(FTypeId.SelectRegion)
-                return
+            if (0 == this.index) return;
+            this.indexType = index
+            switch (index) {
+                case 0: this.indexIds = []
+                    break;
+                default: this.indexIds = [0, 0]
+                    break;
             }
-            const fId = commSelectTypeId(this, index)
-            if (fId == FTypeId.PleaseSelect) return;
-            this.ids.push(FTypeId.SelectAll)
-            this.ids.push(FTypeId.SelectAll)
+            let ids = []
+            if (index < 1) {
+                this.$emit('set:typeids', this.index, [FTypeId.PleaseSelect, ids])
+                return;
+            }
+            ids = [FTypeId.SelectAll, FTypeId.SelectAll]
+            this.$emit('set:typeids', this.index, [this.SrcTypes[index].Id, ids])
         },
-        selectId(ii, index) {
-            index = parseInt(index)
+        selectId(index, ii) {
+            this.indexIds[ii] = index
             const item = this.SrcIds[ii][index]
             if (!item) return;
-
-            const id = item.Id
-            const lstId = this.ids
-            lstId.splice(ii, 1, id)
-            this.$emit('set:ids', lstId)
-        },        
+            console.log('select id ', item, index, ii)
+            const lstId = this.typeIds[1]
+            lstId[ii] = item.Id
+            this.$emit('set:typeids', this.index, [this.SrcTypes[this.indexType].Id, lstId])
+        },
+    },
+    beforeMount() {
+        this.indexType = this.SrcTypes.findIndex(x => x.Id == this.typeIds[0])
+        const ids = this.typeIds[1]
+        for (let ii = 0, index; ii < ids.length; ii++) {
+            index = this.SrcIds[ii]
+            if (!index) break;
+            const id = ids[ii]
+            index = index.findIndex(x => x.Id == id)
+            if (-1 < index) {
+                this.indexIds.push(index)
+            }
+        }
     },
 }
 const MsFilterSubMarket = {
@@ -141,11 +169,9 @@ const MsFilterSubMarket = {
         }
     },
     methods: {
-        setTypeF(ii, val) {
-            const crts = this.Criterials[ii]
-            crts[0] = val
+        setTypeIds(iic, typeIds) { 
+          //  this.Criterials.splice(iic, 1, typeIds) 
         },
-        setIds(ii, ids) { this.Criterials[ii].splice(1, 1, ids) },
         removeCriterial() { },
         setFilter() {
             const rCrites = this.$root.SubMarketCrites
@@ -176,6 +202,7 @@ export default {
     template: `#tmp-comp-submarket`,
     components: {
         'comp-filter-smarket': MsFilterSubMarket,
+        'drop-selection': DropSelection,
         draggable: VueDraggableNext
     },
     data() {

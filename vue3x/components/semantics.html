@@ -4,10 +4,6 @@
       <i class="dropdown icon"></i>
       <slot name="default"></slot>
       <div class="menu">
-        <!-- <slot name="item" 
-          :items="items" 
-          active="active selected" 
-          :index="index"></slot> -->
           <div v-for="(item, ii) in items" class="item" 
           :class="[isActive(ii) ? 'active selected' : '']" 
           :data-value="ii">{{itemName(ii)}}</div>
@@ -16,4 +12,17 @@
 </template>
 <template id="tmp-comp-s-range">
   <div class="ui labeled range" :style="style"></div>
+</template>
+<template id="tmp-comp-drop-selection">
+  <div class="ui selection dropdown" style="height: 38px;">
+    <input type="hidden" :name="name" :value="index">
+    <i class="dropdown icon"></i>
+    <div class="text">{{SelectView}}</div>
+    <div class="menu">
+      <div v-for="(item, ii) in items" 
+        class="item" 
+        :class="[index == ii ? 'active selected' : '']"
+        :data-value="ii">{{item.Name}}</div>
+    </div>
+  </div>
 </template>

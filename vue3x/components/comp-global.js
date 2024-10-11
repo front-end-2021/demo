@@ -16,7 +16,6 @@ export const DropSelect = {
             onChange: changeDrp
         })
     },
-    // computed: { },
     methods: {
         isActive(ii) {
             if (typeof this.name == 'string') {
@@ -46,26 +45,15 @@ export const DropSelect = {
 export const SRange = {
     template: `#tmp-comp-s-range`,
     props: {
-        min: {
-            type: Number,
-            default: -10
-        },
-        max: {
-            type: Number,
-            default: 10
-        },
+        min: { type: Number, default: -10 },
+        max: { type: Number, default: 10 },
         start: Number,
-        labelType: {
-            type: String,
-            default: 'number'//'letter
+        labelType: { 
+            type: String, default: 'number'//'letter
         },
-        step: {
-            type: Number,
-            default: 1
-        },
-        style: {
-            type: Object,
-            default: { width: '120px' }
+        step: { type: Number, default: 1 },
+        style: { 
+            type: Object, default: { width: '120px' } 
         }
     },
     emits: ['set:value'],
@@ -86,4 +74,31 @@ export const SRange = {
         })
     },
     //beforeUnmount() { },
+}
+export const DropSelection = {
+    template: `#tmp-comp-drop-selection`,
+    props: {
+        name: { type: String, default: '' },
+        items: Array,   // [{ Id, Name }]
+        index: { type: Number, default: 0 },
+    },
+    emits: ['set:index'],
+    computed: { 
+        SelectView(){
+            let item = this.items[this.index]
+            if(item) return item.Name
+            return 'Dropdown Selection'
+        },
+    },
+    mounted() {
+        const changeDrp = (value, text, $selectedItem) => {
+            this.$emit('set:index', parseInt(value))
+        }
+        $(this.$el).dropdown({
+            onChange: changeDrp
+        })
+    },
+    // watch: {
+    //     items(nwLst) { },
+    // },
 }
