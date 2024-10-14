@@ -279,6 +279,7 @@ export default {
             console.groupEnd()
             function checkRmv0(lstId){
                 if(lstId.length < 2) return lstId;
+                if(!lstId.filter(x => 0 < x).length) return [0]
                 for(let ii = lstId.length - 1; -1 < ii; ii--) {
                     if(lstId[ii] < 1) lstId.splice(ii, 1)
                 }
