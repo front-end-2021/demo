@@ -278,12 +278,16 @@ export default {
             console.log('market and submarket ', marketIds, subMarketIds)
             console.groupEnd()
             function checkRmv0(lstId){
-                if(lstId.length < 2) return lstId;
-                if(!lstId.filter(x => 0 < x).length) return [0]
+                if(lstId.length < 2) return
+                for(let ii = 0; ii < lstId.length; ii++) {
+                    for(let jj = lstId.length - 1; ii < jj; jj--) {
+                        if(lstId[jj] == lstId[ii]) lstId.splice(jj, 1)
+                    }
+                }
+                if(!lstId.filter(x => 0 < x).length) return
                 for(let ii = lstId.length - 1; -1 < ii; ii--) {
                     if(lstId[ii] < 1) lstId.splice(ii, 1)
                 }
-                return lstId;
             }
         },
     },
