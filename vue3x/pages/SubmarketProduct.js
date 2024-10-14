@@ -278,15 +278,13 @@ export default {
             console.log('product grp and product ', prdGrpIds, productIds)
             console.log('market and submarket ', marketIds, subMarketIds)
             console.groupEnd()
-            if(prdGrpIds.length) {
-                this.ProductGroups = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
-                
-            }
-            else {
-                this.ProductGroups = this.$store.getters.SortItemsByParent([3, [regionId]])
-                
-            }
+            this.ProductGroups = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
             this.Products = this.$store.getters.SortItemsByParent([4, prdGrpIds, productIds])
+            const lstMrk = this.$store.getters.SortItemsByParent([5, [landId], marketIds])
+            for(let mm = 0, mrk; mm < lstMrk.length; mm++) {
+                mrk = lstMrk[mm]
+                mrk.SubMarkets = this.$store.getters.SortItemsByParent([6, [mrk.Id], subMarketIds])
+            }
 
             function checkRmv0(lstId){
                 if(lstId.length < 2) return

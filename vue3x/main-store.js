@@ -223,8 +223,21 @@ export default createStore({
                     }
                 break;
                 case 4: // Products by PrdGroupId
-                    if(ptIds.length) lst = buildListBy.call(state.Products, ptIds, (itm) => ptIds.includes(itm.PrdGroupId))
+                    if(ptIds.length) 
+                        lst = buildListBy.call(state.Products, ptIds, (itm) => ptIds.includes(itm.PrdGroupId))
                     else lst = buildListBy.call(state.Products, [0])
+                    if(Array.isArray(ids) && ids.length && !ids.includes(0)) {
+                        lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
+                    }
+                break;
+                case 5: // Markets by LandId
+                    lst = buildListBy.call(state.Markets, ptIds, (itm) => ptIds.includes(itm.LandId))
+                    if(Array.isArray(ids) && ids.length && !ids.includes(0)) {
+                        lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
+                    }
+                break;
+                case 6: // SubMarkets by MarketId
+                    lst = buildListBy.call(state.Submarkets, ptIds, (itm) => ptIds.includes(itm.MarketId))
                     if(Array.isArray(ids) && ids.length && !ids.includes(0)) {
                         lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
                     }
