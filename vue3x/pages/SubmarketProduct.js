@@ -165,6 +165,23 @@ const MsFilterSubMarket = {
                 }
                 return lstCrit
             },
+            parentIds: (type, iid, ipos) => {
+                let pId = 0, 
+                    cRit = this.Criterials[0]
+                switch(type) {
+                    case FTypeId.ProductGroups_Product:
+                        if(0 == ipos && 0 < cRit[1][1]) {
+                            pId = cRit[1][1]
+                        }
+                    return pId;
+                    case FTypeId.MarketSegments_Submarket:
+                        if(0 == ipos && 0 < cRit[1][0]) {
+                            pId = cRit[1][0]
+                        }
+                    return pId;
+                }
+                return pId;
+            },
         }
     },
     methods: {
