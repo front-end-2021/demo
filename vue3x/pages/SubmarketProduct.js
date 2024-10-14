@@ -210,7 +210,8 @@ export default {
     data() {
         return {
             ProductGroups: [],
-
+            Products: [],
+            Markets: [],
         }
     },
     computed: {
@@ -277,6 +278,7 @@ export default {
             console.log('product grp and product ', prdGrpIds, productIds)
             console.log('market and submarket ', marketIds, subMarketIds)
             console.groupEnd()
+            this.ProductGroups = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
             function checkRmv0(lstId){
                 if(lstId.length < 2) return
                 for(let ii = 0; ii < lstId.length; ii++) {

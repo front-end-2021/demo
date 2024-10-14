@@ -319,7 +319,7 @@ export default {
             if (!landIds.includes(0)) {
                 mergeIdLands = ids.filter(id => landIds.includes(id))
             }
-            this.Regions = this.$store.getters.RegionByLands(mergeIdLands)
+            this.Regions = this.$store.getters.SortItemsByParent([2, mergeIdLands])
         },
         '$root.IndexProject'(iPrj) {
             let lstC = this.$root.MarketCriterias
@@ -356,7 +356,7 @@ export default {
             if (!landIds.includes(0)) {
                 mergeIdLands = mergeIdLands.filter(id => landIds.includes(id))
             }
-            this.Regions = this.$store.getters.RegionByLands(mergeIdLands)
+            this.Regions = this.$store.getters.SortItemsByParent([2, mergeIdLands])
         },
         openFormLand(land) {
             const iProject = this.$root.IndexProject

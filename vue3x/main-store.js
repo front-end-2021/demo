@@ -210,10 +210,20 @@ export default createStore({
                     return state.Regions.find(x => x.Id == id);
             }
         },
-        RegionByLands: (state) => (landIds) => {
-            const lst = buildListBy.call(state.Regions, landIds, (itm) => landIds.includes(itm.LandId))
-
-            lst.sort((a, b) => a.ASort - b.ASort)
+        SortItemsByParent: (state) => ([type, ptIds, ids]) => {
+            let lst = []
+            switch(type) {
+                case 2: // Regions by LandId
+                    lst = buildListBy.call(state.Regions, ptIds, (itm) => ptIds.includes(itm.LandId))
+                break;
+                case 3: // Product groups by RegionId
+                    lst = buildListBy.call(state.ProductGroups, ptIds, (itm) => ptIds.includes(itm.RegionId))
+                    if(Array.isArray(ids) && ids.length && !ids.includes(0)) {
+                        lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
+                    }
+                break;
+            }
+            if(1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
             return lst
         },
         MarketRegionBy: (state) => ([mId, rId]) => {
