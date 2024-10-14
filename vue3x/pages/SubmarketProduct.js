@@ -174,8 +174,7 @@ const MsFilterSubMarket = {
             const rCrites = this.$root.SubMarketCrites
             const cCrites = this.Criterials
             if (!isChange.call(this)) return;
-            this.$root.SubMarketCrites = JSON.parse(JSON.stringify(cCrites))
-            //console.log('set filter')
+            this.$emit('set:filter', JSON.parse(JSON.stringify(cCrites)))
             function isChange() {
                 if (rCrites.length != cCrites.length) return true;
                 for (let cc = 0, lstR, rLstR; cc < cCrites.length; cc++) {
@@ -260,8 +259,31 @@ export default {
             }
 
         },
-        setFilter() {
-
+        setFilter(cCrites) {
+            this.$root.SubMarketCrites = cCrites
+            const landId = cCrites[0][1][0]
+            const regionId = cCrites[0][1][1]
+            let prdGrpIds = cCrites.filter(x => x[0] == FTypeId.ProductGroups_Product)
+            let productIds = prdGrpIds.map(x => x[1][1])
+            prdGrpIds = prdGrpIds.map(x => x[1][0])
+            let marketIds = cCrites.filter(x => x[0] == FTypeId.MarketSegments_Submarket)
+            let subMarketIds = marketIds.map(x => x[1][1])
+            marketIds = marketIds.map(x => x[1][0])
+            checkRmv0(prdGrpIds)
+            checkRmv0(productIds)
+            checkRmv0(marketIds)
+            checkRmv0(subMarketIds)
+            console.group('set filter subMrk ', landId, regionId)
+            console.log('product grp and product ', prdGrpIds, productIds)
+            console.log('market and submarket ', marketIds, subMarketIds)
+            console.groupEnd()
+            function checkRmv0(lstId){
+                if(lstId.length < 2) return lstId;
+                for(let ii = lstId.length - 1; -1 < ii; ii--) {
+                    if(lstId[ii] < 1) lstId.splice(ii, 1)
+                }
+                return lstId;
+            }
         },
     },
 }
