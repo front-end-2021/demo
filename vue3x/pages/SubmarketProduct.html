@@ -40,24 +40,30 @@
 <template id="tmp-comp-submarket">
     <section class="mt-2" style="padding-bottom: 169px;padding-left: 20px;">
         <comp-filter-smarket @set:filter="$event => setFilter($event)"></comp-filter-smarket>
-        <h1>{{$store.state.ContextLang.ProductGroups}}</h1>
-        <draggable v-model="ProductGroups" v-bind="dragOptions" 
-            class="d-inline-block"> 
-            <transition-group>
-                <div v-for="prg in ProductGroups" 
-                  :key="prg.Id"
-                  class="d-inline-block ui button"
-                  style="margin-right: 6px; padding: 0;"
-                  :class="[$root.ActviePrGrpIds.includes(prg.Id) ? 'positive' : '']" 
-                  @dblclick="e => openFormSmp(5, prg)">
-                <div class="d-inline-block" style="padding: .78571429em 1.5em;" 
-                  :data-content="18 < prg.Name.length ? prg.Name : null"
-                  @mouseenter="onMouseEnter"
-                  @click.stop="e => $root.activeItem(5, prg)">{{$root.viewName(prg.Name, 5)}}</div>
-              </div>
-            </transition-group>
-        </draggable>
-        <div class="d-inline-block ui primary button" 
-            @click.stop="e => openFormSmp(5)">+ {{$store.state.ContextLang.ProductGroups}}</div>
+        <article v-if="1 == $root.ProcessState">
+            <button>Action plan</button><button>Eval submarkets</button>
+            <button>Porfolio analysis</button><button>Submarket strategy</button>
+            <button>Volume plan</button>
+            <h1>{{$store.state.ContextLang.ProductGroups}}</h1>
+            <draggable v-model="ProductGroups" v-bind="dragOptions" 
+                class="d-inline-block"> 
+                <transition-group>
+                    <div v-for="prg in ProductGroups" 
+                    :key="prg.Id"
+                    class="d-inline-block ui button"
+                    style="margin-right: 6px; padding: 0;"
+                    :class="[$root.ActviePrGrpIds.includes(prg.Id) ? 'positive' : '']" 
+                    @dblclick="e => openFormSmp(5, prg)">
+                    <div class="d-inline-block" style="padding: .78571429em 1.5em;" 
+                    :data-content="18 < prg.Name.length ? prg.Name : null"
+                    @mouseenter="onMouseEnter"
+                    @click.stop="e => $root.activeItem(5, prg)">{{$root.viewName(prg.Name, 5)}}</div>
+                </div>
+                </transition-group>
+            </draggable>
+            <div class="d-inline-block ui primary button" 
+                @click.stop="e => openFormSmp(5)">+ {{$store.state.ContextLang.ProductGroups}}</div>
+        </article>
+        
     </section>
 </template>
