@@ -175,16 +175,14 @@ const MsFilterSubMarket = {
             const cCrites = this.Criterials
             if (!isChange.call(this)) return;
             this.$root.SubMarketCrites = JSON.parse(JSON.stringify(cCrites))
-            
-            console.log('set filter')
+            //console.log('set filter')
             function isChange() {
                 if (rCrites.length != cCrites.length) return true;
                 for (let cc = 0, lstR, rLstR; cc < cCrites.length; cc++) {
-                    lstR = cCrites[cc]
-                    rLstR = rCrites[cc]
+                    lstR = cCrites[cc]; rLstR = rCrites[cc];
                     if (lstR.length != rLstR.length) return true;
                     for (let rr = 0, itm, rItm; rr < lstR.length; rr++) {
-                        rItm = rLstR[rr]; itm = lstR[rr]
+                        rItm = rLstR[rr]; itm = lstR[rr];
                         if (itm.toString() != rItm.toString()) return true;
                     }
                 }
@@ -192,10 +190,10 @@ const MsFilterSubMarket = {
             }
         },
         resetFilter() { 
-            for(let ii = this.Criterials.length - 1; 1 < ii; ii--) {
-                this.Criterials.splice(ii, 1)
-            }
-            if(1 < this.Criterials.length) {
+            const cCrites = this.Criterials
+            for(let ii = cCrites.length - 1; 1 < ii; ii--) cCrites.splice(ii, 1)
+            if(1 < cCrites.length) {
+               // cCrites[1][1].splice(0)
                 this.Criterials[1] = [FTypeId.PleaseSelect, []]
             }
             this.setFilter()
