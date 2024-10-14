@@ -175,7 +175,7 @@ const MsFilterSubMarket = {
             const cCrites = this.Criterials
             if (!isChange.call(this)) return;
             this.$root.SubMarketCrites = JSON.parse(JSON.stringify(cCrites))
-            //this.$emit('set:filter', [landIds, marketIds])
+            
             console.log('set filter')
             function isChange() {
                 if (rCrites.length != cCrites.length) return true;
@@ -191,7 +191,15 @@ const MsFilterSubMarket = {
                 return false;
             }
         },
-        resetFilter() { },
+        resetFilter() { 
+            for(let ii = this.Criterials.length - 1; 1 < ii; ii--) {
+                this.Criterials.splice(ii, 1)
+            }
+            if(1 < this.Criterials.length) {
+                this.Criterials[1] = [FTypeId.PleaseSelect, []]
+            }
+            this.setFilter()
+        },
         addFilter() { this.Criterials.push([FTypeId.ProductGroups_Product, [FTypeId.SelectAll, FTypeId.SelectAll]]) },
     },
 }
