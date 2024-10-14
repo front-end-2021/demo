@@ -285,7 +285,7 @@ export default {
                 mrk = lstMrk[mm]
                 mrk.SubMarkets = this.$store.getters.SortItemsByParent([6, [mrk.Id], subMarketIds])
             }
-
+            this.Markets = lstMrk;
             function checkRmv0(lstId){
                 if(lstId.length < 2) return
                 for(let ii = 0; ii < lstId.length; ii++) {
