@@ -169,13 +169,7 @@ const MsFilterSubMarket = {
     },
     methods: {
         setTypeIds(iic, typeIds) { this.Criterials.splice(iic, 1, typeIds) },
-        removeCriterial(iic) { this.Criterials.splice(iic, 1); return;
-            const cpCrites = JSON.parse(JSON.stringify(this.Criterials))
-            console.log('remove ', JSON.parse(JSON.stringify(cpCrites)))
-            cpCrites.splice(iic, 1) 
-            console.log('remove 2 ', cpCrites)
-            this.Criterials = cpCrites
-        },
+        removeCriterial(iic) { this.Criterials.splice(iic, 1) },
         setFilter() {
             const rCrites = this.$root.SubMarketCrites
             const cCrites = this.Criterials
