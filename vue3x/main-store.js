@@ -222,6 +222,13 @@ export default createStore({
                         lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
                     }
                 break;
+                case 4: // Products by PrdGroupId
+                    if(ptIds.length) lst = buildListBy.call(state.Products, ptIds, (itm) => ptIds.includes(itm.PrdGroupId))
+                    else lst = buildListBy.call(state.Products, [0])
+                    if(Array.isArray(ids) && ids.length && !ids.includes(0)) {
+                        lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
+                    }
+                break;
             }
             if(1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
             return lst
