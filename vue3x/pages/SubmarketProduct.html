@@ -49,16 +49,16 @@
                 class="d-inline-block"> 
                 <transition-group>
                     <div v-for="prg in ProductGroups" 
-                    :key="prg.Id"
-                    class="d-inline-block ui button"
-                    style="margin-right: 6px; padding: 0;"
-                    :class="[$root.ActviePrGrpIds.includes(prg.Id) ? 'positive' : '']" 
-                    @dblclick="e => openFormSmp(5, prg)">
-                    <div class="d-inline-block" style="padding: .78571429em 1.5em;" 
-                    :data-content="18 < prg.Name.length ? prg.Name : null"
-                    @mouseenter="onMouseEnter"
-                    @click.stop="e => $root.activeItem(5, prg)">{{$root.viewName(prg.Name, 5)}}</div>
-                </div>
+                        :key="prg.Id"
+                        class="d-inline-block ui button"
+                        style="margin-right: 6px; padding: 0;"
+                        :class="[$root.ActviePrGrpIds.includes(prg.Id) ? 'positive' : '']" 
+                        @dblclick="e => openFormSmp(5, prg)">
+                        <div class="d-inline-block" style="padding: .78571429em 1.5em;" 
+                        :data-content="18 < prg.Name.length ? prg.Name : null"
+                        @mouseenter="onMouseEnter"
+                        @click.stop="e => $root.activeItem(5, prg)">{{$root.viewName(prg.Name, 5)}}</div>
+                    </div>
                 </transition-group>
             </draggable>
             <div class="d-inline-block ui primary button" 

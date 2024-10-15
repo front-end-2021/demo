@@ -50,7 +50,7 @@ const FCriterialSmk = {
                 const itmSelctAll = {
                     Id: FTypeId.SelectAll, Name: this.$store.getters.txtFilter(FTypeId.SelectAll)
                 }
-                let parentId = this.parentId(this.typeId, this.index) 
+                let parentId = this.parentId(this.typeId, this.index)
                 switch (this.typeId) {
                     case FTypeId.ProductGroups_Product:
                         ignIds = this.ignoreIds(FTypeId.ProductGroups_Product, 0, this.index)
@@ -75,30 +75,12 @@ const FCriterialSmk = {
                     default: break;
                 }
                 function pruneList(lst, fnc) {
-                    for(let il = lst.length - 1; -1 < il; il--) {
-                        if(fnc(lst[il])) lst.splice(il, 1)
+                    for (let il = lst.length - 1; -1 < il; il--) {
+                        if (fnc(lst[il])) lst.splice(il, 1)
                     }
                 }
             }
             return []
-        },
-        ItemSelectLand() {
-            return {
-                Id: FTypeId.SelectLand, // -29
-                Name: this.$store.getters.txtFilter(FTypeId.SelectLand)
-            }
-        },
-        ItemSelectRegion() {
-            return {
-                Id: FTypeId.SelectRegion, // -30
-                Name: this.$store.getters.txtFilter(FTypeId.SelectRegion)
-            }
-        },
-        ItemSelectAll() {
-            return {
-                Id: FTypeId.SelectAll, // 0
-                Name: this.$store.getters.txtFilter(FTypeId.SelectAll)
-            }
         },
     },
     methods: {
@@ -143,12 +125,6 @@ const MsFilterSubMarket = {
         'comp-criterial-smarket': FCriterialSmk,
     },
     emits: ['set:filter'],
-    beforeCreate() {
-        const rootCrs = this.$root.SubMarketCrites
-        if (!rootCrs.length) {
-            rootCrs.push([FTypeId.PleaseSelect, [FTypeId.SelectLand, FTypeId.SelectRegion]])
-        }
-    },
     data() {
         return {
             Criterials: JSON.parse(JSON.stringify(this.$root.SubMarketCrites)),    // [Type, Ids]
@@ -249,6 +225,12 @@ export default {
             }
         },
     },
+    beforeCreate() {
+        const rootCrs = this.$root.SubMarketCrites
+        if (!rootCrs.length) {
+            rootCrs.push([FTypeId.PleaseSelect, [FTypeId.SelectLand, FTypeId.SelectRegion]])
+        }
+    },
     methods: {
         openFormSmp(type, eItem) {
             const iProject = this.$root.IndexProject
@@ -287,30 +269,44 @@ export default {
         },
         setFilter(cCrites) {
             this.$root.SubMarketCrites = cCrites
-            const landId = cCrites[0][1][0]
-            const regionId = cCrites[0][1][1]
-            let prdGrpIds = cCrites.filter(x => x[0] == FTypeId.ProductGroups_Product)
-            let productIds = prdGrpIds.map(x => x[1][1])
-            prdGrpIds = prdGrpIds.map(x => x[1][0])
-            let marketIds = cCrites.filter(x => x[0] == FTypeId.MarketSegments_Submarket)
-            let subMarketIds = marketIds.map(x => x[1][1])
-            marketIds = marketIds.map(x => x[1][0])
-            checkRmv0(prdGrpIds)
-            checkRmv0(productIds)
-            checkRmv0(marketIds)
-            checkRmv0(subMarketIds)
-            console.group('set filter subMrk ', landId, regionId)
-            console.log('product grp and product ', prdGrpIds, productIds)
-            console.log('market and submarket ', marketIds, subMarketIds)
-            console.groupEnd()
-            this.ProductGroups = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
-            this.Products = this.$store.getters.SortItemsByParent([4, prdGrpIds, productIds])
-            const lstMrk = this.$store.getters.SortItemsByParent([5, [landId], marketIds])
-            for (let mm = 0, mrk; mm < lstMrk.length; mm++) {
-                mrk = lstMrk[mm]
-                mrk.SubMarkets = this.$store.getters.SortItemsByParent([6, [mrk.Id], subMarketIds])
+            this.buildData(cCrites)
+        },
+        buildData(cCrites) {
+            this.$root.ProcessState = 0
+            
+            const process = () => {
+                let landId = cCrites[0][1][0]
+                if(landId < 0) landId = 0
+                let regionId = cCrites[0][1][1]
+                if(regionId < 0) regionId = 0
+                let prdGrpIds = cCrites.filter(x => x[0] == FTypeId.ProductGroups_Product)
+                let productIds = prdGrpIds.map(x => x[1][1])
+                prdGrpIds = prdGrpIds.map(x => x[1][0])
+                let marketIds = cCrites.filter(x => x[0] == FTypeId.MarketSegments_Submarket)
+                let subMarketIds = marketIds.map(x => x[1][1])
+                marketIds = marketIds.map(x => x[1][0])
+                checkRmv0(prdGrpIds)
+                checkRmv0(productIds)
+                checkRmv0(marketIds)
+                checkRmv0(subMarketIds)
+                console.group('build data subMrk ', landId, regionId)
+                console.log('product grp and product ', prdGrpIds, productIds)
+                console.log('market and submarket ', marketIds, subMarketIds)
+                console.groupEnd()
+                const lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
+                const lstPrd = this.$store.getters.SortItemsByParent([4, prdGrpIds, productIds])
+                const lstMrk = this.$store.getters.SortItemsByParent([5, [landId], marketIds])
+                for (let mm = 0, mrk; mm < lstMrk.length; mm++) {
+                    mrk = lstMrk[mm]
+                    mrk.SubMarkets = this.$store.getters.SortItemsByParent([6, [mrk.Id], subMarketIds])
+                }
+                this.ProductGroups = lstPrG;
+                this.Products = lstPrd;
+                this.Markets = lstMrk;
+                this.$root.ProcessState = 1
             }
-            this.Markets = lstMrk;
+            setTimeout(process, 123)
+            
             function checkRmv0(lstId) {
                 if (lstId.length < 2) return
                 for (let ii = 0; ii < lstId.length; ii++) {
@@ -324,5 +320,9 @@ export default {
                 }
             }
         },
+    },
+    beforeMount() {
+        const cCrites = this.$root.SubMarketCrites
+        this.buildData(cCrites)
     },
 }

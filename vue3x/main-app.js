@@ -43,7 +43,7 @@ Promise.all([
                 
                 MarketCriterias: [],    // [Type, Ids]
                 SubMarketCrites: [],    // [Type, Ids]
-                ProcessState: 0,    // loading, success
+                ProcessState: 0,    // loading (0), success (1)
                 PopupMenu: null,
                 DragDrop: null,
                 PopTooltip: null,
@@ -191,7 +191,6 @@ Promise.all([
                 this.IndexPage = getLocal(6)
             })
         },
-        //beforeMount() { console.log('before mount', this) },
         mounted() {
             values.forEach((path, ii) => {
                 // console.log(path, ii)
