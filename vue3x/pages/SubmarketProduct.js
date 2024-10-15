@@ -297,11 +297,12 @@ export default {
                 checkRmv0(productIds)
                 checkRmv0(marketIds)
                 checkRmv0(subMarketIds)
-                console.group('build data subMrk ', landId, regionId)
-                console.log('product grp and product ', prdGrpIds, productIds)
-                console.log('market and submarket ', marketIds, subMarketIds)
-                console.groupEnd()
-                const lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
+                let lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
+                if(0 < landId && regionId < 1) {
+                    let lstRg = this.$store.getters.SortItemsByParent([2, [landId]])
+                    let rgIds = lstRg.map(x => x.Id)
+                    lstPrG = this.$store.getters.SortItemsByParent([3, rgIds, prdGrpIds])
+                }
                 const lstPrd = this.$store.getters.SortItemsByParent([4, prdGrpIds, productIds])
                 const lstMrk = this.$store.getters.SortItemsByParent([5, [landId], marketIds])
                 for (let mm = 0, mrk; mm < lstMrk.length; mm++) {
@@ -313,7 +314,7 @@ export default {
                 this.Markets = lstMrk;
                 this.$root.ProcessState = 1
             }
-            setTimeout(process, 123)
+            setTimeout(process, 111)
 
             function checkRmv0(lstId) {
                 if (lstId.length < 2) return
