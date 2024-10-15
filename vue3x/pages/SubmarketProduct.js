@@ -38,11 +38,13 @@ const FCriterialSmk = {
         SrcIds() {
             let ignIds = []
             let lst1 = [], lst2 = []
-            if (0 == this.index) {
-                lst1 = this.$store.getters.SortedItems([1, [0], ignIds])
+            if (0 == this.index) {              // Land/Region
+                lst1 = this.$store.getters.SortedItems([1, [0], []])
                 lst1.unshift({ Id: FTypeId.SelectLand, Name: this.$store.getters.txtFilter(FTypeId.SelectLand) })
 
-                lst2 = this.$store.getters.SortedItems([3, [0], ignIds])
+                const landId = this.listId[0]
+                if (landId < 1) lst2 = this.$store.getters.SortedItems([3, [0], []])
+                else lst2 = this.$store.getters.SortItemsByParent([2, [landId]])
                 lst2.unshift({ Id: FTypeId.SelectRegion, Name: this.$store.getters.txtFilter(FTypeId.SelectRegion) })
                 return [lst1, lst2]
             } else {
@@ -55,21 +57,27 @@ const FCriterialSmk = {
                     case FTypeId.ProductGroups_Product:
                         ignIds = this.ignoreIds(FTypeId.ProductGroups_Product, 0, this.index)
                         lst1 = this.$store.getters.SortedItems([5, [0], ignIds])
-                        pruneList(lst1, (itm) => itm.RegionId == parentId)
+                        if (0 < parentId) pruneList(lst1, (itm) => itm.RegionId != parentId)
                         lst1.unshift(itmSelctAll)
 
                         ignIds = this.ignoreIds(FTypeId.ProductGroups_Product, 1, this.index)
                         lst2 = this.$store.getters.SortedItems([8, [0], ignIds])
+                        const pgId = this.listId[0]
+                        if (0 < pgId) {
+                            pruneList(lst2, (itm) => pgId != itm.PrdGroupId)
+                        }
                         lst2.unshift(itmSelctAll)
                         return [lst1, lst2]
                     case FTypeId.MarketSegments_Submarket:
                         ignIds = this.ignoreIds(FTypeId.MarketSegments_Submarket, 0, this.index)
                         lst1 = this.$store.getters.SortedItems([2, [0], ignIds])
-                        pruneList(lst1, (itm) => itm.LandId == parentId)
+                        if (0 < parentId) pruneList(lst1, (itm) => itm.LandId != parentId)
                         lst1.unshift(itmSelctAll)
 
                         ignIds = this.ignoreIds(FTypeId.MarketSegments_Submarket, 1, this.index)
                         lst2 = this.$store.getters.SortedItems([4, [0], ignIds])
+                        const smId = this.listId[0]
+                        if (0 < smId) pruneList(lst2, (itm) => smId != itm.MarketId)
                         lst2.unshift(itmSelctAll)
                         return [lst1, lst2]
                     default: break;
@@ -273,12 +281,12 @@ export default {
         },
         buildData(cCrites) {
             this.$root.ProcessState = 0
-            
+
             const process = () => {
                 let landId = cCrites[0][1][0]
-                if(landId < 0) landId = 0
+                if (landId < 0) landId = 0
                 let regionId = cCrites[0][1][1]
-                if(regionId < 0) regionId = 0
+                if (regionId < 0) regionId = 0
                 let prdGrpIds = cCrites.filter(x => x[0] == FTypeId.ProductGroups_Product)
                 let productIds = prdGrpIds.map(x => x[1][1])
                 prdGrpIds = prdGrpIds.map(x => x[1][0])
@@ -306,7 +314,7 @@ export default {
                 this.$root.ProcessState = 1
             }
             setTimeout(process, 123)
-            
+
             function checkRmv0(lstId) {
                 if (lstId.length < 2) return
                 for (let ii = 0; ii < lstId.length; ii++) {
@@ -319,6 +327,9 @@ export default {
                     if (lstId[ii] < 1) lstId.splice(ii, 1)
                 }
             }
+        },
+        onMouseEnter(e) {
+
         },
     },
     beforeMount() {
