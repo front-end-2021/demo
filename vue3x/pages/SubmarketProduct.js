@@ -10,7 +10,7 @@ const FCriterialSmk = {
     },
     //mixins: [MxFCriterial],
     emits: ['remove:item', 'set:typeids'],
-    inject: ['ignoreIds'],
+    inject: ['ignoreIds', 'parentId'],
     props: {
         index: Number,
         typeIds: {
@@ -50,10 +50,12 @@ const FCriterialSmk = {
                 const itmSelctAll = {
                     Id: FTypeId.SelectAll, Name: this.$store.getters.txtFilter(FTypeId.SelectAll)
                 }
+                let parentId = this.parentId(this.typeId, this.index) 
                 switch (this.typeId) {
                     case FTypeId.ProductGroups_Product:
                         ignIds = this.ignoreIds(FTypeId.ProductGroups_Product, 0, this.index)
                         lst1 = this.$store.getters.SortedItems([5, [0], ignIds])
+                        pruneList(lst1, (itm) => itm.RegionId == parentId)
                         lst1.unshift(itmSelctAll)
 
                         ignIds = this.ignoreIds(FTypeId.ProductGroups_Product, 1, this.index)
@@ -63,6 +65,7 @@ const FCriterialSmk = {
                     case FTypeId.MarketSegments_Submarket:
                         ignIds = this.ignoreIds(FTypeId.MarketSegments_Submarket, 0, this.index)
                         lst1 = this.$store.getters.SortedItems([2, [0], ignIds])
+                        pruneList(lst1, (itm) => itm.LandId == parentId)
                         lst1.unshift(itmSelctAll)
 
                         ignIds = this.ignoreIds(FTypeId.MarketSegments_Submarket, 1, this.index)
@@ -70,6 +73,11 @@ const FCriterialSmk = {
                         lst2.unshift(itmSelctAll)
                         return [lst1, lst2]
                     default: break;
+                }
+                function pruneList(lst, fnc) {
+                    for(let il = lst.length - 1; -1 < il; il--) {
+                        if(fnc(lst[il])) lst.splice(il, 1)
+                    }
                 }
             }
             return []
@@ -111,16 +119,16 @@ const FCriterialSmk = {
         },
     },
     beforeMount() {
-        if(this.typeIds.length) this.typeId = this.typeIds[0]
-        if(1 < this.typeIds.length) {
-            if(Array.isArray(this.typeIds[1])) this.listId = this.typeIds[1]
+        if (this.typeIds.length) this.typeId = this.typeIds[0]
+        if (1 < this.typeIds.length) {
+            if (Array.isArray(this.typeIds[1])) this.listId = this.typeIds[1]
         }
-    }, 
+    },
     watch: {
         typeIds(nwLst, olLst) {
             const nTyp = nwLst[0]
             const oTyp = olLst[0]
-            if(nTyp != oTyp) {
+            if (nTyp != oTyp) {
                 this.typeId = nTyp
             }
         },
@@ -149,12 +157,12 @@ const MsFilterSubMarket = {
     provide() {
         return {
             ignoreIds: (type, iid, ipos) => {
-                if(ipos < 1) return []
+                if (ipos < 1) return []
                 let lstCrit = []
-                for(let iii = this.Criterials.length - 1, cri; 0 < iii; iii--) {
-                    if(iii == ipos) continue;
+                for (let iii = this.Criterials.length - 1, cri; 0 < iii; iii--) {
+                    if (iii == ipos) continue;
                     cri = this.Criterials[iii]
-                    if(type != cri[0]) continue;
+                    if (type != cri[0]) continue;
                     lstCrit.push(cri[1][iid])
                 }
                 if (!lstCrit.length) return []
@@ -165,20 +173,20 @@ const MsFilterSubMarket = {
                 }
                 return lstCrit
             },
-            parentIds: (type, iid, ipos) => {
-                let pId = 0, 
-                    cRit = this.Criterials[0]
-                switch(type) {
+            parentId: (type, ipos, iid) => {
+                let pId = 0,
+                    cRit = this.Criterials[0];
+                switch (type) {
                     case FTypeId.ProductGroups_Product:
-                        if(0 == ipos && 0 < cRit[1][1]) {
+                        if (1 == ipos && 0 <= cRit[1][1]) {
                             pId = cRit[1][1]
                         }
-                    return pId;
+                        return pId;
                     case FTypeId.MarketSegments_Submarket:
-                        if(0 == ipos && 0 < cRit[1][0]) {
+                        if (0 == ipos && 0 <= cRit[1][0]) {
                             pId = cRit[1][0]
                         }
-                    return pId;
+                        return pId;
                 }
                 return pId;
             },
@@ -205,11 +213,11 @@ const MsFilterSubMarket = {
                 return false;
             }
         },
-        resetFilter() { 
+        resetFilter() {
             const cCrites = this.Criterials
-            for(let ii = cCrites.length - 1; 1 < ii; ii--) cCrites.splice(ii, 1)
-            if(1 < cCrites.length) {
-               // cCrites[1][1].splice(0)
+            for (let ii = cCrites.length - 1; 1 < ii; ii--) cCrites.splice(ii, 1)
+            if (1 < cCrites.length) {
+                // cCrites[1][1].splice(0)
                 this.Criterials[1] = [FTypeId.PleaseSelect, []]
             }
             this.setFilter()
@@ -298,21 +306,21 @@ export default {
             this.ProductGroups = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
             this.Products = this.$store.getters.SortItemsByParent([4, prdGrpIds, productIds])
             const lstMrk = this.$store.getters.SortItemsByParent([5, [landId], marketIds])
-            for(let mm = 0, mrk; mm < lstMrk.length; mm++) {
+            for (let mm = 0, mrk; mm < lstMrk.length; mm++) {
                 mrk = lstMrk[mm]
                 mrk.SubMarkets = this.$store.getters.SortItemsByParent([6, [mrk.Id], subMarketIds])
             }
             this.Markets = lstMrk;
-            function checkRmv0(lstId){
-                if(lstId.length < 2) return
-                for(let ii = 0; ii < lstId.length; ii++) {
-                    for(let jj = lstId.length - 1; ii < jj; jj--) {
-                        if(lstId[jj] == lstId[ii]) lstId.splice(jj, 1)
+            function checkRmv0(lstId) {
+                if (lstId.length < 2) return
+                for (let ii = 0; ii < lstId.length; ii++) {
+                    for (let jj = lstId.length - 1; ii < jj; jj--) {
+                        if (lstId[jj] == lstId[ii]) lstId.splice(jj, 1)
                     }
                 }
-                if(!lstId.filter(x => 0 < x).length) return
-                for(let ii = lstId.length - 1; -1 < ii; ii--) {
-                    if(lstId[ii] < 1) lstId.splice(ii, 1)
+                if (!lstId.filter(x => 0 < x).length) return
+                for (let ii = lstId.length - 1; -1 < ii; ii--) {
+                    if (lstId[ii] < 1) lstId.splice(ii, 1)
                 }
             }
         },
