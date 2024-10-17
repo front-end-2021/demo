@@ -161,15 +161,13 @@ const MxMarketRegion = {
         },
     },
     mounted() {
-        console.log('mounted')
+       // console.log('mounted')
         this.$nextTick(() => {
-            setTimeout(() => {
-                this.$el.querySelector(`.dnbRegionName`).focus()
-            }, 1234)
+            this.$el.querySelector(`.dnbRegionName`).focus()
         })
     },
     updated() {
-        console.log('upated')
+      //  console.log('upated')
     },
 }
 export const CompFormMarket = {

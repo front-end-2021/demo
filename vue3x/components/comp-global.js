@@ -13,7 +13,7 @@ export const DropSelect = {
             this.$emit('set:index', value)
         }
         $(this.$el).dropdown({
-            onChange: changeDrp
+            onChange: changeDrp,
         })
     },
     methods: {
@@ -40,7 +40,6 @@ export const DropSelect = {
             }
         },
     },
-
 }
 export const SRange = {
     template: `#tmp-comp-s-range`,
@@ -48,12 +47,12 @@ export const SRange = {
         min: { type: Number, default: -10 },
         max: { type: Number, default: 10 },
         start: Number,
-        labelType: { 
+        labelType: {
             type: String, default: 'number'//'letter
         },
         step: { type: Number, default: 1 },
-        style: { 
-            type: Object, default: { width: '120px' } 
+        style: {
+            type: Object, default: { width: '120px' }
         }
     },
     emits: ['set:value'],
@@ -83,26 +82,23 @@ export const DropSelection = {
         id: Number,
     },
     emits: ['set:id'],
-    computed: { 
-        SelectView(){
+    computed: {
+        SelectView() {
             let item = this.items.find(x => x.Id == this.id)
-            if(item) return item.Name
-            if(!this.items.length) return 'Dropdown Selection'
+            if (item) return item.Name
+            if (!this.items.length) return 'Dropdown Selection'
             this.$emit('set:id', this.items[0].Id)
             return this.items[0].Name
         },
     },
     mounted() {
-        const changeDrp = (value, text, $selectedItem) => {
-            this.$emit('set:id', parseInt(value))
-        }
-        $(this.$el).dropdown({
-            onChange: changeDrp
+        this.$nextTick(function () {
+            const changeDrp = (value, text, $selectedItem) => {
+                this.$emit('set:id', parseInt(value))
+            }
+            $(this.$el).dropdown({
+                onChange: changeDrp
+            })
         })
     },
-    // watch: {
-    //     items(nwLst) {
-
-    //      },
-    // },
 }
