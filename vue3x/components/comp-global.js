@@ -15,6 +15,7 @@ export const DropSelect = {
         $(this.$el).dropdown({
             onChange: changeDrp,
         })
+        console.log('mounted drop select')
     },
     methods: {
         isActive(ii) {

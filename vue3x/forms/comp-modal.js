@@ -161,9 +161,12 @@ const MxMarketRegion = {
         },
     },
     mounted() {
-       // console.log('mounted')
+        console.log('mounted form region')
         this.$nextTick(() => {
+            const drp = this.$el.querySelectorAll(`.ui.selection.dropdown.grp-dropdown-min.active.visible`)
+            console.log('next tick mounted form region', drp)
             this.$el.querySelector(`.dnbRegionName`).focus()
+
         })
     },
     updated() {
