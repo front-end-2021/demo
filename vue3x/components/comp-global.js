@@ -1,6 +1,5 @@
 
-export const DropSelect = {
-    template: `#tmp-comp-drop-select`,
+export const MxDropSelect = {
     props: {
         items: Array,
         index: Number,
@@ -8,15 +7,6 @@ export const DropSelect = {
         name: String,
     },
     emits: ['set:index'],
-    mounted() {
-        const changeDrp = (value, text, $selectedItem) => {
-            this.$emit('set:index', value)
-        }
-        $(this.$el).dropdown({
-            onChange: changeDrp,
-        })
-        console.log('mounted drop select')
-    },
     methods: {
         isActive(ii) {
             if (typeof this.name == 'string') {
@@ -40,6 +30,18 @@ export const DropSelect = {
                 return this.items[ii].Name
             }
         },
+    },
+}
+export const DropSelect = {
+    template: `#tmp-comp-drop-select`,
+    mixins: [MxDropSelect],
+    mounted() {
+        const changeDrp = (value, text, $selectedItem) => {
+            this.$emit('set:index', value)
+        }
+        $(this.$el).dropdown({
+            onChange: changeDrp,
+        })
     },
 }
 export const SRange = {

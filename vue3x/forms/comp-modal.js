@@ -1,4 +1,5 @@
 import { deepCopy } from '../common.js'
+import { MxDropSelect } from '../components/comp-global.js'
 const MxModal = {
     props: {
         moItem: Object
@@ -159,13 +160,16 @@ const MxMarketRegion = {
             if (!land) land = this.LandActives[0]
             this.moItem.data.LandId = land.Id
         },
+        forcusName(){
+            this.$el.querySelector(`.dnbRegionName`).focus()
+        },
     },
     mounted() {
-        console.log('mounted form region')
+        console.log('mounted form region ,mix')
         this.$nextTick(() => {
             const drp = this.$el.querySelectorAll(`.ui.selection.dropdown.grp-dropdown-min.active.visible`)
             console.log('next tick mounted form region', drp)
-            this.$el.querySelector(`.dnbRegionName`).focus()
+           // this.$el.querySelector(`.dnbRegionName`).focus()
 
         })
     },
@@ -201,10 +205,35 @@ export const CompFormMarket = {
         },
     },
 }
+const DropRgn = {
+    template: `#tmp-comp-drop-select`,
+    mixins: [MxDropSelect],
+    inject: ['setListDrp' ],
+    mounted() {
+        const onChange = (value, text, $selectedItem) => {
+            this.$emit('set:index', value)
+        }
+        const onShow = () => {
+            console.log(' onshow')
+        }
+        $(this.$el).dropdown({
+            onChange,
+            onShow
+        })
+        this.setListDrp(this)
+    },
+}
 export const CompFormRegion = {
     template: `#tmp-comp-form-region`,
     mixins: [MxModal, MxFormLandRegion, MxMarketRegion],
-
+    components: {
+        'drop-rselect': DropRgn,
+    },
+    data(){
+        return {
+            ListDrp: []
+        }
+    },
     computed: {
         Currencies() {
             return ['CHF', 'USD', 'VND']
@@ -214,5 +243,26 @@ export const CompFormRegion = {
         setCurrency(value) {
             this.moItem.data.Currency = this.Currencies[value]
         },
+    },
+    provide(){
+        return {
+            setListDrp: (drpCmp) => {
+                let ii = this.ListDrp.findIndex(x => Object.is(x, drpCmp))
+                if(ii < 0) this.ListDrp.push(drpCmp)
+                else {
+                    
+                }
+                if(2 == this.ListDrp.length) {
+                    this.$nextTick(() => {
+                        this.$el.querySelector(`.dnbRegionName`).focus()
+                        console.log('set list drop ')
+                    })
+                }
+            },
+        }
+    },
+    mounted() {
+        console.log('mounted form region')
+        
     },
 }

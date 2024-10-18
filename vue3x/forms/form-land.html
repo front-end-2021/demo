@@ -130,18 +130,18 @@
                     style="min-height: 180px; width: 570px;"></span>
                 <br>
                 <strong class="d-inline-block w81px py-2 pe-2">Land*</strong>
-                <drop-select :f-id="moItem.data.LandId" 
+                <drop-rselect :f-id="moItem.data.LandId" 
                     :items="LandActives" 
                     @set:index="$event => setLandInActive($event)"
                     :class="['grp-dropdown-min']">
                     <template #default>
                         <div class="text">{{LandActiveName}}</div>
                     </template>
-                </drop-select>
+                </drop-rselect>
                 <br>
                 <strong v-if="moItem.type == 'comp-form-region'"
                     class="d-inline-block w81px py-2 pe-2">Currency*</strong>
-                <drop-select v-if="moItem.type == 'comp-form-region'"
+                <drop-rselect v-if="moItem.type == 'comp-form-region'"
                     :name="moItem.data.Currency" 
                     :items="Currencies" 
                     @set:index="$event => setCurrency($event)"
@@ -149,7 +149,7 @@
                     <template #default>
                         <div class="text">{{moItem.data.Currency}}</div>
                     </template>
-                </drop-select>
+                </drop-rselect>
             </div>
         </div>
         <div class="actions">
