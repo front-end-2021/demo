@@ -40,11 +40,11 @@ export const CompModal = {
 }
 const MxFormLandRegion = {
     data() {
-        const land = this.moItem.data
+        const oItem = this.moItem.data
         return {
-            item: land,
-            name: land.Name,
-            des: land.Description
+            item: oItem,
+            name: oItem.Name,
+            des: oItem.Description,
         }
     },
     computed: {

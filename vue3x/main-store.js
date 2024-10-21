@@ -1,6 +1,6 @@
 import {
     ListPrj, Langs,
-    DemoLands, DemoRegions, 
+    DemoLands, DemoRegions,
     DemoPrdGroups, DemoProducts,
     DemoMarkets, DemoSubmarkets,
 } from './mock-data.js';
@@ -30,6 +30,8 @@ export default createStore({
         Submarkets: [], // DemoSubmarkets,
         ProductGroups: DemoPrdGroups,
         Products: DemoProducts,
+
+        WkMapDes: new WeakMap(),
 
         MarketRegions: [], // [{MarketId, RegionId, Criterias [], Active, Comment}]
         count: 0,
@@ -212,38 +214,38 @@ export default createStore({
         },
         SortItemsByParent: (state) => ([type, ptIds, ids]) => {
             let lst = []
-            switch(type) {
+            switch (type) {
                 case 2: // Regions by LandId
                     lst = buildListBy.call(state.Regions, ptIds, (itm) => ptIds.includes(itm.LandId))
-                break;
+                    break;
                 case 3: // Product groups by RegionId
                     lst = buildListBy.call(state.ProductGroups, ptIds, (itm) => ptIds.includes(itm.RegionId))
-                    if(Array.isArray(ids) && ids.length && !ids.includes(0)) {
+                    if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
                         lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
                     }
-                break;
+                    break;
                 case 4: // Products by PrdGroupId
-                    if(ptIds.length) 
+                    if (ptIds.length)
                         lst = buildListBy.call(state.Products, ptIds, (itm) => ptIds.includes(itm.PrdGroupId))
                     else lst = buildListBy.call(state.Products, [0])
-                    if(Array.isArray(ids) && ids.length && !ids.includes(0)) {
+                    if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
                         lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
                     }
-                break;
+                    break;
                 case 5: // Markets by LandId
                     lst = buildListBy.call(state.Markets, ptIds, (itm) => ptIds.includes(itm.LandId))
-                    if(Array.isArray(ids) && ids.length && !ids.includes(0)) {
+                    if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
                         lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
                     }
-                break;
+                    break;
                 case 6: // SubMarkets by MarketId
                     lst = buildListBy.call(state.Submarkets, ptIds, (itm) => ptIds.includes(itm.MarketId))
-                    if(Array.isArray(ids) && ids.length && !ids.includes(0)) {
+                    if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
                         lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
                     }
-                break;
+                    break;
             }
-            if(1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
+            if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
             return lst
         },
         MarketRegionBy: (state) => ([mId, rId]) => {
@@ -271,6 +273,15 @@ export default createStore({
             if (!allIds.length) return 1;
             allIds.sort((a, b) => b - a)        // decrease
             return allIds[0] + 1;
+        },
+        Des: (state) => (item) => { return state.WkMapDes.get(item) || '' },
+        isChangeDes: (state) => ([item, des]) => {
+            if (!state.WkMapDes.has(item)) {
+                if (typeof des != 'string' || '' == des.trim()) return false;
+                return true;
+            }
+            if (state.WkMapDes.get(item) != des) return true;
+            return false;
         },
     },
     mutations: {
@@ -364,6 +375,10 @@ export default createStore({
                         break;
                 }
             }
+        },
+        setDes(state, [item, des]) {
+            if (typeof des != 'string' || '' == des.trim()) return;
+            state.WkMapDes.set(item, des)
         },
     }
 })

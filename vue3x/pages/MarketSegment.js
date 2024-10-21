@@ -1,7 +1,9 @@
-import { FTypeId, MxFCriterial,
-    getLandMarketIds, commSelectTypeId } from "../components/dFilter.js";
+import {
+    FTypeId, MxFCriterial,
+    getLandMarketIds, commSelectTypeId
+} from "../components/dFilter.js";
 import { setLastState, getLastState, isDragDrop } from "../common.js";
-import { getMessCompare, overrideItem } from "../mock-data.js";
+import { getMessCompare, overrideItem, getCopyItem } from "../mock-data.js";
 import { getData } from "../repo-services.js";
 
 import { VueDraggableNext } from 'vue-draggable-next'
@@ -220,8 +222,8 @@ const MsFilterMarket = {
                 for (let ii = 0; ii < rLstC.length; ii++) {
                     const rCrite = rLstC[ii]
                     const crite = lstC[ii]
-                    if(!crite) continue;
-                    
+                    if (!crite) continue;
+
                     if (rCrite[0] != crite[0]) {
                         ii = removeAt(ii)
                         continue
@@ -362,11 +364,13 @@ export default {
             const iProject = this.$root.IndexProject
             if (!land) {        // add new
                 land = {
-                    Id: this.$store.getters.newNumId(1),
-                    Name: '', IsNew: false, Description: '',
-                    ASort: this.$store.getters.newASort(1)
+                    Id: this.$store.getters.newNumId(1), Name: '',
+                    IsNew: false, ASort: this.$store.getters.newASort(1)
                 }
                 const saveClose = (mLand) => {
+                    this.$store.commit('setDes', [land, mLand.Description])
+                    delete mLand.Description
+
                     overrideItem.call(land, mLand)
                     this.$store.commit('addUpdateLocal', [1, land, iProject])
 
@@ -488,12 +492,14 @@ export default {
             // add new
             if (!region) {
                 region = {
-                    Id: this.$store.getters.newNumId(2),
-                    Name: '', Description: '',
+                    Id: this.$store.getters.newNumId(2), Name: '',
                     LandId: landActiveIds[0], Currency: 'USD',
                     ASort: this.$store.getters.newASort(2)
                 }
                 const saveClose = (mRegion) => {
+                    this.$store.commit('setDes', [region, mRegion.Description])
+                    delete mRegion.Description
+
                     overrideItem.call(region, mRegion)
                     this.$store.commit('addUpdateLocal', [2, region, iProject])
                     this.resetRegion()
@@ -520,23 +526,32 @@ export default {
         openFormEdit(type, dItem) {
             const iProject = this.$root.IndexProject
             const landActiveIds = this.$root.ActiveLandIds
-            let saveClose, xClose, item
+            let saveClose, xClose, item, cpyItm;
             switch (type) {
                 case 2:     // Region
                     saveClose = (mRegion) => {
                         setLastState(2, 0)
+
+                        this.$store.commit('setDes', [dItem, mRegion.Description])
+                        delete mRegion.Description
+
                         overrideItem.call(dItem, mRegion)
                         this.$store.commit('addUpdateLocal', [2, null, iProject])
                         this.resetRegion()
                     }
                     xClose = (mRegion) => {
                         let mess = getMessCompare(dItem, mRegion)
+                        let newDes = mRegion.Description
+                        if (this.$store.getters.isChangeDes([dItem, newDes])) {
+                            if(!mess) mess = `Something changes: \n`
+                            mess += `Description : ${this.$store.getters.Des(dItem)} => ${newDes}`
+                        }
                         if (mess && confirm(mess)) saveClose(mRegion)
                         else setLastState(2, 0)
                     }
                     item = {
                         title: this.$store.state.ContextLang.TxtEdtRegion,  // Edit Region
-                        data: JSON.parse(JSON.stringify(dItem)),
+                        data: getCopyItem.call(this, dItem),
                         landActiveIds,
                         type: `comp-form-region`
                     }
@@ -741,7 +756,8 @@ export default {
         }
 
     },
-    mounted() { 
+    mounted() {
         //this.initDragDrop(2) 
+        this.$root.traceHeap('Market segment')
     },
 }

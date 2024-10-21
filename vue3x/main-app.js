@@ -3,9 +3,12 @@ import {
     getLocal, setLocal
 } from './common.js'
 import {
-    DropSelect, SRange, 
+    DropSelect, SRange,
 } from './components/comp-global.js'
-import { getMessCompare, overrideItem } from './mock-data.js'
+import {
+    getMessCompare, overrideItem,
+    getCopyItem
+} from './mock-data.js'
 import dnbStore from './main-store.js'
 import {
     CompModal, CompFormLand, CompFormRegion, CompFormMarket,
@@ -40,7 +43,7 @@ Promise.all([
                 TabStatus: [1, 1, 1, 1, 1], // [M@rk3t, SubM@rk3t, @ctionPl4n, Ro4dm@p, T3mB0@rd]
                 ActviePrGrpIds: [],
                 ActiveLandIds: [],
-                
+
                 MarketCriterias: [],    // [Type, Ids]
                 SubMarketCrites: [],    // [Type, Ids]
                 ProcessState: 0,    // loading (0), success (1)
@@ -110,17 +113,26 @@ Promise.all([
                 const iProject = this.IndexProject
                 const saveClose = (mLand) => {
                     setLastState(1, 0)
+
+                    this.$store.commit('setDes', [land, mLand.Description])
+                    delete mLand.Description
+
                     overrideItem.call(land, mLand)
                     this.$store.commit('addUpdateLocal', [1, null, iProject])
                 }
                 const xClose = (mLand) => {
                     setLastState(1, 0)
                     let mess = getMessCompare(land, mLand)
+                    let newDes = mLand.Description
+                    if (this.$store.getters.isChangeDes([land, newDes])) {
+                        if (!mess) mess = `Something changes: \n`
+                        mess += `Description : ${this.$store.getters.Des(land)} => ${newDes}`
+                    }
                     if (mess && confirm(mess)) saveClose(mLand)
                 }
                 const item = {
                     title: `Edit Land`,
-                    data: JSON.parse(JSON.stringify(land)),
+                    data: getCopyItem.call(this, land),
                     type: `comp-form-land`
                 }
                 this.$store.commit('setModal', [item, saveClose, xClose])
@@ -179,6 +191,16 @@ Promise.all([
                 }
 
             },
+            traceHeap(mess) {
+                if (performance.memory) {
+                    let memoryUsage = performance.memory.usedJSHeapSize;
+                    memoryUsage = memoryUsage / 1024
+                    memoryUsage = memoryUsage / 1024
+                    console.log(`${mess} used JS heap size: ${Math.ceil(memoryUsage)} M.Bytes`);
+                } else {
+                    console.log('The performance.memory API is not supported in this environment.');
+                }
+            },
         },
         //  beforeCreate() { },
         created() {
@@ -197,6 +219,7 @@ Promise.all([
                 let pDom = document.body.querySelector(`.dnbimporthtml[dnbpath="${path}"]`)
                 if (pDom) pDom.remove();
             })
+            this.traceHeap('Main App')
         },
     })
     app.use(dnbStore)
