@@ -198,7 +198,7 @@ Promise.all([
                     case 1:     // Land
                         text = this.$store.getters.Des(item)
                         offTarget = e.target.getBoundingClientRect()
-                        console.log(e, offTarget)
+                      //  console.log(e, offTarget)
                         if (text) {
                             this.Popup_UI = {
                                 type: 2,
