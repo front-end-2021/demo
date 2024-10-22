@@ -19,7 +19,7 @@ const CellValuation = {
     },
     computed: {
         IsShowMenu() {
-            const popMenu = this.$root.PopupMenu
+            const popMenu = this.$root.Popup_UI
             if (Object.is(popMenu, null)) return false;
             if (typeof popMenu != 'object') return false;
             if (popMenu.type != 1) return false;
@@ -43,7 +43,7 @@ const CellValuation = {
                 land = land.Name + (land.IsNew ? ' *' : '')
             } else land = 'LAND'
 
-            this.$root.clearPopupMenu(1)
+            this.$root.clearPopupUI(1)
 
             this.$store.dispatch('openFormValue',
                 [market.Id, region.Id]).then(([ii, item]) => {
@@ -61,7 +61,7 @@ const CellValuation = {
 
         },
         toggleMenuValuation(imk, irg) {
-            this.$root.PopupMenu = {
+            this.$root.Popup_UI = {
                 type: 1,
                 imarket: imk,
                 iregion: irg
@@ -430,7 +430,7 @@ export default {
         },
         onClickTab(e) {
             //console.log('on click tab', e.target, e)
-            this.$root.clearPopupMenu(1)
+            this.$root.clearPopupUI(1)
         },
         hasExistMarketName(mMarket, elName) {
             const allMarket = this.$store.getters.SortedItems([2, [0], []])

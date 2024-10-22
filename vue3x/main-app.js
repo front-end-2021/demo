@@ -47,9 +47,8 @@ Promise.all([
                 MarketCriterias: [],    // [Type, Ids]
                 SubMarketCrites: [],    // [Type, Ids]
                 ProcessState: 0,    // loading (0), success (1)
-                PopupMenu: null,
                 DragDrop: null,
-                PopTooltip: null,
+                Popup_UI: null,  // 
                 UserInfo: {
                     img: `https://allimages.sgp1.digitaloceanspaces.com/tipeduvn/2022/01/1642393308_940_Hinh-Anh-Girl-Xinh-Viet-Nam-Dep-De-Thuong-Cute.jpg`,
                     header: `Profile`,
@@ -77,6 +76,12 @@ Promise.all([
                 const iPrj = this.IndexProject
                 if (iPrj < 0) return ''
                 return this.$store.state.Projects[iPrj].Name
+            },
+            IsShowTooltip() {
+                const popTlp = this.Popup_UI
+                if (Object.is(popTlp, null)) return false;
+                if (1 == popTlp.type) return false;
+                return true;
             },
         },
         watch: {
@@ -133,14 +138,14 @@ Promise.all([
                 }
                 this.$store.commit('setModal', [item, saveClose, xClose])
             },
-            clearPopupMenu(type) {
-                const popMenu = this.$root.PopupMenu
+            clearPopupUI(type) {
+                const popMenu = this.Popup_UI
                 if (Object.is(popMenu, null)) return;
                 switch (type) {
                     case 1:     // Menu valuation
                         if (typeof popMenu != 'object') return;
                         if (popMenu.type != 1) return;
-                        this.$root.PopupMenu = null;
+                        this.Popup_UI = null;
                         break;
                     default: break;
                 }
@@ -186,6 +191,41 @@ Promise.all([
                         break;
                 }
 
+            },
+            onMouseOver(type, item, e) {
+                let text, offTarget;
+                switch (type) {
+                    case 1:     // Land
+                        text = this.$store.getters.Des(item)
+                        offTarget = e.target.getBoundingClientRect()
+                        console.log(e, offTarget)
+                        if (text) {
+                            this.Popup_UI = {
+                                type: 2,
+                                BodyText: text,
+                                Style: {
+                                    top: `${offTarget.top + offTarget.height}px`,
+                                    left: `${offTarget.left}px`,
+                                    minWidth: `${offTarget.width}px`,
+                                    minHeight: `${offTarget.height}px`
+                                },
+                                StyleArr: { transform: `translateX(${offTarget.width / 2 - 8}px)`},
+                                placement: 'bottom'
+                            }
+                        }
+
+                        break;
+
+                }
+            },
+            onMouseOut(type, item, e) {
+                switch (type) {
+                    case 1:     // Land
+
+                        break;
+
+                }
+                this.Popup_UI = null;
             },
             traceHeap(mess) {
                 if (performance.memory) {

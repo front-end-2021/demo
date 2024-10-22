@@ -40,6 +40,8 @@
                 class="d-inline-block ui button"
                 style="margin-right: 6px; padding: 0;"
                 :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']" 
+                @mouseover="e => $root.onMouseOver(1, land, e)"
+                @mouseout="e => $root.onMouseOut(1, land, e)"
                 @dblclick="e => openFormLand(land)">
               <div class="d-inline-block" style="padding: .78571429em 1.5em;" 
                 :data-content="18 < land.Name.length ? land.Name : null"

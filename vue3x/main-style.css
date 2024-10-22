@@ -23,13 +23,15 @@ button { cursor: pointer; }
 .justify-content-start { justify-content: flex-start; }
 .justify-content-cent { justify-content: center; }
 .align-items-center { align-items: center; }
-.bg-primary { background-color: #008ff8; }
-.bg-primary { background-color: #565656;  } /*dnb_dev */
+.bg-primary { 
+    background-color: #008ff8; 
+    background-color: #bbb; /*dnb_dev */
+}
 .border-box { box-sizing: border-box; }
 .dnbdropdown-primary.ui.selection.dropdown {
     background-color: #0080dd; border-color: #0080dd;
     color: white;
-    background-color: #3c3c3c; border-color: #3c3c3c; /*dnb_dev */
+    background-color: #bcbcbc; border-color: #3c3c3c; /*dnb_dev */
 }
 .ui.dropdown>.text {
     max-width: 150px; white-space: pre;
@@ -99,7 +101,7 @@ button { cursor: pointer; }
 .w81px { width: 81px; }
 .dnb-nav {
     background-color: #006bb9; height: 30px;
-    background-color: #656565; /*dnb_dev */
+    background-color: #b1b1b1; /*dnb_dev */
 }
 .h42 { height: 42px; }
 .h32 {height: 32px;}
@@ -170,12 +172,12 @@ button { cursor: pointer; }
 
 .bg-008ff8 {
     background-color: #008ff8; color: white;
-    background-color: #565656;
+    background-color: #f3f3f3; color: #565656;  /*dnb_dev */
 }
 
 .bg-006bb9 {
     background-color: #006bb9; color: white;
-    background-color: #656565;  /*dnb_dev */
+    background-color: #e8e8e8; color: #2d2d2d;  /*dnb_dev */
 }
 
 .row-crite .ui.selection.dropdown {
@@ -227,6 +229,21 @@ button { cursor: pointer; }
 .dnd_view .dnd_market_y:hover > *:last-child {border-right: 1px solid red;}
 .dnd_view .dnd_region_x:hover > *:first-child {border-top: 1px solid red;}
 .dnd_view .dnd_region_x:hover > *:last-child {border-bottom: 1px solid red;}
+
+.dnb-arrow {
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid rgb(213, 213, 213);
+    transform: translateX(3px);
+}
+.dnb-tlp { position: fixed;display: inline-block; }
+.dnb-tlp-body {
+    padding: 9px 12px; border-radius: 3px;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+
 @media screen and (max-width: 558px) {
     nav.container-fluid {
         flex-wrap: wrap;

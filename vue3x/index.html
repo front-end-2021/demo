@@ -7,7 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="./range-slider-semantic-ui.css"></link>
+  <link rel="stylesheet" href="./range-slider-semantic-ui.css">
+  </link>
   <link rel="stylesheet" href="./main-style.css">
   <script src="../3rd/jquery/jquery-3.7.1.min.js"></script>
   <script type="importmap">
@@ -29,43 +30,45 @@
       <section class="d-inline-flex align-items-center">
         <i class="bi bi-bootstrap-fill me-2 font24 cpointer text-white"></i>
         <h2 class="me-3 my-0 text-white">{{$store.state.ContextLang.TxtPr0ject}}</h2>
-        <drop-select :index="IndexProject" 
-            :items="$store.state.Projects" 
-            :class="['grp-dropdown-min dnbdropdown-primary']"
-            @set:index="$event => setIndexProject($event)">
-            <template #default>
-              <div class="text">{{ProjectName}}</div>
-            </template>
+        <drop-select :index="IndexProject" :items="$store.state.Projects"
+          :class="['grp-dropdown-min dnbdropdown-primary']" @set:index="$event => setIndexProject($event)">
+          <template #default>
+            <div class="text">{{ProjectName}}</div>
+          </template>
         </drop-select>
       </section>
       <nav class="dnb-nav d-inline-flex align-items-center px22px text-white border-r4px">
-        <h4 v-for="(page, ipg) in $store.getters.Pages"
-          class="my-0 mx-3 cpointer"
-          :class="[ ipg === IndexPage ? 'working' : '']"
-          @click.stop="e => selectPage(ipg)">{{page}}</h4>
+        <h4 v-for="(page, ipg) in $store.getters.Pages" class="my-0 mx-3 cpointer"
+          :class="[ ipg === IndexPage ? 'working' : '']" @click.stop="e => selectPage(ipg)">{{page}}</h4>
       </nav>
       <section class="d-inline-flex align-items-center">
         <h4 class="text-white mb-0 me-2">Language: </h4>
-        <drop-select :index="$store.state.IndexLang" 
-            :items="$store.state.Languages" 
-            :class="['grp-dropdown-min dnbdropdown-primary']" style="min-width: 120px;"
-            @set:index="$event => setIndexLang($event)">
-            <template #default>
-              <div class="text">{{$store.getters.activeLang.Name}}</div>
-            </template>
+        <drop-select :index="$store.state.IndexLang" :items="$store.state.Languages"
+          :class="['grp-dropdown-min dnbdropdown-primary']" style="min-width: 120px;"
+          @set:index="$event => setIndexLang($event)">
+          <template #default>
+            <div class="text">{{$store.getters.activeLang.Name}}</div>
+          </template>
         </drop-select>
         <i class="bi bi-folder-fill mx-3 font24 cpointer text-white"></i>
         <i class="bi bi-question-square-fill font24 cpointer text-white"></i>
         <i class="bi bi-gear-fill font24 mx-3 cpointer text-white"></i>
-        <i class="bi bi-person-circle font24 cpointer text-white"
-          @click.stop="e => openForm(1)"></i>
+        <i class="bi bi-person-circle font24 cpointer text-white" @click.stop="e => openForm(1)"></i>
       </section>
     </header>
 
     <component :is="CompPage" v-cloak></component>
 
-    <div v-if="0 == ProcessState" 
-      class="ui segment" style="height: 100px; border: none; box-shadow: none;">
+    <div v-if="IsShowTooltip"
+      class="dnb-tlp"
+      :style="[Popup_UI.Style]"
+      :data-placement="Popup_UI.placement">
+      <div class="dnb-arrow" :style="[Popup_UI.StyleArr]"></div>
+      <div class="dnb-tlp-body">{{Popup_UI.BodyText}}</div>
+    </div>
+
+
+    <div v-if="0 == ProcessState" class="ui segment" style="height: 100px; border: none; box-shadow: none;">
       <div class="ui active inverted dimmer">
         <div class="ui text loader">Loading</div>
       </div>
