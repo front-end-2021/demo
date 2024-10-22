@@ -1,5 +1,5 @@
 <template id="tmp-comp-form-land">
-    <div class="ui modal" style="width: 344px;">
+    <div class="ui modal" style="min-width: 344px;">
         <i class="close icon" @click.stop="onExitClose"></i>
         <div class="header">{{Title}}</div>
         <div class="image content">
@@ -12,7 +12,8 @@
                 <br>
                 <strong class="d-inline-block w81px py-2 pe-2">Description: </strong>
                 <span contenteditable="true" v-html="item.Description" 
-                    class="d-inline-block p-2" style="width: 234px; height: 96px;"
+                    class="d-inline-block p-2" 
+                    style="min-width: 234px; min-height: 96px;max-width: 60%;max-height:66vh;overflow: auto;"
                     @input="onChangeDes"
                     style="min-height: 180px; width: 570px;"></span>
                 <br>
