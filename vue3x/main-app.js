@@ -123,11 +123,7 @@ Promise.all([
                 const xClose = (mLand) => {
                     setLastState(1, 0)
                     let mess = getMessCompare(land, mLand)
-                    let newDes = mLand.Description
-                    if (this.$store.getters.isChangeDes([land, newDes])) {
-                        if (!mess) mess = `Something changes: \n`
-                        mess += `Description : ${this.$store.getters.Des(land)} => ${newDes}`
-                    }
+                    mess = this.$store.getters.checkChangeExt([land, mLand, mess])
                     if (mess && confirm(mess)) saveClose(mLand)
                 }
                 const item = {

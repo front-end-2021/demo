@@ -275,13 +275,21 @@ export default createStore({
             return allIds[0] + 1;
         },
         Des: (state) => (item) => { return state.WkMapDes.get(item) || '' },
-        isChangeDes: (state) => ([item, des]) => {
-            if (!state.WkMapDes.has(item)) {
-                if (typeof des != 'string' || '' == des.trim()) return false;
-                return true;
+        checkChangeExt: (state, getters) => ([item, mItem, mess]) => {
+            let des = mItem.Description
+            if (typeof des == 'string') {
+                des = des.trim()
+                if (!state.WkMapDes.has(item)) {
+                    if ('' != des) setDes()
+                } else if (state.WkMapDes.get(item) != des) {
+                    setDes()
+                }
+                function setDes() {
+                    if (!mess) mess = `Something changes: \n`;
+                    mess += `Description : ${getters.Des(item)} => ${des}`
+                }
             }
-            if (state.WkMapDes.get(item) != des) return true;
-            return false;
+            return mess;
         },
     },
     mutations: {
@@ -377,7 +385,10 @@ export default createStore({
             }
         },
         setDes(state, [item, des]) {
-            if (typeof des != 'string' || '' == des.trim()) return;
+            if (typeof des != 'string' || '' == des.trim()) {
+                state.WkMapDes.delete(item)
+                return;
+            }
             state.WkMapDes.set(item, des)
         },
     }

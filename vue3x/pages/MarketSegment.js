@@ -541,11 +541,7 @@ export default {
                     }
                     xClose = (mRegion) => {
                         let mess = getMessCompare(dItem, mRegion)
-                        let newDes = mRegion.Description
-                        if (this.$store.getters.isChangeDes([dItem, newDes])) {
-                            if(!mess) mess = `Something changes: \n`
-                            mess += `Description : ${this.$store.getters.Des(dItem)} => ${newDes}`
-                        }
+                        mess = this.$store.getters.checkChangeExt([dItem, mRegion, mess])
                         if (mess && confirm(mess)) saveClose(mRegion)
                         else setLastState(2, 0)
                     }
