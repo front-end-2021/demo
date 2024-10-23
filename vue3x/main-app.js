@@ -193,29 +193,29 @@ Promise.all([
 
             },
             onMouseOver(type, item, e) {
-                let text, offTarget;
+                let text, 
+                    offTarget = e.target.getBoundingClientRect()
                 switch (type) {
                     case 1:     // Land
                         text = this.$store.getters.Des(item)
-                        offTarget = e.target.getBoundingClientRect()
-                      //  console.log(e, offTarget)
-                        if (text) {
-                            this.Popup_UI = {
-                                type: 2,
-                                BodyText: text,
-                                Style: {
-                                    top: `${offTarget.top + offTarget.height}px`,
-                                    left: `${offTarget.left}px`,
-                                    minWidth: `${offTarget.width}px`,
-                                    minHeight: `${offTarget.height}px`
-                                },
-                                StyleArr: { transform: `translateX(${offTarget.width / 2 - 8}px)`},
-                                placement: 'bottom'
-                            }
-                        }
-
+                      
                         break;
-
+                    default: break;
+                }
+                //  console.log(e, offTarget)
+                if (text) {
+                    this.Popup_UI = {
+                        type: 2,
+                        BodyText: text,
+                        Style: {
+                            top: `${offTarget.top + offTarget.height}px`,
+                            left: `${offTarget.left}px`,
+                            minWidth: `${offTarget.width}px`,
+                            minHeight: `${offTarget.height}px`
+                        },
+                        StyleArr: { transform: `translateX(${offTarget.width / 2 - 8}px)`},
+                        placement: 'bottom'
+                    }
                 }
             },
             onMouseOut(type, item, e) {
@@ -223,7 +223,7 @@ Promise.all([
                     case 1:     // Land
 
                         break;
-
+                    default: break;
                 }
                 this.Popup_UI = null;
             },
