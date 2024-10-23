@@ -361,15 +361,14 @@ export default {
             this.Regions = this.$store.getters.SortItemsByParent([2, mergeIdLands])
         },
         countClick(type, item, e) {
-            console.log('count click ', type, item, e)
+           // console.log('count click ', type, item, e)
             if (typeof window.DnbLastAction != 'number') {
                 const onClick = () => {
                     this.$root.activeItem(type, item)
                     delete window.DnbLastAction
-
-                    console.log('click ', type, item, e)
+                    //console.log('click ', type, item, e)
                 }
-                window.DnbLastAction = setTimeout(onClick, 666)
+                window.DnbLastAction = setTimeout(onClick, 357)
 
             } else {
                 clearTimeout(window.DnbLastAction)
