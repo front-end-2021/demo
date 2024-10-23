@@ -205,9 +205,11 @@ button { cursor: pointer; }
 .vw-marketsegment .row-market .col-market:hover .dnd-ic-market {
     display: initial;
 }
-.btn-menu-valuation {text-align: center;}
+.btn-menu-valuation { text-align: center;}
+.btn-menu-inbtn { text-align: center; padding:3px; margin-right: 2px; }
 .vw-marketsegment .col-region:hover .dnd-ic-region:hover,
 .btn-menu-valuation:hover,
+.btn-menu-inbtn:hover,
 .vw-marketsegment .row-market .col-market:hover .dnd-ic-market:hover {
     border-radius: 4px;
     cursor: pointer;

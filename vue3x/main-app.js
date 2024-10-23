@@ -49,9 +49,9 @@ Promise.all([
                 ProcessState: 0,    // loading (0), success (1)
                 DragDrop: null,
                 Popup_UI: null,  // 
-                
-               // LastAction: null,
-                
+
+                // LastAction: null,
+
                 UserInfo: {
                     img: `https://allimages.sgp1.digitaloceanspaces.com/tipeduvn/2022/01/1642393308_940_Hinh-Anh-Girl-Xinh-Viet-Nam-Dep-De-Thuong-Cute.jpg`,
                     header: `Profile`,
@@ -83,7 +83,8 @@ Promise.all([
             IsShowTooltip() {
                 const popTlp = this.Popup_UI
                 if (Object.is(popTlp, null)) return false;
-                if (1 == popTlp.type) return false;
+                if (1 == popTlp.type) return false;     // Menu Valuation
+                if (11 == popTlp.type) return false;    // Menu Land
                 return true;
             },
         },
@@ -196,19 +197,29 @@ Promise.all([
 
             },
             onMouseOver(type, item, e) {
-                let text, 
+                let text, des,
                     offTarget = e.target.getBoundingClientRect()
                 switch (type) {
                     case 1:     // Land
-                        text = this.$store.getters.Des(item)
-                      
+                    case 2:     // Region
+                        des = this.$store.getters.Des(item)
+                        if (18 < item.Name.length) {
+                            if (des) {
+                                text = `<strong>Name</strong>`
+                                text += `<p>${item.Name}</p>`
+                                text += `<strong>Description</strong>`
+                                text += `<p>${des}</p>`
+                            } else text = item.Name;
+                        } else {
+                            text = des
+                        }
                         break;
                     default: break;
                 }
                 //  console.log(e, offTarget)
                 if (text) {
                     this.Popup_UI = {
-                        type: 2,
+                        type: 111,
                         BodyText: text,
                         Style: {
                             top: `${offTarget.top + offTarget.height}px`,
@@ -216,7 +227,7 @@ Promise.all([
                             minWidth: `${offTarget.width}px`,
                             minHeight: `${offTarget.height}px`
                         },
-                        StyleArr: { transform: `translateX(${offTarget.width / 2 - 8}px)`},
+                        StyleArr: { transform: `translateX(${offTarget.width / 2 - 8}px)` },
                         placement: 'bottom'
                     }
                 }
@@ -224,11 +235,15 @@ Promise.all([
             onMouseOut(type, item, e) {
                 switch (type) {
                     case 1:     // Land
-
+                    case 2:     // Region
                         break;
                     default: break;
                 }
                 this.Popup_UI = null;
+            },
+            classSqr(isCheck) {
+                if (isCheck) return `bi-check2-square`
+                return `bi-square`
             },
             traceHeap(mess) {
                 if (performance.memory) {

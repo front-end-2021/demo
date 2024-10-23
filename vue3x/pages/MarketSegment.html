@@ -5,7 +5,7 @@
     <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
     <i class="bi bi-gear btn-menu-valuation" 
       @click.stop="e => toggleMenuValuation(imarket, iregion)"></i>
-    <div v-if="IsShowMenu"
+    <div v-if="IsShowMenuCell"
       class="menu-valuation d-inline-flex">
       <div class="p6px cpointer" @click.stop="e => openFormValuation(market, region)"><i class="bi bi-sliders2"></i>
         {{$store.state.ContextLang.Valuation}}</div>
@@ -37,20 +37,18 @@
             <transition-group>
               <div v-for="land in Lands" 
                 :key="land.Id"
-                class="d-inline-block ui button"
-                style="margin-right: 6px; padding: 0;"
+                class="align-items-center ui button"
+                style="margin-right: 6px; padding: 0; display: inline-grid; grid-template-columns: auto 24px;"
                 :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']" 
-                @mouseover="e => $root.onMouseOver(1, land, e)"
-                @mouseout="e => $root.onMouseOut(1, land, e)"
-                @click="e => countClick(1, land, e)"
                 @dblclick="e => openFormLand(land)">
-              <!-- <div class="d-inline-block" style="padding: .78571429em 1.5em;" 
-                :data-content="18 < land.Name.length ? land.Name : null"
-                @mouseenter="onMouseEnter"
-                @click.stop="e => $root.activeItem(1, land)">{{$root.viewName(land.Name, 1)}}</div> -->
-                <div class="d-inline-block" style="padding: .78571429em 1.5em;" 
-                  :data-content="18 < land.Name.length ? land.Name : null"
-                  @mouseenter="onMouseEnter" >{{$root.viewName(land.Name, 1)}}</div>
+                <div class="d-inline-block" 
+                  style="padding: .78571429em 1.5em;" 
+                  @mouseover="e => $root.onMouseOver(1, land, e)"
+                  @mouseout="e => $root.onMouseOut(1, land, e)"
+                  @click="e => countClick(1, land, e)"
+                  >{{$root.viewName(land.Name, 1)}}</div>
+                <i class="bi bi-gear btn-menu-inbtn"
+                  @click="e => onShowMenu(11, land, e)"></i>
             </div>
             </transition-group>
           </draggable>
@@ -59,9 +57,9 @@
         <div v-if="$root.DragDrop == null" class="d-flex mt-3">
           <div class="col-market p6px bg-006bb9 cdefault">{{$store.state.ContextLang.Marketsegments}}\Region</div>
           <div v-for="region in Regions"
-            :data-content="18 < region.Name.length ? region.Name : null"
-            @mouseenter="onMouseEnter"
             class="col-region p6px pe48px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700 pos-relative"
+            @mouseover="e => $root.onMouseOver(2, region, e)"
+            @mouseout="e => $root.onMouseOut(2, region, e)"
             @dblclick="e => openFormRegion(region)">{{$root.viewName(region.Name, 2)}}
               <i v-if="1 < Regions.length" class="bi bi-arrows dnd-ic-region pos-absolute"
               @click.stop="e => initDragDrop(2)"></i>
@@ -189,5 +187,21 @@
       </div>
       
     </article>
+    <div v-if="ShowMenuLand != null"
+      style="position: fixed;"
+      class="menu-valuation d-inline-flex"
+      :style="[ShowMenuLand.Style]">
+        <div class="p6px cpointer" 
+          @click.stop="e => clickMenuEdit(ShowMenuLand.Entry, 1)"
+          ><i class="bi bi-pencil-square"></i>&nbsp;&nbsp;Edit ({{getNameMenu(ShowMenuLand.Entry.Name)}})</div>
+        <div class="p6px cpointer"
+          :class="[$root.classSqr(ShowMenuLand.Entry.IsNew)]"
+          @click.stop="e => toggleIsNew(ShowMenuLand.Entry, 1)" 
+          ><i class="bi"></i>&nbsp;&nbsp;Is New</div>
+        <div class="p6px cpointer"
+          @click.stop="e => goToSubmarket(ShowMenuLand.Entry, 1)"
+          ><i class="bi bi-box-arrow-in-right"></i>&nbsp;&nbsp;Goto Submarket</div>
+    </div>
+    
   </section>
 </template>

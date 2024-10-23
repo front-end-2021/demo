@@ -18,10 +18,11 @@ const CellValuation = {
         iregion: Number
     },
     computed: {
-        IsShowMenu() {
+        IsShowMenuCell() {
             const popMenu = this.$root.Popup_UI
             if (Object.is(popMenu, null)) return false;
             if (typeof popMenu != 'object') return false;
+            if (11 == popMenu.type) return false;
             if (popMenu.type != 1) return false;
             if (popMenu.imarket != this.imarket) return false;
             if (popMenu.iregion != this.iregion) return false;
@@ -82,8 +83,7 @@ const CellValuation = {
         classSquare(mId, rId) {
             const item = this.$store.getters.MarketRegionBy([mId, rId])
             if (!item) return `bi-square`
-            if (item.Active) return `bi-check2-square`
-            return `bi-square`
+            return this.$root.classSqr(item.Active)
         },
     },
 }
@@ -310,6 +310,13 @@ export default {
                 disabled: false,
                 ghostClass: "ghost"
             }
+        },
+        ShowMenuLand(){
+            const popMenu = this.$root.Popup_UI
+            if (Object.is(popMenu, null)) return null;
+            if (typeof popMenu != 'object') return null;
+            if (11 == popMenu.type) return popMenu;
+            return null;
         },
     },
     watch: {
@@ -696,9 +703,48 @@ export default {
                 }
             }
         },
-        onMouseEnter(e) {
-            if (!e.target.getAttribute('data-content')) return;
-            $(e.target).popup('show')
+        onShowMenu(type, item, e){
+            if (typeof window.DnbLastAction != 'number') {
+                const onClick = () => {
+                    let offTarget = e.target.getBoundingClientRect()
+                    this.$root.Popup_UI = {
+                        type: type,
+                        Entry: item,
+                        Style: {
+                            top: `${offTarget.top + offTarget.height}px`,
+                            left: `${offTarget.left}px`,
+                        },
+                    }
+                    delete window.DnbLastAction
+                }
+                window.DnbLastAction = setTimeout(onClick, 357)
+            } else {
+                clearTimeout(window.DnbLastAction)
+                delete window.DnbLastAction
+            }
+        },
+        clickMenuEdit(item, type){
+            switch(type) {
+                case 1: this.openFormLand(item)
+                break;
+            }
+            this.$root.Popup_UI = null
+        },
+        toggleIsNew(item, type){
+            switch(type) {
+                case 1: // Land
+                    item.IsNew = !item.IsNew
+                break;
+            }
+            this.$root.Popup_UI = null
+        },
+        goToSubmarket(item, type){
+
+            this.$root.Popup_UI = null
+        },
+        getNameMenu(name){
+            if(name.length <= 12) return name;
+            return name.slice(0, 12) + ' ...'
         },
     },
     provide() {
