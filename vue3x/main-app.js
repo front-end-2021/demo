@@ -80,12 +80,20 @@ Promise.all([
                 if (iPrj < 0) return ''
                 return this.$store.state.Projects[iPrj].Name
             },
-            IsShowTooltip() {
+            UiTooltipType() {
                 const popTlp = this.Popup_UI
-                if (Object.is(popTlp, null)) return false;
-                if (1 == popTlp.type) return false;     // Menu Valuation
-                if (11 == popTlp.type) return false;    // Menu Land
-                return true;
+                if (Object.is(popTlp, null)) return 0;
+                if (typeof popTlp != 'object') return 0;
+                if (popTlp.type < 1000) return 0;
+                return popTlp.type
+            },
+            UiPopupType() {
+                const popMenu = this.$root.Popup_UI
+                if (Object.is(popMenu, null)) return 0;
+                if (typeof popMenu != 'object') return 0;
+                if (999 < popMenu.type) return 0;        // tooltip
+                return popMenu.type
+                // 1 (Menu Cell Valuation), 11 (Menu btn Land)
             },
         },
         watch: {
@@ -219,7 +227,7 @@ Promise.all([
                 //  console.log(e, offTarget)
                 if (text) {
                     this.Popup_UI = {
-                        type: 111,
+                        type: 1000,
                         BodyText: text,
                         Style: {
                             top: `${offTarget.top + offTarget.height}px`,

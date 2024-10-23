@@ -19,13 +19,10 @@ const CellValuation = {
     },
     computed: {
         IsShowMenuCell() {
+            if (1 != this.$root.UiPopupType) return false
             const popMenu = this.$root.Popup_UI
-            if (Object.is(popMenu, null)) return false;
-            if (typeof popMenu != 'object') return false;
-            if (11 == popMenu.type) return false;
-            if (popMenu.type != 1) return false;
-            if (popMenu.imarket != this.imarket) return false;
-            if (popMenu.iregion != this.iregion) return false;
+            if (this.imarket != popMenu.imarket) return false;
+            if (this.iregion != popMenu.iregion) return false;
             return true;
         },
     },
@@ -311,13 +308,7 @@ export default {
                 ghostClass: "ghost"
             }
         },
-        ShowMenuLand(){
-            const popMenu = this.$root.Popup_UI
-            if (Object.is(popMenu, null)) return null;
-            if (typeof popMenu != 'object') return null;
-            if (11 == popMenu.type) return popMenu;
-            return null;
-        },
+
     },
     watch: {
         '$root.ActiveLandIds'(ids) {
@@ -368,7 +359,7 @@ export default {
             this.Regions = this.$store.getters.SortItemsByParent([2, mergeIdLands])
         },
         countClick(type, item, e) {
-           // console.log('count click ', type, item, e)
+            // console.log('count click ', type, item, e)
             if (typeof window.DnbLastAction != 'number') {
                 const onClick = () => {
                     this.$root.activeItem(type, item)
@@ -703,7 +694,7 @@ export default {
                 }
             }
         },
-        onShowMenu(type, item, e){
+        onShowMenu(type, item, e) {
             if (typeof window.DnbLastAction != 'number') {
                 const onClick = () => {
                     let offTarget = e.target.getBoundingClientRect()
@@ -723,27 +714,27 @@ export default {
                 delete window.DnbLastAction
             }
         },
-        clickMenuEdit(item, type){
-            switch(type) {
+        clickMenuEdit(item, type) {
+            switch (type) {
                 case 1: this.openFormLand(item)
-                break;
+                    break;
             }
             this.$root.Popup_UI = null
         },
-        toggleIsNew(item, type){
-            switch(type) {
+        toggleIsNew(item, type) {
+            switch (type) {
                 case 1: // Land
                     item.IsNew = !item.IsNew
-                break;
+                    break;
             }
             this.$root.Popup_UI = null
         },
-        goToSubmarket(item, type){
+        goToSubmarket(item, type) {
 
             this.$root.Popup_UI = null
         },
-        getNameMenu(name){
-            if(name.length <= 12) return name;
+        getNameMenu(name) {
+            if (name.length <= 12) return name;
             return name.slice(0, 12) + ' ...'
         },
     },

@@ -59,7 +59,7 @@
 
     <component :is="CompPage" v-cloak></component>
 
-    <div v-if="IsShowTooltip"
+    <div v-if="0 < UiTooltipType"
       class="dnb-tlp"
       :style="[Popup_UI.Style]"
       :data-placement="Popup_UI.placement">

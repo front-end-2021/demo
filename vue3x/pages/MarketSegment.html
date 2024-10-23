@@ -7,7 +7,8 @@
       @click.stop="e => toggleMenuValuation(imarket, iregion)"></i>
     <div v-if="IsShowMenuCell"
       class="menu-valuation d-inline-flex">
-      <div class="p6px cpointer" @click.stop="e => openFormValuation(market, region)"><i class="bi bi-sliders2"></i>
+      <div class="p6px cpointer" 
+        @click.stop="e => openFormValuation(market, region)"><i class="bi bi-sliders2"></i>
         {{$store.state.ContextLang.Valuation}}</div>
       <div @click.stop="e => activeValuation(market.Id, region.Id)" class="p6px cpointer"><i class="bi"
           :class="classSquare(market.Id, region.Id)"></i> {{$store.state.ContextLang.Active}}</div>
@@ -187,19 +188,19 @@
       </div>
       
     </article>
-    <div v-if="ShowMenuLand != null"
+    <div v-if="11 == $root.UiPopupType"
       style="position: fixed;"
       class="menu-valuation d-inline-flex"
-      :style="[ShowMenuLand.Style]">
+      :style="[$root.Popup_UI.Style]">
         <div class="p6px cpointer" 
-          @click.stop="e => clickMenuEdit(ShowMenuLand.Entry, 1)"
-          ><i class="bi bi-pencil-square"></i>&nbsp;&nbsp;Edit ({{getNameMenu(ShowMenuLand.Entry.Name)}})</div>
+          @click.stop="e => clickMenuEdit($root.Popup_UI.Entry, 1)"
+          ><i class="bi bi-pencil-square"></i>&nbsp;&nbsp;Edit ({{getNameMenu($root.Popup_UI.Entry.Name)}})</div>
         <div class="p6px cpointer"
-          :class="[$root.classSqr(ShowMenuLand.Entry.IsNew)]"
-          @click.stop="e => toggleIsNew(ShowMenuLand.Entry, 1)" 
+          :class="[$root.classSqr($root.Popup_UI.Entry.IsNew)]"
+          @click.stop="e => toggleIsNew($root.Popup_UI.Entry, 1)" 
           ><i class="bi"></i>&nbsp;&nbsp;Is New</div>
         <div class="p6px cpointer"
-          @click.stop="e => goToSubmarket(ShowMenuLand.Entry, 1)"
+          @click.stop="e => goToSubmarket($root.Popup_UI.Entry, 1)"
           ><i class="bi bi-box-arrow-in-right"></i>&nbsp;&nbsp;Goto Submarket</div>
     </div>
     
