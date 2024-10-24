@@ -60,7 +60,7 @@ export default createStore({
             return state
         },
         updateAsort({ commit, state }, [type, oldIds, newIds]) {
-            const lstNewSort = []
+            const mapIndex = new Map()
             let oId, oItem, item;
             const items = [];
             switch (type) {
@@ -75,17 +75,19 @@ export default createStore({
                     break;
                 default: return items;
             }
+            //  const lstNewSort = []
             newIds.forEach((nId, ii) => {
                 oId = oldIds[ii]
                 oItem = items.find(l => l.Id == oId)
-                lstNewSort.push([nId, oItem.ASort])
+                mapIndex.set(nId, oItem.ASort)
+               // lstNewSort.push([nId, oItem.ASort])
             });
-            lstNewSort.forEach(([nId, nSort]) => {
-                item = items.find(l => l.Id == nId)
-                item.ASort = nSort
-            });
+            for(let ii = 0; ii < items.length; ii++) {
+                item = items[ii]
+                item.ASort = mapIndex.get(item.Id)
+            }
+            // lstNewSort.forEach(([nId, nSort]) => { item = items.find(l => l.Id == nId); item.ASort = nSort})
             return items;
-
             function buildItems(lstItem) {
                 for (let ii = 0; ii < lstItem.length; ii++) {
                     item = lstItem[ii]
