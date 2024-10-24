@@ -703,12 +703,12 @@ export default {
                         Entry: item,
                         Style: {
                             top: `${offTarget.top + offTarget.height}px`,
-                            left: `${offTarget.left}px`,
+                            left: `calc(${offTarget.left}px - 12px)`,
                         },
                     }
                     delete window.DnbLastAction
                 }
-                window.DnbLastAction = setTimeout(onClick, 357)
+                window.DnbLastAction = setTimeout(onClick, 321)
             } else {
                 clearTimeout(window.DnbLastAction)
                 delete window.DnbLastAction
