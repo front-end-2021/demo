@@ -378,12 +378,14 @@ export default {
             const iProject = this.$root.IndexProject
             if (!land) {        // add new
                 land = {
-                    Id: this.$store.getters.newNumId(1), Name: '',
-                    IsNew: false, ASort: this.$store.getters.newASort(1)
+                    Id: this.$store.getters.newNumId(1), 
+                    Name: '', Description: '', IsNew: false, 
+                    ASort: this.$store.getters.newASort(1)
                 }
                 const saveClose = (mLand) => {
                     this.$store.commit('setDes', [land, mLand.Description])
                     delete mLand.Description
+                    delete land.Description
 
                     overrideItem.call(land, mLand)
                     this.$store.commit('addUpdateLocal', [1, land, iProject])
@@ -429,6 +431,7 @@ export default {
                     if (!mLand.Name.length) return
                     let mess = `Do you want to save?`
                     if (confirm(mess)) saveClose(mLand)
+                    else delete land.Description
                 }
                 const item = {
                     title: `New Land`,
@@ -506,13 +509,14 @@ export default {
             // add new
             if (!region) {
                 region = {
-                    Id: this.$store.getters.newNumId(2), Name: '',
+                    Id: this.$store.getters.newNumId(2), Name: '', Description: '',
                     LandId: landActiveIds[0], Currency: 'USD',
                     ASort: this.$store.getters.newASort(2)
                 }
                 const saveClose = (mRegion) => {
                     this.$store.commit('setDes', [region, mRegion.Description])
                     delete mRegion.Description
+                    delete region.Description
 
                     overrideItem.call(region, mRegion)
                     this.$store.commit('addUpdateLocal', [2, region, iProject])
@@ -523,6 +527,7 @@ export default {
                     if (!mRegion.Name.length) return
                     let mess = `Do you want to save?`
                     if (confirm(mess)) saveClose(mRegion)
+                    else delete region.Description
                 }
                 const item = {
                     title: `New REgion`,
