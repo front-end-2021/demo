@@ -60,21 +60,18 @@ export default createStore({
             return state
         },
         updateAsort({ commit, state }, [type, oldIds, newIds]) {
-            const mapIndex = new Map()
             let oId, oItem, item;
             const items = [];
             switch (type) {
-                case 1:     // Lands
-                    buildItems(state.Lands)
+                case 1: buildItems(state.Lands)
                     break;
-                case 2:     // Region
-                    buildItems(state.Regions);
+                case 2: buildItems(state.Regions);
                     break;
-                case 3:     // Market
-                    buildItems(state.Markets)
+                case 3: buildItems(state.Markets)
                     break;
                 default: return items;
             }
+            const mapIndex = new Map()
             //  const lstNewSort = []
             newIds.forEach((nId, ii) => {
                 oId = oldIds[ii]
