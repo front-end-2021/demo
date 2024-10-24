@@ -366,7 +366,7 @@ export default {
                     delete window.DnbLastAction
                     //console.log('click ', type, item, e)
                 }
-                window.DnbLastAction = setTimeout(onClick, 357)
+                window.DnbLastAction = setTimeout(onClick, 123)
 
             } else {
                 clearTimeout(window.DnbLastAction)
@@ -708,7 +708,7 @@ export default {
                     }
                     delete window.DnbLastAction
                 }
-                window.DnbLastAction = setTimeout(onClick, 321)
+                window.DnbLastAction = setTimeout(onClick, 123)
             } else {
                 clearTimeout(window.DnbLastAction)
                 delete window.DnbLastAction
