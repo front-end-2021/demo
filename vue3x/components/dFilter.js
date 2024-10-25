@@ -140,6 +140,7 @@ export const getLandMarketIds = (lstC, outputType) => {
         if(typeof type == 'undefined') continue;
         const ids = crt[1]
         if(!Array.isArray(ids)) continue;
+        if(!ids.length) continue;
         processType(type, ids[0])
     }
     let lndIds = landIds.filter(l => 0 < l);
