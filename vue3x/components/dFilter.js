@@ -133,12 +133,13 @@ export const MxFCriterial = {
 export const getLandMarketIds = (lstC, outputType) => {
     let landIds = []
     let marketIds = []
-    const cLen = lstC.length
     const typeSelect = -2024
-    for (let ii = 0; ii < cLen; ii++) {
-        const crt = lstC[ii]
+    for (let ii = 0, crt; ii < lstC.length; ii++) {
+        crt = lstC[ii]
         const type = crt[0]
+        if(typeof type == 'undefined') continue;
         const ids = crt[1]
+        if(!Array.isArray(ids)) continue;
         processType(type, ids[0])
     }
     let lndIds = landIds.filter(l => 0 < l);
