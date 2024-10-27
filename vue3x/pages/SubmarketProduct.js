@@ -220,7 +220,7 @@ export default {
         return {
             ProductGroups: [],
             Products: [],
-            Markets: [],
+            ListMarket: [],
         }
     },
     computed: {
@@ -305,13 +305,16 @@ export default {
                 }
                 const lstPrd = this.$store.getters.SortItemsByParent([4, prdGrpIds, productIds])
                 const lstMrk = this.$store.getters.SortItemsByParent([5, [landId], marketIds])
+                this.ListMarket = []
                 for (let mm = 0, mrk; mm < lstMrk.length; mm++) {
                     mrk = lstMrk[mm]
-                    mrk.SubMarkets = this.$store.getters.SortItemsByParent([6, [mrk.Id], subMarketIds])
+                    this.ListMarket.push({
+                        Entry: mrk,
+                        ListSubMarket: this.$store.getters.SortItemsByParent([6, [mrk.Id], subMarketIds])
+                    })
                 }
                 this.ProductGroups = lstPrG;
                 this.Products = lstPrd;
-                this.Markets = lstMrk;
                 this.$root.ProcessState = 1
             }
             setTimeout(process, 111)

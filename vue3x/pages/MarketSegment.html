@@ -6,7 +6,7 @@
     <i class="bi bi-gear btn-menu-valuation" 
       @click.stop="e => toggleMenuValuation(imarket, iregion)"></i>
     <div v-if="IsShowMenuCell"
-      class="menu-valuation d-inline-flex">
+      class="d-inline-flex menu-valuation dflex-col">
       <div class="p6px cpointer" 
         @click.stop="e => openFormValuation(market, region)"><i class="bi bi-sliders2"></i>
         {{$store.state.ContextLang.Valuation}}</div>
@@ -190,7 +190,7 @@
     </article>
     <div v-if="11 == $root.UiPopupType"
       style="position: fixed;"
-      class="menu-valuation d-inline-flex"
+      class="d-inline-flex menu-valuation dflex-col"
       :style="[$root.Popup_UI.Style]">
         <div class="p6px cpointer" 
           @click.stop="e => clickMenuEdit($root.Popup_UI.Entry, 1)"

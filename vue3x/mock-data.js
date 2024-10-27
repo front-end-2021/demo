@@ -88,11 +88,14 @@ const DemoMarkets = [
     { Id: 6, Name: 'Cai Rang market', LandId: 6, ASort: 5, Description: '' },
 ]
 const DemoSubmarkets = [
-    { Id: 7, Name: 'Square 1', MarketId: 2, Description: '' },
+    { Id: 1, Name: 'Square 1', MarketId: 2, Description: '' },
     { Id: 3, Name: 'Cho Tinh', MarketId: 3, Description: '' },
-    { Id: 4, Name: 'Hue submarket 1', MarketId: 5, Description: '' },
-    { Id: 5, Name: 'Quangninh submarket 2', MarketId: 4, Description: '' },
-    { Id: 6, Name: 'Cairang submarket 3', MarketId: 6, Description: '' },
+    { Id: 4, Name: 'Cho Hue', MarketId: 5, Description: '' },
+    { Id: 2, Name: 'Hue submarket 1', MarketId: 5, Description: '' },
+    { Id: 5, Name: 'Cho Bai Chay', MarketId: 4, Description: '' },
+    { Id: 7, Name: 'Cho Uong Bi', MarketId: 4, Description: '' },
+    { Id: 8, Name: 'Cho Cam Pha', MarketId: 4, Description: '' },
+    { Id: 6, Name: 'Cho Cai rang', MarketId: 6, Description: '' },
 ]
 const DemoPrdGroups = [
     { Id: 3, Name: `Truyen trinh tham`, RegionId: 1, ASort: 2, Description: '' },

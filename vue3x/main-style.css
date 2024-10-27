@@ -78,6 +78,7 @@ button { cursor: pointer; }
 }
 .mb-0 { margin-bottom: 0; }
 .px22px {padding-left: 22px; padding-right: 22px;}
+.p-1 {padding: .25rem}
 .py-1 { padding-top: .25rem; padding-bottom: .25rem; }
 .p-2 { padding: .5rem; }
 .py-2 {
@@ -147,14 +148,14 @@ button { cursor: pointer; }
 .cell-valuation:hover {
     background-color: #c1c1c1;
 }
-
+.dflex-col {flex-direction: column;}
+.dflex-row {flex-direction: row;}
 .menu-valuation {
     position: absolute;
     top: 30px;
     left: 0;
     z-index: 1;
     width: 220px;
-    flex-direction: column;
     background-color: #1b83c9; color: white;
     background-color: #868686;  /*dnb_dev */
 }
