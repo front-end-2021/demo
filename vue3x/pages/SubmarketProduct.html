@@ -64,19 +64,25 @@
             <div class="d-inline-block ui primary button" 
                 @click.stop="e => openFormSmp(5)">+ {{$store.state.ContextLang.ProductGroups}}</div>
         </article>
-        <article class="mt-3">
-            <div class="d-inline-flex dflex-col" >
+        <article v-if="1 == $root.ProcessState" 
+            class="d-flex dflex-row mt-3">
+            <div class="d-inline-flex dflex-col" style="padding-top: 42px;">
                 <div v-for="eMrk in ListMarket"
-                    class="d-inline-grid align-items-center p-1"
-                    style="width: 360px;grid-template-columns: 180px auto;border: 1px solid rgb(217, 217, 217);">
-                    <div >{{eMrk.Entry.Name}}</div>
-                    <div class="d-inline-flex dflex-col">
+                    class="d-inline-grid align-items-center"
+                    style="width: 360px; grid-template-columns: 180px auto;border: 1px solid rgb(217, 217, 217);">
+                    <div class="p-1">{{eMrk.Entry.Name}}</div>
+                    <div class="d-inline-flex dflex-col" >
                         <div v-for="eSubMrk in eMrk.ListSubMarket"
-                            class="p-1"
-                            style="border-bottom: 1px solid rgb(224, 224, 224);">{{eSubMrk.Name}}</div>
+                            style="height:40px; border: 1px solid rgb(224, 224, 224);align-content: center;"
+                            class="d-inline-block p-1">{{eSubMrk.Name}}</div>
                     </div>
                 </div>
-                
+            </div>
+            <div v-for="prd in Products"
+                class="d-inline-flex dflex-col"
+                style="width: 150px;">
+                <div class="p-1"
+                    style="height: 42px; border: 1px solid rgb(217, 217, 217);align-content: center;">{{prd.Name}}</div>
             </div>
         </article>
     </section>
