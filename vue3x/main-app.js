@@ -7,7 +7,7 @@ import {
 } from './components/comp-global.js'
 import {
     getMessCompare, overrideItem,
-    getCopyItem
+    getCopyItem, deleteDes
 } from './mock-data.js'
 import dnbStore from './main-store.js'
 import {
@@ -132,7 +132,7 @@ Promise.all([
                     setLastState(1, 0)
 
                     this.$store.commit('setDes', [land, mLand.Description])
-                    delete mLand.Description
+                    deleteDes.call(mLand)
 
                     overrideItem.call(land, mLand)
                     this.$store.commit('addUpdateLocal', [1, null, iProject])

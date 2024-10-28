@@ -89,36 +89,36 @@ const DemoRegions = [
     { Id: 11, Name: 'Thai Binh', LandId: 10, Currency: 'VND', ASort: 9 },
 ]
 const DemoMarkets = [
-    { Id: 2, Name: 'Dong Xuan', LandId: 3, ASort: 3, Description: '' },
-    { Id: 3, Name: 'Sapa market', LandId: 1, ASort: 1, Description: '' },
-    { Id: 4, Name: 'Quang Ninh market', LandId: 1, ASort: 2, Description: '' },
-    { Id: 5, Name: 'Hue market', LandId: 4, ASort: 4, Description: '' },
-    { Id: 6, Name: 'Cai Rang market', LandId: 6, ASort: 5, Description: '' },
+    { Id: 2, Name: 'Dong Xuan', LandId: 3, ASort: 3, },
+    { Id: 3, Name: 'Sapa market', LandId: 1, ASort: 1, },
+    { Id: 4, Name: 'Quang Ninh market', LandId: 1, ASort: 2, },
+    { Id: 5, Name: 'Hue market', LandId: 4, ASort: 4, },
+    { Id: 6, Name: 'Cai Rang market', LandId: 6, ASort: 5, },
 ]
 const DemoSubmarkets = [
-    { Id: 1, Name: 'Square 1', MarketId: 2, Description: '' },
-    { Id: 3, Name: 'Cho Tinh', MarketId: 3, Description: '' },
-    { Id: 4, Name: 'Cho Hue', MarketId: 5, Description: '' },
-    { Id: 2, Name: 'Hue submarket 1', MarketId: 5, Description: '' },
-    { Id: 5, Name: 'Cho Bai Chay', MarketId: 4, Description: '' },
-    { Id: 7, Name: 'Cho Uong Bi', MarketId: 4, Description: '' },
-    { Id: 8, Name: 'Cho Cam Pha', MarketId: 4, Description: '' },
-    { Id: 6, Name: 'Cho Cai rang', MarketId: 6, Description: '' },
+    { Id: 1, Name: 'Square 1', MarketId: 2, },
+    { Id: 3, Name: 'Cho Tinh', MarketId: 3, },
+    { Id: 4, Name: 'Cho Hue', MarketId: 5, },
+    { Id: 2, Name: 'Hue submarket 1', MarketId: 5, },
+    { Id: 5, Name: 'Cho Bai Chay', MarketId: 4, },
+    { Id: 7, Name: 'Cho Uong Bi', MarketId: 4, },
+    { Id: 8, Name: 'Cho Cam Pha', MarketId: 4, },
+    { Id: 6, Name: 'Cho Cai rang', MarketId: 6, },
 ]
 const DemoPrdGroups = [
-    { Id: 3, Name: `Truyen trinh tham`, RegionId: 1, ASort: 2, Description: '' },
-    { Id: 2, Name: `Truyen thieu nhi`, RegionId: 7, ASort: 3, Description: '' },
-    { Id: 4, Name: `Sach khoa hoc`, RegionId: 5, ASort: 1, Description: '' },
-    { Id: 1, Name: `The thao`, RegionId: 7, ASort: 5, Description: '' },
-    { Id: 5, Name: `Sach giao khoa`, RegionId: 1, ASort: 4, Description: '' },
+    { Id: 3, Name: `Truyen trinh tham`, RegionId: 1, ASort: 2, },
+    { Id: 2, Name: `Truyen thieu nhi`, RegionId: 7, ASort: 3, },
+    { Id: 4, Name: `Sach khoa hoc`, RegionId: 5, ASort: 1, },
+    { Id: 1, Name: `The thao`, RegionId: 7, ASort: 5, },
+    { Id: 5, Name: `Sach giao khoa`, RegionId: 1, ASort: 4, },
 ]
 const DemoProducts = [
-    { Id: 5, Name: `Conan - Chap 1`, PrdGroupId: 3, ASort: 3, Description: '' },
-    { Id: 3, Name: `Conan - Chap 2`, PrdGroupId: 3, ASort: 2, Description: '' },
-    { Id: 4, Name: `Conan - Chap 3`, PrdGroupId: 3, ASort: 1, Description: '' },
-    { Id: 6, Name: `Tieng Viet Lop 2`, PrdGroupId: 5, ASort: 4, Description: '' },
-    { Id: 9, Name: `Toan Lop 1`, PrdGroupId: 5, ASort: 5, Description: '' },
-    { Id: 7, Name: `De men phieu luu ky - Chap 1`, PrdGroupId: 2, ASort: 6, Description: '' },
+    { Id: 5, Name: `Conan - Chap 1`, PrdGroupId: 3, ASort: 3, },
+    { Id: 3, Name: `Conan - Chap 2`, PrdGroupId: 3, ASort: 2, },
+    { Id: 4, Name: `Conan - Chap 3`, PrdGroupId: 3, ASort: 1, },
+    { Id: 6, Name: `Tieng Viet Lop 2`, PrdGroupId: 5, ASort: 4, },
+    { Id: 9, Name: `Toan Lop 1`, PrdGroupId: 5, ASort: 5, },
+    { Id: 7, Name: `De men phieu luu ky - Chap 1`, PrdGroupId: 2, ASort: 6, },
 ]
 function getMessCompare(item, mItem) {
     let mess = ''
@@ -147,13 +147,14 @@ function getCopyItem(item) {
     cpyItem.Description = vueApp.$store.getters.Des(item)
     return cpyItem
 }
+function deleteDes() { delete this.Description }
 export {
     Mains, ListPrj, Langs,
     DemoLands, DemoRegions,
     DemoPrdGroups, DemoProducts,
     DemoMarkets, DemoSubmarkets,
     getMessCompare,
-    overrideItem, getCopyItem
+    overrideItem, getCopyItem, deleteDes
 }
 
 function newItem() {
