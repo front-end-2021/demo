@@ -79,7 +79,7 @@ const DemoLands = [
 ]
 const DemoRegions = [
     { Id: 1, Name: 'TP.Hanoi', LandId: 3, Currency: 'VND', ASort: 1 },
-    { Id: 3, Name: 'Haiphong', LandId: 10, Currency: 'USD', ASort: 3 },
+    { Id: 3, Name: 'TP.Haiphong', LandId: 10, Currency: 'USD', ASort: 3 },
     { Id: 4, Name: 'TP.Can Tho', LandId: 6, Currency: 'CHF', ASort: 5 },
     { Id: 5, Name: 'Hue', LandId: 4, Currency: 'VND', ASort: 4 },
     { Id: 10, Name: 'Quang Ninh', LandId: 9, Currency: 'VND', ASort: 2 },
@@ -89,11 +89,18 @@ const DemoRegions = [
     { Id: 11, Name: 'Thai Binh', LandId: 10, Currency: 'VND', ASort: 9 },
 ]
 const DemoMarkets = [
-    { Id: 2, Name: 'Dong Xuan', LandId: 3, ASort: 3, },
+    { Id: 2, Name: 'Thanh Xuan', LandId: 3, ASort: 5, },
+    { Id: 7, Name: 'Hoang Mai', LandId: 3, ASort: 6, },
+    { Id: 8, Name: 'Long Bien', LandId: 3, ASort: 7, },
+    { Id: 10, Name: 'Ha Dong', LandId: 3, ASort: 8, },
+    { Id: 9, Name: 'Hoan Kiem', LandId: 3, ASort: 3, },
     { Id: 3, Name: 'Sapa market', LandId: 1, ASort: 1, },
     { Id: 4, Name: 'Quang Ninh market', LandId: 1, ASort: 2, },
     { Id: 5, Name: 'Hue market', LandId: 4, ASort: 4, },
-    { Id: 6, Name: 'Cai Rang market', LandId: 6, ASort: 5, },
+    { Id: 6, Name: 'Ben Thanh market', LandId: 6, ASort: 9, },
+    { Id: 1, Name: 'Bình Tây market', LandId: 6, ASort: 10, },
+    { Id: 12, Name: 'Bình Điền market', LandId: 6, ASort: 11, },
+    { Id: 13, Name: 'Bà Chiểu market', LandId: 6, ASort: 12, },
 ]
 const DemoSubmarkets = [
     { Id: 1, Name: 'Square 1', MarketId: 2, },
@@ -103,7 +110,21 @@ const DemoSubmarkets = [
     { Id: 5, Name: 'Cho Bai Chay', MarketId: 4, },
     { Id: 7, Name: 'Cho Uong Bi', MarketId: 4, },
     { Id: 8, Name: 'Cho Cam Pha', MarketId: 4, },
-    { Id: 6, Name: 'Cho Cai rang', MarketId: 6, },
+    { Id: 6, Name: 'Saigon Centre', MarketId: 6, },
+    { Id: 18, Name: 'Vincom Center Đồng Khởi', MarketId: 6, },
+    { Id: 19, Name: 'Crescent Mall', MarketId: 6, },
+    { Id: 20, Name: 'Diamond Plaza', MarketId: 6, },
+    { Id: 21, Name: 'Union Square', MarketId: 6, },
+    { Id: 22, Name: 'Trung tâm mua sắm SC Vivo', MarketId: 6, },
+    { Id: 9, Name: 'Vincom Mega Mall Times City', MarketId: 7, },
+    { Id: 12, Name: 'Vincom Mega Mall Royal City', MarketId: 2, },
+    { Id: 10, Name: 'Aeon Mall Long Biên', MarketId: 8, },
+    { Id: 14, Name: 'Savico Mega Mall', MarketId: 8, },
+    { Id: 15, Name: 'Vincom Plaza Long Biên', MarketId: 8, },
+    { Id: 11, Name: 'Aeon Mall Hà Đông', MarketId: 10, },
+    { Id: 16, Name: 'Melinh Plaza Hà Đông', MarketId: 10, },
+    { Id: 17, Name: 'TTTM Mac Plaza', MarketId: 10, },
+    { Id: 13, Name: 'Tràng Tiền Plaza', MarketId: 9, },
 ]
 const DemoPrdGroups = [
     { Id: 3, Name: `Truyen trinh tham`, RegionId: 1, ASort: 2, },
