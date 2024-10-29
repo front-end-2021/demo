@@ -80,13 +80,14 @@ const DemoLands = [
 const DemoRegions = [
     { Id: 1, Name: 'TP.Hanoi', LandId: 3, Currency: 'VND', ASort: 1 },
     { Id: 3, Name: 'TP.Haiphong', LandId: 10, Currency: 'USD', ASort: 3 },
-    { Id: 4, Name: 'TP.Can Tho', LandId: 6, Currency: 'CHF', ASort: 5 },
     { Id: 5, Name: 'Hue', LandId: 4, Currency: 'VND', ASort: 4 },
     { Id: 10, Name: 'Quang Ninh', LandId: 9, Currency: 'VND', ASort: 2 },
     { Id: 9, Name: 'Hai Duong', LandId: 10, Currency: 'VND', ASort: 7 },
     { Id: 8, Name: 'Bac Ninh', LandId: 3, Currency: 'VND', ASort: 6 },
     { Id: 7, Name: 'Hung Yen', LandId: 10, Currency: 'VND', ASort: 8 },
     { Id: 11, Name: 'Thai Binh', LandId: 10, Currency: 'VND', ASort: 9 },
+    { Id: 12, Name: 'Q. Bình Tân', LandId: 6, Currency: 'VND', ASort: 10 },
+    { Id: 4, Name: 'Q. Tân Phú', LandId: 6, Currency: 'CHF', ASort: 11 },
 ]
 const DemoMarkets = [
     { Id: 2, Name: 'Thanh Xuan', LandId: 3, ASort: 5, },
