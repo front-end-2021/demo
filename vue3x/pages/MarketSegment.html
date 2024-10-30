@@ -30,32 +30,35 @@
     <article v-if="1 == $root.ProcessState">
       <button>Eval markets</button><button>Eval submarkets</button><button>Strategy</button>
       <button>Plan from submarkets</button><button>All criterials</button>
+      
+      <h2 style="margin-top: 18px;">MK segments</h2>
       <div>
-        <h2 style="margin-top: 18px;">MK segments</h2>
-        <div>
-          <draggable v-model="Lands" v-bind="dragOptions" 
-            class="d-inline-block">
-            <transition-group>
-              <div v-for="land in Lands" 
-                :key="land.Id"
-                class="align-items-center ui button"
-                style="margin-right: 6px; padding: 0; display: inline-grid; grid-template-columns: auto 24px;"
-                :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']" 
-                @dblclick="e => openFormLand(land)">
-                <div class="d-inline-block" 
-                  style="padding: .78571429em 1.5em;" 
-                  @mouseover="e => $root.onMouseOver(1, land, e)"
-                  @mouseout="e => $root.onMouseOut(1, land, e)"
-                  @click="e => countClick(1, land, e)"
-                  >{{$root.viewName(land.Name, 1)}}</div>
-                <i class="bi bi-gear btn-menu-inbtn"
-                  @click="e => onShowMenu(11, land, e)"></i>
-            </div>
-            </transition-group>
-          </draggable>
-          <div class="d-inline-block ui primary button" @click.stop="e => openFormLand()">+ Land</div>
-        </div>
-        <div v-if="$root.DragDrop == null" class="d-flex mt-3">
+        <draggable v-model="Lands" v-bind="dragOptions" 
+          class="d-inline-block">
+          <transition-group>
+            <div v-for="land in Lands" 
+              :key="land.Id"
+              class="align-items-center ui button"
+              style="margin-right: 6px; padding: 0; display: inline-grid; grid-template-columns: auto 24px;"
+              :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']" 
+              @dblclick="e => openFormLand(land)">
+              <div class="d-inline-block" 
+                style="padding: .78571429em 1.5em;" 
+                @mouseover="e => $root.onMouseOver(1, land, e)"
+                @mouseout="e => $root.onMouseOut(1, land, e)"
+                @click="e => countClick(1, land, e)"
+                >{{$root.viewName(land.Name, 1)}}</div>
+              <i class="bi bi-gear btn-menu-inbtn"
+                @click="e => onShowMenu(11, land, e)"></i>
+          </div>
+          </transition-group>
+        </draggable>
+        <div class="d-inline-block ui primary button" @click.stop="e => openFormLand()">+ Land</div>
+      </div>
+      <div v-if="$root.DragDrop == null"
+        @scroll="scrollViewSegRegion"
+        class="dnb-view-seg-region" style="overflow: auto;">
+        <div class="d-flex mt-3">
           <div class="col-market p6px bg-006bb9 cdefault">{{$store.state.ContextLang.Marketsegments}}\Region</div>
           <div v-for="region in Regions"
             class="col-region p6px pe48px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700 pos-relative"
@@ -70,8 +73,7 @@
           <div class="col-region single line p6px cpointer prevent-select bg-008ff8 fb700" 
             @click.stop="e => openFormRegion()">+ Region</div>
         </div>
-        <div v-if="$root.DragDrop == null"
-            v-for="(market, imk) in Markets" class="row-market d-flex">
+        <div v-for="(market, imk) in Markets" class="row-market d-flex">
           <div class="p6px bg-008ff8 col-market pos-relative fb700 cdefault" 
             @dblclick="e => openFormMarket(market)">{{market.Name}}
             <i v-if="1 < Markets.length"
@@ -87,7 +89,7 @@
           </div>
           <div class="p6px col-region border-box border-r1-e8e9e9">{{getValuation(0, 0)}}</div>
         </div>
-        <div v-if="$root.DragDrop == null" class="d-flex">
+        <div class="d-flex">
           <div class="p6px bg-008ff8 col-market fb700"
             @click.stop="e => openFormMarket()">+ Market<i class="circle help link icon" 
             data-html="Maximum device width with two <code
@@ -98,9 +100,11 @@
           <div v-for="ii in Regions.length + 1"
             class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
         </div>
-
+      </div>
+      <div v-if="$root.DragDrop != null"
+        class="dnb-dnd-seg-region" style="overflow: auto;">
         <!-- Drag and drop Y -->
-        <div v-if="$root.DragDrop != null && $root.DragDrop.type == 3" 
+        <div v-if="$root.DragDrop.type == 3" 
           class="dnd-market mt-3">
           <div class="d-flex">
             <div class="col-market p6px bg-006bb9">{{$store.state.ContextLang.Marketsegments}}\Region</div>
@@ -140,7 +144,7 @@
           </div>
         </div>
         <!-- Drag and drop X -->
-        <div v-if="$root.DragDrop != null && $root.DragDrop.type == 2" 
+        <div v-if="$root.DragDrop.type == 2" 
           class="dnd-region d-flex mt-3">
           <div class="rgn-first-col">
             <div class="col-market p6px bg-006bb9 h32">{{$store.state.ContextLang.Marketsegments}}\Region</div>
@@ -186,7 +190,6 @@
           </div>
         </div>
       </div>
-      
     </article>
     <div v-if="11 == $root.UiPopupType"
       style="position: fixed;"

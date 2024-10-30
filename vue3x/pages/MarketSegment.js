@@ -745,6 +745,27 @@ export default {
             if (name.length <= 12) return name;
             return name.slice(0, 12) + ' ...'
         },
+        scrollViewSegRegion(e) {
+            // console.group('scroll view seg region ')
+            // console.log(e)
+            // console.log(e.target.scrollTop, e.target.scrollLeft)
+            // console.groupEnd()
+        },
+        styleColMarketStickyLeft(wrap, isReset) {
+            if (isReset) {
+                wrap.querySelectorAll(`.col-market`).forEach(col => {
+                    col.style.position = ''
+                    col.style.left = ''
+                    col.style.zIndex = ''
+                })
+                return
+            }
+            wrap.querySelectorAll(`.col-market`).forEach(col => {
+                col.style.position = 'sticky'
+                col.style.left = '0'
+                col.style.zIndex = '1'
+            })
+        },
     },
     provide() {
         return {
@@ -816,5 +837,23 @@ export default {
     mounted() {
         //this.initDragDrop(2) 
         this.$root.traceHeap('Market segment')
+    },
+    updated() {
+
+        if (Object.is(this.$root.DragDrop, null)) {
+            const vwSegRgn = this.$el.querySelector(`.dnb-view-seg-region`);
+            if (vwSegRgn.clientWidth < vwSegRgn.scrollWidth) {
+                this.styleColMarketStickyLeft(vwSegRgn, false)
+            } else {
+                this.styleColMarketStickyLeft(vwSegRgn, true)
+            }
+        } else if(3 == this.$root.DragDrop.type) {
+            const vwSegRgn = this.$el.querySelector(`.dnb-dnd-seg-region`);
+            if (vwSegRgn.clientWidth < vwSegRgn.scrollWidth) {
+                this.styleColMarketStickyLeft(vwSegRgn, false)
+            } else {
+                this.styleColMarketStickyLeft(vwSegRgn, true)
+            }
+        }
     },
 }

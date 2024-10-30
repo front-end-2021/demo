@@ -142,8 +142,8 @@ button { cursor: pointer; }
 }
 .border-r4px {border-radius: 4px;}
 .fb700 {font-weight: 700;}
-.col-market { width: 294px; }
-.col-region { width: 204px; }
+.col-market { width: 294px; min-width: 294px; max-width: 294px; }
+.col-region { width: 204px; min-width: 204px; max-width: 204px; }
 
 .cell-valuation:hover {
     background-color: #c1c1c1;
