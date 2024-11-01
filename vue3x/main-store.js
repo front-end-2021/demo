@@ -319,15 +319,15 @@ export default createStore({
             if (!prj) return
             switch (prj.Id) {
                 case 1:     // Demo
+                    if (oldiPrj < state.Projects.length && 2 == state.Projects[oldiPrj].Id) {
+                        updateLocalStore.call(state)
+                    }
                     state.Lands = DemoLands
                     state.Regions = DemoRegions
                     state.Markets = DemoMarkets
                     state.Submarkets = DemoSubmarkets
                     state.ProductGroups = DemoPrdGroups
                     state.Products = DemoProducts
-                    if (oldiPrj < state.Projects.length && 2 == state.Projects[oldiPrj].Id) {
-                        updateLocalStore.call(state)
-                    }
                     return;
                 case 2:     // localStorage
                     state.Lands = getLocal(1)
@@ -396,7 +396,7 @@ export default createStore({
                 //         break;
                 //     case 5: setLocal(7, getFulInfos(state.ProductGroups))
                 //         break;
-                //     case 8: setLocal(8, getFulInfos(state.ProductGroups))
+                //     case 8: setLocal(8, getFulInfos(state.Products))
                 //         break;
                 // }
                 // function getFulInfos(items) {
@@ -420,12 +420,12 @@ export default createStore({
 function updateLocalStore(type) {
     const state = this
     if (typeof type != 'number') {
-        setLocal(1, getFulInfos(state.Lands))
-        setLocal(2, getFulInfos(state.Regions))
-        setLocal(3, getFulInfos(state.Markets))
-        setLocal(4, getFulInfos(state.Submarkets))
-        setLocal(7, getFulInfos(state.ProductGroups))
-        setLocal(8, getFulInfos(state.ProductGroups))
+        if (state.Lands.length) setLocal(1, getFulInfos(state.Lands))
+        if (state.Regions.length) setLocal(2, getFulInfos(state.Regions))
+        if (state.Markets.length) setLocal(3, getFulInfos(state.Markets))
+        if (state.Submarkets.length) setLocal(4, getFulInfos(state.Submarkets))
+        if (state.ProductGroups.length) setLocal(7, getFulInfos(state.ProductGroups))
+        if (state.Products.length) setLocal(8, getFulInfos(state.Products))
         return
     }
     switch (type) {
@@ -439,7 +439,7 @@ function updateLocalStore(type) {
             break;
         case 5: setLocal(7, getFulInfos(state.ProductGroups))
             break;
-        case 8: setLocal(8, getFulInfos(state.ProductGroups))
+        case 8: setLocal(8, getFulInfos(state.Products))
             break;
         default: break;
     }
