@@ -31,7 +31,8 @@
         <i class="bi bi-bootstrap-fill me-2 font24 cpointer text-white"></i>
         <h2 class="me-3 my-0 text-white">{{$store.state.ContextLang.TxtPr0ject}}</h2>
         <drop-select :index="IndexProject" :items="$store.state.Projects"
-          :class="['grp-dropdown-min dnbdropdown-primary']" @set:index="$event => setIndexProject($event)">
+          :class="['grp-dropdown-min dnbdropdown-primary']" 
+          @set:index="$event => setIndexProject($event)">
           <template #default>
             <div class="text">{{ProjectName}}</div>
           </template>

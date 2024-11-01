@@ -102,10 +102,11 @@ Promise.all([
         },
         methods: {
             selectPage(index) { this.IndexPage = index },
-            setIndexProject(val) {
-                val = parseInt(val)
-                this.IndexProject = val
-                this.$store.commit('setDataProject', val)
+            setIndexProject(iPrj) {
+                iPrj = parseInt(iPrj)
+                const oldIprj = this.IndexProject
+                this.IndexProject = iPrj
+                this.$store.commit('setDataProject', [iPrj, oldIprj])
             },
             setIndexLang(val) { this.$store.commit('setILang', parseInt(val)) },
             openForm(type) {

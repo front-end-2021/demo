@@ -77,9 +77,9 @@ export default createStore({
                 oId = oldIds[ii]
                 oItem = items.find(l => l.Id == oId)
                 mapIndex.set(nId, oItem.ASort)
-               // lstNewSort.push([nId, oItem.ASort])
+                // lstNewSort.push([nId, oItem.ASort])
             });
-            for(let ii = 0; ii < items.length; ii++) {
+            for (let ii = 0; ii < items.length; ii++) {
                 item = items[ii]
                 item.ASort = mapIndex.get(item.Id)
             }
@@ -314,7 +314,7 @@ export default createStore({
             if (lng) state.ContextLang = getTxtBy(lng.Key);
             else state.ContextLang = getTxtBy()
         },
-        setDataProject(state, iProject) {
+        setDataProject(state, [iProject, oldiPrj]) {
             const prj = state.Projects[iProject]
             if (!prj) return
             switch (prj.Id) {
@@ -325,6 +325,9 @@ export default createStore({
                     state.Submarkets = DemoSubmarkets
                     state.ProductGroups = DemoPrdGroups
                     state.Products = DemoProducts
+                    if (oldiPrj < state.Projects.length && 2 == state.Projects[oldiPrj].Id) {
+                        updateLocalStore.call(state)
+                    }
                     return;
                 case 2:     // localStorage
                     state.Lands = getLocal(1)
@@ -333,6 +336,12 @@ export default createStore({
                     state.Submarkets = getLocal(4)
                     state.ProductGroups = getLocal(7)
                     state.Products = getLocal(8)
+                    setMapwDes(state.Lands)
+                    setMapwDes(state.Regions)
+                    setMapwDes(state.Markets)
+                    setMapwDes(state.Submarkets)
+                    setMapwDes(state.ProductGroups)
+                    setMapwDes(state.Products)
                     return;
                 case 3:     // Clear local storage
                     localStorage.clear();
@@ -346,6 +355,14 @@ export default createStore({
             state.Submarkets = []
             state.ProductGroups = []
             state.Products = []
+            function setMapwDes(items) {
+                for (let ii = 0, item; ii < items.length; ii++) {
+                    item = items[ii]
+                    let des = item.Descrip
+                    delete item.Descrip
+                    if (des) state.WkMapDes.set(item, des)
+                }
+            }
         },
         addUpdateLocal(state, [type, item, iProject]) {
             const prj = state.Projects[iProject]
@@ -367,20 +384,28 @@ export default createStore({
                 }
             }
             if (2 == prj.Id) {          //localStorage
-                switch (type) {
-                    case 1: setLocal(type, state.Lands)
-                        break;;
-                    case 2: setLocal(type, state.Regions)
-                        break;
-                    case 3: setLocal(type, state.Markets)
-                        break;
-                    case 4: setLocal(type, state.Submarkets)
-                        break;
-                    case 5: setLocal(7, state.ProductGroups)
-                        break;
-                    case 8: setLocal(8, state.ProductGroups)
-                        break;
-                }
+                updateLocalStore.call(state, type)
+                // switch (type) {
+                //     case 1: setLocal(type, getFulInfos(state.Lands))
+                //         break;;
+                //     case 2: setLocal(type, getFulInfos(state.Regions))
+                //         break;
+                //     case 3: setLocal(type, getFulInfos(state.Markets))
+                //         break;
+                //     case 4: setLocal(type, getFulInfos(state.Submarkets))
+                //         break;
+                //     case 5: setLocal(7, getFulInfos(state.ProductGroups))
+                //         break;
+                //     case 8: setLocal(8, getFulInfos(state.ProductGroups))
+                //         break;
+                // }
+                // function getFulInfos(items) {
+                //     const mapDes = state.WkMapDes, cpyItems = JSON.parse(JSON.stringify(items))
+                //     for (let ii = 0, item; ii < items.length; ii++) { item = items[ii];
+                //         if (mapDes.has(item)) cpyItems[ii].Descrip = mapDes.get(item)
+                //     }
+                //     return cpyItems
+                // }
             }
         },
         setDes(state, [item, des]) {
@@ -392,3 +417,41 @@ export default createStore({
         },
     }
 })
+function updateLocalStore(type) {
+    const state = this
+    if (typeof type != 'number') {
+        setLocal(1, getFulInfos(state.Lands))
+        setLocal(2, getFulInfos(state.Regions))
+        setLocal(3, getFulInfos(state.Markets))
+        setLocal(4, getFulInfos(state.Submarkets))
+        setLocal(7, getFulInfos(state.ProductGroups))
+        setLocal(8, getFulInfos(state.ProductGroups))
+        return
+    }
+    switch (type) {
+        case 1: setLocal(type, getFulInfos(state.Lands))
+            break;;
+        case 2: setLocal(type, getFulInfos(state.Regions))
+            break;
+        case 3: setLocal(type, getFulInfos(state.Markets))
+            break;
+        case 4: setLocal(type, getFulInfos(state.Submarkets))
+            break;
+        case 5: setLocal(7, getFulInfos(state.ProductGroups))
+            break;
+        case 8: setLocal(8, getFulInfos(state.ProductGroups))
+            break;
+        default: break;
+    }
+    function getFulInfos(items) {
+        const mapDes = state.WkMapDes
+        const cpyItems = JSON.parse(JSON.stringify(items))
+        for (let ii = 0, item; ii < items.length; ii++) {
+            item = items[ii]
+            if (mapDes.has(item)) {
+                cpyItems[ii].Descrip = mapDes.get(item)
+            }
+        }
+        return cpyItems
+    }
+}
