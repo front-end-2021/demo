@@ -385,27 +385,7 @@ export default createStore({
             }
             if (2 == prj.Id) {          //localStorage
                 updateLocalStore.call(state, type)
-                // switch (type) {
-                //     case 1: setLocal(type, getFulInfos(state.Lands))
-                //         break;;
-                //     case 2: setLocal(type, getFulInfos(state.Regions))
-                //         break;
-                //     case 3: setLocal(type, getFulInfos(state.Markets))
-                //         break;
-                //     case 4: setLocal(type, getFulInfos(state.Submarkets))
-                //         break;
-                //     case 5: setLocal(7, getFulInfos(state.ProductGroups))
-                //         break;
-                //     case 8: setLocal(8, getFulInfos(state.Products))
-                //         break;
-                // }
-                // function getFulInfos(items) {
-                //     const mapDes = state.WkMapDes, cpyItems = JSON.parse(JSON.stringify(items))
-                //     for (let ii = 0, item; ii < items.length; ii++) { item = items[ii];
-                //         if (mapDes.has(item)) cpyItems[ii].Descrip = mapDes.get(item)
-                //     }
-                //     return cpyItems
-                // }
+                
             }
         },
         setDes(state, [item, des]) {
