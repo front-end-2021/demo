@@ -144,7 +144,7 @@
                     class="d-inline-block w81px py-2 pe-2">Currency*</strong>
                 <drop-rselect v-if="moItem.type == 'comp-form-region'"
                     :name="moItem.data.Currency" 
-                    :items="Currencies" 
+                    :items="$store.state.Currencies" 
                     @set:index="$event => setCurrency($event)"
                     style="min-width: 96px;max-width: 96px;">
                     <template #default>

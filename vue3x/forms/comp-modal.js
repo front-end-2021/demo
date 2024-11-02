@@ -53,8 +53,11 @@ const MxFormLandRegion = {
     methods: {
         setNameAndDes() {
             this.item.Name = this.name.trim()
-            let des = this.des.replaceAll(`&nbsp;`, ' ')
-            des = des.replaceAll(`<br>`, `\n`)
+            let des = ''
+            if (typeof this.des == 'string') {
+                des = this.des.replaceAll(`&nbsp;`, ' ')
+                des = des.replaceAll(`<br>`, `\n`)
+            }
             this.item.Description = des.trim()
         },
         onExitClose() {
@@ -162,22 +165,24 @@ const MxMarketRegion = {
             if (!land) land = this.LandActives[0]
             this.moItem.data.LandId = land.Id
         },
-        forcusName(){
+        forcusName() {
             this.$el.querySelector(`.dnbRegionName`).focus()
         },
     },
     mounted() {
-        console.log('mounted form region ,mix')
         this.$nextTick(() => {
-            const drp = this.$el.querySelectorAll(`.ui.selection.dropdown.grp-dropdown-min.active.visible`)
-            console.log('next tick mounted form region', drp)
-           // this.$el.querySelector(`.dnbRegionName`).focus()
-
+            const focusName = () => {
+                this.$el.querySelector(`.dnbRegionName`).focus()
+            }
+            const lstDrp = this.$el.querySelectorAll(`.ui.selection.dropdown.grp-dropdown-min`)
+            if (!lstDrp.length) {
+                focusName()
+            } else {
+                setTimeout(focusName, 696)
+            }
         })
     },
-    updated() {
-      //  console.log('upated')
-    },
+    //updated() { console.log('upated') },
 }
 export const CompFormMarket = {
     template: `#tmp-comp-form-region`,
@@ -210,17 +215,14 @@ export const CompFormMarket = {
 const DropRgn = {
     template: `#tmp-comp-drop-select`,
     mixins: [MxDropSelect],
-    inject: ['setListDrp' ],
+    inject: ['setListDrp'],
     mounted() {
         const onChange = (value, text, $selectedItem) => {
             this.$emit('set:index', value)
         }
-        const onShow = () => {
-            console.log(' onshow')
-        }
         $(this.$el).dropdown({
             onChange,
-            onShow
+            showOnFocus: false
         })
         this.setListDrp(this)
     },
@@ -231,40 +233,26 @@ export const CompFormRegion = {
     components: {
         'drop-rselect': DropRgn,
     },
-    data(){
+    data() {
         return {
             ListDrp: []
         }
     },
-    computed: {
-        Currencies() {
-            return ['CHF', 'USD', 'VND']
-        },
-    },
     methods: {
         setCurrency(value) {
-            this.moItem.data.Currency = this.Currencies[value]
+            this.moItem.data.Currency = this.$store.state.Currencies[value]
         },
     },
-    provide(){
+    provide() {
         return {
             setListDrp: (drpCmp) => {
                 let ii = this.ListDrp.findIndex(x => Object.is(x, drpCmp))
-                if(ii < 0) this.ListDrp.push(drpCmp)
+                if (ii < 0) this.ListDrp.push(drpCmp)
                 else {
-                    
-                }
-                if(2 == this.ListDrp.length) {
-                    this.$nextTick(() => {
-                        this.$el.querySelector(`.dnbRegionName`).focus()
-                        console.log('set list drop ')
-                    })
+
                 }
             },
         }
     },
-    mounted() {
-        console.log('mounted form region')
-        
-    },
+    // mounted() { console.log('mounted form region') },
 }

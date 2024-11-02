@@ -31,6 +31,7 @@ export default createStore({
         ProductGroups: DemoPrdGroups,
         Products: DemoProducts,
 
+        Currencies: ['CHF', 'USD', 'VND'],
         WkMapDes: new WeakMap(),
 
         MarketRegions: [], // [{MarketId, RegionId, Criterias [], Active, Comment}]
