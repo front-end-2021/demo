@@ -72,18 +72,18 @@ export default createStore({
                 default: return items;
             }
             const mapIndex = new Map()
-            //  const lstNewSort = []
+
             newIds.forEach((nId, ii) => {
                 oId = oldIds[ii]
                 oItem = items.find(l => l.Id == oId)
                 mapIndex.set(nId, oItem.ASort)
-                // lstNewSort.push([nId, oItem.ASort])
+
             });
             for (let ii = 0; ii < items.length; ii++) {
                 item = items[ii]
                 item.ASort = mapIndex.get(item.Id)
             }
-            // lstNewSort.forEach(([nId, nSort]) => { item = items.find(l => l.Id == nId); item.ASort = nSort})
+
             return items;
             function buildItems(lstItem) {
                 for (let ii = 0; ii < lstItem.length; ii++) {
@@ -141,6 +141,7 @@ export default createStore({
                     break;
                 case 8: lst = state.Products.map(x => x.ASort)
                     break;
+                default: return [];
             }
             if (!lst.length) return 1;
             lst.sort((a, b) => b - a)
@@ -168,7 +169,8 @@ export default createStore({
                         break
                     case 8:     // Products
                         lst = buildListBy.call(state.Products, ids, (itm) => ids.includes(itm.Id))
-                        break
+                        break;
+                    default: return lst
                 }
             } else {
                 switch (type) {
@@ -184,6 +186,7 @@ export default createStore({
                         break
                     case 8: lst = state.Products;
                         break
+                    default: return lst
                 }
             }
             if (ignoreIds.length) {
@@ -209,6 +212,7 @@ export default createStore({
                     return state.Markets.find(x => x.Id == id);
                 case 3:     // Region
                     return state.Regions.find(x => x.Id == id);
+                default: break;
             }
         },
         SortItemsByParent: (state) => ([type, ptIds, ids]) => {
@@ -243,6 +247,7 @@ export default createStore({
                         lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
                     }
                     break;
+                default: return lst;
             }
             if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
             return lst
@@ -316,7 +321,7 @@ export default createStore({
         },
         setDataProject(state, [iProject, oldiPrj]) {
             const prj = state.Projects[iProject]
-            if (!prj) return
+            if (!prj) return;
             switch (prj.Id) {
                 case 1:     // Demo
                     if (oldiPrj < state.Projects.length && 2 == state.Projects[oldiPrj].Id) {
@@ -346,8 +351,7 @@ export default createStore({
                 case 3:     // Clear local storage
                     localStorage.clear();
                     break;
-                default:
-                    break;
+                default: return;
             }
             state.Lands = []
             state.Regions = []
@@ -366,7 +370,7 @@ export default createStore({
         },
         addUpdateLocal(state, [type, item, iProject]) {
             const prj = state.Projects[iProject]
-            if (!prj) return
+            if (!prj) return;
             if (!Object.is(item, null)) {
                 switch (type) {
                     case 1: state.Lands.push(item);
@@ -381,11 +385,12 @@ export default createStore({
                         break;
                     case 8: state.Products.push(item);
                         break;
+                    default: return;
                 }
             }
             if (2 == prj.Id) {          //localStorage
                 updateLocalStore.call(state, type)
-                
+
             }
         },
         setDes(state, [item, des]) {
