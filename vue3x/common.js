@@ -297,6 +297,36 @@ function storageAvailable(type) {
         );
     }
 }
+export const MxSortable = {
+    methods: {
+        updateAsort(type, newLst, oldLst) {
+            const oldIds = oldLst.map(l => l.Id)
+            const newIds = newLst.map(l => l.Id)
+            if (isDragDrop(oldIds, newIds)) {
+                this.$store.dispatch('updateAsort', [type, oldIds, newIds]).then(items => {
+                    switch (type) {
+                        case 1: setAsort.call(this.Lands, items)
+                            return;
+                        case 2: setAsort.call(this.Regions, items)
+                            return;
+                        case 3: setAsort.call(this.Markets, items)
+                            return;
+                        case 5: setAsort.call(this.ProductGroups, items)
+                            return;
+                        default: return;
+                    }
+                })
+                function setAsort(items) {
+                    for (let ll = 0, itm, nItm; ll < this.length; ll++) {
+                        itm = this[ll]
+                        nItm = items.find(ld => ld.Id == itm.Id)
+                        itm.ASort = nItm.ASort
+                    }
+                }
+            }
+        },
+    }
+}
 // export const newIntId = () => {
 //     let s = new Date(2024, 6, 19, 8, 20, 0)        // 7/19/2024 08:20
 //     s = Date.now() - s.getTime()

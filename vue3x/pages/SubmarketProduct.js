@@ -2,6 +2,7 @@ import { FTypeId, commSelectTypeId, MxFCriterial } from "../components/dFilter.j
 import { overrideItem } from "../mock-data.js";
 import { DropSelection } from "../components/comp-global.js";
 import { VueDraggableNext } from 'vue-draggable-next'
+import { MxSortable } from "../common.js";
 
 const FCriterialSmk = {
     template: `#tmp-comp-criterial-smarket`,
@@ -216,6 +217,7 @@ export default {
         'drop-selection': DropSelection,
         draggable: VueDraggableNext
     },
+    mixins: [MxSortable],
     data() {
         return {
             ProductGroups: [],
@@ -231,6 +233,11 @@ export default {
                 disabled: false,
                 ghostClass: "ghost"
             }
+        },
+    },
+    watch: {
+        ProductGroups(lst, oldLst) {
+            this.updateAsort(5, lst, oldLst)
         },
     },
     beforeCreate() {
@@ -298,7 +305,7 @@ export default {
                 checkRmv0(marketIds)
                 checkRmv0(subMarketIds)
                 let lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
-                if(0 < landId && regionId < 1) {
+                if (0 < landId && regionId < 1) {
                     let lstRg = this.$store.getters.SortItemsByParent([2, [landId]])
                     let rgIds = lstRg.map(x => x.Id)
                     lstPrG = this.$store.getters.SortItemsByParent([3, rgIds, prdGrpIds])

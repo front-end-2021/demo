@@ -70,6 +70,8 @@ export default createStore({
                     break;
                 case 3: buildItems(state.Markets)
                     break;
+                case 5: buildItems(state.ProductGroups)
+                    break;
                 default: return items;
             }
             const mapIndex = new Map()

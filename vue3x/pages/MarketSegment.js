@@ -2,7 +2,7 @@ import {
     FTypeId, MxFCriterial,
     getLandMarketIds, commSelectTypeId
 } from "../components/dFilter.js";
-import { setLastState, getLastState, isDragDrop } from "../common.js";
+import { setLastState, getLastState, MxSortable } from "../common.js";
 import {
     getMessCompare, overrideItem,
     getCopyItem, deleteDes
@@ -295,6 +295,7 @@ export default {
         'cell-valuation': CellValuation,
         draggable: VueDraggableNext
     },
+    mixins: [MxSortable],
     data() {
         return {
             Lands: [],
@@ -676,32 +677,6 @@ export default {
             if (80 < total && total < 91) return { backgroundColor: `#597623`, color: `#fff` }
             if (90 < total && total < 101) return { backgroundColor: `#4e6d22`, color: `#fff` }
         },
-        updateAsort(type, newLst, oldLst) {
-            const oldIds = oldLst.map(l => l.Id)
-            const newIds = newLst.map(l => l.Id)
-            if (isDragDrop(oldIds, newIds)) {
-                this.$store.dispatch('updateAsort', [type, oldIds, newIds]).then(items => {
-                    switch (type) {
-                        case 1:     // Land
-                            setAsort.call(this.Lands, items)
-                            return;
-                        case 2:     // Region
-                            setAsort.call(this.Regions, items)
-                            return;
-                        case 3:     // Market
-                            setAsort.call(this.Markets, items)
-                            return;
-                    }
-                })
-                function setAsort(items) {
-                    for (let ll = 0, itm, nItm; ll < this.length; ll++) {
-                        itm = this[ll]
-                        nItm = items.find(ld => ld.Id == itm.Id)
-                        itm.ASort = nItm.ASort
-                    }
-                }
-            }
-        },
         onShowMenu(type, item, e) {
             if (typeof window.DnbLastAction != 'number') {
                 const onClick = () => {
@@ -847,7 +822,7 @@ export default {
             } else {
                 this.styleColMarketStickyLeft(vwSegRgn, true)
             }
-        } else if(3 == this.$root.DragDrop.type) {
+        } else if (3 == this.$root.DragDrop.type) {
             const vwSegRgn = this.$el.querySelector(`.dnb-dnd-seg-region`);
             if (vwSegRgn.clientWidth < vwSegRgn.scrollWidth) {
                 this.styleColMarketStickyLeft(vwSegRgn, false)

@@ -1,41 +1,29 @@
 <template id="tmp-comp-criterial-smarket">
     <div class="d-inline-flex align-items-center mb-2">
-        <drop-selection 
-            :class="['grp-dropdown-min', 0 == index ? 'disabled' : '']"
+        <drop-selection :class="['grp-dropdown-min', 0 == index ? 'disabled' : '']" 
             name="f-crite-type"
-            :items="SrcTypes"
-            :id="typeId"
-            @set:id="$event => selectTypeId($event)" 
+            :items="SrcTypes" :id="typeId" @set:id="$event => selectTypeId($event)"
             style="margin-right: 6px;"></drop-selection>
-        <drop-selection v-for="(lstSrc, ii) in SrcIds"
-            :class="['grp-dropdown-min']"
+        <drop-selection v-for="(lstSrc, ii) in SrcIds" :class="['grp-dropdown-min']" 
             :name="'f-crite-id_ ' +  ii"
-            :items="lstSrc"
-            :id="listId[ii]"
-            :key="ii + 2"
-            @set:id="$event => selectId($event, ii)" 
+            :items="lstSrc" :id="listId[ii]" :key="ii + 2" 
+            @set:id="$event => selectId($event, ii)"
             style="margin-right: 6px;"></drop-selection>
-        <button v-if="0 < index"
-            style="width: 28px; height: 28px;"
-            @click.stop="e => $emit('remove:item', index)"> - </button>
+        <button v-if="0 < index" style="width: 28px; height: 28px;" @click.stop="e => $emit('remove:item', index)"> -
+        </button>
     </div>
 </template>
 <template id="tmp-comp-filter-smarket">
     <h3>{{$store.state.ContextLang.Filter}} m4rk3t</h3>
     <div class="d-flex" style="flex-direction: column;">
-        <comp-criterial-smarket 
-            v-for="(crts, iic) in Criterials" 
+        <comp-criterial-smarket v-for="(crts, iic) in Criterials" 
             @remove:item="$event => removeCriterial($event)"
-            @set:typeids="$event => setTypeIds(iic, $event)"
-            :index="iic"
-            :type-ids="crts"
+            @set:typeids="$event => setTypeIds(iic, $event)" :index="iic" :type-ids="crts"
             :key="iic"></comp-criterial-smarket>
     </div>
     <button @click.stop="setFilter">{{$store.state.ContextLang.Filter}}</button>
-    <button @click.stop="resetFilter"
-        style="margin: 6px">{{$store.state.ContextLang.Reset}}</button>
-    <button @click.stop="addFilter"
-        >{{$store.state.ContextLang.AddFilter}}</button>
+    <button @click.stop="resetFilter" style="margin: 6px">{{$store.state.ContextLang.Reset}}</button>
+    <button @click.stop="addFilter">{{$store.state.ContextLang.AddFilter}}</button>
 </template>
 <template id="tmp-comp-submarket">
     <section class="mt-2" style="padding-bottom: 169px;padding-left: 20px;">
@@ -45,44 +33,42 @@
             <button>Porfolio analysis</button><button>Submarket strategy</button>
             <button>Volume plan</button>
             <h1>{{$store.state.ContextLang.ProductGroups}}</h1>
-            <draggable v-model="ProductGroups" v-bind="dragOptions" 
-                class="d-inline-block"> 
+            <draggable v-model="ProductGroups" v-bind="dragOptions" class="d-inline-block">
                 <transition-group>
-                    <div v-for="prg in ProductGroups" 
-                        :key="prg.Id"
-                        class="d-inline-block ui button"
+                    <div v-for="prg in ProductGroups" :key="prg.Id" class="d-inline-block ui button"
                         style="margin-right: 6px; padding: 0;"
-                        :class="[$root.ActviePrGrpIds.includes(prg.Id) ? 'positive' : '']" 
+                        :class="[$root.ActviePrGrpIds.includes(prg.Id) ? 'positive' : '']"
                         @dblclick="e => openFormSmp(5, prg)">
-                        <div class="d-inline-block" style="padding: .78571429em 1.5em;" 
-                        :data-content="18 < prg.Name.length ? prg.Name : null"
-                        @mouseenter="onMouseEnter"
-                        @click.stop="e => $root.activeItem(5, prg)">{{$root.viewName(prg.Name, 5)}}</div>
+                        <div class="d-inline-block" style="padding: .78571429em 1.5em;"
+                            :data-content="18 < prg.Name.length ? prg.Name : null" @mouseenter="onMouseEnter"
+                            @click.stop="e => $root.activeItem(5, prg)">{{$root.viewName(prg.Name, 5)}}</div>
                     </div>
                 </transition-group>
             </draggable>
-            <div class="d-inline-block ui primary button" 
-                @click.stop="e => openFormSmp(5)">+ {{$store.state.ContextLang.ProductGroups}}</div>
+            <div class="d-inline-block ui primary button" @click.stop="e => openFormSmp(5)">+
+                {{$store.state.ContextLang.ProductGroups}}</div>
         </article>
-        <article v-if="1 == $root.ProcessState" 
-            class="d-flex dflex-row mt-3">
-            <div class="d-inline-flex dflex-col" style="padding-top: 42px;">
-                <div v-for="eMrk in ListMarket"
-                    class="d-inline-grid align-items-center"
-                    style="width: 360px; grid-template-columns: 180px auto;border: 1px solid rgb(217, 217, 217);">
+        <article v-if="1 == $root.ProcessState" class="d-flex dflex-row mt-3">
+            <div class="dnbcol-market d-inline-flex dflex-col">
+                <div v-for="eMrk in ListMarket" 
+                    class="dnbcel-market dnbborder217 d-inline-grid align-items-center border-box">
                     <div class="p-1">{{eMrk.Entry.Name}}</div>
-                    <div class="d-inline-flex dflex-col" >
+                    <div class="dnb-cel-submrk d-inline-flex dflex-col">
                         <div v-for="eSubMrk in eMrk.ListSubMarket"
-                            style="height:40px; border: 1px solid rgb(224, 224, 224);align-content: center;"
-                            class="d-inline-block p-1">{{eSubMrk.Name}}</div>
+                            class="dnb-cel-smk-name d-inline-block aln-ctn-center p-1"
+                            >{{eSubMrk.Name}}</div>
                     </div>
                 </div>
             </div>
-            <div v-for="prd in Products"
-                class="d-inline-flex dflex-col"
-                style="width: 150px;">
-                <div class="p-1"
-                    style="height: 42px; border: 1px solid rgb(217, 217, 217);align-content: center;">{{prd.Name}}</div>
+            <div v-for="prd in Products" class="dnbrow-prd d-inline-flex dflex-col">
+                <div class="dnbcel-prdname dnbborder217 p-1 aln-ctn-center">{{prd.Name}}</div>
+                <div v-for="eMrk in ListMarket" class="dnbcol-prdmarket dnbborder217 d-inline-flex dflex-col" 
+                    :mid="eMrk.Entry.Id">
+                    <div v-for="eSubMrk in eMrk.ListSubMarket"
+                        :smid="eSubMrk.Id"
+                        :pid="prd.Id"
+                        class="dnb-cell-prd-submrk d-inline-block p-1 aln-ctn-center"></div>
+                </div>
             </div>
         </article>
     </section>
