@@ -9,7 +9,8 @@
             :items="lstSrc" :id="listId[ii]" :key="ii + 2" 
             @set:id="$event => selectId($event, ii)"
             style="margin-right: 6px;"></drop-selection>
-        <button v-if="0 < index" style="width: 28px; height: 28px;" @click.stop="e => $emit('remove:item', index)"> -
+        <button v-if="0 < index" style="width: 28px; height: 28px;" 
+            @click.stop="e => $emit('remove:item', index)"> -
         </button>
     </div>
 </template>
@@ -40,8 +41,9 @@
                         :class="[$root.ActviePrGrpIds.includes(prg.Id) ? 'positive' : '']"
                         @dblclick="e => openFormSmp(5, prg)">
                         <div class="d-inline-block" style="padding: .78571429em 1.5em;"
-                            :data-content="18 < prg.Name.length ? prg.Name : null" @mouseenter="onMouseEnter"
-                            @click.stop="e => $root.activeItem(5, prg)">{{$root.viewName(prg.Name, 5)}}</div>
+                            :data-content="18 < prg.Name.length ? prg.Name : null" 
+                            @click.stop="e => $root.activeItem(5, prg)"
+                            @mouseover="e => onMseOver(5, e, prg)">{{$root.viewName(prg.Name, 5)}}</div>
                     </div>
                 </transition-group>
             </draggable>
@@ -54,20 +56,26 @@
                     class="dnbcel-market dnbborder217 d-inline-grid align-items-center border-box">
                     <div class="p-1">{{eMrk.Entry.Name}}</div>
                     <div class="dnb-cel-submrk d-inline-flex dflex-col">
-                        <div v-for="eSubMrk in eMrk.ListSubMarket"
-                            class="dnb-cel-smk-name d-inline-block aln-ctn-center p-1"
-                            >{{eSubMrk.Name}}</div>
+                        <div class="dnb-cel-smk-name d-inline-block aln-ctn-center p-1"
+                            v-for="eSubMrk in eMrk.ListSubMarket">{{eSubMrk.Name}}</div>
                     </div>
                 </div>
             </div>
-            <div v-for="prd in Products" class="dnbrow-prd d-inline-flex dflex-col">
+            <div v-for="(prd, iip) in Products" 
+                class="dnbrow-prd d-inline-flex dflex-col">
                 <div class="dnbcel-prdname dnbborder217 p-1 aln-ctn-center">{{prd.Name}}</div>
-                <div v-for="eMrk in ListMarket" class="dnbcol-prdmarket dnbborder217 d-inline-flex dflex-col" 
+                <div v-for="(eMrk, iim) in ListMarket" 
+                    class="dnbcol-prdmarket dnbborder217 d-inline-flex dflex-col" 
                     :mid="eMrk.Entry.Id">
-                    <div v-for="eSubMrk in eMrk.ListSubMarket"
-                        :smid="eSubMrk.Id"
-                        :pid="prd.Id"
-                        class="dnb-cell-prd-submrk d-inline-block p-1 aln-ctn-center"></div>
+                    <div v-for="(eSubMrk, iis) in eMrk.ListSubMarket"
+                        class="dnb-cell-prd-submrk d-inline-block p-1 aln-ctn-center"
+                        :smid="eSubMrk.Id" :pid="prd.Id"
+                        @mouseenter="e => onMseEnterSmpPrd(e, iip, iim, iis)">
+                        <div @mouseout="e => onMseOut()" 
+                                style="width: 100%;height: 100%;">
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </article>

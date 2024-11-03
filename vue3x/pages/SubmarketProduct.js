@@ -223,6 +223,7 @@ export default {
             ProductGroups: [],
             Products: [],
             ListMarket: [],
+            CellSmpPrd: null,
         }
     },
     computed: {
@@ -238,6 +239,13 @@ export default {
     watch: {
         ProductGroups(lst, oldLst) {
             this.updateAsort(5, lst, oldLst)
+        },
+        CellSmpPrd(val) {
+            if (Object.is(val, null)) return;
+            console.group('product name: ', val.Product.Name)
+            console.log('market name: ', val.Market.Name)
+            console.log('submarket name: ', val.Submarket.Name)
+            console.groupEnd()
         },
     },
     beforeCreate() {
@@ -339,8 +347,27 @@ export default {
                 }
             }
         },
-        onMouseEnter(e) {
+        onMseEnterSmpPrd(e, iip, iim, iis) {
+            const prd = this.Products[iip]
+            const eMrk = this.ListMarket[iim]
+            const smp = eMrk.ListSubMarket[iis]
+            this.CellSmpPrd = {
+                Product: prd,
+                Market: eMrk.Entry,
+                Submarket: smp
+            }
+        },
+        onMseOver(type, e, pr, smp, mrk) {
 
+            switch (type) {
+                case 5: // pr = product group, smp = undefined
+
+                    break;
+                default: break;
+            }
+        },
+        onMseOut() {
+            this.CellSmpPrd = null;
         },
     },
     beforeMount() {
