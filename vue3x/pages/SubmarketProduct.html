@@ -71,21 +71,27 @@
                         class="dnb-cell-prd-submrk d-inline-block p-1 aln-ctn-center"
                         :smid="eSubMrk.Id" :pid="prd.Id"
                         @mouseenter="e => onMseEnterSmpPrd(e, prd, eMrk.Entry, eSubMrk)">
-                        <div class="border-r4px"
-                            :class="[getClassActive(eSubMrk.Id, prd.Id)]"
-                            @mouseout="e => onMseOut()" 
-                            style="width: 100%;height: 100%;">
-                            <div v-if="isActive(eSubMrk.Id, prd.Id)"
-                                class="cell-smprd-content d-inline-grid">
-                                <div style="height: 24px;align-content: center;cursor: default;"
-                                    @dblclick="e => onClkOpenGroupGa(eSubMrk.Id, prd.Id)"
-                                    >{{eMrk.Entry.Id}} | {{eSubMrk.Id}} | {{prd.Id}}</div>
-                                <i class="bi bi-gear btn-menu-valuation"></i>
-                            </div>
-                        </div>
+                        <comp-cell-smprd v-if="isActive(eSubMrk.Id, prd.Id)"
+                            :market="eMrk.Entry"
+                            :key="eMrk.Entry.Id + '-' + eSubMrk.Id + '-' + prd.Id"
+                            :submarket="eSubMrk"
+                            :product="prd"></comp-cell-smprd>
+                        <div v-else class="cell-submk-prd-empty border-r4px"
+                            @mouseout="e => onMseOut()" ></div>
                     </div>
                 </div>
             </div>
         </article>
     </section>
+</template>
+<template id="tmp-comp-cell-smprd">
+    <div class="cell-submk-prd border-r4px"
+        style="width: 100%;height: 100%;">
+        <div class="cell-smprd-content d-inline-grid">
+            <div style="height: 24px;align-content: center;cursor: default;"
+                @dblclick="e => onClkOpenGroupGa()"
+                >{{market.Id}} | {{submarket.Id}} | {{product.Id}}</div>
+            <i class="bi bi-gear btn-menu-valuation"></i>
+        </div>
+    </div>
 </template>

@@ -210,11 +210,23 @@ const MsFilterSubMarket = {
         addFilter() { this.Criterials.push([FTypeId.ProductGroups_Product, [FTypeId.SelectAll, FTypeId.SelectAll]]) },
     },
 }
-
+const CellSmPrd = {
+    template: `#tmp-comp-cell-smprd`,
+    props: ['market', 'submarket', 'product'],
+    //inject: [''],
+    methods: {
+        onClkOpenGroupGa() {
+            const smpId = this.submarket.Id,
+                prdId = this.product.Id
+            console.log('dbl click ', smpId, prdId)
+        },
+    },
+}
 export default {
     template: `#tmp-comp-submarket`,
     components: {
         'comp-filter-smarket': MsFilterSubMarket,
+        'comp-cell-smprd': CellSmPrd,
         'drop-selection': DropSelection,
         draggable: VueDraggableNext
     },
@@ -224,7 +236,6 @@ export default {
             ProductGroups: [],
             Products: [],
             ListMarket: [],
-            ListSubmkPrdId: ['3-5', '8-9', '14-4'],
             CellSmpPrd: null,
         }
     },
@@ -250,6 +261,9 @@ export default {
             console.groupEnd()
         },
     },
+    // provide() {
+    //     return { }
+    // },
     beforeCreate() {
         const rootCrs = this.$root.SubMarketCrites
         if (!rootCrs.length) {
@@ -365,19 +379,10 @@ export default {
                 default: break;
             }
         },
-        onMseOut() {
-            this.CellSmpPrd = null;
-        },
-        getClassActive(smpId, prdId) {
-            if (this.isActive(smpId, prdId)) return 'cell-submk-prd'
-            return `cell-submk-prd-empty`
-        },
-        isActive(smpId, prdId) {
-            const smkPrdId = `${smpId}-${prdId}`
-            return this.ListSubmkPrdId.includes(smkPrdId)
-        },
-        onClkOpenGroupGa(smpId, prdId) {
-
+        onMseOut() { this.CellSmpPrd = null },
+        isActive(smkId, prdId) {
+            const smkPrdId = `${smkId}-${prdId}`
+            return this.$root.ListSubmkPrdId.includes(smkPrdId)
         },
     },
     beforeMount() {

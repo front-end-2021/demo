@@ -50,6 +50,7 @@ Promise.all([
                 DragDrop: null,
                 Popup_UI: null,  // 
 
+                ListSubmkPrdId: ['3-5', '8-9', '14-4'],
                 // LastAction: null,
 
                 UserInfo: {
