@@ -210,6 +210,7 @@ const MsFilterSubMarket = {
         addFilter() { this.Criterials.push([FTypeId.ProductGroups_Product, [FTypeId.SelectAll, FTypeId.SelectAll]]) },
     },
 }
+
 export default {
     template: `#tmp-comp-submarket`,
     components: {
@@ -223,6 +224,7 @@ export default {
             ProductGroups: [],
             Products: [],
             ListMarket: [],
+            ListSubmkPrdId: ['3-5', '8-9', '14-4'],
             CellSmpPrd: null,
         }
     },
@@ -347,13 +349,10 @@ export default {
                 }
             }
         },
-        onMseEnterSmpPrd(e, iip, iim, iis) {
-            const prd = this.Products[iip]
-            const eMrk = this.ListMarket[iim]
-            const smp = eMrk.ListSubMarket[iis]
+        onMseEnterSmpPrd(e, prd, eMrk, smp) {
             this.CellSmpPrd = {
                 Product: prd,
-                Market: eMrk.Entry,
+                Market: eMrk,
                 Submarket: smp
             }
         },
@@ -368,6 +367,17 @@ export default {
         },
         onMseOut() {
             this.CellSmpPrd = null;
+        },
+        getClassActive(smpId, prdId) {
+            if (this.isActive(smpId, prdId)) return 'cell-submk-prd'
+            return `cell-submk-prd-empty`
+        },
+        isActive(smpId, prdId) {
+            const smkPrdId = `${smpId}-${prdId}`
+            return this.ListSubmkPrdId.includes(smkPrdId)
+        },
+        onClkOpenGroupGa(smpId, prdId) {
+
         },
     },
     beforeMount() {
