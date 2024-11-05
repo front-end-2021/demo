@@ -229,7 +229,7 @@ Promise.all([
                 //  console.log(e, offTarget)
                 if (text) {
                     this.Popup_UI = {
-                        type: 1000,
+                        type: 1000,     // tooltip
                         BodyText: text,
                         Style: {
                             top: `${offTarget.top + offTarget.height}px`,
@@ -254,6 +254,20 @@ Promise.all([
             classSqr(isCheck) {
                 if (isCheck) return `bi-check2-square`
                 return `bi-square`
+            },
+            onGotoTab(type, entry) {
+                this.Popup_UI = null
+                this.IndexPage = type
+
+                switch (type) {
+                    case 0: // M@rk3t
+                        break;
+                    case 1: // Subm@rk3t
+                        break;
+                    case 2: // @ct1on Pl@n
+                        break;
+                    default: break;
+                }
             },
             traceHeap(mess) {
                 if (performance.memory) {

@@ -13,77 +13,20 @@ import { VueDraggableNext } from 'vue-draggable-next'
 
 const CellValuation = {
     template: `#tmp-comp-cell-valuation`,
-    inject: ['getValuation', 'getBgColor', 'clssCheckMark'],
+    inject: ['getValuation', 'getBgColor', 'clssCheckMark',
+        'openFormEval', 'toggleMenuEval'],
     props: {
         market: Object,
         region: Object,
-        imarket: Number,
-        iregion: Number
     },
-    computed: {
-        IsShowMenuCell() {
-            if (1 != this.$root.UiPopupType) return false
-            const popMenu = this.$root.Popup_UI
-            if (this.imarket != popMenu.imarket) return false;
-            if (this.iregion != popMenu.iregion) return false;
-            return true;
-        },
-    },
+    //computed: { },
     methods: {
-        dblclOpenFormValue(market, region) {
-            const mId = market.Id
-            const rId = region.Id;
+        dblclOpenFormValue() {
+            const mId = this.market.Id
+            const rId = this.region.Id;
             const item = this.$store.getters.MarketRegionBy([mId, rId])
             if (!item) return
-            this.openFormValuation(market, region)
-        },
-        openFormValuation(market, region) {
-            const landId = region.LandId
-            let land = this.$store.getters.ItemBy([1, landId])
-            if (land) {
-                land = land.Name + (land.IsNew ? ' *' : '')
-            } else land = 'LAND'
-
-            this.$root.clearPopupUI(1)
-
-            this.$store.dispatch('openFormValue',
-                [market.Id, region.Id]).then(([ii, item]) => {
-                    if (ii < 0) return;
-                    const saveClose = (mItem) => {
-                        const itemCopy = Object.assign(item, mItem)
-                        this.$store.state.MarketRegions.splice(ii, 1, itemCopy)
-                    }
-                    this.$store.commit('setModal', [{
-                        data: item,
-                        path: `${market.Name} / ${land} / ${region.Name}`,
-                        type: `comp-form-valuation`
-                    }, saveClose, () => { }])
-                })
-
-        },
-        toggleMenuValuation(imk, irg) {
-            this.$root.Popup_UI = {
-                type: 1,
-                imarket: imk,
-                iregion: irg
-            }
-        },
-        activeValuation(MarketId, RegionId) {
-            const item = this.$store.getters.MarketRegionBy([MarketId, RegionId])
-            if (!item) {
-                this.$store.state.MarketRegions.push({
-                    MarketId, RegionId,
-                    Criterias: [], Active: true,
-                    Comment: ``
-                })
-                return
-            }
-            item.Active = !item.Active
-        },
-        classSquare(mId, rId) {
-            const item = this.$store.getters.MarketRegionBy([mId, rId])
-            if (!item) return `bi-square`
-            return this.$root.classSqr(item.Active)
+            this.openFormEval(this.market, this.region)
         },
     },
 }
@@ -602,6 +545,81 @@ export default {
             }
             this.$store.commit('setModal', [item, saveClose, xClose])
         },
+        openFormEval(market, region) {
+            const landId = region.LandId
+            let land = this.$store.getters.ItemBy([1, landId])
+            if (land) {
+                land = land.Name + (land.IsNew ? ' *' : '')
+            } else land = 'LAND'
+
+            this.$root.clearPopupUI(1)
+
+            this.$store.dispatch('openFormValue',
+                [market.Id, region.Id]).then(([ii, item]) => {
+                    if (ii < 0) return;
+                    const saveClose = (mItem) => {
+                        const itemCopy = Object.assign(item, mItem)
+                        this.$store.state.MarketRegions.splice(ii, 1, itemCopy)
+                    }
+                    this.$store.commit('setModal', [{
+                        data: item,
+                        path: `${market.Name} / ${land} / ${region.Name}`,
+                        type: `comp-form-valuation`
+                    }, saveClose, () => { }])
+                })
+
+        },
+        // #region menu cell valuation
+        toggleMenuEval(e, market, region) {
+            let offTarget = e.target.getBoundingClientRect()
+            this.$root.Popup_UI = {
+                type: 1,    // menu valuation market region
+                Market: market,
+                Region: region,
+                Style: {
+                    top: `${offTarget.top + offTarget.height}px`,
+                    left: `${offTarget.left - 147}px`,
+                },
+            }
+        },
+        openFormValun() {
+            const popMenu = this.$root.Popup_UI
+            if (Object.is(popMenu, null)) return;
+            const market = popMenu.Market
+            const region = popMenu.Region
+            this.openFormEval(market, region)
+        },
+        activeValuation() {
+            const popMenu = this.$root.Popup_UI
+            if (Object.is(popMenu, null)) return;
+            const MarketId = popMenu.Market.Id
+            const RegionId = popMenu.Region.Id
+            const item = this.$store.getters.MarketRegionBy([MarketId, RegionId])
+            if (!item) {
+                this.$store.state.MarketRegions.push({
+                    MarketId, RegionId,
+                    Criterias: [], Active: true,
+                    Comment: ``
+                })
+                return
+            }
+            item.Active = !item.Active
+        },
+        isCelInActive(mId, rId) {
+            const item = this.$store.state.MarketRegions.find(x => x.MarketId == mId && x.RegionId == rId)
+            if (item) return false;
+            return true;
+        },
+        classSquare() {
+            const popMenu = this.$root.Popup_UI
+            if (Object.is(popMenu, null)) return;
+            const mId = popMenu.Market.Id
+            const rId = popMenu.Region.Id
+            const item = this.$store.getters.MarketRegionBy([mId, rId])
+            if (!item) return `bi-square`
+            return this.$root.classSqr(item.Active)
+        },
+        // #endregion
         initDragDrop(type) {
             switch (type) {
                 case 2: // region
@@ -682,11 +700,11 @@ export default {
                 const onClick = () => {
                     let offTarget = e.target.getBoundingClientRect()
                     this.$root.Popup_UI = {
-                        type: type,
+                        type: type,     // menu Land (11)
                         Entry: item,
                         Style: {
                             top: `${offTarget.top + offTarget.height}px`,
-                            left: `calc(${offTarget.left}px - 12px)`,
+                            left: `${offTarget.left - 89}px`,
                         },
                     }
                     delete window.DnbLastAction
@@ -701,6 +719,7 @@ export default {
             switch (type) {
                 case 1: this.openFormLand(item)
                     break;
+                default: break;
             }
             this.$root.Popup_UI = null
         },
@@ -709,11 +728,8 @@ export default {
                 case 1: // Land
                     item.IsNew = !item.IsNew
                     break;
+                default: break;
             }
-            this.$root.Popup_UI = null
-        },
-        goToSubmarket(item, type) {
-
             this.$root.Popup_UI = null
         },
         getNameMenu(name) {
@@ -747,6 +763,8 @@ export default {
             getValuation: this.getValuation,
             clssCheckMark: this.clssCheckMark,
             getBgColor: this.getBgColor,
+            openFormEval: this.openFormEval,
+            toggleMenuEval: this.toggleMenuEval,
         }
     },
     beforeCreate() {

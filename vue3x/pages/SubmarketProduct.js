@@ -220,6 +220,15 @@ const CellSmPrd = {
                 prdId = this.product.Id
             console.log('dbl click ', smpId, prdId)
         },
+        clkShowMenu(e) {
+            let offTarget = e.target.getBoundingClientRect()
+            this.$root.Popup_UI = { type: 48,   // menu submarket + product
+                Style: {
+                    top: `${offTarget.top + offTarget.height}px`,
+                    left: `calc(${offTarget.left}px - 12px)`,
+                },
+            }
+        },
     },
 }
 export default {

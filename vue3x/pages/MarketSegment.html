@@ -1,27 +1,16 @@
 <template id="tmp-comp-cell-valuation">
   <div class="cell-valuation pos-relative border-r4px" 
-    @dblclick="e => dblclOpenFormValue(market, region)"
+    @dblclick="e => dblclOpenFormValue()"
     :style="[getBgColor(market.Id, region.Id)]">
     <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
     <i class="bi bi-gear btn-menu-valuation" 
-      @click.stop="e => toggleMenuValuation(imarket, iregion)"></i>
-    <div v-if="IsShowMenuCell"
-      class="d-inline-flex menu-valuation dflex-col">
-      <div class="p6px cpointer" 
-        @click.stop="e => openFormValuation(market, region)"><i class="bi bi-sliders2"></i>
-        {{$store.state.ContextLang.Valuation}}</div>
-      <div @click.stop="e => activeValuation(market.Id, region.Id)" class="p6px cpointer"><i class="bi"
-          :class="classSquare(market.Id, region.Id)"></i> {{$store.state.ContextLang.Active}}</div>
-      <div class="p6px cpointer"><i class="bi bi-box-arrow-in-right"></i>
-        {{$store.state.ContextLang.Sub_market}}/{{$store.state.ContextLang.Productstrategy}}</div>
-    </div>
+      @click.stop="e => toggleMenuEval(e, market, region)"></i>
     <i class="bi" :class="clssCheckMark(market.Id, region.Id)" style="font-size: 24px;"></i>
   </div>
 </template>
 <template id="tmp-comp-market">
   <section @click="onClickTab" 
-    style="padding-bottom: 169px;padding-left: 20px;"
-    class="vw-marketsegment">
+    style="padding-bottom: 169px;padding-left: 20px;" class="vw-marketsegment">
     <div class="mt-2">
 
       <comp-filter-market :market-ids="$root.MarketIds" @set:filter="$event => setFilter($event)">
@@ -30,69 +19,67 @@
     <article v-if="1 == $root.ProcessState">
       <button>Eval markets</button><button>Eval submarkets</button><button>Strategy</button>
       <button>Plan from submarkets</button><button>All criterials</button>
-      
+
       <h2 style="margin-top: 18px;">MK segments</h2>
       <div>
-        <draggable v-model="Lands" v-bind="dragOptions" 
-          class="d-inline-block">
+        <draggable v-model="Lands" v-bind="dragOptions" class="d-inline-block">
           <transition-group>
-            <div v-for="land in Lands" 
-              :key="land.Id"
-              class="align-items-center ui button"
+            <div v-for="land in Lands" :key="land.Id" class="align-items-center ui button"
               style="margin-right: 6px; padding: 0; display: inline-grid; grid-template-columns: auto 24px;"
               :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']" 
               @dblclick="e => openFormLand(land)">
-              <div class="d-inline-block" 
-                style="padding: .78571429em 1.5em;" 
-                @mouseover="e => $root.onMouseOver(1, land, e)"
+              <div class="d-inline-block" style="padding: .78571429em 1.5em;"
+                @mouseover="e => $root.onMouseOver(1, land, e)" 
                 @mouseout="e => $root.onMouseOut(1, land, e)"
-                @click="e => countClick(1, land, e)"
-                >{{$root.viewName(land.Name, 1)}}</div>
-              <i class="bi bi-gear btn-menu-inbtn"
-                @click="e => onShowMenu(11, land, e)"></i>
-          </div>
+                @click="e => countClick(1, land, e)">{{$root.viewName(land.Name, 1)}}</div>
+              <i class="bi bi-gear btn-menu-inbtn" @click="e => onShowMenu(11, land, e)"></i>
+            </div>
           </transition-group>
         </draggable>
-        <div class="d-inline-block ui primary button" @click.stop="e => openFormLand()">+ Land</div>
+        <div class="d-inline-block ui primary button" 
+          @click.stop="e => openFormLand()">+ Land</div>
       </div>
-      <div v-if="$root.DragDrop == null"
-        @scroll="scrollViewSegRegion"
-        class="dnb-view-seg-region" style="overflow: auto;">
+      <div v-if="$root.DragDrop == null" @scroll="scrollViewSegRegion" 
+        class="dnb-view-seg-region"
+        style="overflow: auto;">
         <div class="d-flex mt-3">
           <div class="col-market p6px bg-006bb9 cdefault">{{$store.state.ContextLang.Marketsegments}}\Region</div>
           <div v-for="region in Regions"
             class="col-region p6px pe48px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700 pos-relative"
-            @mouseover="e => $root.onMouseOver(2, region, e)"
+            @mouseover="e => $root.onMouseOver(2, region, e)" 
             @mouseout="e => $root.onMouseOut(2, region, e)"
             @dblclick="e => openFormRegion(region)">{{$root.viewName(region.Name, 2)}}
-              <i v-if="1 < Regions.length" class="bi bi-arrows dnd-ic-region pos-absolute"
+            <i v-if="1 < Regions.length" class="bi bi-arrows dnd-ic-region pos-absolute"
               @click.stop="e => initDragDrop(2)"></i>
-              <i class="bi bi-gear dnd-ic-region pos-absolute" 
-                style="right: 6px;"></i>
-            </div>
-          <div class="col-region single line p6px cpointer prevent-select bg-008ff8 fb700" 
+            <i class="bi bi-gear dnd-ic-region pos-absolute" style="right: 6px;"></i>
+          </div>
+          <div class="col-region single line p6px cpointer prevent-select bg-008ff8 fb700"
             @click.stop="e => openFormRegion()">+ Region</div>
         </div>
         <div v-for="(market, imk) in Markets" class="row-market d-flex">
           <div class="p6px bg-008ff8 col-market pos-relative fb700 cdefault" 
-            @dblclick="e => openFormMarket(market)">{{market.Name}}
-            <i v-if="1 < Markets.length"
-              class="bi bi-arrows-vertical dnd-ic-market pos-absolute"
+            @dblclick="e => openFormMarket(market)">
+            {{market.Name}}
+            <i v-if="1 < Markets.length" class="bi bi-arrows-vertical dnd-ic-market pos-absolute"
               @click.stop="e => initDragDrop(3)"></i>
-            <i class="bi bi-gear dnd-ic-market pos-absolute" 
-            style="right: 6px;"></i>
+            <i class="bi bi-gear dnd-ic-market pos-absolute" style="right: 6px;"></i>
           </div>
           <div v-for="(region, ii) in Regions" 
-            class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42" >
-              <cell-valuation :market="market" :imarket="imk" :region="region"
-              :iregion="ii"></comp-cell-valuation>
+            class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42">
+            <div v-if="isCelInActive(market.Id, region.Id)"
+              class="cell-valuation pos-relative border-r4px">
+              <span></span><i class="bi bi-gear btn-menu-valuation"
+                @click.stop="e => toggleMenuEval(e, market, region)"></i><i class="bi"></i>
+            </div>
+            <cell-valuation v-else
+              :key="market.Id + '-' + region.Id"
+              :market="market" :region="region"></comp-cell-valuation>
           </div>
           <div class="p6px col-region border-box border-r1-e8e9e9">{{getValuation(0, 0)}}</div>
         </div>
         <div class="d-flex">
-          <div class="p6px bg-008ff8 col-market fb700"
-            @click.stop="e => openFormMarket()">+ Market<i class="circle help link icon" 
-            data-html="Maximum device width with two <code
+          <div class="p6px bg-008ff8 col-market fb700" @click.stop="e => openFormMarket()">+ Market<i
+              class="circle help link icon" data-html="Maximum device width with two <code
                 >1.5em</code> gutters and a <code>17px</code> scrollbar width. <div 
                 class='ui divider'></div> <code>992 - (14 * (1.5 * 2)) - 17</code>">
             </i>
@@ -101,11 +88,9 @@
             class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
         </div>
       </div>
-      <div v-if="$root.DragDrop != null"
-        class="dnb-dnd-seg-region" style="overflow: auto;">
+      <div v-if="$root.DragDrop != null" class="dnb-dnd-seg-region" style="overflow: auto;">
         <!-- Drag and drop Y -->
-        <div v-if="$root.DragDrop.type == 3" 
-          class="dnd-market mt-3">
+        <div v-if="$root.DragDrop.type == 3" class="dnd-market mt-3">
           <div class="d-flex">
             <div class="col-market p6px bg-006bb9">{{$store.state.ContextLang.Marketsegments}}\Region</div>
             <div class="col-region p6px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700"
@@ -114,66 +99,54 @@
           </div>
           <draggable v-model="Markets" v-bind="$root.DragDrop.options" class="dnd_view">
             <transition-group>
-              <div v-for="(market, imk) in Markets" 
-                :key="market.Id"
-                class="d-flex dnd_market_y">
+              <div v-for="(market, imk) in Markets" :key="market.Id" class="d-flex dnd_market_y">
                 <div class="p6px bg-008ff8 col-market fb700 cdefault">{{market.Name}}</div>
-                <div v-for="(region, ii) in Regions" 
-                  class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42" >
-                    <div class="cell-valuation pos-relative border-r4px" 
-                      :mkid="market.Id" :rnid="region.Id"
-                      :x="ii" :y="imk"
-                      :style="[getBgColor(market.Id, region.Id)]">
-                      <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
-                      <i class="bi bi-gear" ></i>
-                      <i class="bi" :class="clssCheckMark(market.Id, region.Id)" style="font-size: 24px;"></i>
-                    </div>
+                <div v-for="(region, ii) in Regions"
+                  class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42">
+                  <div class="cell-valuation pos-relative border-r4px" :mkid="market.Id" :rnid="region.Id" :x="ii"
+                    :y="imk" :style="[getBgColor(market.Id, region.Id)]">
+                    <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
+                    <i class="bi bi-gear"></i>
+                    <i class="bi" :class="clssCheckMark(market.Id, region.Id)" style="font-size: 24px;"></i>
+                  </div>
                 </div>
                 <div class="p6px col-region border-box border-r1-e8e9e9">{{getValuation(0, 0)}}</div>
               </div>
             </transition-group>
           </draggable>
           <div class="d-flex">
-            <div class="p6px col-market bg-008ff8" >
-                <div class="d-inline-block py-2 ps-3 pe-3 cpointer bg-006bb9"
-                  style="border-radius: 6px"
-                  @click.stop="finishDragDrop">Finish Drag drop Market</div>
-              </div>
+            <div class="p6px col-market bg-008ff8">
+              <div class="d-inline-block py-2 ps-3 pe-3 cpointer bg-006bb9" style="border-radius: 6px"
+                @click.stop="finishDragDrop">Finish Drag drop Market</div>
+            </div>
             <div v-for="ii in Regions.length + 1"
               class="p6px col-region border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
           </div>
         </div>
         <!-- Drag and drop X -->
-        <div v-if="$root.DragDrop.type == 2" 
-          class="dnd-region d-flex mt-3">
+        <div v-if="$root.DragDrop.type == 2" class="dnd-region d-flex mt-3">
           <div class="rgn-first-col">
             <div class="col-market p6px bg-006bb9 h32">{{$store.state.ContextLang.Marketsegments}}\Region</div>
-            <div v-for="(market, imk) in Markets" 
-              class="p6px bg-008ff8 col-market fb700 cdefault h42">{{market.Name}}</div>
-            <div class="p6px col-market bg-008ff8 h42" >+ Market<i class="circle help link icon" 
-              data-html="Maximum device width with two <code
+            <div v-for="(market, imk) in Markets" class="p6px bg-008ff8 col-market fb700 cdefault h42">{{market.Name}}
+            </div>
+            <div class="p6px col-market bg-008ff8 h42">+ Market<i class="circle help link icon" data-html="Maximum device width with two <code
                   >1.5em</code> gutters and a <code>17px</code> scrollbar width. <div 
                   class='ui divider'></div> <code>992 - (14 * (1.5 * 2)) - 17</code>">
               </i></div>
           </div>
-          <draggable v-model="Regions" v-bind="$root.DragDrop.options" 
-            class="rgn-dnd-cols dnd_view d-flex">
+          <draggable v-model="Regions" v-bind="$root.DragDrop.options" class="rgn-dnd-cols dnd_view d-flex">
             <transition-group>
-              <div v-for="(region, ii) in Regions" 
-                :key="region.Id"
-                class="dnd_region_x"
+              <div v-for="(region, ii) in Regions" :key="region.Id" class="dnd_region_x"
                 style="background-color: white;">
                 <div class="col-region p6px bg-008ff8 fb700 h32">{{region.Name}}</div>
-                <div v-for="(market, imk) in Markets" 
-                    class="p6px col-region fb700 cdefault border-box border-r1-e8e9e9 border-b1-e8e9e9 h42">
-                    <div class="cell-valuation pos-relative border-r4px" 
-                      :mkid="market.Id" :rnid="region.Id"
-                      :x="ii" :y="imk"
-                      :style="[getBgColor(market.Id, region.Id)]">
-                      <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
-                      <i class="bi bi-gear" ></i>
-                      <i class="bi" :class="clssCheckMark(market.Id, region.Id)" style="font-size: 24px;"></i>
-                    </div>
+                <div v-for="(market, imk) in Markets"
+                  class="p6px col-region fb700 cdefault border-box border-r1-e8e9e9 border-b1-e8e9e9 h42">
+                  <div class="cell-valuation pos-relative border-r4px" :mkid="market.Id" :rnid="region.Id" :x="ii"
+                    :y="imk" :style="[getBgColor(market.Id, region.Id)]">
+                    <span class="text-center">{{getValuation(market.Id, region.Id)}}</span>
+                    <i class="bi bi-gear"></i>
+                    <i class="bi" :class="clssCheckMark(market.Id, region.Id)" style="font-size: 24px;"></i>
+                  </div>
                 </div>
                 <div class="p6px col-region cdefault border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
               </div>
@@ -181,31 +154,32 @@
           </draggable>
           <div class="rgn-last-col">
             <div class="col-region bg-008ff8 h32 d-inline-flex align-items-center justify-content-cent">
-              <div class="d-inline-block py-1 ps-3 pe-3 cpointer bg-006bb9"
-              style="border-radius: 6px"
-              @click.stop="finishDragDrop">Finish Drag drop Region</div>
+              <div class="d-inline-block py-1 ps-3 pe-3 cpointer bg-006bb9" style="border-radius: 6px"
+                @click.stop="finishDragDrop">Finish Drag drop Region</div>
             </div>
-            <div v-for="ii in Markets.length + 1" 
-            class="p6px col-region fb700 cdefault border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
+            <div v-for="ii in Markets.length + 1"
+              class="p6px col-region fb700 cdefault border-box border-r1-e8e9e9 border-b1-e8e9e9 h42"></div>
           </div>
         </div>
       </div>
     </article>
-    <div v-if="11 == $root.UiPopupType"
-      style="position: fixed;"
-      class="d-inline-flex menu-valuation dflex-col"
+    <div v-if="11 == $root.UiPopupType" style="position: fixed;" class="d-inline-flex menu-valuation dflex-col"
       :style="[$root.Popup_UI.Style]">
-        <div class="p6px cpointer" 
-          @click.stop="e => clickMenuEdit($root.Popup_UI.Entry, 1)"
-          ><i class="bi bi-pencil-square"></i>&nbsp;&nbsp;Edit ({{getNameMenu($root.Popup_UI.Entry.Name)}})</div>
-        <div class="p6px cpointer"
-          :class="[$root.classSqr($root.Popup_UI.Entry.IsNew)]"
-          @click.stop="e => toggleIsNew($root.Popup_UI.Entry, 1)" 
-          ><i class="bi"></i>&nbsp;&nbsp;Is New</div>
-        <div class="p6px cpointer"
-          @click.stop="e => goToSubmarket($root.Popup_UI.Entry, 1)"
-          ><i class="bi bi-box-arrow-in-right"></i>&nbsp;&nbsp;Goto Submarket</div>
+      <div class="p6px cpointer" @click.stop="e => clickMenuEdit($root.Popup_UI.Entry, 1)"><i
+          class="bi bi-pencil-square"></i>&nbsp;&nbsp;Edit ({{getNameMenu($root.Popup_UI.Entry.Name)}})</div>
+      <div class="p6px cpointer" :class="[$root.classSqr($root.Popup_UI.Entry.IsNew)]"
+        @click.stop="e => toggleIsNew($root.Popup_UI.Entry, 1)"><i class="bi"></i>&nbsp;&nbsp;Is New</div>
+      <div class="p6px cpointer" @click.stop="e => $root.onGotoTab(1, $root.Popup_UI.Entry)"><i
+          class="bi bi-box-arrow-in-right"></i>&nbsp;&nbsp;Goto Submarket</div>
     </div>
-    
+    <div v-if="1 == $root.UiPopupType" style="position: fixed;" class="d-inline-flex menu-valuation dflex-col"
+      :style="[$root.Popup_UI.Style]">
+      <div class="p6px cpointer" @click.stop="e => openFormValun()"><i class="bi bi-sliders2"></i>
+        {{$store.state.ContextLang.Valuation}}</div>
+      <div @click.stop="e => activeValuation()" class="p6px cpointer"><i class="bi" :class="classSquare()"></i>
+        {{$store.state.ContextLang.Active}}</div>
+      <div class="p6px cpointer" @click.stop="e => $root.onGotoTab(1)"><i class="bi bi-box-arrow-in-right"></i>
+        {{$store.state.ContextLang.Sub_market}}/{{$store.state.ContextLang.Productstrategy}}</div>
+    </div>
   </section>
 </template>

@@ -241,7 +241,7 @@ button { cursor: pointer; }
     border-bottom: 5px solid rgb(213, 213, 213);
     transform: translateX(3px);
 }
-.dnb-tlp { position: fixed;display: inline-block; }
+.dnb-tlp, .dnb-menu { position: fixed;display: inline-block; }
 .dnb-tlp-body {
     padding: 9px 12px; border-radius: 3px;
     background-color: white;
@@ -278,6 +278,9 @@ button { cursor: pointer; }
     height: 32px;
     align-items: center;
     text-align: center;
+}
+.dmenu-smprd > *:hover {
+    background-color: #ffffff57;
 }
 
 @media screen and (max-width: 558px) {
