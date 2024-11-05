@@ -736,6 +736,27 @@ export default {
             if (name.length <= 12) return name;
             return name.slice(0, 12) + ' ...'
         },
+        clkGotoTabBy(type){
+            const popMenu = this.$root.Popup_UI;
+            switch(type) {
+                case 1: // Cell market region
+                    let market = popMenu.Market
+                    let region = popMenu.Region
+                    this.$root.SubMarketCrites = [
+                        [FTypeId.PleaseSelect, [region.LandId, region.Id]],
+                        [FTypeId.MarketSegments_Submarket, [market.Id, FTypeId.SelectAll]]
+                    ]
+                break;
+                case 11:    // Land
+                    let land = popMenu.Entry
+                    this.$root.SubMarketCrites = [
+                        [FTypeId.PleaseSelect, [land.Id, FTypeId.SelectRegion]]
+                    ]
+                    this.$root.onGotoTab(1, land)
+                return;
+            }
+            this.$root.onGotoTab(1)
+        },
         scrollViewSegRegion(e) {
             // console.group('scroll view seg region ')
             // console.log(e)

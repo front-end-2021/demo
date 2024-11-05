@@ -222,7 +222,8 @@ const CellSmPrd = {
         },
         clkShowMenu(e) {
             let offTarget = e.target.getBoundingClientRect()
-            this.$root.Popup_UI = { type: 48,   // menu submarket + product
+            this.$root.Popup_UI = {
+                type: 48,   // menu submarket + product
                 Style: {
                     top: `${offTarget.top + offTarget.height}px`,
                     left: `calc(${offTarget.left}px - 12px)`,
@@ -264,10 +265,27 @@ export default {
         },
         CellSmpPrd(val) {
             if (Object.is(val, null)) return;
-            console.group('product name: ', val.Product.Name)
-            console.log('market name: ', val.Market.Name)
-            console.log('submarket name: ', val.Submarket.Name)
-            console.groupEnd()
+            // console.group('product name: ', val.Product.Name)
+            // console.log('market name: ', val.Market.Name)
+            // console.log('submarket name: ', val.Submarket.Name)
+            // console.groupEnd()
+        },
+        '$root.ActviePrGrpIds'(ids) {
+            const cCrites = this.$root.SubMarketCrites
+            let prdGrpIds = cCrites.filter(x => x[0] == FTypeId.ProductGroups_Product)
+
+            let productIds = prdGrpIds.map(x => x[1][1])
+            this.checkRmv0(productIds)
+
+            prdGrpIds = prdGrpIds.map(x => x[1][0]);
+
+            if (!prdGrpIds.length) prdGrpIds = [0]
+            else this.checkRmv0(prdGrpIds);
+
+            if (prdGrpIds.includes(0))
+                prdGrpIds = JSON.parse(JSON.stringify(ids))
+
+            this.buildListProduct(prdGrpIds, productIds)
         },
     },
     // provide() {
@@ -278,7 +296,19 @@ export default {
         if (!rootCrs.length) {
             rootCrs.push([FTypeId.PleaseSelect, [FTypeId.SelectLand, FTypeId.SelectRegion]])
         }
+        let prdGrpIds = rootCrs.filter(x => x[0] == FTypeId.ProductGroups_Product)
+        prdGrpIds = prdGrpIds.map(x => x[1][0]);
+
+        if (!prdGrpIds.length) prdGrpIds = [0]
+        else this.checkRmv0(prdGrpIds)
+
+        let regionId = rootCrs[0][1][1]
+        if (regionId < 0) regionId = 0
+        let lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
+        console.log(lstPrG.map(x => x.Id))
+        this.$root.ActviePrGrpIds = lstPrG.map(x => x.Id)
     },
+    //created() {},
     methods: {
         openFormSmp(type, eItem) {
             const iProject = this.$root.IndexProject
@@ -328,51 +358,72 @@ export default {
                 let regionId = cCrites[0][1][1]
                 if (regionId < 0) regionId = 0
                 let prdGrpIds = cCrites.filter(x => x[0] == FTypeId.ProductGroups_Product)
+
                 let productIds = prdGrpIds.map(x => x[1][1])
+                this.checkRmv0(productIds)
+
                 prdGrpIds = prdGrpIds.map(x => x[1][0])
+                this.checkRmv0(prdGrpIds)
+
                 let marketIds = cCrites.filter(x => x[0] == FTypeId.MarketSegments_Submarket)
                 let subMarketIds = marketIds.map(x => x[1][1])
                 marketIds = marketIds.map(x => x[1][0])
-                checkRmv0(prdGrpIds)
-                checkRmv0(productIds)
-                checkRmv0(marketIds)
-                checkRmv0(subMarketIds)
+
+                this.checkRmv0(marketIds)
+                this.checkRmv0(subMarketIds)
+                this.buildListMarket(landId, marketIds, subMarketIds)
+
                 let lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
                 if (0 < landId && regionId < 1) {
                     let lstRg = this.$store.getters.SortItemsByParent([2, [landId]])
                     let rgIds = lstRg.map(x => x.Id)
                     lstPrG = this.$store.getters.SortItemsByParent([3, rgIds, prdGrpIds])
                 }
-                const lstPrd = this.$store.getters.SortItemsByParent([4, prdGrpIds, productIds])
-                const lstMrk = this.$store.getters.SortItemsByParent([5, [landId], marketIds])
-                this.ListMarket = []
-                for (let mm = 0, mrk; mm < lstMrk.length; mm++) {
-                    mrk = lstMrk[mm]
-                    this.ListMarket.push({
-                        Entry: mrk,
-                        ListSubMarket: this.$store.getters.SortItemsByParent([6, [mrk.Id], subMarketIds])
-                    })
-                }
                 this.ProductGroups = lstPrG;
-                this.Products = lstPrd;
+
+                if (prdGrpIds.length) {
+                    const activePrgIds = this.$root.ActviePrGrpIds
+                    for (let pp = 0, pg, iia; pp < lstPrG.length; pp++) {
+                        pg = lstPrG[pp]
+                        iia = activePrgIds.indexOf(pg.Id)
+                        if (iia < 0) activePrgIds.push(pg.Id)
+                    }
+                }
+
+                this.buildListProduct(prdGrpIds, productIds)
+
                 this.$root.ProcessState = 1
             }
             setTimeout(process, 111)
-
-            function checkRmv0(lstId) {
-                if (lstId.length < 2) return
-                for (let ii = 0; ii < lstId.length; ii++) {
-                    for (let jj = lstId.length - 1; ii < jj; jj--) {
-                        if (lstId[jj] == lstId[ii]) lstId.splice(jj, 1)
-                    }
-                }
-                if (!lstId.filter(x => 0 < x).length) return
-                for (let ii = lstId.length - 1; -1 < ii; ii--) {
-                    if (lstId[ii] < 1) lstId.splice(ii, 1)
+        },
+        checkRmv0(lstId) {
+            if (lstId.length < 2) return
+            for (let ii = 0; ii < lstId.length; ii++) {
+                for (let jj = lstId.length - 1; ii < jj; jj--) {
+                    if (lstId[jj] == lstId[ii]) lstId.splice(jj, 1)
                 }
             }
+            if (!lstId.filter(x => 0 < x).length) return
+            for (let ii = lstId.length - 1; -1 < ii; ii--) {
+                if (lstId[ii] < 1) lstId.splice(ii, 1)
+            }
+        },
+        buildListMarket(landId, marketIds, subMarketIds) {
+            const lstMrk = this.$store.getters.SortItemsByParent([5, [landId], marketIds])
+            this.ListMarket = []
+            for (let mm = 0, mrk; mm < lstMrk.length; mm++) {
+                mrk = lstMrk[mm]
+                this.ListMarket.push({
+                    Entry: mrk,
+                    ListSubMarket: this.$store.getters.SortItemsByParent([6, [mrk.Id], subMarketIds])
+                })
+            }
+        },
+        buildListProduct(prdGrpIds, productIds) {
+            this.Products = this.$store.getters.SortItemsByParent([4, prdGrpIds, productIds])
         },
         onMseEnterSmpPrd(e, prd, eMrk, smp) {
+            this.$root.Popup_UI = null
             this.CellSmpPrd = {
                 Product: prd,
                 Market: eMrk,

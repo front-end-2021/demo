@@ -247,7 +247,7 @@ button { cursor: pointer; }
     background-color: white;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 }
-.dnbcol-market { padding-top: 42px; }
+.dnbcol-market { padding-top: 42px; min-width: 424px; min-height: 164px; }
 .dnbcel-market {
     width: 424px; min-height: 42px;
     grid-template-columns: 180px auto;
@@ -268,7 +268,7 @@ button { cursor: pointer; }
     border-bottom: 1px solid rgb(224, 224, 224);
     border-right: 1px solid rgb(224, 224, 224);
 }
-.dnb-cell-prd-submrk > .cell-submk-prd-empty { display: none; }
+.dnb-cell-prd-submrk > .cell-submk-prd-empty { display: none;height: 100%; }
 .dnb-cell-prd-submrk:hover > .cell-submk-prd-empty {
     display: block; background-color: rgb(128, 128, 128);
 }

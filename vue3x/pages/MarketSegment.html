@@ -169,7 +169,7 @@
           class="bi bi-pencil-square"></i>&nbsp;&nbsp;Edit ({{getNameMenu($root.Popup_UI.Entry.Name)}})</div>
       <div class="p6px cpointer" :class="[$root.classSqr($root.Popup_UI.Entry.IsNew)]"
         @click.stop="e => toggleIsNew($root.Popup_UI.Entry, 1)"><i class="bi"></i>&nbsp;&nbsp;Is New</div>
-      <div class="p6px cpointer" @click.stop="e => $root.onGotoTab(1, $root.Popup_UI.Entry)"><i
+      <div class="p6px cpointer" @click.stop="e => clkGotoTabBy(11)"><i
           class="bi bi-box-arrow-in-right"></i>&nbsp;&nbsp;Goto Submarket</div>
     </div>
     <div v-if="1 == $root.UiPopupType" style="position: fixed;" class="d-inline-flex menu-valuation dflex-col"
@@ -178,7 +178,7 @@
         {{$store.state.ContextLang.Valuation}}</div>
       <div @click.stop="e => activeValuation()" class="p6px cpointer"><i class="bi" :class="classSquare()"></i>
         {{$store.state.ContextLang.Active}}</div>
-      <div class="p6px cpointer" @click.stop="e => $root.onGotoTab(1)"><i class="bi bi-box-arrow-in-right"></i>
+      <div class="p6px cpointer" @click.stop="e => clkGotoTabBy(1)"><i class="bi bi-box-arrow-in-right"></i>
         {{$store.state.ContextLang.Sub_market}}/{{$store.state.ContextLang.Productstrategy}}</div>
     </div>
   </section>

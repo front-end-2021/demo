@@ -200,7 +200,7 @@ Promise.all([
                         }
                         if (1 < acIds.length) {
                             acIds.splice(ii, 1);
-                            this.ActiveLandIds = acIds  // set to run watcher
+                            this.ActviePrGrpIds = acIds  // set to run watcher
                         }
                         break;
                 }

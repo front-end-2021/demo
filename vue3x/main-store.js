@@ -225,7 +225,10 @@ export default createStore({
                     lst = buildListBy.call(state.Regions, ptIds, (itm) => ptIds.includes(itm.LandId))
                     break;
                 case 3: // Product groups by RegionId
-                    lst = buildListBy.call(state.ProductGroups, ptIds, (itm) => ptIds.includes(itm.RegionId))
+                    if(ptIds.includes(0)) 
+                        lst = buildListBy.call(state.ProductGroups, [0])
+                    else
+                        lst = buildListBy.call(state.ProductGroups, ptIds, (itm) => ptIds.includes(itm.RegionId));
                     if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
                         lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
                     }

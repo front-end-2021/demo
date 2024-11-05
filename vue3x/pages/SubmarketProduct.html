@@ -51,7 +51,7 @@
                 {{$store.state.ContextLang.ProductGroups}}</div>
         </article>
         <article v-if="1 == $root.ProcessState" class="d-flex dflex-row mt-3">
-            <div class="dnbcol-market d-inline-flex dflex-col">
+            <div class="dnbcol-market d-inline-flex dflex-col dnbborder217">
                 <div v-for="eMrk in ListMarket" 
                     class="dnbcel-market dnbborder217 d-inline-grid align-items-center border-box">
                     <div class="p-1">{{eMrk.Entry.Name}}</div>
@@ -62,7 +62,7 @@
                 </div>
             </div>
             <div v-for="(prd, iip) in Products" 
-                class="dnbrow-prd d-inline-flex dflex-col">
+                class="dnbrow-prd d-inline-flex dflex-col dnbborder217">
                 <div class="dnbcel-prdname dnbborder217 p-1 aln-ctn-center">{{prd.Name}}</div>
                 <div v-for="(eMrk, iim) in ListMarket" 
                     class="dnbcol-prdmarket dnbborder217 d-inline-flex dflex-col" 
