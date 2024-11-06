@@ -3,6 +3,7 @@ import {
     DemoLands, DemoRegions,
     DemoPrdGroups, DemoProducts,
     DemoMarkets, DemoSubmarkets,
+    DemoGoals,
 } from './mock-data.js';
 import { getTxtBy, getLocal, setLocal } from './common.js';
 import { FTypeId } from './components/dFilter.js';
@@ -30,6 +31,9 @@ export default createStore({
         Submarkets: [], // DemoSubmarkets,
         ProductGroups: DemoPrdGroups,
         Products: DemoProducts,
+        ListGoal: DemoGoals,
+        ListSub: [],
+        ListAction: [],
 
         Currencies: ['CHF', 'USD', 'VND'],
         WkMapDes: new WeakMap(),
@@ -153,7 +157,7 @@ export default createStore({
         SortedItems: (state) => ([type, ids, ignoreIds]) => {
             if (!ids.length && !ignoreIds.length) return []
             let lst = []
-            if (ids.length) {
+            if (ids.length && !ids.includes(0)) {
                 switch (type) {
                     case 1:     // Land
                         lst = buildListBy.call(state.Lands, ids, (itm) => ids.includes(itm.Id))
@@ -173,6 +177,7 @@ export default createStore({
                     case 8:     // Products
                         lst = buildListBy.call(state.Products, ids, (itm) => ids.includes(itm.Id))
                         break;
+                    case 9: lst = buildListBy.call(state.ListGoal, ids, (itm) => ids.includes(itm.Id))
                     default: return lst
                 }
             } else {
@@ -188,6 +193,8 @@ export default createStore({
                     case 5: lst = state.ProductGroups;
                         break
                     case 8: lst = state.Products;
+                        break
+                    case 9: lst = state.ListGoal;
                         break
                     default: return lst
                 }
@@ -225,7 +232,7 @@ export default createStore({
                     lst = buildListBy.call(state.Regions, ptIds, (itm) => ptIds.includes(itm.LandId))
                     break;
                 case 3: // Product groups by RegionId
-                    if(ptIds.includes(0)) 
+                    if (ptIds.includes(0))
                         lst = buildListBy.call(state.ProductGroups, [0])
                     else
                         lst = buildListBy.call(state.ProductGroups, ptIds, (itm) => ptIds.includes(itm.RegionId));

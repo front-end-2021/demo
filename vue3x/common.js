@@ -327,6 +327,16 @@ export const MxSortable = {
         },
     }
 }
+export const groupBy = (array, key) => {
+    const mapRes = new Map()
+    for (let aa = 0, item, val; aa < array.length; aa++) {
+        item = array[aa]
+        val = item[key]
+        if (mapRes.has(val)) mapRes.get(val).push(item)
+        else mapRes.set(val, [item])
+    }
+    return mapRes;
+}
 // export const newIntId = () => {
 //     let s = new Date(2024, 6, 19, 8, 20, 0)        // 7/19/2024 08:20
 //     s = Date.now() - s.getTime()
