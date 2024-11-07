@@ -17,6 +17,8 @@ export default {
             this.$root.UserAssign = this.$root.Users[valIndex]
         },
         buildData(submkIds, prdIds) {
+            let ddd = Date.now()
+            console.log('action plan begin build data ', ddd)
             // #region validate
             if (!Array.isArray(submkIds) || !submkIds.length) submkIds = [0]
             if (!Array.isArray(prdIds) || !prdIds.length) prdIds = [0]
@@ -101,6 +103,7 @@ export default {
                 //console.log('list market ', lstMarkt)
             } else this.ListMarket = []
             this.GroupGoals = groupedGoals
+            console.log('action plan finish build data ', Date.now() - ddd)
            // console.log('list goal ', listGoal)
            // console.log('grouped goals ', groupedGoals)
             function lstPrdXy(prgId, products, lstSubMkXy) {
