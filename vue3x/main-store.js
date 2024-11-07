@@ -157,7 +157,7 @@ export default createStore({
         SortedItems: (state) => ([type, ids, ignoreIds]) => {
             if (!ids.length && !ignoreIds.length) return []
             let lst = []
-            if (ids.length && !ids.includes(0)) {
+            if (ids.length) {
                 switch (type) {
                     case 1:     // Land
                         lst = buildListBy.call(state.Lands, ids, (itm) => ids.includes(itm.Id))

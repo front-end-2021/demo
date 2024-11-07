@@ -8,4 +8,28 @@
             </drop-select>
     </section>
     <h1>4ct10n Pl_n</h1>
+    <section>
+        <div v-for="market in ListMarket">
+            <div class="p-2">{{market.Entry.Name}}</div>
+            <div v-for="subMk in market.SubMarkets" 
+                class="p-2"
+                :smprid="subMk.SubmarketProductId">
+                <div class="p-2">{{subMk.Entry.Name}}</div>
+                <div>
+
+                </div>
+            </div>
+        </div>
+        <div v-for="prdG in ProductGroups">
+            <div class="p-2">{{prdG.Entry.Name}}</div>
+            <div v-for="product in prdG.ListProduct" 
+                class="p-2"
+                :smprid="product.SubmarketProductId">
+                <div class="p-2">{{product.Entry.Name}}</div>
+                <div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
 </template>

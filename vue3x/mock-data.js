@@ -159,6 +159,10 @@ const DemoGoals = [
         Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
     },
     {
+        Id: 6, Name: 'Bán 600 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '12-6',
+        Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
+    },
+    {
         Id: 4, Name: 'Bán 300 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '3-6',
         Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
     },
