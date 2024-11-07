@@ -801,10 +801,10 @@ export default {
         switch (this.$root.TabStatus[0]) {
             case 1:
                 Promise.all([
-                    getData(3),
-                    getData(4),
-                    getData(5),
-                    getData(6),
+                    getData(3),        // Lands
+                    getData(4),       // Regions
+                    getData(5),       // Markets
+                    getData(6),       // Submarkets
                 ]).then((values) => {
                     this.$root.ProcessState = 1     // success
                     const [lands, regions, markets, subMarkets] = values

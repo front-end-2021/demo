@@ -296,17 +296,23 @@ export default {
         if (!rootCrs.length) {
             rootCrs.push([FTypeId.PleaseSelect, [FTypeId.SelectLand, FTypeId.SelectRegion]])
         }
-        let prdGrpIds = rootCrs.filter(x => x[0] == FTypeId.ProductGroups_Product)
-        prdGrpIds = prdGrpIds.map(x => x[1][0]);
+        this.$root.ProcessState = 0     // loading
+        setTimeout(() => {
+            let prdGrpIds = rootCrs.filter(x => x[0] == FTypeId.ProductGroups_Product)
+            prdGrpIds = prdGrpIds.map(x => x[1][0]);
 
-        if (!prdGrpIds.length) prdGrpIds = [0]
-        else this.checkRmv0(prdGrpIds)
+            if (!prdGrpIds.length) prdGrpIds = [0]
+            else this.checkRmv0(prdGrpIds)
 
-        let regionId = rootCrs[0][1][1]
-        if (regionId < 0) regionId = 0
-        let lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
-        console.log(lstPrG.map(x => x.Id))
-        this.$root.ActviePrGrpIds = lstPrG.map(x => x.Id)
+            let regionId = rootCrs[0][1][1]
+            if (regionId < 0) regionId = 0
+            let lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
+            console.log(lstPrG.map(x => x.Id))
+            this.$root.ActviePrGrpIds = lstPrG.map(x => x.Id)
+            
+            this.$root.ProcessState = 1     // success
+        }, 999)
+
     },
     //created() {},
     methods: {
