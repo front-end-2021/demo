@@ -788,18 +788,11 @@ export default {
             toggleMenuEval: this.toggleMenuEval,
         }
     },
-    beforeCreate() {
-        switch (this.$root.TabStatus[0]) {
-            case 0:
-                break;
-            default: this.$root.ProcessState = 0     // loading
-                break;
-        }
-
-    },
+    //beforeCreate() { },
     created() {
         switch (this.$root.TabStatus[0]) {
             case 1:
+                this.$root.ProcessState = 0     // loading
                 Promise.all([
                     getData(3),        // Lands
                     getData(4),       // Regions

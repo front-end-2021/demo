@@ -3,6 +3,8 @@ import {
     ListPrj, Langs,
     DemoLands, DemoRegions,
     DemoMarkets, DemoSubmarkets,
+    DemoPrdGroups, DemoProducts,
+    DemoGoals,
 } from "./mock-data.js";
 
 export const getData = (type) => {
@@ -15,17 +17,19 @@ export const getData = (type) => {
                 case 2:         // Languages
                     resolve(Langs)
                     break;
-                case 3:         // Lands
-                    resolve(DemoLands)
+                case 3: resolve(DemoLands)
                     break;
-                case 4:         // Regions
-                    resolve(DemoRegions)
+                case 4: resolve(DemoRegions)
                     break;
-                case 5:         // Markets
-                    resolve(DemoMarkets)
+                case 5: resolve(DemoMarkets)
                     break;
-                case 6:         // Submarkets
-                    resolve(DemoSubmarkets)
+                case 6: resolve(DemoSubmarkets)
+                    break;
+                case 7: resolve(DemoPrdGroups)
+                    break;
+                case 8: resolve(DemoProducts)
+                    break;
+                case 9: resolve(DemoGoals)
                     break;
             }
         }, getRandomInt(100, 999))

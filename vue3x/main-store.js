@@ -42,9 +42,9 @@ export default createStore({
         Regions: [], // DemoRegions,
         Markets: [], // DemoMarkets,
         Submarkets: [], // DemoSubmarkets,
-        ProductGroups: DemoPrdGroups,
-        Products: DemoProducts,
-        ListGoal: DemoGoals,
+        ProductGroups: [],
+        Products: [],
+        ListGoal: [],
         ListSub: [],
         ListAction: [],
 

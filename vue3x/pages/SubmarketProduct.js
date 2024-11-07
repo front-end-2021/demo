@@ -3,6 +3,7 @@ import { overrideItem } from "../mock-data.js";
 import { DropSelection } from "../components/comp-global.js";
 import { VueDraggableNext } from 'vue-draggable-next'
 import { MxSortable } from "../common.js";
+import { getData } from "../repo-services.js";
 
 const FCriterialSmk = {
     template: `#tmp-comp-criterial-smarket`,
@@ -291,30 +292,50 @@ export default {
     // provide() {
     //     return { }
     // },
-    beforeCreate() {
+    //beforeCreate() { },
+    created() {
         const rootCrs = this.$root.SubMarketCrites
         if (!rootCrs.length) {
             rootCrs.push([FTypeId.PleaseSelect, [FTypeId.SelectLand, FTypeId.SelectRegion]])
         }
-        this.$root.ProcessState = 0     // loading
-        setTimeout(() => {
-            let prdGrpIds = rootCrs.filter(x => x[0] == FTypeId.ProductGroups_Product)
-            prdGrpIds = prdGrpIds.map(x => x[1][0]);
+        switch (this.$root.TabStatus[1]) {
+            case 1:
+                this.$root.ProcessState = 0     // loading
+                Promise.all([
+                    getData(9),        // Goals
+                    getData(7),       // Product group
+                    getData(8),       // Products
+                ]).then((values) => {
+                    const [goals, prdGrps, prds] = values
 
-            if (!prdGrpIds.length) prdGrpIds = [0]
-            else this.checkRmv0(prdGrpIds)
+                    this.$store.state.ListGoal = goals
+                    this.$store.state.ProductGroups = prdGrps
+                    this.$store.state.Products = prds
 
-            let regionId = rootCrs[0][1][1]
-            if (regionId < 0) regionId = 0
-            let lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
-            console.log(lstPrG.map(x => x.Id))
-            this.$root.ActviePrGrpIds = lstPrG.map(x => x.Id)
-            
-            this.$root.ProcessState = 1     // success
-        }, 999)
+                    let prdGrpIds = rootCrs.filter(x => x[0] == FTypeId.ProductGroups_Product)
+                    prdGrpIds = prdGrpIds.map(x => x[1][0]);
+
+                    if (!prdGrpIds.length) prdGrpIds = [0]
+                    else this.checkRmv0(prdGrpIds)
+
+                    let regionId = rootCrs[0][1][1]
+                    if (regionId < 0) regionId = 0
+                    let lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
+                    // console.log(lstPrG.map(x => x.Id))
+                    this.$root.ActviePrGrpIds = lstPrG.map(x => x.Id)
+
+                    this.buildData(rootCrs)
+
+                    this.$root.ProcessState = 1     // success
+                    this.$root.TabStatus[1] = 0
+                })
+                break;
+            default: this.buildData(rootCrs)
+                break;
+        }
+
 
     },
-    //created() {},
     methods: {
         openFormSmp(type, eItem) {
             const iProject = this.$root.IndexProject
@@ -451,8 +472,5 @@ export default {
             return this.$root.ListSubmkPrdId.includes(smkPrdId)
         },
     },
-    beforeMount() {
-        const cCrites = this.$root.SubMarketCrites
-        this.buildData(cCrites)
-    },
+    //beforeMount() { },
 }
