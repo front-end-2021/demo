@@ -112,27 +112,27 @@ const DemoMarkets = [
 ]
 const DemoSubmarkets = [
     { Id: 1, Name: 'Thuong Dinh Market', MarketId: 2, ASort: 1, IsXY: false, },
-    { Id: 12, Name: 'Vincom Mega Mall Royal City', MarketId: 2, ASort: 2, IsXY: true, },
+    { Id: 2, Name: 'Vincom Mega Mall Royal City', MarketId: 2, ASort: 2, IsXY: true, },
     { Id: 3, Name: 'Chợ Cốc Ly', MarketId: 3, ASort: 1, IsXY: false, },
     { Id: 4, Name: 'Chợ Bến Ngự Huế', MarketId: 5, ASort: 1, IsXY: true, },
-    { Id: 2, Name: 'Chợ phiên Nam Đông', MarketId: 5, ASort: 2, IsXY: false, },
+    { Id: 6, Name: 'Chợ phiên Nam Đông', MarketId: 5, ASort: 2, IsXY: false, },
     { Id: 5, Name: 'Cho Bai Chay', MarketId: 4, ASort: 1, IsXY: false, },
     { Id: 7, Name: 'Cho Uong Bi', MarketId: 4, ASort: 2, IsXY: true, },
     { Id: 8, Name: 'Cho Cam Pha', MarketId: 4, ASort: 3, IsXY: false, },
-    { Id: 6, Name: 'Saigon Centre', MarketId: 6, ASort: 1, IsXY: false, },
-    { Id: 18, Name: 'Vincom Center Đồng Khởi', MarketId: 6, ASort: 2, IsXY: false, },
-    { Id: 19, Name: 'Crescent Mall', MarketId: 6, ASort: 3, IsXY: true, },
-    { Id: 20, Name: 'Diamond Plaza', MarketId: 6, ASort: 4, IsXY: true, },
-    { Id: 21, Name: 'Union Square', MarketId: 6, ASort: 5, IsXY: false, },
-    { Id: 22, Name: 'Trung tâm mua sắm SC Vivo', MarketId: 6, ASort: 6, IsXY: false, },
+    { Id: 15, Name: 'Saigon Centre', MarketId: 6, ASort: 1, IsXY: false, },
+    { Id: 14, Name: 'Vincom Center Đồng Khởi', MarketId: 6, ASort: 2, IsXY: false, },
+    { Id: 13, Name: 'Crescent Mall', MarketId: 6, ASort: 3, IsXY: true, },
+    { Id: 12, Name: 'Diamond Plaza', MarketId: 6, ASort: 4, IsXY: true, },
+    { Id: 11, Name: 'Union Square', MarketId: 6, ASort: 5, IsXY: false, },
+    { Id: 10, Name: 'Trung tâm mua sắm SC Vivo', MarketId: 6, ASort: 6, IsXY: false, },
     { Id: 9, Name: 'Vincom Mega Mall Times City', MarketId: 7, ASort: 1, IsXY: false, },
-    { Id: 10, Name: 'Aeon Mall Long Biên', MarketId: 8, ASort: 1, IsXY: false, },
-    { Id: 14, Name: 'Savico Mega Mall', MarketId: 8, ASort: 2, IsXY: false, },
-    { Id: 15, Name: 'Vincom Plaza Long Biên', MarketId: 8, ASort: 3, IsXY: true, },
-    { Id: 11, Name: 'Aeon Mall Hà Đông', MarketId: 10, ASort: 1, IsXY: true, },
-    { Id: 16, Name: 'Melinh Plaza Hà Đông', MarketId: 10, ASort: 2, IsXY: false, },
-    { Id: 17, Name: 'TTTM Mac Plaza', MarketId: 10, ASort: 3, IsXY: false, },
-    { Id: 13, Name: 'Tràng Tiền Plaza', MarketId: 9, ASort: 1, IsXY: false, },
+    { Id: 16, Name: 'Aeon Mall Long Biên', MarketId: 8, ASort: 1, IsXY: false, },
+    { Id: 17, Name: 'Savico Mega Mall', MarketId: 8, ASort: 2, IsXY: false, },
+    { Id: 20, Name: 'Vincom Plaza Long Biên', MarketId: 8, ASort: 3, IsXY: true, },
+    { Id: 19, Name: 'Aeon Mall Hà Đông', MarketId: 10, ASort: 1, IsXY: true, },
+    { Id: 18, Name: 'Melinh Plaza Hà Đông', MarketId: 10, ASort: 2, IsXY: false, },
+    { Id: 21, Name: 'TTTM Mac Plaza', MarketId: 10, ASort: 3, IsXY: false, },
+    { Id: 22, Name: 'Tràng Tiền Plaza', MarketId: 9, ASort: 1, IsXY: false, },
 ]
 const DemoPrdGroups = [
     { Id: 3, Name: `Truyen trinh tham`, RegionId: 1, ASort: 2, },
@@ -142,35 +142,49 @@ const DemoPrdGroups = [
     { Id: 5, Name: `Sach giao khoa`, RegionId: 1, ASort: 4, },
 ]
 const DemoProducts = [
-    { Id: 5, Name: `Conan - Section 1`, PrdGroupId: 3, ASort: 3, },
-    { Id: 3, Name: `Conan - Section 2`, PrdGroupId: 3, ASort: 2, },
-    { Id: 4, Name: `Conan - Section 3`, PrdGroupId: 3, ASort: 1, },
-    { Id: 6, Name: `Tieng Viet Lop 2`, PrdGroupId: 5, ASort: 4, },
-    { Id: 9, Name: `Toan Lop 1`, PrdGroupId: 5, ASort: 5, },
-    { Id: 7, Name: `De men phieu luu ky - Chap 1`, PrdGroupId: 2, ASort: 6, },
+    { Id: 3, Name: `Conan - Section 1`, PrdGroupId: 3, ASort: 3, },
+    { Id: 2, Name: `Conan - Section 2`, PrdGroupId: 3, ASort: 2, },
+    { Id: 1, Name: `Conan - Section 3`, PrdGroupId: 3, ASort: 1, },
+    { Id: 5, Name: `Tieng Viet Lop 2`, PrdGroupId: 5, ASort: 4, },
+    { Id: 4, Name: `Toan Lop 1`, PrdGroupId: 5, ASort: 5, },
+    { Id: 6, Name: `De men phieu luu ky - Chap 1`, PrdGroupId: 2, ASort: 6, },
 ]
-const DemoGoals = [
-    {
-        Id: 3, Name: 'Bán 1200 cuốn Conan Section 1 trong quý 3', SubmPrdId: '6-3',
-        Start: 'Tue Oct 01 2024', End: new Date('Tue Dec 31 2024').toDateString(),
-    },
-    {
-        Id: 2, Name: 'Bán 900 cuốn Toan Lop 1 trong tháng 8', SubmPrdId: '12-9',
-        Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
-    },
-    {
-        Id: 6, Name: 'Bán 600 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '12-6',
-        Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
-    },
-    {
-        Id: 4, Name: 'Bán 300 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '3-6',
-        Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
-    },
-    {
-        Id: 5, Name: 'Bán 100 cuốn Conan - Section 2 trong tháng 8', SubmPrdId: '3-6',
-        Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
-    },
-]
+const DemoGoals = getGoals()
+function getGoals() {
+    const lst = [
+        {
+            Id: 3, Name: 'Bán 1200 cuốn Conan Section 1 trong quý 3', SubmPrdId: '6-3',
+            Start: 'Tue Oct 01 2024', End: new Date('Tue Dec 31 2024').toDateString(),
+        },
+        {
+            Id: 2, Name: 'Bán 900 cuốn Toan Lop 1 trong tháng 8', SubmPrdId: '12-9',
+            Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
+        },
+        {
+            Id: 6, Name: 'Bán 600 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '12-6',
+            Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
+        },
+        {
+            Id: 4, Name: 'Bán 300 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '3-6',
+            Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
+        },
+        {
+            Id: 5, Name: 'Bán 100 cuốn Conan - Section 2 trong tháng 8', SubmPrdId: '3-6',
+            Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
+        },
+    ]
+    return lst;
+    let name = 'Test perfomance gen main '
+    for (let ii = 6, smId, prId; ii < 1000; ii++) {
+        smId = getRandomInt(1, 23)
+        prId = getRandomInt(1, 7)
+        lst.push({
+            Id: ii, Name: `${name} (${ii})`, SubmPrdId: `${smId}-${prId}`,
+            Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
+        })
+    }
+    return lst
+}
 function getMessCompare(item, mItem) {
     let mess = ''
     mItem = JSON.parse(JSON.stringify(mItem))

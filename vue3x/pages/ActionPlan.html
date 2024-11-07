@@ -7,17 +7,17 @@
         </drop-select>
     </section>
     <h1>4ct10n Pl_n</h1>
-    <section>
-        <div v-for="market in ListMarket">
-            <div class="p-2">{{market.Entry.Name}}</div>
+    <section class="px20px">
+        <div v-for="market in ListMarket" class="border-e8e9e9">
+            <div class="p-2 bg-006bb9">{{market.Entry.Name}}</div>
             <div v-for="subMk in market.SubMarkets" class="p-2">
-                <div class="p-2">{{subMk.Entry.Name}}</div>
-                <div v-for="product in subMk.Products">
-                    <div class="p-2">{{product.Entry.Name}}</div>
+                <div class="p-2 bg-008ff8">{{subMk.Entry.Name}}</div>
+                <div v-for="product in subMk.Products" class="p-2">
+                    <div class="p-2 bg-ededed">{{product.Entry.Name}}</div>
                     <draggable v-model="product.Goals" v-bind="DndOptions" class="p-2">
                         <transition-group>
                             <div v-for="(goal) in product.Goals" 
-                                :key="goal.Id" class="p-2">
+                                :key="goal.Id" class="p-2 w344px bg-008ff8 mt-2">
                                 <div>{{goal.Name}}</div>
                             </div>
                         </transition-group>
@@ -25,16 +25,16 @@
                 </div>
             </div>
         </div>
-        <div v-for="prdG in ProductGroups">
-            <div class="p-2">{{prdG.Entry.Name}} (xy)</div>
+        <div v-for="prdG in ProductGroups" class="border-e8e9e9">
+            <div class="p-2 bg-prdgrp">{{prdG.Entry.Name}} (xy)</div>
             <div v-for="product in prdG.ListProduct" class="p-2">
-                <div class="p-2">{{product.Entry.Name}}</div>
+                <div class="p-2 bg-008ff8">{{product.Entry.Name}}</div>
                 <div v-for="subMk in product.SubMarkets" class="p-2">
-                    <div class="p-2">{{subMk.Entry.Name}}</div>
+                    <div class="p-2 bg-ededed">{{subMk.Entry.Name}}</div>
                     <draggable v-model="subMk.Goals" v-bind="DndOptions" class="p-2">
                         <transition-group>
                             <div v-for="(goal) in subMk.Goals" 
-                                :key="goal.Id" class="p-2">
+                                :key="goal.Id" class="p-2 w344px bg-008ff8 mt-2">
                                 <div>{{goal.Name}}</div>
                             </div>
                         </transition-group>

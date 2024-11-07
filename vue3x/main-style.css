@@ -97,10 +97,12 @@ button { cursor: pointer; }
 .pe-3 { padding-right: 1rem; }
 .p6px { padding: 6px; }
 .pe48px { padding-right: 48px; }
+.px20px { padding-left: 20px; padding-right: 20px; }
 .text-white { color: white; }
 .font24 { font-size: 24px; }
 .text-center { text-align: center; }
 .w81px { width: 81px; }
+.w344px { width: 344px; }
 .dnb-nav {
     background-color: #006bb9; height: 30px;
     background-color: #b1b1b1; /*dnb_dev */
@@ -181,7 +183,12 @@ button { cursor: pointer; }
     background-color: #006bb9; color: white;
     background-color: #e8e8e8; color: #2d2d2d;  /*dnb_dev */
 }
-
+.bg-ededed { 
+    background-color: #ededed;  /*dnb_dev */
+}
+.bg-prdgrp { 
+    background-color: #e0e1e2;   /*dnb_dev */
+}
 .row-crite .ui.selection.dropdown {
     min-width: 96px;
     max-width: 96px;
@@ -193,6 +200,7 @@ button { cursor: pointer; }
 .row-crite .ui.selection.dropdown .menu>.item { padding: 8px !important;}
 .border-r1-0384e3 { border-right: 1px solid #0384e3; }
 .border-r1-0384e3 { border-right: 1px solid #6f6f6f; }   /*dnb_dev */
+.border-e8e9e9 { border: 1px solid #e8e9e9; }
 .border-r1-e8e9e9 { border-right: 1px solid #e8e9e9; }
 .border-b1-e8e9e9 { border-bottom: 1px solid #e8e9e9; }
 .vw-marketsegment .col-region .dnd-ic-region,

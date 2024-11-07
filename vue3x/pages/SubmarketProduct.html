@@ -27,7 +27,7 @@
     <button @click.stop="addFilter">{{$store.state.ContextLang.AddFilter}}</button>
 </template>
 <template id="tmp-comp-submarket">
-    <section class="mt-2" style="padding-bottom: 169px;padding-left: 20px;">
+    <section class="mt-2 px20px" style="padding-bottom: 169px;">
         <comp-filter-smarket @set:filter="$event => setFilter($event)"></comp-filter-smarket>
         <article v-if="1 == $root.ProcessState">
             <button>Action plan</button><button>Eval submarkets</button>
