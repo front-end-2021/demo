@@ -8,7 +8,20 @@ import {
 import { getTxtBy, getLocal, setLocal } from './common.js';
 import { FTypeId } from './components/dFilter.js';
 import { createStore } from 'vuex'
-
+function getListBy(ids) {
+    if (ids.includes(0)) {
+        return buildListBy.call(this, ids)
+    }
+    // speed
+    const mItm = new Map(this.map(x => [x.Id, x]))
+    const lst = []
+    for (let ii = ids.length - 1, id; -1 < ii; ii--) {
+        id = ids[ii]
+        if (mItm.has(id)) lst.push(mItm.get(id))
+    }
+    mItm.clear()
+    return lst;
+}
 function buildListBy(ids, fnc) {
     const lst = []
     for (let ii = 0, item; ii < this.length; ii++) {
@@ -160,24 +173,24 @@ export default createStore({
             if (ids.length) {
                 switch (type) {
                     case 1:     // Land
-                        lst = buildListBy.call(state.Lands, ids, (itm) => ids.includes(itm.Id))
+                        lst = getListBy.call(state.Lands, ids)
                         break;
                     case 2:     // Market
-                        lst = buildListBy.call(state.Markets, ids, (itm) => ids.includes(itm.Id))
+                        lst = getListBy.call(state.Markets, ids)
                         break
                     case 3:     // Region
-                        lst = buildListBy.call(state.Regions, ids, (itm) => ids.includes(itm.Id))
+                        lst = getListBy.call(state.Regions, ids)
                         break
                     case 4: //Submarkets
-                        lst = buildListBy.call(state.Submarkets, ids, (itm) => ids.includes(itm.Id))
+                        lst = getListBy.call(state.Submarkets, ids)
                         break
                     case 5:     // Product Groups
-                        lst = buildListBy.call(state.ProductGroups, ids, (itm) => ids.includes(itm.Id))
+                        lst = getListBy.call(state.ProductGroups, ids)
                         break
                     case 8:     // Products
-                        lst = buildListBy.call(state.Products, ids, (itm) => ids.includes(itm.Id))
+                        lst = getListBy.call(state.Products, ids)
                         break;
-                    case 9: lst = buildListBy.call(state.ListGoal, ids, (itm) => ids.includes(itm.Id))
+                    case 9: lst = getListBy.call(state.ListGoal, ids)
                     default: return lst
                 }
             } else {
@@ -237,7 +250,7 @@ export default createStore({
                     else
                         lst = buildListBy.call(state.ProductGroups, ptIds, (itm) => ptIds.includes(itm.RegionId));
                     if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
-                        lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
+                        lst = getListBy.call(lst, ids)
                     }
                     break;
                 case 4: // Products by PrdGroupId
@@ -245,19 +258,19 @@ export default createStore({
                         lst = buildListBy.call(state.Products, ptIds, (itm) => ptIds.includes(itm.PrdGroupId))
                     else lst = buildListBy.call(state.Products, [0])
                     if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
-                        lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
+                        lst = getListBy.call(lst, ids)
                     }
                     break;
                 case 5: // Markets by LandId
                     lst = buildListBy.call(state.Markets, ptIds, (itm) => ptIds.includes(itm.LandId))
                     if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
-                        lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
+                        lst = getListBy.call(lst, ids)
                     }
                     break;
                 case 6: // SubMarkets by MarketId
                     lst = buildListBy.call(state.Submarkets, ptIds, (itm) => ptIds.includes(itm.MarketId))
                     if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
-                        lst = buildListBy.call(lst, ids, (itm) => ids.includes(itm.Id))
+                        lst = getListBy.call(lst, ids)
                     }
                     break;
                 default: return lst;

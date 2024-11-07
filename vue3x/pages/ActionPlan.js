@@ -1,14 +1,15 @@
 import { groupBy } from "../common.js"
+import { VueDraggableNext } from 'vue-draggable-next'
+
 export default {
     template: `#tmp-comp-action-plan`,
-    // components: {
-
-    // },
+    components: {
+        draggable: VueDraggableNext
+    },
     data() {
         return {
             ListMarket: [],
             ProductGroups: [],
-            GroupGoals: null,
         }
     },
     methods: {
@@ -28,7 +29,6 @@ export default {
             const lstSubM = this.$store.getters.SortedItems([4, submkIds, []])
             const lstPrd = this.$store.getters.SortedItems([8, prdIds, []])
             // #endregion
-
             // #region goal
             if (!submkIds.includes(0) || !prdIds.includes(0)) {
                 const submIds = lstSubM.map(x => x.Id)
@@ -102,10 +102,10 @@ export default {
                 this.ListMarket = lstMarkt
                 //console.log('list market ', lstMarkt)
             } else this.ListMarket = []
-            this.GroupGoals = groupedGoals
-            console.log('action plan finish build data ', Date.now() - ddd)
-           // console.log('list goal ', listGoal)
-           // console.log('grouped goals ', groupedGoals)
+            groupedGoals.clear()
+            console.log('action plan finish build data ', Date.now() - ddd, 'mili second')
+            // console.log('list goal ', listGoal)
+            // console.log('grouped goals ', groupedGoals)
             function lstPrdXy(prgId, products, lstSubMkXy) {
                 const lst = []
                 for (let pp = 0, pr; pp < products.length; pp++) {
@@ -115,7 +115,7 @@ export default {
                         if (!lstSmk.length) continue;
                         lst.push({
                             Entry: pr,
-                            Submarkets: lstSmk
+                            SubMarkets: lstSmk
                         })
                     }
                 }
@@ -129,7 +129,8 @@ export default {
                     if (groupedGoals.has(smPrId)) {
                         lstSmk.push({
                             Entry: subMk,
-                            SubmarketProductId: smPrId
+                            SubmarketProductId: smPrId,
+                            Goals: groupedGoals.get(smPrId)
                         })
                     }
                 }
@@ -158,7 +159,8 @@ export default {
                     if (groupedGoals.has(smPrId)) {
                         lst.push({
                             Entry: prd,
-                            SubmarketProductId: smPrId
+                            SubmarketProductId: smPrId,
+                            Goals: groupedGoals.get(smPrId)
                         })
                     }
                 }
@@ -168,5 +170,17 @@ export default {
     },
     created() {
         this.buildData([0], [0])
-    }
+    },
+    computed: {
+        DndOptions() {
+            return {
+                animation: 200,
+                disabled: false,
+                ghostClass: "ghost",
+                direction: 'vertical',
+                group: "goal",
+            }
+        },
+    },
+
 }

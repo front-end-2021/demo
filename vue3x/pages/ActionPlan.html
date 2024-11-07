@@ -1,33 +1,44 @@
 <template id="tmp-comp-action-plan">
     <section>
-        <drop-select :name="$root.UserAssign" :items="$root.Users" 
-            @set:index="$event => setUserAssign($event)">
+        <drop-select :name="$root.UserAssign" :items="$root.Users" @set:index="$event => setUserAssign($event)">
             <template #default>
                 <div class="default text">{{$root.UserAssign}}</div>
             </template>
-            </drop-select>
+        </drop-select>
     </section>
     <h1>4ct10n Pl_n</h1>
     <section>
         <div v-for="market in ListMarket">
             <div class="p-2">{{market.Entry.Name}}</div>
-            <div v-for="subMk in market.SubMarkets" 
-                class="p-2"
-                :smprid="subMk.SubmarketProductId">
+            <div v-for="subMk in market.SubMarkets" class="p-2">
                 <div class="p-2">{{subMk.Entry.Name}}</div>
-                <div>
-
+                <div v-for="product in subMk.Products">
+                    <div class="p-2">{{product.Entry.Name}}</div>
+                    <draggable v-model="product.Goals" v-bind="DndOptions" class="p-2">
+                        <transition-group>
+                            <div v-for="(goal) in product.Goals" 
+                                :key="goal.Id" class="p-2">
+                                <div>{{goal.Name}}</div>
+                            </div>
+                        </transition-group>
+                    </draggable>
                 </div>
             </div>
         </div>
         <div v-for="prdG in ProductGroups">
-            <div class="p-2">{{prdG.Entry.Name}}</div>
-            <div v-for="product in prdG.ListProduct" 
-                class="p-2"
-                :smprid="product.SubmarketProductId">
+            <div class="p-2">{{prdG.Entry.Name}} (xy)</div>
+            <div v-for="product in prdG.ListProduct" class="p-2">
                 <div class="p-2">{{product.Entry.Name}}</div>
-                <div>
-                    
+                <div v-for="subMk in product.SubMarkets" class="p-2">
+                    <div class="p-2">{{subMk.Entry.Name}}</div>
+                    <draggable v-model="subMk.Goals" v-bind="DndOptions" class="p-2">
+                        <transition-group>
+                            <div v-for="(goal) in subMk.Goals" 
+                                :key="goal.Id" class="p-2">
+                                <div>{{goal.Name}}</div>
+                            </div>
+                        </transition-group>
+                    </draggable>
                 </div>
             </div>
         </div>
