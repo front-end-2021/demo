@@ -1,9 +1,8 @@
-import { FTypeId, commSelectTypeId, MxFCriterial } from "../components/dFilter.js";
+import { FTypeId, } from "../components/dFilter.js";
 import { overrideItem } from "../mock-data.js";
 import { DropSelection } from "../components/comp-global.js";
 import { VueDraggableNext } from 'vue-draggable-next'
 import { MxSortable } from "../common.js";
-import { getData } from "../repo-services.js";
 
 const FCriterialSmk = {
     template: `#tmp-comp-criterial-smarket`,
@@ -232,6 +231,17 @@ const CellSmPrd = {
             }
         },
     },
+    computed: {
+        CountGa() {
+            const smpId = this.submarket.Id
+            const prdId = this.product.Id
+            const smPrId = `${smpId}-${prdId}`
+            const groupedGoals = this.$root.MapGoals
+            if (!groupedGoals.has(smPrId)) return ''
+            const goals = groupedGoals.get(smPrId)
+            return `${goals.length} | 0 | 0`
+        },
+    },
 }
 export default {
     template: `#tmp-comp-submarket`,
@@ -301,34 +311,22 @@ export default {
         switch (this.$root.TabStatus[1]) {
             case 1:
                 this.$root.ProcessState = 0     // loading
-                Promise.all([
-                    getData(9),        // Goals
-                    getData(7),       // Product group
-                    getData(8),       // Products
-                ]).then((values) => {
-                    const [goals, prdGrps, prds] = values
+                let prdGrpIds = rootCrs.filter(x => x[0] == FTypeId.ProductGroups_Product)
+                prdGrpIds = prdGrpIds.map(x => x[1][0]);
 
-                    this.$store.state.ListGoal = goals
-                    this.$store.state.ProductGroups = prdGrps
-                    this.$store.state.Products = prds
+                if (!prdGrpIds.length) prdGrpIds = [0]
+                else this.checkRmv0(prdGrpIds)
 
-                    let prdGrpIds = rootCrs.filter(x => x[0] == FTypeId.ProductGroups_Product)
-                    prdGrpIds = prdGrpIds.map(x => x[1][0]);
+                let regionId = rootCrs[0][1][1]
+                if (regionId < 0) regionId = 0
+                let lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
+                // console.log(lstPrG.map(x => x.Id))
+                this.$root.ActviePrGrpIds = lstPrG.map(x => x.Id)
 
-                    if (!prdGrpIds.length) prdGrpIds = [0]
-                    else this.checkRmv0(prdGrpIds)
+                this.buildData(rootCrs)
 
-                    let regionId = rootCrs[0][1][1]
-                    if (regionId < 0) regionId = 0
-                    let lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
-                    // console.log(lstPrG.map(x => x.Id))
-                    this.$root.ActviePrGrpIds = lstPrG.map(x => x.Id)
-
-                    this.buildData(rootCrs)
-
-                    this.$root.ProcessState = 1     // success
-                    this.$root.TabStatus[1] = 0
-                })
+                this.$root.ProcessState = 1     // success
+                this.$root.TabStatus[1] = 0
                 break;
             default: this.buildData(rootCrs)
                 break;
@@ -421,7 +419,7 @@ export default {
 
                 this.$root.ProcessState = 1
             }
-            setTimeout(process, 111)
+            setTimeout(process, 1)
         },
         checkRmv0(lstId) {
             if (lstId.length < 2) return
@@ -469,7 +467,7 @@ export default {
         onMseOut() { this.CellSmpPrd = null },
         isActive(smkId, prdId) {
             const smkPrdId = `${smkId}-${prdId}`
-            return this.$root.ListSubmkPrdId.includes(smkPrdId)
+            return this.$root.MapGoals.has(smkPrdId)
         },
     },
     //beforeMount() { },

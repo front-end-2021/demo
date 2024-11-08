@@ -178,22 +178,27 @@ function getGoals() {
         {
             Id: 3, Name: 'Bán 1200 cuốn Conan Section 1 trong quý 3', SubmPrdId: '6-3',
             Start: 'Tue Oct 01 2024', End: new Date('Tue Dec 31 2024').toDateString(),
+            ASort: 1,
         },
         {
             Id: 2, Name: 'Bán 900 cuốn Toan Lop 1 trong tháng 8', SubmPrdId: '12-9',
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
+            ASort: 1,
         },
         {
             Id: 6, Name: 'Bán 600 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '12-6',
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
+            ASort: 1,
         },
         {
             Id: 4, Name: 'Bán 300 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '3-6',
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
+            ASort: 2,
         },
         {
             Id: 5, Name: 'Bán 100 cuốn Conan - Section 2 trong tháng 8', SubmPrdId: '3-6',
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
+            ASort: 1,
         },
     ]
     lst.forEach(item => {
@@ -211,7 +216,7 @@ function getGoals() {
         smId = getRandomInt(1, 23)
         prId = getRandomInt(1, 7)
         lst.push({
-            Id: ii, Name: `${name} (${ii})`, SubmPrdId: `${smId}-${prId}`,
+            Id: ii, Name: `${name}`, SubmPrdId: `${smId}-${prId}`,
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
         })
     }

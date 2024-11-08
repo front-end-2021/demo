@@ -1,4 +1,3 @@
-import { groupBy } from "../common.js"
 import { VueDraggableNext } from 'vue-draggable-next'
 const ViewGoal = {
     template: `#tmp-comp-vw-goal`,
@@ -6,16 +5,16 @@ const ViewGoal = {
         draggable: VueDraggableNext,
     },
     props: ['item'],
-    data(){
+    data() {
         return {
-            
+
         }
     },
 }
 export default {
     template: `#tmp-comp-action-plan`,
     components: {
-        'comp-vw-goal' : ViewGoal,
+        'comp-vw-goal': ViewGoal,
         draggable: VueDraggableNext,
     },
     data() {
@@ -37,28 +36,10 @@ export default {
             if (!Array.isArray(prdIds) || !prdIds.length) prdIds = [0]
             // #endregion
             // #region begin data
-            let listGoal = this.$store.getters.SortedItems([9, [0], []])
-            const lstSubM = this.$store.getters.SortedItems([4, submkIds, []])
-            const lstPrd = this.$store.getters.SortedItems([8, prdIds, []])
+            const lstSubM = this.$store.getters.UnsortItems([4, submkIds, []])
+            const lstPrd = this.$store.getters.UnsortItems([8, prdIds, []])
             // #endregion
-            // #region goal
-            if (!submkIds.includes(0) || !prdIds.includes(0)) {
-                const submIds = lstSubM.map(x => x.Id)
-                const prIds = lstPrd.map(x => x.Id)
-                for (let gg = listGoal.length - 1, goal; -1 < gg; gg--) {
-                    goal = listGoal[gg]
-                    let [tSmId, tPrId] = goal.SubmPrdId.split('-')
-                    let smId = parseInt(tSmId)
-                    let prId = parseInt(tPrId)
-                    if (submIds.includes(smId) && prIds.includes(prId)) {
-                        continue;
-                    }
-                    listGoal.splice(gg, 1)      // remove at gg
-                }
-            }
-            // #endregion
-            const groupedGoals = groupBy(listGoal, 'SubmPrdId')
-
+            const groupedGoals = this.$root.MapGoals
             const lstSubMxy = []
             for (let ss = 0, smk; ss < lstSubM.length; ss++) {
                 smk = lstSubM[ss]
@@ -114,9 +95,8 @@ export default {
                 this.ListMarket = lstMarkt
                 //console.log('list market ', lstMarkt)
             } else this.ListMarket = []
-            groupedGoals.clear()
+            
             console.log('action plan finish build data ', Date.now() - ddd, 'mili second')
-            // console.log('list goal ', listGoal)
             // console.log('grouped goals ', groupedGoals)
             function lstPrdXy(prgId, products, lstSubMkXy) {
                 const lst = []
@@ -125,12 +105,14 @@ export default {
                     if (prgId == pr.PrdGroupId) {
                         const lstSmk = lstSubMarketXy(pr.Id, lstSubMkXy)
                         if (!lstSmk.length) continue;
+                        lstSmk.sort((a, b) => a.Entry.ASort - b.Entry.ASort)
                         lst.push({
                             Entry: pr,
                             SubMarkets: lstSmk
                         })
                     }
                 }
+                lst.sort((a, b) => a.Entry.ASort - b.Entry.ASort)
                 return lst
             }
             function lstSubMarketXy(prId, lstSubMkXy) {
@@ -139,11 +121,14 @@ export default {
                     subMk = lstSubMkXy[ss]
                     smPrId = `${subMk.Id}-${prId}`
                     if (groupedGoals.has(smPrId)) {
-                        lstSmk.push({
+                        const lstGoal = groupedGoals.get(smPrId)
+                        lstGoal.sort((a, b) => a.ASort - b.ASort)
+                        const item = {
                             Entry: subMk,
                             SubmarketProductId: smPrId,
-                            Goals: groupedGoals.get(smPrId)
-                        })
+                            Goals: lstGoal
+                        }
+                        lstSmk.push(item)
                     }
                 }
                 return lstSmk
@@ -155,12 +140,14 @@ export default {
                     if (smk.MarketId == mkId) {
                         const lstPrd = lstProducts(smk.Id, products)
                         if (!lstPrd.length) continue;
+                        lstPrd.sort((a, b) => a.Entry.ASort - b.Entry.ASort)
                         lst.push({
                             Entry: smk,
                             Products: lstPrd
                         })
                     }
                 }
+                lst.sort((a, b) => a.Entry.ASort - b.Entry.ASort)
                 return lst;
             }
             function lstProducts(smId, products) {
@@ -169,15 +156,37 @@ export default {
                     prd = products[pp]
                     smPrId = `${smId}-${prd.Id}`
                     if (groupedGoals.has(smPrId)) {
-                        lst.push({
+                        const lstGoal = groupedGoals.get(smPrId)
+                        lstGoal.sort((a, b) => a.ASort - b.ASort)
+                        const item = {
                             Entry: prd,
                             SubmarketProductId: smPrId,
-                            Goals: groupedGoals.get(smPrId)
-                        })
+                            Goals: lstGoal
+                        }
+                        lst.push(item)
                     }
                 }
                 return lst;
             }
+        },
+        onStartDndGoal(evt) {
+
+        },
+        onEndDndGoal(evt) {
+            const srcSmPrId = evt.from.getAttribute('smprid')
+
+            const desGoalIds = []
+            const desSmPrId = evt.to.getAttribute('smprid')
+            evt.to.querySelectorAll(`[goalid]`).forEach(gl => {
+                const gId = gl.getAttribute('goalid')
+                desGoalIds.push(gId)
+            })
+
+            console.group('on end dnd ', evt)
+            console.log('source ', srcSmPrId)
+
+            console.log('destination ', desSmPrId, desGoalIds)
+            console.groupEnd()
         },
     },
     created() {

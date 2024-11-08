@@ -167,7 +167,14 @@ export default createStore({
             lst.sort((a, b) => b - a)
             return lst[0] + 1
         },
-        SortedItems: (state) => ([type, ids, ignoreIds]) => {
+        SortedItems: (state, getters) => ([type, ids, ignoreIds]) => {
+            if (!ids.length && !ignoreIds.length) return []
+            let lst = getters.UnsortItems([type, ids, ignoreIds])
+            if (lst.length < 2) return lst;
+            lst.sort((a, b) => a.ASort - b.ASort)
+            return lst
+        },
+        UnsortItems: (state) => ([type, ids, ignoreIds]) => {
             if (!ids.length && !ignoreIds.length) return []
             let lst = []
             if (ids.length) {
@@ -223,9 +230,7 @@ export default createStore({
                     return dItems
                 }
             }
-            if (lst.length < 2) return lst;
-            lst.sort((a, b) => a.ASort - b.ASort)
-            return lst
+            return lst;
         },
         ItemBy: (state) => ([type, id]) => {
             switch (type) {

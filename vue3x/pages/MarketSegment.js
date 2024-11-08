@@ -7,7 +7,6 @@ import {
     getMessCompare, overrideItem,
     getCopyItem, deleteDes
 } from "../mock-data.js";
-import { getData } from "../repo-services.js";
 
 import { VueDraggableNext } from 'vue-draggable-next'
 
@@ -293,10 +292,12 @@ export default {
             this.Markets = this.$store.getters.SortedItems([2, marketIds, []])
         },
         setLandRegionMarket() {
+            this.$root.ProcessState = 0     // loading
             let lstC = this.$root.MarketCriterias
             const [landIds, marketIds] = getLandMarketIds(lstC)
 
             this.setFilter([landIds, marketIds])
+            this.$root.ProcessState = 1     // success
         },
         setRegions(landIds) {
             let mergeIdLands = this.$root.ActiveLandIds
@@ -736,9 +737,9 @@ export default {
             if (name.length <= 12) return name;
             return name.slice(0, 12) + ' ...'
         },
-        clkGotoTabBy(type){
+        clkGotoTabBy(type) {
             const popMenu = this.$root.Popup_UI;
-            switch(type) {
+            switch (type) {
                 case 1: // Cell market region
                     let market = popMenu.Market
                     let region = popMenu.Region
@@ -746,14 +747,14 @@ export default {
                         [FTypeId.PleaseSelect, [region.LandId, region.Id]],
                         [FTypeId.MarketSegments_Submarket, [market.Id, FTypeId.SelectAll]]
                     ]
-                break;
+                    break;
                 case 11:    // Land
                     let land = popMenu.Entry
                     this.$root.SubMarketCrites = [
                         [FTypeId.PleaseSelect, [land.Id, FTypeId.SelectRegion]]
                     ]
                     this.$root.onGotoTab(1, land)
-                return;
+                    return;
             }
             this.$root.onGotoTab(1)
         },
@@ -793,47 +794,32 @@ export default {
         switch (this.$root.TabStatus[0]) {
             case 1:
                 this.$root.ProcessState = 0     // loading
-                Promise.all([
-                    getData(3),        // Lands
-                    getData(4),       // Regions
-                    getData(5),       // Markets
-                    getData(6),       // Submarkets
-                ]).then((values) => {
-                    this.$root.ProcessState = 1     // success
-                    const [lands, regions, markets, subMarkets] = values
 
-                    this.$store.state.Lands = lands
-                    this.$store.state.Regions = regions
-                    this.$store.state.Markets = markets
-                    this.$store.state.Submarkets = subMarkets;
-
-                    this.$root.ActiveLandIds = [3];
-                    this.$nextTick(() => {
-                        getLastState().then(oData => {
-                            let sItem;
-                            switch (oData.type) {
-                                case 1:     // Edit Land
-                                    sItem = this.$store.getters.ItemBy([1, oData.id])
-                                    if (sItem) this.$root.openFormEditLand(sItem);
-                                    break;
-                                case 2:     // Edit Region
-                                    sItem = this.$store.getters.ItemBy([3, oData.id])
-                                    if (sItem) this.openFormEdit(2, sItem);
-                                    break;
-                                case 3:     // Edit Market
-                                    sItem = this.$store.getters.ItemBy([2, oData.id])
-                                    if (sItem) this.openFormEdit(3, sItem);
-                                    break;
-                                case 4:     // Edit Submarket
-                                    console.log('edit sub market')
-                                    break;
-                            }
-                            this.$root.TabStatus[0] = 0
-                            // console.log(oData)
-                        })
+                this.$nextTick(() => {
+                    getLastState().then(oData => {
+                        let sItem;
+                        switch (oData.type) {
+                            case 1:     // Edit Land
+                                sItem = this.$store.getters.ItemBy([1, oData.id])
+                                if (sItem) this.$root.openFormEditLand(sItem);
+                                break;
+                            case 2:     // Edit Region
+                                sItem = this.$store.getters.ItemBy([3, oData.id])
+                                if (sItem) this.openFormEdit(2, sItem);
+                                break;
+                            case 3:     // Edit Market
+                                sItem = this.$store.getters.ItemBy([2, oData.id])
+                                if (sItem) this.openFormEdit(3, sItem);
+                                break;
+                            case 4:     // Edit Submarket
+                                console.log('edit sub market')
+                                break;
+                        }
+                        this.$root.TabStatus[0] = 0
+                        // console.log(oData)
                     })
-                    this.setLandRegionMarket()
                 })
+                this.setLandRegionMarket()
                 break;
             default:
                 this.setLandRegionMarket()

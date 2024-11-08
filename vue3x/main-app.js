@@ -1,6 +1,6 @@
 import {
     includeHTML, setLastState,
-    getLocal, setLocal
+    getLocal, setLocal, groupBy
 } from './common.js'
 import {
     DropSelect, SRange,
@@ -39,7 +39,7 @@ Promise.all([
         data() {
             return {
                 IndexProject: -1,
-                IndexPage: 0,
+                IndexPage: -1,
                 TabStatus: [1, 1, 1, 1, 1], // [M@rk3t, SubM@rk3t, @ctionPl4n, Ro4dm@p, T3mB0@rd]
                 ActviePrGrpIds: [],
                 ActiveLandIds: [],
@@ -50,7 +50,7 @@ Promise.all([
                 DragDrop: null,
                 Popup_UI: null,  // 
 
-                ListSubmkPrdId: ['3-5', '8-9', '14-4'],
+                MapGoals: new Map(),        // {'subMarketId-productId' : [goal, ...]}
                 // LastAction: null,
 
                 UserInfo: {
@@ -282,13 +282,38 @@ Promise.all([
         },
         //  beforeCreate() { },
         created() {
-            Promise.all([getData(1), getData(2)]).then((values) => {
-                const [projects, langs] = values
+            this.ProcessState = 0     // loading
+            Promise.all([
+                getData(1),
+                getData(2),
+                getData(3),        // Lands
+                getData(4),       // Regions
+                getData(5),       // Markets
+                getData(6),       // Submarkets
+                getData(9),        // Goals
+                getData(7),       // Product group
+                getData(8),       // Products
+            ]).then((values) => {
+                const [projects, langs, lands, regions, markets, subMarkets, goals, prdGrps, prds] = values
+                
+                this.MapGoals = groupBy(goals, 'SubmPrdId')
+
                 this.$store.state.Projects = projects
                 this.$store.state.Languages = langs
+                this.$store.state.Lands = lands
+                this.$store.state.Regions = regions
+                this.$store.state.Markets = markets
+                this.$store.state.Submarkets = subMarkets;
+                this.$store.state.ListGoal = goals
+                this.$store.state.ProductGroups = prdGrps
+                this.$store.state.Products = prds
 
-                this.$root.IndexProject = 0;
+                this.ActiveLandIds = lands.map(x => x.Id)
+
+                this.IndexProject = 0;
                 this.IndexPage = getLocal(6)
+
+                this.ProcessState = 1     // success
             })
         },
         mounted() {
