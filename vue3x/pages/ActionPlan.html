@@ -1,3 +1,8 @@
+<template id="tmp-comp-vw-goal">
+    <div class="p-2 w344px bg-008ff8 mt-2">
+        <div>{{item.Name}}</div>
+    </div>
+</template>
 <template id="tmp-comp-action-plan">
     <section>
         <drop-select :name="$root.UserAssign" :items="$root.Users" @set:index="$event => setUserAssign($event)">
@@ -16,10 +21,9 @@
                     <div class="p-2 bg-ededed">{{product.Entry.Name}}</div>
                     <draggable v-model="product.Goals" v-bind="DndOptions" class="p-2">
                         <transition-group>
-                            <div v-for="(goal) in product.Goals" 
-                                :key="goal.Id" class="p-2 w344px bg-008ff8 mt-2">
-                                <div>{{goal.Name}}</div>
-                            </div>
+                            <comp-vw-goal v-for="goal in product.Goals" 
+                                :item="goal"
+                                :key="goal.Id"></comp-vw-goal>
                         </transition-group>
                     </draggable>
                 </div>
@@ -33,10 +37,9 @@
                     <div class="p-2 bg-ededed">{{subMk.Entry.Name}}</div>
                     <draggable v-model="subMk.Goals" v-bind="DndOptions" class="p-2">
                         <transition-group>
-                            <div v-for="(goal) in subMk.Goals" 
-                                :key="goal.Id" class="p-2 w344px bg-008ff8 mt-2">
-                                <div>{{goal.Name}}</div>
-                            </div>
+                            <comp-vw-goal v-for="goal in subMk.Goals" 
+                                :item="goal"
+                                :key="goal.Id"></comp-vw-goal>
                         </transition-group>
                     </draggable>
                 </div>

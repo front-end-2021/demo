@@ -1,10 +1,22 @@
 import { groupBy } from "../common.js"
 import { VueDraggableNext } from 'vue-draggable-next'
-
+const ViewGoal = {
+    template: `#tmp-comp-vw-goal`,
+    components: {
+        draggable: VueDraggableNext,
+    },
+    props: ['item'],
+    data(){
+        return {
+            
+        }
+    },
+}
 export default {
     template: `#tmp-comp-action-plan`,
     components: {
-        draggable: VueDraggableNext
+        'comp-vw-goal' : ViewGoal,
+        draggable: VueDraggableNext,
     },
     data() {
         return {

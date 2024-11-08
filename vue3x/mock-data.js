@@ -185,6 +185,27 @@ function getGoals() {
     }
     return lst
 }
+const DemoSubs = getSubs()
+function getSubs(){
+    const lst = [
+        {
+            Id: 2, Name: 'Bán 600 cuốn Conan Section 1 trong tháng 10', GoalId: 3,
+            Start: 'Tue Oct 01 2024', End: new Date('Thu Oct 31 2024').toDateString(),
+        },
+        {
+            Id: 1, Name: 'Bán 500 cuốn Conan Section 1 trong tháng 11', GoalId: 3,
+            Start: 'Fri Nov 01 2024', End: 'Sat Nov 30 2024',
+        },
+        {
+            Id: 3, Name: 'Bán 600 cuốn Toan Lop 1 trong tuan 1', GoalId: 2,
+            Start: 'Thu Aug 01 2024', End: 'Sun Aug 11 2024',
+        },
+        {
+            Id: 4, Name: 'Bán 300 cuốn Toan Lop 1 trong tuan 2, 3, 4', GoalId: 2,
+            Start: 'Mon Aug 12 2024', End: 'Sat Aug 31 2024',
+        },
+    ]
+}
 function getMessCompare(item, mItem) {
     let mess = ''
     mItem = JSON.parse(JSON.stringify(mItem))
