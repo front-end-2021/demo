@@ -110,30 +110,43 @@ const DemoMarkets = [
     { Id: 12, Name: 'Bình Điền market', LandId: 6, ASort: 11, },
     { Id: 13, Name: 'Bà Chiểu market', LandId: 6, ASort: 12, },
 ]
-const DemoSubmarkets = [
-    { Id: 1, Name: 'Thuong Dinh Market', MarketId: 2, ASort: 1, IsXY: false, },
-    { Id: 2, Name: 'Vincom Mega Mall Royal City', MarketId: 2, ASort: 2, IsXY: true, },
-    { Id: 3, Name: 'Chợ Cốc Ly', MarketId: 3, ASort: 1, IsXY: false, },
-    { Id: 4, Name: 'Chợ Bến Ngự Huế', MarketId: 5, ASort: 1, IsXY: true, },
-    { Id: 6, Name: 'Chợ phiên Nam Đông', MarketId: 5, ASort: 2, IsXY: false, },
-    { Id: 5, Name: 'Cho Bai Chay', MarketId: 4, ASort: 1, IsXY: false, },
-    { Id: 7, Name: 'Cho Uong Bi', MarketId: 4, ASort: 2, IsXY: true, },
-    { Id: 8, Name: 'Cho Cam Pha', MarketId: 4, ASort: 3, IsXY: false, },
-    { Id: 15, Name: 'Saigon Centre', MarketId: 6, ASort: 1, IsXY: false, },
-    { Id: 14, Name: 'Vincom Center Đồng Khởi', MarketId: 6, ASort: 2, IsXY: false, },
-    { Id: 13, Name: 'Crescent Mall', MarketId: 6, ASort: 3, IsXY: true, },
-    { Id: 12, Name: 'Diamond Plaza', MarketId: 6, ASort: 4, IsXY: true, },
-    { Id: 11, Name: 'Union Square', MarketId: 6, ASort: 5, IsXY: false, },
-    { Id: 10, Name: 'Trung tâm mua sắm SC Vivo', MarketId: 6, ASort: 6, IsXY: false, },
-    { Id: 9, Name: 'Vincom Mega Mall Times City', MarketId: 7, ASort: 1, IsXY: false, },
-    { Id: 16, Name: 'Aeon Mall Long Biên', MarketId: 8, ASort: 1, IsXY: false, },
-    { Id: 17, Name: 'Savico Mega Mall', MarketId: 8, ASort: 2, IsXY: false, },
-    { Id: 20, Name: 'Vincom Plaza Long Biên', MarketId: 8, ASort: 3, IsXY: true, },
-    { Id: 19, Name: 'Aeon Mall Hà Đông', MarketId: 10, ASort: 1, IsXY: true, },
-    { Id: 18, Name: 'Melinh Plaza Hà Đông', MarketId: 10, ASort: 2, IsXY: false, },
-    { Id: 21, Name: 'TTTM Mac Plaza', MarketId: 10, ASort: 3, IsXY: false, },
-    { Id: 22, Name: 'Tràng Tiền Plaza', MarketId: 9, ASort: 1, IsXY: false, },
-]
+const DemoSubmarkets = getSubmarkets()
+function getSubmarkets() {
+    const lst = [
+        { Id: 1, Name: 'Thuong Dinh Market', MarketId: 2, ASort: 1, IsXY: false, },
+        { Id: 2, Name: 'Vincom Mega Mall Royal City', MarketId: 2, ASort: 2, IsXY: true, },
+        { Id: 3, Name: 'Chợ Cốc Ly', MarketId: 3, ASort: 1, IsXY: false, },
+        { Id: 4, Name: 'Chợ Bến Ngự Huế', MarketId: 5, ASort: 1, IsXY: true, },
+        { Id: 6, Name: 'Chợ phiên Nam Đông', MarketId: 5, ASort: 2, IsXY: false, },
+        { Id: 5, Name: 'Cho Bai Chay', MarketId: 4, ASort: 1, IsXY: false, },
+        { Id: 7, Name: 'Cho Uong Bi', MarketId: 4, ASort: 2, IsXY: true, },
+        { Id: 8, Name: 'Cho Cam Pha', MarketId: 4, ASort: 3, IsXY: false, },
+        { Id: 15, Name: 'Saigon Centre', MarketId: 6, ASort: 1, IsXY: false, },
+        { Id: 14, Name: 'Vincom Center Đồng Khởi', MarketId: 6, ASort: 2, IsXY: false, },
+        { Id: 13, Name: 'Crescent Mall', MarketId: 6, ASort: 3, IsXY: true, },
+        { Id: 12, Name: 'Diamond Plaza', MarketId: 6, ASort: 4, IsXY: true, },
+        { Id: 11, Name: 'Union Square', MarketId: 6, ASort: 5, IsXY: false, },
+        { Id: 10, Name: 'Trung tâm mua sắm SC Vivo', MarketId: 6, ASort: 6, IsXY: false, },
+        { Id: 9, Name: 'Vincom Mega Mall Times City', MarketId: 7, ASort: 1, IsXY: false, },
+        { Id: 16, Name: 'Aeon Mall Long Biên', MarketId: 8, ASort: 1, IsXY: false, },
+        { Id: 17, Name: 'Savico Mega Mall', MarketId: 8, ASort: 2, IsXY: false, },
+        { Id: 20, Name: 'Vincom Plaza Long Biên', MarketId: 8, ASort: 3, IsXY: true, },
+        { Id: 19, Name: 'Aeon Mall Hà Đông', MarketId: 10, ASort: 1, IsXY: true, },
+        { Id: 18, Name: 'Melinh Plaza Hà Đông', MarketId: 10, ASort: 2, IsXY: false, },
+        { Id: 21, Name: 'TTTM Mac Plaza', MarketId: 10, ASort: 3, IsXY: false, },
+        { Id: 22, Name: 'Tràng Tiền Plaza', MarketId: 9, ASort: 1, IsXY: false, },
+    ]
+    lst.forEach(item => {
+        Object.defineProperty(item, 'Id', {
+            writable: false, // Không thể thay đổi giá trị
+            configurable: false // Không thể xóa hoặc thay đổi thuộc tính
+        })
+        Object.defineProperty(item, 'MarketId', {
+            configurable: false
+        })
+    })
+    return lst
+}
 const DemoPrdGroups = [
     { Id: 3, Name: `Truyen trinh tham`, RegionId: 1, ASort: 2, },
     { Id: 2, Name: `Truyen thieu nhi`, RegionId: 7, ASort: 3, },
@@ -141,14 +154,24 @@ const DemoPrdGroups = [
     { Id: 1, Name: `The thao`, RegionId: 7, ASort: 5, },
     { Id: 5, Name: `Sach giao khoa`, RegionId: 1, ASort: 4, },
 ]
-const DemoProducts = [
-    { Id: 3, Name: `Conan - Section 1`, PrdGroupId: 3, ASort: 3, },
-    { Id: 2, Name: `Conan - Section 2`, PrdGroupId: 3, ASort: 2, },
-    { Id: 1, Name: `Conan - Section 3`, PrdGroupId: 3, ASort: 1, },
-    { Id: 5, Name: `Tieng Viet Lop 2`, PrdGroupId: 5, ASort: 4, },
-    { Id: 4, Name: `Toan Lop 1`, PrdGroupId: 5, ASort: 5, },
-    { Id: 6, Name: `De men phieu luu ky - Chap 1`, PrdGroupId: 2, ASort: 6, },
-]
+const DemoProducts = getProducts()
+function getProducts() {
+    const lst = [
+        { Id: 3, Name: `Conan - Section 1`, PrdGroupId: 3, ASort: 3, },
+        { Id: 2, Name: `Conan - Section 2`, PrdGroupId: 3, ASort: 2, },
+        { Id: 1, Name: `Conan - Section 3`, PrdGroupId: 3, ASort: 1, },
+        { Id: 5, Name: `Tieng Viet Lop 2`, PrdGroupId: 5, ASort: 4, },
+        { Id: 4, Name: `Toan Lop 1`, PrdGroupId: 5, ASort: 5, },
+        { Id: 6, Name: `De men phieu luu ky - Chap 1`, PrdGroupId: 2, ASort: 6, },
+    ]
+    lst.forEach(item => {
+        Object.defineProperty(item, 'Id', {
+            writable: false, // Không thể thay đổi giá trị
+            configurable: false // Không thể xóa hoặc thay đổi thuộc tính
+        })
+    })
+    return lst
+}
 const DemoGoals = getGoals()
 function getGoals() {
     const lst = [
@@ -173,6 +196,15 @@ function getGoals() {
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
         },
     ]
+    lst.forEach(item => {
+        Object.defineProperty(item, 'Id', {
+            writable: false, // Không thể thay đổi giá trị
+            configurable: false // Không thể xóa hoặc thay đổi thuộc tính
+        })
+        Object.defineProperty(item, 'SubmPrdId', {
+            configurable: false
+        })
+    })
     return lst;
     let name = 'Test perfomance gen main '
     for (let ii = 6, smId, prId; ii < 1000; ii++) {
@@ -186,7 +218,7 @@ function getGoals() {
     return lst
 }
 const DemoSubs = getSubs()
-function getSubs(){
+function getSubs() {
     const lst = [
         {
             Id: 2, Name: 'Bán 600 cuốn Conan Section 1 trong tháng 10', GoalId: 3,
