@@ -122,7 +122,6 @@ export default {
                     smPrId = `${subMk.Id}-${prId}`
                     if (groupedGoals.has(smPrId)) {
                         const lstGoal = groupedGoals.get(smPrId)
-                        //  lstGoal.sort((a, b) => a.ASort - b.ASort)
                         const item = {
                             Entry: subMk,
                             SubmarketProductId: smPrId,
@@ -157,7 +156,6 @@ export default {
                     smPrId = `${smId}-${prd.Id}`
                     if (groupedGoals.has(smPrId)) {
                         const lstGoal = groupedGoals.get(smPrId)
-                        //lstGoal.sort((a, b) => a.ASort - b.ASort)
                         const item = {
                             Entry: prd,
                             SubmarketProductId: smPrId,
@@ -186,21 +184,84 @@ export default {
                 const goals = groupedGoals.get(srcSmPrId)
                 let oldIds = goals.map(x => x.Id)
                 if (oldIds.join(',') != desGoalIds.join(',')) {
-                    this.$store.dispatch('updateAsort', [8, oldIds, desGoalIds]).then(items => {
+                    updateSort.call(this, oldIds, desGoalIds).then(items => {
                         setAsort.call(goals, items)
+                        goals.sort((a, b) => a.ASort - b.ASort)
                     })
-                    function setAsort(items) {
-                        for (let ll = 0, itm, nItm; ll < this.length; ll++) {
-                            itm = this[ll]
-                            nItm = items.find(ld => ld.Id == itm.Id)
-                            itm.ASort = nItm.ASort
-                        }
+                }
+            } else if (srcSmPrId != desSmPrId && groupedGoals.has(srcSmPrId)) {
+                const srcGoals = groupedGoals.get(srcSmPrId)
+                let desGoals = groupedGoals.get(desSmPrId)
+                const oldGoals = []
+                for (let oo = srcGoals.length - 1, oGoal; -1 < oo; oo--) {
+                    oGoal = srcGoals[oo]
+                    if (desGoalIds.includes(oGoal.Id)) {
+                        oGoal.SubmPrdId = desSmPrId
+                        desGoals.push(oGoal)
+                        oldGoals.push(oGoal)
+                        srcGoals.splice(oo, 1)
                     }
                 }
-            } else {
+                desGoals = this.$store.getters.SortItemsByParent([8, [desSmPrId]])
+                if (desGoals.length <= 1) {
+                    for (let oo = 0; oo < oldGoals.length; oo++) {
+                        desGoals.push(oldGoals[oo])
+                    }
+                    for (let gg = 0; gg < desGoals.length; gg++) {
+                        desGoals[gg].ASort = gg + 1
+                    }
+                    desGoals = groupedGoals.get(desSmPrId)
+                    if (1 < desGoals.length) {
+                        desGoals.sort((a, b) => a.ASort - b.ASort)
+                    }
+                } else {
+                    // remove goal on left side is not in list
+                    let index = 1
+                    for (let nn = 0, goal; nn < desGoals.length; nn++) {
+                        goal = desGoals[nn]
+                        if (!desGoalIds.includes(goal.Id)) {
+                            index = goal.ASort
+                            desGoals.splice(nn, 1)
+                            nn -= 1
+                        } else break
+                    }
+                    const mapOrigin = new Map(desGoals.map(x => [x.Id, x]))
+                    for (let oo = 0; oo < oldGoals.length; oo++) {
+                        desGoals.splice(oo, 0, oldGoals[oo])
+                    }
+                    const sortedGs = []
+                    for (let nn = 0, goal; nn < desGoals.length - 1; nn++) {
+                        goal = desGoals[nn]
+                        if (mapOrigin.has(goal.Id)) {
+                            if (++index != goal.ASort) {
+                                goal.ASort = index
+                                sortedGs.push(goal)
+                            }
+                        } else {
+                            goal.ASort = ++index
+                            sortedGs.push(goal)
+                        }
+                    }
+                    sortedGs.sort((a, b) => a.ASort - b.ASort)
+                    let oldIds = sortedGs.map(x => x.Id)
+                    let newIds = [...desGoalIds]
+                    if (oldIds.length != newIds.length) {
 
+                    } else {
+                        updateSort.call(this, oldIds, newIds)
+                    }
+                }
             }
-
+            function updateSort(oldIds, newIds) {
+                return this.$store.dispatch('updateAsort', [8, oldIds, newIds])
+            }
+            function setAsort(items) {
+                for (let ll = 0, itm, nItm; ll < this.length; ll++) {
+                    itm = this[ll]
+                    nItm = items.find(ld => ld.Id == itm.Id)
+                    itm.ASort = nItm.ASort
+                }
+            }
             console.group('on end dnd ', evt)
             console.log('source ', srcSmPrId)
 
