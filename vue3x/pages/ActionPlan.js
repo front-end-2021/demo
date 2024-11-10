@@ -95,7 +95,7 @@ export default {
                 this.ListMarket = lstMarkt
                 //console.log('list market ', lstMarkt)
             } else this.ListMarket = []
-            
+
             console.log('action plan finish build data ', Date.now() - ddd, 'mili second')
             // console.log('grouped goals ', groupedGoals)
             function lstPrdXy(prgId, products, lstSubMkXy) {
@@ -122,7 +122,7 @@ export default {
                     smPrId = `${subMk.Id}-${prId}`
                     if (groupedGoals.has(smPrId)) {
                         const lstGoal = groupedGoals.get(smPrId)
-                        lstGoal.sort((a, b) => a.ASort - b.ASort)
+                        //  lstGoal.sort((a, b) => a.ASort - b.ASort)
                         const item = {
                             Entry: subMk,
                             SubmarketProductId: smPrId,
@@ -157,7 +157,7 @@ export default {
                     smPrId = `${smId}-${prd.Id}`
                     if (groupedGoals.has(smPrId)) {
                         const lstGoal = groupedGoals.get(smPrId)
-                        lstGoal.sort((a, b) => a.ASort - b.ASort)
+                        //lstGoal.sort((a, b) => a.ASort - b.ASort)
                         const item = {
                             Entry: prd,
                             SubmarketProductId: smPrId,
@@ -179,8 +179,27 @@ export default {
             const desSmPrId = evt.to.getAttribute('smprid')
             evt.to.querySelectorAll(`[goalid]`).forEach(gl => {
                 const gId = gl.getAttribute('goalid')
-                desGoalIds.push(gId)
+                desGoalIds.push(parseInt(gId))
             })
+            const groupedGoals = this.$root.MapGoals
+            if (srcSmPrId == desSmPrId && groupedGoals.has(srcSmPrId)) {
+                const goals = groupedGoals.get(srcSmPrId)
+                let oldIds = goals.map(x => x.Id)
+                if (oldIds.join(',') != desGoalIds.join(',')) {
+                    this.$store.dispatch('updateAsort', [8, oldIds, desGoalIds]).then(items => {
+                        setAsort.call(goals, items)
+                    })
+                    function setAsort(items) {
+                        for (let ll = 0, itm, nItm; ll < this.length; ll++) {
+                            itm = this[ll]
+                            nItm = items.find(ld => ld.Id == itm.Id)
+                            itm.ASort = nItm.ASort
+                        }
+                    }
+                }
+            } else {
+
+            }
 
             console.group('on end dnd ', evt)
             console.log('source ', srcSmPrId)

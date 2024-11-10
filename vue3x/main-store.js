@@ -89,21 +89,22 @@ export default createStore({
                     break;
                 case 5: buildItems(state.ProductGroups)
                     break;
+                // case 6: // SubMarket
+                // case 7: // Product
+                case 8: buildItems(state.ListGoal)
+                    break;
                 default: return items;
             }
             const mapIndex = new Map()
-
             newIds.forEach((nId, ii) => {
                 oId = oldIds[ii]
                 oItem = items.find(l => l.Id == oId)
                 mapIndex.set(nId, oItem.ASort)
-
-            });
+            })
             for (let ii = 0; ii < items.length; ii++) {
                 item = items[ii]
                 item.ASort = mapIndex.get(item.Id)
             }
-
             return items;
             function buildItems(lstItem) {
                 for (let ii = 0; ii < lstItem.length; ii++) {

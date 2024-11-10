@@ -295,8 +295,12 @@ Promise.all([
                 getData(8),       // Products
             ]).then((values) => {
                 const [projects, langs, lands, regions, markets, subMarkets, goals, prdGrps, prds] = values
-                
-                this.MapGoals = groupBy(goals, 'SubmPrdId')
+
+                const mGoals = groupBy(goals, 'SubmPrdId')
+                for (const goals of mGoals.values()) {
+                    goals.sort((a, b) => a.ASort - b.ASort)
+                }
+                this.MapGoals = mGoals
 
                 this.$store.state.Projects = projects
                 this.$store.state.Languages = langs
