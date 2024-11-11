@@ -215,8 +215,8 @@ export default {
                         desGoals.sort((a, b) => a.ASort - b.ASort)
                     }
                 } else {
-                    // remove goal on left side is not in list
                     let index = 1
+                    // #region remove goal before is not in list and set start index
                     for (let nn = 0, goal; nn < desGoals.length; nn++) {
                         goal = desGoals[nn]
                         if (!desGoalIds.includes(goal.Id)) {
@@ -225,32 +225,69 @@ export default {
                             nn -= 1
                         } else break
                     }
+                    // #endregion
                     const mapOrigin = new Map(desGoals.map(x => [x.Id, x]))
+                    // insert goals from src to des
                     for (let oo = 0; oo < oldGoals.length; oo++) {
                         desGoals.splice(oo, 0, oldGoals[oo])
                     }
-                    const sortedGs = []
+                    const sortGoals = []
+                    // #region get goals need sorted
                     for (let nn = 0, goal; nn < desGoals.length - 1; nn++) {
                         goal = desGoals[nn]
                         if (mapOrigin.has(goal.Id)) {
                             if (++index != goal.ASort) {
                                 goal.ASort = index
-                                sortedGs.push(goal)
+                                sortGoals.push(goal)
                             }
                         } else {
                             goal.ASort = ++index
-                            sortedGs.push(goal)
+                            sortGoals.push(goal)
                         }
                     }
-                    sortedGs.sort((a, b) => a.ASort - b.ASort)
-                    let oldIds = sortedGs.map(x => x.Id)
+                    sortGoals.sort((a, b) => a.ASort - b.ASort)
+                    // #endregion
+                    let oldIds = sortGoals.map(x => x.Id)
                     let newIds = [...desGoalIds]
-                    if (oldIds.length != newIds.length) {
-
-                    } else {
-                        updateSort.call(this, oldIds, newIds)
+                    switch (getTypeOrder(oldIds, newIds)) {
+                        case 1: updateSort.call(this, oldIds, newIds)
+                            break;
+                        case 2:     // filter
+                            for (let oo = 0, oId; oo < oldIds.length; oo++) {
+                                oId = oldIds[oo]
+                                if (desGoalIds.includes(oId)) continue;
+                                newIds.push(oId)
+                            }
+                            if (oldIds.length != newIds.length) {
+                                console.warn('something went wrong!')
+                            } else {
+                                updateSort.call(this, oldIds, newIds)
+                            }
+                            break;
+                        case 3:
+                            console.warn('cannot happen! old and new ids same length but diff ids')
+                            break;
+                        case 4:     // noway
+                            console.warn('cannot happen! length old < new ids')
+                            break;
+                        case 0:     // noway
+                            console.warn('cannot happen! keep position')
+                            break;
+                        default: break;
                     }
                 }
+            }
+            function getTypeOrder(oldIds, newIds) {
+                if (oldIds.length > newIds.length) return 2;
+                if (oldIds.length < newIds.length) return 4;
+                if (oldIds.join(',') == newIds.join(',')) return 0;
+                let cpyOdIds = [...oldIds]
+                let cpyNwIds = [...newIds]
+                cpyOdIds.sort()
+                cpyNwIds.sort()
+                if (cpyOdIds.join(',') != cpyNwIds.join(',')) {
+                    return 3
+                } else return 1
             }
             function updateSort(oldIds, newIds) {
                 return this.$store.dispatch('updateAsort', [8, oldIds, newIds])
