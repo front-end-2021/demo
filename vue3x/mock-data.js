@@ -172,6 +172,7 @@ function getProducts() {
     })
     return lst
 }
+
 const DemoGoals = getGoals()
 function getGoals() {
     const lst = [
@@ -186,12 +187,12 @@ function getGoals() {
             ASort: 1,
         },
         {
-            Id: 6, Name: 'Bán 600 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '12-6',
+            Id: 4, Name: 'Bán 600 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '12-6',
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
             ASort: 1,
         },
         {
-            Id: 4, Name: 'Bán 300 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '3-6',
+            Id: 1, Name: 'Bán 300 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '3-6',
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
             ASort: 2,
         },
@@ -210,13 +211,15 @@ function getGoals() {
             configurable: false
         })
     })
-    return lst;
-    let name = 'Test perfomance gen main '
-    for (let ii = 6, smId, prId; ii < 1000; ii++) {
+  //  return lst;
+    let goalId = 6
+    let name = 'Test perfomance main'
+    for (let smId, prId; goalId < 1000; goalId++) {
         smId = getRandomInt(1, 23)
         prId = getRandomInt(1, 7)
         lst.push({
-            Id: ii, Name: `${name}`, SubmPrdId: `${smId}-${prId}`,
+            Id: goalId, Name: `${genRandName(nameList)}(${name})`, 
+            SubmPrdId: `${smId}-${prId}`,
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
         })
     }
@@ -242,6 +245,19 @@ function getSubs() {
             Start: 'Mon Aug 12 2024', End: 'Sat Aug 31 2024',
         },
     ]
+   // return lst;
+    const arr = DemoGoals.map(x => x.Id)
+    const maxId = arr.reduce((a, b) => Math.max(a, b), -Infinity);
+    let name = 'Test perfomance sub'
+    let subId = 5
+    for (let prId; subId < 2000; subId++) {
+        prId = getRandomInt(1, maxId + 1)
+        lst.push({
+            Id: subId, Name: `${genRandName(nameList)}(${name})`, GoalId: prId, 
+            Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
+        })
+    }
+    return lst;
 }
 function getMessCompare(item, mItem) {
     let mess = ''
@@ -276,7 +292,7 @@ export {
     DemoLands, DemoRegions,
     DemoPrdGroups, DemoProducts,
     DemoMarkets, DemoSubmarkets,
-    DemoGoals,
+    DemoGoals, DemoSubs,
     getMessCompare,
     overrideItem, getCopyItem, deleteDes
 }
