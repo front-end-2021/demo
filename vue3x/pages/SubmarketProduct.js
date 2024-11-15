@@ -45,7 +45,7 @@ const FCriterialSmk = {
 
                 const landId = this.listId[0]
                 if (landId < 1) lst2 = this.$store.getters.SortedItems([3, [0], []])
-                else lst2 = this.$store.getters.SortItemsByParent([2, [landId]])
+                else lst2 = this.$store.getters.sortedItemsBy([2, [landId]])
                 lst2.unshift({ Id: FTypeId.SelectRegion, Name: this.$store.getters.txtFilter(FTypeId.SelectRegion) })
                 return [lst1, lst2]
             } else {
@@ -236,9 +236,7 @@ const CellSmPrd = {
             const smpId = this.submarket.Id
             const prdId = this.product.Id
             const smPrId = `${smpId}-${prdId}`
-            const groupedGoals = this.$root.MapGoals
-            if (!groupedGoals.has(smPrId)) return ''
-            const goals = groupedGoals.get(smPrId)
+            let goals = this.$store.getters.unSortItemsBy([9, [smPrId]])
             return `${goals.length} | 0 | 0`
         },
     },
@@ -319,7 +317,7 @@ export default {
 
                 let regionId = rootCrs[0][1][1]
                 if (regionId < 0) regionId = 0
-                let lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
+                let lstPrG = this.$store.getters.sortedItemsBy([3, [regionId], prdGrpIds])
                 // console.log(lstPrG.map(x => x.Id))
                 this.$root.ActviePrGrpIds = lstPrG.map(x => x.Id)
 
@@ -398,11 +396,11 @@ export default {
                 this.checkRmv0(subMarketIds)
                 this.buildListMarket(landId, marketIds, subMarketIds)
 
-                let lstPrG = this.$store.getters.SortItemsByParent([3, [regionId], prdGrpIds])
+                let lstPrG = this.$store.getters.sortedItemsBy([3, [regionId], prdGrpIds])
                 if (0 < landId && regionId < 1) {
-                    let lstRg = this.$store.getters.SortItemsByParent([2, [landId]])
+                    let lstRg = this.$store.getters.sortedItemsBy([2, [landId]])
                     let rgIds = lstRg.map(x => x.Id)
-                    lstPrG = this.$store.getters.SortItemsByParent([3, rgIds, prdGrpIds])
+                    lstPrG = this.$store.getters.sortedItemsBy([3, rgIds, prdGrpIds])
                 }
                 this.ProductGroups = lstPrG;
 
@@ -434,18 +432,18 @@ export default {
             }
         },
         buildListMarket(landId, marketIds, subMarketIds) {
-            const lstMrk = this.$store.getters.SortItemsByParent([5, [landId], marketIds])
+            const lstMrk = this.$store.getters.sortedItemsBy([5, [landId], marketIds])
             this.ListMarket = []
             for (let mm = 0, mrk; mm < lstMrk.length; mm++) {
                 mrk = lstMrk[mm]
                 this.ListMarket.push({
                     Entry: mrk,
-                    ListSubMarket: this.$store.getters.SortItemsByParent([6, [mrk.Id], subMarketIds])
+                    ListSubMarket: this.$store.getters.sortedItemsBy([6, [mrk.Id], subMarketIds])
                 })
             }
         },
         buildListProduct(prdGrpIds, productIds) {
-            this.Products = this.$store.getters.SortItemsByParent([4, prdGrpIds, productIds])
+            this.Products = this.$store.getters.sortedItemsBy([4, prdGrpIds, productIds])
         },
         onMseEnterSmpPrd(e, prd, eMrk, smp) {
             this.$root.Popup_UI = null
@@ -466,8 +464,9 @@ export default {
         },
         onMseOut() { this.CellSmpPrd = null },
         isActive(smkId, prdId) {
-            const smkPrdId = `${smkId}-${prdId}`
-            return this.$root.MapGoals.has(smkPrdId)
+            const smPrId = `${smkId}-${prdId}`
+            let goals = this.$store.getters.unSortItemsBy([9, [smPrId]])
+            return 0 < goals.length
         },
     },
     //beforeMount() { },

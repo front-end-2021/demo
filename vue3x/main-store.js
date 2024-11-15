@@ -90,8 +90,8 @@ export default createStore({
                 case 5: buildItems(state.ProductGroups)
                     break;
                 // case 6: // SubMarket
-                // case 7: // Product
-                case 8: buildItems(state.ListGoal)
+                // case 8: // Product
+                case 9: buildItems(state.ListGoal)
                     break;
                 default: return items;
             }
@@ -244,7 +244,12 @@ export default createStore({
                 default: break;
             }
         },
-        SortItemsByParent: (state) => ([type, ptIds, ids]) => {
+        sortedItemsBy: (state, getters) => ([type, ptIds, ids]) => {
+            let lst = getters.unSortItemsBy([type, ptIds, ids])
+            if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
+            return lst
+        },
+        unSortItemsBy: (state) => ([type, ptIds, ids]) => {
             let lst = []
             switch (type) {
                 case 2: // Regions by LandId
@@ -279,8 +284,8 @@ export default createStore({
                         lst = getListBy.call(lst, ids)
                     }
                     break;
-                // case 7: // Product
-                case 8:     // Goals
+                // case 8: // Product
+                case 9:     // Goals
                     lst = buildListBy.call(state.ListGoal, ptIds, (itm) => ptIds.includes(itm.SubmPrdId))
                     if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
                         lst = getListBy.call(lst, ids)
@@ -288,7 +293,6 @@ export default createStore({
                     break;
                 default: return lst;
             }
-            if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
             return lst
         },
         MarketRegionBy: (state) => ([mId, rId]) => {

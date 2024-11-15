@@ -1,4 +1,5 @@
 import { VueDraggableNext } from 'vue-draggable-next'
+import { groupBy } from '../common.js'
 const ViewGoal = {
     template: `#tmp-comp-vw-goal`,
     components: {
@@ -39,7 +40,7 @@ export default {
             const lstSubM = this.$store.getters.UnsortItems([4, submkIds, []])
             const lstPrd = this.$store.getters.UnsortItems([8, prdIds, []])
             // #endregion
-            const groupedGoals = this.$root.MapGoals
+            const groupedGoals = groupBy(this.$store.state.ListGoal, 'SubmPrdId')
             const lstSubMxy = []
             for (let ss = 0, smk; ss < lstSubM.length; ss++) {
                 smk = lstSubM[ss]
@@ -95,9 +96,9 @@ export default {
                 this.ListMarket = lstMarkt
                 //console.log('list market ', lstMarkt)
             } else this.ListMarket = []
-
+            groupedGoals.clear()
             console.log('action plan finish build data ', Date.now() - ddd, 'mili second')
-            // console.log('grouped goals ', groupedGoals)
+
             function lstPrdXy(prgId, products, lstSubMkXy) {
                 const lst = []
                 for (let pp = 0, pr; pp < products.length; pp++) {
@@ -122,6 +123,7 @@ export default {
                     smPrId = `${subMk.Id}-${prId}`
                     if (groupedGoals.has(smPrId)) {
                         const lstGoal = groupedGoals.get(smPrId)
+                        lstGoal.sort((a, b) => a.ASort - b.ASort)
                         const item = {
                             Entry: subMk,
                             SubmarketProductId: smPrId,
@@ -156,6 +158,7 @@ export default {
                     smPrId = `${smId}-${prd.Id}`
                     if (groupedGoals.has(smPrId)) {
                         const lstGoal = groupedGoals.get(smPrId)
+                        lstGoal.sort((a, b) => a.ASort - b.ASort)
                         const item = {
                             Entry: prd,
                             SubmarketProductId: smPrId,
@@ -180,15 +183,13 @@ export default {
 
             const srcSmPrId = evt.from.getAttribute('smprid')
             const desSmPrId = evt.to.getAttribute('smprid')
-            const groupedGoals = this.$root.MapGoals
-            if (srcSmPrId == desSmPrId && groupedGoals.has(srcSmPrId)) {
+            const srcGols = this.$store.getters.sortedItemsBy([9, [srcSmPrId]])
+            if (srcSmPrId == desSmPrId) {
                 // drag drop same sub-market product
-                const goals = groupedGoals.get(srcSmPrId)
-                let oldIds = goals.map(x => x.Id)
+                let oldIds = srcGols.map(x => x.Id)
                 if (oldIds.join(',') != desGoalIds.join(',')) {
-                    this.$store.dispatch('updateAsort', [8, oldIds, desGoalIds]).then(items => {
-                        setAsort.call(goals, items)
-                        goals.sort((a, b) => a.ASort - b.ASort)
+                    this.$store.dispatch('updateAsort', [9, oldIds, desGoalIds]).then(items => {
+                        setAsort.call(srcGols, items)
                     })
                 }
                 function setAsort(items) {
@@ -198,25 +199,21 @@ export default {
                         itm.ASort = nItm.ASort
                     }
                 }
-            } else if (srcSmPrId != desSmPrId && groupedGoals.has(srcSmPrId)) {
+            } else if (srcSmPrId != desSmPrId) {
                 // drag drop diff sub-market product 
-                let desGoals = groupedGoals.get(desSmPrId)
+                let desGoals = this.$store.getters.sortedItemsBy([9, [desSmPrId]])
                 let srcGoal
                 // #region remove drag goal from src
-                const srcGols = groupedGoals.get(srcSmPrId)
                 for (let oo = srcGols.length - 1; -1 < oo; oo--) {
                     srcGoal = srcGols[oo]
                     if (desGoalIds.includes(srcGoal.Id)) {
-                        srcGoal = srcGols.splice(oo, 1)[0]      // remove
                         break;
                     }
                 }
-                if (!srcGols.length) groupedGoals.delete(srcSmPrId)
                 // #endregion
                 srcGoal.SubmPrdId = desSmPrId
                 if (1 == desGoalIds.length) {
                     srcGoal.ASort = 1
-                    groupedGoals.set(desSmPrId, [srcGoal])
                 } else {
                     let iiDes = desGoals.findIndex(x => desGoalIds[0] === x.Id)
                     if (iiDes < 0) {

@@ -265,7 +265,7 @@ export default {
             if (!landIds.includes(0)) {
                 mergeIdLands = ids.filter(id => landIds.includes(id))
             }
-            this.Regions = this.$store.getters.SortItemsByParent([2, mergeIdLands])
+            this.Regions = this.$store.getters.sortedItemsBy([2, mergeIdLands])
         },
         '$root.IndexProject'(iPrj) {
             let lstC = this.$root.MarketCriterias
@@ -304,7 +304,7 @@ export default {
             if (!landIds.includes(0)) {
                 mergeIdLands = mergeIdLands.filter(id => landIds.includes(id))
             }
-            this.Regions = this.$store.getters.SortItemsByParent([2, mergeIdLands])
+            this.Regions = this.$store.getters.sortedItemsBy([2, mergeIdLands])
         },
         countClick(type, item, e) {
             // console.log('count click ', type, item, e)
