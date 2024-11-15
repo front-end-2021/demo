@@ -171,137 +171,89 @@ export default {
 
         },
         onEndDndGoal(evt) {
-            const srcSmPrId = evt.from.getAttribute('smprid')
-
-            const desGoalIds = []
-            const desSmPrId = evt.to.getAttribute('smprid')
+            const desGoalIds = []           // new ordered id
             evt.to.querySelectorAll(`[goalid]`).forEach(gl => {
                 const gId = gl.getAttribute('goalid')
                 desGoalIds.push(parseInt(gId))
             })
+            if (desGoalIds.length < 1) return;
+
+            const srcSmPrId = evt.from.getAttribute('smprid')
+            const desSmPrId = evt.to.getAttribute('smprid')
             const groupedGoals = this.$root.MapGoals
             if (srcSmPrId == desSmPrId && groupedGoals.has(srcSmPrId)) {
+                // drag drop same sub-market product
                 const goals = groupedGoals.get(srcSmPrId)
                 let oldIds = goals.map(x => x.Id)
                 if (oldIds.join(',') != desGoalIds.join(',')) {
-                    updateSort.call(this, oldIds, desGoalIds).then(items => {
+                    this.$store.dispatch('updateAsort', [8, oldIds, desGoalIds]).then(items => {
                         setAsort.call(goals, items)
                         goals.sort((a, b) => a.ASort - b.ASort)
                     })
                 }
-            } else if (srcSmPrId != desSmPrId && groupedGoals.has(srcSmPrId)) {
-                const srcGoals = groupedGoals.get(srcSmPrId)
-                let desGoals = groupedGoals.get(desSmPrId)
-                const oldGoals = []
-                for (let oo = srcGoals.length - 1, oGoal; -1 < oo; oo--) {
-                    oGoal = srcGoals[oo]
-                    if (desGoalIds.includes(oGoal.Id)) {
-                        oGoal.SubmPrdId = desSmPrId
-                        desGoals.push(oGoal)
-                        oldGoals.push(oGoal)
-                        srcGoals.splice(oo, 1)
+                function setAsort(items) {
+                    for (let ll = 0, itm, nItm; ll < this.length; ll++) {
+                        itm = this[ll]
+                        nItm = items.find(ld => ld.Id == itm.Id)
+                        itm.ASort = nItm.ASort
                     }
                 }
-                desGoals = this.$store.getters.SortItemsByParent([8, [desSmPrId]])
-                if (desGoals.length <= 1) {
-                    for (let oo = 0; oo < oldGoals.length; oo++) {
-                        desGoals.push(oldGoals[oo])
+            } else if (srcSmPrId != desSmPrId && groupedGoals.has(srcSmPrId)) {
+                // drag drop diff sub-market product 
+                let desGoals = groupedGoals.get(desSmPrId)
+                let srcGoal
+                // #region remove drag goal from src
+                const srcGols = groupedGoals.get(srcSmPrId)
+                for (let oo = srcGols.length - 1; -1 < oo; oo--) {
+                    srcGoal = srcGols[oo]
+                    if (desGoalIds.includes(srcGoal.Id)) {
+                        srcGoal = srcGols.splice(oo, 1)[0]      // remove
+                        break;
                     }
-                    for (let gg = 0; gg < desGoals.length; gg++) {
-                        desGoals[gg].ASort = gg + 1
-                    }
-                    desGoals = groupedGoals.get(desSmPrId)
-                    if (1 < desGoals.length) {
-                        desGoals.sort((a, b) => a.ASort - b.ASort)
-                    }
+                }
+                if (!srcGols.length) groupedGoals.delete(srcSmPrId)
+                // #endregion
+                srcGoal.SubmPrdId = desSmPrId
+                if (1 == desGoalIds.length) {
+                    srcGoal.ASort = 1
+                    groupedGoals.set(desSmPrId, [srcGoal])
                 } else {
-                    let index = 1
-                    // #region remove goal before is not in list and set start index
-                    for (let nn = 0, goal; nn < desGoals.length; nn++) {
-                        goal = desGoals[nn]
-                        if (!desGoalIds.includes(goal.Id)) {
-                            index = goal.ASort
-                            desGoals.splice(nn, 1)
-                            nn -= 1
-                        } else break
-                    }
-                    // #endregion
-                    const mapOrigin = new Map(desGoals.map(x => [x.Id, x]))
-                    // insert goals from src to des
-                    for (let oo = 0; oo < oldGoals.length; oo++) {
-                        desGoals.splice(oo, 0, oldGoals[oo])
-                    }
-                    const sortGoals = []
-                    // #region get goals need sorted
-                    for (let nn = 0, goal; nn < desGoals.length - 1; nn++) {
-                        goal = desGoals[nn]
-                        if (mapOrigin.has(goal.Id)) {
-                            if (++index != goal.ASort) {
-                                goal.ASort = index
-                                sortGoals.push(goal)
-                            }
-                        } else {
-                            goal.ASort = ++index
-                            sortGoals.push(goal)
+                    let iiDes = desGoals.findIndex(x => desGoalIds[0] === x.Id)
+                    if (iiDes < 0) {
+                        // src id = desGoalIds[0]
+                        let ii1 = desGoals.findIndex(x => desGoalIds[1] === x.Id)
+                        if (ii1 < 0) return;
+                        let index = desGoals[ii1].ASort     // m-index des
+                        srcGoal.ASort = index               // src = des
+                        desGoals.splice(ii1, 0, srcGoal)       // insert at
+                        for (let ii = ii1 + 1, desG; ii < desGoals.length; ii++) {
+                            desG = desGoals[ii]
+                            if (desG.ASort < ++index) {
+                                desG.ASort = index
+                            } else break;
+                        }
+                    } else {
+                        let ii1 = iiDes
+                        let ii = 1
+                        for (; ii < desGoalIds.length; ii++) {
+                            const jDes = desGoals.findIndex(x => desGoalIds[ii] === x.Id)
+                            if (jDes < 0) break
+                            ii1 = jDes
+                        }
+                        let index = desGoals[ii1].ASort     // m-index des
+                        srcGoal.ASort = ++index               // src = des + 1
+                        desGoals.splice(ii1 + 1, 0, srcGoal)       // insert at
+                        for (ii = ii1 + 2; ii < desGoals.length; ii++) {
+                            const desG = desGoals[ii]
+                            if (desG.ASort < ++index) {
+                                desG.ASort = index
+                            } else break;
                         }
                     }
-                    sortGoals.sort((a, b) => a.ASort - b.ASort)
-                    // #endregion
-                    let oldIds = sortGoals.map(x => x.Id)
-                    let newIds = [...desGoalIds]
-                    switch (getTypeOrder(oldIds, newIds)) {
-                        case 1: updateSort.call(this, oldIds, newIds)
-                            break;
-                        case 2:     // filter
-                            for (let oo = 0, oId; oo < oldIds.length; oo++) {
-                                oId = oldIds[oo]
-                                if (desGoalIds.includes(oId)) continue;
-                                newIds.push(oId)
-                            }
-                            if (oldIds.length != newIds.length) {
-                                console.warn('something went wrong!')
-                            } else {
-                                updateSort.call(this, oldIds, newIds)
-                            }
-                            break;
-                        case 3:
-                            console.warn('cannot happen! old and new ids same length but diff ids')
-                            break;
-                        case 4:     // noway
-                            console.warn('cannot happen! length old < new ids')
-                            break;
-                        case 0:     // noway
-                            console.warn('cannot happen! keep position')
-                            break;
-                        default: break;
-                    }
-                }
-            }
-            function getTypeOrder(oldIds, newIds) {
-                if (oldIds.length > newIds.length) return 2;
-                if (oldIds.length < newIds.length) return 4;
-                if (oldIds.join(',') == newIds.join(',')) return 0;
-                let cpyOdIds = [...oldIds]
-                let cpyNwIds = [...newIds]
-                cpyOdIds.sort()
-                cpyNwIds.sort()
-                if (cpyOdIds.join(',') != cpyNwIds.join(',')) {
-                    return 3
-                } else return 1
-            }
-            function updateSort(oldIds, newIds) {
-                return this.$store.dispatch('updateAsort', [8, oldIds, newIds])
-            }
-            function setAsort(items) {
-                for (let ll = 0, itm, nItm; ll < this.length; ll++) {
-                    itm = this[ll]
-                    nItm = items.find(ld => ld.Id == itm.Id)
-                    itm.ASort = nItm.ASort
                 }
             }
             console.group('on end dnd ', evt)
             console.log('source ', srcSmPrId)
-
             console.log('destination ', desSmPrId, desGoalIds)
             console.groupEnd()
         },

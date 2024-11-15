@@ -179,17 +179,17 @@ function getGoals() {
         {
             Id: 3, Name: 'Bán 1200 cuốn Conan Section 1 trong quý 3', SubmPrdId: '6-3',
             Start: 'Tue Oct 01 2024', End: new Date('Tue Dec 31 2024').toDateString(),
-            ASort: 1,
+            ASort: 4,
         },
         {
             Id: 2, Name: 'Bán 900 cuốn Toan Lop 1 trong tháng 8', SubmPrdId: '12-9',
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
-            ASort: 1,
+            ASort: 5,
         },
         {
             Id: 4, Name: 'Bán 600 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '12-6',
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
-            ASort: 1,
+            ASort: 3,
         },
         {
             Id: 1, Name: 'Bán 300 cuốn Tieng Viet Lop 2 trong tháng 8', SubmPrdId: '3-6',
@@ -211,15 +211,17 @@ function getGoals() {
             configurable: false
         })
     })
-  //  return lst;
+    //  return lst;
+    const arr = lst.map(x => x.ASort)
+    let maxIndex = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     let goalId = 6
     let name = 'Test perfomance main'
-    for (let smId, prId; goalId < 1000; goalId++) {
+    for (let smId, prId; goalId < 20; goalId++) {
         smId = getRandomInt(1, 23)
         prId = getRandomInt(1, 7)
         lst.push({
-            Id: goalId, Name: `${genRandName(nameList)}(${name})`, 
-            SubmPrdId: `${smId}-${prId}`,
+            Id: goalId, Name: `${genRandName(nameList)}(${name})`,
+            SubmPrdId: `${smId}-${prId}`, ASort: ++maxIndex,
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
         })
     }
@@ -229,32 +231,34 @@ const DemoSubs = getSubs()
 function getSubs() {
     const lst = [
         {
-            Id: 2, Name: 'Bán 600 cuốn Conan Section 1 trong tháng 10', GoalId: 3,
+            Id: 2, Name: 'Bán 600 cuốn Conan Section 1 trong tháng 10', GoalId: 3, ASort: 1,
             Start: 'Tue Oct 01 2024', End: new Date('Thu Oct 31 2024').toDateString(),
         },
         {
             Id: 1, Name: 'Bán 500 cuốn Conan Section 1 trong tháng 11', GoalId: 3,
-            Start: 'Fri Nov 01 2024', End: 'Sat Nov 30 2024',
+            Start: 'Fri Nov 01 2024', End: 'Sat Nov 30 2024', ASort: 2,
         },
         {
             Id: 3, Name: 'Bán 600 cuốn Toan Lop 1 trong tuan 1', GoalId: 2,
-            Start: 'Thu Aug 01 2024', End: 'Sun Aug 11 2024',
+            Start: 'Thu Aug 01 2024', End: 'Sun Aug 11 2024', ASort: 3,
         },
         {
             Id: 4, Name: 'Bán 300 cuốn Toan Lop 1 trong tuan 2, 3, 4', GoalId: 2,
-            Start: 'Mon Aug 12 2024', End: 'Sat Aug 31 2024',
+            Start: 'Mon Aug 12 2024', End: 'Sat Aug 31 2024', ASort: 4,
         },
     ]
-   // return lst;
-    const arr = DemoGoals.map(x => x.Id)
+    // return lst;
+    let arr = DemoGoals.map(x => x.Id)
     const maxId = arr.reduce((a, b) => Math.max(a, b), -Infinity);
+    arr = lst.map(x => x.ASort)
+    let maxIndex = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     let name = 'Test perfomance sub'
-    let subId = 5
-    for (let prId; subId < 2000; subId++) {
+    let subId = maxId + 1
+    for (let prId; subId < maxId + 2000; subId++) {
         prId = getRandomInt(1, maxId + 1)
         lst.push({
-            Id: subId, Name: `${genRandName(nameList)}(${name})`, GoalId: prId, 
-            Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
+            Id: subId, Name: `${genRandName(nameList)}(${name})`, GoalId: prId,
+            Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`, ASort: ++maxIndex,
         })
     }
     return lst;
