@@ -1,5 +1,5 @@
 <template id="tmp-comp-vw-goal">
-    <div class="p-2 w344px bg-008ff8 mt-2"
+    <div class="p-2 w344px bg-006bb9 mt-2 border-r4px"
         :goalid="item.Id">
         <div>{{item.Name}} ({{item.Id}})</div>
     </div>
@@ -14,14 +14,14 @@
     </section>
     <h1>4ct10n Pl_n</h1>
     <section class="dnbViewAcPlan px20px">
-        <div v-for="market in ListMarket" class="border-e8e9e9">
-            <div class="p-2 bg-006bb9">{{market.Entry.Name}}</div>
+        <div v-for="market in ListMarket" class="bg-008ff8 border-r6px mb-3">
+            <div class="p-2 border-r6px bg-008ff8">{{market.Entry.Name}}</div>
             <div v-for="subMk in market.SubMarkets" class="p-2">
                 <div class="p-2 bg-008ff8">{{subMk.Entry.Name}}</div>
-                <div v-for="product in subMk.Products" class="p-2">
-                    <div class="p-2 bg-ededed">{{product.Entry.Name}} ({{product.SubmarketProductId}})</div>
+                <div v-for="product in subMk.Products" class="p-2 bg-008ff8">
+                    <div class="p-2 bg-e8e9e9 border-u4px">{{product.Entry.Name}} ({{product.SubmarketProductId}})</div>
                     <draggable v-model="product.Goals" v-bind="DndOptions" 
-                        class="dndGoals p-2"
+                        class="dndGoals p-2 bg-e8e9e9 border-d4px"
                         :smprid="product.SubmarketProductId"
                         @start="onStartDndGoal"
                         @end="onEndDndGoal">
@@ -34,14 +34,14 @@
                 </div>
             </div>
         </div>
-        <div v-for="prdG in ProductGroups" class="border-e8e9e9">
-            <div class="p-2 bg-prdgrp">{{prdG.Entry.Name}} (xy)</div>
+        <div v-for="prdG in ProductGroups" class="bg-008ff8 border-r6px mb-3">
+            <div class="p-2 border-r6px bg-008ff8">{{prdG.Entry.Name}} (xy)</div>
             <div v-for="product in prdG.ListProduct" class="p-2">
                 <div class="p-2 bg-008ff8">{{product.Entry.Name}}</div>
-                <div v-for="subMk in product.SubMarkets" class="p-2">
-                    <div class="p-2 bg-ededed">{{subMk.Entry.Name}} ({{subMk.SubmarketProductId}})</div>
+                <div v-for="subMk in product.SubMarkets" class="p-2 bg-008ff8">
+                    <div class="p-2 bg-e8e9e9 border-u4px">{{subMk.Entry.Name}} ({{subMk.SubmarketProductId}})</div>
                     <draggable v-model="subMk.Goals" v-bind="DndOptions" 
-                        class="dndGoals p-2"
+                        class="dndGoals p-2 bg-e8e9e9 border-d4px"
                         :smprid="subMk.SubmarketProductId"
                         @end="onEndDndGoal">
                         <transition-group>
