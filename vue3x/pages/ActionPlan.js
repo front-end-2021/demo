@@ -189,15 +189,12 @@ export default {
                 let oldIds = srcGols.map(x => x.Id)
                 if (oldIds.join(',') != desGoalIds.join(',')) {
                     this.$store.dispatch('updateAsort', [9, oldIds, desGoalIds]).then(items => {
-                        setAsort.call(srcGols, items)
+                        for (let ll = 0, itm, nItm; ll < srcGols.length; ll++) {
+                            itm = srcGols[ll]
+                            nItm = items.find(ld => ld.Id == itm.Id)
+                            itm.ASort = nItm.ASort
+                        }
                     })
-                }
-                function setAsort(items) {
-                    for (let ll = 0, itm, nItm; ll < this.length; ll++) {
-                        itm = this[ll]
-                        nItm = items.find(ld => ld.Id == itm.Id)
-                        itm.ASort = nItm.ASort
-                    }
                 }
             } else if (srcSmPrId != desSmPrId) {
                 // drag drop diff sub-market product 
