@@ -252,10 +252,10 @@ export default createStore({
         unSortItemsBy: (state) => ([type, ptIds, ids]) => {
             let lst = []
             switch (type) {
-                case 2: // Regions by LandId
+                case 2: // Regions by LandIds
                     lst = buildListBy.call(state.Regions, ptIds, (itm) => ptIds.includes(itm.LandId))
                     break;
-                case 3: // Product groups by RegionId
+                case 3: // Product groups by RegionIds
                     if (ptIds.includes(0))
                         lst = buildListBy.call(state.ProductGroups, [0])
                     else
@@ -264,7 +264,7 @@ export default createStore({
                         lst = getListBy.call(lst, ids)
                     }
                     break;
-                case 4: // Products by PrdGroupId
+                case 4: // Products by PrdGroupIds
                     if (ptIds.length)
                         lst = buildListBy.call(state.Products, ptIds, (itm) => ptIds.includes(itm.PrdGroupId))
                     else lst = buildListBy.call(state.Products, [0])
@@ -272,21 +272,27 @@ export default createStore({
                         lst = getListBy.call(lst, ids)
                     }
                     break;
-                case 5: // Markets by LandId
+                case 5: // Markets by LandIds
                     lst = buildListBy.call(state.Markets, ptIds, (itm) => ptIds.includes(itm.LandId))
                     if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
                         lst = getListBy.call(lst, ids)
                     }
                     break;
-                case 6: // SubMarkets by MarketId
+                case 6: // SubMarkets by MarketIds
                     lst = buildListBy.call(state.Submarkets, ptIds, (itm) => ptIds.includes(itm.MarketId))
                     if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
                         lst = getListBy.call(lst, ids)
                     }
                     break;
                 // case 8: // Product
-                case 9:     // Goals
+                case 9:     // Goals by SubmarketProductIds
                     lst = buildListBy.call(state.ListGoal, ptIds, (itm) => ptIds.includes(itm.SubmPrdId))
+                    if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
+                        lst = getListBy.call(lst, ids)
+                    }
+                    break;
+                case 10:      // Subs by GoalIds
+                    lst = buildListBy.call(state.ListSub, ptIds, (itm) => ptIds.includes(itm.GoalId))
                     if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
                         lst = getListBy.call(lst, ids)
                     }

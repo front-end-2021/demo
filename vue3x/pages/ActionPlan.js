@@ -2,14 +2,32 @@ import { VueDraggableNext } from 'vue-draggable-next'
 import { groupBy } from '../common.js'
 const ViewGoal = {
     template: `#tmp-comp-vw-goal`,
+    name: "ViewWrapGoal",
+    display: "ViewWrapGoal",
     components: {
         draggable: VueDraggableNext,
     },
     props: ['item'],
     data() {
         return {
-
+            ListSub: this.$store.getters.sortedItemsBy([10, [this.item.Id]])
         }
+    },
+    computed: {
+        DndSubOptions() {
+            return {
+                animation: 200,
+                disabled: false,
+                ghostClass: "ghost",
+                direction: 'vertical',
+                group: "sub",
+            }
+        },
+    },
+    methods: {
+        onEndDndSub(evt) {
+
+        },
     },
 }
 export default {
@@ -63,7 +81,7 @@ export default {
                 const prdGroups = []
                 for (let pg = 0, prg, lstPr; pg < lstPrg.length; pg++) {
                     prg = lstPrg[pg]
-                    lstPr = lstPrdXy(prg.Id, lstPrd, lstSubMxy)
+                    lstPr = lstPrdXy.call(this, prg.Id, lstPrd, lstSubMxy)
                     if (!lstPr.length) continue;
                     prdGroups.push({
                         Entry: prg,
@@ -86,7 +104,7 @@ export default {
                 const lstMarkt = []
                 for (let mm = 0, mk, lstSmk; mm < lstMrk.length; mm++) {
                     mk = lstMrk[mm]
-                    lstSmk = lstSubmarket(mk.Id, lstSubM, lstPrd)
+                    lstSmk = lstSubmarket.call(this, mk.Id, lstSubM, lstPrd)
                     if (!lstSmk.length) continue;
                     lstMarkt.push({
                         Entry: mk,
@@ -97,6 +115,7 @@ export default {
                 //console.log('list market ', lstMarkt)
             } else this.ListMarket = []
             groupedGoals.clear()
+
             console.log('action plan finish build data ', Date.now() - ddd, 'mili second')
 
             function lstPrdXy(prgId, products, lstSubMkXy) {
@@ -104,7 +123,7 @@ export default {
                 for (let pp = 0, pr; pp < products.length; pp++) {
                     pr = products[pp]
                     if (prgId == pr.PrdGroupId) {
-                        const lstSmk = lstSubMarketXy(pr.Id, lstSubMkXy)
+                        const lstSmk = lstSubMarketXy.call(this, pr.Id, lstSubMkXy)
                         if (!lstSmk.length) continue;
                         lstSmk.sort((a, b) => a.Entry.ASort - b.Entry.ASort)
                         lst.push({
@@ -139,7 +158,7 @@ export default {
                 for (let ss = 0, smk; ss < lstSubmk.length; ss++) {
                     smk = lstSubmk[ss]
                     if (smk.MarketId == mkId) {
-                        const lstPrd = lstProducts(smk.Id, products)
+                        const lstPrd = lstProducts.call(this, smk.Id, products)
                         if (!lstPrd.length) continue;
                         lstPrd.sort((a, b) => a.Entry.ASort - b.Entry.ASort)
                         lst.push({

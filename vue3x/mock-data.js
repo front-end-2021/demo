@@ -216,7 +216,7 @@ function getGoals() {
     let maxIndex = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     let goalId = 6
     let name = 'Test perfomance main'
-    for (let smId, prId; goalId < 20; goalId++) {
+    for (let smId, prId; goalId < 15; goalId++) {
         smId = getRandomInt(1, 23)
         prId = getRandomInt(1, 7)
         lst.push({
@@ -254,7 +254,7 @@ function getSubs() {
     let maxIndex = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     let name = 'Test perfomance sub'
     let subId = maxId + 1
-    for (let prId; subId < maxId + 2000; subId++) {
+    for (let prId; subId < maxId + 50; subId++) {
         prId = getRandomInt(1, maxId + 1)
         lst.push({
             Id: subId, Name: `${genRandName(nameList)}(${name})`, GoalId: prId,

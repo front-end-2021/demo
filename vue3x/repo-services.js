@@ -4,7 +4,7 @@ import {
     DemoLands, DemoRegions,
     DemoMarkets, DemoSubmarkets,
     DemoPrdGroups, DemoProducts,
-    DemoGoals,
+    DemoGoals, DemoSubs,
 } from "./mock-data.js";
 
 export const getData = (type) => {
@@ -30,6 +30,8 @@ export const getData = (type) => {
                 case 8: resolve(DemoProducts)
                     break;
                 case 9: resolve(DemoGoals)
+                    break;
+                case 10: resolve(DemoSubs)
                     break;
             }
         }, getRandomInt(100, 999))
