@@ -1,9 +1,59 @@
 import { VueDraggableNext } from 'vue-draggable-next'
 import { groupBy, isDragDrop } from '../common.js'
+const MxDndGolSub = {
+    methods: {
+        sortSameParent(gols, oGols) {
+            if (gols.length < 2) return;
+            const nIds = gols.map(x => x.Id)
+            const oIds = oGols.map(x => x.Id)
+            if (isDragDrop(oIds, nIds)) {
+                const mSorts = oGols.map(x => x.ASort)
+                for (let ii = 0; ii < gols.length; ii++) {
+                    gols[ii].ASort = mSorts[ii]
+                }
+            }
+        },
+        sortDiffParent(gols, type, [key, pId]) {   // ['SubmPrdId', id] | ['GoalId', id]
+            if (1 == gols.length && pId != gols[0][key]) {
+                gols[0][key] = pId
+                return
+            }
+            // 2 <= gols.length
+            const ii = getIiDnd(pId)
+            if (-1 < ii) {
+                const fulGols = this.$store.getters.sortedItemsBy([type, [pId]])
+                const srcGol = gols[ii]
+                srcGol[key] = pId
+                if (0 == ii) {
+                    let ii1 = fulGols.findIndex(s => s.Id == gols[ii + 1].Id)
+                    fulGols.splice(ii1, 0, srcGol)       // insert
+                    let index = 1
+                    for (let ss = 0; ss < fulGols.length; ss++) {
+                        fulGols[ss].ASort = index++
+                    }
+                } else {            // 1 <= ii
+                    let ii1 = fulGols.findIndex(s => s.Id == gols[ii - 1].Id)
+                    fulGols.splice(ii1 + 1, 0, srcGol)       // insert
+                    let index = 1
+                    for (let ss = 0; ss < fulGols.length; ss++) {
+                        fulGols[ss].ASort = index++
+                    }
+                }
+            }
+            function getIiDnd(pId) {
+                for (let ii = 0; ii < gols.length; ii++) {
+                    if (pId != gols[ii][key]) return ii
+                }
+                return -1
+            }
+        },
+    },
+}
 const ViewGoal = {
     template: `#tmp-comp-vw-goal`,
     name: "ViewWrapGoal",
     display: "ViewWrapGoal",
+    mixins: [MxDndGolSub],
     components: {
         draggable: VueDraggableNext,
     },
@@ -38,50 +88,51 @@ const ViewGoal = {
             // }))
             // console.groupEnd()
             if (subs.length == oSubs.length) {
-                if (subs.length < 2) return;
-                const nIds = subs.map(x => x.Id)
-                const oIds = oSubs.map(x => x.Id)
-                if (isDragDrop(oIds, nIds)) {
-                    const mSorts = oSubs.map(x => x.ASort)
-                    console.log('list a-sort ', mSorts)
-                    for (let ii = 0; ii < subs.length; ii++) {
-                        subs[ii].ASort = mSorts[ii]
-                    }
-                }
+                this.sortSameParent(subs, oSubs)
+                // if (subs.length < 2) return;
+                // const nIds = subs.map(x => x.Id); const oIds = oSubs.map(x => x.Id)
+                // if (isDragDrop(oIds, nIds)) {
+                //     const mSorts = oSubs.map(x => x.ASort)
+                //     console.log('list a-sort ', mSorts)
+                //     for (let ii = 0; ii < subs.length; ii++) {
+                //         subs[ii].ASort = mSorts[ii]
+                //     }
+                // }
             } else if (oSubs.length < subs.length) {
                 const goalId = this.item.Id
-                if (1 == subs.length && goalId != subs[0].GoalId) {
-                    subs[0].GoalId = goalId
-                    return
-                }
-                // 2 <= subs.length
-                const ii = getIiDnd(goalId)
-                if (-1 < ii) {
-                    const fulSubs = this.$store.getters.sortedItemsBy([10, [this.item.Id]])
-                    const srcSub = subs[ii]
-                    srcSub.GoalId = goalId
-                    if (0 == ii) {
-                        let ii1 = fulSubs.findIndex(s => s.Id == subs[ii + 1].Id)
-                        fulSubs.splice(ii1, 0, srcSub)       // insert
-                        let index = 1
-                        for (let ss = 0; ss < fulSubs.length; ss++) {
-                            fulSubs[ss].ASort = index++
-                        }
-                    } else {            // 1 <= ii
-                        let ii1 = fulSubs.findIndex(s => s.Id == subs[ii - 1].Id)
-                        fulSubs.splice(ii1 + 1, 0, srcSub)       // insert
-                        let index = 1
-                        for (let ss = 0; ss < fulSubs.length; ss++) {
-                            fulSubs[ss].ASort = index++
-                        }
-                    }
-                }
-                function getIiDnd(gId) {
-                    for (let ii = 0; ii < subs.length; ii++) {
-                        if (gId != subs[ii].GoalId) return ii
-                    }
-                    return -1
-                }
+                this.sortDiffParent(gols, 10, ['GoalId', goalId])
+                // if (1 == subs.length && goalId != subs[0].GoalId) {
+                //     subs[0].GoalId = goalId
+                //     return
+                // }
+                // // 2 <= subs.length
+                // const ii = getIiDnd(goalId)
+                // if (-1 < ii) {
+                //     const fulSubs = this.$store.getters.sortedItemsBy([10, [goalId]])
+                //     const srcSub = subs[ii]
+                //     srcSub.GoalId = goalId
+                //     if (0 == ii) {
+                //         let ii1 = fulSubs.findIndex(s => s.Id == subs[ii + 1].Id)
+                //         fulSubs.splice(ii1, 0, srcSub)       // insert
+                //         let index = 1
+                //         for (let ss = 0; ss < fulSubs.length; ss++) {
+                //             fulSubs[ss].ASort = index++
+                //         }
+                //     } else {            // 1 <= ii
+                //         let ii1 = fulSubs.findIndex(s => s.Id == subs[ii - 1].Id)
+                //         fulSubs.splice(ii1 + 1, 0, srcSub)       // insert
+                //         let index = 1
+                //         for (let ss = 0; ss < fulSubs.length; ss++) {
+                //             fulSubs[ss].ASort = index++
+                //         }
+                //     }
+                // }
+                // function getIiDnd(gId) {
+                //     for (let ii = 0; ii < subs.length; ii++) {
+                //         if (gId != subs[ii].GoalId) return ii
+                //     }
+                //     return -1
+                // }
             }
         },
     },
@@ -90,6 +141,7 @@ const ViewProduct = {
     template: `#tmp-comp-vw-prd`,
     name: "ViewWrapPrd",
     display: "ViewWrapPrd",
+    mixins: [MxDndGolSub],
     components: {
         'comp-vw-goal': ViewGoal,
         draggable: VueDraggableNext,
@@ -114,49 +166,50 @@ const ViewProduct = {
     watch: {
         ListGoal(gols, oGols) {
             if (gols.length == oGols.length) {
-                if (gols.length < 2) return;
-                const nIds = gols.map(x => x.Id)
-                const oIds = oGols.map(x => x.Id)
-                if (isDragDrop(oIds, nIds)) {
-                    const mSorts = oGols.map(x => x.ASort)
-                    for (let ii = 0; ii < gols.length; ii++) {
-                        gols[ii].ASort = mSorts[ii]
-                    }
-                }
+                this.sortSameParent(gols, oGols)
+                // if (gols.length < 2) return;
+                // const nIds = gols.map(x => x.Id); const oIds = oGols.map(x => x.Id)
+                // if (isDragDrop(oIds, nIds)) {
+                //     const mSorts = oGols.map(x => x.ASort)
+                //     for (let ii = 0; ii < gols.length; ii++) {
+                //         gols[ii].ASort = mSorts[ii]
+                //     }
+                // }
             } else if (oGols.length < gols.length) {
                 const smpId = this.smpdid
-                if (1 == gols.length && smpId != gols[0].SubmPrdId) {
-                    gols[0].SubmPrdId = smpId
-                    return
-                }
+                this.sortDiffParent(gols, 9, ['SubmPrdId', smpId])
+                // if (1 == gols.length && smpId != gols[0].SubmPrdId) {
+                //     gols[0].SubmPrdId = smpId
+                //     return
+                // }
                 // 2 <= gols.length
-                const ii = getIiDnd(smpId)
-                if (-1 < ii) {
-                    const fulGols = this.$store.getters.sortedItemsBy([9, [this.smpdid]])
-                    const srcGol = gols[ii]
-                    srcGol.SubmPrdId = smpId
-                    if (0 == ii) {
-                        let ii1 = fulGols.findIndex(s => s.Id == gols[ii + 1].Id)
-                        fulGols.splice(ii1, 0, srcGol)       // insert
-                        let index = 1
-                        for (let ss = 0; ss < fulGols.length; ss++) {
-                            fulGols[ss].ASort = index++
-                        }
-                    } else {            // 1 <= ii
-                        let ii1 = fulGols.findIndex(s => s.Id == gols[ii - 1].Id)
-                        fulGols.splice(ii1 + 1, 0, srcGol)       // insert
-                        let index = 1
-                        for (let ss = 0; ss < fulGols.length; ss++) {
-                            fulGols[ss].ASort = index++
-                        }
-                    }
-                }
-                function getIiDnd(pId) {
-                    for (let ii = 0; ii < gols.length; ii++) {
-                        if (pId != gols[ii].SubmPrdId) return ii
-                    }
-                    return -1
-                }
+                // const ii = getIiDnd(smpId)
+                // if (-1 < ii) {
+                //     const fulGols = this.$store.getters.sortedItemsBy([9, [smpId]])
+                //     const srcGol = gols[ii]
+                //     srcGol.SubmPrdId = smpId
+                //     if (0 == ii) {
+                //         let ii1 = fulGols.findIndex(s => s.Id == gols[ii + 1].Id)
+                //         fulGols.splice(ii1, 0, srcGol)       // insert
+                //         let index = 1
+                //         for (let ss = 0; ss < fulGols.length; ss++) {
+                //             fulGols[ss].ASort = index++
+                //         }
+                //     } else {            // 1 <= ii
+                //         let ii1 = fulGols.findIndex(s => s.Id == gols[ii - 1].Id)
+                //         fulGols.splice(ii1 + 1, 0, srcGol)       // insert
+                //         let index = 1
+                //         for (let ss = 0; ss < fulGols.length; ss++) {
+                //             fulGols[ss].ASort = index++
+                //         }
+                //     }
+                // }
+                // function getIiDnd(pId) {
+                //     for (let ii = 0; ii < gols.length; ii++) {
+                //         if (pId != gols[ii].SubmPrdId) return ii
+                //     }
+                //     return -1
+                // }
             }
         },
     },
