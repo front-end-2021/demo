@@ -24,6 +24,21 @@ const ViewGoal = {
             }
         },
     },
+    watch: {
+        ListSub(subs, oSubs) {
+            console.group('watch list sub ', subs.map(x => {
+                return {
+                    Id: x.Id, ASort: x.ASort, GoalId: x.GoalId
+                }
+            }))
+            console.log('old subs ', oSubs.map(x => {
+                return {
+                    Id: x.Id, ASort: x.ASort, GoalId: x.GoalId
+                }
+            }))
+            console.groupEnd()
+        },
+    },
     methods: {
         onEndDndSub(evt) {
 
