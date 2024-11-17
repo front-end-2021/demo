@@ -280,10 +280,6 @@ export default {
                     }
                 }
             }
-            console.group('on end dnd ', evt)
-            console.log('source ', srcSmPrId)
-            console.log('destination ', desSmPrId, desGoalIds)
-            console.groupEnd()
         },
     },
     created() {
