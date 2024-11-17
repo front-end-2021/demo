@@ -1,14 +1,26 @@
 <template id="tmp-comp-vw-goal">
     <div class="p-2 bg-006bb9 mt-2 border-r4px d-flex">
-        <div class="w344px dnbHandle">{{item.Name}} ({{item.Id}})</div>
+        <div class="w344px dnbHandle">{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
         <draggable v-model="ListSub" v-bind="DndSubOptions" 
-            class="list-sub p-2 border-d4px"
-            :goal-id="item.Id"
-            @end="onEndDndSub">
+            class="list-sub p-2 border-d4px" >
             <transition-group>
                 <div v-for="sub in ListSub" 
                     class="my-2 p-2 bg-e8e9e9 border-r4px"
                     :key="sub.Id">{{sub.Name}} ({{sub.Id}}.{{sub.ASort}})</div>
+            </transition-group>
+        </draggable>
+    </div>
+</template>
+<template id="tmp-comp-vw-prd">
+    <div class="p-2 bg-008ff8">
+        <div class="p-2 bg-e8e9e9 border-u4px">{{item.Name}} ({{smpdid}})</div>
+        <draggable v-model="ListGoal" v-bind="DndGoalOptions" 
+            class="list-goal p-2 bg-e8e9e9 border-d4px"
+            handle=".dnbHandle">
+            <transition-group>
+                <comp-vw-goal v-for="goal in ListGoal" 
+                    :item="goal"
+                    :key="goal.Id"></comp-vw-goal>
             </transition-group>
         </draggable>
     </div>
@@ -27,40 +39,18 @@
             <div class="p-2 border-r6px bg-008ff8">{{market.Entry.Name}}</div>
             <div v-for="subMk in market.SubMarkets" class="p-2">
                 <div class="p-2 bg-008ff8">{{subMk.Entry.Name}}</div>
-                <div v-for="product in subMk.Products" class="p-2 bg-008ff8">
-                    <div class="p-2 bg-e8e9e9 border-u4px">{{product.Entry.Name}} ({{product.SubmarketProductId}})</div>
-                    <draggable v-model="product.Goals" v-bind="DndOptions" 
-                        class="list-goal p-2 bg-e8e9e9 border-d4px"
-                        :smprid="product.SubmarketProductId"
-                        handle=".dnbHandle"
-                        @start="onStartDndGoal"
-                        @end="onEndDndGoal">
-                        <transition-group>
-                            <comp-vw-goal v-for="goal in product.Goals" 
-                                :item="goal"
-                                :key="goal.Id"></comp-vw-goal>
-                        </transition-group>
-                    </draggable>
-                </div>
+                <comp-vw-prd v-for="product in subMk.Products"
+                    :item="product.Entry"
+                    :smpdid="product.SubmarketProductId"></comp-vw-prd>
             </div>
         </div>
         <div v-for="prdG in ProductGroups" class="bg-008ff8 border-r6px mb-3">
             <div class="p-2 border-r6px bg-008ff8">{{prdG.Entry.Name}} (xy)</div>
             <div v-for="product in prdG.ListProduct" class="p-2">
                 <div class="p-2 bg-008ff8">{{product.Entry.Name}}</div>
-                <div v-for="subMk in product.SubMarkets" class="p-2 bg-008ff8">
-                    <div class="p-2 bg-e8e9e9 border-u4px">{{subMk.Entry.Name}} ({{subMk.SubmarketProductId}})</div>
-                    <draggable v-model="subMk.Goals" v-bind="DndOptions" 
-                        class="list-goal p-2 bg-e8e9e9 border-d4px"
-                        :smprid="subMk.SubmarketProductId"
-                        @end="onEndDndGoal">
-                        <transition-group>
-                            <comp-vw-goal v-for="goal in subMk.Goals" 
-                                :item="goal"
-                                :key="goal.Id"></comp-vw-goal>
-                        </transition-group>
-                    </draggable>
-                </div>
+                <comp-vw-prd v-for="subMk in product.SubMarkets"
+                    :item="subMk.Entry"
+                    :smpdid="subMk.SubmarketProductId"></comp-vw-prd>
             </div>
         </div>
     </section>
