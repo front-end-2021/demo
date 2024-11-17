@@ -8,7 +8,7 @@
             <transition-group>
                 <div v-for="sub in ListSub" 
                     class="my-2 p-2 bg-e8e9e9 border-r4px"
-                    :key="sub.Id">{{sub.Name}} ({{sub.Id}})</div>
+                    :key="sub.Id">{{sub.Name}} ({{sub.Id}}.{{sub.ASort}})</div>
             </transition-group>
         </draggable>
     </div>

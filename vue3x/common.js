@@ -273,11 +273,12 @@ export const setLocal = (type, oData) => {
 export const isDragDrop = (oIds, nIds) => {
     if (oIds.length != nIds.length) return false;
     if (nIds.length < 2) return false;
+    if (oIds.join(',') == nIds.join(',')) return false;
     const cOids = [...oIds]
     const cNids = [...nIds]
     cOids.sort((a, b) => a - b)
     cNids.sort((a, b) => a - b)
-    if (cOids.join('') != cNids.join('')) return false;
+    if (cOids.join(',') != cNids.join(',')) return false;
     return true;
 }
 function storageAvailable(type) {

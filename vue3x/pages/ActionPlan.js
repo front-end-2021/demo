@@ -1,5 +1,5 @@
 import { VueDraggableNext } from 'vue-draggable-next'
-import { groupBy } from '../common.js'
+import { groupBy, isDragDrop } from '../common.js'
 const ViewGoal = {
     template: `#tmp-comp-vw-goal`,
     name: "ViewWrapGoal",
@@ -37,6 +37,52 @@ const ViewGoal = {
                 }
             }))
             console.groupEnd()
+            if (subs.length == oSubs.length) {
+                if (subs.length < 2) return;
+                const nIds = subs.map(x => x.Id)
+                const oIds = oSubs.map(x => x.Id)
+                if (isDragDrop(oIds, nIds)) {
+                    const mSorts = oSubs.map(x => x.ASort)
+                    console.log('list a-sort ', mSorts)
+                    for (let ii = 0; ii < subs.length; ii++) {
+                        subs[ii].ASort = mSorts[ii]
+                    }
+                }
+            } else if (oSubs.length < subs.length) {
+                const goalId = this.item.Id
+                if (1 == subs.length && goalId != subs[0].GoalId) {
+                    subs[0].GoalId = goalId
+                    return
+                }
+                // 2 <= subs.length
+                const ii = getIiDnd(goalId)
+                if (-1 < ii) {
+                    const fulSubs = this.$store.getters.sortedItemsBy([10, [this.item.Id]])
+                    const srcSub = subs[ii]
+                    srcSub.GoalId = goalId
+                    if (0 == ii) {
+                        let ii1 = fulSubs.findIndex(s => s.Id == subs[ii + 1].Id)
+                        fulSubs.splice(ii1, 0, srcSub)       // insert
+                        let index = 1
+                        for (let ss = 0; ss < fulSubs.length; ss++) {
+                            fulSubs[ss].ASort = index++
+                        }
+                    } else {            // 1 <= ii
+                        let ii1 = fulSubs.findIndex(s => s.Id == subs[ii - 1].Id)
+                        fulSubs.splice(ii1 + 1, 0, srcSub)       // insert
+                        let index = 1
+                        for (let ss = 0; ss < fulSubs.length; ss++) {
+                            fulSubs[ss].ASort = index++
+                        }
+                    }
+                }
+                function getIiDnd(gId) {
+                    for (let ii = 0; ii < subs.length; ii++) {
+                        if (gId != subs[ii].GoalId) return ii
+                    }
+                    return -1
+                }
+            }
         },
     },
     methods: {

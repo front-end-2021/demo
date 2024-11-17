@@ -93,6 +93,7 @@ export default createStore({
                 // case 8: // Product
                 case 9: buildItems(state.ListGoal)
                     break;
+                // case 10: buildItems(state.ListSub); break;
                 default: return items;
             }
             const mapIndex = new Map()
