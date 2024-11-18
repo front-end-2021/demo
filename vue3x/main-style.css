@@ -102,9 +102,10 @@ button { cursor: pointer; }
 .px20px { padding-left: 20px; padding-right: 20px; }
 .text-white { color: white; }
 .font24 { font-size: 24px; }
+.font12 { font-size: 12px; }
 .text-center { text-align: center; }
 .w81px { width: 81px; }
-.w344px { width: 344px; }
+.w344px { width: calc(344px - 30px); }
 .dnb-nav {
     background-color: #006bb9; height: 30px;
     background-color: #b1b1b1; /*dnb_dev */

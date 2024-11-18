@@ -1,5 +1,24 @@
 import { VueDraggableNext } from 'vue-draggable-next'
 import { groupBy, isDragDrop } from '../common.js'
+const MxItemDate = {
+    computed: {
+        ViewStartEnd() { return this.getHtmlStartEnd(this.item) },
+    },
+    methods: {
+        getHtmlStartEnd(item) {
+            let arrS = item.Start.split(' ')
+            let arrE = item.End.split(' ')
+            let txtYs = arrS[3]
+            let txtYe = arrE[3]
+            if (txtYs == txtYe) {
+                txtYe = `${arrE[0]} ${arrE[1]} ${arrE[2]} ${txtYe}`
+                txtYs = `${arrS[0]} ${arrS[1]} ${arrS[2]}`
+                return `${txtYs} &mdash; ${txtYe}`
+            }
+            return `${item.Start} &mdash; ${item.End}`
+        },
+    },
+}
 const MxDndGolSub = {
     methods: {
         sortSameParent(gols, oGols) {
@@ -53,7 +72,7 @@ const ViewGoal = {
     template: `#tmp-comp-vw-goal`,
     name: "ViewWrapGoal",
     display: "ViewWrapGoal",
-    mixins: [MxDndGolSub],
+    mixins: [MxDndGolSub, MxItemDate],
     components: {
         draggable: VueDraggableNext,
     },
@@ -81,11 +100,11 @@ const ViewGoal = {
             // console.groupEnd()
             if (subs.length == oSubs.length) {
                 this.sortSameParent(subs, oSubs)
-                
+
             } else if (oSubs.length < subs.length) {
                 const goalId = this.item.Id
                 this.sortDiffParent(subs, 10, ['GoalId', goalId])
-                
+
             }
         },
     },
@@ -120,11 +139,11 @@ const ViewProduct = {
         ListGoal(gols, oGols) {
             if (gols.length == oGols.length) {
                 this.sortSameParent(gols, oGols)
-                
+
             } else if (oGols.length < gols.length) {
                 const smpId = this.smpdid
                 this.sortDiffParent(gols, 9, ['SubmPrdId', smpId])
-                
+
             }
         },
     },

@@ -1,21 +1,34 @@
 <template id="tmp-comp-vw-goal">
-    <div class="p-2 bg-006bb9 mt-2 border-r4px d-flex">
-        <div class="w344px dnbHandle">{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+    <div class="p-2 bg-e8e9e9 mt-2 border-r4px d-flex">
+        <div>
+            <div class="w344px dnbHandle">{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+            <div class="font12">
+                <i class="bi bi-clock me-1"></i>
+                <span v-html="ViewStartEnd"></span>
+            </div>
+        </div>
         <draggable v-model="ListSub" v-bind="DndSubOptions" 
             class="list-sub p-2 border-d4px" >
             <transition-group>
                 <div v-for="sub in ListSub" 
-                    class="my-2 p-2 bg-e8e9e9 border-r4px"
-                    :key="sub.Id">{{sub.Name}} ({{sub.Id}}.{{sub.ASort}})</div>
+                    class="my-2 p-2 bg-008ff8 border-r4px"
+                    :key="sub.Id">
+                    <div>{{sub.Name}} ({{sub.Id}}.{{sub.ASort}})</div>
+                    <div class="font12">
+                        <i class="bi bi-clock me-1"></i>
+                        <span v-html="getHtmlStartEnd(item)"></span>
+                    </div>
+                </div>
             </transition-group>
         </draggable>
     </div>
 </template>
 <template id="tmp-comp-vw-prd">
-    <div class="p-2 bg-008ff8">
-        <div class="p-2 bg-e8e9e9 border-u4px">{{item.Name}} ({{smpdid}})</div>
+    <div class="p-2">
+        <div class="p-2 bg-006bb9 border-u4px">{{item.Name}} ({{smpdid}})</div>
         <draggable v-model="ListGoal" v-bind="DndGoalOptions" 
-            class="list-goal p-2 bg-e8e9e9 border-d4px"
+            style="border: 1px solid #d6d6d6;"
+            class="list-goal p-2 border-d4px"
             handle=".dnbHandle">
             <transition-group>
                 <comp-vw-goal v-for="goal in ListGoal" 
