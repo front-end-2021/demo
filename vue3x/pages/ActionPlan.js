@@ -100,7 +100,7 @@ const ViewGoal = {
                 // }
             } else if (oSubs.length < subs.length) {
                 const goalId = this.item.Id
-                this.sortDiffParent(gols, 10, ['GoalId', goalId])
+                this.sortDiffParent(subs, 10, ['GoalId', goalId])
                 // if (1 == subs.length && goalId != subs[0].GoalId) {
                 //     subs[0].GoalId = goalId
                 //     return
