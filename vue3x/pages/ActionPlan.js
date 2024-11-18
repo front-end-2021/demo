@@ -76,63 +76,16 @@ const ViewGoal = {
     },
     watch: {
         ListSub(subs, oSubs) {
-            // console.group('watch list sub ', subs.map(x => {
-            //     return {
-            //         Id: x.Id, ASort: x.ASort, GoalId: x.GoalId
-            //     }
-            // }))
-            // console.log('old subs ', oSubs.map(x => {
-            //     return {
-            //         Id: x.Id, ASort: x.ASort, GoalId: x.GoalId
-            //     }
-            // }))
+            // console.group('watch list sub ', subs.map(x => { return { Id: x.Id, ASort: x.ASort, GoalId: x.GoalId } }))
+            // console.log('old subs ', oSubs.map(x => { return { Id: x.Id, ASort: x.ASort, GoalId: x.GoalId } }))
             // console.groupEnd()
             if (subs.length == oSubs.length) {
                 this.sortSameParent(subs, oSubs)
-                // if (subs.length < 2) return;
-                // const nIds = subs.map(x => x.Id); const oIds = oSubs.map(x => x.Id)
-                // if (isDragDrop(oIds, nIds)) {
-                //     const mSorts = oSubs.map(x => x.ASort)
-                //     console.log('list a-sort ', mSorts)
-                //     for (let ii = 0; ii < subs.length; ii++) {
-                //         subs[ii].ASort = mSorts[ii]
-                //     }
-                // }
+                
             } else if (oSubs.length < subs.length) {
                 const goalId = this.item.Id
                 this.sortDiffParent(subs, 10, ['GoalId', goalId])
-                // if (1 == subs.length && goalId != subs[0].GoalId) {
-                //     subs[0].GoalId = goalId
-                //     return
-                // }
-                // // 2 <= subs.length
-                // const ii = getIiDnd(goalId)
-                // if (-1 < ii) {
-                //     const fulSubs = this.$store.getters.sortedItemsBy([10, [goalId]])
-                //     const srcSub = subs[ii]
-                //     srcSub.GoalId = goalId
-                //     if (0 == ii) {
-                //         let ii1 = fulSubs.findIndex(s => s.Id == subs[ii + 1].Id)
-                //         fulSubs.splice(ii1, 0, srcSub)       // insert
-                //         let index = 1
-                //         for (let ss = 0; ss < fulSubs.length; ss++) {
-                //             fulSubs[ss].ASort = index++
-                //         }
-                //     } else {            // 1 <= ii
-                //         let ii1 = fulSubs.findIndex(s => s.Id == subs[ii - 1].Id)
-                //         fulSubs.splice(ii1 + 1, 0, srcSub)       // insert
-                //         let index = 1
-                //         for (let ss = 0; ss < fulSubs.length; ss++) {
-                //             fulSubs[ss].ASort = index++
-                //         }
-                //     }
-                // }
-                // function getIiDnd(gId) {
-                //     for (let ii = 0; ii < subs.length; ii++) {
-                //         if (gId != subs[ii].GoalId) return ii
-                //     }
-                //     return -1
-                // }
+                
             }
         },
     },
@@ -167,49 +120,11 @@ const ViewProduct = {
         ListGoal(gols, oGols) {
             if (gols.length == oGols.length) {
                 this.sortSameParent(gols, oGols)
-                // if (gols.length < 2) return;
-                // const nIds = gols.map(x => x.Id); const oIds = oGols.map(x => x.Id)
-                // if (isDragDrop(oIds, nIds)) {
-                //     const mSorts = oGols.map(x => x.ASort)
-                //     for (let ii = 0; ii < gols.length; ii++) {
-                //         gols[ii].ASort = mSorts[ii]
-                //     }
-                // }
+                
             } else if (oGols.length < gols.length) {
                 const smpId = this.smpdid
                 this.sortDiffParent(gols, 9, ['SubmPrdId', smpId])
-                // if (1 == gols.length && smpId != gols[0].SubmPrdId) {
-                //     gols[0].SubmPrdId = smpId
-                //     return
-                // }
-                // 2 <= gols.length
-                // const ii = getIiDnd(smpId)
-                // if (-1 < ii) {
-                //     const fulGols = this.$store.getters.sortedItemsBy([9, [smpId]])
-                //     const srcGol = gols[ii]
-                //     srcGol.SubmPrdId = smpId
-                //     if (0 == ii) {
-                //         let ii1 = fulGols.findIndex(s => s.Id == gols[ii + 1].Id)
-                //         fulGols.splice(ii1, 0, srcGol)       // insert
-                //         let index = 1
-                //         for (let ss = 0; ss < fulGols.length; ss++) {
-                //             fulGols[ss].ASort = index++
-                //         }
-                //     } else {            // 1 <= ii
-                //         let ii1 = fulGols.findIndex(s => s.Id == gols[ii - 1].Id)
-                //         fulGols.splice(ii1 + 1, 0, srcGol)       // insert
-                //         let index = 1
-                //         for (let ss = 0; ss < fulGols.length; ss++) {
-                //             fulGols[ss].ASort = index++
-                //         }
-                //     }
-                // }
-                // function getIiDnd(pId) {
-                //     for (let ii = 0; ii < gols.length; ii++) {
-                //         if (pId != gols[ii].SubmPrdId) return ii
-                //     }
-                //     return -1
-                // }
+                
             }
         },
     },
