@@ -46,7 +46,7 @@ export default createStore({
         Products: [],
         ListGoal: [],
         ListSub: [],
-        ListAction: [],
+        ListTask: [],
 
         Currencies: ['CHF', 'USD', 'VND'],
         WkMapDes: new WeakMap(),
@@ -294,6 +294,12 @@ export default createStore({
                     break;
                 case 10:      // Subs by GoalIds
                     lst = buildListBy.call(state.ListSub, ptIds, (itm) => ptIds.includes(itm.GoalId))
+                    if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
+                        lst = getListBy.call(lst, ids)
+                    }
+                    break;
+                case 11:      // Tasks by SubIds
+                    lst = buildListBy.call(state.ListTask, ptIds, (itm) => ptIds.includes(itm.SubId))
                     if (Array.isArray(ids) && ids.length && !ids.includes(0)) {
                         lst = getListBy.call(lst, ids)
                     }

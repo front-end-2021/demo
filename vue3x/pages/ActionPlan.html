@@ -1,34 +1,57 @@
-<template id="tmp-comp-vw-goal">
-    <div class="p-2 bg-e8e9e9 mt-2 border-r4px d-flex">
-        <div>
-            <div class="w344px dnbHandle">{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
-            <div class="font12">
-                <i class="bi bi-clock me-1"></i>
-                <span v-html="ViewStartEnd"></span>
+<template id="tmp-comp-vw-sub">
+    <div class="d-flex mb-2">
+        <div class="p-2 bg-008ff8 border-l6px">
+            <div class="w344px" style="position: sticky; top: 0;">
+                <div class="dnbHandle">{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+                <div class="font12">
+                    <i class="bi bi-clock me-1"></i>
+                    <span v-html="getHtmlStartEnd(item)"></span>
+                </div>
             </div>
         </div>
-        <draggable v-model="ListSub" v-bind="DndSubOptions" 
-            class="list-sub p-2 border-d4px" >
+        <draggable v-model="ListTask" v-bind="DndTaskOptions" 
+            class="list-task p-2 border-r6px" >
             <transition-group>
-                <div v-for="sub in ListSub" 
-                    class="my-2 p-2 bg-008ff8 border-r4px"
-                    :key="sub.Id">
-                    <div>{{sub.Name}} ({{sub.Id}}.{{sub.ASort}})</div>
+                <div v-for="task in ListTask" 
+                    class="m-2 p-2 bg-008ff8 border-4px w344px d-inline-block"
+                    :key="task.Id">
+                    <div>{{task.Name}} ({{task.Id}}.{{task.ASort}})</div>
                     <div class="font12">
                         <i class="bi bi-clock me-1"></i>
-                        <span v-html="getHtmlStartEnd(item)"></span>
+                        <span v-html="getHtmlStartEnd(task)"></span>
                     </div>
                 </div>
             </transition-group>
         </draggable>
     </div>
 </template>
+<template id="tmp-comp-vw-goal">
+    <div class="p-2 bg-e8e9e9 mt-2 border-4px d-flex">
+        <div class="wrap-info">
+            <div class="w344px" style="position: sticky; top: 0;">
+                <div class="dnbHandle">{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+                <div class="font12">
+                    <i class="bi bi-clock me-1"></i>
+                    <span v-html="ViewStartEnd"></span>
+                </div>
+            </div>
+        </div>
+        <draggable v-model="ListSub" v-bind="DndSubOptions" 
+            class="list-sub p-2 border-d6px" >
+            <transition-group>
+                <comp-vw-sub v-for="sub in ListSub"
+                    :item="sub"
+                    :key="sub.Id"></comp-vw-sub>
+            </transition-group>
+        </draggable>
+    </div>
+</template>
 <template id="tmp-comp-vw-prd">
     <div class="p-2">
-        <div class="p-2 bg-006bb9 border-u4px">{{item.Name}} ({{smpdid}})</div>
+        <div class="p-2 bg-006bb9 border-u6px">{{item.Name}} ({{smpdid}})</div>
         <draggable v-model="ListGoal" v-bind="DndGoalOptions" 
             style="border: 1px solid #d6d6d6;"
-            class="list-goal p-2 border-d4px"
+            class="list-goal p-2 border-d6px"
             handle=".dnbHandle">
             <transition-group>
                 <comp-vw-goal v-for="goal in ListGoal" 
@@ -48,8 +71,8 @@
     </section>
     <h1>4ct10n Pl_n</h1>
     <section class="dnbViewAcPlan px20px">
-        <div v-for="market in ListMarket" class="bg-008ff8 border-r6px mb-3">
-            <div class="p-2 border-r6px bg-008ff8">{{market.Entry.Name}}</div>
+        <div v-for="market in ListMarket" class="bg-008ff8 border-6px mb-3">
+            <div class="p-2 border-6px bg-008ff8">{{market.Entry.Name}}</div>
             <div v-for="subMk in market.SubMarkets" class="p-2">
                 <div class="p-2 bg-008ff8">{{subMk.Entry.Name}}</div>
                 <comp-vw-prd v-for="product in subMk.Products"
@@ -57,8 +80,8 @@
                     :smpdid="product.SubmarketProductId"></comp-vw-prd>
             </div>
         </div>
-        <div v-for="prdG in ProductGroups" class="bg-008ff8 border-r6px mb-3">
-            <div class="p-2 border-r6px bg-008ff8">{{prdG.Entry.Name}} (xy)</div>
+        <div v-for="prdG in ProductGroups" class="bg-008ff8 border-6px mb-3">
+            <div class="p-2 border-6px bg-008ff8">{{prdG.Entry.Name}} (xy)</div>
             <div v-for="product in prdG.ListProduct" class="p-2">
                 <div class="p-2 bg-008ff8">{{product.Entry.Name}}</div>
                 <comp-vw-prd v-for="subMk in product.SubMarkets"

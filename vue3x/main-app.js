@@ -293,6 +293,7 @@ Promise.all([
                 getData(7),       // Product group
                 getData(8),       // Products
                 getData(10),       // Subs
+                getData(11),       // Tasks
             ]).then((values) => {
                 const [projects, langs, lands, regions, markets, subMarkets] = values
 
@@ -306,6 +307,7 @@ Promise.all([
                 this.$store.state.ProductGroups = values[7]
                 this.$store.state.Products = values[8]
                 this.$store.state.ListSub = values[9]
+                this.$store.state.ListTask = values[10]
 
                 this.ActiveLandIds = lands.map(x => x.Id)
 

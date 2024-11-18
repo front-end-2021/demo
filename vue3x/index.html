@@ -38,7 +38,7 @@
           </template>
         </drop-select>
       </section>
-      <nav class="dnb-nav d-inline-flex align-items-center px22px text-white border-r4px">
+      <nav class="dnb-nav d-inline-flex align-items-center px22px text-white border-4px">
         <h4 v-for="(page, ipg) in $store.getters.Pages" class="my-0 mx-3 cpointer"
           :class="[ ipg === IndexPage ? 'working' : '']" 
           @click.stop="e => selectPage(ipg)">{{page}}</h4>

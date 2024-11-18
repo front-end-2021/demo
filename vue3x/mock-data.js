@@ -247,7 +247,7 @@ function getSubs() {
             Start: 'Mon Aug 12 2024', End: 'Sat Aug 31 2024', ASort: 4,
         },
     ]
-    // return lst;
+     return lst;
     let arr = DemoGoals.map(x => x.Id)
     const maxId = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     arr = lst.map(x => x.ASort)
@@ -258,6 +258,42 @@ function getSubs() {
         prId = getRandomInt(1, maxId + 1)
         lst.push({
             Id: subId, Name: `${genRandName(nameList)}(${name})`, GoalId: prId,
+            Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`, ASort: ++maxIndex,
+        })
+    }
+    return lst;
+}
+const DemoTasks = getTaks()
+function getTaks() {
+    const lst = [
+        {
+            Id: 2, Name: 'Bán 30 cuốn Conan Section 1 trong tuan 1', SubId: 2, ASort: 1,
+            Start: 'Tue Oct 01 2024', End: new Date('Thu Oct 31 2024').toDateString(),
+        },
+        {
+            Id: 1, Name: 'Bán 40 cuốn Conan Section 1 trong tuan 2', SubId: 2,
+            Start: 'Fri Nov 01 2024', End: 'Sat Nov 30 2024', ASort: 2,
+        },
+        {
+            Id: 3, Name: 'Bán 30 cuốn Conan Section 1 trong tuan 3', SubId: 2,
+            Start: 'Thu Aug 01 2024', End: 'Sun Aug 11 2024', ASort: 3,
+        },
+        {
+            Id: 4, Name: 'Bán 50 cuốn Conan Section 1 trong tuan 4', SubId: 2,
+            Start: 'Mon Aug 12 2024', End: 'Sat Aug 31 2024', ASort: 4,
+        },
+    ]
+    // return lst;
+    let arr = DemoSubs.map(x => x.Id)
+    const maxId = arr.reduce((a, b) => Math.max(a, b), -Infinity);
+    arr = lst.map(x => x.ASort)
+    let maxIndex = arr.reduce((a, b) => Math.max(a, b), -Infinity);
+    let name = 'Test perfomance task'
+    let taskId = maxId + 1
+    for (let prId; taskId < maxId + 50; taskId++) {
+        prId = getRandomInt(1, maxId + 1)
+        lst.push({
+            Id: taskId, Name: `${genRandName(nameList)}(${name})`, SubId: prId,
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`, ASort: ++maxIndex,
         })
     }
@@ -296,7 +332,7 @@ export {
     DemoLands, DemoRegions,
     DemoPrdGroups, DemoProducts,
     DemoMarkets, DemoSubmarkets,
-    DemoGoals, DemoSubs,
+    DemoGoals, DemoSubs, DemoTasks,
     getMessCompare,
     overrideItem, getCopyItem, deleteDes
 }

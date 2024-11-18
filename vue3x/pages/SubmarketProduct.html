@@ -76,24 +76,24 @@
                             :key="eMrk.Entry.Id + '-' + eSubMrk.Id + '-' + prd.Id"
                             :submarket="eSubMrk"
                             :product="prd"></comp-cell-smprd>
-                        <div v-else class="cell-submk-prd-empty border-r4px"
+                        <div v-else class="cell-submk-prd-empty border-4px"
                             @mouseout="e => onMseOut()" ></div>
                     </div>
                 </div>
             </div>
         </article>
         <div v-if="$root.Popup_UI != null" 
-            class="dnb-menu dmenu-smprd border-r4px p-2"
+            class="dnb-menu dmenu-smprd border-4px p-2"
             :style="[$root.Popup_UI.Style]"
             style="width: 150px;background-color: #868686;color:white;">
-            <p class="p-1 my-0 border-r4px cpointer">1. Edit </p>
-            <p class="p-1 my-0 border-r4px cpointer"
+            <p class="p-1 my-0 border-4px cpointer">1. Edit </p>
+            <p class="p-1 my-0 border-4px cpointer"
                 @click.stop="e => $root.onGotoTab(2)">2. G0t0 @ct1on Pl4n</p>
         </div>
     </section>
 </template>
 <template id="tmp-comp-cell-smprd">
-    <div class="cell-submk-prd border-r4px"
+    <div class="cell-submk-prd border-4px"
         style="width: 100%;height: 100%;">
         <div class="cell-smprd-content d-inline-grid">
             <div style="height: 24px;align-content: center;cursor: default;"

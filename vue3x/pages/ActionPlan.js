@@ -68,12 +68,50 @@ const MxDndGolSub = {
         },
     },
 }
+const ViewSub = {
+    template: `#tmp-comp-vw-sub`,
+    name: "ViewWrapSub",
+    display: "ViewWrapSub",
+    mixins: [MxDndGolSub, MxItemDate],
+    components: {
+        draggable: VueDraggableNext,
+    },
+    props: ['item'],
+    data() {
+        return {
+            ListTask: this.$store.getters.sortedItemsBy([11, [this.item.Id]])
+        }
+    },
+    computed: {
+        DndTaskOptions() {
+            return {
+                animation: 200,
+                disabled: false,
+                ghostClass: "ghost",
+                group: "task",
+            }
+        },
+    },
+    watch: {
+        ListTask(tasks, oTasks) {
+            if (tasks.length == oTasks.length) {
+                this.sortSameParent(tasks, oTasks)
+
+            } else if (oTasks.length < tasks.length) {
+                const subId = this.item.Id
+                this.sortDiffParent(tasks, 11, ['SubId', subId])
+
+            }
+        },
+    },
+}
 const ViewGoal = {
     template: `#tmp-comp-vw-goal`,
     name: "ViewWrapGoal",
     display: "ViewWrapGoal",
     mixins: [MxDndGolSub, MxItemDate],
     components: {
+        'comp-vw-sub': ViewSub,
         draggable: VueDraggableNext,
     },
     props: ['item'],
