@@ -247,14 +247,13 @@ function getSubs() {
             Start: 'Mon Aug 12 2024', End: 'Sat Aug 31 2024', ASort: 4,
         },
     ]
-     return lst;
     let arr = DemoGoals.map(x => x.Id)
     const maxId = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     arr = lst.map(x => x.ASort)
     let maxIndex = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     let name = 'Test perfomance sub'
     let subId = maxId + 1
-    for (let prId; subId < maxId + 50; subId++) {
+    for (let prId; subId < maxId + 10; subId++) {
         prId = getRandomInt(1, maxId + 1)
         lst.push({
             Id: subId, Name: `${genRandName(nameList)}(${name})`, GoalId: prId,
@@ -293,7 +292,7 @@ function getTaks() {
     for (let prId; taskId < maxId + 50; taskId++) {
         prId = getRandomInt(1, maxId + 1)
         lst.push({
-            Id: taskId, Name: `${genRandName(nameList)}(${name})`, SubId: prId,
+            Id: taskId, Name: `${genRandName(nameList)} (${name})`, SubId: prId,
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`, ASort: ++maxIndex,
         })
     }

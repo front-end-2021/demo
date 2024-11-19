@@ -1,8 +1,8 @@
 <template id="tmp-comp-vw-sub">
     <div class="d-flex mb-2">
         <div class="p-2 bg-008ff8 border-l6px">
-            <div class="w344px" style="position: sticky; top: 0;">
-                <div class="dnbHandle">{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+            <div class="dnbHandle w344px cdefault" style="position: sticky; top: 0;">
+                <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
                 <div class="font12">
                     <i class="bi bi-clock me-1"></i>
                     <span v-html="getHtmlStartEnd(item)"></span>
@@ -10,10 +10,11 @@
             </div>
         </div>
         <draggable v-model="ListTask" v-bind="DndTaskOptions" 
+            handle=".dnbHandle"
             class="list-task p-2 border-r6px" >
             <transition-group>
                 <div v-for="task in ListTask" 
-                    class="m-2 p-2 bg-008ff8 border-4px w344px d-inline-block"
+                    class="dnbHandle m-2 p-2 bg-008ff8 border-4px w344px d-inline-block cdefault"
                     :key="task.Id">
                     <div>{{task.Name}} ({{task.Id}}.{{task.ASort}})</div>
                     <div class="font12">
@@ -28,8 +29,8 @@
 <template id="tmp-comp-vw-goal">
     <div class="p-2 bg-e8e9e9 mt-2 border-4px d-flex">
         <div class="wrap-info">
-            <div class="w344px" style="position: sticky; top: 0;">
-                <div class="dnbHandle">{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+            <div class="dnbHandle w344px cdefault" style="position: sticky; top: 0;">
+                <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
                 <div class="font12">
                     <i class="bi bi-clock me-1"></i>
                     <span v-html="ViewStartEnd"></span>
@@ -37,7 +38,8 @@
             </div>
         </div>
         <draggable v-model="ListSub" v-bind="DndSubOptions" 
-            class="list-sub p-2 border-d6px" >
+            class="list-sub p-2 border-d6px" 
+            handle=".dnbHandle">
             <transition-group>
                 <comp-vw-sub v-for="sub in ListSub"
                     :item="sub"
