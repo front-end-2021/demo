@@ -73,20 +73,24 @@
     </section>
     <h1>4ct10n Pl_n</h1>
     <section class="dnbViewAcPlan px20px">
-        <div v-for="market in ListMarket" class="bg-008ff8 border-6px mb-3">
+        <div v-for="market in ListMarket" class="bg-008ff8 border-6px mb-3"
+            :key="market.Entry.Id">
             <div class="p-2 border-6px bg-008ff8">{{market.Entry.Name}}</div>
             <div v-for="subMk in market.SubMarkets" class="p-2">
                 <div class="p-2 bg-008ff8">{{subMk.Entry.Name}}</div>
                 <comp-vw-prd v-for="product in subMk.Products"
+                    :key="product.SubmarketProductId + '_' + product.Entry.Id"
                     :item="product.Entry"
                     :smpdid="product.SubmarketProductId"></comp-vw-prd>
             </div>
         </div>
-        <div v-for="prdG in ProductGroups" class="bg-008ff8 border-6px mb-3">
+        <div v-for="prdG in ProductGroups" class="bg-008ff8 border-6px mb-3"
+            :key="prdG.Entry.Id">
             <div class="p-2 border-6px bg-008ff8">{{prdG.Entry.Name}} (xy)</div>
             <div v-for="product in prdG.ListProduct" class="p-2">
                 <div class="p-2 bg-008ff8">{{product.Entry.Name}}</div>
                 <comp-vw-prd v-for="subMk in product.SubMarkets"
+                    :key="subMk.SubmarketProductId + '_' + subMk.Entry.Id"
                     :item="subMk.Entry"
                     :smpdid="subMk.SubmarketProductId"></comp-vw-prd>
             </div>

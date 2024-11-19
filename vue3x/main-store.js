@@ -245,6 +245,26 @@ export default createStore({
                 default: break;
             }
         },
+        sortedInRange: (state, getters) => ([type, ptIds, i0, ie]) => {
+            let lst = []
+            switch (type) {
+                case 9:     // Goals by SubmarketProductIds
+                    lst = buildListBy.call(state.ListGoal, ptIds, (itm) => ptIds.includes(itm.SubmPrdId))
+                    break;
+                case 10:      // Subs by GoalIds
+                    lst = buildListBy.call(state.ListSub, ptIds, (itm) => ptIds.includes(itm.GoalId))
+                    break;
+                case 11:      // Tasks by SubIds
+                    lst = buildListBy.call(state.ListTask, ptIds, (itm) => ptIds.includes(itm.SubId))
+                    break;
+                default: return lst;
+            }
+            if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
+            const len = lst.length
+            lst.splice(0, i0)
+            lst.splice(ie + 1, len - ie)
+            return lst;
+        },
         sortedItemsBy: (state, getters) => ([type, ptIds, ids]) => {
             let lst = getters.unSortItemsBy([type, ptIds, ids])
             if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)

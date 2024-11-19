@@ -327,6 +327,7 @@ Promise.all([
         },
     })
     app.use(dnbStore)
+    
     app.component('drop-select', DropSelect)
     app.mount('#app')
 

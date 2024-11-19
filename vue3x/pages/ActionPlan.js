@@ -79,7 +79,7 @@ const ViewSub = {
     props: ['item'],
     data() {
         return {
-            ListTask: this.$store.getters.sortedItemsBy([11, [this.item.Id]])
+            ListTask: this.$store.getters.sortedInRange([11, [this.item.Id], 0, 90])
         }
     },
     computed: {
@@ -117,7 +117,7 @@ const ViewGoal = {
     props: ['item'],
     data() {
         return {
-            ListSub: this.$store.getters.sortedItemsBy([10, [this.item.Id]])
+            ListSub: this.$store.getters.sortedInRange([10, [this.item.Id], 0, 20])
         }
     },
     computed: {
@@ -159,7 +159,7 @@ const ViewProduct = {
     props: ['item', 'smpdid'],
     data() {
         return {
-            ListGoal: this.$store.getters.sortedItemsBy([9, [this.smpdid]])
+            ListGoal: this.$store.getters.sortedInRange([9, [this.smpdid], 0, 12])
         }
     },
     computed: {
