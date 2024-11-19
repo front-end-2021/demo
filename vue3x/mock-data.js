@@ -256,7 +256,7 @@ function getSubs() {
     for (let prId; subId < maxId + 10; subId++) {
         prId = getRandomInt(1, maxId + 1)
         lst.push({
-            Id: subId, Name: `${genRandName(nameList)}(${name})`, GoalId: prId,
+            Id: subId, Name: `${genRandName(nameList)} (${name})`, GoalId: prId,
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`, ASort: ++maxIndex,
         })
     }

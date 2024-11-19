@@ -295,7 +295,7 @@ button { cursor: pointer; }
 .dmenu-smprd > *:hover {
     background-color: #ffffff57;
 }
-
+.minh87px { min-height: 87px; }
 @media screen and (max-width: 558px) {
     nav.container-fluid {
         flex-wrap: wrap;
