@@ -19,6 +19,7 @@ import MarketSegment from './pages/MarketSegment.js'
 import SubmarketProduct from './pages/SubmarketProduct.js'
 import ActionPlan from './pages/ActionPlan.js'
 import { createApp } from 'vue'
+import VueObserveVisibility from 'vue3-observe-visibility'
 
 Promise.all([
     includeHTML(`./components/semantics.html`),
@@ -327,7 +328,7 @@ Promise.all([
         },
     })
     app.use(dnbStore)
-    
+    app.directive('observe-visibility', VueObserveVisibility.ObserveVisibility)
     app.component('drop-select', DropSelect)
     app.mount('#app')
 

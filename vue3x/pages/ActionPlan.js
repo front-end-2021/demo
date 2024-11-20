@@ -1,5 +1,6 @@
 import { VueDraggableNext } from 'vue-draggable-next'
 import { groupBy, isDragDrop } from '../common.js'
+
 const MxItemDate = {
     computed: {
         ViewStartEnd() { return this.getHtmlStartEnd(this.item) },
@@ -185,6 +186,14 @@ const ViewProduct = {
             }
         },
     },
+    methods: {       
+        visibilityChanged(isVisible, entry) {
+            console.group('visbile ', isVisible)
+            console.log(entry)
+            console.log(entry.target)
+            console.groupEnd()
+        },
+    },
 }
 export default {
     template: `#tmp-comp-action-plan`,
@@ -338,7 +347,7 @@ export default {
                 return lst;
             }
         },
-
+        
     },
     created() {
         this.buildData([0], [0])

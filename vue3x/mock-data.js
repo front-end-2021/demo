@@ -289,7 +289,7 @@ function getTaks() {
     let maxIndex = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     let name = 'Test perfomance task'
     let taskId = maxId + 1
-    for (let prId; taskId < maxId + 6000; taskId++) {
+    for (let prId; taskId < maxId + 3000; taskId++) {
         prId = getRandomInt(1, maxId + 1)
         lst.push({
             Id: taskId, Name: `${genRandName(nameList)} (${name})`, SubId: prId,
