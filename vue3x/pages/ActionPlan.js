@@ -160,6 +160,7 @@ const ViewProduct = {
     props: ['item', 'smpdid'],
     data() {
         return {
+            IsVisible: true,
             ListGoal: this.$store.getters.sortedInRange([9, [this.smpdid], 0, 12])
         }
     },
@@ -188,6 +189,17 @@ const ViewProduct = {
     },
     methods: {       
         visibilityChanged(isVisible, entry) {
+            if(this.IsVisible && !isVisible) {      // true -> false
+                let cStyle = window.getComputedStyle(this.$el)
+                const height = cStyle.height
+                this.$el.style.minHeight = height
+                this.$el.style.maxHeight = height
+            } 
+            if(!this.IsVisible && isVisible) {      // false -> true
+                this.$el.style.minHeight = ''
+                this.$el.style.maxHeight = ''
+            }
+            this.IsVisible = isVisible
             console.group('visbile ', isVisible)
             console.log(entry)
             console.log(entry.target)

@@ -54,7 +54,8 @@
         throttle: 0, intersection: { threshold: 0 }
       }">
         <div class="p-2 bg-006bb9 border-u6px">{{item.Name}} ({{smpdid}})</div>
-        <draggable v-model="ListGoal" v-bind="DndGoalOptions" 
+        <draggable v-if="IsVisible"
+            v-model="ListGoal" v-bind="DndGoalOptions" 
             style="border: 1px solid #d6d6d6;"
             class="list-goal p-2 border-d6px"
             handle=".dnbHandle">
