@@ -1,3 +1,13 @@
+<template id="tmp-comp-vw-task">
+    <div class="dnbHandle m-2 p-2 bg-008ff8 border-4px w344px d-inline-block cdefault"
+        >
+        <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+        <div class="font12">
+            <i class="bi bi-clock me-1"></i>
+            <span v-html="ViewStartEnd"></span>
+        </div>
+    </div>
+</template>
 <template id="tmp-comp-vw-sub">
     <div class="d-flex mb-2 minh87px">
         <div class="p-2 bg-008ff8 border-l6px">
@@ -5,7 +15,7 @@
                 <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
                 <div class="font12">
                     <i class="bi bi-clock me-1"></i>
-                    <span v-html="getHtmlStartEnd(item)"></span>
+                    <span v-html="ViewStartEnd"></span>
                 </div>
             </div>
         </div>
@@ -13,6 +23,10 @@
             handle=".dnbHandle"
             class="list-task p-2 border-r6px" >
             <transition-group>
+                <comp-vw-task v-for="task in ListTask"
+                    :item="task"
+                    :key="task.Id">
+                </comp-vw-task>
                 <div v-for="task in ListTask" 
                     class="dnbHandle m-2 p-2 bg-008ff8 border-4px w344px d-inline-block cdefault"
                     :key="task.Id">

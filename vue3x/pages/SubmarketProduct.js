@@ -222,7 +222,7 @@ const CellSmPrd = {
         },
         clkShowMenu(e) {
             let offTarget = e.target.getBoundingClientRect()
-            this.$root.Popup_UI = {
+            this.$root.Popup_UI = { // type 48
                 type: 48,   // menu submarket + product
                 Style: {
                     top: `${offTarget.top + offTarget.height}px`,

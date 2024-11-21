@@ -1,3 +1,4 @@
+// #region import
 import {
     includeHTML, setLastState,
     getLocal, setLocal,
@@ -20,7 +21,7 @@ import SubmarketProduct from './pages/SubmarketProduct.js'
 import ActionPlan from './pages/ActionPlan.js'
 import { createApp } from 'vue'
 import VueObserveVisibility from 'vue3-observe-visibility'
-
+// #endregion
 Promise.all([
     includeHTML(`./components/semantics.html`),
     includeHTML(`./pages/MarketSegment.html`),
@@ -50,8 +51,6 @@ Promise.all([
                 ProcessState: 0,    // loading (0), success (1)
                 DragDrop: null,
                 Popup_UI: null,  // 
-
-                // LastAction: null,
 
                 UserInfo: {
                     img: `https://allimages.sgp1.digitaloceanspaces.com/tipeduvn/2022/01/1642393308_940_Hinh-Anh-Girl-Xinh-Viet-Nam-Dep-De-Thuong-Cute.jpg`,
@@ -228,7 +227,7 @@ Promise.all([
                 }
                 //  console.log(e, offTarget)
                 if (text) {
-                    this.Popup_UI = {
+                    this.Popup_UI = {   // type 1000
                         type: 1000,     // tooltip
                         BodyText: text,
                         Style: {

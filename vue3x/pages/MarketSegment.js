@@ -573,7 +573,7 @@ export default {
         // #region menu cell valuation
         toggleMenuEval(e, market, region) {
             let offTarget = e.target.getBoundingClientRect()
-            this.$root.Popup_UI = {
+            this.$root.Popup_UI = {     // type 1
                 type: 1,    // menu valuation market region
                 Market: market,
                 Region: region,
@@ -700,7 +700,7 @@ export default {
             if (typeof window.DnbLastAction != 'number') {
                 const onClick = () => {
                     let offTarget = e.target.getBoundingClientRect()
-                    this.$root.Popup_UI = {
+                    this.$root.Popup_UI = { // type 11
                         type: type,     // menu Land (11)
                         Entry: item,
                         Style: {

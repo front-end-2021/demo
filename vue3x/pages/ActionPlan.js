@@ -69,12 +69,20 @@ const MxDndGolSub = {
         },
     },
 }
+const ViewTask = {
+    template: `#tmp-comp-vw-task`,
+    name: "ViewWrapTask",
+    display: "ViewWrapTask",
+    mixins: [MxItemDate],
+    props: ['item'],
+}
 const ViewSub = {
     template: `#tmp-comp-vw-sub`,
     name: "ViewWrapSub",
     display: "ViewWrapSub",
     mixins: [MxDndGolSub, MxItemDate],
     components: {
+        'comp-vw-task': ViewTask,
         draggable: VueDraggableNext,
     },
     props: ['item'],
