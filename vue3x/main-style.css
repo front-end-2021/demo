@@ -296,6 +296,15 @@ button { cursor: pointer; }
     background-color: #ffffff57;
 }
 .minh87px { min-height: 87px; }
+.wrp_menu {
+    position: absolute;
+    top: 0; right: -3px;
+    cursor: pointer;
+    background-color: #00000069; color: white;
+    padding: 5px; border-radius: 6px;
+    display: none;
+}
+.wrap-info:hover .wrp_menu { display: block;}
 @media screen and (max-width: 558px) {
     nav.container-fluid {
         flex-wrap: wrap;

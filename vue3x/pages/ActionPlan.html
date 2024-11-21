@@ -10,13 +10,14 @@
 </template>
 <template id="tmp-comp-vw-sub">
     <div class="d-flex mb-2 minh87px">
-        <div class="p-2 bg-008ff8 border-l6px">
+        <div class="wrap-info p-2 bg-008ff8 border-l6px">
             <div class="dnbHandle w344px cdefault" style="position: sticky; top: 0;">
                 <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
                 <div class="font12">
                     <i class="bi bi-clock me-1"></i>
                     <span v-html="ViewStartEnd"></span>
                 </div>
+                <div class="wrp_menu">[Edit]</div>
             </div>
         </div>
         <draggable v-model="ListTask" v-bind="DndTaskOptions" 
@@ -49,6 +50,7 @@
                     <i class="bi bi-clock me-1"></i>
                     <span v-html="ViewStartEnd"></span>
                 </div>
+                <div class="wrp_menu">[Edit]</div>
             </div>
         </div>
         <draggable v-model="ListSub" v-bind="DndSubOptions" 
