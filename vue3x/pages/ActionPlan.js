@@ -69,6 +69,39 @@ const MxDndGolSub = {
         },
     },
 }
+const MxMenuEdit = {
+    methods: {
+        showMenuEdit(type, e) {
+            const popMenu = this.$root.Popup_UI
+            const golSub = this.item
+            if (!Object.is(popMenu, null) && type == popMenu.type && golSub.Id == popMenu.Entry.Id) {
+                this.$root.Popup_UI = null
+                return;
+            }
+            let offTarget = e.target.getBoundingClientRect()
+            this.$root.Popup_UI = {     // type 9, 10
+                type: type,    // menu goal, sub
+                Entry: golSub,
+                Style: {
+                    top: `${offTarget.top + offTarget.height}px`,
+                    left: `${offTarget.left - 135}px`,
+                },
+                newChild: function (e) {
+                    const parent = this.Entry
+                    console.log('new child', this.type, parent)
+                },
+                copyItem: function (e) {
+
+                },
+                deleteItem: (item, type) => {
+                    console.log('delete ', this.$store)
+                    this.removeItem(item.Id, type)
+                    this.$root.Popup_UI = null
+                },
+            }
+        },
+    }
+}
 const ViewTask = {
     template: `#tmp-comp-vw-task`,
     name: "ViewWrapTask",
@@ -80,7 +113,8 @@ const ViewSub = {
     template: `#tmp-comp-vw-sub`,
     name: "ViewWrapSub",
     display: "ViewWrapSub",
-    mixins: [MxDndGolSub, MxItemDate],
+    inject: ['removeItem'],
+    mixins: [MxDndGolSub, MxItemDate, MxMenuEdit],
     components: {
         'comp-vw-task': ViewTask,
         draggable: VueDraggableNext,
@@ -118,7 +152,8 @@ const ViewGoal = {
     template: `#tmp-comp-vw-goal`,
     name: "ViewWrapGoal",
     display: "ViewWrapGoal",
-    mixins: [MxDndGolSub, MxItemDate],
+    inject: ['removeItem'],
+    mixins: [MxDndGolSub, MxItemDate, MxMenuEdit],
     components: {
         'comp-vw-sub': ViewSub,
         draggable: VueDraggableNext,
@@ -154,6 +189,19 @@ const ViewGoal = {
 
             }
         },
+    },
+    provide() {
+        return {
+            removeItem: (gId, type) => {        // view goal
+                if (type != 10) return;
+                const lstG = this.ListSub
+                for (let gg = lstG.length - 1, gol; -1 < gg; gg--) {
+                    gol = lstG[gg]
+                    if (gol.Id == gId) lstG.splice(gg, 1)
+                }
+                this.$store.commit('remove', [gId, 10])
+            },
+        }
     },
 }
 const ViewProduct = {
@@ -195,24 +243,34 @@ const ViewProduct = {
             }
         },
     },
-    methods: {       
+    methods: {
         visibilityChanged(isVisible, entry) {
-            if(this.IsVisible && !isVisible) {      // true -> false
+            if (this.IsVisible && !isVisible) {      // true -> false
                 let cStyle = window.getComputedStyle(this.$el)
                 const height = cStyle.height
                 this.$el.style.minHeight = height
                 this.$el.style.maxHeight = height
-            } 
-            if(!this.IsVisible && isVisible) {      // false -> true
+            }
+            if (!this.IsVisible && isVisible) {      // false -> true
                 this.$el.style.minHeight = ''
                 this.$el.style.maxHeight = ''
             }
             this.IsVisible = isVisible
-            console.group('visbile ', isVisible)
-            console.log(entry)
-            console.log(entry.target)
-            console.groupEnd()
+            //console.log(entry.target)
         },
+    },
+    provide() {
+        return {
+            removeItem: (gId, type) => {
+                if (type != 9) return;
+                const lstG = this.ListGoal
+                for (let gg = lstG.length - 1, gol; -1 < gg; gg--) {
+                    gol = lstG[gg]
+                    if (gol.Id == gId) lstG.splice(gg, 1)
+                }
+                this.$store.commit('remove', [gId, 9])
+            },
+        }
     },
 }
 export default {
@@ -367,10 +425,18 @@ export default {
                 return lst;
             }
         },
-        
+
     },
     created() {
         this.buildData([0], [0])
     },
-
+    computed: {
+        MenuAcPlan() {
+            const popMenu = this.$root.Popup_UI
+            if (Object.is(popMenu, null)) return null
+            if (9 == popMenu.type) return popMenu
+            if (10 == popMenu.type) return popMenu
+            return null
+        },
+    },
 }

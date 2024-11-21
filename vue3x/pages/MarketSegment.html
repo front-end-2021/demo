@@ -30,9 +30,9 @@
               @dblclick="e => openFormLand(land)">
               <div class="d-inline-block" style="padding: .78571429em 1.5em;"
                 @mouseover="e => $root.onMouseOver(1, land, e)" 
-                @mouseout="e => $root.onMouseOut(1, land, e)"
+                @mouseout="e => $root.hideTooltip(1, land, e)"
                 @click="e => countClick(1, land, e)">{{$root.viewName(land.Name, 1)}}</div>
-              <i class="bi bi-gear btn-menu-inbtn" @click="e => onShowMenu(11, land, e)"></i>
+              <i class="bi bi-gear btn-menu-inbtn" @click="e => onShowMenu(1, land, e)"></i>
             </div>
           </transition-group>
         </draggable>
@@ -47,7 +47,7 @@
           <div v-for="region in Regions"
             class="col-region p6px pe48px cpointer prevent-select bg-008ff8 border-box border-r1-0384e3 fb700 pos-relative"
             @mouseover="e => $root.onMouseOver(2, region, e)" 
-            @mouseout="e => $root.onMouseOut(2, region, e)"
+            @mouseout="e => $root.hideTooltip(2, region, e)"
             @dblclick="e => openFormRegion(region)">{{$root.viewName(region.Name, 2)}}
             <i v-if="1 < Regions.length" class="bi bi-arrows dnd-ic-region pos-absolute"
               @click.stop="e => initDragDrop(2)"></i>
@@ -163,22 +163,31 @@
         </div>
       </div>
     </article>
-    <div v-if="11 == $root.UiPopupType" style="position: fixed;" class="d-inline-flex menu-valuation dflex-col"
+    <div v-if="1 == $root.UiPopupType" style="position: fixed;" 
+      class="dnb-menu menu-valuation bg-006bb9 p-1 border-4px"
       :style="[$root.Popup_UI.Style]">
-      <div class="p6px cpointer" @click.stop="e => clickMenuEdit($root.Popup_UI.Entry, 1)"><i
+      <div class="p6px cpointer menu_golsub-i mb1px border-4px" 
+        @click.stop="e => clickMenuEdit($root.Popup_UI.Entry, 1)"><i
           class="bi bi-pencil-square"></i>&nbsp;&nbsp;Edit ({{getNameMenu($root.Popup_UI.Entry.Name)}})</div>
-      <div class="p6px cpointer" :class="[$root.classSqr($root.Popup_UI.Entry.IsNew)]"
+      <div class="p6px cpointer menu_golsub-i mb1px border-4px" 
+        :class="[$root.classSqr($root.Popup_UI.Entry.IsNew)]"
         @click.stop="e => toggleIsNew($root.Popup_UI.Entry, 1)"><i class="bi"></i>&nbsp;&nbsp;Is New</div>
-      <div class="p6px cpointer" @click.stop="e => clkGotoTabBy(11)"><i
+      <div class="p6px cpointer menu_golsub-i border-4px" 
+        @click.stop="e => clkGotoTabBy(11)"><i
           class="bi bi-box-arrow-in-right"></i>&nbsp;&nbsp;Goto Submarket</div>
     </div>
-    <div v-if="1 == $root.UiPopupType" style="position: fixed;" class="d-inline-flex menu-valuation dflex-col"
+    <div v-if="23 == $root.UiPopupType" 
+    style="position: fixed;" 
+    class="dnb-menu menu-valuation bg-006bb9 p-1 border-4px"
       :style="[$root.Popup_UI.Style]">
-      <div class="p6px cpointer" @click.stop="e => openFormValun()"><i class="bi bi-sliders2"></i>
+      <div class="p6px cpointer menu_golsub-i mb1px border-4px" 
+        @click.stop="e => openFormValun()"><i class="bi bi-sliders2"></i>
         {{$store.state.ContextLang.Valuation}}</div>
-      <div @click.stop="e => activeValuation()" class="p6px cpointer"><i class="bi" :class="classSquare()"></i>
+      <div @click.stop="e => activeValuation()" 
+        class="p6px cpointer menu_golsub-i mb1px border-4px"><i class="bi" :class="classSquare()"></i>
         {{$store.state.ContextLang.Active}}</div>
-      <div class="p6px cpointer" @click.stop="e => clkGotoTabBy(1)"><i class="bi bi-box-arrow-in-right"></i>
+      <div class="p6px cpointer menu_golsub-i border-4px" 
+        @click.stop="e => clkGotoTabBy(1)"><i class="bi bi-box-arrow-in-right"></i>
         {{$store.state.ContextLang.Sub_market}}/{{$store.state.ContextLang.Productstrategy}}</div>
     </div>
   </section>

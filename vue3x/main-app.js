@@ -93,12 +93,12 @@ Promise.all([
                 if (typeof popMenu != 'object') return 0;
                 if (999 < popMenu.type) return 0;        // tooltip
                 return popMenu.type
-                // 1 (Menu Cell Valuation), 11 (Menu btn Land)
+                // 23 (Menu Cell Valuation), 1 (Menu btn Land)
             },
         },
         watch: {
             IndexPage(val) { setLocal(6, val) },
-            MarketCriterias(val) { console.log('watch market crites', val) }
+            
         },
         methods: {
             selectPage(index) { this.IndexPage = index },
@@ -155,7 +155,7 @@ Promise.all([
                 const popMenu = this.Popup_UI
                 if (Object.is(popMenu, null)) return;
                 switch (type) {
-                    case 1:     // Menu valuation
+                    case 23:     // Menu valuation
                         if (typeof popMenu != 'object') return;
                         if (popMenu.type != 1) return;
                         this.Popup_UI = null;
@@ -241,15 +241,7 @@ Promise.all([
                     }
                 }
             },
-            onMouseOut(type, item, e) {
-                switch (type) {
-                    case 1:     // Land
-                    case 2:     // Region
-                        break;
-                    default: break;
-                }
-                this.Popup_UI = null;
-            },
+            hideTooltip(type, item, e){ this.Popup_UI = null },
             classSqr(isCheck) {
                 if (isCheck) return `bi-check2-square`
                 return `bi-square`

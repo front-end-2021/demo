@@ -6,7 +6,7 @@
             <div class="description">
                 <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
                 <span contenteditable="true" v-html="item.Name" 
-                    class="d-inline-block p-2" style="width: 234px;"
+                    class="d-inline-block p-2 dnbItemName" style="width: 234px;"
                     @keypress="onKeyPressName"
                     @input="onChangeName"></span>
                 <br>
@@ -117,7 +117,7 @@
                 <span style="position: relative;">
                     <span contenteditable="true" 
                         v-html="item.Name" 
-                        class="d-inline-block p-2 dnbRegionName" 
+                        class="d-inline-block p-2 dnbItemName" 
                         data-content="Duplicate name"
                         style="width: 234px;"
                         @keypress="onKeyPressName"
@@ -161,5 +161,32 @@
                 class="checkmark icon"></i>
             </div>
         </div>
+    </div>
+</template>
+<template id="tmp-comp-form-goal">
+    <div class="ui modal">
+        <!-- <i class="close icon" @click.stop="onExitClose"></i>
+        <div class="header">{{Title}}</div>
+        <div class="image content">
+            <div class="description">
+                <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
+                <span style="position: relative;">
+                    <span contenteditable="true" 
+                        v-html="item.Name" 
+                        class="d-inline-block p-2 dnbItemName" 
+                        data-content="Duplicate name"
+                        style="width: 234px;"
+                        @keypress="onKeyPressName"
+                        @input="onChangeName"></span>
+                </span>
+                <br>
+                <strong class="d-inline-block w81px py-2 pe-2">Description: </strong>
+                <span contenteditable="true" v-html="item.Description" 
+                    class="d-inline-block p-2" style="width: 234px; height: 96px;"
+                    @input="onChangeDes"
+                    style="min-height: 180px; width: 570px;"></span>
+                <br>
+            </div>
+        </div> -->
     </div>
 </template>

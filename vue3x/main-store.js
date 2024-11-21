@@ -476,6 +476,50 @@ export default createStore({
             }
             state.WkMapDes.set(item, des)
         },
+        remove(state, [itemId, type]) {
+            let lst, lst2 = [];
+            switch (type) {
+                case 9: // Main
+                    lst = state.ListGoal
+                    for (let mm = lst.length - 1, goal; -1 < mm; mm--) {
+                        goal = lst[mm]
+                        if (goal.Id == itemId) lst.splice(mm, 1)
+                    }
+                    lst = state.ListSub
+                    lst2 = []
+                    for (let ss = lst.length - 1, sub; -1 < ss; ss--) {
+                        sub = lst[ss]
+                        if (sub.GoalId == itemId) {
+                            lst2.push(sub.Id)
+                            lst.splice(ss, 1)
+                        }
+                    }
+                    lst = state.ListTask
+                    for (let tt = lst.length - 1, task; -1 < tt; tt--) {
+                        task = lst[tt]
+                        if (lst2.includes(task.SubId)) lst.splice(tt, 1)
+                    }
+                    break;
+                case 10:    // Sub
+                    lst = state.ListSub
+                    for (let ss = lst.length - 1, sub; -1 < ss; ss--) {
+                        sub = lst[ss]
+                        if (sub.Id == itemId) {
+                            lst.splice(ss, 1)
+                        }
+                    }
+                    lst = state.ListTask
+                    lst2 = []
+                    for (let tt = lst.length - 1, task; -1 < tt; tt--) {
+                        task = lst[tt]
+                        if (task.SubId == itemId) {
+                            lst2.push(task.Id)
+                            lst.splice(tt, 1)
+                        }
+                    }
+                    break;
+            }
+        },
     }
 })
 function updateLocalStore(type) {

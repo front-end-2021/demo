@@ -1,23 +1,26 @@
 <template id="tmp-comp-vw-task">
     <div class="dnbHandle m-2 p-2 bg-008ff8 border-4px w344px d-inline-block cdefault"
-        >
+        @mouseenter="e => $root.Popup_UI = null">
         <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+        <i class="bi bi-clock me-1 font12"></i>
+        <span class="font12" v-html="ViewStartEnd"></span>
         <div class="font12">
-            <i class="bi bi-clock me-1"></i>
-            <span v-html="ViewStartEnd"></span>
+            [+ Todo]
         </div>
     </div>
 </template>
 <template id="tmp-comp-vw-sub">
     <div class="d-flex mb-2 minh87px">
-        <div class="wrap-info p-2 bg-008ff8 border-l6px">
-            <div class="dnbHandle w344px cdefault" style="position: sticky; top: 0;">
+        <div class="wrap-info p-2 bg-008ff8 border-l6px"
+            @mouseenter="e => $root.Popup_UI = null">
+            <div class="dnbHandle w344px cdefault stick-top0">
                 <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
                 <div class="font12">
                     <i class="bi bi-clock me-1"></i>
                     <span v-html="ViewStartEnd"></span>
                 </div>
-                <div class="wrp_menu">[Edit]</div>
+                <div class="wrp_menu"
+                    @click.stop="e => showMenuEdit(10, e)">[Edit]</div>
             </div>
         </div>
         <draggable v-model="ListTask" v-bind="DndTaskOptions" 
@@ -28,29 +31,22 @@
                     :item="task"
                     :key="task.Id">
                 </comp-vw-task>
-                <div v-for="task in ListTask" 
-                    class="dnbHandle m-2 p-2 bg-008ff8 border-4px w344px d-inline-block cdefault"
-                    :key="task.Id">
-                    <div>{{task.Name}} ({{task.Id}}.{{task.ASort}})</div>
-                    <div class="font12">
-                        <i class="bi bi-clock me-1"></i>
-                        <span v-html="getHtmlStartEnd(task)"></span>
-                    </div>
-                </div>
             </transition-group>
         </draggable>
     </div>
 </template>
 <template id="tmp-comp-vw-goal">
-    <div class="p-2 bg-e8e9e9 mt-2 border-4px d-flex">
-        <div class="wrap-info">
-            <div class="dnbHandle w344px cdefault" style="position: sticky; top: 0;">
+    <div class="p-2 bg-e8e9e9 mt-2 border-4px d-flex" >
+        <div class="wrap-info"
+            @mouseenter="e => $root.Popup_UI = null">
+            <div class="dnbHandle w344px cdefault stick-top0" >
                 <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
                 <div class="font12">
                     <i class="bi bi-clock me-1"></i>
                     <span v-html="ViewStartEnd"></span>
                 </div>
-                <div class="wrp_menu">[Edit]</div>
+                <div class="wrp_menu"
+                    @click.stop="e => showMenuEdit(9, e)">[Edit]</div>
             </div>
         </div>
         <draggable v-model="ListSub" v-bind="DndSubOptions" 
@@ -65,10 +61,11 @@
     </div>
 </template>
 <template id="tmp-comp-vw-prd">
-    <div class="p-2" v-observe-visibility="{
-        callback: visibilityChanged,
-        throttle: 0, intersection: { threshold: 0 }
-      }">
+    <div class="p-2" 
+        v-observe-visibility="{
+            callback: visibilityChanged,
+            throttle: 0, intersection: { threshold: 0 }
+        }">
         <div class="p-2 bg-006bb9 border-u6px">{{item.Name}} ({{smpdid}})</div>
         <draggable v-if="IsVisible"
             v-model="ListGoal" v-bind="DndGoalOptions" 
@@ -92,7 +89,7 @@
         </drop-select>
     </section>
     <h1>4ct10n Pl_n</h1>
-    <section class="dnbViewAcPlan px20px">
+    <section class="dnbViewAcPlan px20px" >
         <div v-for="market in ListMarket" class="bg-008ff8 border-6px mb-3"
             :key="market.Entry.Id">
             <div class="p-2 border-6px bg-008ff8">{{market.Entry.Name}}</div>
@@ -116,4 +113,16 @@
             </div>
         </div>
     </section>
+    <div v-if="MenuAcPlan != null" 
+        class="d-inline-block p-1 bg-006bb9 menu_golsub border-4px"
+        @mouseleave="e => $root.Popup_UI = null"
+        :style="[MenuAcPlan.Style]">
+        <div class="p-2 cpointer menu_golsub-i mb1px border-4px">Edit item</div>
+        <div class="p-2 cpointer menu_golsub-i mb1px border-4px"
+            @click.stop="e => MenuAcPlan.newChild(e)">New {{9 == MenuAcPlan.type ? 'Sub' : 'Task'}}</div>
+        <div class="p-2 cpointer menu_golsub-i mb1px border-4px"
+            @click.stop="e => MenuAcPlan.copyItem(e)">Copy</div>
+        <div class="p-2 cpointer menu_golsub-i border-4px"
+            @click.stop="e => MenuAcPlan.deleteItem(MenuAcPlan.Entry, MenuAcPlan.type)">Delete</div>
+    </div>
 </template>

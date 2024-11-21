@@ -65,6 +65,7 @@ button { cursor: pointer; }
 .m-2 { margin: .5rem; }
 .mt-2 { margin-top: .5rem; }
 .mb-2 { margin-bottom: .5rem; }
+.mb1px { margin-bottom: 1px; }
 .my-2 { margin-top: .5rem; margin-bottom: .5rem; }
 .mt-3 { margin-top: 1rem; }
 .mb-3 { margin-bottom: 1rem; }
@@ -142,6 +143,7 @@ button { cursor: pointer; }
 }
 .pos-relative {position: relative;}
 .pos-absolute {position: absolute;}
+.stick-top0 { position:sticky; top: 0 }
 .cell-valuation {
     display: inline-grid;
     grid-template-columns: 141px 24px 24px;
@@ -178,7 +180,11 @@ button { cursor: pointer; }
     background-color: #0f3551;
     background-color: #808080;  /*dnb_dev */
 }
-
+.menu_golsub {
+    position: fixed; top: 0; left: 0;min-width: 180px;min-height: 90px;
+}
+.menu_golsub-i {color:white;background-color: #acacac;}
+.menu_golsub-i:hover {background-color: #acacac82;}
 .row-crite {
     grid-template-columns: 300px 105px 366px 54px;
     align-items: center;
@@ -291,9 +297,6 @@ button { cursor: pointer; }
     height: 32px;
     align-items: center;
     text-align: center;
-}
-.dmenu-smprd > *:hover {
-    background-color: #ffffff57;
 }
 .minh87px { min-height: 87px; }
 .wrp_menu {

@@ -274,10 +274,9 @@ export default {
         },
         CellSmpPrd(val) {
             if (Object.is(val, null)) return;
-            // console.group('product name: ', val.Product.Name)
+            // console.log('product name: ', val.Product.Name)
             // console.log('market name: ', val.Market.Name)
             // console.log('submarket name: ', val.Submarket.Name)
-            // console.groupEnd()
         },
         '$root.ActviePrGrpIds'(ids) {
             const cCrites = this.$root.SubMarketCrites
@@ -297,10 +296,6 @@ export default {
             this.buildListProduct(prdGrpIds, productIds)
         },
     },
-    // provide() {
-    //     return { }
-    // },
-    //beforeCreate() { },
     created() {
         const rootCrs = this.$root.SubMarketCrites
         if (!rootCrs.length) {
@@ -318,7 +313,7 @@ export default {
                 let regionId = rootCrs[0][1][1]
                 if (regionId < 0) regionId = 0
                 let lstPrG = this.$store.getters.sortedItemsBy([3, [regionId], prdGrpIds])
-                // console.log(lstPrG.map(x => x.Id))
+                
                 this.$root.ActviePrGrpIds = lstPrG.map(x => x.Id)
 
                 this.buildData(rootCrs)

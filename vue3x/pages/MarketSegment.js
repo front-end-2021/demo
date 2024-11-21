@@ -2,7 +2,7 @@ import {
     FTypeId, MxFCriterial,
     getLandMarketIds, commSelectTypeId
 } from "../components/dFilter.js";
-import { setLastState, getLastState, MxSortable } from "../common.js";
+import { setLastState, getLastState, MxSortable, counterClick } from "../common.js";
 import {
     getMessCompare, overrideItem,
     getCopyItem, deleteDes
@@ -270,7 +270,7 @@ export default {
         '$root.IndexProject'(iPrj) {
             let lstC = this.$root.MarketCriterias
             const [landIds, marketIds] = getLandMarketIds(lstC)
-            //   console.log('watch Index Project', iPrj, landIds, marketIds)
+            
             this.setFilter([landIds, marketIds])
         },
         Lands(lst, oldLst) {
@@ -307,20 +307,22 @@ export default {
             this.Regions = this.$store.getters.sortedItemsBy([2, mergeIdLands])
         },
         countClick(type, item, e) {
-            // console.log('count click ', type, item, e)
-            if (typeof window.DnbLastAction != 'number') {
-                const onClick = () => {
-                    this.$root.activeItem(type, item)
-                    delete window.DnbLastAction
-                    //console.log('click ', type, item, e)
+            counterClick(() => {
+                this.$root.activeItem(type, item)
+            })
+        },
+        onShowMenu(type, item, e) {
+            counterClick(() => {
+                let offTarget = e.target.getBoundingClientRect()
+                this.$root.Popup_UI = { // type 1
+                    type: type,     // menu Land (1)
+                    Entry: item,
+                    Style: {
+                        top: `${offTarget.top + offTarget.height}px`,
+                        left: `${offTarget.left - 89}px`,
+                    },
                 }
-                window.DnbLastAction = setTimeout(onClick, 123)
-
-            } else {
-                clearTimeout(window.DnbLastAction)
-                delete window.DnbLastAction
-            }
-
+            })
         },
         openFormLand(land) {
             const iProject = this.$root.IndexProject
@@ -394,7 +396,6 @@ export default {
             setLastState(1, land.Id)
         },
         onClickTab(e) {
-            //console.log('on click tab', e.target, e)
             this.$root.clearPopupUI(1)
         },
         hasExistMarketName(mMarket, elName) {
@@ -573,8 +574,8 @@ export default {
         // #region menu cell valuation
         toggleMenuEval(e, market, region) {
             let offTarget = e.target.getBoundingClientRect()
-            this.$root.Popup_UI = {     // type 1
-                type: 1,    // menu valuation market region
+            this.$root.Popup_UI = {     // type 23
+                type: 23,    // menu valuation market region
                 Market: market,
                 Region: region,
                 Style: {
@@ -696,26 +697,6 @@ export default {
             if (80 < total && total < 91) return { backgroundColor: `#597623`, color: `#fff` }
             if (90 < total && total < 101) return { backgroundColor: `#4e6d22`, color: `#fff` }
         },
-        onShowMenu(type, item, e) {
-            if (typeof window.DnbLastAction != 'number') {
-                const onClick = () => {
-                    let offTarget = e.target.getBoundingClientRect()
-                    this.$root.Popup_UI = { // type 11
-                        type: type,     // menu Land (11)
-                        Entry: item,
-                        Style: {
-                            top: `${offTarget.top + offTarget.height}px`,
-                            left: `${offTarget.left - 89}px`,
-                        },
-                    }
-                    delete window.DnbLastAction
-                }
-                window.DnbLastAction = setTimeout(onClick, 123)
-            } else {
-                clearTimeout(window.DnbLastAction)
-                delete window.DnbLastAction
-            }
-        },
         clickMenuEdit(item, type) {
             switch (type) {
                 case 1: this.openFormLand(item)
@@ -740,7 +721,7 @@ export default {
         clkGotoTabBy(type) {
             const popMenu = this.$root.Popup_UI;
             switch (type) {
-                case 1: // Cell market region
+                case 23: // Cell market region
                     let market = popMenu.Market
                     let region = popMenu.Region
                     this.$root.SubMarketCrites = [
@@ -748,7 +729,7 @@ export default {
                         [FTypeId.MarketSegments_Submarket, [market.Id, FTypeId.SelectAll]]
                     ]
                     break;
-                case 11:    // Land
+                case 1:    // Land
                     let land = popMenu.Entry
                     this.$root.SubMarketCrites = [
                         [FTypeId.PleaseSelect, [land.Id, FTypeId.SelectRegion]]
@@ -759,10 +740,9 @@ export default {
             this.$root.onGotoTab(1)
         },
         scrollViewSegRegion(e) {
-            // console.group('scroll view seg region ')
+            // console.log('scroll view seg region ')
             // console.log(e)
             // console.log(e.target.scrollTop, e.target.scrollLeft)
-            // console.groupEnd()
         },
         styleColMarketStickyLeft(wrap, isReset) {
             if (isReset) {
@@ -816,7 +796,6 @@ export default {
                                 break;
                         }
                         this.$root.TabStatus[0] = 0
-                        // console.log(oData)
                     })
                 })
                 this.setLandRegionMarket()

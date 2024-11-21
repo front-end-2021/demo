@@ -339,6 +339,20 @@ export const groupBy = (array, key) => {
     }
     return mapRes;
 }
+export const counterClick = (fnClick) => {
+    if (typeof fnClick != 'function') return     // verify
+    if (typeof window.DnbLastAction != 'number') {
+        const onClick = () => {
+            fnClick()
+            delete window.DnbLastAction
+        }
+        window.DnbLastAction = setTimeout(onClick, 123)
+
+    } else {
+        clearTimeout(window.DnbLastAction)
+        delete window.DnbLastAction
+    }
+}
 // export const newIntId = () => {
 //     let s = new Date(2024, 6, 19, 8, 20, 0)        // 7/19/2024 08:20
 //     s = Date.now() - s.getTime()

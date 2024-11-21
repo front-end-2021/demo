@@ -78,6 +78,13 @@ const MxFormLandRegion = {
         },
         onChangeDes(e) { this.des = e.target.innerHTML },
     },
+    mounted() {
+        this.$nextTick(() => {
+            setTimeout(() => {
+                this.$el.querySelector(`.dnbItemName`).focus()
+            }, 696)
+        })
+    },
 }
 export const CompFormLand = {
     template: `#tmp-comp-form-land`,
@@ -165,24 +172,8 @@ const MxMarketRegion = {
             if (!land) land = this.LandActives[0]
             this.moItem.data.LandId = land.Id
         },
-        forcusName() {
-            this.$el.querySelector(`.dnbRegionName`).focus()
-        },
     },
-    mounted() {
-        this.$nextTick(() => {
-            const focusName = () => {
-                this.$el.querySelector(`.dnbRegionName`).focus()
-            }
-            const lstDrp = this.$el.querySelectorAll(`.ui.selection.dropdown.grp-dropdown-min`)
-            if (!lstDrp.length) {
-                focusName()
-            } else {
-                setTimeout(focusName, 696)
-            }
-        })
-    },
-    //updated() { console.log('upated') },
+    
 }
 export const CompFormMarket = {
     template: `#tmp-comp-form-region`,
@@ -191,7 +182,7 @@ export const CompFormMarket = {
         onExitClose() {
             this.setNameAndDes()
             this.$store.dispatch('outConfirmModal', ['exit-close', deepCopy(this.item),
-                this.$el.querySelector('.dnbRegionName')
+                this.$el.querySelector('.dnbItemName')
             ]).then(state => {
                 if (typeof state == 'boolean') return;
                 if (typeof state != 'object') return;
@@ -202,7 +193,7 @@ export const CompFormMarket = {
         onSaveClose() {
             this.setNameAndDes()
             this.$store.dispatch('outConfirmModal', ['save-close', deepCopy(this.item),
-                this.$el.querySelector('.dnbRegionName')
+                this.$el.querySelector('.dnbItemName')
             ]).then(state => {
                 if (typeof state == 'boolean') return;
                 if (typeof state != 'object') return;
@@ -255,4 +246,36 @@ export const CompFormRegion = {
         }
     },
     // mounted() { console.log('mounted form region') },
+}
+export const CompFormGol = {
+    template: `#tmp-comp-form-goal`,
+    mixins: [MxModal],
+    methods: {
+        setNameAndDes() {
+            this.item.Name = this.name.trim()
+            let des = ''
+            if (typeof this.des == 'string') {
+                des = this.des.replaceAll(`&nbsp;`, ' ')
+                des = des.replaceAll(`<br>`, `\n`)
+            }
+            this.item.Description = des.trim()
+        },
+        onExitClose() {
+            this.setNameAndDes()
+            this.hideModal()
+            this.$store.commit('outModal', ['exit-close', this.item])
+        },
+        onSaveClose() {
+            this.setNameAndDes()
+            this.hideModal()
+            this.$store.commit('outModal', ['save-close', this.item])
+        },
+        onChangeName(e) { this.name = e.target.innerText },
+        onKeyPressName(e) {
+            if (e.which === 13) {
+                e.preventDefault(); // prevent enter
+            }
+        },
+        onChangeDes(e) { this.des = e.target.innerHTML },
+    },
 }
