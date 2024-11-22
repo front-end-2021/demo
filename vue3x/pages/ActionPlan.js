@@ -91,10 +91,10 @@ const MxMenuEdit = {
                     console.log('new child', this.type, parent)
                 },
                 copyItem: (item, type) => {
-
+                    this.copyItem(item, type)
+                    this.$root.Popup_UI = null
                 },
                 deleteItem: (item, type) => {
-                    console.log('delete ', this.$store)
                     this.removeItem(item.Id, type)
                     this.$root.Popup_UI = null
                 },
@@ -113,7 +113,7 @@ const ViewSub = {
     template: `#tmp-comp-vw-sub`,
     name: "ViewWrapSub",
     display: "ViewWrapSub",
-    inject: ['removeItem'],
+    inject: ['removeItem', 'copyItem'],
     mixins: [MxDndGolSub, MxItemDate, MxMenuEdit],
     components: {
         'comp-vw-task': ViewTask,
@@ -152,7 +152,7 @@ const ViewGoal = {
     template: `#tmp-comp-vw-goal`,
     name: "ViewWrapGoal",
     display: "ViewWrapGoal",
-    inject: ['removeItem'],
+    inject: ['removeItem', 'copyItem'],
     mixins: [MxDndGolSub, MxItemDate, MxMenuEdit],
     components: {
         'comp-vw-sub': ViewSub,
@@ -200,6 +200,14 @@ const ViewGoal = {
                     if (gol.Id == gId) lstG.splice(gg, 1)
                 }
                 this.$store.commit('remove', [gId, 10])
+            },
+            copyItem: (item, type) => {
+                if (type != 10) return;
+                const lstG = this.ListSub
+                let ii = lstG.findIndex(x => x.Id == item.Id)
+                this.$store.dispatch('copyItem', [item, type]).then(cpyItm => {
+                    lstG.splice(ii + 1, 0, cpyItm)
+                })
             },
         }
     },
@@ -269,6 +277,14 @@ const ViewProduct = {
                     if (gol.Id == gId) lstG.splice(gg, 1)
                 }
                 this.$store.commit('remove', [gId, 9])
+            },
+            copyItem: (item, type) => {
+                if (type != 9) return;
+                const lstG = this.ListGoal
+                let ii = lstG.findIndex(x => x.Id == item.Id)
+                this.$store.dispatch('copyItem', [item, type]).then(cpyItm => {
+                    lstG.splice(ii + 1, 0, cpyItm)
+                })
             },
         }
     },

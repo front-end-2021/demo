@@ -114,6 +114,72 @@ export default createStore({
                 }
             }
         },
+        copyItem({ commit, state }, [item, type]) {
+            let cpyItm
+            switch (type) {
+                case 9:     //Main
+                    cpyItm = copyItm(state.ListGoal, (itm) => item.SubmPrdId == itm.SubmPrdId)
+                    let [oldIds, cpyLst] = copyChildren(state.ListSub,
+                        (itm) => item.Id == itm.GoalId,
+                        (cpI) => { cpI.GoalId = cpyItm.Id }
+                    )
+                    for (let ii = 0, oId; ii < oldIds.length; ii++) {
+                        oId = oldIds[ii]
+                        copyChildren(state.ListTask,
+                            (itm) => oId == itm.SubId,
+                            (cpI) => { cpI.SubId = cpyLst[ii].Id }
+                        )
+                    }
+                    break;
+                case 10:    // Sub
+                    cpyItm = copyItm(state.ListSub, (itm) => item.GoalId == itm.GoalId)
+                    copyChildren(state.ListTask,
+                        (itm) => item.Id == itm.SubId,
+                        (cpI) => { cpI.SubId = cpyItm.Id }
+                    )
+                    break;
+            }
+            return cpyItm
+            function copyItm(lstGs, fnc) {
+                const cpItm = JSON.parse(JSON.stringify(item))
+                cpItm.Name += ` [1]`
+                cpItm.Id = lstGs.map(x => x.Id).reduce((a, b) => Math.max(a, b), -Infinity)
+                cpItm.Id += 1
+                const lst = buildListBy.call(lstGs, [-1], fnc)    // list by parent id
+                lst.sort((a, b) => a.ASort - b.ASort)
+                let ii, index
+                for (ii = 0; ii < lst.length; ii++) {
+                    let itm = lst[ii]
+                    if (itm.Id == item.Id) {
+                        index = itm.ASort + 1
+                        cpItm.ASort = index
+                        break
+                    }
+                }
+                lstGs.push(cpItm)
+                for (ii += 1; ii < lst.length; ii++) {
+                    let itm = lst[ii]
+                    if (++index <= itm.ASort) break;
+                    itm.ASort = index
+                }
+                return cpItm
+            }
+            function copyChildren(lstCh, fncCom, fncSetPa) {
+                let maxId = lstCh.map(x => x.Id).reduce((a, b) => Math.max(a, b), -Infinity)
+                const lst = buildListBy.call(lstCh, [-1], fncCom)    // list by parent ids
+                lst.sort((a, b) => a.ASort - b.ASort)
+                const cpLst = []
+                for (let ii = 0, cpyC; ii < lst.length; ii++) {
+                    cpyC = JSON.parse(JSON.stringify(lst[ii]))
+                    cpyC.Id = ++maxId
+                    cpyC.Name += ` [1]`
+                    fncSetPa(cpyC)
+                    lstCh.push(cpyC)
+                    cpLst.push(cpyC)
+                }
+                return [lst.map(x => x.Id), cpLst]
+            }
+        },
     },
     getters: {
         ListModal(state) { return state.Modals },

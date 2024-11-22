@@ -253,7 +253,7 @@ function getSubs() {
     let maxIndex = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     let name = 'Test perfomance sub'
     let subId = maxId + 1
-    for (let prId; subId < maxId + 90; subId++) {
+    for (let prId; subId < maxId + 60; subId++) {
         prId = getRandomInt(1, maxId + 1)
         lst.push({
             Id: subId, Name: `${genRandName(nameList)} (${name})`, GoalId: prId,
@@ -289,7 +289,7 @@ function getTaks() {
     let maxIndex = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     let name = 'Test perfomance task'
     let taskId = maxId + 1
-    for (let prId; taskId < maxId + 600; taskId++) {
+    for (let prId; taskId < maxId + 300; taskId++) {
         prId = getRandomInt(1, maxId + 1)
         lst.push({
             Id: taskId, Name: `${genRandName(nameList)} (${name})`, SubId: prId,
