@@ -11,8 +11,7 @@
 <template id="tmp-comp-market">
   <section @click="onClickTab" 
     style="padding-bottom: 169px;" class="vw-marketsegment px20px">
-    <div class="mt-2">
-
+    <div v-if="$root.IsShowF" class="mt-2">
       <comp-filter-market :market-ids="$root.MarketIds" @set:filter="$event => setFilter($event)">
       </comp-filter-market>
     </div>

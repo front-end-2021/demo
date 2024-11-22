@@ -46,7 +46,9 @@
           @click.stop="e => selectPage(ipg)">{{page}}</h4>
       </nav>
       <section class="d-inline-flex align-items-center">
-        <h4 class="text-white mb-0 me-2">Language: </h4>
+        <i class="font21 me-2 cpointer bi" :class="[IsShowF ? 'bi-funnel-fill' : 'bi-funnel']"
+          @click.stop="e => { IsShowF = !IsShowF }"></i>
+        <h4 class="text-white my-0 me-2">Language: </h4>
         <drop-select :index="$store.state.IndexLang" :items="$store.state.Languages"
           :class="['grp-dropdown-min dnbdropdown-primary']" style="min-width: 120px;"
           @set:index="$event => setIndexLang($event)">
