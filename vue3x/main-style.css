@@ -93,10 +93,7 @@ button { cursor: pointer; }
 .ps-2 { padding-left: .5rem; }
 .pe-2 { padding-right: .5rem; }
 .p-3 { padding: 1rem; }
-.py-3 {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-}
+.py9px { padding-top: 9px; padding-bottom: 9px; }
 .ps-3 { padding-left: 1rem; }
 .pe-3 { padding-right: 1rem; }
 .p6px { padding: 6px; }
