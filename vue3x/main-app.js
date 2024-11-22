@@ -316,6 +316,11 @@ Promise.all([
                 if (pDom) pDom.remove();
             })
             this.traceHeap('Main App')
+
+            const message = "Hello, world!";
+            const hash = CryptoJS.SHA256(message);
+            console.log('test sha256', hash.toString(CryptoJS.enc.Hex));
+            
         },
     })
     app.use(dnbStore)
