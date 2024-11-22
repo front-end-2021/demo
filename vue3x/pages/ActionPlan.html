@@ -121,7 +121,7 @@
         <div class="p-2 cpointer menu_golsub-i mb1px border-4px"
             @click.stop="e => MenuAcPlan.newChild(e)">New {{9 == MenuAcPlan.type ? 'Sub' : 'Task'}}</div>
         <div class="p-2 cpointer menu_golsub-i mb1px border-4px"
-            @click.stop="e => MenuAcPlan.copyItem(e)">Copy</div>
+            @click.stop="e => MenuAcPlan.copyItem(MenuAcPlan.Entry, MenuAcPlan.type)">Copy</div>
         <div class="p-2 cpointer menu_golsub-i border-4px"
             @click.stop="e => MenuAcPlan.deleteItem(MenuAcPlan.Entry, MenuAcPlan.type)">Delete</div>
     </div>

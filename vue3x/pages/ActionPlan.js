@@ -90,7 +90,7 @@ const MxMenuEdit = {
                     const parent = this.Entry
                     console.log('new child', this.type, parent)
                 },
-                copyItem: function (e) {
+                copyItem: (item, type) => {
 
                 },
                 deleteItem: (item, type) => {
