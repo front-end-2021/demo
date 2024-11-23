@@ -138,6 +138,9 @@ export default createStore({
                         (cpI) => { cpI.SubId = cpyItm.Id }
                     )
                     break;
+                case 11:    // Task
+                    cpyItm = copyItm(state.ListTask, (itm) => item.SubId == itm.SubId)
+                    break;
             }
             return cpyItm
             function copyItm(lstGs, fnc) {

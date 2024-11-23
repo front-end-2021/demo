@@ -13,7 +13,7 @@ import {
 import dnbStore from './main-store.js'
 import {
     CompModal, CompFormLand, CompFormRegion, CompFormMarket,
-    CompFormValuation, CompMessNewLand
+    CompFormValuation, CompMessNewLand, CompFormGol,
 } from './forms/comp-modal.js'
 import { getData } from './repo-services.js'
 import MarketSegment from './pages/MarketSegment.js'
@@ -337,6 +337,7 @@ Promise.all([
             'comp-mess-newland': CompMessNewLand,
             'comp-form-market': CompFormMarket,
             'comp-form-region': CompFormRegion,
+            'comp-form-goal': CompFormGol,
         },
         computed: {
             // #region trace dev

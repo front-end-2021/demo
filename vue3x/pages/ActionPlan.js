@@ -1,5 +1,6 @@
 import { VueDraggableNext } from 'vue-draggable-next'
 import { groupBy, isDragDrop } from '../common.js'
+import { getCopyItem } from '../mock-data.js'
 
 const MxItemDate = {
     computed: {
@@ -79,26 +80,55 @@ const MxMenuEdit = {
                 return;
             }
             let offTarget = e.target.getBoundingClientRect()
-            this.$root.Popup_UI = {     // type 9, 10
-                type: type,    // menu goal, sub
-                Entry: golSub,
-                Style: {
-                    top: `${offTarget.top + offTarget.height}px`,
-                    left: `${offTarget.left - 135}px`,
-                },
-                newChild: function (e) {
-                    const parent = this.Entry
-                    console.log('new child', this.type, parent)
-                },
-                copyItem: (item, type) => {
-                    this.copyItem(item, type)
-                    this.$root.Popup_UI = null
-                },
-                deleteItem: (item, type) => {
-                    this.removeItem(item.Id, type)
-                    this.$root.Popup_UI = null
-                },
+            const editItem = (item, type) => {
+                console.log('edit item ', type)
+                let compType = `comp-form-goal`
+                let formTlt = `Edit`
+                if(9 == type) formTlt += ` goal (${item.Id})`
+                if(10 == type) formTlt += ` sub (${item.Id})`
+                if(11 == type) formTlt += ` task (${item.Id})`
+                let saveClose = (mItem) => {
+                    console.log('save close ', type)
+                }
+                let xClose = (mItem) => {
+                    console.log('x close ', type)
+                }
+                let eItem = {
+                    title: formTlt,
+                    data: getCopyItem.call(this, item),
+                    type: compType
+                }
+                this.$store.commit('setModal', [eItem, saveClose, xClose])
+                this.$root.Popup_UI = null
             }
+            const deleteItem = (item, type) => {
+                this.removeItem(item.Id, type)
+                this.$root.Popup_UI = null
+            }
+            const copyItem = (item, type) => {
+                this.pCopyItem(item, type)
+                this.$root.Popup_UI = null
+            }
+            const ppMenu = {
+                type: type,    // menu goal, sub, task
+                Entry: golSub,
+                Style: { left: `${offTarget.left - 135}px`,
+                    top: `${offTarget.top + offTarget.height}px`,
+                },
+                editItem, copyItem, deleteItem,
+            }
+            switch (type) {
+                case 9:
+                case 10:
+                    ppMenu.newChild = function (e) {
+                        const parent = this.Entry
+                        console.log('new child', this.type, parent)
+                    }
+                    break;
+                default: break;
+            }
+
+            this.$root.Popup_UI = ppMenu       // type 9, 10, 11
         },
     }
 }
@@ -106,14 +136,15 @@ const ViewTask = {
     template: `#tmp-comp-vw-task`,
     name: "ViewWrapTask",
     display: "ViewWrapTask",
-    mixins: [MxItemDate],
+    inject: ['removeItem', 'pCopyItem'],
+    mixins: [MxItemDate, MxMenuEdit],
     props: ['item'],
 }
 const ViewSub = {
     template: `#tmp-comp-vw-sub`,
     name: "ViewWrapSub",
     display: "ViewWrapSub",
-    inject: ['removeItem', 'copyItem'],
+    inject: ['removeItem', 'pCopyItem'],
     mixins: [MxDndGolSub, MxItemDate, MxMenuEdit],
     components: {
         'comp-vw-task': ViewTask,
@@ -146,13 +177,34 @@ const ViewSub = {
 
             }
         },
+    }, 
+    provide() {
+        return {
+            removeItem: (gId, type) => {        // view goal
+                if (type != 11) return;
+                const lstG = this.ListTask
+                for (let gg = lstG.length - 1, gol; -1 < gg; gg--) {
+                    gol = lstG[gg]
+                    if (gol.Id == gId) lstG.splice(gg, 1)
+                }
+                this.$store.commit('remove', [gId, 11])
+            },
+            pCopyItem: (item, type) => {
+                if (type != 11) return;
+                const lstG = this.ListTask
+                let ii = lstG.findIndex(x => x.Id == item.Id)
+                this.$store.dispatch('copyItem', [item, 11]).then(cpyItm => {
+                    lstG.splice(ii + 1, 0, cpyItm)
+                })
+            },
+        }
     },
 }
 const ViewGoal = {
     template: `#tmp-comp-vw-goal`,
     name: "ViewWrapGoal",
     display: "ViewWrapGoal",
-    inject: ['removeItem', 'copyItem'],
+    inject: ['removeItem', 'pCopyItem'],
     mixins: [MxDndGolSub, MxItemDate, MxMenuEdit],
     components: {
         'comp-vw-sub': ViewSub,
@@ -201,11 +253,11 @@ const ViewGoal = {
                 }
                 this.$store.commit('remove', [gId, 10])
             },
-            copyItem: (item, type) => {
+            pCopyItem: (item, type) => {
                 if (type != 10) return;
                 const lstG = this.ListSub
                 let ii = lstG.findIndex(x => x.Id == item.Id)
-                this.$store.dispatch('copyItem', [item, type]).then(cpyItm => {
+                this.$store.dispatch('copyItem', [item, 10]).then(cpyItm => {
                     lstG.splice(ii + 1, 0, cpyItm)
                 })
             },
@@ -278,11 +330,11 @@ const ViewProduct = {
                 }
                 this.$store.commit('remove', [gId, 9])
             },
-            copyItem: (item, type) => {
+            pCopyItem: (item, type) => {
                 if (type != 9) return;
                 const lstG = this.ListGoal
                 let ii = lstG.findIndex(x => x.Id == item.Id)
-                this.$store.dispatch('copyItem', [item, type]).then(cpyItm => {
+                this.$store.dispatch('copyItem', [item, 9]).then(cpyItm => {
                     lstG.splice(ii + 1, 0, cpyItm)
                 })
             },
@@ -452,6 +504,7 @@ export default {
             if (Object.is(popMenu, null)) return null
             if (9 == popMenu.type) return popMenu
             if (10 == popMenu.type) return popMenu
+            if (11 == popMenu.type) return popMenu
             return null
         },
     },

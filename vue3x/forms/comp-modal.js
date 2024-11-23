@@ -250,6 +250,14 @@ export const CompFormRegion = {
 export const CompFormGol = {
     template: `#tmp-comp-form-goal`,
     mixins: [MxModal],
+    data() {
+        const oItem = this.moItem.data
+        return {
+            item: oItem,
+            name: oItem.Name,
+            des: oItem.Description,
+        }
+    },
     methods: {
         setNameAndDes() {
             this.item.Name = this.name.trim()

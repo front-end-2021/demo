@@ -165,9 +165,9 @@
 </template>
 <template id="tmp-comp-form-goal">
     <div class="ui modal">
-        <!-- <i class="close icon" @click.stop="onExitClose"></i>
-        <div class="header">{{Title}}</div>
-        <div class="image content">
+        <i class="close icon" @click.stop="onExitClose"></i>
+        <div class="header">{{moItem.title}}</div>
+        <div class="content">
             <div class="description">
                 <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
                 <span style="position: relative;">
@@ -187,6 +187,11 @@
                     style="min-height: 180px; width: 570px;"></span>
                 <br>
             </div>
-        </div> -->
+        </div>
+        <div class="actions">
+            <div class="ui positive right labeled icon button" 
+                @click.stop="onSaveClose">Save And Close<i class="checkmark icon"></i>
+            </div>
+        </div>
     </div>
 </template>

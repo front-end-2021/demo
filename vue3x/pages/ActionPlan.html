@@ -1,7 +1,11 @@
 <template id="tmp-comp-vw-task">
     <div class="dnbHandle m-2 p-2 bg-008ff8 border-4px w344px d-inline-block cdefault"
         @mouseenter="e => $root.Popup_UI = null">
-        <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+        <div class="wrap-info pos-relative">
+            <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+            <div class="wrp_menu"
+                @click.stop="e => showMenuEdit(11, e)">[Edit]</div>
+        </div>
         <i class="bi bi-clock me-1 font12"></i>
         <span class="font12" v-html="ViewStartEnd"></span>
         <div class="font12">
@@ -15,12 +19,12 @@
             @mouseenter="e => $root.Popup_UI = null">
             <div class="dnbHandle w344px cdefault stick-top0">
                 <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+                <div class="wrp_menu"
+                    @click.stop="e => showMenuEdit(10, e)">[Edit]</div>
                 <div class="font12">
                     <i class="bi bi-clock me-1"></i>
                     <span v-html="ViewStartEnd"></span>
                 </div>
-                <div class="wrp_menu"
-                    @click.stop="e => showMenuEdit(10, e)">[Edit]</div>
             </div>
         </div>
         <draggable v-model="ListTask" v-bind="DndTaskOptions" 
@@ -41,12 +45,12 @@
             @mouseenter="e => $root.Popup_UI = null">
             <div class="dnbHandle w344px cdefault stick-top0" >
                 <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+                <div class="wrp_menu"
+                    @click.stop="e => showMenuEdit(9, e)">[Edit]</div>
                 <div class="font12">
                     <i class="bi bi-clock me-1"></i>
                     <span v-html="ViewStartEnd"></span>
                 </div>
-                <div class="wrp_menu"
-                    @click.stop="e => showMenuEdit(9, e)">[Edit]</div>
             </div>
         </div>
         <draggable v-model="ListSub" v-bind="DndSubOptions" 
@@ -117,8 +121,10 @@
         class="d-inline-block p-1 bg-006bb9 menu_golsub border-4px"
         @mouseleave="e => $root.Popup_UI = null"
         :style="[MenuAcPlan.Style]">
-        <div class="p-2 cpointer menu_golsub-i mb1px border-4px">Edit item</div>
         <div class="p-2 cpointer menu_golsub-i mb1px border-4px"
+            @click.stop="e => MenuAcPlan.editItem(MenuAcPlan.Entry, MenuAcPlan.type)">Edit item</div>
+        <div v-if="9 == MenuAcPlan.type || 10 == MenuAcPlan.type"
+            class="p-2 cpointer menu_golsub-i mb1px border-4px"
             @click.stop="e => MenuAcPlan.newChild(e)">New {{9 == MenuAcPlan.type ? 'Sub' : 'Task'}}</div>
         <div @click.stop="e => MenuAcPlan.copyItem(MenuAcPlan.Entry, MenuAcPlan.type)"
             class="p-2 cpointer menu_golsub-i mb1px border-4px">Copy</div>
