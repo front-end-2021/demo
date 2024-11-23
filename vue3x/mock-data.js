@@ -320,9 +320,9 @@ function overrideItem(mItem) {
     }
 }
 function getCopyItem(item) {
-    const vueApp = this;
+    const vComp = this;
     const cpyItem = JSON.parse(JSON.stringify(item))
-    cpyItem.Description = vueApp.$store.getters.Des(item)
+    cpyItem.Description = vComp.$store.getters.Des(item)
     return cpyItem
 }
 function deleteDes() { delete this.Description }

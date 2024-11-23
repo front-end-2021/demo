@@ -28,7 +28,8 @@
 </template>
 <template id="tmp-comp-submarket">
     <section class="mt-2 px20px" style="padding-bottom: 169px;">
-        <comp-filter-smarket @set:filter="$event => setFilter($event)"></comp-filter-smarket>
+        <comp-filter-smarket v-if="$root.IsShowF"
+            @set:filter="$event => setFilter($event)"></comp-filter-smarket>
         <article v-if="1 == $root.ProcessState">
             <button>Action plan</button><button>Eval submarkets</button>
             <button>Porfolio analysis</button><button>Submarket strategy</button>

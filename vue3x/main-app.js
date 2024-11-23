@@ -45,7 +45,7 @@ Promise.all([
                 TabStatus: [1, 1, 1, 1, 1], // [M@rk3t, SubM@rk3t, @ctionPl4n, Ro4dm@p, T3mB0@rd]
                 ActviePrGrpIds: [],
                 ActiveLandIds: [],
-                IsShowF: false,
+                IsShowF: true,
                 MarketCriterias: [],    // [Type, Ids]
                 SubMarketCrites: [],    // [Type, Ids]
                 ProcessState: 0,    // loading (0), success (1)

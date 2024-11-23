@@ -107,7 +107,7 @@ button { cursor: pointer; }
 .w81px { width: 81px; }
 .w344px { width: calc(344px - 30px); }
 .list-sub { width: calc(100% - 344px + 30px); }
-.list-task { width: calc(100% - 344px + 30px - .5rem); }
+.list-task { width: calc(100% - 344px + 30px - .5rem); display: flex; flex-wrap: wrap;}
 .dnb-nav {
     background-color: #006bb9; height: 30px;
     background-color: #b1b1b1; /*dnb_dev */

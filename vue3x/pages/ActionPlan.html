@@ -8,9 +8,20 @@
         </div>
         <i class="bi bi-clock me-1 font12"></i>
         <span class="font12" v-html="ViewStartEnd"></span>
-        <div class="font12">
-            [+ Todo]
+        <div v-for="(todo, ii) in Todos" class="d-flex">
+            <span v-if="ii < 3">{{ii + 1}}.&nbsp;</span>
+            <span v-else @click.stop="showFormEdit"
+                class="cpointer">[ Expand... ]</span>
+            <span v-if="ii < 3"
+                @input="e => onChangeTodo(ii, e)"
+                style="flex-grow: 2;"
+                @keypress="onPreventEnter"
+                contenteditable="true">{{todo}}</span>
+            <span v-if="ii < 3" class="cpointer"
+                @click.stop="e => removeTodo(ii)">[ - ]</span>
         </div>
+        <div v-if="Todos.length < 4" 
+            class="font12" @click.stop="addTodo">[+ Todo]</div>
     </div>
 </template>
 <template id="tmp-comp-vw-sub">

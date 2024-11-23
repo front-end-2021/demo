@@ -139,6 +139,40 @@ const ViewTask = {
     inject: ['removeItem', 'pCopyItem'],
     mixins: [MxItemDate, MxMenuEdit],
     props: ['item'],
+    data(){
+        return {
+            Todos: []
+        }
+    },
+    methods: {
+        addTodo(){ this.Todos.push(`Todo ${this.Todos.length + 1}`) },
+        removeTodo(ii){ this.Todos.splice(ii, 1) },
+        onChangeTodo(ii, e){
+            console.log('e ', e)
+             let newTxt = e.target.innerText
+             this.Todos.splice(ii, 1, newTxt)
+        },
+        onPreventEnter(e){ 
+            if (e.which === 13) { e.preventDefault(); // prevent enter
+        }},
+        showFormEdit(){
+            const type = 11
+            let compType = `comp-form-goal`
+            let formTlt = `Edit task (${this.item.Id})`
+            let saveClose = (mItem) => {
+                console.log('save close ', type)
+            }
+            let xClose = (mItem) => {
+                console.log('x close ', type)
+            }
+            let eItem = {
+                title: formTlt,
+                data: getCopyItem.call(this, this.item),
+                type: compType
+            }
+            this.$store.commit('setModal', [eItem, saveClose, xClose])
+        },
+    },
 }
 const ViewSub = {
     template: `#tmp-comp-vw-sub`,
