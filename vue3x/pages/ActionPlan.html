@@ -36,10 +36,14 @@
                     <span v-html="ViewStartEnd"></span>
                 </div>
             </div>
-            <div class="ui floating labeled icon dropdown button"
+            <div v-if="AssignU == null"
+                class="ui floating labeled icon dropdown button"
                 @click.stop="e => showAssignUser(e)">
-                <i class="add user icon"></i>Add User
-            </div>
+                <i class="add user icon"></i>Add User</div>
+            <div v-else
+                class="ui floating labeled icon dropdown button"
+                @click.stop="e => showAssignUser(e)">
+                <i class="user icon"></i>{{AssignU.Name}}</div>
         </div>
         <draggable v-model="ListTask" v-bind="DndTaskOptions" 
             handle=".dnbHandle"
@@ -150,14 +154,15 @@
         style="position: fixed;" :style="[MenuAssignUser.Style]"
         class="drpUserAsgn ui floating labeled icon dropdown button">
         <i class="add user icon"></i>
-        <span class="text">Add User</span>
+        <span class="text">{{MenuAssignUser.Name}}</span>
         <div class="menu">
           <div class="header">Assign user</div>
-          <div v-for="person in $root.People" class="item" 
+          <div v-for="(person, ii) in $root.People" class="item"
+            :data-value="ii"
             style="align-items: center;display: flex;">
             <span class="d-inline-block me-1 border-4px text-center" 
                 style="width: 18px;height: 18px;background-color: #565656;color: white;"
-                :value="person.Id">{{person.Name[0]}}</span>
+                >{{person.Name[0]}}</span>
             {{person.Name}}
           </div>
         </div>

@@ -190,7 +190,8 @@ const ViewSub = {
     props: ['item'],
     data() {
         return {
-            ListTask: this.$store.getters.sortedInRange([11, [this.item.Id], 0, 90])
+            ListTask: this.$store.getters.sortedInRange([11, [this.item.Id], 0, 90]),
+            AssignU: null
         }
     },
     computed: {
@@ -239,20 +240,21 @@ const ViewSub = {
     methods: {
         showAssignUser(e) {
             let offTarget = e.target.getBoundingClientRect()
+            let name = this.AssignU === null ? `Add User` : this.AssignU.Name
             this.$root.Popup_UI = { // type 100
                 type: 100,
                 Entry: this.item,
                 Style: {
-                    left: `${offTarget.left}px`,
-                    top: `${offTarget.top}px`,
+                    left: `${offTarget.left}px`, top: `${offTarget.top}px`,
                 },
+                Name: name
             }
             this.$root.$nextTick(() => {
                 const $drp = $('.drpUserAsgn')
-                const onChange = (value, text, $choice) => {
-                    
-                    console.log('change ', typeof value, value)
-                    console.log('change ', text)
+                const onChange = (value) => {
+                    let ii = parseInt(value)
+                    this.AssignU = this.$root.People[ii]
+                    this.$root.Popup_UI = null
                 }
                 $drp.dropdown({
                     onChange
@@ -569,7 +571,7 @@ export default {
             if (11 == popMenu.type) return popMenu
             return null
         },
-        MenuAssignUser(){
+        MenuAssignUser() {
             const popMenu = this.$root.Popup_UI
             if (Object.is(popMenu, null)) return null
             if (100 == popMenu.type) return popMenu
@@ -577,6 +579,6 @@ export default {
         },
     },
     mounted() {
-        
+
     },
 }
