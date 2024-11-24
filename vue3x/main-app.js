@@ -50,7 +50,12 @@ Promise.all([
                 SubMarketCrites: [],    // [Type, Ids]
                 ProcessState: 0,    // loading (0), success (1)
                 DragDrop: null,
-                Popup_UI: null,  // 
+                
+                // type 1000 (tooltip name, des), 
+                // type 9, 10, 11 (menu goal, sub, task),
+                // type 1 (menu land), 23 (menu evaluation market-region)
+                // type 48 (menu submarket product)
+                Popup_UI: null,
 
                 UserInfo: {
                     img: `https://allimages.sgp1.digitaloceanspaces.com/tipeduvn/2022/01/1642393308_940_Hinh-Anh-Girl-Xinh-Viet-Nam-Dep-De-Thuong-Cute.jpg`,
@@ -62,7 +67,20 @@ Promise.all([
                   <p>Is it okay to use this photo?`
                     }
                 },
-                Users: ['Unassigned', 'Bill Gate', 'Elon Musk', 'Larry Page'],
+                People: [
+                    { Name: 'Dai NB', Id: 1,
+                        Pass: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'
+                    },
+                    { Name: 'Bill Gate', Id: 2,
+                        Pass: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'
+                    },
+                    { Name: 'Elon Musk', 
+                        Pass: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'
+                    },
+                    { Name: 'Larry Page', Id: 3,
+                        Pass: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'
+                    },
+                ],
                 UserAssign: 'Assign',
             }
         },
@@ -95,6 +113,7 @@ Promise.all([
                 return popMenu.type
                 // 23 (Menu Cell Valuation), 1 (Menu btn Land)
             },
+            Users(){ return ['Unassigned', ...this.People.map(x => x.Name)] },
         },
         watch: {
             IndexPage(val) { setLocal(6, val) },
@@ -317,7 +336,7 @@ Promise.all([
             })
             this.traceHeap('Main App')
 
-            const message = "Hello, world!";
+            const message = "123456";
             const hash = CryptoJS.SHA256(message);
             console.log('test sha256', hash.toString(CryptoJS.enc.Hex));
             

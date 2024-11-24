@@ -26,9 +26,8 @@
 </template>
 <template id="tmp-comp-vw-sub">
     <div class="d-flex mb-2 minh87px">
-        <div class="wrap-info p-2 bg-008ff8 border-l6px"
-            @mouseenter="e => $root.Popup_UI = null">
-            <div class="dnbHandle w344px cdefault stick-top0">
+        <div class="p-2 bg-008ff8 border-l6px">
+            <div class="dnbHandle wrap-info w344px cdefault stick-top0">
                 <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
                 <div class="wrp_menu"
                     @click.stop="e => showMenuEdit(10, e)">[Edit]</div>
@@ -36,6 +35,10 @@
                     <i class="bi bi-clock me-1"></i>
                     <span v-html="ViewStartEnd"></span>
                 </div>
+            </div>
+            <div class="ui floating labeled icon dropdown button"
+                @click.stop="e => showAssignUser(e)">
+                <i class="add user icon"></i>Add User
             </div>
         </div>
         <draggable v-model="ListTask" v-bind="DndTaskOptions" 
@@ -97,7 +100,8 @@
 </template>
 <template id="tmp-comp-action-plan">
     <section>
-        <drop-select :name="$root.UserAssign" :items="$root.Users" @set:index="$event => setUserAssign($event)">
+        <drop-select :name="$root.UserAssign" :items="$root.Users" 
+        @set:index="$event => setUserAssign($event)">
             <template #default>
                 <div class="default text">{{$root.UserAssign}}</div>
             </template>
@@ -141,5 +145,21 @@
             class="p-2 cpointer menu_golsub-i mb1px border-4px">Copy</div>
         <div @click.stop="e => MenuAcPlan.deleteItem(MenuAcPlan.Entry, MenuAcPlan.type)"
             class="p-2 cpointer menu_golsub-i border-4px">Delete</div>
+    </div>
+    <div v-if="MenuAssignUser != null" 
+        style="position: fixed;" :style="[MenuAssignUser.Style]"
+        class="drpUserAsgn ui floating labeled icon dropdown button">
+        <i class="add user icon"></i>
+        <span class="text">Add User</span>
+        <div class="menu">
+          <div class="header">Assign user</div>
+          <div v-for="person in $root.People" class="item" 
+            style="align-items: center;display: flex;">
+            <span class="d-inline-block me-1 border-4px text-center" 
+                style="width: 18px;height: 18px;background-color: #565656;color: white;"
+                :value="person.Id">{{person.Name[0]}}</span>
+            {{person.Name}}
+          </div>
+        </div>
     </div>
 </template>

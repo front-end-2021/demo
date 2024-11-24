@@ -84,9 +84,9 @@ const MxMenuEdit = {
                 console.log('edit item ', type)
                 let compType = `comp-form-goal`
                 let formTlt = `Edit`
-                if(9 == type) formTlt += ` goal (${item.Id})`
-                if(10 == type) formTlt += ` sub (${item.Id})`
-                if(11 == type) formTlt += ` task (${item.Id})`
+                if (9 == type) formTlt += ` goal (${item.Id})`
+                if (10 == type) formTlt += ` sub (${item.Id})`
+                if (11 == type) formTlt += ` task (${item.Id})`
                 let saveClose = (mItem) => {
                     console.log('save close ', type)
                 }
@@ -112,7 +112,8 @@ const MxMenuEdit = {
             const ppMenu = {
                 type: type,    // menu goal, sub, task
                 Entry: golSub,
-                Style: { left: `${offTarget.left - 135}px`,
+                Style: {
+                    left: `${offTarget.left - 135}px`,
                     top: `${offTarget.top + offTarget.height}px`,
                 },
                 editItem, copyItem, deleteItem,
@@ -139,23 +140,25 @@ const ViewTask = {
     inject: ['removeItem', 'pCopyItem'],
     mixins: [MxItemDate, MxMenuEdit],
     props: ['item'],
-    data(){
+    data() {
         return {
             Todos: []
         }
     },
     methods: {
-        addTodo(){ this.Todos.push(`Todo ${this.Todos.length + 1}`) },
-        removeTodo(ii){ this.Todos.splice(ii, 1) },
-        onChangeTodo(ii, e){
+        addTodo() { this.Todos.push(`Todo ${this.Todos.length + 1}`) },
+        removeTodo(ii) { this.Todos.splice(ii, 1) },
+        onChangeTodo(ii, e) {
             console.log('e ', e)
-             let newTxt = e.target.innerText
-             this.Todos.splice(ii, 1, newTxt)
+            let newTxt = e.target.innerText
+            this.Todos.splice(ii, 1, newTxt)
         },
-        onPreventEnter(e){ 
-            if (e.which === 13) { e.preventDefault(); // prevent enter
-        }},
-        showFormEdit(){
+        onPreventEnter(e) {
+            if (e.which === 13) {
+                e.preventDefault(); // prevent enter
+            }
+        },
+        showFormEdit() {
             const type = 11
             let compType = `comp-form-goal`
             let formTlt = `Edit task (${this.item.Id})`
@@ -211,7 +214,7 @@ const ViewSub = {
 
             }
         },
-    }, 
+    },
     provide() {
         return {
             removeItem: (gId, type) => {        // view goal
@@ -231,6 +234,31 @@ const ViewSub = {
                     lstG.splice(ii + 1, 0, cpyItm)
                 })
             },
+        }
+    },
+    methods: {
+        showAssignUser(e) {
+            let offTarget = e.target.getBoundingClientRect()
+            this.$root.Popup_UI = { // type 100
+                type: 100,
+                Entry: this.item,
+                Style: {
+                    left: `${offTarget.left}px`,
+                    top: `${offTarget.top}px`,
+                },
+            }
+            this.$root.$nextTick(() => {
+                const $drp = $('.drpUserAsgn')
+                const onChange = (value, text, $choice) => {
+                    
+                    console.log('change ', typeof value, value)
+                    console.log('change ', text)
+                }
+                $drp.dropdown({
+                    onChange
+                })
+                $drp.dropdown('show')
+            })
         }
     },
 }
@@ -541,5 +569,14 @@ export default {
             if (11 == popMenu.type) return popMenu
             return null
         },
+        MenuAssignUser(){
+            const popMenu = this.$root.Popup_UI
+            if (Object.is(popMenu, null)) return null
+            if (100 == popMenu.type) return popMenu
+            return null
+        },
+    },
+    mounted() {
+        
     },
 }
