@@ -76,7 +76,7 @@ const MxMenuEdit = {
             const popMenu = this.$root.Popup_UI
             const golSub = this.item
             if (!Object.is(popMenu, null) && type == popMenu.type && golSub.Id == popMenu.Entry.Id) {
-                this.$root.Popup_UI = null
+                this.$root.clearPopupUI(9)
                 return;
             }
             let offTarget = e.target.getBoundingClientRect()
@@ -99,15 +99,15 @@ const MxMenuEdit = {
                     type: compType
                 }
                 this.$store.commit('setModal', [eItem, saveClose, xClose])
-                this.$root.Popup_UI = null
+                this.$root.clearPopupUI(9)
             }
             const deleteItem = (item, type) => {
                 this.removeItem(item.Id, type)
-                this.$root.Popup_UI = null
+                this.$root.clearPopupUI(9)
             }
             const copyItem = (item, type) => {
                 this.pCopyItem(item, type)
-                this.$root.Popup_UI = null
+                this.$root.clearPopupUI(9)
             }
             const ppMenu = {
                 type: type,    // menu goal, sub, task
@@ -128,7 +128,6 @@ const MxMenuEdit = {
                     break;
                 default: break;
             }
-
             this.$root.Popup_UI = ppMenu       // type 9, 10, 11
         },
     }
@@ -189,9 +188,11 @@ const ViewSub = {
     },
     props: ['item'],
     data() {
+        let uId = this.item.UserId
+        let user = this.$root.People.find(x => x.Id == uId)
         return {
             ListTask: this.$store.getters.sortedInRange([11, [this.item.Id], 0, 90]),
-            AssignU: null
+            AssignU: !user ? null : user,
         }
     },
     computed: {
@@ -240,21 +241,23 @@ const ViewSub = {
     methods: {
         showAssignUser(e) {
             let offTarget = e.target.getBoundingClientRect()
-            let name = this.AssignU === null ? `Add User` : this.AssignU.Name
+            const asgnU = this.AssignU
             this.$root.Popup_UI = { // type 100
                 type: 100,
                 Entry: this.item,
                 Style: {
                     left: `${offTarget.left}px`, top: `${offTarget.top}px`,
                 },
-                Name: name
+                Name: asgnU === null ? `Add User` : asgnU.Name
             }
             this.$root.$nextTick(() => {
                 const $drp = $('.drpUserAsgn')
                 const onChange = (value) => {
                     let ii = parseInt(value)
-                    this.AssignU = this.$root.People[ii]
-                    this.$root.Popup_UI = null
+                    let asU = this.$root.People[ii]
+                    this.AssignU = asU
+                    this.item.UserId = asU.Id
+                    this.$root.clearPopupUI(10)
                 }
                 $drp.dropdown({
                     onChange

@@ -155,10 +155,10 @@
         class="drpUserAsgn ui floating labeled icon dropdown button">
         <i class="add user icon"></i>
         <span class="text">{{MenuAssignUser.Name}}</span>
-        <div class="menu">
+        <div class="menu" style="margin-top: 0 !important;">
           <div class="header">Assign user</div>
           <div v-for="(person, ii) in $root.People" class="item"
-            :data-value="ii"
+            :data-value="ii" :class="MenuAssignUser.Entry.UserId == person.Id ? 'active' : ''"
             style="align-items: center;display: flex;">
             <span class="d-inline-block me-1 border-4px text-center" 
                 style="width: 18px;height: 18px;background-color: #565656;color: white;"

@@ -50,7 +50,7 @@ Promise.all([
                 SubMarketCrites: [],    // [Type, Ids]
                 ProcessState: 0,    // loading (0), success (1)
                 DragDrop: null,
-                
+
                 // type 1000 (tooltip name, des), 
                 // type 9, 10, 11 (menu goal, sub, task),
                 // type 1 (menu land), 23 (menu evaluation market-region)
@@ -68,16 +68,20 @@ Promise.all([
                     }
                 },
                 People: [
-                    { Name: 'Dai NB', Id: 1,
+                    {
+                        Name: 'Dai NB', Id: 1,
                         Pass: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'
                     },
-                    { Name: 'Bill Gate', Id: 2,
+                    {
+                        Name: 'Bill Gate', Id: 2,
                         Pass: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'
                     },
-                    { Name: 'Elon Musk',  Id: 4,
+                    {
+                        Name: 'Elon Musk', Id: 4,
                         Pass: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'
                     },
-                    { Name: 'Larry Page', Id: 3,
+                    {
+                        Name: 'Larry Page', Id: 3,
                         Pass: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'
                     },
                 ],
@@ -113,11 +117,11 @@ Promise.all([
                 return popMenu.type
                 // 23 (Menu Cell Valuation), 1 (Menu btn Land)
             },
-            Users(){ return ['Unassigned', ...this.People.map(x => x.Name)] },
+            Users() { return ['Unassigned', ...this.People.map(x => x.Name)] },
         },
         watch: {
             IndexPage(val) { setLocal(6, val) },
-            
+
         },
         methods: {
             selectPage(index) { this.IndexPage = index },
@@ -179,7 +183,8 @@ Promise.all([
                         if (popMenu.type != 1) return;
                         this.Popup_UI = null;
                         break;
-                    default: break;
+                    default: this.Popup_UI = null;
+                        break;
                 }
             },
             viewName(name, type) {
@@ -260,7 +265,7 @@ Promise.all([
                     }
                 }
             },
-            hideTooltip(type, item, e){ this.Popup_UI = null },
+            hideTooltip(type, item, e) { this.Popup_UI = null },
             classSqr(isCheck) {
                 if (isCheck) return `bi-check2-square`
                 return `bi-square`
@@ -339,7 +344,7 @@ Promise.all([
             const message = "123456";
             const hash = CryptoJS.SHA256(message);
             console.log('test sha256', hash.toString(CryptoJS.enc.Hex));
-            
+
         },
     })
     app.use(dnbStore)
