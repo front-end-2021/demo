@@ -175,17 +175,62 @@
                         v-html="item.Name" 
                         class="d-inline-block p-2 dnbItemName" 
                         data-content="Duplicate name"
-                        style="width: 234px;"
+                        style="width: calc(100% - 81px);"
                         @keypress="onKeyPressName"
                         @input="onChangeName"></span>
                 </span>
                 <br>
                 <strong class="d-inline-block w81px py-2 pe-2">Description: </strong>
                 <span contenteditable="true" v-html="item.Description" 
-                    class="d-inline-block p-2" style="width: 234px; height: 96px;"
+                    class="d-inline-block p-2" 
+                    style="width: calc(100% - 81px); height: 96px;"
                     @input="onChangeDes"
                     style="min-height: 180px; width: 570px;"></span>
                 <br>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui positive right labeled icon button" 
+                @click.stop="onSaveClose">Save And Close<i class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="tmp-comp-form-task">
+    <div class="ui modal">
+        <i class="close icon" @click.stop="onExitClose"></i>
+        <div class="header">{{moItem.title}}</div>
+        <div class="content">
+            <div class="description">
+                <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
+                <span style="position: relative;">
+                    <span contenteditable="true" 
+                        v-html="item.Name" 
+                        class="d-inline-block p-2 dnbItemName" 
+                        data-content="Duplicate name"
+                        style="width: calc(100% - 81px);"
+                        @keypress="onKeyPressName"
+                        @input="onChangeName"></span>
+                </span>
+                <br>
+                <strong class="d-inline-block w81px py-2 pe-2">Description: </strong>
+                <span contenteditable="true" v-html="item.Description" 
+                    class="d-inline-block p-2" 
+                    style="width: calc(100% - 81px); height: 96px;"
+                    @input="onChangeDes"
+                    style="min-height: 180px; width: 570px;"></span>
+                <br>
+                <div class="d-flex">
+                    <strong class="d-inline-block w81px py-2 pe-2"
+                        style="padding-top: 0;">Todos: </strong>
+                    <ol style="width: calc(100% - 81px);margin-top: 0;">
+                        <li v-for="(todo, ii) in moItem.data.Todos"
+                            class="px-2 pb-2"
+                            @keypress="onKeyPressName"
+                            @input="e => onChangeTodo(e, ii)"
+                            contenteditable="true" v-html="todo"></li>
+                    </ol>
+                </div>
             </div>
         </div>
         <div class="actions">

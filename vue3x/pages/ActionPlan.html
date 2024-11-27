@@ -8,7 +8,7 @@
         </div>
         <i class="bi bi-clock me-1 font12"></i>
         <span class="font12" v-html="ViewStartEnd"></span>
-        <div v-for="(todo, ii) in Todos" class="d-flex">
+        <div v-for="(todo, ii) in item.Todos" class="d-flex">
             <span v-if="ii < 3">{{ii + 1}}.&nbsp;</span>
             <span v-else @click.stop="showFormEdit"
                 class="cpointer">[ Expand... ]</span>
@@ -20,7 +20,7 @@
             <span v-if="ii < 3" class="cpointer"
                 @click.stop="e => removeTodo(ii)">[ - ]</span>
         </div>
-        <div v-if="Todos.length < 4" 
+        <div v-if="item.Todos.length < 4" 
             class="font12" @click.stop="addTodo">[+ Todo]</div>
     </div>
 </template>

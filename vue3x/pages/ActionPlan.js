@@ -80,23 +80,26 @@ const MxMenuEdit = {
                 return;
             }
             let offTarget = e.target.getBoundingClientRect()
-            const editItem = (item, type) => {
-                console.log('edit item ', type)
+            const editItem = (item, etype) => {
+                console.log('edit item ', etype)
                 let compType = `comp-form-goal`
                 let formTlt = `Edit`
-                if (9 == type) formTlt += ` goal (${item.Id})`
-                if (10 == type) formTlt += ` sub (${item.Id})`
-                if (11 == type) formTlt += ` task (${item.Id})`
+                if (9 == etype) formTlt += ` goal (${item.Id})`
+                if (10 == etype) formTlt += ` sub (${item.Id})`
+                if (11 == etype) {
+                    formTlt += ` task (${item.Id})`
+                    compType = `comp-form-task`
+                }
                 let saveClose = (mItem) => {
-                    console.log('save close ', type)
+                    console.log('save close ', etype)
                 }
                 let xClose = (mItem) => {
-                    console.log('x close ', type)
+                    console.log('x close ', etype)
                 }
-                let eItem = {
+                const eItem = {
                     title: formTlt,
                     data: getCopyItem.call(this, item),
-                    type: compType
+                    type: compType,
                 }
                 this.$store.commit('setModal', [eItem, saveClose, xClose])
                 this.$root.clearPopupUI(9)
@@ -139,18 +142,22 @@ const ViewTask = {
     inject: ['removeItem', 'pCopyItem'],
     mixins: [MxItemDate, MxMenuEdit],
     props: ['item'],
-    data() {
-        return {
-            Todos: []
-        }
-    },
+   
     methods: {
-        addTodo() { this.Todos.push(`Todo ${this.Todos.length + 1}`) },
-        removeTodo(ii) { this.Todos.splice(ii, 1) },
+        addTodo() {
+            const lstT = this.item.Todos
+            lstT.push(`Todo ${lstT.length + 1}`)
+        },
+        removeTodo(ii) { 
+            const lstT = this.item.Todos
+            lstT.splice(ii, 1) 
+        },
         onChangeTodo(ii, e) {
-            console.log('e ', e)
+            //console.log('e ', e)
+            const lstT = this.item.Todos
             let newTxt = e.target.innerText
-            this.Todos.splice(ii, 1, newTxt)
+            lstT.splice(ii, 1, newTxt)
+            this.item.Todos = lstT
         },
         onPreventEnter(e) {
             if (e.which === 13) {
@@ -159,7 +166,7 @@ const ViewTask = {
         },
         showFormEdit() {
             const type = 11
-            let compType = `comp-form-goal`
+            let compType = `comp-form-task`
             let formTlt = `Edit task (${this.item.Id})`
             let saveClose = (mItem) => {
                 console.log('save close ', type)
@@ -170,7 +177,7 @@ const ViewTask = {
             let eItem = {
                 title: formTlt,
                 data: getCopyItem.call(this, this.item),
-                type: compType
+                type: compType,
             }
             this.$store.commit('setModal', [eItem, saveClose, xClose])
         },

@@ -268,18 +268,22 @@ function getTaks() {
         {
             Id: 2, Name: 'Bán 30 cuốn Conan Section 1 trong tuan 1', SubId: 2, ASort: 1,
             Start: 'Tue Oct 01 2024', End: new Date('Thu Oct 31 2024').toDateString(),
+            Todos: [],
         },
         {
             Id: 1, Name: 'Bán 40 cuốn Conan Section 1 trong tuan 2', SubId: 2,
             Start: 'Fri Nov 01 2024', End: 'Sat Nov 30 2024', ASort: 2,
+            Todos: [],
         },
         {
             Id: 3, Name: 'Bán 30 cuốn Conan Section 1 trong tuan 3', SubId: 2,
             Start: 'Thu Aug 01 2024', End: 'Sun Aug 11 2024', ASort: 3,
+            Todos: [],
         },
         {
             Id: 4, Name: 'Bán 50 cuốn Conan Section 1 trong tuan 4', SubId: 2,
             Start: 'Mon Aug 12 2024', End: 'Sat Aug 31 2024', ASort: 4,
+            Todos: [],
         },
     ]
     // return lst;
@@ -294,6 +298,7 @@ function getTaks() {
         lst.push({
             Id: taskId, Name: `${genRandName(nameList)} (${name})`, SubId: prId,
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`, ASort: ++maxIndex,
+            Todos: [],
         })
     }
     return lst;

@@ -247,6 +247,48 @@ export const CompFormRegion = {
     },
     // mounted() { console.log('mounted form region') },
 }
+export const CompFormTask = {
+    template: `#tmp-comp-form-task`,
+    mixins: [MxModal],
+    data() {
+        const oItem = this.moItem.data
+        return {
+            item: oItem,
+            name: oItem.Name,
+            des: oItem.Description,
+            ListTodo: oItem.Todos.map(x => x),     // copy
+        }
+    },
+    methods: {
+        setNameAndDes() {
+            this.item.Name = this.name.trim()
+            let des = ''
+            if (typeof this.des == 'string') {
+                des = this.des.replaceAll(`&nbsp;`, ' ')
+                des = des.replaceAll(`<br>`, `\n`)
+            }
+            this.item.Description = des.trim()
+        },
+        onExitClose() {
+            this.setNameAndDes()
+            this.hideModal()
+            this.$store.commit('outModal', ['exit-close', this.item])
+        },
+        onSaveClose() {
+            this.setNameAndDes()
+            this.hideModal()
+            this.$store.commit('outModal', ['save-close', this.item])
+        },
+        onChangeName(e) { this.name = e.target.innerText },
+        onKeyPressName(e) {
+            if (e.which === 13) {
+                e.preventDefault(); // prevent enter
+            }
+        },
+        onChangeDes(e) { this.des = e.target.innerHTML },
+        onChangeTodo(e, ii) { this.ListTodo.splice(ii, 1, e.target.innerText) },
+    },
+}
 export const CompFormGol = {
     template: `#tmp-comp-form-goal`,
     mixins: [MxModal],
