@@ -31,35 +31,6 @@ for (let pp = 5; pp < PLen + 5; pp++) {
 }
 
 const Mains = []
-for (let mm = 1; mm < 19; mm++) {
-    const main = newItem()
-    main.ProjectId = getRandomInt(1, PLen)
-    main.Subs = []
-    const Slen = getRandomInt(1, 6)
-    for (let ss = 1; ss <= Slen; ss++) {
-        const sub = newItem()
-        sub.Actions = []
-        const Alen = getRandomInt(1, 9)
-        for (let aa = 1; aa <= Alen; aa++) {
-            const action = newItem()
-            action.Costs = []
-            const Clen = getRandomInt(1, 5)
-            for (let cc = 1; cc <= Clen; cc++) {
-                const activity = newItem()
-                action.Costs.push(activity)
-            }
-            action.Todos = []
-            const Tlen = getRandomInt(1, 5)
-            for (let tt = 1; tt <= Tlen; tt++) {
-                const todo = newItem()
-                action.Todos.push(todo)
-            }
-            sub.Actions.push(action)
-        }
-        main.Subs.push(sub)
-    }
-    Mains.push(main)
-}
 
 const Langs = [
     { Key: 'en', Name: 'English' },
@@ -173,7 +144,7 @@ function getProducts() {
     return lst
 }
 
-const DemoGoals = getGoals()
+let DemoGoals //= getGoals()
 function getGoals() {
     const lst = [
         {
@@ -202,16 +173,6 @@ function getGoals() {
             ASort: 1,
         },
     ]
-    lst.forEach(item => {
-        Object.defineProperty(item, 'Id', {
-            writable: false, // Không thể thay đổi giá trị
-            configurable: false // Không thể xóa hoặc thay đổi thuộc tính
-        })
-        Object.defineProperty(item, 'SubmPrdId', {
-            configurable: false
-        })
-    })
-    //  return lst;
     const arr = lst.map(x => x.ASort)
     let maxIndex = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     let goalId = 6
@@ -225,10 +186,19 @@ function getGoals() {
             Start: `Thu Aug 01 2024`, End: `Sat Aug 31 2024`,
         })
     }
+    lst.forEach(item => {
+        Object.defineProperty(item, 'Id', {
+            writable: false, // Không thể thay đổi giá trị
+            configurable: false // Không thể xóa hoặc thay đổi thuộc tính
+        })
+        Object.defineProperty(item, 'SubmPrdId', {
+            configurable: false
+        })
+    })
     return lst
 }
-const DemoSubs = getSubs()
-function getSubs() {
+let DemoSubs //= getSubs(DemoGoals)
+function getSubs(goals) {
     const lst = [
         {
             Id: 2, Name: 'Bán 600 cuốn Conan Section 1 trong tháng 10', GoalId: 3, ASort: 1,
@@ -247,7 +217,7 @@ function getSubs() {
             Start: 'Mon Aug 12 2024', End: 'Sat Aug 31 2024', ASort: 4,
         },
     ]
-    let arr = DemoGoals.map(x => x.Id)
+    let arr = goals.map(x => x.Id)
     const maxId = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     arr = lst.map(x => x.ASort)
     let maxIndex = arr.reduce((a, b) => Math.max(a, b), -Infinity);
@@ -262,8 +232,8 @@ function getSubs() {
     }
     return lst;
 }
-const DemoTasks = getTaks()
-function getTaks() {
+let DemoTasks //= getTaks(DemoSubs)
+function getTaks(subs) {
     const lst = [
         {
             Id: 2, Name: 'Bán 30 cuốn Conan Section 1 trong tuan 1', SubId: 2, ASort: 1,
@@ -287,7 +257,7 @@ function getTaks() {
         },
     ]
     // return lst;
-    let arr = DemoSubs.map(x => x.Id)
+    let arr = subs.map(x => x.Id)
     const maxId = arr.reduce((a, b) => Math.max(a, b), -Infinity);
     arr = lst.map(x => x.ASort)
     let maxIndex = arr.reduce((a, b) => Math.max(a, b), -Infinity);
@@ -302,6 +272,21 @@ function getTaks() {
         })
     }
     return lst;
+}
+if (window.Worker) {
+    const myWorker = new Worker('worker.js');
+    myWorker.onmessage = function (event) {
+        DemoGoals = event.data.Goals
+        DemoSubs = event.data.Subs
+        DemoTasks = event.data.Tasks
+        console.log('Result from worker:', event.data);
+    }
+    myWorker.postMessage({ type: 'get goals, subs, tasks' }); // Gửi dữ liệu đến worker 
+} else {
+    //  console.info('Your browser doesn\'t support Web Workers.');
+    DemoGoals = getGoals()
+    DemoSubs = getSubs(DemoGoals)
+    DemoTasks = getTaks(DemoSubs)
 }
 function getMessCompare(item, mItem) {
     let mess = ''
@@ -341,31 +326,21 @@ export {
     overrideItem, getCopyItem, deleteDes
 }
 
-function newItem() {
-    let start = Math.random() < 0.21 ? null : genRandomDateStr()
-    let end = !start ? null : (Math.random() < 0.314 ? null : genRandomDateStr(start))
-    return {
-        Name: `${genRandName(nameList)} ${genRandName(nameList)}`,
-        Des: genRandomDes(),
-        Start: start,
-        End: end,
-    }
-}
 function genRandName(names) { return names[Math.floor(Math.random() * names.length)] }
-function genRandomDes() {
-    let txt = genRandName(nameList)
-    const N = getRandomInt(3, 9)
-    for (let ii = 0; ii < N; ii++) txt += ` ${genRandName(nameList)}`
-    return `${txt}.`
-}
-function genRandomDateStr(start) {
-    if (typeof start == 'string') start = new Date(start)
-    let sYear = !start ? 2000 : start.getFullYear()
-    let year = getRandomInt(sYear, 2030)
-    let sMonth = !start ? 1 : start.getMonth() + 1
-    let month = sYear < year ? getRandomInt(1, 13) : getRandomInt(sMonth, 13)
-    let date = !start ? 1 : start.getDate()
-    if (28 < date) date = 28
-    let day = getRandomInt(date, 29)
-    return `${year}-${month}-${day}T00:00:00.000Z`   //YYYY-MM-DDTHH:mm:ss.sssZ
-}
+// function genRandomDes() {
+//     let txt = genRandName(nameList)
+//     const N = getRandomInt(3, 9)
+//     for (let ii = 0; ii < N; ii++) txt += ` ${genRandName(nameList)}`
+//     return `${txt}.`
+// }
+// function genRandomDateStr(start) {
+//     if (typeof start == 'string') start = new Date(start)
+//     let sYear = !start ? 2000 : start.getFullYear()
+//     let year = getRandomInt(sYear, 2030)
+//     let sMonth = !start ? 1 : start.getMonth() + 1
+//     let month = sYear < year ? getRandomInt(1, 13) : getRandomInt(sMonth, 13)
+//     let date = !start ? 1 : start.getDate()
+//     if (28 < date) date = 28
+//     let day = getRandomInt(date, 29)
+//     return `${year}-${month}-${day}T00:00:00.000Z`   //YYYY-MM-DDTHH:mm:ss.sssZ
+// }
