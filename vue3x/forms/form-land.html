@@ -5,7 +5,7 @@
         <div class="image content">
             <div class="description">
                 <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
-                <span contenteditable="true" v-html="item.Name" 
+                <span contenteditable="plaintext-only" v-html="item.Name" 
                     class="d-inline-block p-2 dnbItemName" style="width: 234px;"
                     @keypress="onKeyPressName"
                     @input="onChangeName"></span>
@@ -38,7 +38,7 @@
     <div class="ui modal">
         <div class="header">{{$store.state.ContextLang.Valuation}}</div>
         <div class="content" style="flex-direction: column;">
-            <div class="d-flex" style="justify-content: space-between;">
+            <div class="d-flex jc-sb" >
                 <h1>{{moItem.path}}</h1>
                 <span @click.stop="toggleActive" style="cursor: default;"
                     ><i class="bi" :class="item.Active ? 'bi-check2-square' : 'bi-square'"
@@ -171,7 +171,7 @@
             <div class="description">
                 <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
                 <span style="position: relative;">
-                    <span contenteditable="true" 
+                    <span contenteditable="plaintext-only" 
                         v-html="item.Name" 
                         class="d-inline-block p-2 dnbItemName" 
                         data-content="Duplicate name"
@@ -204,7 +204,7 @@
             <div class="description">
                 <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
                 <span style="position: relative;">
-                    <span contenteditable="true" 
+                    <span contenteditable="plaintext-only" 
                         v-html="item.Name" 
                         class="d-inline-block p-2 dnbItemName" 
                         data-content="Duplicate name"
@@ -228,7 +228,7 @@
                             class="px-2 pb-2"
                             @keypress="onKeyPressName"
                             @input="e => onChangeTodo(e, ii)"
-                            contenteditable="true" v-html="todo"></li>
+                            contenteditable="plaintext-only" v-html="todo"></li>
                     </ol>
                 </div>
             </div>

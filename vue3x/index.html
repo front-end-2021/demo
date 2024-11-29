@@ -29,8 +29,8 @@
 
 <body>
   <main id="app" v-cloak>
-    <header class="dapp-header bg-primary d-flex px22px py9px">
-      <section class="d-inline-flex align-items-center">
+    <header class="bg-primary d-flex jc-sb px22px py9px">
+      <section class="d-inline-flex algi-s-cent">
         <i class="bi bi-bootstrap-fill me-2 font24 cpointer text-white"></i>
         <h2 class="me-3 my-0 text-white">{{$store.state.ContextLang.TxtPr0ject}}</h2>
         <drop-select :index="IndexProject" :items="$store.state.Projects"
@@ -41,12 +41,12 @@
           </template>
         </drop-select>
       </section>
-      <nav class="dnb-nav d-inline-flex align-items-center px22px text-white border-4px">
+      <nav class="dnb-nav d-inline-flex algi-s-cent px22px text-white border-4px">
         <h4 v-for="(page, ipg) in $store.getters.Pages" class="my-0 mx-3 cpointer"
           :class="[ ipg === IndexPage ? 'working' : '']" 
           @click.stop="e => selectPage(ipg)">{{page}}</h4>
       </nav>
-      <section class="d-inline-flex align-items-center">
+      <section class="d-inline-flex algi-s-cent">
         <i class="font21 me-2 cpointer bi" :class="[IsShowF ? 'bi-funnel-fill' : 'bi-funnel']"
           @click.stop="e => { IsShowF = !IsShowF }"></i>
         <h4 class="text-white my-0 me-2">Language: </h4>

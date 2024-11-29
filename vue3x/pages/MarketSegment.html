@@ -23,7 +23,7 @@
       <div>
         <draggable v-model="Lands" v-bind="dragOptions" class="d-inline-block">
           <transition-group>
-            <div v-for="land in Lands" :key="land.Id" class="align-items-center ui button"
+            <div v-for="land in Lands" :key="land.Id" class="algi-s-cent ui button"
               style="margin-right: 6px; padding: 0; display: inline-grid; grid-template-columns: auto 24px;"
               :class="[$root.ActiveLandIds.includes(land.Id) ? 'positive' : '']" 
               @dblclick="e => openFormLand(land)">
@@ -152,7 +152,7 @@
             </transition-group>
           </draggable>
           <div class="rgn-last-col">
-            <div class="col-region bg-008ff8 h32 d-inline-flex align-items-center justify-content-cent">
+            <div class="col-region bg-008ff8 h32 d-inline-flex algi-s-cent jc-cent">
               <div class="d-inline-block py-1 ps-3 pe-3 cpointer bg-006bb9" style="border-radius: 6px"
                 @click.stop="finishDragDrop">Finish Drag drop Region</div>
             </div>

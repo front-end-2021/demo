@@ -1,5 +1,5 @@
 <template id="tmp-comp-criterial-smarket">
-    <div class="d-inline-flex align-items-center mb-2">
+    <div class="d-inline-flex algi-s-cent mb-2">
         <drop-selection :class="['grp-dropdown-min', 0 == index ? 'disabled' : '']" 
             name="f-crite-type"
             :items="SrcTypes" :id="typeId" @set:id="$event => selectTypeId($event)"
@@ -54,7 +54,7 @@
         <article v-if="1 == $root.ProcessState" class="d-flex dflex-row mt-3">
             <div class="dnbcol-market d-inline-flex dflex-col dnbborder217">
                 <div v-for="eMrk in ListMarket" 
-                    class="dnbcel-market dnbborder217 d-inline-grid align-items-center border-box">
+                    class="dnbcel-market dnbborder217 d-inline-grid algi-s-cent border-box">
                     <div class="p-1">{{eMrk.Entry.Name}}</div>
                     <div class="dnb-cel-submrk d-inline-flex dflex-col">
                         <div class="dnb-cel-smk-name d-inline-block aln-ctn-center p-1"

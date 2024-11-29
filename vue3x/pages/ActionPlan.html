@@ -7,7 +7,9 @@
                 @click.stop="e => showMenuEdit(11, e)">[Edit]</div>
         </div>
         <i class="bi bi-clock me-1 font12"></i>
-        <span class="font12" v-html="ViewStartEnd"></span>
+        <div class="font12 d-inline-block"
+            style="width: calc(100% - 16px);" 
+            v-html="ViewStartEnd"></div>
         <div v-for="(todo, ii) in item.Todos" class="d-flex">
             <span v-if="ii < 3">{{ii + 1}}.&nbsp;</span>
             <span v-else @click.stop="showFormEdit"
@@ -16,18 +18,18 @@
                 @input="e => onChangeTodo(ii, e)"
                 style="flex-grow: 2;"
                 @keypress="onPreventEnter"
-                contenteditable="true">{{todo}}</span>
+                contenteditable="plaintext-only">{{todo}}</span>
             <span v-if="ii < 3" class="cpointer"
                 @click.stop="e => removeTodo(ii)">[ - ]</span>
         </div>
-        <div v-if="item.Todos.length < 4" 
-            class="font12" @click.stop="addTodo">[+ Todo]</div>
+        <span v-if="item.Todos.length < 4" 
+            class="font12" @click.stop="addTodo">[+ Todo]</span>
     </div>
 </template>
 <template id="tmp-comp-vw-sub">
     <div class="d-flex mb-2 minh87px">
         <div class="p-2 bg-008ff8 border-l6px">
-            <div class="dnbHandle wrap-info w344px cdefault stick-top0">
+            <div class="dnbHandle wrap-info w344px cdefault stick-top0 bg-008ff8">
                 <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
                 <div class="wrp_menu"
                     @click.stop="e => showMenuEdit(10, e)">[Edit]</div>
@@ -36,14 +38,10 @@
                     <span v-html="ViewStartEnd"></span>
                 </div>
             </div>
-            <div v-if="AssignU == null"
-                class="ui floating labeled icon dropdown button"
+            <div class="assign-user d-inline-grid cpointer"
                 @click.stop="e => showAssignUser(e)">
-                <i class="add user icon"></i>Add User</div>
-            <div v-else
-                class="ui floating labeled icon dropdown button"
-                @click.stop="e => showAssignUser(e)">
-                <i class="user icon"></i>{{AssignU.Name}}</div>
+                <i :class="[AssignU == null ? 'add' : '']"
+                    class="user icon"></i>{{AssignU == null ? 'Add User' : AssignU.Name}}</div>
         </div>
         <draggable v-model="ListTask" v-bind="DndTaskOptions" 
             handle=".dnbHandle"
@@ -59,9 +57,9 @@
 </template>
 <template id="tmp-comp-vw-goal">
     <div class="p-2 bg-e8e9e9 mt-2 border-4px d-flex" >
-        <div class="wrap-info"
+        <div class="wrap-info d-flex dflex-col jc-sb"
             @mouseenter="e => $root.Popup_UI = null">
-            <div class="dnbHandle w344px cdefault stick-top0" >
+            <div class="dnbHandle w344px cdefault stick-top0 bg-e8e9e9" >
                 <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
                 <div class="wrp_menu"
                     @click.stop="e => showMenuEdit(9, e)">[Edit]</div>
@@ -69,6 +67,10 @@
                     <i class="bi bi-clock me-1"></i>
                     <span v-html="ViewStartEnd"></span>
                 </div>
+            </div>
+            <div class="pb-4 font12 w344px">
+                <div v-for="sub in ListSub"
+                    class="txt-elipsis">{{sub.Name}}</div>
             </div>
         </div>
         <draggable v-model="ListSub" v-bind="DndSubOptions" 
@@ -88,7 +90,10 @@
             callback: visibilityChanged,
             throttle: 0, intersection: { threshold: 0 }
         }">
-        <div class="p-2 bg-006bb9 border-u6px">{{item.Name}} ({{smpdid}})</div>
+        <div class="d-flex jc-sb p-2 bg-006bb9 border-u6px">
+            <div>{{item.Name}} ({{smpdid}})</div>
+            <div>{{ListGoal.length}}&nbsp;|&nbsp;{{SubIds.length}}&nbsp;|&nbsp;{{TaskIds.length}}</div>
+        </div>
         <draggable v-if="IsVisible"
             v-model="ListGoal" v-bind="DndGoalOptions" 
             style="border: 1px solid #d6d6d6;"
@@ -151,20 +156,19 @@
             class="p-2 cpointer menu_golsub-i border-4px">Delete</div>
     </div>
     <div v-if="MenuAssignUser != null" 
-        style="position: fixed;" :style="[MenuAssignUser.Style]"
-        class="drpUserAsgn ui floating labeled icon dropdown button">
-        <i class="add user icon"></i>
-        <span class="text">{{MenuAssignUser.Name}}</span>
-        <div class="menu" style="margin-top: 0 !important;">
-          <div class="header">Assign user</div>
-          <div v-for="(person, ii) in $root.People" class="item"
-            :data-value="ii" :class="MenuAssignUser.Entry.UserId == person.Id ? 'active' : ''"
-            style="align-items: center;display: flex;">
-            <span class="d-inline-block me-1 border-4px text-center" 
-                style="width: 18px;height: 18px;background-color: #565656;color: white;"
-                >{{person.Name[0]}}</span>
-            {{person.Name}}
-          </div>
+        class="menu-assign-user d-inline-block border-6px"
+        style="position: fixed; background-color: #cfcfcf; padding: 3px;" 
+        :style="[MenuAssignUser.Style]">
+        <div class="ma_u-item d-flex algi-s-cent cpointer p-2 cpointer menu_golsub-i mb1px border-4px"
+            @click.stop="e => MenuAssignUser.onSelect(null)"
+            :class="[!MenuAssignUser.Entry.UserId ? 'active' : '']">Un assign</div>
+        <div v-for="(person, ii) in $root.People" 
+            class="ma_u-item d-flex algi-s-cent cpointer p-2 cpointer menu_golsub-i mb1px border-4px"
+            @click.stop="e => MenuAssignUser.onSelect(person)"
+            :class="[MenuAssignUser.Entry.UserId == person.Id ? 'active' : '']"
+            style="margin-top: 6px;">
+            <span class="avta d-inline-block me-1 border-4px text-center"
+                >{{person.Name[0]}}</span>{{person.Name}}
         </div>
     </div>
 </template>

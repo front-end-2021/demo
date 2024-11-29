@@ -91,10 +91,14 @@ const MxMenuEdit = {
                     compType = `comp-form-task`
                 }
                 let saveClose = (mItem) => {
-                    console.log('save close ', etype)
+                    console.log('save close ', etype, mItem)
+                    let name = mItem.Name
+                    name = name.trim()
+                    if(name.length) item.Name = name
+
                 }
                 let xClose = (mItem) => {
-                    console.log('x close ', etype)
+                    console.log('x close ', etype, mItem)
                 }
                 const eItem = {
                     title: formTlt,
@@ -139,10 +143,9 @@ const ViewTask = {
     template: `#tmp-comp-vw-task`,
     name: "ViewWrapTask",
     display: "ViewWrapTask",
-    inject: ['removeItem', 'pCopyItem'],
+    inject: ['removeItem', 'pCopyItem', 'setTaskId'],
     mixins: [MxItemDate, MxMenuEdit],
     props: ['item'],
-   
     methods: {
         addTodo() {
             const lstT = this.item.Todos
@@ -182,12 +185,18 @@ const ViewTask = {
             this.$store.commit('setModal', [eItem, saveClose, xClose])
         },
     },
+    mounted(){
+        this.setTaskId(this.item.Id, true)
+    },
+    beforeUnmount(){
+        this.setTaskId(this.item.Id, false)
+    },
 }
 const ViewSub = {
     template: `#tmp-comp-vw-sub`,
     name: "ViewWrapSub",
     display: "ViewWrapSub",
-    inject: ['removeItem', 'pCopyItem'],
+    inject: ['removeItem', 'pCopyItem', 'setSubId'],
     mixins: [MxDndGolSub, MxItemDate, MxMenuEdit],
     components: {
         'comp-vw-task': ViewTask,
@@ -248,30 +257,32 @@ const ViewSub = {
     methods: {
         showAssignUser(e) {
             let offTarget = e.target.getBoundingClientRect()
-            const asgnU = this.AssignU
+          
+            const onSelect = (person) => {
+                if(Object.is(person, null)) {
+                    this.AssignU = null
+                    delete this.item.UserId
+                } else {
+                    this.AssignU = person
+                    this.item.UserId = person.Id
+                }
+                this.$root.clearPopupUI(10)
+            }
             this.$root.Popup_UI = { // type 100
                 type: 100,
                 Entry: this.item,
                 Style: {
                     left: `${offTarget.left}px`, top: `${offTarget.top}px`,
                 },
-                Name: asgnU === null ? `Add User` : asgnU.Name
+                onSelect,
             }
-            this.$root.$nextTick(() => {
-                const $drp = $('.drpUserAsgn')
-                const onChange = (value) => {
-                    let ii = parseInt(value)
-                    let asU = this.$root.People[ii]
-                    this.AssignU = asU
-                    this.item.UserId = asU.Id
-                    this.$root.clearPopupUI(10)
-                }
-                $drp.dropdown({
-                    onChange
-                })
-                $drp.dropdown('show')
-            })
         }
+    },
+    mounted(){
+        this.setSubId(this.item.Id, true)
+    },
+    beforeUnmount(){
+        this.setSubId(this.item.Id, false)
     },
 }
 const ViewGoal = {
@@ -300,6 +311,7 @@ const ViewGoal = {
                 group: "sub",
             }
         },
+
     },
     watch: {
         ListSub(subs, oSubs) {
@@ -351,7 +363,9 @@ const ViewProduct = {
     data() {
         return {
             IsVisible: true,
-            ListGoal: this.$store.getters.sortedInRange([9, [this.smpdid], 0, 12])
+            ListGoal: this.$store.getters.sortedInRange([9, [this.smpdid], 0, 12]),
+            SubIds: [],
+            TaskIds: [],
         }
     },
     computed: {
@@ -411,6 +425,18 @@ const ViewProduct = {
                 this.$store.dispatch('copyItem', [item, 9]).then(cpyItm => {
                     lstG.splice(ii + 1, 0, cpyItm)
                 })
+            },
+            setSubId: (id, isAdd) => {
+                const ids = this.SubIds
+                const ii = ids.indexOf(id)
+                if(isAdd && ii < 0) ids.push(id)
+                if(!isAdd && -1 < ii) ids.splice(ii, 1)
+            },
+            setTaskId: (id, isAdd) => {
+                const ids = this.TaskIds
+                const ii = ids.indexOf(id)
+                if(isAdd && ii < 0) ids.push(id)
+                if(!isAdd && -1 < ii) ids.splice(ii, 1)
             },
         }
     },

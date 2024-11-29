@@ -20,9 +20,9 @@ button { cursor: pointer; }
 .d-inline-grid { display: inline-grid; }
 .d-flex { display: flex; }
 .d-inline-flex { display: inline-flex; }
-.justify-content-start { justify-content: flex-start; }
-.justify-content-cent { justify-content: center; }
-.align-items-center { align-items: center; }
+.jc-cent { justify-content: center; }
+.jc-sb {justify-content: space-between;}
+.algi-s-cent { align-items: center; }
 .aln-ctn-center { align-content: center; }
 .bg-primary { 
     background-color: #008ff8; 
@@ -34,6 +34,9 @@ button { cursor: pointer; }
     color: white;
     background-color: #bcbcbc; border-color: #3c3c3c; /*dnb_dev */
 }
+.txt-elipsis {text-overflow: ellipsis;
+    overflow-x: hidden;
+    white-space: nowrap;}
 .ui.dropdown>.text {
     max-width: 150px; white-space: pre;
     overflow: hidden; text-overflow: ellipsis;
@@ -86,6 +89,7 @@ button { cursor: pointer; }
 .py9px { padding-top: 9px; padding-bottom: 9px; }
 .ps-3 { padding-left: 1rem; }
 .pe-3 { padding-right: 1rem; }
+.pb-4 {padding-bottom: 1rem;}
 .p6px { padding: 6px; }
 .pe48px { padding-right: 48px; }
 .px20px { padding-left: 20px; padding-right: 20px; }
@@ -95,7 +99,7 @@ button { cursor: pointer; }
 .font12 { font-size: 12px; }
 .text-center { text-align: center; }
 .w81px { width: 81px; }
-.w344px { width: calc(344px - 30px); }
+.w344px { min-width: calc(344px - 30px);max-width: calc(344px - 30px); }
 .list-sub { width: calc(100% - 344px + 30px); }
 .list-task { width: calc(100% - 344px + 30px - .5rem); display: flex; flex-wrap: wrap;}
 .dnb-nav {
@@ -111,7 +115,6 @@ button { cursor: pointer; }
 .dnb-nav>*.working { color: white; }
 .cpointer { cursor: pointer; }
 .cdefault {cursor: default;}
-.dapp-header {justify-content: space-between;}
 
 .grp-dropdown-min.ui.selection.dropdown {
     min-height: 30px;
@@ -296,6 +299,16 @@ button { cursor: pointer; }
     display: none;
 }
 .wrap-info:hover .wrp_menu { display: block;}
+.assign-user {
+    background-color: #e0e1e2;
+    border-radius: 6px;
+    padding: 8px 23px 8px 15px;
+    grid-template-columns: 29px auto;
+}
+.menu-assign-user .ma_u-item {padding: 6px 24px;}
+.menu-assign-user .ma_u-item:hover {background-color: #888;}
+.menu-assign-user .ma_u-item.active {background-color: #888;font-weight: bold;}
+.ma_u-item .avta {width: 18px;height: 18px;background-color: #565656;color: white;}
 @media screen and (max-width: 558px) {
     nav.container-fluid {
         flex-wrap: wrap;
