@@ -176,7 +176,7 @@ self.onmessage = function (event) {
 }
 function getItems(items, type, parentIds, i0, ie) {
     let lst = []
-    switch (rsData.type) {
+    switch (type) {
         case 9:     // Goals 
             for (let ii = items.length - 1, item; -1 < ii; ii--) {
                 item = items[ii]

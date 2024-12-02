@@ -43,7 +43,15 @@
                 <i :class="[AssignU == null ? 'add' : '']"
                     class="user icon"></i>{{AssignU == null ? 'Add User' : AssignU.Name}}</div>
         </div>
-        <draggable v-model="ListTask" v-bind="DndTaskOptions" 
+        <div v-if="0 == LoadState" 
+            class="ui segment" style="border: none;box-shadow: none;width: 100%;margin-top: 0;">
+            <div class="ui active inverted dimmer">
+              <div class="ui text loader">Loading</div>
+            </div>
+            <p></p>
+          </div>
+        <draggable v-else
+            v-model="ListTask" v-bind="DndTaskOptions" 
             handle=".dnbHandle"
             class="list-task p-2 border-r6px" >
             <transition-group>

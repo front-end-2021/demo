@@ -209,6 +209,7 @@ const ViewSub = {
         return {
             ListTask: [],
             AssignU: !user ? null : user,
+            LoadState: 0,
         }
     },
     beforeCreate() {
@@ -223,13 +224,15 @@ const ViewSub = {
                     return { Id: x.Id, SubId: x.SubId, ASort: x.ASort }
                 })
             }
+            that.LoadState = 0
             runWorker(entry, (event) => {
                 const rsData = event.data
                 const ids = rsData.listId
                 const lst = that.$store.getters.UnsortItems([11, ids, []])
                 if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
                 that.ListTask = lst
-                console.log('Result sorted in range from worker:', event.data);
+                that.LoadState = 1
+               // console.log('Result sorted in range from worker:', event.data);
             })
         } else {
             this.ListTask = this.$store.getters.sortedInRange([11, [this.item.Id], 0, 90])

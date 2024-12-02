@@ -357,6 +357,7 @@ export const runWorker = (entry, fnc) => {
     const myWorker = new Worker('worker.js');
     myWorker.onmessage = function (event) {
         fnc(event)
+        myWorker.terminate();
     }
     myWorker.postMessage(entry);    // Gửi dữ liệu đến worker 
 }
