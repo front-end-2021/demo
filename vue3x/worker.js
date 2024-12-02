@@ -182,9 +182,9 @@ function getItems(items, type, parentIds, i0, ie) {
                 item = items[ii]
                 if (!parentIds.includes(item.SubmPrdId)) items.splice(ii, 1)
             }
-            for(let ii = 0, item; ii < items.length; ii++) {
+            for (let ii = 0, item; ii < items.length; ii++) {
                 item = items[ii]
-                if(ptIds.includes(item.SubmPrdId)) lst.push(item)
+                if (ptIds.includes(item.SubmPrdId)) lst.push(item)
             }
             break;
         case 10:      // Subs 
@@ -192,17 +192,27 @@ function getItems(items, type, parentIds, i0, ie) {
                 item = items[ii]
                 if (parentIds.includes(item.GoalId)) items.splice(ii, 1)
             }
-
+            for (let ii = 0, item; ii < items.length; ii++) {
+                item = items[ii]
+                if (ptIds.includes(item.GoalId)) lst.push(item)
+            }
             break;
         case 11:      // Tasks 
             for (let ii = items.length - 1, item; -1 < ii; ii--) {
                 item = items[ii]
                 if (parentIds.includes(item.SubId)) items.splice(ii, 1)
             }
-
+            for (let ii = 0, item; ii < items.length; ii++) {
+                item = items[ii]
+                if (ptIds.includes(item.SubId)) lst.push(item)
+            }
             break;
         default: return lst;
     }
+    if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
+    const len = lst.length
+    lst.splice(0, i0)
+    lst.splice(ie + 1, len - ie)
     return {
         type, listId: lst.map(x => x.Id)
     }

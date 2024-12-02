@@ -320,20 +320,19 @@ export default createStore({
                 const myWorker = new Worker('worker.js');
                 myWorker.onmessage = function (event) {
                     const rsData = event.data
+                    const ids = rsData.listId
                     switch (rsData.type) {
-                        case 9:     // Goals 
-                            
+                        case 9: lst = getListBy.call(state.ListGoal, ids)
                             break;
-                        case 10:      // Subs 
-                            
+                        case 10: lst = getListBy.call(state.ListSub, ids)
                             break;
-                        case 11:      // Tasks 
-                            
+                        case 11: lst = getListBy.call(state.ListTask, ids)
                             break;
                         default: return lst;
                     }
-
-                    console.log('Result from worker:', event.data);
+                    if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
+                    console.log('Result sorted in range from worker:', event.data);
+                    return lst;
                 }
                 let entry = {
                     type: 'get sorted in range',
@@ -342,14 +341,11 @@ export default createStore({
                     i0, ie
                 }
                 switch (type) {
-                    case 9:     // Goals by SubmarketProductIds
-                        entry.Items = state.ListGoal.map(x => { return { Id: x.Id, SubmPrdId: x.SubmPrdId, ASort: x.ASort } })
+                    case 9: entry.Items = state.ListGoal.map(x => { return { Id: x.Id, SubmPrdId: x.SubmPrdId, ASort: x.ASort } })
                         break;
-                    case 10:      // Subs by GoalIds
-                        entry.Items = state.ListSub.map(x => { return { Id: x.Id, GoalId: x.GoalId, ASort: x.ASort } })
+                    case 10: entry.Items = state.ListSub.map(x => { return { Id: x.Id, GoalId: x.GoalId, ASort: x.ASort } })
                         break;
-                    case 11:      // Tasks by SubIds
-                        entry.Items = state.ListTask.map(x => { return { Id: x.Id, SubId: x.SubId, ASort: x.ASort } })
+                    case 11: entry.Items = state.ListTask.map(x => { return { Id: x.Id, SubId: x.SubId, ASort: x.ASort } })
                         break;
                     default: return lst;
                 }
@@ -371,8 +367,8 @@ export default createStore({
                 const len = lst.length
                 lst.splice(0, i0)
                 lst.splice(ie + 1, len - ie)
-                return lst;
             }
+            return lst;
         },
         sortedItemsBy: (state, getters) => ([type, ptIds, ids]) => {
             let lst = getters.unSortItemsBy([type, ptIds, ids])
