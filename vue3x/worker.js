@@ -184,7 +184,7 @@ function getItems(items, type, parentIds, i0, ie) {
             }
             for (let ii = 0, item; ii < items.length; ii++) {
                 item = items[ii]
-                if (ptIds.includes(item.SubmPrdId)) lst.push(item)
+                if (parentIds.includes(item.SubmPrdId)) lst.push(item)
             }
             break;
         case 10:      // Subs 
@@ -194,7 +194,7 @@ function getItems(items, type, parentIds, i0, ie) {
             }
             for (let ii = 0, item; ii < items.length; ii++) {
                 item = items[ii]
-                if (ptIds.includes(item.GoalId)) lst.push(item)
+                if (parentIds.includes(item.GoalId)) lst.push(item)
             }
             break;
         case 11:      // Tasks 
@@ -204,7 +204,7 @@ function getItems(items, type, parentIds, i0, ie) {
             }
             for (let ii = 0, item; ii < items.length; ii++) {
                 item = items[ii]
-                if (ptIds.includes(item.SubId)) lst.push(item)
+                if (parentIds.includes(item.SubId)) lst.push(item)
             }
             break;
         default: return lst;
