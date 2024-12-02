@@ -190,7 +190,7 @@ function getItems(items, type, parentIds, i0, ie) {
         case 10:      // Subs 
             for (let ii = items.length - 1, item; -1 < ii; ii--) {
                 item = items[ii]
-                if (parentIds.includes(item.GoalId)) items.splice(ii, 1)
+                if (!parentIds.includes(item.GoalId)) items.splice(ii, 1)
             }
             for (let ii = 0, item; ii < items.length; ii++) {
                 item = items[ii]
@@ -200,7 +200,7 @@ function getItems(items, type, parentIds, i0, ie) {
         case 11:      // Tasks 
             for (let ii = items.length - 1, item; -1 < ii; ii--) {
                 item = items[ii]
-                if (parentIds.includes(item.SubId)) items.splice(ii, 1)
+                if (!parentIds.includes(item.SubId)) items.splice(ii, 1)
             }
             for (let ii = 0, item; ii < items.length; ii++) {
                 item = items[ii]
