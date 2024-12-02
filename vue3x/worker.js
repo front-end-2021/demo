@@ -161,8 +161,49 @@ self.onmessage = function (event) {
             const Tasks = getTaks(Subs)
             self.postMessage({ Goals, Subs, Tasks });
             break;
+        case 'get sorted in range':
+            const items = eData.Items
+            const type = eData.ItemType
+            const parentIds = eData.ParentIds
+            const i0 = eData.i0
+            const ie = eData.ie
+            self.postMessage(getItems(items, type, parentIds, i0, ie));
+            break;
         default: self.postMessage(0);
             break;
     }
 
+}
+function getItems(items, type, parentIds, i0, ie) {
+    let lst = []
+    switch (rsData.type) {
+        case 9:     // Goals 
+            for (let ii = items.length - 1, item; -1 < ii; ii--) {
+                item = items[ii]
+                if (!parentIds.includes(item.SubmPrdId)) items.splice(ii, 1)
+            }
+            for(let ii = 0, item; ii < items.length; ii++) {
+                item = items[ii]
+                if(ptIds.includes(item.SubmPrdId)) lst.push(item)
+            }
+            break;
+        case 10:      // Subs 
+            for (let ii = items.length - 1, item; -1 < ii; ii--) {
+                item = items[ii]
+                if (parentIds.includes(item.GoalId)) items.splice(ii, 1)
+            }
+
+            break;
+        case 11:      // Tasks 
+            for (let ii = items.length - 1, item; -1 < ii; ii--) {
+                item = items[ii]
+                if (parentIds.includes(item.SubId)) items.splice(ii, 1)
+            }
+
+            break;
+        default: return lst;
+    }
+    return {
+        type, listId: lst.map(x => x.Id)
+    }
 }
