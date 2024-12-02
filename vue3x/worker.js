@@ -152,7 +152,7 @@ function getTaks(subs) {
     return lst;
 }
 self.onmessage = function (event) {
-    console.log('event ', event)
+   // console.log('event ', event)
     const eData = event.data
     switch (eData.type) {
         case 'get goals, subs, tasks':

@@ -279,7 +279,7 @@ if (window.Worker) {
         DemoGoals = event.data.Goals
         DemoSubs = event.data.Subs
         DemoTasks = event.data.Tasks
-        console.log('Result from worker:', event.data);
+      //  console.log('Result from worker:', event.data);
     })
 } else {
     //  console.info('Your browser doesn\'t support Web Workers.');

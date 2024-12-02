@@ -98,7 +98,8 @@
             callback: visibilityChanged,
             throttle: 0, intersection: { threshold: 0 }
         }">
-        <div class="d-flex jc-sb p-2 bg-006bb9 border-u6px">
+        <div v-if="IsVisible"
+            class="d-flex jc-sb p-2 bg-006bb9 border-u6px">
             <div>{{item.Name}} ({{smpdid}})</div>
             <div>{{ListGoal.length}}&nbsp;|&nbsp;{{SubIds.length}}&nbsp;|&nbsp;{{TaskIds.length}}</div>
         </div>

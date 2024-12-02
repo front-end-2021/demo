@@ -425,10 +425,12 @@ const ViewProduct = {
                 const height = cStyle.height
                 this.$el.style.minHeight = height
                 this.$el.style.maxHeight = height
+                this.$el.style.width = cStyle.width
             }
             if (!this.IsVisible && isVisible) {      // false -> true
                 this.$el.style.minHeight = ''
                 this.$el.style.maxHeight = ''
+                this.$el.style.width = ''
             }
             this.IsVisible = isVisible
             //console.log(entry.target)
