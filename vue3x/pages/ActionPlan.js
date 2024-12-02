@@ -1,5 +1,5 @@
 import { VueDraggableNext } from 'vue-draggable-next'
-import { groupBy, isDragDrop } from '../common.js'
+import { groupBy, isDragDrop, runWorker } from '../common.js'
 import { getCopyItem } from '../mock-data.js'
 
 const MxItemDate = {
@@ -94,7 +94,7 @@ const MxMenuEdit = {
                     console.log('save close ', etype, mItem)
                     let name = mItem.Name
                     name = name.trim()
-                    if(name.length) item.Name = name
+                    if (name.length) item.Name = name
 
                 }
                 let xClose = (mItem) => {
@@ -151,9 +151,9 @@ const ViewTask = {
             const lstT = this.item.Todos
             lstT.push(`Todo ${lstT.length + 1}`)
         },
-        removeTodo(ii) { 
+        removeTodo(ii) {
             const lstT = this.item.Todos
-            lstT.splice(ii, 1) 
+            lstT.splice(ii, 1)
         },
         onChangeTodo(ii, e) {
             //console.log('e ', e)
@@ -185,10 +185,10 @@ const ViewTask = {
             this.$store.commit('setModal', [eItem, saveClose, xClose])
         },
     },
-    mounted(){
+    mounted() {
         this.setTaskId(this.item.Id, true)
     },
-    beforeUnmount(){
+    beforeUnmount() {
         this.setTaskId(this.item.Id, false)
     },
 }
@@ -207,8 +207,32 @@ const ViewSub = {
         let uId = this.item.UserId
         let user = this.$root.People.find(x => x.Id == uId)
         return {
-            ListTask: this.$store.getters.sortedInRange([11, [this.item.Id], 0, 90]),
+            ListTask: [],
             AssignU: !user ? null : user,
+        }
+    },
+    beforeCreate() {
+        if (window.Worker) {
+            const that = this
+            let entry = {
+                type: 'get sorted in range',
+                ItemType: 11,
+                ParentIds: [this.item.Id],
+                i0: 0, ie: 90,
+                Items: this.$store.state.ListTask.map(x => {
+                    return { Id: x.Id, SubId: x.SubId, ASort: x.ASort }
+                })
+            }
+            runWorker(entry, (event) => {
+                const rsData = event.data
+                const ids = rsData.listId
+                const lst = that.$store.getters.UnsortItems([11, ids, []])
+                if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
+                that.ListTask = lst
+                console.log('Result sorted in range from worker:', event.data);
+            })
+        } else {
+            this.ListTask = this.$store.getters.sortedInRange([11, [this.item.Id], 0, 90])
         }
     },
     computed: {
@@ -257,9 +281,9 @@ const ViewSub = {
     methods: {
         showAssignUser(e) {
             let offTarget = e.target.getBoundingClientRect()
-          
+
             const onSelect = (person) => {
-                if(Object.is(person, null)) {
+                if (Object.is(person, null)) {
                     this.AssignU = null
                     delete this.item.UserId
                 } else {
@@ -278,10 +302,10 @@ const ViewSub = {
             }
         }
     },
-    mounted(){
+    mounted() {
         this.setSubId(this.item.Id, true)
     },
-    beforeUnmount(){
+    beforeUnmount() {
         this.setSubId(this.item.Id, false)
     },
 }
@@ -429,14 +453,14 @@ const ViewProduct = {
             setSubId: (id, isAdd) => {
                 const ids = this.SubIds
                 const ii = ids.indexOf(id)
-                if(isAdd && ii < 0) ids.push(id)
-                if(!isAdd && -1 < ii) ids.splice(ii, 1)
+                if (isAdd && ii < 0) ids.push(id)
+                if (!isAdd && -1 < ii) ids.splice(ii, 1)
             },
             setTaskId: (id, isAdd) => {
                 const ids = this.TaskIds
                 const ii = ids.indexOf(id)
-                if(isAdd && ii < 0) ids.push(id)
-                if(!isAdd && -1 < ii) ids.splice(ii, 1)
+                if (isAdd && ii < 0) ids.push(id)
+                if (!isAdd && -1 < ii) ids.splice(ii, 1)
             },
         }
     },

@@ -353,6 +353,13 @@ export const counterClick = (fnClick) => {
         delete window.DnbLastAction
     }
 }
+export const runWorker = (entry, fnc) => {
+    const myWorker = new Worker('worker.js');
+    myWorker.onmessage = function (event) {
+        fnc(event)
+    }
+    myWorker.postMessage(entry);    // Gửi dữ liệu đến worker 
+}
 // export const newIntId = () => {
 //     let s = new Date(2024, 6, 19, 8, 20, 0)        // 7/19/2024 08:20
 //     s = Date.now() - s.getTime()

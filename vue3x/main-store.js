@@ -5,7 +5,7 @@ import {
     DemoMarkets, DemoSubmarkets,
     DemoGoals,
 } from './mock-data.js';
-import { getTxtBy, getLocal, setLocal } from './common.js';
+import { getTxtBy, getLocal, setLocal, } from './common.js';
 import { FTypeId } from './components/dFilter.js';
 import { createStore } from 'vuex'
 function getListBy(ids) {
@@ -246,29 +246,28 @@ export default createStore({
             return lst
         },
         UnsortItems: (state) => ([type, ids, ignoreIds]) => {
-            if (!ids.length && !ignoreIds.length) return []
+            if (!Array.isArray(ids)) return []
             let lst = []
             if (ids.length) {
                 switch (type) {
-                    case 1:     // Land
-                        lst = getListBy.call(state.Lands, ids)
+                    case 1: lst = getListBy.call(state.Lands, ids)
                         break;
-                    case 2:     // Market
-                        lst = getListBy.call(state.Markets, ids)
+                    case 2: lst = getListBy.call(state.Markets, ids)
                         break
-                    case 3:     // Region
-                        lst = getListBy.call(state.Regions, ids)
+                    case 3: lst = getListBy.call(state.Regions, ids)
                         break
-                    case 4: //Submarkets
-                        lst = getListBy.call(state.Submarkets, ids)
+                    case 4: lst = getListBy.call(state.Submarkets, ids)
                         break
-                    case 5:     // Product Groups
-                        lst = getListBy.call(state.ProductGroups, ids)
+                    case 5: lst = getListBy.call(state.ProductGroups, ids)
                         break
-                    case 8:     // Products
-                        lst = getListBy.call(state.Products, ids)
+                    case 8: lst = getListBy.call(state.Products, ids)
                         break;
                     case 9: lst = getListBy.call(state.ListGoal, ids)
+                        break;
+                    case 10: lst = getListBy.call(state.ListSub, ids)
+                        break;
+                    case 11: lst = getListBy.call(state.ListTask, ids)
+                        break;
                     default: return lst
                 }
             } else {
@@ -287,10 +286,14 @@ export default createStore({
                         break
                     case 9: lst = state.ListGoal;
                         break
+                    case 10: lst = state.ListSub;
+                        break
+                    case 11: lst = state.ListTask;
+                        break
                     default: return lst
                 }
             }
-            if (ignoreIds.length) {
+            if (Array.isArray(ignoreIds) && ignoreIds.length) {
                 lst = buildList(lst)
                 function buildList(srItems) {
                     const dItems = []
@@ -314,60 +317,24 @@ export default createStore({
                 default: break;
             }
         },
-        sortedInRange: (state, getters) => ([type, ptIds, i0, ie]) => {
+        sortedInRange: (state) => ([type, ptIds, i0, ie]) => {
             let lst = []
-            if (window.Worker) {
-                const myWorker = new Worker('worker.js');
-                myWorker.onmessage = function (event) {
-                    const rsData = event.data
-                    const ids = rsData.listId
-                    switch (rsData.type) {
-                        case 9: lst = getListBy.call(state.ListGoal, ids)
-                            break;
-                        case 10: lst = getListBy.call(state.ListSub, ids)
-                            break;
-                        case 11: lst = getListBy.call(state.ListTask, ids)
-                            break;
-                        default: return lst;
-                    }
-                    if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
-                    console.log('Result sorted in range from worker:', event.data);
-                    return lst;
-                }
-                let entry = {
-                    type: 'get sorted in range',
-                    ItemType: type,
-                    ParentIds: ptIds,
-                    i0, ie
-                }
-                switch (type) {
-                    case 9: entry.Items = state.ListGoal.map(x => { return { Id: x.Id, SubmPrdId: x.SubmPrdId, ASort: x.ASort } })
-                        break;
-                    case 10: entry.Items = state.ListSub.map(x => { return { Id: x.Id, GoalId: x.GoalId, ASort: x.ASort } })
-                        break;
-                    case 11: entry.Items = state.ListTask.map(x => { return { Id: x.Id, SubId: x.SubId, ASort: x.ASort } })
-                        break;
-                    default: return lst;
-                }
-                myWorker.postMessage(entry);
-            } else {
-                switch (type) {
-                    case 9:     // Goals by SubmarketProductIds
-                        lst = buildListBy.call(state.ListGoal, ptIds, (itm) => ptIds.includes(itm.SubmPrdId))
-                        break;
-                    case 10:      // Subs by GoalIds
-                        lst = buildListBy.call(state.ListSub, ptIds, (itm) => ptIds.includes(itm.GoalId))
-                        break;
-                    case 11:      // Tasks by SubIds
-                        lst = buildListBy.call(state.ListTask, ptIds, (itm) => ptIds.includes(itm.SubId))
-                        break;
-                    default: return lst;
-                }
-                if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
-                const len = lst.length
-                lst.splice(0, i0)
-                lst.splice(ie + 1, len - ie)
+            switch (type) {
+                case 9:     // Goals by SubmarketProductIds
+                    lst = buildListBy.call(state.ListGoal, ptIds, (itm) => ptIds.includes(itm.SubmPrdId))
+                    break;
+                case 10:      // Subs by GoalIds
+                    lst = buildListBy.call(state.ListSub, ptIds, (itm) => ptIds.includes(itm.GoalId))
+                    break;
+                case 11:      // Tasks by SubIds
+                    lst = buildListBy.call(state.ListTask, ptIds, (itm) => ptIds.includes(itm.SubId))
+                    break;
+                default: return lst;
             }
+            if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
+            const len = lst.length
+            lst.splice(0, i0)
+            lst.splice(ie + 1, len - ie)
             return lst;
         },
         sortedItemsBy: (state, getters) => ([type, ptIds, ids]) => {

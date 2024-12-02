@@ -1,4 +1,4 @@
-import { getRandomInt } from './common.js'
+import { getRandomInt, runWorker } from './common.js'
 const nameList = [
     'Time', 'Past', 'Future', 'Dev', 'Fly', 'Flying', 'Soar', 'Soaring', 'Power', 'Falling', 'Fall', 'Jump', 'Cliff',
     'Mountain', 'Rend', 'Red', 'Blue', 'Green', 'Yellow', 'Gold', 'Demon', 'Demonic', 'Panda', 'Cat', 'Kitty',
@@ -273,15 +273,14 @@ function getTaks(subs) {
     }
     return lst;
 }
+
 if (window.Worker) {
-    const myWorker = new Worker('worker.js');
-    myWorker.onmessage = function (event) {
+    runWorker({ type: 'get goals, subs, tasks' }, (event) => {
         DemoGoals = event.data.Goals
         DemoSubs = event.data.Subs
         DemoTasks = event.data.Tasks
         console.log('Result from worker:', event.data);
-    }
-    myWorker.postMessage({ type: 'get goals, subs, tasks' }); // Gửi dữ liệu đến worker 
+    })
 } else {
     //  console.info('Your browser doesn\'t support Web Workers.');
     DemoGoals = getGoals()
