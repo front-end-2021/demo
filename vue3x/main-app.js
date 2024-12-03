@@ -52,8 +52,7 @@ Promise.all([
                 ProcessState: 0,    // loading (0), success (1)
                 DragDrop: null,
 
-                IdExpandGoals: [],
-                IdExpandSubs: [],
+                ApCollapseIds: [],
 
                 // type 1000 (tooltip name, des), 
                 // type 9, 10, 11 (menu goal, sub, task),

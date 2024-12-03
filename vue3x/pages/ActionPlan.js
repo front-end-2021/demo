@@ -232,7 +232,7 @@ const ViewSub = {
                 if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
                 that.ListTask = lst
                 that.LoadState = 1
-               // console.log('Result sorted in range from worker:', event.data);
+                // console.log('Result sorted in range from worker:', event.data);
             })
         } else {
             this.ListTask = this.$store.getters.sortedInRange([11, [this.item.Id], 0, 90])
@@ -405,6 +405,11 @@ const ViewProduct = {
                 group: "goal",
             }
         },
+        IsExpand() {
+            const colapseIds = this.$root.ApCollapseIds
+            let idTxt = this.smpdid
+            return !colapseIds.includes(idTxt)
+        },
     },
     watch: {
         ListGoal(gols, oGols) {
@@ -434,6 +439,13 @@ const ViewProduct = {
             }
             this.IsVisible = isVisible
             //console.log(entry.target)
+        },
+        toggleExpand() {
+            let idTxt = this.smpdid
+            const colapseIds = this.$root.ApCollapseIds
+            let ii = colapseIds.indexOf(idTxt)
+            if(-1 < ii) colapseIds.splice(ii, 1)
+            else colapseIds.push(idTxt)
         },
     },
     provide() {
@@ -622,7 +634,40 @@ export default {
                 return lst;
             }
         },
-
+        toggleExpand(id, type) {
+            let idTxt = ''
+            switch (type) {
+                case 3: idTxt = 'mk' + id   // Market
+                    break;
+                case 4: idTxt = 'smk' + id   // SubMarket
+                    break;
+                case 5: idTxt = 'pdg' + id   // Product group
+                    break;
+                case 6: idTxt = 'pd' + id   // Product
+                    break;
+                default: return;
+            }
+            const colapseIds = this.$root.ApCollapseIds
+            let ii = colapseIds.indexOf(idTxt)
+            if(-1 < ii) colapseIds.splice(ii, 1)
+            else colapseIds.push(idTxt)
+        },
+        isExpand(id, type) {
+            const colapseIds = this.$root.ApCollapseIds
+            let idTxt = ''
+            switch (type) {
+                case 3: idTxt = 'mk' + id   // Market
+                    break;
+                case 4: idTxt = 'smk' + id   // SubMarket
+                    break;
+                case 5: idTxt = 'pdg' + id   // Product group
+                    break;
+                case 6: idTxt = 'pd' + id   // Product
+                    break;
+                default: return;
+            }
+            return !colapseIds.includes(idTxt)
+        },
     },
     created() {
         this.buildData([0], [0])

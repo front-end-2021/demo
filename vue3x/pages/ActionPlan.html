@@ -100,10 +100,15 @@
         }">
         <div v-if="IsVisible"
             class="d-flex jc-sb p-2 bg-006bb9 border-u6px">
-            <div>{{item.Name}} ({{smpdid}})</div>
+            <div class="d-grid" style="grid-template-columns: 24px auto;">
+                <span @click.stop="toggleExpand"
+                    style="text-align: center;"
+                    class="cpointer">{{IsExpand ? '--' : '+'}}</span>
+                <div>{{item.Name}} ({{smpdid}})</div>
+            </div>
             <div>{{ListGoal.length}}&nbsp;|&nbsp;{{SubIds.length}}&nbsp;|&nbsp;{{TaskIds.length}}</div>
         </div>
-        <draggable v-if="IsVisible"
+        <draggable v-if="IsVisible && IsExpand"
             v-model="ListGoal" v-bind="DndGoalOptions" 
             style="border: 1px solid #d6d6d6;"
             class="list-goal p-2 border-d6px"
@@ -129,10 +134,24 @@
     <section class="dnbViewAcPlan px20px" >
         <div v-for="market in ListMarket" class="bg-008ff8 border-6px mb-3"
             :key="market.Entry.Id">
-            <div class="p-2 border-6px bg-008ff8">{{market.Entry.Name}}</div>
-            <div v-for="subMk in market.SubMarkets" class="p-2">
-                <div class="p-2 bg-008ff8">{{subMk.Entry.Name}}</div>
-                <comp-vw-prd v-for="product in subMk.Products"
+            <div class="d-grid p-2 border-6px bg-008ff8"
+                style="grid-template-columns: 24px auto;">
+                <span @click.stop="e => toggleExpand(market.Entry.Id, 3)"
+                    style="text-align: center;"
+                    class="cpointer">{{isExpand(market.Entry.Id, 3) ? '--' : '+'}}</span>
+                <div>{{market.Entry.Name}}</div>
+            </div>
+            <div v-if="isExpand(market.Entry.Id, 3)"
+                v-for="subMk in market.SubMarkets" class="p-2">
+                <div class="d-grid p-2 bg-008ff8"
+                    style="grid-template-columns: 24px auto;">
+                    <span @click.stop="e => toggleExpand(subMk.Entry.Id, 4)"
+                        style="text-align: center;"
+                        class="cpointer">{{isExpand(subMk.Entry.Id, 4) ? '--' : '+'}}</span>
+                    <div>{{subMk.Entry.Name}}</div>
+                </div>
+                <comp-vw-prd v-if="isExpand(subMk.Entry.Id, 4)"
+                    v-for="product in subMk.Products"
                     :key="product.SubmarketProductId + '_' + product.Entry.Id"
                     :item="product.Entry"
                     :smpdid="product.SubmarketProductId"></comp-vw-prd>
@@ -140,10 +159,24 @@
         </div>
         <div v-for="prdG in ProductGroups" class="bg-008ff8 border-6px mb-3"
             :key="prdG.Entry.Id">
-            <div class="p-2 border-6px bg-008ff8">{{prdG.Entry.Name}} (xy)</div>
-            <div v-for="product in prdG.ListProduct" class="p-2">
-                <div class="p-2 bg-008ff8">{{product.Entry.Name}}</div>
-                <comp-vw-prd v-for="subMk in product.SubMarkets"
+            <div class="d-grid p-2 border-6px bg-008ff8"
+                style="grid-template-columns: 24px auto;">
+                <span @click.stop="e => toggleExpand(prdG.Entry.Id, 5)"
+                    style="text-align: center;"
+                    class="cpointer">{{isExpand(prdG.Entry.Id, 5) ? '--' : '+'}}</span>
+                <div>{{prdG.Entry.Name}} (xy)</div>
+            </div>
+            <div v-if="isExpand(prdG.Entry.Id, 5)"
+                v-for="product in prdG.ListProduct" class="p-2">
+                <div class="d-grid p-2 bg-008ff8"
+                    style="grid-template-columns: 24px auto;">
+                    <span @click.stop="e => toggleExpand(product.Entry.Id, 6)"
+                        style="text-align: center;"
+                        class="cpointer">{{isExpand(product.Entry.Id, 6) ? '--' : '+'}}</span>
+                    <div>{{product.Entry.Name}}</div>
+                </div>
+                <comp-vw-prd v-if="isExpand(product.Entry.Id, 6)"
+                    v-for="subMk in product.SubMarkets"
                     :key="subMk.SubmarketProductId + '_' + subMk.Entry.Id"
                     :item="subMk.Entry"
                     :smpdid="subMk.SubmarketProductId"></comp-vw-prd>
