@@ -466,7 +466,7 @@ const ViewProduct = {
                 }
                 runWorker(entry, this.getWwGstIds)
             } else {
-                this.GoalIds = ListGoal.map(x => x.Id)
+                this.GoalIds = this.ListGoal.map(x => x.Id)
             }
         },
         getWwGstIds(event) {
@@ -724,15 +724,5 @@ export default {
             return null
         },
     },
-    unmounted() {
-        let lstOnMess = window.DnbWwListOnMess
-        if (Array.isArray(lstOnMess)) {
-            lstOnMess.splice(0)
-        }
-        let wworker = window.DnbWworker
-        if (wworker) wworker.terminate()
-
-        delete window.DnbWwListOnMess
-        delete window.DnbWworker
-    },
+    //unmounted() { },
 }
