@@ -212,7 +212,7 @@ const ViewSub = {
             LoadState: 0,
         }
     },
-    beforeCreate() {
+    created() {
         if (window.Worker) {
             const that = this
             let entry = {
@@ -225,15 +225,7 @@ const ViewSub = {
                 })
             }
             that.LoadState = 0
-            runWorker(entry, (event) => {
-                const rsData = event.data
-                const ids = rsData.listId
-                const lst = that.$store.getters.UnsortItems([11, ids, []])
-                if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
-                that.ListTask = lst
-                that.LoadState = 1
-                // console.log('Result sorted in range from worker:', event.data);
-            })
+            runWorker(entry, this.getWwListTask)
         } else {
             this.ListTask = this.$store.getters.sortedInRange([11, [this.item.Id], 0, 90])
         }
@@ -303,7 +295,16 @@ const ViewSub = {
                 },
                 onSelect,
             }
-        }
+        },
+        getWwListTask(event) {
+            const rsData = event.data
+            const ids = rsData.listId
+            const lst = this.$store.getters.UnsortItems([11, ids, []])
+            if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
+            this.ListTask = lst
+            this.LoadState = 1
+            // console.log('Result sorted in range from worker:', event.data);
+        },
     },
     mounted() {
         this.setSubId(this.item.Id, true)
@@ -463,15 +464,16 @@ const ViewProduct = {
                         return { Id: x.Id, SubId: x.SubId }
                     })
                 }
-                runWorker(entry, (event) => {
-                    const rsData = event.data
-                    this.GoalIds = rsData.GoalIds
-                    this.SubIds = rsData.SubIds
-                    this.TaskIds = rsData.TaskIds
-                })
+                runWorker(entry, this.getWwGstIds)
             } else {
                 this.GoalIds = ListGoal.map(x => x.Id)
             }
+        },
+        getWwGstIds(event) {
+            const rsData = event.data
+            this.GoalIds = rsData.GoalIds
+            this.SubIds = rsData.SubIds
+            this.TaskIds = rsData.TaskIds
         },
     },
     provide() {
@@ -722,7 +724,15 @@ export default {
             return null
         },
     },
-    mounted() {
+    unmounted() {
+        let lstOnMess = window.DnbWwListOnMess
+        if (Array.isArray(lstOnMess)) {
+            lstOnMess.splice(0)
+        }
+        let wworker = window.DnbWworker
+        if (wworker) wworker.terminate()
 
+        delete window.DnbWwListOnMess
+        delete window.DnbWworker
     },
 }

@@ -354,11 +354,27 @@ export const counterClick = (fnClick) => {
     }
 }
 export const runWorker = (entry, fnc) => {
-    const wworker = new Worker('worker.js');
-    wworker.onmessage = function (event) {
-        fnc(event)
-        wworker.terminate();
+    let wworker = new Worker('worker.js')
+    wworker.onmessage = function (event) { fnc(event); wworker.terminate() }
+    wworker.postMessage(entry);    // Gửi dữ liệu đến worker 
+    return
+
+
+    let lstOnMess = window.DnbWwListOnMess
+    if (!Array.isArray(lstOnMess)) {
+        window.DnbWwListOnMess = []
+        lstOnMess = window.DnbWwListOnMess
     }
+    wworker = window.DnbWworker
+    if (!wworker) {
+        window.DnbWworker = new Worker('worker.js')
+        wworker = window.DnbWworker
+    }
+    if (!lstOnMess.find(x => Object.is(x, fnc))) {
+        lstOnMess.push(fnc)
+        wworker.addEventListener("message", fnc)
+    }
+    // wworker.onmessage = function (event) { fnc(event); wworker.terminate() }
     wworker.postMessage(entry);    // Gửi dữ liệu đến worker 
 }
 // export const newIntId = () => {

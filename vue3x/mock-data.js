@@ -273,14 +273,13 @@ function getTaks(subs) {
     }
     return lst;
 }
-
+function getListGoalSubTask(event) {
+    DemoGoals = event.data.Goals
+    DemoSubs = event.data.Subs
+    DemoTasks = event.data.Tasks
+}
 if (window.Worker) {
-    runWorker({ type: 'get goals, subs, tasks' }, (event) => {
-        DemoGoals = event.data.Goals
-        DemoSubs = event.data.Subs
-        DemoTasks = event.data.Tasks
-      //  console.log('Result from worker:', event.data);
-    })
+    runWorker({ type: 'get goals, subs, tasks' }, getListGoalSubTask)
 } else {
     //  console.info('Your browser doesn\'t support Web Workers.');
     DemoGoals = getGoals()
