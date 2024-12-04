@@ -152,25 +152,23 @@ function getTaks(subs) {
     return lst;
 }
 self.onmessage = function (event) {
-   // console.log('event ', event)
+    // console.log('event ', event)
     const eData = event.data
     switch (eData.type) {
         case 'get goals, subs, tasks':
             const Goals = getGoals()
             const Subs = getSubs(Goals)
             const Tasks = getTaks(Subs)
-            self.postMessage({ Goals, Subs, Tasks });
-            break;
+            self.postMessage({ Goals, Subs, Tasks })
+            return;
         case 'get sorted in range':
-            const items = eData.Items
-            const type = eData.ItemType
-            const parentIds = eData.ParentIds
-            const i0 = eData.i0
-            const ie = eData.ie
-            self.postMessage(getItems(items, type, parentIds, i0, ie));
-            break;
-        default: self.postMessage(0);
-            break;
+            self.postMessage(getItems(eData.Items, eData.ItemType, eData.ParentIds, eData.i0, eData.ie))
+            return;
+        case 'count main sub task':
+            self.postMessage(getCountMainSubTask(eData))
+            return;
+        default: self.postMessage(0)
+            return;
     }
 
 }
@@ -215,5 +213,20 @@ function getItems(items, type, parentIds, i0, ie) {
     lst.splice(ie + 1, len - ie)
     return {
         type, listId: lst.map(x => x.Id)
+    }
+}
+function getCountMainSubTask(eData) {
+    const smpdid = eData.smpdid
+    const goals = eData.goals.filter(x => smpdid == x.SubmPrdId);
+    const setGoal = new Set(goals.map(x => x.Id))
+    const subs = eData.subs.filter(s => setGoal.has(s.GoalId))
+    const setSub = new Set(subs.map(x => x.Id))
+    const tasks = eData.tasks.filter(t => setSub.has(t.SubId))
+    setGoal.clear()
+    setSub.clear()
+    return {
+        GoalIds: goals.map(x => x.Id),
+        SubIds: subs.map(x => x.Id),
+        TaskIds: tasks.map(x => x.Id),
     }
 }

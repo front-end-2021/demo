@@ -354,12 +354,12 @@ export const counterClick = (fnClick) => {
     }
 }
 export const runWorker = (entry, fnc) => {
-    const myWorker = new Worker('worker.js');
-    myWorker.onmessage = function (event) {
+    const wworker = new Worker('worker.js');
+    wworker.onmessage = function (event) {
         fnc(event)
-        myWorker.terminate();
+        wworker.terminate();
     }
-    myWorker.postMessage(entry);    // Gửi dữ liệu đến worker 
+    wworker.postMessage(entry);    // Gửi dữ liệu đến worker 
 }
 // export const newIntId = () => {
 //     let s = new Date(2024, 6, 19, 8, 20, 0)        // 7/19/2024 08:20

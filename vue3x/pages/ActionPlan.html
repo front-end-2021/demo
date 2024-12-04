@@ -106,7 +106,7 @@
                     class="cpointer">{{IsExpand ? '--' : '+'}}</span>
                 <div>{{item.Name}} ({{smpdid}})</div>
             </div>
-            <div>{{ListGoal.length}}&nbsp;|&nbsp;{{SubIds.length}}&nbsp;|&nbsp;{{TaskIds.length}}</div>
+            <div>{{GoalIds.length}}&nbsp;|&nbsp;{{SubIds.length}}&nbsp;|&nbsp;{{TaskIds.length}}</div>
         </div>
         <draggable v-if="IsVisible && IsExpand"
             v-model="ListGoal" v-bind="DndGoalOptions" 

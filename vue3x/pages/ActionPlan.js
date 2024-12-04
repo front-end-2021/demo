@@ -391,6 +391,7 @@ const ViewProduct = {
         return {
             IsVisible: true,
             ListGoal: this.$store.getters.sortedInRange([9, [this.smpdid], 0, 12]),
+            GoalIds: [],
             SubIds: [],
             TaskIds: [],
         }
@@ -444,8 +445,33 @@ const ViewProduct = {
             let idTxt = this.smpdid
             const colapseIds = this.$root.ApCollapseIds
             let ii = colapseIds.indexOf(idTxt)
-            if(-1 < ii) colapseIds.splice(ii, 1)
+            if (-1 < ii) colapseIds.splice(ii, 1)
             else colapseIds.push(idTxt)
+        },
+        getCountGoalSubTask() {
+            if (window.Worker) {
+                let entry = {
+                    type: 'count main sub task',
+                    smpdid: this.smpdid,
+                    goals: this.$store.state.ListGoal.map(x => {
+                        return { Id: x.Id, SubmPrdId: x.SubmPrdId }
+                    }),
+                    subs: this.$store.state.ListSub.map(x => {
+                        return { Id: x.Id, GoalId: x.GoalId }
+                    }),
+                    tasks: this.$store.state.ListTask.map(x => {
+                        return { Id: x.Id, SubId: x.SubId }
+                    })
+                }
+                runWorker(entry, (event) => {
+                    const rsData = event.data
+                    this.GoalIds = rsData.GoalIds
+                    this.SubIds = rsData.SubIds
+                    this.TaskIds = rsData.TaskIds
+                })
+            } else {
+                this.GoalIds = ListGoal.map(x => x.Id)
+            }
         },
     },
     provide() {
@@ -468,18 +494,26 @@ const ViewProduct = {
                 })
             },
             setSubId: (id, isAdd) => {
+                if (window.Worker) return;
                 const ids = this.SubIds
                 const ii = ids.indexOf(id)
                 if (isAdd && ii < 0) ids.push(id)
                 if (!isAdd && -1 < ii) ids.splice(ii, 1)
             },
             setTaskId: (id, isAdd) => {
+                if (window.Worker) return;
                 const ids = this.TaskIds
                 const ii = ids.indexOf(id)
                 if (isAdd && ii < 0) ids.push(id)
                 if (!isAdd && -1 < ii) ids.splice(ii, 1)
             },
         }
+    },
+    created() {
+        this.getCountGoalSubTask()
+    },
+    beforeUpdate() {
+        this.getCountGoalSubTask()
     },
 }
 export default {
@@ -649,7 +683,7 @@ export default {
             }
             const colapseIds = this.$root.ApCollapseIds
             let ii = colapseIds.indexOf(idTxt)
-            if(-1 < ii) colapseIds.splice(ii, 1)
+            if (-1 < ii) colapseIds.splice(ii, 1)
             else colapseIds.push(idTxt)
         },
         isExpand(id, type) {
