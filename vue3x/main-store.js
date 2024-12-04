@@ -333,7 +333,7 @@ export default createStore({
             }
             if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
             const len = lst.length
-            if (-1 < i0) {
+            if (0 < i0) {
                 lst.splice(0, i0)
                 if (i0 < ie) lst.splice(ie + 1, len - ie)
             }
