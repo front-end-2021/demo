@@ -70,17 +70,13 @@ Promise.all([
                     arP = lstPos[ii]
                     let pos = arP[0]
                     if (pos[2] == id) {
-                        if (pos[0] + pos[3] < arP[1][0]) {
-                            x += pos[3] + 3
-                        }
+                        if (x + pos[3] < arP[1][0]) x += pos[3] + 3
                         checkChange(pos)
                         continue
                     }
                     pos = arP[1]
                     if (pos[2] == id) {
-                        if (pos[0] + pos[3] < arP[0][0]) {
-                            x += pos[3] + 3
-                        }
+                        if (x + pos[3] < arP[0][0]) x += pos[3] + 3
                         checkChange(pos)
                     }
                 }

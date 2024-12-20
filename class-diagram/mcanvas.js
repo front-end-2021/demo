@@ -4,18 +4,18 @@ export function drawExtension(p0, p1, width) {
     const ctx = this
     let x1 = p1[0], y1 = p1[1];
     let [a, b] = linearCoeffict(p0, p1);
-
+    let x0 = p0[0], y0 = p0[1]
     let posE = directToD(p1, width * 3, a, b);
     let xx0 = posE[0]
-    if (x1 < xx0) xx0 = posE[1]
+    if (x0 < x1 && x1 < xx0) xx0 = posE[1]
     let yy0 = a * xx0 + b;
 
     ctx.beginPath();
-    ctx.arc(p0[0], p0[1], 1, 0, 2 * Math.PI);
+    ctx.arc(x0, y0, 1, 0, 2 * Math.PI);
     ctx.fillStyle = "black";
     ctx.fill();
 
-    ctx.moveTo(p0[0], p0[1]);
+    ctx.moveTo(x0, y0);
     ctx.lineTo(xx0, yy0);
 
     let [a1, b1] = perpendiLine([xx0, yy0], a, b);
