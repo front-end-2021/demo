@@ -13,6 +13,7 @@ Promise.all([
         data() {
             return {
                 IndexPage: 0,
+                DragElm: null,
             }
         },
         computed: {
@@ -29,24 +30,41 @@ Promise.all([
         },
         methods: {
             selectPage(index) { this.IndexPage = index },
+            trackMouse(event) {
+                let x = event.clientX;
+                let y = event.clientY;
+
+                if (this.DragElm !== null) {
+                    const dgElm = this.DragElm
+                    dgElm.Item.left = x + dgElm.offX
+                    dgElm.Item.top = y + dgElm.offY
+                }
+                document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
+            },
+            onKeyUp(evt) {
+                console.log('on key up', evt)
+                this.DragElm = null
+            },
         },
         //  beforeCreate() { },
         created() {
-            
+
         },
         mounted() {
-            
+
             const message = "123456";
             const hash = CryptoJS.SHA256(message);
             console.log('test sha256', hash.toString(CryptoJS.enc.Hex));
 
-        },
+            document.addEventListener('mousemove', this.trackMouse)
+            document.addEventListener("keyup", this.onKeyUp);
+        }
     })
     app.mount('#m-app')
 
 }).catch(errStatus => { console.log('Woop!', errStatus) })
 
-function includeHTML (path) {
+function includeHTML(path) {
     const items = document.body.getElementsByClassName("dnb-imp-html");
     path = path.trim()
     for (let i = 0; i < items.length; i++) {

@@ -5,8 +5,10 @@
   <title>Class Diagram</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></link>
-  <link rel="stylesheet" href="./m-style.css"></link>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  </link>
+  <link rel="stylesheet" href="./m-style.css">
+  </link>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script type="importmap">
     {
@@ -16,24 +18,27 @@
       }
     }
   </script>
-  
+
 </head>
 
 <body>
   <main id="m-app" v-cloak>
     <header class="">
-      
+
       </section>
       <nav class="">
-        
+
       </nav>
       <section class="">
-        
+
       </section>
     </header>
 
     <component :is="CompPage" v-cloak></component>
 
+    <div>
+      Trace log: <span id="dnb-app-log"></span>
+    </div>
   </main>
 
   <span class="dnb-imp-html" dnbpath="./components/vw-diagram.html"></span>
