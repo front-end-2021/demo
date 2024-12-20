@@ -1,5 +1,43 @@
 <template id="tmp-vw-diagram">
-    <section>
-        View diagram
+    <section style="position: relative;">
+        <canvas id="dnb-mcanvas" width="1900" height="600" style="border:1px solid #000000;">
+            Your browser does not support the HTML canvas tag.
+        </canvas>
+        <div style="position: absolute;top: 0;left: 0;width: 1900px;height: 600px;border: 1px solid rgb(0, 0, 0);">
+            <div id="cls-account"
+                style="display: inline-block;width: 220px;border: 1px solid rgb(0, 0, 0);position: inherit;top:30px;left: 90px;">
+                <div style="font-size: 18px;font-weight: bold;text-align: center;border-bottom: 1px solid black;"
+                    >Account</div>
+                <div style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
+                    <div>&nbsp;# name: String</div>
+                    <div>&nbsp;# emailAddress: String</div>
+                </div>
+                <div style="font-size: 14px;font-weight: 100;">
+                    <div>+ GetName(): String</div>
+                    <div>+ void SetName(String)</div>
+                    <div>+ GetEmailAddress(): String</div>
+                    <div>+ void SetEmailAddress(String)</div>
+                </div>
+            </div>
+
+            <div id="cls-contact"
+                style="display: inline-block;width: 210px;border: 1px solid rgb(0, 0, 0);position: inherit;top:70px;left: 680px;">
+                <div style="font-size: 18px;font-weight: bold;text-align: center;border-bottom: 1px solid black;"
+                    >Contact</div>
+                <div style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
+                    <div>&nbsp;# name: String</div>
+                    <div>&nbsp;# emailAddress: String</div>
+                    <div>&nbsp;# faxNumber: String</div>
+                </div>
+                <div style="font-size: 14px;font-weight: 100;">
+                    <div>+ GetName(): String</div>
+                    <div>+ GetName(): String</div>
+                    <div>+ GetFaxNumber(): Number</div>
+                    <div>+ void SetName(String)</div>
+                    <div>+ void SetEmailAddress(String)</div>
+                    <div>+ void SetFaxNumber(Number)</div>
+                </div>
+            </div>
+        </div>
     </section>
 </template>
