@@ -1,5 +1,6 @@
 // #region import
 import { createApp } from 'vue'
+import { drawExtension } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 // #endregion
 Promise.all([
@@ -13,6 +14,7 @@ Promise.all([
         data() {
             return {
                 IndexPage: 0,
+                ListPos: [],      // [[x, y, id, width], ...]
                 DragElm: null,
             }
         },
@@ -26,7 +28,16 @@ Promise.all([
         },
         watch: {
             IndexPage(val) { setLocal(6, val) },
-
+            ListPos(lstPos) {
+                console.log('watch pos')
+                const c = document.getElementById(`dnb-mcanvas`);
+                const ctx = c.getContext("2d");
+                ctx.clearRect(0, 0, c.width, c.height);
+                for (let ii = 0; ii < lstPos.length; ii++) {
+                    const [p0, p1] = lstPos[ii]
+                    drawExtension.call(ctx, p0, p1, 8)
+                }
+            },
         },
         methods: {
             selectPage(index) { this.IndexPage = index },
@@ -36,14 +47,56 @@ Promise.all([
 
                 if (this.DragElm !== null) {
                     const dgElm = this.DragElm
-                    dgElm.Item.left = x + dgElm.offX
-                    dgElm.Item.top = y + dgElm.offY
+                    let left = x + dgElm.offX
+                    let top = y + dgElm.offY
+                    const dItem = dgElm.Item
+                    dItem.left = left
+                    dItem.top = top
+                    const id = dItem.id
+                    let x1 = left
+                    let y1 = dItem.top + dItem.height / 10
+                    this.updatePos(id, x1, y1)
                 }
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
             },
             onKeyUp(evt) {
-                console.log('on key up', evt)
+                // console.log('on key up', evt)
                 this.DragElm = null
+            },
+            updatePos(id, x, y) {
+                const lstPos = this.ListPos
+                let isChange = false
+                for (let ii = 0, arP; ii < lstPos.length; ii++) {
+                    arP = lstPos[ii]
+                    let pos = arP[0]
+                    if (pos[2] == id) {
+                        if (pos[0] + pos[3] < arP[1][0]) {
+                            x += pos[3] + 3
+                        }
+                        checkChange(pos)
+                        continue
+                    }
+                    pos = arP[1]
+                    if (pos[2] == id) {
+                        if (pos[0] + pos[3] < arP[0][0]) {
+                            x += pos[3] + 3
+                        }
+                        checkChange(pos)
+                    }
+                }
+                if (isChange) {
+                    this.ListPos = [...lstPos]
+                }
+                function checkChange(pos) {
+                    if (pos[0] != x) {
+                        pos[0] = x
+                        isChange = true
+                    }
+                    if (pos[1] != y) {
+                        pos[1] = y
+                        isChange = true
+                    }
+                }
             },
         },
         //  beforeCreate() { },

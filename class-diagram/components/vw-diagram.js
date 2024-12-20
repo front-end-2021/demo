@@ -1,15 +1,9 @@
-import { drawExtension } from "../mcanvas.js";
+
 const RectClass = {
     template: `#tmp-rect-class`,
     name: "Rect_Class",
     display: "Rect.Class",
     props: ['item'],
-    data() {
-        return {
-            top: this.top,
-            left: this.left,
-        }
-    },
     methods: {
         getProperty(prp) {
             const space = ` `
@@ -31,8 +25,11 @@ const RectClass = {
         },
     },
     mounted() {
+        const off = this.$el.getBoundingClientRect()
+        this.item.height = off.height
         this.$el.addEventListener('mousedown', this.onMouseDown)
     },
+    // updated() { },
     beforeUnmount() {
         this.$el.removeEventListener('mousedown', this.onMouseDown)
     },
@@ -51,6 +48,7 @@ export const ViewDiagram = {
         let lstCls = [
             {
                 id: 'cls-account', top: 30, left: 90, width: 220,
+                idTo: 'cls-contact',
                 Name: 'Account', Fields: [
                     { AcModify: '#', Name: 'name', Type: 'String' },
                     { AcModify: '#', Name: 'emailAddress', Type: 'String' },
@@ -75,43 +73,41 @@ export const ViewDiagram = {
                     ['+', 'GetFaxNumber()', 'Number'],
                     ['+', 'SetFaxNumber(Number)', 'void'],
                 ]
-            }
+            },
         ]
         return {
-            ListClass: lstCls
+            ListClass: lstCls,
         }
     },
     methods: {
-        addTodo() {
-            const lstT = this.item.Todos
-            lstT.push(`Todo ${lstT.length + 1}`)
+        drawLines() {
+            const lstCls = this.ListClass
+            const lstPos = []
+            for (let ii = 0, item; ii < lstCls.length; ii++) {
+                item = lstCls[ii]
+                if (!item.idTo) continue;
+
+                let x0 = item.left + item.width + 3
+                let y0 = item.top + item.height / 10
+                for (let jj = ii + 1, Jtem; jj < lstCls.length; jj++) {
+                    Jtem = lstCls[jj]
+                    if (Jtem.idTo) continue
+                    if (item.idTo == Jtem.id) {
+                        let x1 = Jtem.left
+                        let y1 = Jtem.top + Jtem.height / 10
+                        lstPos.push([[x0, y0, item.id, item.width], [x1, y1, Jtem.id, Jtem.width]])
+                    }
+                }
+            }
+            //console.log(lstPos)
+            this.$root.ListPos = lstPos
         },
     },
-    beforeUnmount() {
-
-    },
+    //beforeUnmount() { },
     mounted() {
-        let lstCls = this.ListClass
-        let clsAccount = document.getElementById('cls-account')
-        let clsContact = document.getElementById('cls-contact')
-        const c = document.getElementById(`dnb-mcanvas`);
-        let offC = c.getBoundingClientRect()
-        const rootY = offC.top
-        const rootX = offC.left
-        let offAcc = clsAccount.getBoundingClientRect()
-        let offCon = clsContact.getBoundingClientRect()
-        let x0 = 60, y0 = 60;
-        let x1 = 200, y1 = 100;
-        x0 = offAcc.left + offAcc.width - rootX
-        y0 = offAcc.top + offAcc.height / 10 - rootX
-
-        x1 = offCon.left - rootY
-        y1 = offCon.top + offCon.height / 10 - rootY
-        var ctx = c.getContext("2d");
-        let p0 = [x0, y0];
-        let p1 = [x1, y1];
-
-        drawExtension.call(ctx, p0, p1, 8)
-        //  drawExtension.call(ctx, [80, 300], [120, 50], 8)
+        this.drawLines()
+    },
+    updated() {
+        this.drawLines()
     },
 }
