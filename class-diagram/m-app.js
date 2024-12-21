@@ -15,7 +15,6 @@ Promise.all([
             return {
                 IndexPage: 0,
                 ListClass: getListCls(),
-                ListPos: [],      // List<[[x0, y0, id0, w0, h0, cType], [x1, y1, id1, w1, h1]]>
                 LastArea: [],   // List<[id, x, y, w, h]>
                 DragElm: null,
             }
@@ -43,10 +42,14 @@ Promise.all([
                     let top = y + dgElm.offY
                     const dItem = dgElm.Item
                     const id = dItem.id
+
                     if (!this.isOverView(id, left, top, dItem.width, dItem.height)) {
-                        dItem.left = left
-                        dItem.top = top
-                        this.updatePos(id, left, top)
+                        if (dItem.left != left || dItem.top != top) {
+                            dItem.left = left
+                            dItem.top = top
+                            
+                            this.drawLines(this.getPoints('point'))
+                        }
                     }
                 }
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
@@ -54,7 +57,8 @@ Promise.all([
             onKeyUp(evt) {
                 // console.log('on key up', evt)
                 this.DragElm = null
-                this.updateLastArea()
+                
+                this.updateLastArea(this.getPoints('pos'))
             },
             drawLines(points) {
                 const c = document.getElementById(`dnb-mcanvas`);
@@ -76,42 +80,38 @@ Promise.all([
                 }
                 return false
             },
-            updatePos(id, x, y) {
-                const lstPos = this.ListPos
+            getPoints(type) {
+                const lstCls = this.$root.ListClass
                 const points = []
-                let hasPos = false
-                for (let ii = 0, arP; ii < lstPos.length; ii++) {
-                    arP = lstPos[ii]
-                    let pos = arP[0]
-                    if (pos[2] == id) {
-                        checkChange(pos);
-                        hasPos = true
-                        continue;
-                    }
-                    pos = arP[1]
-                    if (pos[2] == id) {
-                        checkChange(pos)
-                        hasPos = true
+                for (let ii = 0, item; ii < lstCls.length; ii++) {
+                    item = lstCls[ii]
+                    if (!item.idTo) continue;
+                    let idTos = item.idTo.split(',')
+                    let cTypes = item.connType.split(',')
+                    let x0 = item.left + 3
+                    let y0 = item.top
+                    for (let jj = 0, Jtem; jj < lstCls.length; jj++) {
+                        if (jj == ii) continue;
+                        Jtem = lstCls[jj]
+                        if (Jtem.idTo) continue
+                        let iiT = idTos.indexOf(Jtem.id)
+                        if (iiT < 0) continue
+                        let w0 = item.width
+                        let h0 = item.height
+                        let x1 = Jtem.left
+                        let y1 = Jtem.top
+                        let w1 = Jtem.width
+                        let h1 = Jtem.height
+                        const cType = cTypes[iiT]
+                        if (type == 'point')
+                            points.push([[x0, y0, w0, h0, cType], [x1, y1, w1, h1]])
+                        if (type == 'pos')
+                            points.push([[x0, y0, item.id, w0, h0, cType], [x1, y1, Jtem.id, w1, h1]])
                     }
                 }
-                if (hasPos) {
-                    for (let ii = 0, arP; ii < lstPos.length; ii++) {
-                        arP = lstPos[ii]
-                        let pos0 = arP[0]
-                        let pos1 = arP[1]
-                        let p0 = [pos0[0], pos0[1], pos0[3], pos0[4], pos0[5]]
-                        let p1 = [pos1[0], pos1[1], pos1[3], pos1[4]]
-                        points.push([p0, p1])
-                    }
-                }
-                if (points.length) this.drawLines(points)
-                function checkChange(pos) {
-                    if (pos[0] != x) pos[0] = x
-                    if (pos[1] != y) pos[1] = y
-                }
+                return points;
             },
-            updateLastArea() {
-                const lstPos = this.ListPos
+            updateLastArea(lstPos) {
                 const lstArea = []
                 for (let ii = 0; ii < lstPos.length; ii++) {
                     const [arP0, arP1] = lstPos[ii]

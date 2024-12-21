@@ -70,37 +70,11 @@ export const ViewDiagram = {
     },
     methods: {
         buildLines() {
-            const lstCls = this.$root.ListClass
-            const lstPos = []
-            const points = []
-            for (let ii = 0, item; ii < lstCls.length; ii++) {
-                item = lstCls[ii]
-                if (!item.idTo) continue;
-                let idTos = item.idTo.split(',')
-                let cTypes = item.connType.split(',')
-                let x0 = item.left + 3
-                let y0 = item.top
-                for (let jj = 0, Jtem; jj < lstCls.length; jj++) {
-                    if (jj == ii) continue;
-                    Jtem = lstCls[jj]
-                    if (Jtem.idTo) continue
-                    let iiT = idTos.indexOf(Jtem.id)
-                    if (iiT < 0) continue
-                    let w0 = item.width
-                    let h0 = item.height
-                    let x1 = Jtem.left
-                    let y1 = Jtem.top
-                    let w1 = Jtem.width
-                    let h1 = Jtem.height
-                    const cType = cTypes[iiT]
-                    lstPos.push([[x0, y0, item.id, w0, h0, cType], [x1, y1, Jtem.id, w1, h1]])
-                    points.push([[x0, y0, w0, h0, cType], [x1, y1, w1, h1]])
-                }
-            }
-            console.log(lstPos, points)
-            this.$root.ListPos = lstPos
+            const points = this.$root.getPoints('point')
             this.$root.drawLines(points)
-            this.$root.updateLastArea()
+
+            const lstPos = this.$root.getPoints('pos')
+            this.$root.updateLastArea(lstPos)
         },
     },
     //beforeUnmount() { },
