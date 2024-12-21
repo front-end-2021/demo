@@ -3,9 +3,30 @@
 export function drawExtension(p0, p1, width) {
     const ctx = this
     let x1 = p1[0], y1 = p1[1];
-    let [a, b] = linearCoeffict(p0, p1);
+    let w1 = p1[2], h1 = p1[3]
     let x0 = p0[0], y0 = p0[1]
-    let posE = directToD(p1, width * 3, a, b);
+    let w0 = p0[2], h0 = p0[3]
+    let isLefX0 = x1 < x0
+    let isBotY0 = y0 + h0 < y1
+
+    let isCenY = (y0 <= y1 && y1 <= y0 + h0) || (y1 <= y0 && y0 <= y1 + h1)
+    let isCenX = (x0 <= x1 && x1 <= x0 + w0) || (x1 <= x0 && x0 <= x1 + w1)
+
+    let isLefX1 = x0 < x1
+    let isBotY1 = y1 + h1 / 6 < y0
+
+    if(isCenX) x0 += w0 / 2
+    else if(!isLefX0) x0 += w0;
+    if(isCenY) y0 += h0 / 2
+    else if(isBotY0) y0 += (h0 - 1)
+
+    if(isCenX) x1 += w1 / 2
+    else if(!isLefX1) x1 += w1;
+    if(isCenY) y1 += h1 / 2
+    else if(isBotY1) y1 += (h1 - 1)
+    
+    let [a, b] = linearCoeffict([x0, y0], [x1, y1]);
+    let posE = directToD([x1, y1], width * 3, a, b);
     let xx0 = posE[0]
     if (x0 < x1 && x1 < xx0) xx0 = posE[1]
     let yy0 = a * xx0 + b;

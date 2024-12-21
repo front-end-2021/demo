@@ -35,7 +35,9 @@ Promise.all([
                 ctx.clearRect(0, 0, c.width, c.height);
                 for (let ii = 0; ii < lstPos.length; ii++) {
                     const [p0, p1] = lstPos[ii]
-                    drawExtension.call(ctx, p0, p1, 8)
+                    const [x0, y0, id0, w0, h0] = p0
+                    const [x1, y1, id1, w1, h1] = p1
+                    drawExtension.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], 8)
                 }
             },
         },
@@ -53,9 +55,7 @@ Promise.all([
                     dItem.left = left
                     dItem.top = top
                     const id = dItem.id
-                    let x1 = left
-                    let y1 = dItem.top + dItem.height / 10
-                    this.updatePos(id, x1, y1)
+                    this.updatePos(id, left, top)
                 }
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
             },
@@ -70,13 +70,11 @@ Promise.all([
                     arP = lstPos[ii]
                     let pos = arP[0]
                     if (pos[2] == id) {
-                        if (x + pos[3] < arP[1][0]) x += pos[3] + 3
                         checkChange(pos)
                         continue
                     }
                     pos = arP[1]
                     if (pos[2] == id) {
-                        if (x + pos[3] < arP[0][0]) x += pos[3] + 3
                         checkChange(pos)
                     }
                 }

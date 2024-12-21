@@ -47,7 +47,7 @@ export const ViewDiagram = {
     data() {
         let lstCls = [
             {
-                id: 'cls-account', top: 30, left: 90, width: 220,
+                id: 'cls-account', top: 30, left: 90, width: 220, height: 100,
                 idTo: 'cls-contact',
                 Name: 'Account', Fields: [
                     { AcModify: '#', Name: 'name', Type: 'String' },
@@ -60,7 +60,7 @@ export const ViewDiagram = {
                 ]
             },
             {
-                id: 'cls-contact', top: 70, left: 680, width: 210,
+                id: 'cls-contact', top: 70, left: 680, width: 210, height: 100,
                 Name: 'Contact', Fields: [
                     { AcModify: '#', Name: 'name', Type: 'String' },
                     { AcModify: '#', Name: 'emailAddress', Type: 'String' },
@@ -87,15 +87,19 @@ export const ViewDiagram = {
                 item = lstCls[ii]
                 if (!item.idTo) continue;
 
-                let x0 = item.left + item.width + 3
-                let y0 = item.top + item.height / 10
+                let x0 = item.left + 3
+                let y0 = item.top
                 for (let jj = ii + 1, Jtem; jj < lstCls.length; jj++) {
                     Jtem = lstCls[jj]
                     if (Jtem.idTo) continue
                     if (item.idTo == Jtem.id) {
+                        let w0 = item.width
+                        let h0 = item.height
                         let x1 = Jtem.left
-                        let y1 = Jtem.top + Jtem.height / 10
-                        lstPos.push([[x0, y0, item.id, item.width], [x1, y1, Jtem.id, Jtem.width]])
+                        let y1 = Jtem.top
+                        let w1 = Jtem.width
+                        let h1 = Jtem.height
+                        lstPos.push([[x0, y0, item.id, w0, h0], [x1, y1, Jtem.id, w1, h1]])
                     }
                 }
             }
