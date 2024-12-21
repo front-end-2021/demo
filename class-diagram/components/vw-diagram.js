@@ -27,7 +27,7 @@ const RectClass = {
     computed: {
         PaInterface() {
             let cType = this.item.connType
-            if(!cType) return
+            if (!cType) return
             cType = cType.split(',')
             let iiT = cType.indexOf('implement')
             if (iiT < 0) return
@@ -41,7 +41,7 @@ const RectClass = {
         ViewName() {
             const item = this.item
             let paIn = this.PaInterface
-            if(!paIn) return item.Name
+            if (!paIn) return item.Name
             return `${item.Name}: ${paIn.Name}`
         },
     },
@@ -85,22 +85,22 @@ export const ViewDiagram = {
                     Jtem = lstCls[jj]
                     if (Jtem.idTo) continue
                     let iiT = idTos.indexOf(Jtem.id)
-                    if (-1 < iiT) {
-                        let w0 = item.width
-                        let h0 = item.height
-                        let x1 = Jtem.left
-                        let y1 = Jtem.top
-                        let w1 = Jtem.width
-                        let h1 = Jtem.height
-                        const cType = cTypes[iiT]
-                        lstPos.push([[x0, y0, item.id, w0, h0, cType], [x1, y1, Jtem.id, w1, h1]])
-                        points.push([[x0, y0, w0, h0, cType], [x1, y1, w1, h1]])
-                    }
+                    if (iiT < 0) continue
+                    let w0 = item.width
+                    let h0 = item.height
+                    let x1 = Jtem.left
+                    let y1 = Jtem.top
+                    let w1 = Jtem.width
+                    let h1 = Jtem.height
+                    const cType = cTypes[iiT]
+                    lstPos.push([[x0, y0, item.id, w0, h0, cType], [x1, y1, Jtem.id, w1, h1]])
+                    points.push([[x0, y0, w0, h0, cType], [x1, y1, w1, h1]])
                 }
             }
             console.log(lstPos, points)
             this.$root.ListPos = lstPos
             this.$root.drawLines(points)
+            this.$root.updateLastArea()
         },
     },
     //beforeUnmount() { },

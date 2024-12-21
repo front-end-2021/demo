@@ -15,7 +15,8 @@ Promise.all([
             return {
                 IndexPage: 0,
                 ListClass: getListCls(),
-                ListPos: [],      // [[x, y, id, width], ...]
+                ListPos: [],      // List<[[x0, y0, id0, w0, h0, cType], [x1, y1, id1, w1, h1]]>
+                LastArea: [],   // List<[id, x, y, w, h]>
                 DragElm: null,
             }
         },
@@ -41,16 +42,19 @@ Promise.all([
                     let left = x + dgElm.offX
                     let top = y + dgElm.offY
                     const dItem = dgElm.Item
-                    dItem.left = left
-                    dItem.top = top
                     const id = dItem.id
-                    this.updatePos(id, left, top)
+                    if (!this.isOverView(id, left, top, dItem.width, dItem.height)) {
+                        dItem.left = left
+                        dItem.top = top
+                        this.updatePos(id, left, top)
+                    }
                 }
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
             },
             onKeyUp(evt) {
                 // console.log('on key up', evt)
                 this.DragElm = null
+                this.updateLastArea()
             },
             drawLines(points) {
                 const c = document.getElementById(`dnb-mcanvas`);
@@ -61,6 +65,16 @@ Promise.all([
                     if (p0[4] == 'extend') drawExtension.call(ctx, p0, p1, 8)
                     if (p0[4] == 'implement') drawImplement.call(ctx, p0, p1, 6)
                 }
+            },
+            isOverView(id, x, y, w, h) {
+                const lstArea = this.LastArea.filter(x => x[0] != id)
+                for (let ii = 0; ii < lstArea.length; ii++) {
+                    const [id0, x0, y0, w0, h0] = lstArea[ii]
+                    if (x + w < x0 - 30 || x0 + w0 < x - 30) continue
+                    if (y + h < y0 - 30 || y0 + h0 < y - 30) continue
+                    return true
+                }
+                return false
             },
             updatePos(id, x, y) {
                 const lstPos = this.ListPos
@@ -90,12 +104,31 @@ Promise.all([
                         points.push([p0, p1])
                     }
                 }
-                if (points.length) {
-                    this.drawLines(points)
-                }
+                if (points.length) this.drawLines(points)
                 function checkChange(pos) {
                     if (pos[0] != x) pos[0] = x
                     if (pos[1] != y) pos[1] = y
+                }
+            },
+            updateLastArea() {
+                const lstPos = this.ListPos
+                const lstArea = []
+                for (let ii = 0; ii < lstPos.length; ii++) {
+                    const [arP0, arP1] = lstPos[ii]
+                    let x0 = arP0[0], y0 = arP0[1]
+                    let w0 = arP0[3], h0 = arP0[4]
+                    let id0 = arP0[2]
+                    addLst(id0, x0, y0, w0, h0)
+                    let x1 = arP1[0], y1 = arP1[1]
+                    let w1 = arP1[3], h1 = arP1[4]
+                    let id1 = arP1[2]
+                    addLst(id1, x1, y1, w1, h1)
+                }
+                this.$root.LastArea = lstArea
+                function addLst(id, x, y, w, h) {
+                    let iiA = lstArea.findIndex(x => x[0] == id)
+                    if (-1 < iiA) return;
+                    lstArea.push([id, x, y, w, h])
                 }
             },
         },
@@ -118,7 +151,7 @@ Promise.all([
 function getListCls() {
     let lstCls = [
         {
-            id: 'cls-account', type: 'class', 
+            id: 'cls-account', type: 'class',
             idTo: 'cls-contact', connType: 'extend',
             top: 30, left: 90, width: 220, height: 100,
             Name: 'Account', Fields: [
