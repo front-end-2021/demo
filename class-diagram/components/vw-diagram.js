@@ -80,9 +80,10 @@ export const ViewDiagram = {
         }
     },
     methods: {
-        drawLines() {
+        buildLines() {
             const lstCls = this.ListClass
             const lstPos = []
+            const points = []
             for (let ii = 0, item; ii < lstCls.length; ii++) {
                 item = lstCls[ii]
                 if (!item.idTo) continue;
@@ -100,18 +101,20 @@ export const ViewDiagram = {
                         let w1 = Jtem.width
                         let h1 = Jtem.height
                         lstPos.push([[x0, y0, item.id, w0, h0], [x1, y1, Jtem.id, w1, h1]])
+                        points.push([[x0, y0, w0, h0], [x1, y1, w1, h1]])
                     }
                 }
             }
             //console.log(lstPos)
             this.$root.ListPos = lstPos
+            this.$root.drawLines(points)
         },
     },
     //beforeUnmount() { },
     mounted() {
-        this.drawLines()
+        this.buildLines()
     },
     updated() {
-        this.drawLines()
+        this.buildLines()
     },
 }

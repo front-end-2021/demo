@@ -28,18 +28,6 @@ Promise.all([
         },
         watch: {
             IndexPage(val) { setLocal(6, val) },
-            ListPos(lstPos) {
-                console.log('watch pos')
-                const c = document.getElementById(`dnb-mcanvas`);
-                const ctx = c.getContext("2d");
-                ctx.clearRect(0, 0, c.width, c.height);
-                for (let ii = 0; ii < lstPos.length; ii++) {
-                    const [p0, p1] = lstPos[ii]
-                    const [x0, y0, id0, w0, h0] = p0
-                    const [x1, y1, id1, w1, h1] = p1
-                    drawExtension.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], 8)
-                }
-            },
         },
         methods: {
             selectPage(index) { this.IndexPage = index },
@@ -63,23 +51,33 @@ Promise.all([
                 // console.log('on key up', evt)
                 this.DragElm = null
             },
+            drawLines(points) {
+                const c = document.getElementById(`dnb-mcanvas`);
+                const ctx = c.getContext("2d");
+                ctx.clearRect(0, 0, c.width, c.height);
+                for (let ii = 0; ii < points.length; ii++) {
+                    const [p0, p1] = points[ii]
+                    drawExtension.call(ctx, p0, p1, 8)
+                }
+            },
             updatePos(id, x, y) {
                 const lstPos = this.ListPos
+                const points = []
                 let isChange = false
                 for (let ii = 0, arP; ii < lstPos.length; ii++) {
                     arP = lstPos[ii]
                     let pos = arP[0]
                     if (pos[2] == id) {
-                        checkChange(pos)
-                        continue
+                        checkChange(pos);
+                        addPoints(arP)
+                        continue;
                     }
                     pos = arP[1]
-                    if (pos[2] == id) {
-                        checkChange(pos)
-                    }
+                    if (pos[2] == id) checkChange(pos)
+                    addPoints(arP)
                 }
                 if (isChange) {
-                    this.ListPos = [...lstPos]
+                    this.drawLines(points)
                 }
                 function checkChange(pos) {
                     if (pos[0] != x) {
@@ -91,12 +89,18 @@ Promise.all([
                         isChange = true
                     }
                 }
+                function addPoints(arPoint) {
+                    if (!isChange) return;
+                    let pos0 = arPoint[0]
+                    let pos1 = arPoint[1]
+                    let p0 = [pos0[0], pos0[1], pos0[3], pos0[4]]
+                    let p1 = [pos1[0], pos1[1], pos1[3], pos1[4]]
+                    points.push([p0, p1])
+                }
             },
         },
         //  beforeCreate() { },
-        created() {
-
-        },
+        //  created() { },
         mounted() {
 
             const message = "123456";
