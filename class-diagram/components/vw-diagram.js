@@ -93,6 +93,7 @@ export const ViewDiagram = {
                 ], Properties: [
                     ['+', 'Swim()', 'void', 'set'],
                     ['+', 'Quack()', 'void', 'set'],
+                    ['+', 'Fly(){...}', 'void', 'set'],
                 ]
             },
             {
@@ -106,10 +107,8 @@ export const ViewDiagram = {
             },
             {
                 id: 'cls-ifly', top: 500, left: 1200, width: 150, height: 100,
-                Name: 'iFly', Fields: [
-                    { AcModify: '+', Name: 'isWild', Type: 'String' },
-                ], Properties: [
-                    ['+', 'Run()', 'void', 'set'],
+                Name: 'iFly', Fields: [], Properties: [
+                    ['+', 'Fly()', 'void', 'set'],
                 ]
             },
         ]
