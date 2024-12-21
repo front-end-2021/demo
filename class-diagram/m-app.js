@@ -14,6 +14,7 @@ Promise.all([
         data() {
             return {
                 IndexPage: 0,
+                ListClass: getListCls(),
                 ListPos: [],      // [[x, y, id, width], ...]
                 DragElm: null,
             }
@@ -57,8 +58,8 @@ Promise.all([
                 ctx.clearRect(0, 0, c.width, c.height);
                 for (let ii = 0; ii < points.length; ii++) {
                     const [p0, p1] = points[ii]
-                    if(p0[4] == 'extend') drawExtension.call(ctx, p0, p1, 8)
-                    if(p0[4] == 'implement') drawImplement.call(ctx, p0, p1, 6)
+                    if (p0[4] == 'extend') drawExtension.call(ctx, p0, p1, 8)
+                    if (p0[4] == 'implement') drawImplement.call(ctx, p0, p1, 6)
                 }
             },
             updatePos(id, x, y) {
@@ -114,6 +115,81 @@ Promise.all([
 
 }).catch(errStatus => { console.log('Woop!', errStatus) })
 
+function getListCls() {
+    let lstCls = [
+        {
+            id: 'cls-account', type: 'class', 
+            idTo: 'cls-contact', connType: 'extend',
+            top: 30, left: 90, width: 220, height: 100,
+            Name: 'Account', Fields: [
+                { AcModify: '#', Name: 'name', Type: 'String' },
+                { AcModify: '#', Name: 'emailAddress', Type: 'String' },
+            ], Properties: [
+                ['+', 'GetName()', 'String', 'get'],
+                ['+', 'SetName(String)', 'void', 'set'],
+                ['+', 'GetEmailAddress()', 'String', 'get'],
+                ['+', 'SetEmailAddress(String)', 'void', 'set'],
+            ]
+        },
+        {
+            id: 'cls-contact', type: 'class',
+            top: 70, left: 580, width: 210, height: 100,
+            Name: 'Contact', Fields: [
+                { AcModify: '#', Name: 'name', Type: 'String' },
+                { AcModify: '#', Name: 'emailAddress', Type: 'String' },
+                { AcModify: '', Name: 'faxNumber', Type: 'String' },
+            ], Properties: [
+                ['+', 'GetName()', 'String', 'get'],
+                ['+', 'SetName(String)', 'void', 'set'],
+                ['+', 'GetEmailAddress()', 'String', 'get'],
+                ['+', 'SetEmailAddress(String)', 'void', 'set'],
+                ['+', 'GetFaxNumber()', 'Int', 'get'],
+                ['+', 'SetFaxNumber(Int)', 'void', 'set'],
+            ]
+        },
+        {
+            id: 'cls-animal', type: 'class',
+            top: 70, left: 1024, width: 150, height: 100,
+            Name: 'Animal', Fields: [
+                { AcModify: '+', Name: 'age', Type: 'Int' },
+                { AcModify: '+', Name: 'gender', Type: 'String' },
+            ], Properties: [
+                ['+', 'IsMammal()', 'Bool', 'get'],
+                ['+', 'Mate()', 'Int', 'get'],
+            ]
+        },
+        {
+            id: 'cls-duck', type: 'class',
+            idTo: 'cls-animal,cls-ifly', connType: 'extend,implement',
+            top: 270, left: 880, width: 150, height: 100,
+            Name: 'Duck', Fields: [
+                { AcModify: '+', Name: 'beakColor', Type: 'String' },
+            ], Properties: [
+                ['+', 'Swim()', 'void', 'set'],
+                ['+', 'Quack()', 'void', 'set'],
+                ['+', 'Fly(){...}', 'void', 'set'],
+            ]
+        },
+        {
+            id: 'cls-zebra', type: 'class',
+            idTo: 'cls-animal', connType: 'extend',
+            top: 270, left: 1280, width: 150, height: 100,
+            Name: 'Zebra', Fields: [
+                { AcModify: '+', Name: 'isWild', Type: 'String' },
+            ], Properties: [
+                ['+', 'Run()', 'void', 'set'],
+            ]
+        },
+        {
+            id: 'cls-ifly', type: 'interface',
+            top: 500, left: 1200, width: 150, height: 100,
+            Name: 'iFly', Fields: [], Properties: [
+                ['+', 'Fly()', 'void', 'set'],
+            ]
+        },
+    ]
+    return lstCls
+}
 function includeHTML(path) {
     const items = document.body.getElementsByClassName("dnb-imp-html");
     path = path.trim()

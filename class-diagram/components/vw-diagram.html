@@ -5,7 +5,8 @@
         </canvas>
         <div style="position: absolute;top: 0;left: 0;
         width: 1900px;height: 870px;border: 1px solid rgb(0, 0, 0);">
-            <rect-class v-for="wItm in ListClass" :item="wItm"></rect-class>
+            <rect-class v-for="wItm in $root.ListClass" 
+                :item="wItm"></rect-class>
         </div>
         
     </section>
@@ -15,7 +16,7 @@
         style="display: inline-block;border: 1px solid rgb(0, 0, 0);position: inherit;"
         :style="{width: item.width + 'px', top: item.top + 'px', left: item.left + 'px'}">
         <div style="font-size: 18px;font-weight: bold;text-align: center;border-bottom: 1px solid black;"
-            >{{item.Name}}</div>
+            >{{ViewName}}</div>
         <div style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
             <div v-for="field in item.Fields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</div>
         </div>
