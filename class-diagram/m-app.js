@@ -1,6 +1,6 @@
 // #region import
 import { createApp } from 'vue'
-import { drawExtension } from './mcanvas.js'
+import { drawExtension, drawImplement } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 // #endregion
 Promise.all([
@@ -57,7 +57,8 @@ Promise.all([
                 ctx.clearRect(0, 0, c.width, c.height);
                 for (let ii = 0; ii < points.length; ii++) {
                     const [p0, p1] = points[ii]
-                    drawExtension.call(ctx, p0, p1, 8)
+                    if(p0[4] == 'extend') drawExtension.call(ctx, p0, p1, 8)
+                    if(p0[4] == 'implement') drawImplement.call(ctx, p0, p1, 6)
                 }
             },
             updatePos(id, x, y) {
@@ -83,7 +84,7 @@ Promise.all([
                         arP = lstPos[ii]
                         let pos0 = arP[0]
                         let pos1 = arP[1]
-                        let p0 = [pos0[0], pos0[1], pos0[3], pos0[4]]
+                        let p0 = [pos0[0], pos0[1], pos0[3], pos0[4], pos0[5]]
                         let p1 = [pos1[0], pos1[1], pos1[3], pos1[4]]
                         points.push([p0, p1])
                     }
