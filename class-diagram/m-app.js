@@ -81,7 +81,11 @@ Promise.all([
                 if (hasPos) {
                     for (let ii = 0, arP; ii < lstPos.length; ii++) {
                         arP = lstPos[ii]
-                        addPoints(arP)
+                        let pos0 = arP[0]
+                        let pos1 = arP[1]
+                        let p0 = [pos0[0], pos0[1], pos0[3], pos0[4]]
+                        let p1 = [pos1[0], pos1[1], pos1[3], pos1[4]]
+                        points.push([p0, p1])
                     }
                 }
                 if (points.length) {
@@ -90,13 +94,6 @@ Promise.all([
                 function checkChange(pos) {
                     if (pos[0] != x) pos[0] = x
                     if (pos[1] != y) pos[1] = y
-                }
-                function addPoints(arPoint) {
-                    let pos0 = arPoint[0]
-                    let pos1 = arPoint[1]
-                    let p0 = [pos0[0], pos0[1], pos0[3], pos0[4]]
-                    let p1 = [pos1[0], pos1[1], pos1[3], pos1[4]]
-                    points.push([p0, p1])
                 }
             },
         },
