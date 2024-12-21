@@ -135,6 +135,10 @@ Promise.all([
         //  beforeCreate() { },
         //  created() { },
         mounted() {
+            values.forEach((path, ii) => {
+                let pDom = document.body.querySelector(`.dnb-imp-html[dnbpath="${path}"]`)
+                if (pDom) pDom.remove();
+            })
 
             const message = "123456";
             const hash = CryptoJS.SHA256(message);
