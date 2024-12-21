@@ -63,34 +63,35 @@ Promise.all([
             updatePos(id, x, y) {
                 const lstPos = this.ListPos
                 const points = []
-                let isChange = false
+                let hasPos = false
                 for (let ii = 0, arP; ii < lstPos.length; ii++) {
                     arP = lstPos[ii]
                     let pos = arP[0]
                     if (pos[2] == id) {
                         checkChange(pos);
-                        addPoints(arP)
+                        hasPos = true
                         continue;
                     }
                     pos = arP[1]
-                    if (pos[2] == id) checkChange(pos)
-                    addPoints(arP)
+                    if (pos[2] == id) {
+                        checkChange(pos)
+                        hasPos = true
+                    }
                 }
-                if (isChange) {
+                if (hasPos) {
+                    for (let ii = 0, arP; ii < lstPos.length; ii++) {
+                        arP = lstPos[ii]
+                        addPoints(arP)
+                    }
+                }
+                if (points.length) {
                     this.drawLines(points)
                 }
                 function checkChange(pos) {
-                    if (pos[0] != x) {
-                        pos[0] = x
-                        isChange = true
-                    }
-                    if (pos[1] != y) {
-                        pos[1] = y
-                        isChange = true
-                    }
+                    if (pos[0] != x) pos[0] = x
+                    if (pos[1] != y) pos[1] = y
                 }
                 function addPoints(arPoint) {
-                    if (!isChange) return;
                     let pos0 = arPoint[0]
                     let pos1 = arPoint[1]
                     let p0 = [pos0[0], pos0[1], pos0[3], pos0[4]]

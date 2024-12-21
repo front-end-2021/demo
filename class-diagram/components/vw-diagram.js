@@ -10,8 +10,9 @@ const RectClass = {
             let acModify = prp[0]
             let name = prp[1]
             let type = prp[2]
+            let returnType = prp[3]
             let txt = `${acModify}${space}${type}${space}${name}`
-            if (name.toLowerCase().includes('get'))
+            if (returnType.toLowerCase().includes('get'))
                 txt = `${acModify}${space}${name}:${space}${type}`
             return txt
         },
@@ -53,25 +54,54 @@ export const ViewDiagram = {
                     { AcModify: '#', Name: 'name', Type: 'String' },
                     { AcModify: '#', Name: 'emailAddress', Type: 'String' },
                 ], Properties: [
-                    ['+', 'GetName()', 'String'],
-                    ['+', 'SetName(String)', 'void'],
-                    ['+', 'GetEmailAddress()', 'String'],
-                    ['+', 'SetEmailAddress(String)', 'void'],
+                    ['+', 'GetName()', 'String', 'get'],
+                    ['+', 'SetName(String)', 'void', 'set'],
+                    ['+', 'GetEmailAddress()', 'String', 'get'],
+                    ['+', 'SetEmailAddress(String)', 'void', 'set'],
                 ]
             },
             {
-                id: 'cls-contact', top: 70, left: 680, width: 210, height: 100,
+                id: 'cls-contact', top: 70, left: 580, width: 210, height: 100,
                 Name: 'Contact', Fields: [
                     { AcModify: '#', Name: 'name', Type: 'String' },
                     { AcModify: '#', Name: 'emailAddress', Type: 'String' },
                     { AcModify: '', Name: 'faxNumber', Type: 'String' },
                 ], Properties: [
-                    ['+', 'GetName()', 'String'],
-                    ['+', 'SetName(String)', 'void'],
-                    ['+', 'GetEmailAddress()', 'String'],
-                    ['+', 'SetEmailAddress(String)', 'void'],
-                    ['+', 'GetFaxNumber()', 'Number'],
-                    ['+', 'SetFaxNumber(Number)', 'void'],
+                    ['+', 'GetName()', 'String', 'get'],
+                    ['+', 'SetName(String)', 'void', 'set'],
+                    ['+', 'GetEmailAddress()', 'String', 'get'],
+                    ['+', 'SetEmailAddress(String)', 'void', 'set'],
+                    ['+', 'GetFaxNumber()', 'Int', 'get'],
+                    ['+', 'SetFaxNumber(Int)', 'void', 'set'],
+                ]
+            },
+            {
+                id: 'cls-animal', top: 70, left: 1024, width: 150, height: 100,
+                Name: 'Animal', Fields: [
+                    { AcModify: '+', Name: 'age', Type: 'Int' },
+                    { AcModify: '+', Name: 'gender', Type: 'String' },
+                ], Properties: [
+                    ['+', 'IsMammal()', 'Bool', 'get'],
+                    ['+', 'Mate()', 'Int', 'get'],
+                ]
+            },
+            {
+                id: 'cls-duck', top: 270, left: 880, width: 150, height: 100,
+                idTo: 'cls-animal',
+                Name: 'Duck', Fields: [
+                    { AcModify: '+', Name: 'beakColor', Type: 'String' },
+                ], Properties: [
+                    ['+', 'Swim()', 'void', 'set'],
+                    ['+', 'Quack()', 'void', 'set'],
+                ]
+            },
+            {
+                id: 'cls-zebra', top: 270, left: 880 + 200, width: 150, height: 100,
+                idTo: 'cls-animal',
+                Name: 'Zebra', Fields: [
+                    { AcModify: '+', Name: 'isWild', Type: 'String' },
+                ], Properties: [
+                    ['+', 'Run()', 'void', 'set'],
                 ]
             },
         ]
@@ -90,7 +120,8 @@ export const ViewDiagram = {
 
                 let x0 = item.left + 3
                 let y0 = item.top
-                for (let jj = ii + 1, Jtem; jj < lstCls.length; jj++) {
+                for (let jj = 0, Jtem; jj < lstCls.length; jj++) {
+                    if(jj == ii) continue;
                     Jtem = lstCls[jj]
                     if (Jtem.idTo) continue
                     if (item.idTo == Jtem.id) {
