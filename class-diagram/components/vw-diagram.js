@@ -70,11 +70,10 @@ export const ViewDiagram = {
     },
     methods: {
         buildLines() {
-            const points = this.$root.getPoints('point')
+            const points = this.$root.getPoints()
             this.$root.drawLines(points)
 
-            const lstPos = this.$root.getPoints('pos')
-            this.$root.updateLastArea(lstPos)
+            this.$root.updateLastArea()
         },
     },
     //beforeUnmount() { },

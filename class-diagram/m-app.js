@@ -47,8 +47,8 @@ Promise.all([
                         if (dItem.left != left || dItem.top != top) {
                             dItem.left = left
                             dItem.top = top
-                            
-                            this.drawLines(this.getPoints('point'))
+
+                            this.drawLines(this.getPoints())
                         }
                     }
                 }
@@ -57,8 +57,8 @@ Promise.all([
             onKeyUp(evt) {
                 // console.log('on key up', evt)
                 this.DragElm = null
-                
-                this.updateLastArea(this.getPoints('pos'))
+
+                this.updateLastArea()
             },
             drawLines(points) {
                 const c = document.getElementById(`dnb-mcanvas`);
@@ -80,7 +80,7 @@ Promise.all([
                 }
                 return false
             },
-            getPoints(type) {
+            getPoints() {
                 const lstCls = this.$root.ListClass
                 const points = []
                 for (let ii = 0, item; ii < lstCls.length; ii++) {
@@ -88,7 +88,7 @@ Promise.all([
                     if (!item.idTo) continue;
                     let idTos = item.idTo.split(',')
                     let cTypes = item.connType.split(',')
-                    let x0 = item.left + 3
+                    let x0 = item.left + 1
                     let y0 = item.top
                     for (let jj = 0, Jtem; jj < lstCls.length; jj++) {
                         if (jj == ii) continue;
@@ -103,33 +103,24 @@ Promise.all([
                         let w1 = Jtem.width
                         let h1 = Jtem.height
                         const cType = cTypes[iiT]
-                        if (type == 'point')
-                            points.push([[x0, y0, w0, h0, cType], [x1, y1, w1, h1]])
-                        if (type == 'pos')
-                            points.push([[x0, y0, item.id, w0, h0, cType], [x1, y1, Jtem.id, w1, h1]])
+                        points.push([[x0, y0, w0, h0, cType], [x1, y1, w1, h1]])
+                        // points.push([[x0, y0, item.id, w0, h0, cType], [x1, y1, Jtem.id, w1, h1]])
                     }
                 }
                 return points;
             },
-            updateLastArea(lstPos) {
+            updateLastArea() {
                 const lstArea = []
-                for (let ii = 0; ii < lstPos.length; ii++) {
-                    const [arP0, arP1] = lstPos[ii]
-                    let x0 = arP0[0], y0 = arP0[1]
-                    let w0 = arP0[3], h0 = arP0[4]
-                    let id0 = arP0[2]
-                    addLst(id0, x0, y0, w0, h0)
-                    let x1 = arP1[0], y1 = arP1[1]
-                    let w1 = arP1[3], h1 = arP1[4]
-                    let id1 = arP1[2]
-                    addLst(id1, x1, y1, w1, h1)
+                const lstCls = this.$root.ListClass
+                for (let ii = 0, item; ii < lstCls.length; ii++) {
+                    item = lstCls[ii]
+                    let x = item.left
+                    let y = item.top
+                    let w = item.width
+                    let h = item.height
+                    lstArea.push([item.id, x, y, w, h])
                 }
                 this.$root.LastArea = lstArea
-                function addLst(id, x, y, w, h) {
-                    let iiA = lstArea.findIndex(x => x[0] == id)
-                    if (-1 < iiA) return;
-                    lstArea.push([id, x, y, w, h])
-                }
             },
         },
         //  beforeCreate() { },
