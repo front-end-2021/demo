@@ -1,7 +1,18 @@
 <template id="tmp-vw-diagram">
     <section style="display: flex;width: calc(100vw - 16px);">
-        <div id="dnb-vwtab-left" style="width: 150px;">
-            left side
+        <div id="dnb-vwtab-left" style="width: 150px;display: inline-flex;flex-direction: column;">
+            <h3 style="margin: 0;">left side</h3>
+            <div style="display: inline-block;border: 1px solid rgb(0, 0, 0);width: calc(100% - 10px);cursor: default;"
+                id="cls-sample">
+                <div style="font-size: 18px;font-weight: bold;text-align: center;
+                    border-bottom: 1px solid black;">ClassName</div>
+                <div style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
+                    <div>&nbsp;List Fields</div>
+                </div>
+                <div style="font-size: 14px;font-weight: 100;">
+                    <div>&nbsp;List Property</div>
+                </div>
+            </div>
         </div>
         <div id="dnb-vw-main" style="width: calc(100% - 150px); position: relative;">
             <canvas id="dnb-mcanvas" width="1900" height="870" 
@@ -20,7 +31,7 @@
 </template>
 <template id="tmp-rect-class">
     <div :id="item.id"
-        style="display: inline-block;border: 1px solid rgb(0, 0, 0);position: inherit;"
+        style="display: inline-block;border: 1px solid rgb(0, 0, 0);position: inherit;cursor: default;"
         :style="{width: item.width + 'px', top: item.top + 'px', left: item.left + 'px'}">
         <div style="font-size: 18px;font-weight: bold;text-align: center;border-bottom: 1px solid black;"
             >{{ViewName}}</div>
