@@ -7,7 +7,7 @@ export function drawImplement(p0, p1, width) {
     fillCirle(ctx, x0, y0, 1, 'black')
 
     let [a, b] = linearCoeffict([x0, y0], [x1, y1]);    // phuong trinh duong thang (p0, p1)
-    let [xx0, yy0] = getPoint(x0, x1, y1, a, b, width * 2)
+    let [xx0, yy0] = getOpPoint([x0, y0], [x1, y1], a, b, width * 2)
 
     ctx.moveTo(x0, y0);
     ctx.lineTo(xx0, yy0);
@@ -30,17 +30,57 @@ export function drawImplement(p0, p1, width) {
 function poitsArg90(pp0, ab, width) {
     let [xx0, yy0] = pp0
     let [a, b] = ab
-    let [a1, b1] = perpendiLine([xx0, yy0], a, b);      // phuong trinh duong thang T (p0, p1)
-    let [xx1, xx2] = directToD([xx0, yy0], width, a1, b1);
-    let yy1 = a1 * xx1 + b1;
-    let yy2 = a1 * xx2 + b1;
+    let [xx1, yy1] = [xx0, yy0 - width]
+    let [xx2, yy2] = [xx0, yy0 + width]
+    if (-0.003 < a && a < 0.003) return [xx1, yy1, xx2, yy2]
+    let [a1, b1] = perpendiLine([xx0, yy0], a, b);      // phuong trinh duong thang vuog goc (p0, p1)
+    [xx1, xx2] = directToD([xx0, yy0], width, a1, b1);
+    yy1 = a1 * xx1 + b1;
+    yy2 = a1 * xx2 + b1;
     return [xx1, yy1, xx2, yy2]
 }
-function getPoint(x0, x1, y1, a, b, d) {
+function getOpPoint(p0, p1, a, b, d) {
+    let [x1, y1] = p1
+    let [xx0, yy0] = [x1 - d, y1]
+    if (-0.003 < a && a < 0.003) {
+        if (!inRangeXY([xx0, yy0], p0, p1)) xx0 = x1 + d
+        return [xx0, yy0]
+    }
     let posE = directToD([x1, y1], d, a, b);
-    let xx0 = posE[0]
-    if (x0 < x1 && x1 < xx0) xx0 = posE[1]
-    return [xx0, a * xx0 + b]
+    xx0 = posE[0]
+    let xx1 = posE[1]
+    yy0 = a * xx0 + b
+    if (inRangeXY([xx0, yy0], p0, p1)) return [xx0, yy0]
+    return [xx1, a * xx1 + b]
+}
+function inRangeXY(p, p0, p1) {
+    const [x0, y0] = p0
+    const [x1, y1] = p1
+    const [x, y] = p
+    if (x0 < x1) {
+        if (x < x0) return false
+        if (x1 < x) return false
+        return isInY(y, y0, y1)
+    } else if (x0 == x1) {
+        if (x != x0) return false
+        return isInY(y, y0, y1)
+    } else {
+        if (x0 < x) return false
+        if (x < x1) return false
+        return isInY(y, y0, y1)
+    }
+    function isInY(y, y0, y1) {
+        if (y0 < y1) {
+            if (y1 < y) return false
+            if (y < y0) return false
+        } else if (y0 == y1) {
+            if (y != y0) return false
+        } else {
+            if (y0 < y) return false
+            if (y < y1) return false
+        }
+        return true
+    }
 }
 function computeXY(p0, p1) {
     let x1 = p1[0], y1 = p1[1];
@@ -81,7 +121,7 @@ export function drawExtension(p0, p1, width) {
     fillCirle(ctx, x0, y0, 1, 'black')
 
     let [a, b] = linearCoeffict([x0, y0], [x1, y1]);    // phuong trinh duong thang (p0, p1)
-    let [xx0, yy0] = getPoint(x0, x1, y1, a, b, width * 3)
+    let [xx0, yy0] = getOpPoint([x0, y0], [x1, y1], a, b, width * 3)
 
     ctx.moveTo(x0, y0);
     ctx.lineTo(xx0, yy0);
@@ -101,12 +141,14 @@ export function drawExtension(p0, p1, width) {
 function linearCoeffict(p0, p1) {
     let x0 = p0[0], y0 = p0[1];
     let x1 = p1[0], y1 = p1[1];
-    let a = (y1 - y0) / (x1 - x0);
+    let a = y1 - y0;
+    if (x1 - x0 != 0) a = a / (x1 - x0);
     return [a, y0 - a * x0]
 }
 function perpendiLine(p, a, b) {
     let x = p[0], y = p[1];
-    let a1 = -1 / a;
+    let a1 = 0;
+    if (a != 0) a1 = -1 / a;
     return [a1, y - x * a1]
 }
 function directToD(p, d, a, b) {

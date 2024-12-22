@@ -17,9 +17,11 @@ const RectClass = {
         },
         onMouseDown(event) {
             const off = this.$el.getBoundingClientRect()
+            const tbLeft = document.getElementById('dnb-vwtab-left')
+            let x = tbLeft ? tbLeft.offsetWidth : 0
             this.$root.DragElm = {
                 Item: this.item,
-                offX: off.left - event.clientX,
+                offX: off.left - event.clientX - x,
                 offY: off.top - event.clientY
             }
         },
@@ -27,11 +29,11 @@ const RectClass = {
     computed: {
         PaInterface() {
             const lstAr = this.item.idTos
-            if(!lstAr || !lstAr.length) return
+            if (!lstAr || !lstAr.length) return
 
             let iiT = lstAr.findIndex(x => x[1] == 'implement')
             if (iiT < 0) return
-            
+
             const idI = lstAr[iiT][0]
             if (!idI) return
 
@@ -75,12 +77,25 @@ export const ViewDiagram = {
 
             this.$root.updateLastArea()
         },
+        setWithCanvas() {
+            const vwM = document.getElementById('dnb-vw-main')
+            if (vwM) {
+                const offW = vwM.offsetWidth
+                const cv = document.getElementById(`dnb-mcanvas`);
+                if (cv.width != offW) {
+                    cv.width = offW
+                    return true
+                }
+            }
+            return false
+        },
     },
     //beforeUnmount() { },
     mounted() {
+        this.setWithCanvas()
         this.buildLines()
     },
     updated() {
-        this.buildLines()
+        if (this.setWithCanvas()) this.buildLines()
     },
 }

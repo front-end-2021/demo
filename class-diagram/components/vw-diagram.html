@@ -1,14 +1,21 @@
 <template id="tmp-vw-diagram">
-    <section style="position: relative;">
-        <canvas id="dnb-mcanvas" width="1900" height="870" style="border:1px solid #000000;">
-            Your browser does not support the HTML canvas tag.
-        </canvas>
-        <div style="position: absolute;top: 0;left: 0;
-        width: 1900px;height: 870px;border: 1px solid rgb(0, 0, 0);">
-            <rect-class v-for="wItm in $root.ListClass" 
-                :item="wItm"></rect-class>
+    <section style="display: flex;width: calc(100vw - 16px);">
+        <div id="dnb-vwtab-left" style="width: 150px;">
+            left side
         </div>
-        
+        <div id="dnb-vw-main" style="width: calc(100% - 150px); position: relative;">
+            <canvas id="dnb-mcanvas" width="1900" height="870" 
+                style="border:1px solid #000000;">
+                Your browser does not support the HTML canvas tag.
+            </canvas>
+            <div style="position: absolute;top: 0;left: 0;
+            width: 100%;height: 870px;
+            border: 1px solid rgb(0, 0, 0);">
+                <rect-class v-for="wItm in $root.ListClass" 
+                    :item="wItm"></rect-class>
+            </div>
+            
+        </div>
     </section>
 </template>
 <template id="tmp-rect-class">
