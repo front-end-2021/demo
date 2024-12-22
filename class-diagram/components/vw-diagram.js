@@ -26,15 +26,15 @@ const RectClass = {
     },
     computed: {
         PaInterface() {
-            let cType = this.item.connType
-            if (!cType) return
-            cType = cType.split(',')
-            let iiT = cType.indexOf('implement')
+            const lstAr = this.item.idTos
+            if(!lstAr || !lstAr.length) return
+
+            let iiT = lstAr.findIndex(x => x[1] == 'implement')
             if (iiT < 0) return
-            let idTo = this.item.idTo
-            idTo = idTo.split(',')
-            const idI = idTo[iiT]
+            
+            const idI = lstAr[iiT][0]
             if (!idI) return
+
             const lstCls = this.$root.ListClass
             return lstCls.find(x => idI == x.id)
         },

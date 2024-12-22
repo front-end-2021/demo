@@ -47,10 +47,9 @@ Promise.all([
                         if (dItem.left != left || dItem.top != top) {
                             dItem.left = left
                             dItem.top = top
-
-                            this.drawLines(this.getPoints())
                         }
                     }
+                    this.drawLines(this.getPoints())
                 }
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
             },
@@ -85,16 +84,16 @@ Promise.all([
                 const points = []
                 for (let ii = 0, item; ii < lstCls.length; ii++) {
                     item = lstCls[ii]
-                    if (!item.idTo) continue;
-                    let idTos = item.idTo.split(',')
-                    let cTypes = item.connType.split(',')
+                    if (!item.idTos || !item.idTos.length) continue;
+                    let cIds = item.idTos.map(x => x[0])
+                    let cTypes = item.idTos.map(x => x[1])
                     let x0 = item.left + 1
                     let y0 = item.top
                     for (let jj = 0, Jtem; jj < lstCls.length; jj++) {
                         if (jj == ii) continue;
                         Jtem = lstCls[jj]
-                        if (Jtem.idTo) continue
-                        let iiT = idTos.indexOf(Jtem.id)
+                        if (Jtem.idTos && Jtem.idTos.length) continue
+                        let iiT = cIds.indexOf(Jtem.id)
                         if (iiT < 0) continue
                         let w0 = item.width
                         let h0 = item.height
@@ -147,7 +146,7 @@ function getListCls() {
     let lstCls = [
         {
             id: 'cls-account', type: 'class',
-            idTo: 'cls-contact', connType: 'extend',
+            idTos: [['cls-contact', 'extend']],
             top: 30, left: 90, width: 220, height: 100,
             Name: 'Account', Fields: [
                 { AcModify: '#', Name: 'name', Type: 'String' },
@@ -188,7 +187,7 @@ function getListCls() {
         },
         {
             id: 'cls-duck', type: 'class',
-            idTo: 'cls-animal,cls-ifly', connType: 'extend,implement',
+            idTos: [['cls-animal', 'extend'], ['cls-ifly', 'implement']],
             top: 270, left: 880, width: 150, height: 100,
             Name: 'Duck', Fields: [
                 { AcModify: '+', Name: 'beakColor', Type: 'String' },
@@ -200,7 +199,7 @@ function getListCls() {
         },
         {
             id: 'cls-zebra', type: 'class',
-            idTo: 'cls-animal', connType: 'extend',
+            idTos: [['cls-animal', 'extend']],
             top: 270, left: 1280, width: 150, height: 100,
             Name: 'Zebra', Fields: [
                 { AcModify: '+', Name: 'isWild', Type: 'String' },
