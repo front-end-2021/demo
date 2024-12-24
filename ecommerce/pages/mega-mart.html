@@ -1,0 +1,108 @@
+<template id="tmp-pg-megamart">
+    <header class="">
+        <section class="cdefault" style="display: flex;justify-content: space-around;">
+            <i>Welcome to www Megamart!</i>
+            <div style="display: inline-flex;">
+                <span class="mx9px"><i class="bi bi-geo-alt mcolor"></i>&nbsp;Deliver to <a 
+                    href="tel:+84349797441" class="txtbold">+(84)349797441</a></span>
+                <span class="mx9px"><i class="bi bi-truck mcolor"></i>&nbsp;Track your order</span>
+                <span class="mx9px"><i class="bi bi-gear mcolor"></i>&nbsp;All Offers</span>
+            </div>
+        </section>
+        <nav style="display: flex;justify-content: space-around;">
+            <div class="mcolor" style="display: inline-flex;align-items: center;">
+                <i class="mmenu mbg brd8px cpoint bi bi-filter-left font28px"></i>
+                <h1 class="cdefault">MegaMart</h1>
+            </div>
+            <div class="msearch mbg brd8px" style="width: 420px;padding: 6px 16px;">
+                <i class="bi bi-search mcolor font20px cpoint"></i>
+                <input type="text" class="mbg mx6px p6px"
+                style="border:none; width: 100%;margin-right: 9px;"
+                placeholder="Search essentials, groceries and more..." />
+                <i class="bi bi-list-ul font26px cpoint mcolor"></i>
+            </div>
+            <div style="display: inline-flex; align-items: center;">
+                <div class="btnsign cpoint brd8px" 
+                    style="display: inline-flex; align-items: center;padding: 6px 16px;">
+                    <i class="bi bi-person mcolor font26px"></i>
+                    <strong style="padding-left: 6px;">Sign Up/Sign In</strong>
+                </div>
+                <div class="grpcart">
+                    <i class="bi bi-cart3 mcolor font24px mx9px cpoint brd8px" 
+                        style="padding: 6px;"></i>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <section class="mcategories" >
+        <div v-for="(cate, ii) in $root.Categories"
+            @click="e => selectCate(cate)"
+            class="mx9px p6px brd8px cpoint"
+            :class="[getClassSelectCate(cate)]"
+            style="padding: 6px 16px;">{{cate}}</div>
+    </section>
+    <section style="display: flex;width: calc(100vw - 16px);">
+        <div class="swiper mySwiper swiper-initialized swiper-horizontal swiper-backface-hidden">
+            <div class="swiper-wrapper" id="swiper-wrapper-e67f9c3a73d01d98" aria-live="polite">
+              <div class="swiper-slide swiper-slide-active" role="group" aria-label="1 / 9" style="width: 1920px;">Slide 1</div>
+              <div class="swiper-slide swiper-slide-next" role="group" aria-label="2 / 9" style="width: 1920px;">Slide 2</div>
+              <div class="swiper-slide" role="group" aria-label="3 / 9" style="width: 1920px;">Slide 3</div>
+              <div class="swiper-slide" role="group" aria-label="4 / 9" style="width: 1920px;">Slide 4</div>
+              <div class="swiper-slide" role="group" aria-label="5 / 9" style="width: 1920px;">Slide 5</div>
+              <div class="swiper-slide" role="group" aria-label="6 / 9" style="width: 1920px;">Slide 6</div>
+              <div class="swiper-slide" role="group" aria-label="7 / 9" style="width: 1920px;">Slide 7</div>
+              <div class="swiper-slide" role="group" aria-label="8 / 9" style="width: 1920px;">Slide 8</div>
+              <div class="swiper-slide" role="group" aria-label="9 / 9" style="width: 1920px;">Slide 9</div>
+            </div>
+            <div class="swiper-pagination swiper-pagination-bullets swiper-pagination-horizontal swiper-pagination-bullets-dynamic" style="width: 80px;"><span class="swiper-pagination-bullet swiper-pagination-bullet-active swiper-pagination-bullet-active-main" aria-current="true" style="left: 32px;"></span><span class="swiper-pagination-bullet swiper-pagination-bullet-active-next" style="left: 32px;"></span><span class="swiper-pagination-bullet swiper-pagination-bullet-active-next-next" style="left: 32px;"></span><span class="swiper-pagination-bullet" style="left: 32px;"></span><span class="swiper-pagination-bullet" style="left: 32px;"></span><span class="swiper-pagination-bullet" style="left: 32px;"></span><span class="swiper-pagination-bullet" style="left: 32px;"></span><span class="swiper-pagination-bullet" style="left: 32px;"></span><span class="swiper-pagination-bullet" style="left: 32px;"></span></div>
+            <div class="autoplay-progress">
+                <svg viewBox="0 0 48 48" class="svgprogess" >
+                  <circle cx="24" cy="24" r="20"></circle>
+                </svg>
+                <span>3s</span>
+              </div>
+            <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
+    </section>
+    <vw-product type="Mobile"></vw-product>
+    <vw-product type="Category"></vw-product>
+    <vw-product type="Brand"></vw-product>
+    <vw-product type="Essential"></vw-product>
+</template>
+<template id="tmp-vw-product">
+    <div style="border-bottom: 1px solid gainsboro;display: flex;">
+        <div style="display: inline-flex; align-items: center;
+            height: 42px; border-bottom: 2px solid #008ecc; margin-bottom: -1px;">
+            <h3 class="scolor">{{ViewTitle}}</h3>&nbsp;<h3 class="mcolor">{{ViewName}}</h3>
+        </div>
+    </div>
+    <section style="display: flex;">
+        <div v-for="item in Items" 
+            class="prditem" 
+            style="margin: 12px;border-radius: 18px;"
+            :style="[BorderItem]">
+            <div v-if="type == 'Mobile'"
+                style="width: 100%; height: calc(100% - 80px);position: relative;
+                background-repeat: no-repeat;background-position: center;"
+                :style="{backgroundImage: getBgImg(item)}">
+                <span class="numdiscnt">{{getDiscount(item)}}% OFF</span>
+            </div>
+            <div v-if="type == 'Mobile'" 
+                style="height: 80px;padding-left: 12px; padding-right: 12px;">
+                <strong style="display: block;font-size: 16px;">{{item.Name}}</strong>
+                <strong><span v-html="item.Currency"></span>{{item.Sale}}</strong>&nbsp;
+                <span style="text-decoration:line-through;"><span v-html="item.Currency"></span>{{item.Price}}</span>
+                <div style="font-weight: bold;color: #269c40">
+                    Save - <span><span v-html="item.Currency"></span>{{item.Price - item.Sale}}</span>
+                </div>
+            </div>
+            <div v-if="type == 'Category'" 
+                style="display: inline-flex;flex-direction: column;align-items: center;width: 100%;">
+                <div style="background-repeat: no-repeat;background-position: center;background-size: 63%;
+                    border: 1px solid #dcdcdc69; width: 200px; height: 200px; border-radius: 50%; "
+                    :style="{backgroundImage: getBgImg(item)}">
+                </div>
+                <div >{{item.Name}}</div>
+            </div>
+        </div>
+    </section>
+</template>
