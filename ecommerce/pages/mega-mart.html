@@ -90,9 +90,9 @@
                     ]"
                     :class="[0 == ii ? 'swiper-slide-active' : (1 == ii ? 'swiper-slide-next' : '')]"
                     :aria-label="(ii + 1) + ' / ' + Items.length" >
-                    <div style="width: 898px; height: 100%; text-align: left; font-size: 30px;
+                    <div style="width: 898px; height: 100%; text-align: left; font-size: 28px;
                         display: inline-flex; flex-direction: column; justify-content: space-between;
-                        padding: 51px; box-sizing: border-box;">
+                        padding: 30px 50px 90px 50px; box-sizing: border-box;">
                         <div v-if="item.des">{{item.des}}</div>
                         <h2 v-if="item.Name">{{item.Name}}</h2>
                         <div v-if="item.event">{{item.event}}</div>
