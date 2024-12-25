@@ -55,7 +55,7 @@ Promise.all([
 function getCategories() {
     const lst = [
         'Groceries', 'Premium Fruits', 'Home & Kitchen', 'Fashion', 'Electronics',
-        'Beauty', 'Home Improvement', 'Sport, Toys & Luggage'
+        'Beauty', 'Home Improvement', 'Sport, Toys & Luggage', 'Smart Phone'
     ]
     return lst
 }
