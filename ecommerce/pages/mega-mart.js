@@ -41,6 +41,11 @@ const VwCarousel = {
     template: `#tmp-vw-carousel`,
     name: "View-Carousel",
     display: "View.Carousel",
+    data(){
+        return {
+            Items: getItems('carousel'),
+        }
+    },
     computed: {
         IdSwiper() { return `swCarousel${Date.now()}` }
     },
@@ -240,6 +245,31 @@ function getItems(type) {
             lst.push({ Name: 'Cherry', 
                 img: 'https://file.hstatic.net/1000301274/file/cherry-do-my_grande.png', 
                 event: 'UP to 65% OFF' })
+            break;
+        case 'carousel':
+                lst.push({ Name: 'SMART WEARABLE.',
+                    img: 'https://i.pinimg.com/236x/30/fe/f4/30fef4e8abd230cc4c682b91296382b7.jpg',
+                    des: 'Beast Deal Online on smart watches',
+                    bghex: '#212844', color: 'white',
+                    event: 'UP to 60% OFF' })
+                lst.push({ Name: 'Deal hot cuối tuần',
+                    des: 'Công nghệ ưu đãi',
+                    bghex: '#03177a', color: 'white',
+                    event: 'UP to 80% OFF' ,
+                    img: 'https://salt.tikicdn.com/cache/w750/ts/tikimsp/29/9f/b4/0bcd706db4024fe83c5c90faddfc3872.jpg',
+                })
+                lst.push({ Name: 'Deal hot luong ve',
+                    des: 'Sách về xả láng',
+                    bghex: '#338158', color: 'white',
+                    event: 'UP to 50% OFF' ,
+                    img: 'https://salt.tikicdn.com/cache/w750/ts/tikimsp/e9/00/d4/80a7b83a61eedfa95e1243157678e818.png',
+                })
+                lst.push({ Name: 'Ưu đãi linh đình',
+                    des: 'Smartphone sale xịn',
+                    bghex: '#194629', color: 'white',
+                    event: 'Giao nhanh 2h' ,
+                    img: 'https://salt.tikicdn.com/cache/w750/ts/tikimsp/74/44/08/a1d6539e24f08a15a9d43eb5b0ed8bc5.jpg',
+                })
             break;
         default: break;
     }
