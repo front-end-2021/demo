@@ -13,7 +13,7 @@ const RectClass = {
             let txt = `${acModify} ${type} ${name}`
             if (returnType.toLowerCase().includes('get'))
                 txt = `${acModify} ${name}: ${type}`
-            return txt
+            return `${txt} {...}`
         },
         onMouseDown(event) {
             const off = this.$el.getBoundingClientRect()
@@ -45,13 +45,13 @@ const RectClass = {
             idTos = idTos.filter(xx => xx[1].includes('implement'))
             idTos = idTos.map(xx => xx[0])
             if (!idTos.length) return []
-            let lstCls = this.$root.ListClass.filter(xx => 'interface' == xx.type)
-            lstCls = lstCls.filter(xx => idTos.includes(xx.id))
-            if (!lstCls.length) return []
             let lstPrp = []
-            for (let ii = 0, xx; ii < lstCls.length; ii++) {
+            const lstCls = this.$root.ListClass
+            for(let ii = 0, xx; ii < lstCls.length; ii++) {
                 xx = lstCls[ii]
                 if (!xx.Properties || !xx.Properties.length) continue;
+                if('interface' != xx.type) continue
+                if(!idTos.includes(xx.id)) continue
                 for (let jj = 0; jj < xx.Properties.length; jj++) {
                     lstPrp.push(xx.Properties[jj])
                 }
@@ -70,7 +70,7 @@ const RectClass = {
     mounted() {
         const off = this.$el.getBoundingClientRect()
         this.item.height = off.height
-        this.$el.addEventListener('mousedown', this.onMouseDown)
+        this.$el.querySelector('.vwheader').addEventListener('mousedown', this.onMouseDown)
         this.setWidth()
     },
     updated() {
@@ -78,7 +78,7 @@ const RectClass = {
 
     },
     beforeUnmount() {
-        this.$el.removeEventListener('mousedown', this.onMouseDown)
+        this.$el.querySelector('.vwheader').removeEventListener('mousedown', this.onMouseDown)
     },
 }
 export const ViewDiagram = {

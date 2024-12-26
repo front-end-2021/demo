@@ -151,7 +151,7 @@ function getListCls() {
                 { AcModify: '#', Name: 'name', Type: 'String' },
                 { AcModify: '#', Name: 'emailAddress', Type: 'String' },
             ], Properties: [
-                ['+', 'GetName()', 'String', 'get'],
+                ['+', 'GetName()', 'String', 'get', `return this.Name`],
                 ['+', 'SetName(String)', 'void', 'set'],
                 ['+', 'GetEmailAddress()', 'String', 'get'],
                 ['+', 'SetEmailAddress(String)', 'void', 'set'],
