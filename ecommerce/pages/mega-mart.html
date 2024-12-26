@@ -1,81 +1,84 @@
 <template id="tmp-pg-megamart">
-    <header class="">
-        <section class="cdefault" 
-            style="display: flex;justify-content: space-between;border-bottom: 1px solid whitesmoke;
-                margin-bottom: 6px; padding-bottom: 6px; align-items: center; padding-top: 6px;">
-            <i>Welcome to www Megamart!</i>
-            <div style="display: inline-flex;">
-                <span class="mx9px"><i class="bi bi-geo-alt mcolor"></i>&nbsp;Deliver to <a 
-                    href="tel:+84349797441" class="txtbold">+(84)349797441</a></span>
-                <span class="mx9px cpoint"><i class="bi bi-truck mcolor"></i>&nbsp;Track your order</span>
-                <span class="mx9px cpoint"><i class="bi bi-gear mcolor"></i>&nbsp;All Offers</span>
-            </div>
+    <article style="max-width: 1250px; margin: 0 auto;">
+        <header class="">
+            <section class="cdefault" 
+                style="display: flex;justify-content: space-between;border-bottom: 1px solid whitesmoke;
+                    margin-bottom: 6px; padding-bottom: 6px; align-items: center; padding-top: 6px;">
+                <i>Welcome to www Megamart!</i>
+                <div style="display: inline-flex;">
+                    <span class="mx9px"><i class="bi bi-geo-alt mcolor"></i>&nbsp;Deliver to <a 
+                        href="tel:+84349797441" class="txtbold">+(84)349797441</a></span>
+                    <span class="mx9px cpoint"><i class="bi bi-truck mcolor"></i>&nbsp;Track your order</span>
+                    <span class="mx9px cpoint"><i class="bi bi-gear mcolor"></i>&nbsp;All Offers</span>
+                </div>
+            </section>
+            <nav style="display: flex;justify-content: space-between;">
+                <div class="mcolor" style="display: inline-flex;align-items: center;">
+                    <i class="mmenu mbg brd8px cpoint bi bi-filter-left font28px"></i>
+                    <h1 class="cdefault">MegaMart</h1>
+                </div>
+                <div class="msearch mbg brd8px" style="width: 420px;padding: 6px 16px;">
+                    <i class="bi bi-search mcolor font20px cpoint"></i>
+                    <input type="text" class="mbg mx6px p6px"
+                    style="border:none; width: 100%;margin-right: 9px;"
+                    placeholder="Search essentials, groceries and more..." />
+                    <i class="bi bi-list-ul font26px cpoint mcolor"></i>
+                </div>
+                <div style="display: inline-flex; align-items: center;">
+                    <div class="btnsign cpoint brd8px" 
+                        style="display: inline-flex; align-items: center;padding: 6px 16px;">
+                        <i class="bi bi-person mcolor font26px"></i>
+                        <strong style="padding-left: 6px;">Sign Up/Sign In</strong>
+                    </div>
+                    <div class="grpcart">
+                        <i class="bi bi-cart3 mcolor font24px mx9px cpoint brd8px" 
+                            style="padding: 6px;"></i>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <section class="mcategories" >
+            <div v-for="(cate, ii) in $root.Categories"
+                @click="e => selectCate(cate)"
+                class="mx9px p6px brd8px cpoint"
+                :class="[getClassSelectCate(cate)]"
+                style="padding: 6px 16px;">{{cate}}</div>
         </section>
-        <nav style="display: flex;justify-content: space-between;">
-            <div class="mcolor" style="display: inline-flex;align-items: center;">
-                <i class="mmenu mbg brd8px cpoint bi bi-filter-left font28px"></i>
-                <h1 class="cdefault">MegaMart</h1>
-            </div>
-            <div class="msearch mbg brd8px" style="width: 420px;padding: 6px 16px;">
-                <i class="bi bi-search mcolor font20px cpoint"></i>
-                <input type="text" class="mbg mx6px p6px"
-                style="border:none; width: 100%;margin-right: 9px;"
-                placeholder="Search essentials, groceries and more..." />
-                <i class="bi bi-list-ul font26px cpoint mcolor"></i>
-            </div>
-            <div style="display: inline-flex; align-items: center;">
-                <div class="btnsign cpoint brd8px" 
-                    style="display: inline-flex; align-items: center;padding: 6px 16px;">
-                    <i class="bi bi-person mcolor font26px"></i>
-                    <strong style="padding-left: 6px;">Sign Up/Sign In</strong>
-                </div>
-                <div class="grpcart">
-                    <i class="bi bi-cart3 mcolor font24px mx9px cpoint brd8px" 
-                        style="padding: 6px;"></i>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <section class="mcategories" >
-        <div v-for="(cate, ii) in $root.Categories"
-            @click="e => selectCate(cate)"
-            class="mx9px p6px brd8px cpoint"
-            :class="[getClassSelectCate(cate)]"
-            style="padding: 6px 16px;">{{cate}}</div>
-    </section>
-    <vw-carousel></vw-carousel>
-    <vw-mobile type="Mobile">
-        <template #vtitle>
-            <h2 class="scolor">Grab the best deal on</h2>
-          </template>
-          <template #vname>
-              <h2 class="mcolor">Smartphones</h2>
+        <vw-carousel></vw-carousel>
+        <vw-mobile type="Mobile">
+            <template #vtitle>
+                <h2 class="scolor">Grab the best deal on</h2>
             </template>
-    </vw-mobile>
-    <vw-product type="Category">
-        <template #vtitle>
-            <h2 class="scolor">Shop from</h2>
-          </template>
-          <template #vname>
-              <h2 class="mcolor">Top Categories</h2>
+            <template #vname>
+                <h2 class="mcolor">Smartphones</h2>
+                </template>
+        </vw-mobile>
+        <vw-product type="Category">
+            <template #vtitle>
+                <h2 class="scolor">Shop from</h2>
             </template>
-    </vw-product>
-    <vw-brands type="Brand">
-        <template #vtitle>
-            <h2 class="scolor">Top</h2>
-          </template>
-          <template #vname>
-              <h2 class="mcolor">Electronics Brands</h2>
-            </template>
-        </vw-brands>
-    <vw-product type="Essential">
-        <template #vtitle>
-            <h2 class="scolor">Daily</h2>
-          </template>
-          <template #vname>
-              <h2 class="mcolor">Essentials</h2>
-            </template>
+            <template #vname>
+                <h2 class="mcolor">Top Categories</h2>
+                </template>
         </vw-product>
+        <vw-brands type="Brand">
+            <template #vtitle>
+                <h2 class="scolor">Top</h2>
+            </template>
+            <template #vname>
+                <h2 class="mcolor">Electronics Brands</h2>
+                </template>
+            </vw-brands>
+        <vw-product type="Essential">
+            <template #vtitle>
+                <h2 class="scolor">Daily</h2>
+            </template>
+            <template #vname>
+                <h2 class="mcolor">Essentials</h2>
+                </template>
+            </vw-product>
+    </article>
+   
 </template>
 <template id="tmp-vw-carousel">
     <section style="display: flex;">

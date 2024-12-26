@@ -26,9 +26,79 @@
 </head>
 
 <body>
-  <main id="m-app" v-cloak style="max-width: 1250px; margin: 0 auto;">
+  <main id="m-app" v-cloak >
     <component :is="CompPage" v-cloak></component>
-    
+    <footer style="background-color: #008ecc;margin-top: 60px;position: relative;">
+      <section style="display: flex; color: #d1eaf6; width: 1250px; margin: 0 auto;
+          font-size: 18px;padding: 60px 0;">
+          <svg height="310" width="300" xmlns="http://www.w3.org/2000/svg" 
+              style="position: absolute;top:0;right: 0">
+              <circle r="250" cx="250" cy="60" fill="#2faadff0"></circle>
+              Sorry, your browser does not support inline SVG.  
+          </svg>
+          <svg height="310" width="300" xmlns="http://www.w3.org/2000/svg" 
+              style="position: absolute;top:0;right: 0">
+              <circle r="242" cx="250" cy="60" stroke="#008ecc" stroke-width="12" fill="#0c9bda"></circle>
+              Sorry, your browser does not support inline SVG.  
+          </svg>
+          <div style="width: calc(50% - 120px);position: relative;">
+              <h1 style="font-size: 44px; margin-bottom: 30px;color: white;">Mega Mart</h1>
+              <h3 style="margin-bottom: 16px;color: white">Contact Us</h3>
+              <div style="display: grid;grid-template-columns: 30px auto; width: 100%; margin-bottom: 18px;">
+                  <i class="bi bi-whatsapp" style="font-size: 26px; margin-top: 3px;"></i>
+                  <div style="margin-bottom: 16px;margin-left: 3px;">
+                      <div>Watch App</div>
+                      <a style="color: #d1eaf6;margin: 8px 0 16px;font-size: 16px;"
+                          href="tel:+84349797441">+(84)349797441</a>
+                  </div>
+              </div>
+              <div style="display: grid;grid-template-columns: 30px auto; width: 100%; margin-bottom: 18px;">
+                  <i class="bi bi-telephone" style="font-size: 26px; margin-top: 3px;"></i>
+                  <div style="margin-bottom: 16px;margin-left: 3px;">
+                      <div>Call Us</div>
+                      <a style="color: #d1eaf6;margin: 8px 0 16px;font-size: 16px;"
+                          href="tel:+84349797441">+(84)349797441</a>
+                  </div>
+              </div>
+              <div style="display: grid;grid-template-columns: 30px auto; width: 100%;">
+                  <i class="bi bi-envelope-at" style="font-size: 26px; margin-top: 3px;"></i>
+                  <div style="margin-bottom: 16px;margin-left: 3px;">
+                      <div>Mail Us</div>
+                      <a style="color: #d1eaf6;margin: 8px 0 16px;font-size: 16px;"
+                          href="mailto:dainb8x@gmail.com">+(84)349797441</a>
+                  </div>
+              </div>
+          </div>
+          <div style="display: inline-flex;width: 50%;justify-content: space-between;position: relative;">
+              <div>
+                  <h3 style="padding-left: 20px;color: white">Most Popular Categories</h3>
+                  <ul>
+                      <li style="margin: 18px 0;">Staples</li>
+                      <li style="margin: 18px 0;">Beverages</li>
+                      <li style="margin: 18px 0;">Personal Care</li>
+                      <li style="margin: 18px 0;">Home Care</li>
+                      <li style="margin: 18px 0;">Baby Care</li>
+                      <li style="margin: 18px 0;">Vegetables & Fruits</li>
+                      <li style="margin: 18px 0;">Snacks & Foods</li>
+                  </ul>
+              </div>
+              <div>
+                  <h3 style="padding-left: 20px;color: white">Customer Services</h3>
+                  <ul>
+                      <li style="margin: 18px 0;">About Us</li>
+                      <li style="margin: 18px 0;">Tearm & Conditions</li>
+                      <li style="margin: 18px 0;">FAQ</li>
+                      <li style="margin: 18px 0;">Privacy Policy</li>
+                      <li style="margin: 18px 0;">E-waste Policy</li>
+                      <li style="margin: 18px 0;">Cancellation & Return Policy</li>
+                  </ul>
+              </div>
+          </div>
+      </section>
+      <div style="color: #d1eaf6;width: 1250px; margin: 0 auto;font-size: 18px;
+          border-top: 1px solid #039de0; padding: 30px 0; text-align: center;"
+          >Ⓒ 2024 All rights reserved. Front-end-2021 Ltd</div>
+    </footer>
   </main>
   <span class="dnb-imp-html" dnbpath="./pages/mega-mart.html"></span>
   <script type="module" src="m-app.js"></script>
