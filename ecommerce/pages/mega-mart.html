@@ -20,6 +20,8 @@
                 <div class="msearch mbg brd8px" style="width: 420px;padding: 6px 16px;">
                     <i class="bi bi-search mcolor font20px cpoint"></i>
                     <input type="text" class="mbg mx6px p6px"
+                        :value="$root.SearchTxt"
+                        @input="e => $root.SearchTxt = e.target.value"
                     style="border:none; width: 100%;margin-right: 9px;"
                     placeholder="Search essentials, groceries and more..." />
                     <i class="bi bi-list-ul font26px cpoint mcolor"></i>
@@ -32,7 +34,12 @@
                     </div>
                     <div class="grpcart">
                         <i class="bi bi-cart3 mcolor font24px mx9px cpoint brd8px" 
-                            style="padding: 6px;"></i>
+                            style="padding: 6px;position: relative;">
+                            <span style="position: absolute; top: -3px; 
+                                background-color: #008ecc; color: white;
+                            font-size: 13px; border-radius: 50%; font-style: normal;
+                            padding: 1px 6px 0px; text-align: center;">{{$root.Carts.length}}</span>
+                        </i>
                     </div>
                 </div>
             </nav>
@@ -128,13 +135,14 @@
             height: 42px; border-bottom: 2px solid #008ecc; margin-bottom: -1px;">
             <slot name="vtitle"></slot>&nbsp;<slot name="vname"></slot>
         </div>
-        <strong class="cpoint" style="font-size: 12px;">View All<i class="bi bi-chevron-right mcolor"></i></strong>
+        <strong class="cpoint" style="font-size: 12px;"
+            @click.stop="getMoreItems">View more<i class="bi bi-chevron-right mcolor"></i></strong>
     </div>
-    <section style="display: flex;">
-        <div v-for="item in Items" 
+    <section style="display: flex;flex-wrap: wrap;">
+        <div v-for="(item, ii) in Items" 
             class="prditem" 
-            style="margin: 12px;border-radius: 18px;"
-            :style="[BorderItem]">
+            style="border-radius: 18px;"
+            :style="[BorderItem, { opacity: opInSearchTxt(item) }, getMarginX(ii)]">
             <div style="width: 100%; height: calc(100% - 80px);position: relative;
                 background-repeat: no-repeat;background-position: center;"
                 :style="{backgroundImage: getBgImg(item)}">
@@ -144,8 +152,12 @@
                 <strong style="display: block;font-size: 16px;">{{item.Name}}</strong>
                 <strong><span v-html="item.Currency"></span>{{item.Sale}}</strong>&nbsp;
                 <span style="text-decoration:line-through;"><span v-html="item.Currency"></span>{{item.Price}}</span>
-                <div style="font-weight: bold;color: #269c40">
-                    Save - <span><span v-html="item.Currency"></span>{{item.Price - item.Sale}}</span>
+                <div style="font-weight: bold;display: flex;justify-content: space-between;align-items: center;">
+                    <div style="color: #269c40;">Save - <span><span 
+                        v-html="item.Currency"></span>{{item.Price - item.Sale}}</span></div>
+                    <div style="padding: 4px 10px; background-color: #9b9b9b2e; border-radius: 5px; margin-right: -6px;"
+                        class="mcolor cpoint" @click.stop="e => addToCart(item)"
+                        :style="[{fontSize: getFontSz(item)}]">{{getTextBtn(item)}}</div>
                 </div>
             </div>
         </div>
@@ -158,15 +170,17 @@
             height: 42px; border-bottom: 2px solid #008ecc; margin-bottom: -1px;">
             <slot name="vtitle"></slot>&nbsp;<slot name="vname"></slot>
         </div>
-        <strong class="cpoint" style="font-size: 12px;">View All<i class="bi bi-chevron-right mcolor"></i></strong>
+        <strong class="cpoint" style="font-size: 12px;"
+            @click.stop="getMoreItems">View All<i class="bi bi-chevron-right mcolor"></i></strong>
     </div>
-    <section style="display: flex;">
-        <div v-for="item in Items"
+    <section style="display: flex;flex-wrap: wrap;">
+        <div v-for="(item, ii) in Items"
             style="margin: 12px;border-radius: 18px;"
-            :style="[BorderItem]">
+            :style="[BorderItem, getMarginX(ii)]">
             <div v-if="type == 'Category'" 
                 style="display: inline-flex;flex-direction: column;align-items: center;width: 100%;">
-                <div style="background-repeat: no-repeat;background-position: center;background-size: 63%;
+                <div style="background-repeat: no-repeat;background-position: center;background-size: contain;
+                    box-sizing: border-box; border: 1px solid #dcdcdc75;
                     background-color: whitesmoke; width: 156px; height: 156px; border-radius: 50%; "
                     :style="{backgroundImage: getBgImg(item)}">
                 </div>
@@ -177,7 +191,7 @@
             <div v-if="type == 'Essential'" 
                 style="display: inline-flex;flex-direction: column;align-items: center;width: 100%;">
                 <div style="background-repeat: no-repeat;background-position: center;background-size: contain;background-color: whitesmoke; 
-                    width: 180px; height: 180px; border-radius: 12px; border: 1px solid whitesmoke;"
+                    width: 186px; height: 180px; border-radius: 12px; border: 1px solid whitesmoke;"
                     :style="{backgroundImage: getBgImg(item)}">
                 </div>
                 <div style="font-size: 16px;margin-top: 12px;color: #666666;">{{item.Name}}</div>

@@ -14,7 +14,9 @@ Promise.all([
             return {
                 IndexPage: 0,
                 Categories: getCategories(),
-                SelecteCates: ['Groceries']
+                SelecteCates: ['Groceries'],
+                Carts: [],
+                SearchTxt: '',
             }
         },
         computed: {
