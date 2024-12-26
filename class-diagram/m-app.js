@@ -145,8 +145,7 @@ Promise.all([
 function getListCls() {
     let lstCls = [
         {
-            id: 'cls-account', type: 'class',
-            idTos: [['cls-contact', 'extend']],
+            id: 'cls-account', type: 'instance class',
             top: 30, left: 90, width: 220, height: 100,
             Name: 'Account', Fields: [
                 { AcModify: '#', Name: 'name', Type: 'String' },
@@ -159,7 +158,8 @@ function getListCls() {
             ]
         },
         {
-            id: 'cls-contact', type: 'class',
+            id: 'cls-contact', type: 'instance class',
+            idTos: [['cls-account', 'extend']],
             top: 70, left: 580, width: 210, height: 100,
             Name: 'Contact', Fields: [
                 { AcModify: '#', Name: 'name', Type: 'String' },
@@ -175,7 +175,7 @@ function getListCls() {
             ]
         },
         {
-            id: 'cls-animal', type: 'class',
+            id: 'cls-animal', type: 'abstract class',
             top: 70, left: 1024, width: 150, height: 100,
             Name: 'Animal', Fields: [
                 { AcModify: '+', Name: 'age', Type: 'Int' },
@@ -186,19 +186,17 @@ function getListCls() {
             ]
         },
         {
-            id: 'cls-duck', type: 'class',
-            idTos: [['cls-animal', 'extend'], ['cls-ifly', 'implement']],
+            id: 'cls-duck', type: 'instance class',
+            idTos: [['cls-animal', 'extend'], ['cls-ifly', 'implement'], ['cls-quack', 'implement']],
             top: 270, left: 880, width: 150, height: 100,
             Name: 'Duck', Fields: [
                 { AcModify: '+', Name: 'beakColor', Type: 'String' },
             ], Properties: [
                 ['+', 'Swim()', 'void', 'set'],
-                ['+', 'Quack()', 'void', 'set'],
-                ['+', 'Fly(){...}', 'void', 'set'],
             ]
         },
         {
-            id: 'cls-zebra', type: 'class',
+            id: 'cls-zebra', type: 'instance class',
             idTos: [['cls-animal', 'extend']],
             top: 270, left: 1280, width: 150, height: 100,
             Name: 'Zebra', Fields: [
@@ -212,6 +210,13 @@ function getListCls() {
             top: 500, left: 1200, width: 150, height: 100,
             Name: 'iFly', Fields: [], Properties: [
                 ['+', 'Fly()', 'void', 'set'],
+            ]
+        },
+        {
+            id: 'cls-quack', type: 'interface',
+            top: 500, left: 1400, width: 150, height: 100,
+            Name: 'iQuack', Fields: [], Properties: [
+                ['+', 'Quack()', 'void', 'set'],
             ]
         },
     ]
