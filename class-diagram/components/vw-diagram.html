@@ -42,7 +42,8 @@
             <div v-for="field in item.Fields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</div>
         </div>
         <div style="font-size: 14px;font-weight: 100;padding-right: 6px;">
-            <div v-for="prp in ExtendsProperty">&nbsp;{{getProperty(prp)}}</div>
+            <i v-for="prp in ExtendsProperty" style="display: block;">&nbsp;{{getProperty(prp)}}</i>
+            <div v-for="prp in item.Properties">&nbsp;{{getProperty(prp)}}</div>
         </div>
     </div>
 </template>

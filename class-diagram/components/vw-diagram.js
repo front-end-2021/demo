@@ -39,15 +39,15 @@ const RectClass = {
     computed: {
         ExtendsProperty() {
             const item = this.item
-            if ('interface' == item.type) return item.Properties
+            if ('interface' == item.type) return []
             let idTos = item.idTos
-            if (!idTos || !idTos.length) return item.Properties
+            if (!idTos || !idTos.length) return []
             idTos = idTos.filter(xx => xx[1].includes('implement'))
             idTos = idTos.map(xx => xx[0])
-            if (!idTos.length) return item.Properties
+            if (!idTos.length) return []
             let lstCls = this.$root.ListClass.filter(xx => 'interface' == xx.type)
             lstCls = lstCls.filter(xx => idTos.includes(xx.id))
-            if (!lstCls.length) return item.Properties
+            if (!lstCls.length) return []
             let lstPrp = []
             for (let ii = 0, xx; ii < lstCls.length; ii++) {
                 xx = lstCls[ii]
@@ -56,8 +56,7 @@ const RectClass = {
                     lstPrp.push(xx.Properties[jj])
                 }
             }
-            if(!lstPrp.length) return item.Properties
-            return [...lstPrp, ...item.Properties]
+            return lstPrp
         },
         ExtendsView() {
             let idTos = this.item.idTos
