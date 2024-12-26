@@ -34,7 +34,20 @@ const RectClass = {
                 this.$root.drawLines(this.$root.getPoints())
                 this.$root.updateLastArea()
             }
-        }
+        },
+        showCodeBody(ii, e) {
+            const lstPrp = this.item.Properties
+            const prp = lstPrp[ii]
+            let txtP = this.getProperty(prp)
+            txtP = txtP.replace('+', 'public')
+            let pCode = prp[4]
+            if(!pCode) pCode = '/*...*/'
+            if (txtP.includes(`{...}`)) txtP = txtP.replace(`{...}`, `{\n \t${pCode} \n }`)
+            let clsName = this.item.Name
+            let txt = `${clsName} {\n ${txtP}\n}`
+            console.log(txt)
+            return txt
+        },
     },
     computed: {
         ExtendsProperty() {
@@ -47,13 +60,17 @@ const RectClass = {
             if (!idTos.length) return []
             let lstPrp = []
             const lstCls = this.$root.ListClass
-            for(let ii = 0, xx; ii < lstCls.length; ii++) {
+            const prps = item.Properties
+            for (let ii = 0, xx; ii < lstCls.length; ii++) {
                 xx = lstCls[ii]
                 if (!xx.Properties || !xx.Properties.length) continue;
-                if('interface' != xx.type) continue
-                if(!idTos.includes(xx.id)) continue
-                for (let jj = 0; jj < xx.Properties.length; jj++) {
-                    lstPrp.push(xx.Properties[jj])
+                if ('interface' != xx.type) continue
+                if (!idTos.includes(xx.id)) continue
+                for (let jj = 0, prp; jj < xx.Properties.length; jj++) {
+                    prp = xx.Properties[jj]
+                    const name = prp[1]
+                    if (prps.find(xx => name == xx[1])) continue
+                    lstPrp.push(prp)
                 }
             }
             return lstPrp
