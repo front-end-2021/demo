@@ -145,7 +145,7 @@ Promise.all([
 function getListCls() {
     let lstCls = [
         {
-            id: 'cls-account', type: 'instance class',
+            id: 'cls-account', type: 'instant class',
             top: 30, left: 90, width: 220, height: 100,
             Name: 'Account', Fields: [
                 { AcModify: '#', Name: 'name', Type: 'String' },
@@ -158,7 +158,7 @@ function getListCls() {
             ]
         },
         {
-            id: 'cls-contact', type: 'instance class',
+            id: 'cls-contact', type: 'instant class',
             idTos: [['cls-account', 'extend']],
             top: 70, left: 580, width: 210, height: 100,
             Name: 'Contact', Fields: [
@@ -186,7 +186,7 @@ function getListCls() {
             ]
         },
         {
-            id: 'cls-duck', type: 'instance class',
+            id: 'cls-duck', type: 'instant class',
             idTos: [['cls-animal', 'extend'], ['cls-ifly', 'implement'], ['cls-quack', 'implement']],
             top: 270, left: 880, width: 150, height: 100,
             Name: 'Duck', Fields: [
@@ -196,7 +196,7 @@ function getListCls() {
             ]
         },
         {
-            id: 'cls-zebra', type: 'instance class',
+            id: 'cls-zebra', type: 'instant class',
             idTos: [['cls-animal', 'extend']],
             top: 270, left: 1280, width: 150, height: 100,
             Name: 'Zebra', Fields: [
