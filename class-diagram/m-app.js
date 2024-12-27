@@ -66,8 +66,8 @@ Promise.all([
                 ctx.clearRect(0, 0, c.width, c.height);
                 for (let ii = 0; ii < points.length; ii++) {
                     const [p0, p1] = points[ii]
-                    if (p0[4] == 'extend') drawExtension.call(ctx, p0, p1, 8)
-                    if (p0[4] == 'implement') drawImplement.call(ctx, p0, p1, 6)
+                    if (p0[4].includes('class')) drawExtension.call(ctx, p0, p1, 8)
+                    if (p0[4].includes('interface')) drawImplement.call(ctx, p0, p1, 6)
                 }
             },
             isOverView(id, x, y, w, h) {
@@ -85,15 +85,14 @@ Promise.all([
                 const points = []
                 for (let ii = 0, item; ii < lstCls.length; ii++) {
                     item = lstCls[ii]
-                    if (!item.idTos || !item.idTos.length) continue;
-                    let cIds = item.idTos.map(x => x[0])
-                    let cTypes = item.idTos.map(x => x[1])
+                    if (!item.toIds || !item.toIds.length) continue;
+                    let cIds = item.toIds
                     let x0 = item.left + 1
                     let y0 = item.top
                     for (let jj = 0, Jtem; jj < lstCls.length; jj++) {
                         if (jj == ii) continue;
                         Jtem = lstCls[jj]
-                        if (Jtem.idTos && Jtem.idTos.length) continue
+                        if (Jtem.toIds && Jtem.toIds.length) continue
                         let iiT = cIds.indexOf(Jtem.id)
                         if (iiT < 0) continue
                         let w0 = item.width
@@ -102,7 +101,7 @@ Promise.all([
                         let y1 = Jtem.top
                         let w1 = Jtem.width
                         let h1 = Jtem.height
-                        const cType = cTypes[iiT]
+                        const cType = Jtem.type
                         points.push([[x0, y0, w0, h0, cType], [x1, y1, w1, h1]])
                         // points.push([[x0, y0, item.id, w0, h0, cType], [x1, y1, Jtem.id, w1, h1]])
                     }
