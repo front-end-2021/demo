@@ -143,7 +143,7 @@ const ViewTask = {
     template: `#tmp-comp-vw-task`,
     name: "ViewWrapTask",
     display: "ViewWrapTask",
-    inject: ['removeItem', 'pCopyItem', 'setTaskId'],
+    inject: ['removeItem', 'pCopyItem'],
     mixins: [MxItemDate, MxMenuEdit],
     props: ['item'],
     methods: {
@@ -185,18 +185,12 @@ const ViewTask = {
             this.$store.commit('setModal', [eItem, saveClose, xClose])
         },
     },
-    mounted() {
-        this.setTaskId(this.item.Id, true)
-    },
-    beforeUnmount() {
-        this.setTaskId(this.item.Id, false)
-    },
 }
 const ViewSub = {
     template: `#tmp-comp-vw-sub`,
     name: "ViewWrapSub",
     display: "ViewWrapSub",
-    inject: ['removeItem', 'pCopyItem', 'setSubId'],
+    inject: ['removeItem', 'pCopyItem', 'countGoalSubTask'],
     mixins: [MxDndGolSub, MxItemDate, MxMenuEdit],
     components: {
         'comp-vw-task': ViewTask,
@@ -230,12 +224,13 @@ const ViewSub = {
         ListTask(tasks, oTasks) {
             if (tasks.length == oTasks.length) {
                 this.sortSameParent(tasks, oTasks)
-
             } else if (oTasks.length < tasks.length) {
                 const subId = this.item.Id
                 this.sortDiffParent(tasks, 11, ['SubId', subId])
-
             }
+            this.$nextTick(() => {
+                this.countGoalSubTask()
+            })
         },
     },
     provide() {
@@ -283,18 +278,12 @@ const ViewSub = {
             }
         },
     },
-    mounted() {
-        this.setSubId([this.item.Id], true)
-    },
-    beforeUnmount() {
-        this.setSubId([this.item.Id], false)
-    },
 }
 const ViewGoal = {
     template: `#tmp-comp-vw-goal`,
     name: "ViewWrapGoal",
     display: "ViewWrapGoal",
-    inject: ['removeItem', 'pCopyItem'],
+    inject: ['removeItem', 'pCopyItem', 'countGoalSubTask'],
     mixins: [MxDndGolSub, MxItemDate, MxMenuEdit],
     components: {
         'comp-vw-sub': ViewSub,
@@ -326,12 +315,13 @@ const ViewGoal = {
             // console.groupEnd()
             if (subs.length == oSubs.length) {
                 this.sortSameParent(subs, oSubs)
-
             } else if (oSubs.length < subs.length) {
                 const goalId = this.item.Id
                 this.sortDiffParent(subs, 10, ['GoalId', goalId])
-
             }
+            this.$nextTick(() => {
+                this.countGoalSubTask()
+            })
         },
     },
     provide() {
@@ -455,27 +445,13 @@ const ViewProduct = {
                     lstG.splice(ii + 1, 0, cpyItm)
                 })
             },
-            setSubId: (lstId, isAdd) => {
-                const ids = this.SubIds
-                for (let jj = 0, id, ii; jj < lstId.length; jj++) {
-                    id = lstId[jj]
-                    ii = ids.indexOf(id)
-                    if (isAdd && ii < 0) ids.push(id)
-                    if (!isAdd && -1 < ii) ids.splice(ii, 1)
-                }
-            },
-            setTaskId: (id, isAdd) => {
-                const ids = this.TaskIds
-                const ii = ids.indexOf(id)
-                if (isAdd && ii < 0) ids.push(id)
-                if (!isAdd && -1 < ii) ids.splice(ii, 1)
-            },
+            countGoalSubTask: this.getCountGoalSubTask,
         }
     },
     created() {
         this.getCountGoalSubTask()
     },
-    // beforeUpdate() { },
+    // beforeUpdate() { this.getCountGoalSubTask() },
     //  beforeUnmount() { },
 }
 export default {
