@@ -53,19 +53,16 @@ const RectClass = {
         ExtendsProperty() {
             const item = this.item
             if ('interface' == item.type) return []
-            let idTos = item.idTos
-            if (!idTos || !idTos.length) return []
-            idTos = idTos.filter(xx => xx[1].includes('implement'))
-            idTos = idTos.map(xx => xx[0])
-            if (!idTos.length) return []
-            let lstPrp = []
+            let tIds = item.toIds
+            if (!tIds || !tIds.length) return []
             const lstCls = this.$root.ListClass
+            let lstPrp = []
             const prps = item.Properties
             for (let ii = 0, xx; ii < lstCls.length; ii++) {
                 xx = lstCls[ii]
                 if (!xx.Properties || !xx.Properties.length) continue;
                 if ('interface' != xx.type) continue
-                if (!idTos.includes(xx.id)) continue
+                if (!tIds.includes(xx.id)) continue
                 for (let jj = 0, prp; jj < xx.Properties.length; jj++) {
                     prp = xx.Properties[jj]
                     const name = prp[1]
@@ -76,10 +73,9 @@ const RectClass = {
             return lstPrp
         },
         ExtendsView() {
-            let idTos = this.item.idTos
-            if (!idTos || !idTos.length) return null
-            idTos = idTos.map(xx => xx[0])
-            let lstCls = this.$root.ListClass.filter(xx => idTos.includes(xx.id))
+            let tIds = this.item.toIds
+            if (!tIds || !tIds.length) return null
+            let lstCls = this.$root.ListClass.filter(xx => tIds.includes(xx.id))
             lstCls = lstCls.map(xx => xx.Name)
             return `${lstCls.join(', ')}`
         },
