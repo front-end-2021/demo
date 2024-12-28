@@ -87,7 +87,7 @@ const RectClass = {
     mounted() {
         const off = this.$el.getBoundingClientRect()
         this.item.height = off.height
-        this.$el.querySelector('.vwheader').addEventListener('mousedown', this.onMouseDown)
+        this.$el.querySelector('.vwheader>.ctlmove').addEventListener('mousedown', this.onMouseDown)
         this.setWidth()
     },
     updated() {
@@ -95,7 +95,7 @@ const RectClass = {
 
     },
     beforeUnmount() {
-        this.$el.querySelector('.vwheader').removeEventListener('mousedown', this.onMouseDown)
+        this.$el.querySelector('.vwheader>.ctlmove').removeEventListener('mousedown', this.onMouseDown)
     },
 }
 export const ViewDiagram = {

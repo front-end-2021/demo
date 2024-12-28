@@ -1,0 +1,11 @@
+.vwheader {
+    font-size: 18px;text-align: center;border-bottom: 1px solid black;
+    padding-left: 24px; padding-right: 18px; position: relative;
+
+}
+.ctlmove {
+    width: 22px;height: calc(100% - 1px);
+    position: absolute;left: 0;top:1px;
+    background-color: white;
+}
+.cpoint {cursor: pointer;}
