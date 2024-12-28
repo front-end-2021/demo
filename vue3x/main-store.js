@@ -24,6 +24,7 @@ function getListBy(ids) {
 }
 function buildListBy(ids, fnc) {
     const lst = []
+    if(!Array.isArray(this)) return lst
     for (let ii = 0, item; ii < this.length; ii++) {
         item = this[ii]
         if (ids.includes(0)) lst.push(item)

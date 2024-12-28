@@ -99,11 +99,12 @@
             throttle: 0, intersection: { threshold: 0 }
         }">
         <div v-if="IsVisible"
-            class="d-flex jc-sb p-2 bg-006bb9 border-u6px">
+            class="d-flex jc-sb p-2 bg-006bb9"
+            :class="[IsExpand ? 'border-u6px' : 'border-6px']">
             <div class="d-grid" style="grid-template-columns: 24px auto;">
                 <span @click.stop="toggleExpand"
                     style="text-align: center;"
-                    class="cpointer">{{IsExpand ? '--' : '+'}}</span>
+                    class="cpointer">{{IsExpand ? '[&minus;]' : '[+]'}}</span>
                 <div>{{item.Name}} ({{smpdid}})</div>
             </div>
             <div>{{GoalIds.length}}&nbsp;|&nbsp;{{SubIds.length}}&nbsp;|&nbsp;{{TaskIds.length}}</div>
@@ -134,21 +135,13 @@
     <section class="dnbViewAcPlan px20px" >
         <div v-for="market in ListMarket" class="bg-008ff8 border-6px mb-3"
             :key="market.Entry.Id">
-            <div class="d-grid p-2 border-6px bg-008ff8"
-                style="grid-template-columns: 24px auto;">
-                <span @click.stop="e => toggleExpand(market.Entry.Id, 3)"
-                    style="text-align: center;"
-                    class="cpointer">{{isExpand(market.Entry.Id, 3) ? '--' : '+'}}</span>
-                <div>{{market.Entry.Name}}</div>
-            </div>
-            <div v-if="isExpand(market.Entry.Id, 3)"
-                v-for="subMk in market.SubMarkets" class="p-2">
+            <div v-for="subMk in market.SubMarkets" class="p-2">
                 <div class="d-grid p-2 bg-008ff8"
-                    style="grid-template-columns: 24px auto;">
+                    style="grid-template-columns: 24px auto;padding-bottom: 0;">
                     <span @click.stop="e => toggleExpand(subMk.Entry.Id, 4)"
                         style="text-align: center;"
-                        class="cpointer">{{isExpand(subMk.Entry.Id, 4) ? '--' : '+'}}</span>
-                    <div>{{subMk.Entry.Name}}</div>
+                        class="cpointer">{{isExpand(subMk.Entry.Id, 4) ? '[&minus;]' : '[+]'}}</span>
+                    <div>{{market.Entry.Name}} / {{subMk.Entry.Name}}</div>
                 </div>
                 <comp-vw-prd v-if="isExpand(subMk.Entry.Id, 4)"
                     v-for="product in subMk.Products"
@@ -159,21 +152,13 @@
         </div>
         <div v-for="prdG in ProductGroups" class="bg-008ff8 border-6px mb-3"
             :key="prdG.Entry.Id">
-            <div class="d-grid p-2 border-6px bg-008ff8"
-                style="grid-template-columns: 24px auto;">
-                <span @click.stop="e => toggleExpand(prdG.Entry.Id, 5)"
-                    style="text-align: center;"
-                    class="cpointer">{{isExpand(prdG.Entry.Id, 5) ? '--' : '+'}}</span>
-                <div>{{prdG.Entry.Name}} (xy)</div>
-            </div>
-            <div v-if="isExpand(prdG.Entry.Id, 5)"
-                v-for="product in prdG.ListProduct" class="p-2">
+            <div v-for="product in prdG.ListProduct" class="p-2">
                 <div class="d-grid p-2 bg-008ff8"
                     style="grid-template-columns: 24px auto;">
                     <span @click.stop="e => toggleExpand(product.Entry.Id, 6)"
                         style="text-align: center;"
-                        class="cpointer">{{isExpand(product.Entry.Id, 6) ? '--' : '+'}}</span>
-                    <div>{{product.Entry.Name}}</div>
+                        class="cpointer">{{isExpand(product.Entry.Id, 6) ? '[&minus;]' : '[+]'}}</span>
+                    <div>{{prdG.Entry.Name}} (xy) / {{product.Entry.Name}}</div>
                 </div>
                 <comp-vw-prd v-if="isExpand(product.Entry.Id, 6)"
                     v-for="subMk in product.SubMarkets"

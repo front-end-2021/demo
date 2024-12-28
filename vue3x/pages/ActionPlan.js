@@ -1,5 +1,5 @@
 import { VueDraggableNext } from 'vue-draggable-next'
-import { groupBy, isDragDrop, runWorker } from '../common.js'
+import { groupBy, isDragDrop } from '../common.js'
 import { getCopyItem } from '../mock-data.js'
 
 const MxItemDate = {
@@ -213,22 +213,8 @@ const ViewSub = {
         }
     },
     created() {
-        if (window.Worker) {
-            const that = this
-            let entry = {
-                type: 'get sorted in range',
-                ItemType: 11,
-                ParentIds: [this.item.Id],
-                i0: 0, ie: 90,
-                Items: this.$store.state.ListTask.map(x => {
-                    return { Id: x.Id, SubId: x.SubId, ASort: x.ASort }
-                })
-            }
-            that.LoadState = 0
-            runWorker(entry, this.getWwListTask)
-        } else {
-            this.ListTask = this.$store.getters.sortedInRange([11, [this.item.Id], 0, 90])
-        }
+        this.ListTask = this.$store.getters.sortedInRange([11, [this.item.Id], 0, 90])
+        this.LoadState = 1
     },
     computed: {
         DndTaskOptions() {
@@ -296,21 +282,12 @@ const ViewSub = {
                 onSelect,
             }
         },
-        getWwListTask(event) {
-            const rsData = event.data
-            const ids = rsData.listId
-            const lst = this.$store.getters.UnsortItems([11, ids, []])
-            if (1 < lst.length) lst.sort((a, b) => a.ASort - b.ASort)
-            this.ListTask = lst
-            this.LoadState = 1
-            // console.log('Result sorted in range from worker:', event.data);
-        },
     },
     mounted() {
-        this.setSubId(this.item.Id, true)
+        this.setSubId([this.item.Id], true)
     },
     beforeUnmount() {
-        this.setSubId(this.item.Id, false)
+        this.setSubId([this.item.Id], false)
     },
 }
 const ViewGoal = {
@@ -325,8 +302,9 @@ const ViewGoal = {
     },
     props: ['item'],
     data() {
+        const subs = this.$store.getters.sortedInRange([10, [this.item.Id], 0, 20])
         return {
-            ListSub: this.$store.getters.sortedInRange([10, [this.item.Id], 0, 20])
+            ListSub: subs
         }
     },
     computed: {
@@ -450,30 +428,12 @@ const ViewProduct = {
             else colapseIds.push(idTxt)
         },
         getCountGoalSubTask() {
-            if (window.Worker) {
-                let entry = {
-                    type: 'count main sub task',
-                    smpdid: this.smpdid,
-                    goals: this.$store.state.ListGoal.map(x => {
-                        return { Id: x.Id, SubmPrdId: x.SubmPrdId }
-                    }),
-                    subs: this.$store.state.ListSub.map(x => {
-                        return { Id: x.Id, GoalId: x.GoalId }
-                    }),
-                    tasks: this.$store.state.ListTask.map(x => {
-                        return { Id: x.Id, SubId: x.SubId }
-                    })
-                }
-                runWorker(entry, this.getWwGstIds)
-            } else {
-                this.GoalIds = this.ListGoal.map(x => x.Id)
-            }
-        },
-        getWwGstIds(event) {
-            const rsData = event.data
-            this.GoalIds = rsData.GoalIds
-            this.SubIds = rsData.SubIds
-            this.TaskIds = rsData.TaskIds
+            const gIds = this.ListGoal.map(x => x.Id)
+            const sIds = this.$store.state.ListSub.filter(x => gIds.includes(x.GoalId)).map(x => x.Id)
+            const tIds = this.$store.state.ListTask.filter(x => sIds.includes(x.SubId)).map(x => x.Id)
+            this.GoalIds = gIds
+            this.SubIds = sIds
+            this.TaskIds = tIds
         },
     },
     provide() {
@@ -495,15 +455,16 @@ const ViewProduct = {
                     lstG.splice(ii + 1, 0, cpyItm)
                 })
             },
-            setSubId: (id, isAdd) => {
-                if (window.Worker) return;
+            setSubId: (lstId, isAdd) => {
                 const ids = this.SubIds
-                const ii = ids.indexOf(id)
-                if (isAdd && ii < 0) ids.push(id)
-                if (!isAdd && -1 < ii) ids.splice(ii, 1)
+                for (let jj = 0, id, ii; jj < lstId.length; jj++) {
+                    id = lstId[jj]
+                    ii = ids.indexOf(id)
+                    if (isAdd && ii < 0) ids.push(id)
+                    if (!isAdd && -1 < ii) ids.splice(ii, 1)
+                }
             },
             setTaskId: (id, isAdd) => {
-                if (window.Worker) return;
                 const ids = this.TaskIds
                 const ii = ids.indexOf(id)
                 if (isAdd && ii < 0) ids.push(id)
@@ -514,9 +475,8 @@ const ViewProduct = {
     created() {
         this.getCountGoalSubTask()
     },
-    beforeUpdate() {
-        this.getCountGoalSubTask()
-    },
+    // beforeUpdate() { },
+    //  beforeUnmount() { },
 }
 export default {
     template: `#tmp-comp-action-plan`,
@@ -673,11 +633,7 @@ export default {
         toggleExpand(id, type) {
             let idTxt = ''
             switch (type) {
-                case 3: idTxt = 'mk' + id   // Market
-                    break;
                 case 4: idTxt = 'smk' + id   // SubMarket
-                    break;
-                case 5: idTxt = 'pdg' + id   // Product group
                     break;
                 case 6: idTxt = 'pd' + id   // Product
                     break;
@@ -692,11 +648,7 @@ export default {
             const colapseIds = this.$root.ApCollapseIds
             let idTxt = ''
             switch (type) {
-                case 3: idTxt = 'mk' + id   // Market
-                    break;
                 case 4: idTxt = 'smk' + id   // SubMarket
-                    break;
-                case 5: idTxt = 'pdg' + id   // Product group
                     break;
                 case 6: idTxt = 'pd' + id   // Product
                     break;

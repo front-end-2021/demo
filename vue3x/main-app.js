@@ -53,6 +53,7 @@ Promise.all([
                 DragDrop: null,
 
                 ApCollapseIds: [],
+                ListWrkPrd: [],
 
                 // type 1000 (tooltip name, des), 
                 // type 9, 10, 11 (menu goal, sub, task),
@@ -124,7 +125,6 @@ Promise.all([
         },
         watch: {
             IndexPage(val) { setLocal(6, val) },
-
         },
         methods: {
             selectPage(index) { this.IndexPage = index },

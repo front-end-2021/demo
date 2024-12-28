@@ -1,4 +1,4 @@
-import { getRandomInt, runWorker } from './common.js'
+import { getRandomInt } from './common.js'
 const nameList = [
     'Time', 'Past', 'Future', 'Dev', 'Fly', 'Flying', 'Soar', 'Soaring', 'Power', 'Falling', 'Fall', 'Jump', 'Cliff',
     'Mountain', 'Rend', 'Red', 'Blue', 'Green', 'Yellow', 'Gold', 'Demon', 'Demonic', 'Panda', 'Cat', 'Kitty',
@@ -273,19 +273,9 @@ function getTaks(subs) {
     }
     return lst;
 }
-function getListGoalSubTask(event) {
-    DemoGoals = event.data.Goals
-    DemoSubs = event.data.Subs
-    DemoTasks = event.data.Tasks
-}
-if (window.Worker) {
-    runWorker({ type: 'get goals, subs, tasks' }, getListGoalSubTask)
-} else {
-    //  console.info('Your browser doesn\'t support Web Workers.');
-    DemoGoals = getGoals()
-    DemoSubs = getSubs(DemoGoals)
-    DemoTasks = getTaks(DemoSubs)
-}
+DemoGoals = getGoals()
+DemoSubs = getSubs(DemoGoals)
+DemoTasks = getTaks(DemoSubs)
 function getMessCompare(item, mItem) {
     let mess = ''
     mItem = JSON.parse(JSON.stringify(mItem))

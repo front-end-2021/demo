@@ -151,27 +151,72 @@ function getTaks(subs) {
     }
     return lst;
 }
-self.onmessage = function (event) {
-    // console.log('event ', event)
-    const eData = event.data
-    switch (eData.type) {
-        case 'get goals, subs, tasks':
-            const Goals = getGoals()
-            const Subs = getSubs(Goals)
-            const Tasks = getTaks(Subs)
-            self.postMessage({ Goals, Subs, Tasks })
-            return;
-        case 'get sorted in range':
-            self.postMessage(getItems(eData.Items, eData.ItemType, eData.ParentIds, eData.i0, eData.ie))
-            return;
-        case 'count main sub task':
-            self.postMessage(getCountMainSubTask(eData))
-            return;
-        default: self.postMessage(0)
-            return;
-    }
+// self.onmessage = function (event) { // console.log('event ', event)
+//     const eData = event.data
+//     switch (eData.type) {
+//         case 'get goals, subs, tasks':
+//             const Goals = getGoals()
+//             const Subs = getSubs(Goals)
+//             const Tasks = getTaks(Subs)
+//             self.postMessage({ Goals, Subs, Tasks })
+//             return;
+//         case 'get sorted in range':
+//             self.postMessage(getItems(eData.Items, eData.ItemType, eData.ParentIds, eData.i0, eData.ie))
+//             return;
+//         case 'count main sub task':
+//             self.postMessage(getCountMainSubTask(eData))
+//             return;
+//         default: self.postMessage(0)
+//             return;
+//     }
 
-}
+// }
+self.addEventListener('connect', (e) => {
+    const port = e.ports[0];
+    port.addEventListener("message", (event) => {
+        const eData = event.data
+        switch (eData.type) {
+            case 'get goals, subs, tasks':
+                const Goals = getGoals()
+                const Subs = getSubs(Goals)
+                const Tasks = getTaks(Subs)
+                port.postMessage({ Goals, Subs, Tasks })
+                return;
+            case 'get sorted in range':
+                port.postMessage(getItems(eData.Items, eData.ItemType, eData.ParentIds, eData.i0, eData.ie))
+                return;
+            case 'count main sub task':
+                port.postMessage(getCountMainSubTask(eData))
+                return;
+            default: port.postMessage(0)
+                return;
+        }
+    });
+    port.start(); // Required when using addEventListener. Otherwise called implicitly by onmessage setter.
+})
+// self.onconnect = (e) => {
+//     const port = e.ports[0];
+//     port.addEventListener("message", (event) => {
+//         const eData = event.data
+//         switch (eData.type) {
+//             case 'get goals, subs, tasks':
+//                 const Goals = getGoals()
+//                 const Subs = getSubs(Goals)
+//                 const Tasks = getTaks(Subs)
+//                 port.postMessage({ Goals, Subs, Tasks })
+//                 return;
+//             case 'get sorted in range':
+//                 port.postMessage(getItems(eData.Items, eData.ItemType, eData.ParentIds, eData.i0, eData.ie))
+//                 return;
+//             case 'count main sub task':
+//                 port.postMessage(getCountMainSubTask(eData))
+//                 return;
+//             default: port.postMessage(0)
+//                 return;
+//         }
+//     });
+//     port.start(); // Required when using addEventListener. Otherwise called implicitly by onmessage setter.
+// };
 function getItems(items, type, parentIds, i0, ie) {
     let lst = []
     switch (type) {

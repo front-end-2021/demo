@@ -331,6 +331,7 @@ export const MxSortable = {
 }
 export const groupBy = (array, key) => {
     const mapRes = new Map()
+    if (!Array.isArray(array)) return mapRes
     for (let aa = 0, item, val; aa < array.length; aa++) {
         item = array[aa]
         val = item[key]
@@ -354,8 +355,8 @@ export const counterClick = (fnClick) => {
     }
 }
 export const runWorker = (entry, fnc) => {
-    let wworker = new Worker('worker.js')
-    wworker.onmessage = function (event) { fnc(event); wworker.terminate() }
+    let wworker = new Worker('worker.js'); 
+    wworker.onmessage = function (event) { fnc(event); wworker.terminate() }; 
     wworker.postMessage(entry);    // Gửi dữ liệu đến worker 
 }
 // export const newIntId = () => {
