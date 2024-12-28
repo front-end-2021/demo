@@ -1,11 +1,15 @@
 .vwheader {
     font-size: 18px;text-align: center;border-bottom: 1px solid black;
-    padding-left: 24px; padding-right: 18px; position: relative;
+    padding-left: 24px; padding-right: 24px; position: relative;
 
 }
-.ctlmove {
+.ctlmove, .ctledit {
     width: 22px;height: calc(100% - 1px);
-    position: absolute;left: 0;top:1px;
-    background-color: white;
+    position: absolute;top:1px;
+    background-color: white; display: none;
 }
+.ctlmove { left: 0; }
+.ctledit { right: 0; }
+.vwheader:hover>.ctlmove,
+.vwheader:hover>.ctledit { display: inline-block; }
 .cpoint {cursor: pointer;}

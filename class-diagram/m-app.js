@@ -15,9 +15,12 @@ Promise.all([
         data() {
             return {
                 IndexPage: 0,
+                MinX: 150, MaxX: 150 + 1754,
+                MinY: 10, MaxY: 880,
                 ListClass: getListCls(),
                 LastArea: [],   // List<[id, x, y, w, h]>
-                DragElm: null,
+                DragElm: null,  // Dùng kéo các khung class
+                FrameCode: null,
             }
         },
         computed: {
@@ -36,14 +39,16 @@ Promise.all([
             trackMouse(event) {
                 let x = event.clientX;
                 let y = event.clientY;
-
                 if (this.DragElm !== null) {
                     const dgElm = this.DragElm
+                    const dItem = dgElm.Item
+                    if (x - 20 < this.MinX) return;
+                    if (y < this.MinY + 20) return;
+                    if (this.MaxY + 3 < y + dItem.height) return
                     let left = x + dgElm.offX
                     let top = y + dgElm.offY
-                    const dItem = dgElm.Item
+                    if (this.MaxX < x + dItem.width - 6) return;
                     const id = dItem.id
-
                     if (!this.isOverView(id, left, top, dItem.width, dItem.height)) {
                         if (dItem.left != left || dItem.top != top) {
                             dItem.left = left
@@ -56,8 +61,19 @@ Promise.all([
             },
             onKeyUp(evt) {
                 // console.log('on key up', evt)
+                // const dgElm = this.DragElm
+                // if (dgElm != null) {
+                //     const dItem = dgElm.Item
+                //     let x = dItem.left + dItem.width + 20 + this.MinX
+                //     if (this.MaxX <= x) {
+                //         this.MaxX += dItem.width + 20
+                //         this.$nextTick(() => {
+                //             this.drawLines(this.getPoints())
+                //             this.updateLastArea()
+                //         })
+                //     }
+                // }
                 this.DragElm = null
-
                 this.updateLastArea()
             },
             drawLines(points) {
@@ -92,7 +108,6 @@ Promise.all([
                     for (let jj = 0, Jtem; jj < lstCls.length; jj++) {
                         if (jj == ii) continue;
                         Jtem = lstCls[jj]
-                        if (Jtem.toIds && Jtem.toIds.length) continue
                         let iiT = cIds.indexOf(Jtem.id)
                         if (iiT < 0) continue
                         let w0 = item.width
@@ -124,7 +139,11 @@ Promise.all([
         },
         //  beforeCreate() { },
         //  created() { },
+        beforeMount(){
+            this.MaxX = window.innerWidth
+        },
         mounted() {
+            
             values.forEach((path, ii) => {
                 let pDom = document.body.querySelector(`.dnb-imp-html[dnbpath="${path}"]`)
                 if (pDom) pDom.remove();

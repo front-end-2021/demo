@@ -1,6 +1,7 @@
 <template id="tmp-vw-diagram">
     <section style="display: flex;width: calc(100vw - 16px);">
-        <div id="dnb-vwtab-left" style="width: 150px;display: inline-flex;flex-direction: column;">
+        <div id="dnb-vwtab-left" style="display: inline-flex;flex-direction: column;"
+            :style="[{ width: $root.MinX + 'px'}]">
             <h3 style="margin: 0;">left side</h3>
             <div style="display: inline-block;border: 1px solid rgb(0, 0, 0);width: calc(100% - 10px);cursor: default;"
                 id="cls-sample">
@@ -14,8 +15,9 @@
                 </div>
             </div>
         </div>
-        <div id="dnb-vw-main" style="width: calc(100% - 150px); position: relative;">
-            <canvas id="dnb-mcanvas" width="1900" height="870" 
+        <div id="dnb-vw-main" style="position: relative;"
+            :style="[{ width: $root.MaxX - $root.MinX + 'px' }]">
+            <canvas id="dnb-mcanvas" :width="$root.MaxX - $root.MinX" height="870" 
                 style="border:1px solid #000000;">
                 Your browser does not support the HTML canvas tag.
             </canvas>
@@ -29,24 +31,47 @@
         </div>
     </section>
 </template>
-<template id="tmp-rect-class">
+
+<template id="tmp-rect-enum">
     <div :id="item.id"
+        style="display: inline-block;border: 1px solid rgb(0, 0, 0);
+            position: inherit;cursor: default;"
+        :style="{top: item.top + 'px', left: item.left + 'px'}">
+        <div class="vwheader">
+            <i class="bi bi-arrows-move cpoint ctlmove"></i>
+            <i class="bi bi-pen cpoint ctledit"></i>
+            <span style="font-weight: bold;">{{item.Name}}</span>
+        </div>
+        <div style="font-size: 16px; font-weight: 300;padding: 0 6px;">
+            {{TxtField}}
+        </div>
+    </div>
+</template>
+<template id="tmp-rect-class">
+    <rect-enum v-if="'enum' == item.type" :item="item"></rect-enum>
+    <div v-else :id="item.id"
         style="display: inline-block;border: 1px solid rgb(0, 0, 0);position: inherit;cursor: default;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
             <i class="bi bi-arrows-move cpoint ctlmove"></i>
-            <span style="font-weight: bold;">{{item.Name}}</span>
+            <i class="bi bi-pen cpoint ctledit"></i>
+            <span style="font-weight: bold;" 
+                @click.stop="e => showCodeBody(null, e)">{{item.Name}}</span>
             <span v-if="ExtendsView">:&nbsp;<i>{{ExtendsView}}</i></span>
             <span v-else></span>
         </div>
         <div style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
-            <div v-for="field in item.Fields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</div>
+            <i @click.stop="e => { $root.FrameCode = null }" style="display: block;"
+                v-for="field in ExtendFields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</i>
+            <div @click.stop="e => { $root.FrameCode = null }"
+                v-for="field in item.Fields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</div>
         </div>
         <div style="font-size: 14px;font-weight: 100;padding-right: 6px;">
-            <i v-for="prp in ExtendsProperty" 
-                style="display: block;">&nbsp;{{getProperty(prp)}}</i>
             <div v-for="(prp, ii) in item.Properties"
-                @click.stop="e => showCodeBody(ii, e)">&nbsp;{{getProperty(prp)}}</div>
+                @click.stop="e => showCodeBody(ii, 0)">&nbsp;{{getProperty(prp)}}</div>
+            <i v-for="(prp, ii) in ExtendProperties" 
+                @click.stop="e => showCodeBody(ii, item.Properties.length)"
+                style="display: block;">&nbsp;{{getProperty(prp)}}</i>
         </div>
     </div>
 </template>

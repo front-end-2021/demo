@@ -10,9 +10,9 @@ export function getListCls() {
             { AcModify: '#', Name: 'emailAddress', Type: 'String' },
         ], Properties: [
             ['+', 'GetName()', 'String', 'get', `return this.Name`],
-            ['+', 'SetName(String)', 'void', 'set', `this.Name = string`],
-            ['+', 'GetEmailAddress()', 'String', 'get'],
-            ['+', 'SetEmailAddress(String)', 'void', 'set'],
+            ['+', 'SetName(String n)', 'void', 'set', `this.Name = n`],
+            ['+', 'GetEmailAddress()', 'String', 'get', `return emailAddress`],
+            ['+', 'SetEmailAddress(String e)', 'void', 'set', `emailAddress = e`],
         ]
     })
     let tIds = [id]
@@ -20,18 +20,12 @@ export function getListCls() {
     id = getId(name)
     lstCls.push({
         id: id, type: 'instant class', Name: name, toIds: tIds,
-        top: 70, left: 580, width: 210, height: 100,
+        top: 30, left: 380, width: 210, height: 100,
         Fields: [
-            { AcModify: '#', Name: 'name', Type: 'String' },
-            { AcModify: '#', Name: 'emailAddress', Type: 'String' },
-            { AcModify: '', Name: 'faxNumber', Type: 'String' },
+            { AcModify: '-', Name: 'faxNumber', Type: 'String' },
         ], Properties: [
-            ['+', 'GetName()', 'String', 'get'],
-            ['+', 'SetName(String)', 'void', 'set'],
-            ['+', 'GetEmailAddress()', 'String', 'get'],
-            ['+', 'SetEmailAddress(String)', 'void', 'set'],
             ['+', 'GetFaxNumber()', 'Int', 'get'],
-            ['+', 'SetFaxNumber(Int)', 'void', 'set'],
+            ['+', 'SetFaxNumber(Int f)', 'void', 'set', `faxNumber = f`],
         ]
     })
     name = 'Animal'
@@ -89,6 +83,100 @@ export function getListCls() {
             { AcModify: '+', Name: 'beakColor', Type: 'String' },
         ], Properties: [
             ['+', 'Swim()', 'void', 'set'],
+        ]
+    })
+    name = 'Size'
+    id = getId(name)
+    lstCls.push({
+        id: id, type: 'enum', Name: name, 
+        top: 370, left: 90, width: 220, height: 250,
+        Fields: [
+            { Name: 'VENTI' },
+            { Name: 'GRANDE' },
+            { Name: 'TALL' },
+        ], Properties: []
+    })
+    name = 'Beverage'
+    id = getId(name)
+    lstCls.push({
+        id: id, type: 'abstract class', Name: name, 
+        top: 290, left: 480, width: 220, height: 120,
+        Fields: [
+            { AcModify: '#', Name: 'description', Type: 'String' },
+            { AcModify: '#', Name: 'size', Type: 'Size' },
+        ], Properties: [
+            ['+ virtual', 'getDescription()', 'Bool', 'get', `return new List<String>() { description }`],
+            ['+ abstract', 'cost()', 'double', 'set' ],
+            ['+', 'getSize()', 'Size', 'get', 'return size'],
+            ['+', 'SetSize(Size s)', 'void', 'set', 'size = s'],
+        ]
+    })
+    tIds = [id]
+    name = 'Decaf'
+    id = getId(name)
+    lstCls.push({
+        id: id, type: 'instant class', Name: name, toIds: tIds,
+        top: 480, left: 90, width: 220, height: 120,
+        Fields: [], Properties: [
+            ['+', 'Decaf()', '', 'init', `description = "Decaf"`],
+            ['+ override', 'cost()', 'double', 'set', 'return 1.05'],
+        ]
+    })
+    name = 'Espresso'
+    id = getId(name)
+    lstCls.push({
+        id: id, type: 'instant class', Name: name, toIds: tIds,
+        top: 480, left: 290, width: 220, height: 120,
+        Fields: [], Properties: [
+            ['+', 'Espresso()', '', 'init', `description = "Espresso"`],
+            ['+ override', 'cost()', 'double', 'set', 'return 1.99'],
+        ]
+    })
+    name = 'DarkRoast'
+    id = getId(name)
+    lstCls.push({
+        id: id, type: 'instant class', Name: name, toIds: tIds,
+        top: 480, left: 510, width: 220, height: 120,
+        Fields: [], Properties: [
+            ['+', 'DarkRoast()', '', 'init', `description = "DarkRoast"`],
+            ['+ override', 'cost()', 'double', 'set', 'return 0.99'],
+        ]
+    })
+    name = 'HouseBlend'
+    id = getId(name)
+    lstCls.push({
+        id: id, type: 'instant class', Name: name, toIds: tIds,
+        top: 480, left: 750, width: 220, height: 120,
+        Fields: [], Properties: [
+            ['+', 'HouseBlend()', '', 'init', `description = "House Blend Coffee"`],
+            ['+ override', 'cost()', 'double', 'set', 'return 0.89'],
+        ]
+    })
+    name = 'CondimentDecorator'
+    id = getId(name)
+    lstCls.push({
+        id: id, type: 'abstract class', Name: name, toIds: tIds,
+        top: 660, left: 90, width: 220, height: 120,
+        Fields: [
+            { AcModify: '+', Name: 'beverage', Type: 'Beverage' },
+        ],
+        Properties: [
+            ['#', 'CountDes(String des)', 'List<String>', 'set'],
+        ]
+    })
+    tIds = [id]
+    name = 'Soy'
+    id = getId(name)
+    lstCls.push({
+        id: id, type: 'instant class', Name: name, toIds: tIds,
+        top: 660, left: 450, width: 220, height: 120,
+        Fields: [
+            { AcModify: '+', Name: 'beverage', Type: 'Beverage' },
+        ],
+        Properties: [
+            ['+', 'Soy(Beverage b)', '', 'init', `beverage = b`],
+            ['+ override', 'getDescription()', 'List<String>', 'get'],
+            ['+ override', 'cost()', 'double', 'set'],
         ]
     })
     return lstCls

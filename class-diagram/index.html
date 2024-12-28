@@ -10,6 +10,14 @@
   <link rel="stylesheet" href="./m-style.css">
   </link>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/1c-light.min.css" 
+    integrity="sha512-kM8PiTB2J9j9MJxP4pg5Morv1nvatwpY0xsNsHDpHobti6+sdvObgLPhJ7lOIHYUqQmTAUAE+CaTcQXR47XO2w==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js" 
+    integrity="sha512-EBLzUL8XLl+va/zAsmXwS7Z2B1F9HUHkZwyS/VKwh3S7T/U0nF4BaU29EP/ZSf6zgiIxYAnKLu6bJ8dqpmX5uw==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <script type="importmap">
     {
       "imports": {
@@ -36,6 +44,21 @@
     </header>
 
     <component :is="CompPage" v-cloak></component>
+
+    <div v-if="null != FrameCode"
+      style="min-width: 360px; min-height: 250px; box-sizing: border-box;
+            position: fixed; left: calc(249px + 220px); top: calc(39px - 12px);
+            border-radius: 10px; background-color: #cde5f9; padding: 18px;"
+      :style="[{
+      top: FrameCode.top + 'px', left: FrameCode.left + 'px'
+     }]"
+      id="dnb-framecode">
+      <pre><code class="language-csharp" v-html="FrameCode.html"></code></pre>
+      <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
+        background-color: white;position: absolute;right: 5px;top: 5px;border-radius: 6px;padding-top: 4px;"
+        class="bi bi-x-lg cpoint"
+        @click.stop="e => { FrameCode = null }"></i>
+    </div>
 
     <div>
       Trace log: <span id="dnb-app-log"></span>
