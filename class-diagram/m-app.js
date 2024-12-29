@@ -140,9 +140,9 @@ Promise.all([
                 return acs
             },
             getTxtAcModify(symb) {   // AccessModifiers
-                if (symb.includes('+')) return 'public'
-                if (symb.includes('-')) return 'private'
-                if (symb.includes('#')) return 'protected'
+                if (symb.includes('+')) return symb.replace('+', 'public')
+                if (symb.includes('-')) return symb.replace('-', 'private')
+                if (symb.includes('#')) return symb.replace('#', 'protected')
             },
             getTxtType(type) {
                 if ('abstract class' == type) return 'abstract class'
@@ -163,8 +163,9 @@ Promise.all([
                 let mItem = frmCode.MItem || {}
                 let fName = mItem.FdName || new Map()
                 let fType = mItem.FdType || new Map()
-                let amName = mItem.FdAmName || new Map()
-                let amType = mItem.FdAmType || new Map()
+                let amName = mItem.PrpAmName || new Map()
+                let amType = mItem.PrpAmType || new Map()
+                let ctCode = mItem.PrpAmCode || new Map()
                 switch (type) {
                     case 'class name':
                         mItem.Name = target.textContent
@@ -181,19 +182,27 @@ Promise.all([
                     case 'access modify type':
                         amType.set(ii, target.textContent)
                         break;
+                    case 'code context':
+                        ctCode.set(ii, target.value)
+                        break;
                     default: break;
                 }
                 if (!mItem.FdName) mItem.FdName = fName
                 if (!mItem.FdType) mItem.FdType = fType
-                if (!mItem.FdAmName) mItem.FdAmName = amName
-                if (!mItem.FdAmType) mItem.FdAmType = amType
+                if (!mItem.PrpAmName) mItem.PrpAmName = amName
+                if (!mItem.PrpAmType) mItem.PrpAmType = amType
+                if (!mItem.PrpAmCode) mItem.PrpAmCode = ctCode
                 if (!frmCode.MItem) frmCode.MItem = mItem
-                //console.log('on change ', type, target.textContent, e)
+                console.log('on change ', type, target.textContent, e)
             },
             onSaveChange() {
                 const frmCode = this.FrameCode
-                const item = frmCode.item
                 const mItem = frmCode.MItem
+                if(!mItem) {
+                    this.FrameCode = null
+                    return
+                }
+                const item = frmCode.item
                 let name = mItem.Name
                 name = clearSpace(name, item.Name)
                 let arrChange = []
@@ -219,7 +228,7 @@ Promise.all([
                         arrChange.push(`Field.Type ${name}`)
                     }
                 }
-                const amName = mItem.FdAmName
+                const amName = mItem.PrpAmName
                 for (const [ii, txt] of amName) {
                     const prp = item.Properties[ii]
                     const pName = prp[1]
@@ -229,7 +238,7 @@ Promise.all([
                         arrChange.push(`Fuction ${pName}`)
                     }
                 }
-                const amType = mItem.FdAmType
+                const amType = mItem.PrpAmType
                 for (const [ii, txt] of amType) {
                     const prp = item.Properties[ii]
                     const pType = prp[2]
@@ -239,8 +248,19 @@ Promise.all([
                         arrChange.push(`Return Fuction ${pType}`)
                     }
                 }
+                const ctCode = mItem.PrpAmCode
+                for (const [ii, txt] of ctCode) {
+                    const prp = item.Properties[ii]
+                    const pType = prp[4]
+                    name = txt
+                    if(!this.equalHas(name, pType)) {
+                        prp[4] = name
+                        arrChange.push(`Return Fuction ${pType}`)
+                    }
+                }
                 if (arrChange.length) {
                     console.log('changes ', arrChange)
+
                 }
                 this.FrameCode = null
                 function clearSpace(str, nm) {

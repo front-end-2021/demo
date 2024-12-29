@@ -106,7 +106,7 @@ export function getListCls() {
             { AcModify: '#', Name: 'size', Type: 'Size' },
         ], Properties: [
             ['+ virtual', 'getDescription()', 'Bool', 'get', `return new List<String>() { description }`],
-            ['+ abstract', 'cost()', 'double', 'get' ],
+            ['+ abstract', 'cost()', 'double', 'get', ],
             ['+', 'getSize()', 'Size', 'get', 'return size'],
             ['+', 'SetSize(Size s)', 'void', 'set', 'size = s'],
         ]

@@ -22,13 +22,12 @@ const MxRect = {
                 this.$root.updateLastArea()
             }
         },
-        editObject(){
+        editObject() {
             const item = this.item
             // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
-            
+
             this.$root.FrameCode = {
-                type: 2,
-                item: JSON.parse(JSON.stringify(item))
+                type: 2, item
             }
         },
     },
@@ -41,7 +40,7 @@ const MxRect = {
         this.setWidth()
 
     },
-   // beforeUnmount() { },
+    // beforeUnmount() { },
 }
 const RectEnum = {
     template: `#tmp-rect-enum`,
@@ -109,15 +108,16 @@ const RectClass = {
                 txtP = txtP.replace('#', '  protected')
                 if (jj - offI == ii) {
                     let pCode = prp[4]
-                    if (pCode == 'abstract') pCode = ''
-                    else if ('interface' == item.type) { pCode = '' }
-                    else if (!pCode) pCode = '/*...*/'
+                    if ('interface' == item.type) { pCode = '' }
+                    else if (!pCode) pCode = '/* empty */'
+                    else if (pCode == 'abstract') pCode = ''
+                    else if (pCode.includes('\n')) { }
                     else pCode += ';'
                     if (txtP.includes(`{...}`)) {
                         txtP = txtP.replace(`{...}`, `{\n    ${pCode}\n  }\n`)
                     }
                 } else if (txtP.includes(`{...}`)) {
-                    txtP = txtP.replace(`{...}`, `{ /*...*/ }\n`)
+                    txtP = txtP.replace(`{...}`, `{ ... }\n`)
                 }
                 txtFnc += `${txtP}`
             }
@@ -151,7 +151,7 @@ const RectClass = {
                 })
             }
         },
-        
+
     },
     computed: {
         FormCsFormat() {
