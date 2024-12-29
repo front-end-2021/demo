@@ -45,21 +45,62 @@
 
     <component :is="CompPage" v-cloak></component>
 
-    <div v-if="null != FrameCode"
+    <div v-if="ViewCode"
       style="min-width: 360px; min-height: 250px; box-sizing: border-box;
             position: fixed; left: calc(249px + 220px); top: calc(39px - 12px);
             border-radius: 10px; background-color: #cde5f9; padding: 18px;"
       :style="[{
-      top: FrameCode.top + 'px', left: FrameCode.left + 'px'
+      top: ViewCode.top + 'px', left: ViewCode.left + 'px'
      }]"
-      id="dnb-framecode">
-      <pre><code class="language-csharp" v-html="FrameCode.html"></code></pre>
+      id="dnb-viewcode">
+      <pre><code class="language-csharp" v-html="ViewCode.html"></code></pre>
       <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
         background-color: white;position: absolute;right: 5px;top: 5px;border-radius: 6px;padding-top: 4px;"
-        class="bi bi-x-lg cpoint"
-        @click.stop="e => { FrameCode = null }"></i>
+        class="bi bi-x-lg cpoint" @click.stop="e => { FrameCode = null }"></i>
     </div>
+    <div v-if="EditObject"
+      style="min-width: calc(100vw / 2); max-width: calc(100vw - 60px); min-height: 320px; max-height: calc(100vh - 30px);
+      display: inline-block;  padding: 18px; transform: translate(-50%, -50%);
+      box-sizing: border-box; border-radius: 10px; position: fixed;
+      background-color: rgb(168 215 255); top: 50%; left: 50%;">
+        <div style="margin-bottom: 12px; display: flex;align-items: center;">
+          <span class="p36">{{getTxtType(EditObject.type)}}</span>
+          <span contenteditable="plaintext-only"
+            @input="e => onChange(e, 'class name')"
+            @keypress="e => { if (e.which === 13) e.preventDefault() }"
+            class="p36" v-html="EditObject.Name"></span>
+        </div>
+        <div v-for="(field, ii) in EditObject.Fields"
+          style="margin-bottom: 2px; display: flex;align-items: center;">
+          <span class="p36">{{getTxtAcModify(field.AcModify)}}</span>
+          <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+            @input="e => onChange(e, 'field name', ii)"
+            class="p36" contenteditable="plaintext-only" v-html="field.Name"></span>
+          <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+            @input="e => onChange(e, 'field type', ii)"
+            class="p36" contenteditable="plaintext-only" v-html="field.Type"></span>
+        </div>
+        <div v-for="(prp, ii) in EditObject.Properties"
+          style="margin-bottom: 2px;"
+          :style="[0 == ii ? {marginTop: '10px'} : null]">
+          <div style="display: flex;align-items: center;">
+            <span class="p36">{{getTxtAcModify(prp[0])}}</span>
+            <span class="p36">{{getAccessors(prp[3])}}</span>
+            <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+              @input="e => onChange(e, 'access modify name', ii)"
+              class="p36" contenteditable="plaintext-only" v-html="prp[1]"></span>
+            {{getReturnType(prp[3]) ? 'return' : ''}}<span v-if="getReturnType(prp[3])"
+              @input="e => onChange(e, 'access modify type', ii)"
+              @keypress="e => { if (e.which === 13) e.preventDefault() }"
+              contenteditable="plaintext-only" class="p36" v-html="prp[2]"></span>
+          </div>
+          <textarea style="width: 100%; min-height: 90px;border-radius: 6px;border: none;">{{prp[4]}}</textarea>
+        </div>
 
+        <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
+        background-color: white;position: absolute;right: 5px;top: 5px;border-radius: 6px;padding-top: 4px;"
+        class="bi bi-x-lg cpoint" @click.stop="onSaveChange"></i>
+    </div>
     <div>
       Trace log: <span id="dnb-app-log"></span>
     </div>

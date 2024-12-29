@@ -30,6 +30,18 @@ Promise.all([
                     default: break;
                 }
             },
+            ViewCode() {
+                let frmCode = this.$root.FrameCode
+                if (null != frmCode && 1 == frmCode.type) return frmCode
+                return null
+            },
+            EditObject() {
+                let frmCode = this.$root.FrameCode
+                if (null != frmCode && 2 == frmCode.type) {
+                    return frmCode.item
+                }
+                return null
+            },
         },
         watch: {
             IndexPage(val) { setLocal(6, val) },
@@ -60,19 +72,6 @@ Promise.all([
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
             },
             onKeyUp(evt) {
-                // console.log('on key up', evt)
-                // const dgElm = this.DragElm
-                // if (dgElm != null) {
-                //     const dItem = dgElm.Item
-                //     let x = dItem.left + dItem.width + 20 + this.MinX
-                //     if (this.MaxX <= x) {
-                //         this.MaxX += dItem.width + 20
-                //         this.$nextTick(() => {
-                //             this.drawLines(this.getPoints())
-                //             this.updateLastArea()
-                //         })
-                //     }
-                // }
                 this.DragElm = null
                 this.updateLastArea()
             },
@@ -136,14 +135,128 @@ Promise.all([
                 }
                 this.$root.LastArea = lstArea
             },
+            getAccessors(acs) {
+                if (acs.includes('init')) return 'Contructor'
+                return acs
+            },
+            getTxtAcModify(symb) {   // AccessModifiers
+                if (symb.includes('+')) return 'public'
+                if (symb.includes('-')) return 'private'
+                if (symb.includes('#')) return 'protected'
+            },
+            getTxtType(type) {
+                if ('abstract class' == type) return 'abstract class'
+                if (type.includes('class')) return 'class'
+                if (type.includes('interface')) return 'interface'
+            },
+            getReturnType(acs) {
+                if (acs.includes('get')) return true
+                return false
+            },
+            equalHas(txt1, txt2) {
+                let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)
+                return hash1.toString(CryptoJS.enc.Hex) == hash2.toString(CryptoJS.enc.Hex)
+            },
+            onChange(e, type, ii) {
+                const frmCode = this.$root.FrameCode
+                const target = e.target
+                let mItem = frmCode.MItem || {}
+                let fName = mItem.FdName || new Map()
+                let fType = mItem.FdType || new Map()
+                let amName = mItem.FdAmName || new Map()
+                let amType = mItem.FdAmType || new Map()
+                switch (type) {
+                    case 'class name':
+                        mItem.Name = target.textContent
+                        break;
+                    case 'field name':
+                        fName.set(ii, target.textContent)
+                        break;
+                    case 'field type':
+                        fType.set(ii, target.textContent)
+                        break;
+                    case 'access modify name':
+                        amName.set(ii, target.textContent)
+                        break;
+                    case 'access modify type':
+                        amType.set(ii, target.textContent)
+                        break;
+                    default: break;
+                }
+                if (!mItem.FdName) mItem.FdName = fName
+                if (!mItem.FdType) mItem.FdType = fType
+                if (!mItem.FdAmName) mItem.FdAmName = amName
+                if (!mItem.FdAmType) mItem.FdAmType = amType
+                if (!frmCode.MItem) frmCode.MItem = mItem
+                //console.log('on change ', type, target.textContent, e)
+            },
+            onSaveChange() {
+                const frmCode = this.FrameCode
+                const item = frmCode.item
+                const mItem = frmCode.MItem
+                let name = mItem.Name
+                name = clearSpace(name, item.Name)
+                let arrChange = []
+                if (name != item.Name) {
+                    item.Name = name
+                    arrChange.push('Name')
+                }
+                const fName = mItem.FdName
+                for (const [ii, txt] of fName) {
+                    const field = item.Fields[ii]
+                    name = clearSpace(txt, field.Name)
+                    if (field.Name != name) {
+                        field.Name = name
+                        arrChange.push(`Field.Name ${name}`)
+                    }
+                }
+                const fType = mItem.FdType
+                for (const [ii, txt] of fType) {
+                    const field = item.Fields[ii]
+                    name = clearSpace(txt, field.Type)
+                    if (field.Type != name) {
+                        field.Type = name
+                        arrChange.push(`Field.Type ${name}`)
+                    }
+                }
+                const amName = mItem.FdAmName
+                for (const [ii, txt] of amName) {
+                    const prp = item.Properties[ii]
+                    const pName = prp[1]
+                    name = clearSpace(txt, pName)
+                    if (pName != name) {
+                        prp[1] = name
+                        arrChange.push(`Fuction ${pName}`)
+                    }
+                }
+                const amType = mItem.FdAmType
+                for (const [ii, txt] of amType) {
+                    const prp = item.Properties[ii]
+                    const pType = prp[2]
+                    name = clearSpace(txt, pType)
+                    if (pType != name) {
+                        prp[2] = name
+                        arrChange.push(`Return Fuction ${pType}`)
+                    }
+                }
+                if (arrChange.length) {
+                    console.log('changes ', arrChange)
+                }
+                this.FrameCode = null
+                function clearSpace(str, nm) {
+                    if (typeof str != 'string') return nm
+                    str = str.trim()
+                    return str.replaceAll(' ', '')
+                }
+            },
         },
         //  beforeCreate() { },
         //  created() { },
-        beforeMount(){
+        beforeMount() {
             this.MaxX = window.innerWidth
         },
         mounted() {
-            
+
             values.forEach((path, ii) => {
                 let pDom = document.body.querySelector(`.dnb-imp-html[dnbpath="${path}"]`)
                 if (pDom) pDom.remove();

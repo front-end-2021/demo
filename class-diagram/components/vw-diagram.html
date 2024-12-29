@@ -38,8 +38,10 @@
             position: inherit;cursor: default;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
-            <i class="bi bi-arrows-move cpoint ctlmove"></i>
-            <i class="bi bi-pen cpoint ctledit"></i>
+            <i class="bi bi-arrows-move cpoint ctlmove"
+                @mousedown="onMouseDown"></i>
+            <i class="bi bi-pen cpoint ctledit"
+                @click.stop="editObject"></i>
             <span style="font-weight: bold;">{{item.Name}}</span>
         </div>
         <div style="font-size: 16px; font-weight: 300;padding: 0 6px;">
@@ -53,8 +55,10 @@
         style="display: inline-block;border: 1px solid rgb(0, 0, 0);position: inherit;cursor: default;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
-            <i class="bi bi-arrows-move cpoint ctlmove"></i>
-            <i class="bi bi-pen cpoint ctledit"></i>
+            <i class="bi bi-arrows-move cpoint ctlmove"
+                @mousedown="onMouseDown"></i>
+            <i class="bi bi-pen cpoint ctledit"
+                @click.stop="editObject"></i>
             <span style="font-weight: bold;" 
                 @click.stop="e => showCodeBody(null, e)">{{item.Name}}</span>
             <span v-if="ExtendsView">:&nbsp;<i>{{ExtendsView}}</i></span>

@@ -13,3 +13,5 @@
 .vwheader:hover>.ctlmove,
 .vwheader:hover>.ctledit { display: inline-block; }
 .cpoint {cursor: pointer;}
+.p36 { padding: 3px 6px; }
+[contenteditable="plaintext-only"] {border-bottom: 1px solid #ffffff96;}

@@ -1,9 +1,10 @@
 const MxRect = {
+    props: ['item'],
     methods: {
         onMouseDown(event) {
             if (null !== this.$root.DragElm) return;
             const off = this.$el.getBoundingClientRect()
-            let x = this.$root.MinX + 8
+            let x = this.$root.MinX
             let y = this.$root.MinY
             this.$root.DragElm = {
                 Item: this.item,
@@ -21,26 +22,31 @@ const MxRect = {
                 this.$root.updateLastArea()
             }
         },
+        editObject(){
+            const item = this.item
+            // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
+            
+            this.$root.FrameCode = {
+                type: 2,
+                item: JSON.parse(JSON.stringify(item))
+            }
+        },
     },
     mounted() {
         const off = this.$el.getBoundingClientRect()
         this.item.height = off.height
-        this.$el.querySelector('.vwheader>.ctlmove').addEventListener('mousedown', this.onMouseDown)
         this.setWidth()
     },
     updated() {
         this.setWidth()
 
     },
-    beforeUnmount() {
-        this.$el.querySelector('.vwheader>.ctlmove').removeEventListener('mousedown', this.onMouseDown)
-    },
+   // beforeUnmount() { },
 }
 const RectEnum = {
     template: `#tmp-rect-enum`,
     name: "Rect_Class",
     display: "Rect.Class",
-    props: ['item'],
     mixins: [MxRect],
     //methods: { },
     computed: {
@@ -54,7 +60,7 @@ const RectClass = {
     template: `#tmp-rect-class`,
     name: "Rect_Class",
     display: "Rect.Class",
-    props: ['item'],
+    //props: [],
     mixins: [MxRect],
     components: {
         'rect-enum': RectEnum,
@@ -117,34 +123,35 @@ const RectClass = {
             }
             let txt = `${clsName}${txtFnc}}`
             //console.log(txt)
-            this.setFrameCode(txt)
-        },
-        setFrameCode(txt) {
-            let off = this.$el.getBoundingClientRect()
-            let top = off.top - 12
-            let left = off.left + off.width
-            left = Math.ceil(left)
-            if (window.innerWidth < left + 360) {
-                left -= 360
-                left -= off.width
-            }
-            let html = hljs.highlight(txt, { language: 'cs' }).value
-            this.$root.FrameCode = {
-                top, left, html
-            }
-            this.$root.$nextTick(() => {
-                let vwFcode = document.body.querySelector(`#dnb-framecode`)
-                if (vwFcode) {
-                    let frmCode = this.$root.FrameCode
-                    let offF = vwFcode.getBoundingClientRect()
-                    let maxY = offF.top + offF.height
-                    if (window.innerHeight < maxY) {
-                        frmCode.top -= (maxY - window.innerHeight + 6)
-                        vwFcode.style.top = `${frmCode.top}px`
-                    }
+            setFragViewCode.call(this, txt)
+            function setFragViewCode(txt) {
+                let off = this.$el.getBoundingClientRect()
+                let top = off.top - 12
+                let left = off.left + off.width
+                left = Math.ceil(left)
+                if (window.innerWidth < left + 360) {
+                    left -= 360
+                    left -= off.width
                 }
-            })
-        }
+                let html = hljs.highlight(txt, { language: 'cs' }).value
+                this.$root.FrameCode = {
+                    top, left, html, type: 1
+                }
+                this.$root.$nextTick(() => {
+                    let vwFcode = document.body.querySelector(`#dnb-viewcode`)
+                    if (vwFcode) {
+                        let frmCode = this.$root.FrameCode
+                        let offF = vwFcode.getBoundingClientRect()
+                        let maxY = offF.top + offF.height
+                        if (window.innerHeight < maxY) {
+                            frmCode.top -= (maxY - window.innerHeight + 6)
+                            vwFcode.style.top = `${frmCode.top}px`
+                        }
+                    }
+                })
+            }
+        },
+        
     },
     computed: {
         FormCsFormat() {

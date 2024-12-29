@@ -106,7 +106,7 @@ export function getListCls() {
             { AcModify: '#', Name: 'size', Type: 'Size' },
         ], Properties: [
             ['+ virtual', 'getDescription()', 'Bool', 'get', `return new List<String>() { description }`],
-            ['+ abstract', 'cost()', 'double', 'set' ],
+            ['+ abstract', 'cost()', 'double', 'get' ],
             ['+', 'getSize()', 'Size', 'get', 'return size'],
             ['+', 'SetSize(Size s)', 'void', 'set', 'size = s'],
         ]
@@ -119,7 +119,7 @@ export function getListCls() {
         top: 480, left: 90, width: 220, height: 120,
         Fields: [], Properties: [
             ['+', 'Decaf()', '', 'init', `description = "Decaf"`],
-            ['+ override', 'cost()', 'double', 'set', 'return 1.05'],
+            ['+ override', 'cost()', 'double', 'get', 'return 1.05'],
         ]
     })
     name = 'Espresso'
@@ -129,7 +129,7 @@ export function getListCls() {
         top: 480, left: 290, width: 220, height: 120,
         Fields: [], Properties: [
             ['+', 'Espresso()', '', 'init', `description = "Espresso"`],
-            ['+ override', 'cost()', 'double', 'set', 'return 1.99'],
+            ['+ override', 'cost()', 'double', 'get', 'return 1.99'],
         ]
     })
     name = 'DarkRoast'
@@ -139,7 +139,7 @@ export function getListCls() {
         top: 480, left: 510, width: 220, height: 120,
         Fields: [], Properties: [
             ['+', 'DarkRoast()', '', 'init', `description = "DarkRoast"`],
-            ['+ override', 'cost()', 'double', 'set', 'return 0.99'],
+            ['+ override', 'cost()', 'double', 'get', 'return 0.99'],
         ]
     })
     name = 'HouseBlend'
@@ -149,7 +149,7 @@ export function getListCls() {
         top: 480, left: 750, width: 220, height: 120,
         Fields: [], Properties: [
             ['+', 'HouseBlend()', '', 'init', `description = "House Blend Coffee"`],
-            ['+ override', 'cost()', 'double', 'set', 'return 0.89'],
+            ['+ override', 'cost()', 'double', 'get', 'return 0.89'],
         ]
     })
     name = 'CondimentDecorator'
@@ -176,7 +176,7 @@ export function getListCls() {
         Properties: [
             ['+', 'Soy(Beverage b)', '', 'init', `beverage = b`],
             ['+ override', 'getDescription()', 'List<String>', 'get'],
-            ['+ override', 'cost()', 'double', 'set'],
+            ['+ override', 'cost()', 'double', 'get'],
         ]
     })
     return lstCls
