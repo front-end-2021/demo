@@ -160,22 +160,23 @@ Promise.all([
             },
             pasteTxtArea(e) {
                 setTimeout(() => {
-                    let txt = e.target.value
+                    let target = e.target
+                    let txt = target.value
                     let cEnt = countEnter(txt)
-                    if (6 <= cEnt) {
-                        e.target.style.height = `${cEnt * 16}px`
-                    }
+                    this.setHeight(target, cEnt)
                 }, 111)
             },
-            enterTxtArea(e) {
+            keyUpTxtArea(e) {
                 let target = e.target
                 let txt = target.value
                 let cEnt = countEnter(txt)
+                this.setHeight(target, cEnt)
+            },
+            setHeight(textarea, cEnt) {
                 if (6 <= cEnt) {
-                    if(cEnt <= 9) target.style.height = `${cEnt * 18}px`
-                    else target.style.height = `${cEnt * 16}px`
-                }
-                //console.log('enter, ', txt)
+                    if (cEnt <= 9) textarea.style.height = `${cEnt * 18}px`
+                    else textarea.style.height = `${cEnt * 16}px`
+                } else textarea.style.height = ''
             },
             onChange(e, type, ii) {
                 const frmCode = this.$root.FrameCode
@@ -205,7 +206,7 @@ Promise.all([
                     case 'code context':
                         ctCode.set(ii, target.value)
                         let cEnt = countEnter(target.value)
-                        target.style.height = `${cEnt * 16}px`
+                        this.setHeight(target, cEnt)
                         break;
                     default: break;
                 }
@@ -215,7 +216,7 @@ Promise.all([
                 if (!mItem.PrpAmType) mItem.PrpAmType = amType
                 if (!mItem.PrpAmCode) mItem.PrpAmCode = ctCode
                 if (!frmCode.MItem) frmCode.MItem = mItem
-                console.log('on change ', type, target.textContent, e)
+               // console.log('on change ', type, target.textContent, e)
             },
             onSaveChange() {
                 const frmCode = this.FrameCode

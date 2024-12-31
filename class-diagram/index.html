@@ -61,7 +61,7 @@
     <div v-if="EditObject"
       style="min-width: calc(100vw / 2); max-width: calc(100vw - 60px); min-height: 320px; max-height: calc(100vh - 30px);
       display: inline-block;  padding: 18px; transform: translate(-50%, -50%);
-      box-sizing: border-box; border-radius: 10px; position: fixed;
+      box-sizing: border-box; border-radius: 10px; position: fixed; overflow-y: auto;
       background-color: rgb(168 215 255); top: 50%; left: 50%;">
         <div style="margin-bottom: 12px; display: flex;align-items: center;">
           <span class="p36">{{getTxtType(EditObject.type)}}</span>
@@ -96,7 +96,7 @@
           </div>
           <textarea class="objedit-vwcode"
             style="width: 100%; min-height: 90px;border-radius: 6px;border: none;"
-            @paste="pasteTxtArea" @keyup.enter="enterTxtArea"
+            @paste="pasteTxtArea" @keyup.enter="keyUpTxtArea" @keyup.delete="keyUpTxtArea"
             @change="e => onChange(e, 'code context', ii)">{{prp[4]}}</textarea>
         </div>
 
