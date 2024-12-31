@@ -171,7 +171,7 @@ export function getListCls() {
         id: id, type: 'instant class', Name: name, toIds: tIds,
         top: 660, left: 450, width: 220, height: 120,
         Fields: [
-            { AcModify: '+', Name: 'beverage', Type: 'Beverage' },
+            
         ],
         Properties: [
             ['+', 'Soy(Beverage b)', '', 'init', `beverage = b`],

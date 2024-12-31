@@ -3,6 +3,7 @@ import { createApp } from 'vue'
 import { drawExtension, drawImplement } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
+import { countEnter } from './common.js'
 // #endregion
 Promise.all([
     includeHTML(`./components/vw-diagram.html`),
@@ -157,6 +158,25 @@ Promise.all([
                 let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)
                 return hash1.toString(CryptoJS.enc.Hex) == hash2.toString(CryptoJS.enc.Hex)
             },
+            pasteTxtArea(e) {
+                setTimeout(() => {
+                    let txt = e.target.value
+                    let cEnt = countEnter(txt)
+                    if (6 <= cEnt) {
+                        e.target.style.height = `${cEnt * 16}px`
+                    }
+                }, 111)
+            },
+            enterTxtArea(e) {
+                let target = e.target
+                let txt = target.value
+                let cEnt = countEnter(txt)
+                if (6 <= cEnt) {
+                    if(cEnt <= 9) target.style.height = `${cEnt * 18}px`
+                    else target.style.height = `${cEnt * 16}px`
+                }
+                //console.log('enter, ', txt)
+            },
             onChange(e, type, ii) {
                 const frmCode = this.$root.FrameCode
                 const target = e.target
@@ -184,6 +204,8 @@ Promise.all([
                         break;
                     case 'code context':
                         ctCode.set(ii, target.value)
+                        let cEnt = countEnter(target.value)
+                        target.style.height = `${cEnt * 16}px`
                         break;
                     default: break;
                 }
@@ -198,7 +220,7 @@ Promise.all([
             onSaveChange() {
                 const frmCode = this.FrameCode
                 const mItem = frmCode.MItem
-                if(!mItem) {
+                if (!mItem) {
                     this.FrameCode = null
                     return
                 }
@@ -232,7 +254,7 @@ Promise.all([
                 for (const [ii, txt] of amName) {
                     const prp = item.Properties[ii]
                     const pName = prp[1]
-                    name = clearSpace(txt, pName)
+                    name = txt.trim()
                     if (pName != name) {
                         prp[1] = name
                         arrChange.push(`Fuction ${pName}`)
@@ -253,7 +275,7 @@ Promise.all([
                     const prp = item.Properties[ii]
                     const pType = prp[4]
                     name = txt
-                    if(!this.equalHas(name, pType)) {
+                    if (!this.equalHas(name, pType)) {
                         prp[4] = name
                         arrChange.push(`Return Fuction ${pType}`)
                     }

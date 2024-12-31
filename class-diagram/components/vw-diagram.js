@@ -1,3 +1,4 @@
+import { countEnter } from "../common.js";
 const MxRect = {
     props: ['item'],
     methods: {
@@ -29,6 +30,13 @@ const MxRect = {
             this.$root.FrameCode = {
                 type: 2, item
             }
+            this.$root.$nextTick(() => {
+                document.body.querySelectorAll(`textarea.objedit-vwcode`).forEach(el => {
+                    let txt = el.value
+                    let cEnt = countEnter(txt)
+                    el.style.height = `${cEnt * 16}px`
+                })
+            })
         },
     },
     mounted() {
@@ -114,7 +122,12 @@ const RectClass = {
                     else if (pCode.includes('\n')) { }
                     else pCode += ';'
                     if (txtP.includes(`{...}`)) {
-                        txtP = txtP.replace(`{...}`, `{\n    ${pCode}\n  }\n`)
+                        if (pCode.includes('\n')) {
+                            txtP = txtP.replace(`{...}`, `{\n${pCode}\n  }\n`)
+                        }
+                        else {
+                            txtP = txtP.replace(`{...}`, `{\n    ${pCode}\n  }\n`)
+                        }
                     }
                 } else if (txtP.includes(`{...}`)) {
                     txtP = txtP.replace(`{...}`, `{ ... }\n`)
