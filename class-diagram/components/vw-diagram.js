@@ -1,4 +1,4 @@
-import { countEnter } from "../common.js";
+import { setHeight } from "../common.js";
 const MxRect = {
     props: ['item'],
     methods: {
@@ -33,8 +33,7 @@ const MxRect = {
             this.$root.$nextTick(() => {
                 document.body.querySelectorAll(`textarea.objedit-vwcode`).forEach(el => {
                     let txt = el.value
-                    let cEnt = countEnter(txt)
-                    el.style.height = `${cEnt * 16}px`
+                    setHeight(el, txt)
                 })
             })
         },

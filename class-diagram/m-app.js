@@ -3,7 +3,7 @@ import { createApp } from 'vue'
 import { drawExtension, drawImplement } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
-import { countEnter } from './common.js'
+import { setHeight } from './common.js'
 // #endregion
 Promise.all([
     includeHTML(`./components/vw-diagram.html`),
@@ -162,21 +162,13 @@ Promise.all([
                 setTimeout(() => {
                     let target = e.target
                     let txt = target.value
-                    let cEnt = countEnter(txt)
-                    this.setHeight(target, cEnt)
+                    setHeight(target, txt)
                 }, 111)
             },
             keyUpTxtArea(e) {
                 let target = e.target
                 let txt = target.value
-                let cEnt = countEnter(txt)
-                this.setHeight(target, cEnt)
-            },
-            setHeight(textarea, cEnt) {
-                if (6 <= cEnt) {
-                    if (cEnt <= 9) textarea.style.height = `${cEnt * 18}px`
-                    else textarea.style.height = `${cEnt * 16}px`
-                } else textarea.style.height = ''
+                setHeight(target, txt)
             },
             onChange(e, type, ii) {
                 const frmCode = this.$root.FrameCode
@@ -205,8 +197,7 @@ Promise.all([
                         break;
                     case 'code context':
                         ctCode.set(ii, target.value)
-                        let cEnt = countEnter(target.value)
-                        this.setHeight(target, cEnt)
+                        setHeight(target, target.value)
                         break;
                     default: break;
                 }
