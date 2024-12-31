@@ -169,7 +169,7 @@ export function getListCls() {
     id = getId(name)
     lstCls.push({
         id: id, type: 'instant class', Name: name, toIds: tIds,
-        top: 660, left: 450, width: 220, height: 120,
+        top: 660, left: 490, width: 220, height: 120,
         Fields: [
             
         ],

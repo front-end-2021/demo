@@ -84,7 +84,9 @@
           style="margin-bottom: 2px;"
           :style="[0 == ii ? {marginTop: '10px'} : null]">
           <div style="display: flex;align-items: center;">
-            <span class="p36">{{getTxtAcModify(prp[0])}}</span>
+            <span class="p36" @keypress="e => { if (e.which === 13) e.preventDefault() }"
+              @input="e => onChange(e, 'access modify key', ii)"
+              contenteditable="plaintext-only">{{getTxtAcModify(prp[0])}}</span>
             <span class="p36">{{getAccessors(prp[3])}}</span>
             <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
               @input="e => onChange(e, 'access modify name', ii)"
