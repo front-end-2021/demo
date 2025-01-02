@@ -64,13 +64,13 @@
       box-sizing: border-box; border-radius: 10px; position: fixed; overflow-y: auto;
       background-color: rgb(168 215 255); top: 50%; left: 50%;">
         <div style="margin-bottom: 12px; display: flex;align-items: center;">
-          <span class="p36">{{getTxtType(EditObject.type)}}</span>
+          <span class="p36">{{getTxtType(EditObject.item.type)}}</span>
           <span contenteditable="plaintext-only"
             @input="e => onChange(e, 'class name')"
             @keypress="e => { if (e.which === 13) e.preventDefault() }"
-            class="p36" v-html="EditObject.Name"></span>
+            class="p36" v-html="EditObject.item.Name"></span>
         </div>
-        <div v-for="(field, ii) in EditObject.Fields"
+        <div v-for="(field, ii) in EditObject.item.Fields"
           style="margin-bottom: 2px; display: flex;align-items: center;">
           <span class="p36">{{getTxtAcModify(field.AcModify)}}</span>
           <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
@@ -80,14 +80,25 @@
             @input="e => onChange(e, 'field type', ii)"
             class="p36" contenteditable="plaintext-only" v-html="field.Type"></span>
         </div>
-        <div v-for="(prp, ii) in EditObject.Properties"
+        <div v-for="(prp, ii) in EditObject.item.Properties"
           style="margin-bottom: 2px;"
           :style="[0 == ii ? {marginTop: '10px'} : null]">
           <div style="display: flex;align-items: center;">
             <span class="p36" @keypress="e => { if (e.which === 13) e.preventDefault() }"
               @input="e => onChange(e, 'access modify key', ii)"
               contenteditable="plaintext-only">{{getTxtAcModify(prp[0])}}</span>
-            <span class="p36">{{getAccessors(prp[3])}}</span>
+            <span @click="e => menuAccessor(ii)" style="position: relative;"
+              :style="[EditObject.accessors.has(ii) ? { width: '82px' } : null]">
+              <span v-if="!EditObject.accessors.has(ii)">{{getAccessors(prp[3], ii)[0]}}</span>
+              <span v-else id="dnbdrpaccessr"
+                style="display: inline-flex; flex-direction: column;position: absolute;
+                  background-color: white; top: -12px;">
+                <span v-for="(acs, iia) in getAccessors(prp[3], ii)"
+                  @click.stop="e => changeAccessor(ii, acs)"
+                  style="border-bottom: solid 1px #e3e3e3; box-sizing: border-box;"
+                  class="p36">{{acs}}</span>
+              </span>
+            </span>
             <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
               @input="e => onChange(e, 'access modify name', ii)"
               class="p36" contenteditable="plaintext-only" v-html="prp[1]"></span>
@@ -96,7 +107,7 @@
               @keypress="e => { if (e.which === 13) e.preventDefault() }"
               contenteditable="plaintext-only" class="p36" v-html="prp[2]"></span>
           </div>
-          <textarea class="objedit-vwcode"
+          <textarea v-if="getTxtType(EditObject.item.type) != 'interface'" class="objedit-vwcode"
             style="width: 100%; min-height: 90px;border-radius: 6px;border: none;"
             @paste="pasteTxtArea" @keyup.enter="keyUpTxtArea" @keyup.delete="keyUpTxtArea"
             @change="e => onChange(e, 'code context', ii)">{{prp[4]}}</textarea>

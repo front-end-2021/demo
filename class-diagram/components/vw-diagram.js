@@ -28,7 +28,7 @@ const MxRect = {
             // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
 
             this.$root.FrameCode = {
-                type: 2, item
+                type: 2, item, accessors: new Map()
             }
             this.$root.$nextTick(() => {
                 document.body.querySelectorAll(`textarea.objedit-vwcode`).forEach(el => {

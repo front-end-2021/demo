@@ -21,7 +21,7 @@ Promise.all([
                 ListClass: getListCls(),
                 LastArea: [],   // List<[id, x, y, w, h]>
                 DragElm: null,  // Dùng kéo các khung class
-                FrameCode: null,
+                FrameCode: null, //{ top, left, html, type, item }
             }
         },
         computed: {
@@ -39,7 +39,7 @@ Promise.all([
             EditObject() {
                 let frmCode = this.$root.FrameCode
                 if (null != frmCode && 2 == frmCode.type) {
-                    return frmCode.item
+                    return frmCode
                 }
                 return null
             },
@@ -136,21 +136,20 @@ Promise.all([
                 }
                 this.$root.LastArea = lstArea
             },
-            getAccessors(acs) {
-                if (acs.includes('init')) return 'Contructor'
-                return acs
-            },
             getTxtAcModify(symb) {   // AccessModifiers
+                if (typeof symb != 'string') return
                 if (symb.includes('+')) return symb.replace('+', 'public')
                 if (symb.includes('-')) return symb.replace('-', 'private')
                 if (symb.includes('#')) return symb.replace('#', 'protected')
             },
             getTxtType(type) {
+                if (typeof type != 'string') return
                 if ('abstract class' == type) return 'abstract class'
                 if (type.includes('class')) return 'class'
                 if (type.includes('interface')) return 'interface'
             },
             getReturnType(acs) {
+                if (typeof acs != 'string') return false;
                 if (acs.includes('get')) return true
                 return false
             },
@@ -312,6 +311,41 @@ Promise.all([
                     str = str.trim()
                     return str.replaceAll(' ', '')
                 }
+            },
+            menuAccessor(ii) {
+                const frmCode = this.$root.FrameCode    // { type: 2, item }
+                frmCode.accessors.set(ii, ['get', 'set', 'Contructor'])
+            },
+            getAccessors(acs, ii) { //{{acs}}
+                const frmCode = this.$root.FrameCode    // { type: 2, item }
+                let txt = acs
+                if (acs.includes('init')) txt = 'Contructor'
+                if (!frmCode.accessors.has(ii)) return [txt]
+                const lst = frmCode.accessors.get(ii)
+                let top = 12
+                this.$nextTick(() => {
+                    let xx = lst.indexOf(txt)
+                    if (0 < xx) {
+                        top += 24 * xx
+                        let spn = document.body.querySelector(`#dnbdrpaccessr`)
+                        if (spn) {
+                            spn.style.top = `-${top}px`
+                        }
+                    }
+                })
+                return lst
+            },
+            changeAccessor(ii, txt) {
+                let acs = txt
+                const frmCode = this.$root.FrameCode
+                const prp = frmCode.item.Properties[ii]
+                if ('Contructor' == txt) {
+                    acs = 'init'
+                    let a0 = prp[0].split(' ')
+                    prp[0] = a0[0]
+                }
+                prp[3] = acs
+                frmCode.accessors.delete(ii)
             },
         },
         //  beforeCreate() { },
