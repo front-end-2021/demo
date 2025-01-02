@@ -13,3 +13,34 @@ export function setHeight(textarea, txt) {
         else textarea.style.height = `${cEnt * 16}px`
     } else textarea.style.height = ''
 }
+export function processLines(txt) {
+    if (typeof txt != 'string') return txt
+    let txTrim = txt.trim()
+    if (!txTrim.length) return ''
+    const arrLn = txt.split('\n')
+    if (arrLn.length < 1) return txt
+    if (arrLn.length < 2) {
+        let str1 = arrLn[0]
+        txTrim = str1.trim()
+        return txTrim.replace(/  +/g, ' ')
+    }
+    for (let ln = 0, line; ln < arrLn.length; ln++) {
+        line = arrLn[ln]
+        let i0 = 0, chr     // i0 = index char != ''
+        for (const len = line.length; i0 < len; i0++) {
+            chr = line[i0]
+            if (chr != ' ') break;
+        }
+        if (0 < i0) {
+            const str0 = line.slice(0, i0)
+            let str1 = line.slice(i0)
+            txTrim = str1.trim()
+            arrLn[ln] = `${str0}${txTrim.replace(/  +/g, ' ')}`
+            continue        // for ln
+        } else {
+            txTrim = line.trim()
+            arrLn[ln] = txTrim.replace(/  +/g, ' ')
+        }
+    }
+    return arrLn.join('\n')
+}

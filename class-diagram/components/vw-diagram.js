@@ -1,4 +1,4 @@
-import { setHeight } from "../common.js";
+import { setHeight, processLines } from "../common.js";
 const MxRect = {
     props: ['item'],
     methods: {
@@ -118,13 +118,12 @@ const RectClass = {
                     if ('interface' == item.type) { pCode = '' }
                     else if (!pCode) pCode = '/* empty */'
                     else if (pCode == 'abstract') pCode = ''
-                    else if (pCode.includes('\n')) { }
+                    else if (pCode.includes('\n')) { pCode = processLines(pCode) }
                     else pCode += ';'
                     if (txtP.includes(`{...}`)) {
                         if (pCode.includes('\n')) {
                             txtP = txtP.replace(`{...}`, `{\n${pCode}\n  }\n`)
-                        }
-                        else {
+                        } else {
                             txtP = txtP.replace(`{...}`, `{\n    ${pCode}\n  }\n`)
                         }
                     }
