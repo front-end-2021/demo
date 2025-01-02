@@ -176,6 +176,7 @@ Promise.all([
                 let mItem = frmCode.MItem || {}
                 let fName = mItem.FdName || new Map()
                 let fType = mItem.FdType || new Map()
+                let amKey = mItem.PrpAmKey || new Map()
                 let amName = mItem.PrpAmName || new Map()
                 let amType = mItem.PrpAmType || new Map()
                 let ctCode = mItem.PrpAmCode || new Map()
@@ -188,6 +189,9 @@ Promise.all([
                         break;
                     case 'field type':
                         fType.set(ii, target.textContent)
+                        break;
+                    case 'access modify key':
+                        amKey.set(ii, target.textContent)
                         break;
                     case 'access modify name':
                         amName.set(ii, target.textContent)
@@ -203,11 +207,12 @@ Promise.all([
                 }
                 if (!mItem.FdName) mItem.FdName = fName
                 if (!mItem.FdType) mItem.FdType = fType
+                if (!mItem.PrpAmKey) mItem.PrpAmKey = amKey
                 if (!mItem.PrpAmName) mItem.PrpAmName = amName
                 if (!mItem.PrpAmType) mItem.PrpAmType = amType
                 if (!mItem.PrpAmCode) mItem.PrpAmCode = ctCode
                 if (!frmCode.MItem) frmCode.MItem = mItem
-               // console.log('on change ', type, target.textContent, e)
+                // console.log('on change ', type, target.textContent, e)
             },
             onSaveChange() {
                 const frmCode = this.FrameCode
@@ -242,6 +247,31 @@ Promise.all([
                         arrChange.push(`Field.Type ${name}`)
                     }
                 }
+                const amKey = mItem.PrpAmKey
+                for (const [ii, txt] of amKey) {
+                    const prp = item.Properties[ii]
+                    name = txt
+                    if (typeof name != 'string') continue
+                    name = name.trim()
+                    if (!name.length) continue
+                    name = name.split(' ')
+                    name = name.map(x => x.replaceAll(' ', ''))
+                    name = name.filter(x => x.length)
+                    if (!name.length) continue
+                    name = name.map(x => {
+                        let xx = x.toLowerCase()
+                        if (xx.includes('public')) return '+'
+                        if (xx.includes('protected')) return '#'
+                        if (xx.includes('private')) return '-'
+                        return x
+                    })
+                    name = name.join(' ')
+                    const pKey = prp[0]
+                    if (pKey != name) {
+                        prp[0] = name
+                        arrChange.push(`Accessor Fuction ${pKey}`)
+                    }
+                }
                 const amName = mItem.PrpAmName
                 for (const [ii, txt] of amName) {
                     const prp = item.Properties[ii]
@@ -273,7 +303,7 @@ Promise.all([
                     }
                 }
                 if (arrChange.length) {
-                    console.log('changes ', arrChange)
+                    //  console.log('changes ', arrChange)
 
                 }
                 this.FrameCode = null

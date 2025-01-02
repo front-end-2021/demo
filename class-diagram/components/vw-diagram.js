@@ -115,13 +115,17 @@ const RectClass = {
                 txtP = txtP.replace('#', '  protected')
                 if (jj - offI == ii) {
                     let pCode = prp[4]
+                    let hasEnter = false
                     if ('interface' == item.type) { pCode = '' }
                     else if (!pCode) pCode = '/* empty */'
                     else if (pCode == 'abstract') pCode = ''
-                    else if (pCode.includes('\n')) { pCode = processLines(pCode) }
-                    else pCode += ';'
+                    else {
+                        hasEnter = pCode.includes('\n')
+                        if (!hasEnter) pCode += ';'
+                        else pCode = processLines(pCode)
+                    }
                     if (txtP.includes(`{...}`)) {
-                        if (pCode.includes('\n')) {
+                        if (hasEnter) {
                             txtP = txtP.replace(`{...}`, `{\n${pCode}\n  }\n`)
                         } else {
                             txtP = txtP.replace(`{...}`, `{\n    ${pCode}\n  }\n`)
@@ -165,6 +169,16 @@ const RectClass = {
 
     },
     computed: {
+        ClassName() {
+            const item = this.item
+            let clsName = item.Name
+            switch (item.type) {
+                case 'abstract class': return `abstract ${clsName}`
+                case 'instant class': return clsName
+                case 'interface': return clsName
+                default: return '';
+            }
+        },
         FormCsFormat() {
             const item = this.item
             let clsName = item.Name
