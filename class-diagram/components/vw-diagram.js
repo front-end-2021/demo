@@ -118,7 +118,7 @@ const RectClass = {
                     let hasEnter = false
                     if ('interface' == item.type) { pCode = '' }
                     else if (!pCode) pCode = '/* empty */'
-                    else if (pCode == 'abstract') pCode = ''
+                    else if ('abstract' == pCode) pCode = ''
                     else {
                         hasEnter = pCode.includes('\n')
                         if (!hasEnter) pCode += ';'
