@@ -113,18 +113,11 @@
             <span class="p36" @keypress="e => { if (e.which === 13) e.preventDefault() }"
               @input="e => onChange(e, 'access modify key', ii)"
               contenteditable="plaintext-only">{{getTxtAcModify(prp[0])}}</span>
-            <span @click="e => menuAccessor(ii)" style="position: relative;"
-              :style="[EditObject.accessors.has(ii) ? { width: '82px' } : null]">
-              <span v-if="!EditObject.accessors.has(ii)">{{getAccessors(prp[3], ii)[0]}}</span>
-              <span v-else id="dnbdrpaccessr"
-                style="display: inline-flex; flex-direction: column;position: absolute;
-                  background-color: white; top: -12px;">
-                <span v-for="(acs, iia) in getAccessors(prp[3], ii)"
-                  @click.stop="e => changeAccessor(ii, acs)"
-                  style="border-bottom: solid 1px #e3e3e3; box-sizing: border-box;"
-                  class="p36">{{acs}}</span>
-              </span>
-            </span>
+            
+            <menu-list :value="getAccessors(prp[3])"
+              :sources="['get', 'set', 'Contructor']"
+              @change:value="$event => changeAccessor(ii, $event)">></menu-list>
+
             <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
               @input="e => onChange(e, 'access modify name', ii)"
               class="p36" contenteditable="plaintext-only" v-html="prp[1]"></span>

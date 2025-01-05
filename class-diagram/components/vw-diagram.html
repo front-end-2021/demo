@@ -80,3 +80,17 @@
         </div>
     </div>
 </template>
+<template id="tmp-menu-list">
+    <span @click="openLstSrc" style="position: relative;cursor:default;"
+        :style="[ListSrc.length ? { minWidth: '82px' } : null]">
+        <span v-if="!ListSrc.length" >{{value}}</span>
+        <span v-else class="dnb-mnlst"
+          style="display: inline-flex; flex-direction: column;position: absolute;
+            background-color: white; top: -12px;box-shadow: 0 .125rem .25rem #00000030;">
+          <span v-for="acs in ListSrc"
+            @click.stop="e => changeValue(acs)"
+            style="border-bottom: solid 1px #e3e3e3; box-sizing: border-box;"
+            class="p36">{{acs}}</span>
+        </span>
+      </span>
+</template>

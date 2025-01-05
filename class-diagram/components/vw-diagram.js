@@ -1,4 +1,42 @@
 import { setHeight, processLines } from "../common.js";
+export const MenuList = {
+    template: `#tmp-menu-list`,
+    name: "Menu_List",
+    display: "Menu.List",
+    props: ['value', 'sources'],
+    emits: ['change:value'],
+    data() {
+        return {
+            ListSrc: [],
+        }
+    },
+    methods: {
+        openLstSrc() {
+            this.$root.Toast = this
+            this.ListSrc = this.sources
+            let xx = this.sources.indexOf(this.value)
+            if (0 < xx) {
+                let top = 12
+                this.$nextTick(() => {
+                    top += 24 * xx
+                    let spn = this.$el.querySelector(`.dnb-mnlst`)
+                    if (spn) spn.style.top = `-${top}px`
+                })
+            }
+        },
+        changeValue(val) {
+            if (this.value != val) this.$emit('change:value', val)
+            this.ListSrc = []
+            this.$root.Toast = null
+        },
+    },
+    watch: {
+        '$root.Toast'(val) {
+            if (null !== val && val !== this) this.ListSrc = []
+        }
+    },
+    //beforeUnmount(){ },
+}
 const MxRect = {
     props: ['item'],
     methods: {
@@ -39,7 +77,7 @@ const MxRect = {
             // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
 
             this.$root.FrameCode = {
-                type: 2, item, accessors: new Map(),
+                type: 2, item,
                 iFields: JSON.parse(JSON.stringify(item.Fields))
             }
             this.$root.$nextTick(() => {

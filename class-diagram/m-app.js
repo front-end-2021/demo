@@ -1,7 +1,7 @@
 // #region import
 import { createApp } from 'vue'
 import { drawExtension, drawImplement } from './mcanvas.js'
-import { ViewDiagram } from './components/vw-diagram.js'
+import { ViewDiagram, MenuList } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import { setHeight } from './common.js'
 // #endregion
@@ -12,6 +12,7 @@ Promise.all([
         name: `app-main`,
         components: {
             'view-diagram': ViewDiagram,
+            'menu-list': MenuList,
         },
         data() {
             return {
@@ -22,6 +23,7 @@ Promise.all([
                 LastArea: [],   // List<[id, x, y, w, h]>
                 DragElm: null,  // Dùng kéo các khung class
                 FrameCode: null, //{ top, left, html, type, item }
+                Toast: null,
             }
         },
         computed: {
@@ -349,28 +351,10 @@ Promise.all([
                     }
                 }
             },
-            menuAccessor(ii) {
-                const frmCode = this.FrameCode    // { type: 2, item }
-                frmCode.accessors.set(ii, ['get', 'set', 'Contructor'])
-            },
-            getAccessors(acs, ii) { //{{acs}}
-                const frmCode = this.FrameCode    // { type: 2, item }
+            getAccessors(acs) {
                 let txt = acs
                 if (acs.includes('init')) txt = 'Contructor'
-                if (!frmCode.accessors.has(ii)) return [txt]
-                const lst = frmCode.accessors.get(ii)
-                let top = 12
-                this.$nextTick(() => {
-                    let xx = lst.indexOf(txt)
-                    if (0 < xx) {
-                        top += 24 * xx
-                        let spn = document.body.querySelector(`#dnbdrpaccessr`)
-                        if (spn) {
-                            spn.style.top = `-${top}px`
-                        }
-                    }
-                })
-                return lst
+                return txt
             },
             changeAccessor(ii, txt) {
                 let acs = txt
@@ -382,7 +366,6 @@ Promise.all([
                     prp[0] = a0[0]
                 }
                 prp[3] = acs
-                frmCode.accessors.delete(ii)
             },
             removeField(ii, isNew) {
                 const frmCode = this.FrameCode
