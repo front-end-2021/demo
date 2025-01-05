@@ -136,8 +136,15 @@ Promise.all([
                 }
                 this.$root.LastArea = lstArea
             },
-            getTxtAcModify(symb) {   // AccessModifiers
+            getTxtAcModify(symb, isStr) {   // AccessModifiers
                 if (typeof symb != 'string') return
+                if (isStr) {
+                    symb = symb.toLowerCase()
+                    if (symb.includes('public')) return symb.replace('public', '+')
+                    if (symb.includes('private')) return symb.replace('private', '-')
+                    if (symb.includes('protected')) return symb.replace('protected', '#')
+                    return
+                }
                 if (symb.includes('+')) return symb.replace('+', 'public')
                 if (symb.includes('-')) return symb.replace('-', 'private')
                 if (symb.includes('#')) return symb.replace('#', 'protected')
@@ -173,6 +180,7 @@ Promise.all([
                 const frmCode = this.$root.FrameCode
                 const target = e.target
                 let mItem = frmCode.MItem || {}
+                let fAcMd = mItem.FdAcM || new Map()
                 let fName = mItem.FdName || new Map()
                 let fType = mItem.FdType || new Map()
                 let amKey = mItem.PrpAmKey || new Map()
@@ -182,6 +190,9 @@ Promise.all([
                 switch (type) {
                     case 'class name':
                         mItem.Name = target.textContent
+                        break;
+                    case 'field acmodify':
+                        fAcMd.set(ii, target.textContent)
                         break;
                     case 'field name':
                         fName.set(ii, target.textContent)
@@ -204,6 +215,7 @@ Promise.all([
                         break;
                     default: break;
                 }
+                if (!mItem.FdAcM) mItem.FdAcM = fAcMd
                 if (!mItem.FdName) mItem.FdName = fName
                 if (!mItem.FdType) mItem.FdType = fType
                 if (!mItem.PrpAmKey) mItem.PrpAmKey = amKey
@@ -213,14 +225,20 @@ Promise.all([
                 if (!frmCode.MItem) frmCode.MItem = mItem
                 // console.log('on change ', type, target.textContent, e)
             },
+            onCloseEdit() {
+                //const frmCode = this.FrameCode
+                this.FrameCode = null
+            },
             onSaveChange() {
                 const frmCode = this.FrameCode
                 const mItem = frmCode.MItem
+                const item = frmCode.item
                 if (!mItem) {
+                    item.Fields = frmCode.iFields
+                    addNewFields()
                     this.FrameCode = null
                     return
                 }
-                const item = frmCode.item
                 let name = mItem.Name
                 name = clearSpace(name, item.Name)
                 let arrChange = []
@@ -228,24 +246,37 @@ Promise.all([
                     item.Name = name
                     arrChange.push('Name')
                 }
+                const fAcMd = mItem.FdAcM
+                for (const [ii, txt] of fAcMd) {
+                    const field = frmCode.iFields[ii]
+                    name = txt.trim()
+                    name = name.toLowerCase()
+                    name = this.getTxtAcModify(name, true)
+                    if (field.AcModify != name) {
+                        arrChange.push(`Field.AcModify ${field.AcModify}`)
+                        field.AcModify = name
+                    }
+                }
                 const fName = mItem.FdName
                 for (const [ii, txt] of fName) {
-                    const field = item.Fields[ii]
+                    const field = frmCode.iFields[ii]
                     name = clearSpace(txt, field.Name)
                     if (field.Name != name) {
+                        arrChange.push(`Field.Name ${field.Name}`)
                         field.Name = name
-                        arrChange.push(`Field.Name ${name}`)
                     }
                 }
                 const fType = mItem.FdType
                 for (const [ii, txt] of fType) {
-                    const field = item.Fields[ii]
+                    const field = frmCode.iFields[ii]
                     name = clearSpace(txt, field.Type)
                     if (field.Type != name) {
+                        arrChange.push(`Field.Type ${field.Type}`)
                         field.Type = name
-                        arrChange.push(`Field.Type ${name}`)
                     }
                 }
+                item.Fields = frmCode.iFields
+                addNewFields()
                 const amKey = mItem.PrpAmKey
                 for (const [ii, txt] of amKey) {
                     const prp = item.Properties[ii]
@@ -303,7 +334,6 @@ Promise.all([
                 }
                 if (arrChange.length) {
                     //  console.log('changes ', arrChange)
-
                 }
                 this.FrameCode = null
                 function clearSpace(str, nm) {
@@ -311,13 +341,20 @@ Promise.all([
                     str = str.trim()
                     return str.replaceAll(' ', '')
                 }
+                function addNewFields() {
+                    if (!frmCode.Fields) return
+                    if (!frmCode.Fields.length) return
+                    for (let ff = 0; ff < frmCode.Fields.length; ff++) {
+                        item.Fields.push(frmCode.Fields[ff])
+                    }
+                }
             },
             menuAccessor(ii) {
-                const frmCode = this.$root.FrameCode    // { type: 2, item }
+                const frmCode = this.FrameCode    // { type: 2, item }
                 frmCode.accessors.set(ii, ['get', 'set', 'Contructor'])
             },
             getAccessors(acs, ii) { //{{acs}}
-                const frmCode = this.$root.FrameCode    // { type: 2, item }
+                const frmCode = this.FrameCode    // { type: 2, item }
                 let txt = acs
                 if (acs.includes('init')) txt = 'Contructor'
                 if (!frmCode.accessors.has(ii)) return [txt]
@@ -337,7 +374,7 @@ Promise.all([
             },
             changeAccessor(ii, txt) {
                 let acs = txt
-                const frmCode = this.$root.FrameCode
+                const frmCode = this.FrameCode
                 const prp = frmCode.item.Properties[ii]
                 if ('Contructor' == txt) {
                     acs = 'init'
@@ -346,6 +383,64 @@ Promise.all([
                 }
                 prp[3] = acs
                 frmCode.accessors.delete(ii)
+            },
+            removeField(ii, isNew) {
+                const frmCode = this.FrameCode
+                let fields = frmCode.Fields
+                if (isNew && fields) {
+                    fields = JSON.parse(JSON.stringify(fields))
+                    fields.splice(ii, 1)
+                    if (!fields.length) delete frmCode.Fields
+                    else frmCode.Fields = fields
+                    return
+                }
+                fields = frmCode.iFields
+                fields.splice(ii, 1)
+                const mItem = frmCode.MItem
+                if (mItem) {
+                    const fAcMd = mItem.FdAcM
+                    if (fAcMd && fAcMd.has(ii)) fAcMd.delete(ii)
+                    const fName = mItem.FdName
+                    if (fName && fName.has(ii)) fName.delete(ii)
+                    const fType = mItem.FdType
+                    if (fType && fType.has(ii)) fType.delete(ii)
+                }
+            },
+            addField() {
+                const frmCode = this.FrameCode
+                if (!frmCode.Fields) {
+                    frmCode.Fields = [{
+                        ii: 0,
+                        acm: '-', name: 'fieldName', type: 'String',
+                        AcModify: '-', Name: 'fieldName', Type: 'String'
+                    }]
+                } else {
+                    if (frmCode.Fields.filter(x => 'fieldName' == x.Name).length) {
+                        return;
+                    }
+                    let ii = frmCode.Fields.length
+                    frmCode.Fields.push({
+                        ii: ii,
+                        acm: '-', name: 'fieldName', type: 'String',
+                        AcModify: '-', Name: 'fieldName', Type: 'String'
+                    })
+                }
+            },
+            onEditNewField(e, type, ii) {
+                const target = e.target
+                const frmCode = this.FrameCode
+                switch (type) {
+                    case 'field acmodify':
+                        frmCode.Fields[ii].AcModify = target.textContent
+                        break;
+                    case 'field name':
+                        frmCode.Fields[ii].Name = target.textContent
+                        break;
+                    case 'field type':
+                        frmCode.Fields[ii].Type = target.textContent
+                        break;
+                    default: break;
+                }
             },
         },
         //  beforeCreate() { },

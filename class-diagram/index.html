@@ -70,15 +70,41 @@
             @keypress="e => { if (e.which === 13) e.preventDefault() }"
             class="p36" v-html="EditObject.item.Name"></span>
         </div>
-        <div v-for="(field, ii) in EditObject.item.Fields"
+        <div v-for="(field, ii) in EditObject.iFields"
+          :key="'oldfield_' + field.AcModify"
           style="margin-bottom: 2px; display: flex;align-items: center;">
-          <span class="p36">{{getTxtAcModify(field.AcModify)}}</span>
+          <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+            @input="e => onChange(e, 'field acmodify', ii)"
+            class="p36" contenteditable="plaintext-only">{{getTxtAcModify(field.AcModify)}}</span>
           <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
             @input="e => onChange(e, 'field name', ii)"
             class="p36" contenteditable="plaintext-only" v-html="field.Name"></span>
           <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
             @input="e => onChange(e, 'field type', ii)"
             class="p36" contenteditable="plaintext-only" v-html="field.Type"></span>
+          <span style="margin-left: 12px;cursor: pointer;"
+            @click.stop="e => removeField(ii)"><i class="bi bi-trash3"></i></span>
+        </div>
+        <div>
+          <div v-if="EditObject.Fields">
+            <div v-for="(field, ii) in EditObject.Fields"
+              :key="'newfield_' + field.ii"
+              style="margin-bottom: 2px; display: flex;align-items: center;">
+              <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+                @input="e => onEditNewField(e, 'field acmodify', ii)"
+                class="p36" contenteditable="plaintext-only">{{getTxtAcModify(field.acm)}}</span>
+              <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+                @input="e => onEditNewField(e, 'field name', ii)"
+                class="p36" contenteditable="plaintext-only" v-html="field.name"></span>
+              <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+                @input="e => onEditNewField(e, 'field type', ii)"
+                class="p36" contenteditable="plaintext-only" v-html="field.type"></span>
+              <span style="margin-left: 12px;cursor: pointer;"
+                @click.stop="e => removeField(ii, true)"><i class="bi bi-trash3"></i></span>
+            </div>
+          </div>
+          <span style="cursor: pointer;"
+            @click.stop="addField">[new Field]</span>
         </div>
         <div v-for="(prp, ii) in EditObject.item.Properties"
           style="margin-bottom: 2px;"
@@ -112,10 +138,12 @@
             @paste="pasteTxtArea" @keyup.enter="keyUpTxtArea" @keyup.delete="keyUpTxtArea"
             @change="e => onChange(e, 'code context', ii)">{{prp[4]}}</textarea>
         </div>
-
+        <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
+        background-color: white;position: absolute;right: 35px;top: 5px;border-radius: 6px;padding-top: 4px;"
+          class="bi bi-floppy cpoint" @click.stop="onSaveChange"></i>
         <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
         background-color: white;position: absolute;right: 5px;top: 5px;border-radius: 6px;padding-top: 4px;"
-        class="bi bi-x-lg cpoint" @click.stop="onSaveChange"></i>
+        class="bi bi-x-lg cpoint" @click.stop="onCloseEdit"></i>
     </div>
     <div>
       Trace log: <span id="dnb-app-log"></span>

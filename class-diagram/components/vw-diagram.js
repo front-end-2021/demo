@@ -13,12 +13,23 @@ const MxRect = {
                 offY: off.top - event.clientY - y
             }
         },
-        setWidth() {
+        setWidthHeight() {
             let w = this.item.width
             let cW = this.$el.offsetWidth
             cW = Math.ceil(cW)
+            let isChange = false
             if (w != cW) {
                 this.item.width = cW
+                isChange = true
+            }
+            let h = this.item.height
+            let cH = this.$el.offsetHeight
+            cH = Math.ceil(cH)
+            if (h != cH) {
+                this.item.height = cH
+                isChange = true
+            }
+            if (isChange) {
                 this.$root.drawLines(this.$root.getPoints())
                 this.$root.updateLastArea()
             }
@@ -28,7 +39,8 @@ const MxRect = {
             // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
 
             this.$root.FrameCode = {
-                type: 2, item, accessors: new Map()
+                type: 2, item, accessors: new Map(),
+                iFields: JSON.parse(JSON.stringify(item.Fields))
             }
             this.$root.$nextTick(() => {
                 document.body.querySelectorAll(`textarea.objedit-vwcode`).forEach(el => {
@@ -41,10 +53,10 @@ const MxRect = {
     mounted() {
         const off = this.$el.getBoundingClientRect()
         this.item.height = off.height
-        this.setWidth()
+        this.setWidthHeight()
     },
     updated() {
-        this.setWidth()
+        this.setWidthHeight()
 
     },
     // beforeUnmount() { },
