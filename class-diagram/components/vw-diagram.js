@@ -19,7 +19,6 @@ export const MenuList = {
             } else {
                 dmVar.set('PopMenu', this)
             }
-            //  this.$root.Toast = this
             this.ListSrc = this.sources
             let xx = this.sources.indexOf(this.value)
             if (0 < xx) {
@@ -36,14 +35,8 @@ export const MenuList = {
             this.ListSrc = []
             const dmVar = this.$root.DynamicVar
             dmVar.delete('PopMenu')
-            // this.$root.Toast = null
         },
     },
-    // watch: {
-    //     '$root.Toast'(val) {
-    //         if (null !== val && val !== this) this.ListSrc = []
-    //     }
-    // },
     //beforeUnmount(){ },
 }
 const MxRect = {
@@ -121,7 +114,6 @@ const RectEnum = {
         },
     },
 }
-
 const RectClass = {
     template: `#tmp-rect-class`,
     name: "Rect_Class",
@@ -132,7 +124,7 @@ const RectClass = {
         'rect-enum': RectEnum,
     },
     methods: {
-        getProperty(prp) {
+        getFragProp(prp) {
             let acModify = prp[0]
             acModify = acModify.replace(' override', '')
             acModify = acModify.replace(' virtual', '')
@@ -141,11 +133,11 @@ const RectClass = {
             let type = prp[2]
             let returnType = prp[3]
             returnType = returnType.toLowerCase()
-            let txt = `${acModify} ${type} ${name}`
-            if (returnType.includes('init')) txt = `${acModify} ${name}`
+            let txt = [`${acModify} ${type}`, name, `{...}`]     // set
+            if (returnType.includes('init')) txt = [`${acModify}`, name, `{...}`]
             else if (returnType.includes('get'))
-                txt = `${acModify} ${name}: ${type}`
-            return `${txt} {...}`
+                txt = [`${acModify}`, name, `: ${type} {...}`]
+            return txt
         },
         getCsFormat(prp) {
             let acModify = prp[0]
@@ -227,7 +219,38 @@ const RectClass = {
                 })
             }
         },
-
+        onEditable(e, type, ii) {
+            const target = e.target
+            switch (type) {
+                case 'class name':
+                    target.setAttribute('contenteditable', 'plaintext-only')
+                    target.focus()
+                    break;
+                default: break;
+            }
+        },
+        onDoneEdit(e, type, ii) {
+            const target = e.target
+            const item = this.item
+            let name = target.textContent
+            name = name.trim()
+            switch (type) {
+                case 'class name':
+                    target.removeAttribute('contenteditable')
+                    if ('abstract class' == item.type)
+                        name = name.replace('abstract', '');
+                    name = name.replaceAll(' ', '')
+                    item.Name = name
+                    break;
+                case 'property':
+                    const prp = this.item.Properties[ii]
+                    prp[1] = name
+                    break;
+                default: break;
+            }
+            const dmVar = this.$root.DynamicVar
+            dmVar.delete('FrameCode')
+        },
     },
     computed: {
         ClassName() {
@@ -239,6 +262,15 @@ const RectClass = {
                 case 'interface': return clsName
                 default: return '';
             }
+        },
+        ListProperty() {
+            const lst = []
+            for (let ii = 0, prp; ii < this.item.Properties.length; ii++) {
+                prp = this.item.Properties[ii]
+                let txt = this.getFragProp(prp)
+                lst.push(txt)
+            }
+            return lst
         },
         FormCsFormat() {
             const item = this.item

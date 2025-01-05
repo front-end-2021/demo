@@ -61,7 +61,10 @@
             <i class="bi bi-pen cpoint ctledit"
                 @click.stop="editObject"></i>
             <span style="font-weight: bold;" 
-                @click.stop="e => showCodeBody(null, e)">{{ClassName}}</span>
+                @dblclick="e => onEditable(e, 'class name')"
+                @keypress="e => $root.preventKeyPress(e, [13, 32])"
+                @blur="e => onDoneEdit(e, 'class name')"
+                @click="e => showCodeBody(null, e)">{{ClassName}}</span>
             <span v-if="ExtendsView">:&nbsp;<i>{{ExtendsView}}</i></span>
             <span v-else></span>
         </div>
@@ -72,11 +75,17 @@
                 v-for="field in item.Fields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</div>
         </div>
         <div style="font-size: 14px;font-weight: 100;padding-right: 6px;">
-            <div v-for="(prp, ii) in item.Properties"
-                @click.stop="e => showCodeBody(ii, 0)">&nbsp;{{getProperty(prp)}}</div>
+            <div v-for="(prp, ii) in ListProperty"
+                @click="e => showCodeBody(ii, 0)">
+                &nbsp;<span>{{prp[0]}}</span>&nbsp;
+                <span contenteditable="plaintext-only"
+                    @keypress="e => $root.preventKeyPress(e, [13, 32])"
+                    @blur="e => onDoneEdit(e, 'property', ii)">{{prp[1]}}</span>
+                &nbsp;<span>{{prp[2]}}</span>
+            </div>
             <i v-for="(prp, ii) in ExtendProperties" 
                 @click.stop="e => showCodeBody(ii, item.Properties.length)"
-                style="display: block;">&nbsp;{{getProperty(prp)}}</i>
+                style="display: block;">&nbsp;{{getFragProp(prp).join(' ')}}</i>
         </div>
     </div>
 </template>
