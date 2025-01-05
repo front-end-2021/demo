@@ -66,9 +66,9 @@
             <span v-else></span>
         </div>
         <div style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
-            <i @click.stop="e => { $root.FrameCode = null }" style="display: block;"
+            <i @click.stop="e => { $root.DynamicVar.delete('FrameCode') }" style="display: block;"
                 v-for="field in ExtendFields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</i>
-            <div @click.stop="e => { $root.FrameCode = null }"
+            <div @click.stop="e => { $root.DynamicVar.delete('FrameCode') }"
                 v-for="field in item.Fields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</div>
         </div>
         <div style="font-size: 14px;font-weight: 100;padding-right: 6px;">
@@ -81,9 +81,9 @@
     </div>
 </template>
 <template id="tmp-menu-list">
-    <span @click="openLstSrc" style="position: relative;cursor:default;"
+    <span style="position: relative;cursor:default;"
         :style="[ListSrc.length ? { minWidth: '82px' } : null]">
-        <span v-if="!ListSrc.length" >{{value}}</span>
+        <span v-if="!ListSrc.length" @click="openLstSrc">{{value}}</span>
         <span v-else class="dnb-mnlst"
           style="display: inline-flex; flex-direction: column;position: absolute;
             background-color: white; top: -12px;box-shadow: 0 .125rem .25rem #00000030;">

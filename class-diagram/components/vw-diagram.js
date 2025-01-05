@@ -12,7 +12,14 @@ export const MenuList = {
     },
     methods: {
         openLstSrc() {
-            this.$root.Toast = this
+            const dmVar = this.$root.DynamicVar
+            let popM = dmVar.get('PopMenu')
+            if (popM && popM !== this) {
+                popM.ListSrc = []
+            } else {
+                dmVar.set('PopMenu', this)
+            }
+            //  this.$root.Toast = this
             this.ListSrc = this.sources
             let xx = this.sources.indexOf(this.value)
             if (0 < xx) {
@@ -27,29 +34,32 @@ export const MenuList = {
         changeValue(val) {
             if (this.value != val) this.$emit('change:value', val)
             this.ListSrc = []
-            this.$root.Toast = null
+            const dmVar = this.$root.DynamicVar
+            dmVar.delete('PopMenu')
+            // this.$root.Toast = null
         },
     },
-    watch: {
-        '$root.Toast'(val) {
-            if (null !== val && val !== this) this.ListSrc = []
-        }
-    },
+    // watch: {
+    //     '$root.Toast'(val) {
+    //         if (null !== val && val !== this) this.ListSrc = []
+    //     }
+    // },
     //beforeUnmount(){ },
 }
 const MxRect = {
     props: ['item'],
     methods: {
         onMouseDown(event) {
-            if (null !== this.$root.DragElm) return;
+            const dmVar = this.$root.DynamicVar
+            if (dmVar.has('DragElm')) return;
             const off = this.$el.getBoundingClientRect()
             let x = this.$root.MinX
             let y = this.$root.MinY
-            this.$root.DragElm = {
+            this.$root.DynamicVar.set('DragElm', {
                 Item: this.item,
                 offX: off.left - event.clientX - x,
                 offY: off.top - event.clientY - y
-            }
+            })
         },
         setWidthHeight() {
             let w = this.item.width
@@ -75,11 +85,11 @@ const MxRect = {
         editObject() {
             const item = this.item
             // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
-
-            this.$root.FrameCode = {
+            const dmVar = this.$root.DynamicVar
+            dmVar.set('FrameCode', {
                 type: 2, item,
                 iFields: JSON.parse(JSON.stringify(item.Fields))
-            }
+            })
             this.$root.$nextTick(() => {
                 document.body.querySelectorAll(`textarea.objedit-vwcode`).forEach(el => {
                     let txt = el.value
@@ -199,13 +209,14 @@ const RectClass = {
                     left -= off.width
                 }
                 let html = hljs.highlight(txt, { language: 'cs' }).value
-                this.$root.FrameCode = {
+                const dmVar = this.$root.DynamicVar
+                dmVar.set('FrameCode', {
                     top, left, html, type: 1
-                }
+                })
                 this.$root.$nextTick(() => {
                     let vwFcode = document.body.querySelector(`#dnb-viewcode`)
                     if (vwFcode) {
-                        let frmCode = this.$root.FrameCode
+                        let frmCode = dmVar.get('FrameCode')
                         let offF = vwFcode.getBoundingClientRect()
                         let maxY = offF.top + offF.height
                         if (window.innerHeight < maxY) {

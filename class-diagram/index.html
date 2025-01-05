@@ -56,7 +56,7 @@
       <pre><code class="language-csharp" v-html="ViewCode.html"></code></pre>
       <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
         background-color: white;position: absolute;right: 5px;top: 5px;border-radius: 6px;padding-top: 4px;"
-        class="bi bi-x-lg cpoint" @click.stop="e => { FrameCode = null }"></i>
+        class="bi bi-x-lg cpoint" @click.stop="e => { DynamicVar.delete('FrameCode')}"></i>
     </div>
     <div v-if="EditObject"
       style="min-width: calc(100vw / 2); max-width: calc(100vw - 60px); min-height: 320px; max-height: calc(100vh - 30px);
@@ -67,19 +67,19 @@
           <span class="p36">{{getTxtType(EditObject.item.type)}}</span>
           <span contenteditable="plaintext-only"
             @input="e => onChange(e, 'class name')"
-            @keypress="e => { if (e.which === 13) e.preventDefault() }"
+            @keypress="e => preventKeyPress(e, [13])"
             class="p36" v-html="EditObject.item.Name"></span>
         </div>
         <div v-for="(field, ii) in EditObject.iFields"
           :key="'oldfield_' + field.AcModify"
           style="margin-bottom: 2px; display: flex;align-items: center;">
-          <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+          <span @keypress="e => preventKeyPress(e, [13])"
             @input="e => onChange(e, 'field acmodify', ii)"
             class="p36" contenteditable="plaintext-only">{{getTxtAcModify(field.AcModify)}}</span>
-          <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+          <span @keypress="e => preventKeyPress(e, [13])"
             @input="e => onChange(e, 'field name', ii)"
             class="p36" contenteditable="plaintext-only" v-html="field.Name"></span>
-          <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+          <span @keypress="e => preventKeyPress(e, [13])"
             @input="e => onChange(e, 'field type', ii)"
             class="p36" contenteditable="plaintext-only" v-html="field.Type"></span>
           <span style="margin-left: 12px;cursor: pointer;"
@@ -90,13 +90,13 @@
             <div v-for="(field, ii) in EditObject.Fields"
               :key="'newfield_' + field.ii"
               style="margin-bottom: 2px; display: flex;align-items: center;">
-              <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+              <span @keypress="e => preventKeyPress(e, [13])"
                 @input="e => onEditNewField(e, 'field acmodify', ii)"
                 class="p36" contenteditable="plaintext-only">{{getTxtAcModify(field.acm)}}</span>
-              <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+              <span @keypress="e => preventKeyPress(e, [13])"
                 @input="e => onEditNewField(e, 'field name', ii)"
                 class="p36" contenteditable="plaintext-only" v-html="field.name"></span>
-              <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+              <span @keypress="e => preventKeyPress(e, [13])"
                 @input="e => onEditNewField(e, 'field type', ii)"
                 class="p36" contenteditable="plaintext-only" v-html="field.type"></span>
               <span style="margin-left: 12px;cursor: pointer;"
@@ -110,7 +110,7 @@
           style="margin-bottom: 2px;"
           :style="[0 == ii ? {marginTop: '10px'} : null]">
           <div style="display: flex;align-items: center;">
-            <span class="p36" @keypress="e => { if (e.which === 13) e.preventDefault() }"
+            <span class="p36" @keypress="e => preventKeyPress(e, [13])"
               @input="e => onChange(e, 'access modify key', ii)"
               contenteditable="plaintext-only">{{getTxtAcModify(prp[0])}}</span>
             
@@ -118,12 +118,12 @@
               :sources="['get', 'set', 'Contructor']"
               @change:value="$event => changeAccessor(ii, $event)">></menu-list>
 
-            <span @keypress="e => { if (e.which === 13) e.preventDefault() }"
+            <span @keypress="e => preventKeyPress(e, [13])"
               @input="e => onChange(e, 'access modify name', ii)"
               class="p36" contenteditable="plaintext-only" v-html="prp[1]"></span>
             {{getReturnType(prp[3]) ? 'return' : ''}}<span v-if="getReturnType(prp[3])"
               @input="e => onChange(e, 'access modify type', ii)"
-              @keypress="e => { if (e.which === 13) e.preventDefault() }"
+              @keypress="e => preventKeyPress(e, [13])"
               contenteditable="plaintext-only" class="p36" v-html="prp[2]"></span>
           </div>
           <textarea v-if="getTxtType(EditObject.item.type) != 'interface'" class="objedit-vwcode"

@@ -21,9 +21,9 @@ Promise.all([
                 MinY: 10, MaxY: 880,
                 ListClass: getListCls(),
                 LastArea: [],   // List<[id, x, y, w, h]>
-                DragElm: null,  // Dùng kéo các khung class
-                FrameCode: null, //{ top, left, html, type, item }
-                Toast: null,
+                DynamicVar: new Map(),
+                //'PopMenu', 'FrameCode': {top,left,html,type,item}, DragElm (Dùng kéo các khung class)
+
             }
         },
         computed: {
@@ -34,14 +34,18 @@ Promise.all([
                 }
             },
             ViewCode() {
-                let frmCode = this.$root.FrameCode
-                if (null != frmCode && 1 == frmCode.type) return frmCode
+                const dmVar = this.DynamicVar
+                if (dmVar.has('FrameCode')) {
+                    let frmCode = dmVar.get('FrameCode')
+                    if (1 == frmCode.type) return frmCode
+                }
                 return null
             },
             EditObject() {
-                let frmCode = this.$root.FrameCode
-                if (null != frmCode && 2 == frmCode.type) {
-                    return frmCode
+                const dmVar = this.DynamicVar
+                if (dmVar.has('FrameCode')) {
+                    let frmCode = dmVar.get('FrameCode')
+                    if (2 == frmCode.type) return frmCode
                 }
                 return null
             },
@@ -54,8 +58,9 @@ Promise.all([
             trackMouse(event) {
                 let x = event.clientX;
                 let y = event.clientY;
-                if (this.DragElm !== null) {
-                    const dgElm = this.DragElm
+                const dmVar = this.DynamicVar
+                if (dmVar.has('DragElm')) {
+                    const dgElm = dmVar.get('DragElm')
                     const dItem = dgElm.Item
                     if (x - 20 < this.MinX) return;
                     if (y < this.MinY + 20) return;
@@ -75,7 +80,7 @@ Promise.all([
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
             },
             onKeyUp(evt) {
-                this.DragElm = null
+                this.DynamicVar.delete('DragElm')
                 this.updateLastArea()
             },
             drawLines(points) {
@@ -138,6 +143,10 @@ Promise.all([
                 }
                 this.$root.LastArea = lstArea
             },
+            preventKeyPress(e, codes) {
+                if (codes.includes(e.which)) e.preventDefault()
+                //if (e.which === 13) e.preventDefault()
+            },
             getTxtAcModify(symb, isStr) {   // AccessModifiers
                 if (typeof symb != 'string') return
                 if (isStr) {
@@ -179,7 +188,7 @@ Promise.all([
                 setHeight(target, txt)
             },
             onChange(e, type, ii) {
-                const frmCode = this.$root.FrameCode
+                const frmCode = this.DynamicVar.get('FrameCode')
                 const target = e.target
                 let mItem = frmCode.MItem || {}
                 let fAcMd = mItem.FdAcM || new Map()
@@ -228,17 +237,16 @@ Promise.all([
                 // console.log('on change ', type, target.textContent, e)
             },
             onCloseEdit() {
-                //const frmCode = this.FrameCode
-                this.FrameCode = null
+                this.DynamicVar.delete('FrameCode')
             },
             onSaveChange() {
-                const frmCode = this.FrameCode
+                const frmCode = this.DynamicVar.get('FrameCode')
                 const mItem = frmCode.MItem
                 const item = frmCode.item
                 if (!mItem) {
                     item.Fields = frmCode.iFields
                     addNewFields()
-                    this.FrameCode = null
+                    this.DynamicVar.delete('FrameCode')
                     return
                 }
                 let name = mItem.Name
@@ -337,7 +345,7 @@ Promise.all([
                 if (arrChange.length) {
                     //  console.log('changes ', arrChange)
                 }
-                this.FrameCode = null
+                this.DynamicVar.delete('FrameCode')
                 function clearSpace(str, nm) {
                     if (typeof str != 'string') return nm
                     str = str.trim()
@@ -358,7 +366,7 @@ Promise.all([
             },
             changeAccessor(ii, txt) {
                 let acs = txt
-                const frmCode = this.FrameCode
+                const frmCode = this.DynamicVar.get('FrameCode')
                 const prp = frmCode.item.Properties[ii]
                 if ('Contructor' == txt) {
                     acs = 'init'
@@ -368,7 +376,7 @@ Promise.all([
                 prp[3] = acs
             },
             removeField(ii, isNew) {
-                const frmCode = this.FrameCode
+                const frmCode = this.DynamicVar.get('FrameCode')
                 let fields = frmCode.Fields
                 if (isNew && fields) {
                     fields = JSON.parse(JSON.stringify(fields))
@@ -390,7 +398,7 @@ Promise.all([
                 }
             },
             addField() {
-                const frmCode = this.FrameCode
+                const frmCode = this.DynamicVar.get('FrameCode')
                 if (!frmCode.Fields) {
                     frmCode.Fields = [{
                         ii: 0,
@@ -411,7 +419,7 @@ Promise.all([
             },
             onEditNewField(e, type, ii) {
                 const target = e.target
-                const frmCode = this.FrameCode
+                const frmCode = this.DynamicVar.get('FrameCode')
                 switch (type) {
                     case 'field acmodify':
                         frmCode.Fields[ii].AcModify = target.textContent
