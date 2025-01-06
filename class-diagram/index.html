@@ -67,7 +67,7 @@
           <span class="p36">{{getTxtType(EditObject.item.type)}}</span>
           <span contenteditable="plaintext-only"
             @input="e => onChange(e, 'class name')"
-            @keypress="e => preventKeyPress(e, [13])"
+            @keypress="e => preventKeyPress(e, [13, 32])"
             class="p36" v-html="EditObject.item.Name"></span>
         </div>
         <div v-for="(field, ii) in EditObject.iFields"
@@ -76,7 +76,7 @@
           <span @keypress="e => preventKeyPress(e, [13])"
             @input="e => onChange(e, 'field acmodify', ii)"
             class="p36" contenteditable="plaintext-only">{{getTxtAcModify(field.AcModify)}}</span>
-          <span @keypress="e => preventKeyPress(e, [13])"
+          <span @keypress="e => preventKeyPress(e, [13, 32])"
             @input="e => onChange(e, 'field name', ii)"
             class="p36" contenteditable="plaintext-only" v-html="field.Name"></span>
           <span @keypress="e => preventKeyPress(e, [13])"
@@ -93,10 +93,10 @@
               <span @keypress="e => preventKeyPress(e, [13])"
                 @input="e => onEditNewField(e, 'field acmodify', ii)"
                 class="p36" contenteditable="plaintext-only">{{getTxtAcModify(field.acm)}}</span>
-              <span @keypress="e => preventKeyPress(e, [13])"
+              <span @keypress="e => preventKeyPress(e, [13, 32])"
                 @input="e => onEditNewField(e, 'field name', ii)"
                 class="p36" contenteditable="plaintext-only" v-html="field.name"></span>
-              <span @keypress="e => preventKeyPress(e, [13])"
+              <span @keypress="e => preventKeyPress(e, [13, 32])"
                 @input="e => onEditNewField(e, 'field type', ii)"
                 class="p36" contenteditable="plaintext-only" v-html="field.type"></span>
               <span style="margin-left: 12px;cursor: pointer;"
@@ -116,15 +116,15 @@
             
             <menu-list :value="getAccessors(prp[3])"
               :sources="['get', 'set', 'Contructor']"
-              @change:value="$event => changeAccessor(ii, $event)">></menu-list>
+              @change:value="$event => changeAccessor(ii, $event)"></menu-list>
 
             <span @keypress="e => preventKeyPress(e, [13])"
               @input="e => onChange(e, 'access modify name', ii)"
-              class="p36" contenteditable="plaintext-only" v-html="prp[1]"></span>
-            {{getReturnType(prp[3]) ? 'return' : ''}}<span v-if="getReturnType(prp[3])"
-              @input="e => onChange(e, 'access modify type', ii)"
-              @keypress="e => preventKeyPress(e, [13])"
-              contenteditable="plaintext-only" class="p36" v-html="prp[2]"></span>
+              class="p36" contenteditable="plaintext-only" 
+              v-html="prp[1]"></span>{{getReturnType(prp[3]) ? 'return' : ''}}<span v-if="getReturnType(prp[3])"
+                          @input="e => onChange(e, 'access modify type', ii)"
+                          @keypress="e => preventKeyPress(e, [13, 32])"
+                          contenteditable="plaintext-only" class="p36" v-html="prp[2]"></span>
           </div>
           <textarea v-if="getTxtType(EditObject.item.type) != 'interface'" class="objedit-vwcode"
             style="width: 100%; min-height: 90px;border-radius: 6px;border: none;"

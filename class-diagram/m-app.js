@@ -144,8 +144,11 @@ Promise.all([
                 this.$root.LastArea = lstArea
             },
             preventKeyPress(e, codes) {
+                if (e.which === 13) {
+                    e.target.blur()
+                    e.preventDefault()
+                }
                 if (codes.includes(e.which)) e.preventDefault()
-                //if (e.which === 13) e.preventDefault()
             },
             getTxtAcModify(symb, isStr) {   // AccessModifiers
                 if (typeof symb != 'string') return
