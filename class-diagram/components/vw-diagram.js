@@ -53,6 +53,9 @@ const MxRect = {
                 offX: off.left - event.clientX - x,
                 offY: off.top - event.clientY - y
             })
+            const itemEl = document.body.querySelector(`#dnb-vw-main #${this.item.id}`)
+            itemEl.style.zIndex = '1'
+            itemEl.style.backgroundColor = 'white'
         },
         setWidthHeight() {
             let w = this.item.width
@@ -408,6 +411,36 @@ export const ViewDiagram = {
                 }
             }
             return false
+        },
+        onMouseDown(event) {
+           // if(null !== this.$root.NewClassName) return;
+            const dmVar = this.$root.DynamicVar
+            if (dmVar.has('DragElm')) return;
+            const off = this.$el.querySelector('#cls-sample').getBoundingClientRect()
+            let x = this.$root.MinX
+            let y = this.$root.MinY
+            let left = off.left - x
+            let top = off.top - y
+            const id = 'cls-classname'
+            this.$root.NewClassName = {
+                id, type: 'instant class', Name: 'ClassName', 
+                top, left, width: 220, height: 100,
+                Fields: [
+                    { AcModify: '#', Name: 'fieldName', Type: 'String' },
+                ], Properties: [
+                    ['+', 'ClassName', '', 'init'],
+                    ['+', 'GetFunction()', 'String', 'get'],
+                    ['+', 'SetFunction()', 'void', 'set'],
+                ]
+            }
+            this.$root.DynamicVar.set('DragElm', {
+                Item: this.$root.NewClassName, 
+                offX: left - event.clientX, 
+                offY: top - event.clientY
+            })
+            const itemEl = document.body.querySelector(`#dnb-vw-main #${id}`)
+            itemEl.style.zIndex = '1'
+            itemEl.style.backgroundColor = 'white'
         },
     },
     //beforeUnmount() { },

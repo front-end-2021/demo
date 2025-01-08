@@ -5,6 +5,7 @@
             <h3 style="margin: 0;">left side</h3>
             <div style="display: inline-block;border: 1px solid rgb(0, 0, 0);
                 width: calc(100% - 10px);cursor: default;"
+                @mousedown="onMouseDown"
                 id="cls-sample">
                 <div style="font-size: 18px;font-weight: bold;text-align: center;
                     border-bottom: 1px solid black;">ClassName</div>
@@ -27,6 +28,7 @@
             border: 1px solid rgb(0, 0, 0);">
                 <rect-class v-for="wItm in $root.ListClass" 
                     :item="wItm"></rect-class>
+                <rect-class v-if="$root.NewClassName != null" :item="$root.NewClassName"></rect-class>
             </div>
             
         </div>
@@ -53,7 +55,8 @@
 <template id="tmp-rect-class">
     <rect-enum v-if="'enum' == item.type" :item="item"></rect-enum>
     <div v-else :id="item.id"
-        style="display: inline-block;border: 1px solid rgb(0, 0, 0);position: inherit;cursor: default;"
+        style="display: inline-block;border: 1px solid rgb(0, 0, 0);
+            position: inherit;cursor: default;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
             <i class="bi bi-arrows-move cpoint ctlmove"

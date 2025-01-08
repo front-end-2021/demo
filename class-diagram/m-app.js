@@ -23,7 +23,7 @@ Promise.all([
                 LastArea: [],   // List<[id, x, y, w, h]>
                 DynamicVar: new Map(),
                 //'PopMenu', 'FrameCode': {top,left,html,type,item}, DragElm (Dùng kéo các khung class)
-
+                NewClassName: null,
             }
         },
         computed: {
@@ -62,25 +62,42 @@ Promise.all([
                 if (dmVar.has('DragElm')) {
                     const dgElm = dmVar.get('DragElm')
                     const dItem = dgElm.Item
+                    let left = x + dgElm.offX
+                    let top = y + dgElm.offY
+
+                    if('cls-classname' == dItem.id) {
+                        this.setTopLeft(dItem, left, top)
+                        return
+                    }
+
                     if (x - 20 < this.MinX) return;
                     if (y < this.MinY + 20) return;
                     if (this.MaxY + 3 < y + dItem.height) return
-                    let left = x + dgElm.offX
-                    let top = y + dgElm.offY
+                    
                     if (this.MaxX < x + dItem.width - 6) return;
                     const id = dItem.id
                     if (!this.isOverView(id, left, top, dItem.width, dItem.height)) {
                         if (dItem.left != left || dItem.top != top) {
-                            dItem.left = left
-                            dItem.top = top
+                            this.setTopLeft(dItem, left, top)
                         }
                     }
                     this.drawLines(this.getPoints())
                 }
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
             },
+            setTopLeft(dItem, left, top) {
+                dItem.left = left
+                dItem.top = top
+            },
             onKeyUp(evt) {
-                this.DynamicVar.delete('DragElm')
+                const dmVar = this.DynamicVar
+                if (dmVar.has('DragElm')) {
+                    const dgElm = dmVar.get('DragElm')
+                    const itemEl = document.body.querySelector(`#dnb-vw-main #${dgElm.Item.id}`)
+                    itemEl.style.zIndex = ''
+                    itemEl.style.backgroundColor = ''
+                }
+                dmVar.delete('DragElm')
                 this.updateLastArea()
             },
             drawLines(points) {
