@@ -15,3 +15,10 @@
 .cpoint {cursor: pointer;}
 .p36 { padding: 3px 6px; }
 [contenteditable="plaintext-only"] {border-bottom: 1px solid #ffffff96;}
+.mformedit {
+    min-width: calc(100vw / 2); max-width: calc(100vw - 60px); min-height: 320px; max-height: calc(100vh - 30px);
+    display: inline-block;  padding: 18px; transform: translate(-50%, -50%);
+    box-sizing: border-box; border-radius: 10px; position: fixed; overflow-y: auto;
+    background-color: rgb(168 215 255); top: 50%; left: 50%;
+}
+.dnb-mnlst > *:hover {background-color: #efefef;}

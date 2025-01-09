@@ -455,6 +455,21 @@ Promise.all([
                     default: break;
                 }
             },
+            changeTypeObject(val) {
+                console.log('change type object ', val)
+            },
+            closePMenu(e) {
+                const dmVar = this.$root.DynamicVar
+                if (dmVar.has('PopMenu')) {
+                    document.removeEventListener('click', this.$root.closePMenu)
+                    const target = e.target
+                    if (!target.closest('.wrap-mnlist')) {
+                        let popM = dmVar.get('PopMenu')
+                        popM.emptySrc()
+                        dmVar.delete('PopMenu')
+                    }
+                }
+            },
         },
         //  beforeCreate() { },
         //  created() { },
@@ -462,7 +477,6 @@ Promise.all([
             this.MaxX = window.innerWidth
         },
         mounted() {
-
             values.forEach((path, ii) => {
                 let pDom = document.body.querySelector(`.dnb-imp-html[dnbpath="${path}"]`)
                 if (pDom) pDom.remove();

@@ -3,7 +3,7 @@ export const MenuList = {
     template: `#tmp-menu-list`,
     name: "Menu_List",
     display: "Menu.List",
-    props: ['value', 'sources'],
+    props: ['value', 'sources', 'isfix'],
     emits: ['change:value'],
     data() {
         return {
@@ -14,25 +14,38 @@ export const MenuList = {
         openLstSrc() {
             const dmVar = this.$root.DynamicVar
             let popM = dmVar.get('PopMenu')
-            if (popM && popM !== this) {
-                popM.ListSrc = []
-            } else {
-                dmVar.set('PopMenu', this)
+            if (popM) {
+                document.removeEventListener('click', this.$root.closePMenu)
+                if (popM !== this) popM.emptySrc()
+                else return
             }
+            dmVar.set('PopMenu', this)
+
             this.ListSrc = this.sources
-            let xx = this.sources.indexOf(this.value)
-            if (0 < xx) {
-                let top = 12
-                this.$nextTick(() => {
-                    top += 24 * xx
-                    let spn = this.$el.querySelector(`.dnb-mnlst`)
-                    if (spn) spn.style.top = `-${top}px`
-                })
+            if (!this.isfix) {
+                let xx = this.sources.indexOf(this.value)
+                if (0 < xx) {
+                    let top = 12
+                    this.$nextTick(() => {
+                        top += 24 * xx
+                        let spn = this.$el.querySelector(`.dnb-mnlst`)
+                        if (spn) spn.style.top = `-${top}px`
+                    })
+                }
             }
+            this.$nextTick(() => {
+                setTimeout(() => {
+                    document.addEventListener('click', this.$root.closePMenu)
+                }, 696)
+            })
+        },
+        emptySrc() {
+            this.ListSrc = []
         },
         changeValue(val) {
             if (this.value != val) this.$emit('change:value', val)
-            this.ListSrc = []
+            document.removeEventListener('click', this.$root.closePMenu)
+            this.emptySrc()
             const dmVar = this.$root.DynamicVar
             dmVar.delete('PopMenu')
         },
@@ -77,7 +90,7 @@ const MxRect = {
             }
             if (isChange) {
                 this.$root.drawLines(this.$root.getPoints())
-              
+
             }
         },
         editObject() {
@@ -414,7 +427,7 @@ export const ViewDiagram = {
             return false
         },
         onMouseDown(event) {
-           // if(null !== this.$root.NewClassName) return;
+            // if(null !== this.$root.NewClassName) return;
             const dmVar = this.$root.DynamicVar
             if (dmVar.has('DragElm')) return;
             const off = this.$el.querySelector('#cls-sample').getBoundingClientRect()
@@ -424,7 +437,7 @@ export const ViewDiagram = {
             let top = off.top - y
             const id = 'cls-classname'
             this.$root.NewClassName = {
-                id, type: 'instant class', Name: 'ClassName', 
+                id, type: 'instant class', Name: 'ClassName',
                 top, left, width: 220, height: 100,
                 Fields: [
                     { AcModify: '#', Name: 'fieldName', Type: 'String' },
@@ -435,8 +448,8 @@ export const ViewDiagram = {
                 ]
             }
             this.$root.DynamicVar.set('DragElm', {
-                Item: this.$root.NewClassName, 
-                offX: left - event.clientX, 
+                Item: this.$root.NewClassName,
+                offX: left - event.clientX,
                 offY: top - event.clientY
             })
             const itemEl = document.body.querySelector(`#dnb-vw-main #${id}`)

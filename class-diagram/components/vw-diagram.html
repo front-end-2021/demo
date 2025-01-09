@@ -4,7 +4,7 @@
             :style="[{ width: $root.MinX + 'px'}]">
             <h3 style="margin: 0;">left side</h3>
             <div style="display: inline-block;border: 1px solid rgb(0, 0, 0);
-                width: calc(100% - 10px);cursor: default;"
+                width: calc(100% - 10px);cursor: default;border-radius: 4px;"
                 @mousedown="onMouseDown"
                 id="cls-sample">
                 <div style="font-size: 18px;font-weight: bold;text-align: center;
@@ -28,7 +28,8 @@
             border: 1px solid rgb(0, 0, 0);">
                 <rect-class v-for="wItm in $root.ListClass" 
                     :item="wItm"></rect-class>
-                <rect-class v-if="$root.NewClassName != null" :item="$root.NewClassName"></rect-class>
+                <rect-class v-if="$root.NewClassName != null" 
+                    :item="$root.NewClassName"></rect-class>
             </div>
             
         </div>
@@ -38,7 +39,7 @@
 <template id="tmp-rect-enum">
     <div :id="item.id"
         style="display: inline-block;border: 1px solid rgb(0, 0, 0);
-            position: inherit;cursor: default;"
+            position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
             <i class="bi bi-arrows-move cpoint ctlmove"
@@ -56,7 +57,7 @@
     <rect-enum v-if="'enum' == item.type" :item="item"></rect-enum>
     <div v-else :id="item.id"
         style="display: inline-block;border: 1px solid rgb(0, 0, 0);
-            position: inherit;cursor: default;"
+            position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
             <i class="bi bi-arrows-move cpoint ctlmove"
@@ -71,7 +72,8 @@
             <span v-if="ExtendsView">:&nbsp;<i>{{ExtendsView}}</i></span>
             <span v-else></span>
         </div>
-        <div style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
+        <div v-if="0 < ExtendFields.length + item.Fields.length"
+            style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
             <i @click.stop="e => { $root.DynamicVar.delete('FrameCode') }" style="display: block;"
                 v-for="field in ExtendFields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</i>
             <div @click.stop="e => { $root.DynamicVar.delete('FrameCode') }"
@@ -93,15 +95,21 @@
     </div>
 </template>
 <template id="tmp-menu-list">
-    <span style="position: relative;cursor:default;"
+    <span class="wrap-mnlist"
+        style="position: relative;cursor:default;"
         :style="[ListSrc.length ? { minWidth: '82px' } : null]">
         <span v-if="!ListSrc.length" @click="openLstSrc">{{value}}</span>
         <span v-else class="dnb-mnlst"
           style="display: inline-flex; flex-direction: column;position: absolute;
-            background-color: white; top: -12px;box-shadow: 0 .125rem .25rem #00000030;">
+            background-color: white; top: -12px;width: max-content;
+            box-shadow: 0 .125rem .25rem #00000030;">
           <span v-for="acs in ListSrc"
             @click.stop="e => changeValue(acs)"
-            style="border-bottom: solid 1px #e3e3e3; box-sizing: border-box;"
+            style="border-bottom: solid 1px #e3e3e3; 
+            box-sizing: border-box;width: 100%;"
+            :style="[acs == this.value ? {
+                backgroundColor: '#dbdbdb'
+            } : null]"
             class="p36">{{acs}}</span>
         </span>
       </span>

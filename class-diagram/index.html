@@ -59,12 +59,13 @@
         class="bi bi-x-lg cpoint" @click.stop="e => { DynamicVar.delete('FrameCode')}"></i>
     </div>
     <div v-if="EditObject"
-      style="min-width: calc(100vw / 2); max-width: calc(100vw - 60px); min-height: 320px; max-height: calc(100vh - 30px);
-      display: inline-block;  padding: 18px; transform: translate(-50%, -50%);
-      box-sizing: border-box; border-radius: 10px; position: fixed; overflow-y: auto;
-      background-color: rgb(168 215 255); top: 50%; left: 50%;">
+      class="mformedit">
         <div style="margin-bottom: 12px; display: flex;align-items: center;">
-          <span class="p36">{{getTxtType(EditObject.item.type)}}</span>
+          <!-- <span class="p36">{{getTxtType(EditObject.item.type)}}</span> -->
+          <menu-list :value="getTxtType(EditObject.item.type)" :isfix="true"
+            :sources="['interface', 'abstract class', 'class', 'enum']"
+            @change:value="$e => changeTypeObject($e)">
+          </menu-list>
           <span contenteditable="plaintext-only"
             @input="e => onChange(e, 'class name')"
             @keypress="e => preventKeyPress(e, [13, 32])"
@@ -114,9 +115,10 @@
               @input="e => onChange(e, 'access modify key', ii)"
               contenteditable="plaintext-only">{{getTxtAcModify(prp[0])}}</span>
             
-            <menu-list :value="getAccessors(prp[3])"
+            <menu-list :value="getAccessors(prp[3])" :isfix="true"
               :sources="['get', 'set', 'Contructor']"
-              @change:value="$event => changeAccessor(ii, $event)"></menu-list>
+              @change:value="$event => changeAccessor(ii, $event)">
+            </menu-list>
 
             <span @keypress="e => preventKeyPress(e, [13])"
               @input="e => onChange(e, 'access modify name', ii)"
