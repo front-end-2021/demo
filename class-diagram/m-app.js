@@ -20,7 +20,7 @@ Promise.all([
                 MinX: 150, MaxX: 150 + 1754,
                 MinY: 10, MaxY: 880,
                 ListClass: getListCls(),
-                LastArea: [],   // List<[id, x, y, w, h]>
+                UsedAreas: [],   // List<[id, x, y, w, h]>
                 DynamicVar: new Map(),
                 //'PopMenu', 'FrameCode': {top,left,html,type,item}, DragElm (Dùng kéo các khung class)
                 NewClassName: null,
@@ -65,7 +65,7 @@ Promise.all([
                     let left = x + dgElm.offX
                     let top = y + dgElm.offY
 
-                    if('cls-classname' == dItem.id) {
+                    if ('cls-classname' == dItem.id) {
                         this.setTopLeft(dItem, left, top)
                         return
                     }
@@ -73,7 +73,7 @@ Promise.all([
                     if (x - 20 < this.MinX) return;
                     if (y < this.MinY + 20) return;
                     if (this.MaxY + 3 < y + dItem.height) return
-                    
+
                     if (this.MaxX < x + dItem.width - 6) return;
                     const id = dItem.id
                     if (!this.isOverView(id, left, top, dItem.width, dItem.height)) {
@@ -111,7 +111,7 @@ Promise.all([
                 }
             },
             isOverView(id, x, y, w, h) {
-                const lstArea = this.LastArea.filter(x => x[0] != id)
+                const lstArea = this.UsedAreas.filter(x => x[0] != id)
                 for (let ii = 0; ii < lstArea.length; ii++) {
                     const [id0, x0, y0, w0, h0] = lstArea[ii]
                     if (x + w < x0 - 30 || x0 + w0 < x - 30) continue
@@ -119,6 +119,34 @@ Promise.all([
                     return true
                 }
                 return false
+            },
+            processArea(x0, x1, y0, y1) {
+                const lstArea = this.UsedAreas
+                lstArea.sort((a, b) => {
+                    let d = a[1] - b[1]         // order tăng dần
+                    if (0 == d) d = a[2] - b[2]  // order tăng dần
+                    return d
+                })
+                const w = x1 - x0, h = y1 - y0
+                let x = x0
+                let y = y0
+                let dx = 0, dy = 0
+                const gap = 30
+                for (let ii = 0; ii < lstArea.length; ii++) {
+                    const [idi, xi, yi, wi, hi] = lstArea[ii]
+                    if (x1 < xi - gap || xi + wi < x0 - gap) return [dx, dy]
+                    if (y1 < yi - gap || yi + hi < y0 - gap) return [dx, dy]
+
+                }
+                function isAvaiXy(areas, xx0, xx1, yy0, yy1, gap) {
+                    for (let ii = 0; ii < areas.length; ii++) {
+                        const [idi, xi, yi, wi, hi] = areas[ii]
+                        if (xx1 < xi - gap || xi + wi < xx0 - gap) continue
+                        if (yy1 < yi - gap || yi + hi < yy0 - gap) continue
+                        return false
+                    }
+                    return true
+                }
             },
             getPoints() {
                 const lstCls = this.$root.ListClass
@@ -158,7 +186,7 @@ Promise.all([
                     let h = item.height
                     lstArea.push([item.id, x, y, w, h])
                 }
-                this.$root.LastArea = lstArea
+                this.$root.UsedAreas = lstArea
             },
             preventKeyPress(e, codes) {
                 if (e.which === 13) {
