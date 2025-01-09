@@ -20,7 +20,6 @@ Promise.all([
                 MinX: 150, MaxX: 150 + 1754,
                 MinY: 10, MaxY: 880,
                 ListClass: getListCls(),
-                UsedAreas: [],   // List<[id, x, y, w, h]>
                 DynamicVar: new Map(),
                 //'PopMenu', 'FrameCode': {top,left,html,type,item}, DragElm (Dùng kéo các khung class)
                 NewClassName: null,
@@ -75,13 +74,10 @@ Promise.all([
                     if (this.MaxY + 3 < y + dItem.height) return
 
                     if (this.MaxX < x + dItem.width - 6) return;
-                    const id = dItem.id
-                    if (!this.isOverView(id, left, top, dItem.width, dItem.height)) {
-                        if (dItem.left != left || dItem.top != top) {
-                            this.setTopLeft(dItem, left, top)
-                        }
+                    if (dItem.left != left || dItem.top != top) {
+                        this.setTopLeft(dItem, left, top)
+                        this.drawLines(this.getPoints())
                     }
-                    this.drawLines(this.getPoints())
                 }
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
             },
@@ -96,9 +92,38 @@ Promise.all([
                     const itemEl = document.body.querySelector(`#dnb-vw-main #${dgElm.Item.id}`)
                     itemEl.style.zIndex = ''
                     itemEl.style.backgroundColor = ''
+                    const dItem = dgElm.Item
+                    if (isOverView.call(this, dItem.id, dItem.left, dItem.top, dItem.width, dItem.height)) {
+                        this.setTopLeft(dItem, dgElm.Left, dgElm.Top)
+                        this.drawLines(this.getPoints())
+                    }
                 }
                 dmVar.delete('DragElm')
-                this.updateLastArea()
+
+                function isOverView(id, x, y, w, h) {
+                    const lstArea = areaBlocks.call(this, id)
+                    for (let ii = 0; ii < lstArea.length; ii++) {
+                        const [x0, y0, w0, h0] = lstArea[ii]
+                        if (x + w < x0 - 30 || x0 + w0 < x - 30) continue
+                        if (y + h < y0 - 30 || y0 + h0 < y - 30) continue
+                        return true
+                    }
+                    return false
+                }
+                function areaBlocks(id) {
+                    const lst = []
+                    const lstCls = this.$root.ListClass
+                    for (let ii = 0, item; ii < lstCls.length; ii++) {
+                        item = lstCls[ii]
+                        if (item.id === id) continue
+                        let x = item.left
+                        let y = item.top
+                        let w = item.width
+                        let h = item.height
+                        lst.push([x, y, w, h])
+                    }
+                    return lst
+                }
             },
             drawLines(points) {
                 const c = document.getElementById(`dnb-mcanvas`);
@@ -108,44 +133,6 @@ Promise.all([
                     const [p0, p1] = points[ii]
                     if (p0[4].includes('class')) drawExtension.call(ctx, p0, p1, 8)
                     if (p0[4].includes('interface')) drawImplement.call(ctx, p0, p1, 6)
-                }
-            },
-            isOverView(id, x, y, w, h) {
-                const lstArea = this.UsedAreas.filter(x => x[0] != id)
-                for (let ii = 0; ii < lstArea.length; ii++) {
-                    const [id0, x0, y0, w0, h0] = lstArea[ii]
-                    if (x + w < x0 - 30 || x0 + w0 < x - 30) continue
-                    if (y + h < y0 - 30 || y0 + h0 < y - 30) continue
-                    return true
-                }
-                return false
-            },
-            processArea(x0, x1, y0, y1) {
-                const lstArea = this.UsedAreas
-                lstArea.sort((a, b) => {
-                    let d = a[1] - b[1]         // order tăng dần
-                    if (0 == d) d = a[2] - b[2]  // order tăng dần
-                    return d
-                })
-                const w = x1 - x0, h = y1 - y0
-                let x = x0
-                let y = y0
-                let dx = 0, dy = 0
-                const gap = 30
-                for (let ii = 0; ii < lstArea.length; ii++) {
-                    const [idi, xi, yi, wi, hi] = lstArea[ii]
-                    if (x1 < xi - gap || xi + wi < x0 - gap) return [dx, dy]
-                    if (y1 < yi - gap || yi + hi < y0 - gap) return [dx, dy]
-
-                }
-                function isAvaiXy(areas, xx0, xx1, yy0, yy1, gap) {
-                    for (let ii = 0; ii < areas.length; ii++) {
-                        const [idi, xi, yi, wi, hi] = areas[ii]
-                        if (xx1 < xi - gap || xi + wi < xx0 - gap) continue
-                        if (yy1 < yi - gap || yi + hi < yy0 - gap) continue
-                        return false
-                    }
-                    return true
                 }
             },
             getPoints() {
@@ -174,19 +161,6 @@ Promise.all([
                     }
                 }
                 return points;
-            },
-            updateLastArea() {
-                const lstArea = []
-                const lstCls = this.$root.ListClass
-                for (let ii = 0, item; ii < lstCls.length; ii++) {
-                    item = lstCls[ii]
-                    let x = item.left
-                    let y = item.top
-                    let w = item.width
-                    let h = item.height
-                    lstArea.push([item.id, x, y, w, h])
-                }
-                this.$root.UsedAreas = lstArea
             },
             preventKeyPress(e, codes) {
                 if (e.which === 13) {

@@ -51,7 +51,9 @@ const MxRect = {
             this.$root.DynamicVar.set('DragElm', {
                 Item: this.item,
                 offX: off.left - event.clientX - x,
-                offY: off.top - event.clientY - y
+                offY: off.top - event.clientY - y,
+                Top: this.item.top,
+                Left: this.item.left
             })
             const itemEl = document.body.querySelector(`#dnb-vw-main #${this.item.id}`)
             itemEl.style.zIndex = '1'
@@ -75,7 +77,7 @@ const MxRect = {
             }
             if (isChange) {
                 this.$root.drawLines(this.$root.getPoints())
-                this.$root.updateLastArea()
+              
             }
         },
         editObject() {
@@ -398,7 +400,6 @@ export const ViewDiagram = {
             const points = this.$root.getPoints()
             this.$root.drawLines(points)
 
-            this.$root.updateLastArea()
         },
         setWithCanvas() {
             const vwM = document.getElementById('dnb-vw-main')
