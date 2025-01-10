@@ -1,4 +1,4 @@
-import { setHeight, processLines } from "../common.js";
+import { setHeight, processLines, StructTypes } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
     name: "Menu_List",
@@ -255,7 +255,7 @@ const RectClass = {
             switch (type) {
                 case 'class name':
                     target.removeAttribute('contenteditable')
-                    if ('abstract class' == item.type)
+                    if (StructTypes[1][0] == item.type)
                         name = name.replace('abstract', '');
                     name = name.replaceAll(' ', '')
                     item.Name = name
@@ -275,9 +275,11 @@ const RectClass = {
             const item = this.item
             let clsName = item.Name
             switch (item.type) {
-                case 'abstract class': return `abstract ${clsName}`
-                case 'instant class': return clsName
-                case 'interface': return clsName
+                case StructTypes[1][0]:
+                    return `abstract ${clsName}`
+                case StructTypes[2][0]: // 'instant class'
+                case StructTypes[0][0]: //'interface'
+                    return clsName
                 default: return '';
             }
         },
@@ -293,12 +295,14 @@ const RectClass = {
         FormCsFormat() {
             const item = this.item
             let clsName = item.Name
+            const ii = this.$root.PLang
             switch (item.type) {
-                case 'abstract class': clsName = `public abstract class ${clsName}`
+                case StructTypes[1][0]:
+                    clsName = `public ${StructTypes[1][ii]} ${clsName}`
                     break;
-                case 'instant class': clsName = `public class ${clsName}`
+                case StructTypes[2][0]: clsName = `public ${StructTypes[2][ii]} ${clsName}`
                     break;
-                case 'interface': clsName = `public interface ${clsName}`
+                case StructTypes[0][0]: clsName = `public ${StructTypes[0][ii]} ${clsName}`
                     break;
                 default: break;
             }

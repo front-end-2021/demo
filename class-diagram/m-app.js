@@ -3,7 +3,7 @@ import { createApp } from 'vue'
 import { drawExtension, drawImplement } from './mcanvas.js'
 import { ViewDiagram, MenuList } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
-import { setHeight } from './common.js'
+import { setHeight, StructTypes, AccessInit } from './common.js'
 // #endregion
 Promise.all([
     includeHTML(`./components/vw-diagram.html`),
@@ -23,6 +23,9 @@ Promise.all([
                 DynamicVar: new Map(),
                 //'PopMenu', 'FrameCode': {top,left,html,type,item}, DragElm (Dùng kéo các khung class)
                 NewClassName: null,
+                StructTypes: StructTypes,
+                AccessInit: AccessInit,
+                PLang: 1,
             }
         },
         computed: {
@@ -184,9 +187,14 @@ Promise.all([
             },
             getTxtType(type) {
                 if (typeof type != 'string') return
-                if ('abstract class' == type) return 'abstract class'
-                if (type.includes('class')) return 'class'
-                if (type.includes('interface')) return 'interface'
+                const ii = this.PLang
+                if (StructTypes[1][0] == type) return StructTypes[1][ii]
+                if (type.includes('class')) return StructTypes[2][ii]
+                if (type.includes('interface')) return StructTypes[0][ii]
+            },
+            changeTypeObject(val) {
+                console.log('change type object ', val)
+                //getTxtType(EditObject.item.type)
             },
             getReturnType(acs) {
                 if (typeof acs != 'string') return false;
@@ -383,17 +391,29 @@ Promise.all([
             },
             getAccessors(acs) {
                 let txt = acs
-                if (acs.includes('init')) txt = 'Contructor'
+                if (acs.includes(this.AccessInit[2][0]))
+                    txt = this.AccessInit[2][this.PLang]
                 return txt
             },
             changeAccessor(ii, txt) {
                 let acs = txt
                 const frmCode = this.DynamicVar.get('FrameCode')
                 const prp = frmCode.item.Properties[ii]
-                if ('Contructor' == txt) {
-                    acs = 'init'
-                    let a0 = prp[0].split(' ')
-                    prp[0] = a0[0]
+                switch (txt) {
+                    case AccessInit[2][this.PLang]: // init
+                        acs = this.AccessInit[2][0]
+                        let a0 = prp[0].split(' ')
+                        prp[0] = a0[0]
+                        if (prp[2].length) prp[2] = ''
+                        break;
+                    case AccessInit[1][this.PLang]: // set
+                        prp[2] = 'void'
+                        break;
+                    case AccessInit[0][this.PLang]: // get
+                        if ('void' == prp[2]) prp[2] = 'string'
+                        if (!prp[2].length) prp[2] = 'string'
+                        break;
+                    default: break;
                 }
                 prp[3] = acs
             },
@@ -454,9 +474,6 @@ Promise.all([
                         break;
                     default: break;
                 }
-            },
-            changeTypeObject(val) {
-                console.log('change type object ', val)
             },
             closePMenu(e) {
                 const dmVar = this.$root.DynamicVar

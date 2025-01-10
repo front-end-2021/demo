@@ -63,7 +63,7 @@
         <div style="margin-bottom: 12px; display: flex;align-items: center;">
           <!-- <span class="p36">{{getTxtType(EditObject.item.type)}}</span> -->
           <menu-list :value="getTxtType(EditObject.item.type)" :isfix="true"
-            :sources="['interface', 'abstract class', 'class', 'enum']"
+            :sources="StructTypes.map(x => x[PLang])"
             @change:value="$e => changeTypeObject($e)">
           </menu-list>
           <span contenteditable="plaintext-only"
@@ -116,7 +116,7 @@
               contenteditable="plaintext-only">{{getTxtAcModify(prp[0])}}</span>
             
             <menu-list :value="getAccessors(prp[3])" :isfix="true"
-              :sources="['get', 'set', 'Contructor']"
+              :sources="AccessInit.map(x => x[PLang])"
               @change:value="$event => changeAccessor(ii, $event)">
             </menu-list>
 

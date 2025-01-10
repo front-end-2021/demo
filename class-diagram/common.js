@@ -44,3 +44,14 @@ export function processLines(txt) {
     }
     return arrLn.join('\n')
 }
+export const StructTypes = [
+    ['interface', 'interface'],
+    ['abstract class', 'abstract class'],
+    ['instant class', 'class'],
+    ['enum', 'enum'],
+]
+export const AccessInit = [
+    ['get', 'get'],
+    ['set', 'set'],
+    ['init', 'Constructor']
+]
