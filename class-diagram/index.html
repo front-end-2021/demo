@@ -86,28 +86,26 @@
           <span style="margin-left: 12px;cursor: pointer;"
             @click.stop="e => removeField(ii)"><i class="bi bi-trash3"></i></span>
         </div>
-        <div>
-          <div v-if="EditObject.Fields">
-            <div v-for="(field, ii) in EditObject.Fields"
-              :key="'newfield_' + field.ii"
-              style="margin-bottom: 2px; display: flex;align-items: center;">
-              <span @keypress="e => preventKeyPress(e, [13])"
-                @input="e => onEditNewField(e, 'field acmodify', ii)"
-                class="p36" contenteditable="plaintext-only">{{getTxtAcModify(field.acm)}}</span>
-              <span @keypress="e => preventKeyPress(e, [13, 32])"
-                @input="e => onEditNewField(e, 'field name', ii)"
-                class="p36" contenteditable="plaintext-only" v-html="field.name"></span>
-              <span @keypress="e => preventKeyPress(e, [13, 32])"
-                @input="e => onEditNewField(e, 'field type', ii)"
-                class="p36" contenteditable="plaintext-only" v-html="field.type"></span>
-              <span style="margin-left: 12px;cursor: pointer;"
-                @click.stop="e => removeField(ii, true)"><i class="bi bi-trash3"></i></span>
-            </div>
+        <div v-if="EditObject.Fields">
+          <div v-for="(field, ii) in EditObject.Fields"
+            :key="'newfield_' + field.ii"
+            style="margin-bottom: 2px; display: flex;align-items: center;">
+            <span @keypress="e => preventKeyPress(e, [13])"
+              @blur="e => onEditNewField(e, 'field acmodify', ii)"
+              class="p36" contenteditable="true">{{field.AcModify}}</span>
+            <span @keypress="e => preventKeyPress(e, [13, 32])"
+              @blur="e => onEditNewField(e, 'field name', ii)"
+              class="p36" contenteditable="true" v-html="field.Name"></span>
+            <span @keypress="e => preventKeyPress(e, [13, 32])"
+              @blur="e => onEditNewField(e, 'field type', ii)"
+              class="p36" contenteditable="true" v-html="field.Type"></span>
+            <span style="margin-left: 12px;cursor: pointer;"
+              @click.stop="e => removeField(ii, true)"><i class="bi bi-trash3"></i></span>
           </div>
-          <span style="cursor: pointer;"
-            @click.stop="addField">[new Field]</span>
         </div>
-        <div v-for="(prp, ii) in EditObject.item.Properties"
+        <span style="cursor: pointer;"
+            @click.stop="addField">[new Field]</span>
+        <div v-for="(prp, ii) in EditObject.iPropes"
           style="margin-bottom: 2px;"
           :style="[0 == ii ? {marginTop: '10px'} : null]">
           <div style="display: flex;align-items: center;">
@@ -123,18 +121,56 @@
             <span @keypress="e => preventKeyPress(e, [13])"
               @input="e => onChange(e, 'access modify name', ii)"
               class="p36" contenteditable="plaintext-only" 
-              v-html="prp[1]"></span>{{getReturnType(prp[3]) ? 'return' : ''}}<span v-if="getReturnType(prp[3])"
-                          @input="e => onChange(e, 'access modify type', ii)"
-                          @keypress="e => preventKeyPress(e, [13, 32])"
-                          contenteditable="plaintext-only" class="p36" v-html="prp[2]"></span>
+              v-html="prp[1]"></span>
+              <span v-if="getReturnType(prp[3])"><i>return</i>
+                <span @input="e => onChange(e, 'access modify type', ii)"
+                  @keypress="e => preventKeyPress(e, [13, 32])"
+                  contenteditable="plaintext-only" class="p36" v-html="prp[2]"></span>
+              </span>
+            <span style="margin-left: 12px;cursor: pointer;"
+              @click.stop="e => removeProperty(ii, false)"><i class="bi bi-trash3"></i></span>
           </div>
           <textarea v-if="getTxtType(EditObject.item.type) != 'interface'" class="objedit-vwcode"
             style="width: 100%; min-height: 90px;border-radius: 6px;border: none;"
             @paste="pasteTxtArea" @keyup.enter="keyUpTxtArea" @keyup.delete="keyUpTxtArea"
             @change="e => onChange(e, 'code context', ii)">{{prp[4]}}</textarea>
         </div>
+        <div v-if="EditObject.Propers">
+          <div v-for="(prp, ii) in EditObject.Propers"
+            style="margin-bottom: 2px;"
+            :style="[0 == ii ? {marginTop: '10px'} : null]">
+          <div style="display: flex;align-items: center;">
+            <span class="p36" @keypress="e => preventKeyPress(e, [13])"
+              @blur="e => changeNewProp(e, 'access modify key', ii)"
+              contenteditable="true">{{prp[0]}}</span>
+            <menu-list :value="getAccessors(prp[3])" :isfix="true"
+              :sources="AccessInit.map(x => x[PLang])"
+              @change:value="$event => changeNewProp($event, 'acmtp', ii)">
+            </menu-list>
+
+            <span @keypress="e => preventKeyPress(e, [13])"
+              @blur="e => changeNewProp(e, 'access modify name', ii)"
+              class="p36" contenteditable="true" 
+              v-html="prp[1]"></span>
+            <span v-if="getReturnType(prp[3])"><i>return</i>
+              <span @blur="e => changeNewProp(e, 'access modify type', ii)"
+                @keypress="e => preventKeyPress(e, [13, 32])"
+                contenteditable="true" class="p36" v-html="prp[2]"></span>
+            </span>
+            <span style="margin-left: 12px;cursor: pointer;"
+              @click.stop="e => removeProperty(ii, false)"><i class="bi bi-trash3"></i></span>
+          </div>
+          <textarea v-if="getTxtType(EditObject.item.type) != 'interface'" class="objedit-vwcode"
+            style="width: 100%; min-height: 90px;border-radius: 6px;border: none;"
+            @paste="pasteTxtArea" @keyup.enter="keyUpTxtArea" @keyup.delete="keyUpTxtArea"
+            @blur="e => changeNewProp(e, 'code context', ii)">{{prp[4]}}</textarea>
+          </div>
+        </div>
+        <span style="cursor: pointer;"
+        @click.stop="addProperty">[new Property]</span>
         <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
-        background-color: white;position: absolute;right: 35px;top: 5px;border-radius: 6px;padding-top: 4px;"
+          background-color: white;position: absolute;right: 35px;top: 5px;
+          border-radius: 6px;padding-top: 4px;"
           class="bi bi-floppy cpoint" @click.stop="onSaveChange"></i>
         <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
         background-color: white;position: absolute;right: 5px;top: 5px;border-radius: 6px;padding-top: 4px;"

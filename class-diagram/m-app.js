@@ -275,7 +275,9 @@ Promise.all([
                 const item = frmCode.item
                 if (!mItem) {
                     item.Fields = frmCode.iFields
-                    addNewFields()
+                    addNewFields.call(this)
+                    item.Properties = frmCode.iPropes
+                    addNewPropes.call(this)
                     this.DynamicVar.delete('FrameCode')
                     return
                 }
@@ -316,10 +318,10 @@ Promise.all([
                     }
                 }
                 item.Fields = frmCode.iFields
-                addNewFields()
+                addNewFields.call(this)
                 const amKey = mItem.PrpAmKey
                 for (const [ii, txt] of amKey) {
-                    const prp = item.Properties[ii]
+                    const prp = frmCode.iPropes[ii]
                     name = txt
                     if (typeof name != 'string') continue
                     name = name.trim()
@@ -344,7 +346,7 @@ Promise.all([
                 }
                 const amName = mItem.PrpAmName
                 for (const [ii, txt] of amName) {
-                    const prp = item.Properties[ii]
+                    const prp = frmCode.iPropes[ii]
                     const pName = prp[1]
                     name = txt.trim()
                     if (pName != name) {
@@ -354,7 +356,7 @@ Promise.all([
                 }
                 const amType = mItem.PrpAmType
                 for (const [ii, txt] of amType) {
-                    const prp = item.Properties[ii]
+                    const prp = frmCode.iPropes[ii]
                     const pType = prp[2]
                     name = clearSpace(txt, pType)
                     if (pType != name) {
@@ -364,7 +366,7 @@ Promise.all([
                 }
                 const ctCode = mItem.PrpAmCode
                 for (const [ii, txt] of ctCode) {
-                    const prp = item.Properties[ii]
+                    const prp = frmCode.iPropes[ii]
                     const pType = prp[4]
                     name = txt
                     if (!this.equalHas(name, pType)) {
@@ -372,6 +374,8 @@ Promise.all([
                         arrChange.push(`Return Fuction ${pType}`)
                     }
                 }
+                item.Properties = frmCode.iPropes
+                addNewPropes.call(this)
                 if (arrChange.length) {
                     //  console.log('changes ', arrChange)
                 }
@@ -384,8 +388,19 @@ Promise.all([
                 function addNewFields() {
                     if (!frmCode.Fields) return
                     if (!frmCode.Fields.length) return
-                    for (let ff = 0; ff < frmCode.Fields.length; ff++) {
-                        item.Fields.push(frmCode.Fields[ff])
+                    for (let ff = 0, fld; ff < frmCode.Fields.length; ff++) {
+                        fld = frmCode.Fields[ff]
+                        fld.AcModify = this.getTxtAcModify(fld.AcModify, true)
+                        item.Fields.push(fld)
+                    }
+                }
+                function addNewPropes() {
+                    if (!frmCode.Propers) return
+                    if (!frmCode.Propers.length) return
+                    for (let ff = 0, prp; ff < frmCode.Propers.length; ff++) {
+                        prp = frmCode.Propers[ff]
+                        prp[0] = this.getTxtAcModify(prp[0], true)
+                        item.Properties.push(prp)
                     }
                 }
             },
@@ -420,11 +435,13 @@ Promise.all([
             removeField(ii, isNew) {
                 const frmCode = this.DynamicVar.get('FrameCode')
                 let fields = frmCode.Fields
-                if (isNew && fields) {
-                    fields = JSON.parse(JSON.stringify(fields))
-                    fields.splice(ii, 1)
-                    if (!fields.length) delete frmCode.Fields
-                    else frmCode.Fields = fields
+                if (isNew) {
+                    if (fields) {
+                        fields = JSON.parse(JSON.stringify(fields))
+                        fields.splice(ii, 1)
+                        if (!fields.length) delete frmCode.Fields
+                        else frmCode.Fields = fields
+                    }
                     return
                 }
                 fields = frmCode.iFields
@@ -444,8 +461,7 @@ Promise.all([
                 if (!frmCode.Fields) {
                     frmCode.Fields = [{
                         ii: 0,
-                        acm: '-', name: 'fieldName', type: 'String',
-                        AcModify: '-', Name: 'fieldName', Type: 'String'
+                        AcModify: 'private', Name: 'fieldName', Type: 'String'
                     }]
                 } else {
                     if (frmCode.Fields.filter(x => 'fieldName' == x.Name).length) {
@@ -454,8 +470,7 @@ Promise.all([
                     let ii = frmCode.Fields.length
                     frmCode.Fields.push({
                         ii: ii,
-                        acm: '-', name: 'fieldName', type: 'String',
-                        AcModify: '-', Name: 'fieldName', Type: 'String'
+                        AcModify: 'private', Name: 'fieldName', Type: 'String'
                     })
                 }
             },
@@ -471,6 +486,84 @@ Promise.all([
                         break;
                     case 'field type':
                         frmCode.Fields[ii].Type = target.textContent
+                        break;
+                    default: break;
+                }
+            },
+            addProperty() {
+                const frmCode = this.DynamicVar.get('FrameCode')
+                if (!frmCode.Propers) {
+                    frmCode.Propers = [
+                        ['public', 'ProperName()', 'string', AccessInit[0][0], '']
+                    ]
+                } else {
+                    if (frmCode.Propers.filter(x => 'ProperName()' == x[1]).length) {
+                        return;
+                    }
+                    frmCode.Propers.push(['public', 'ProperName()', 'string', AccessInit[0][0], ''])
+                }
+            },
+            removeProperty(ii, isNew) {
+                const frmCode = this.DynamicVar.get('FrameCode')
+                let lstNwPr = frmCode.Propers
+                if (isNew) {
+                    if (lstNwPr) {
+                        if (-1 < ii) lstNwPr.splice(ii, 1)
+                        if (!lstNwPr.length) delete frmCode.Propers
+                    }
+                    return
+                }
+                lstNwPr = frmCode.iPropes
+                lstNwPr.splice(ii, 1)
+                const mItem = frmCode.MItem
+                if (mItem) {
+                    const amKey = mItem.PrpAmKey
+                    if (amKey && amKey.has(ii)) amKey.delete(ii)
+                    const aName = mItem.PrpAmName
+                    if (aName && aName.has(ii)) aName.delete(ii)
+                    const aType = mItem.PrpAmType
+                    if (aType && aType.has(ii)) aType.delete(ii)
+                    const amCode = mItem.PrpAmCode
+                    if (amCode && amCode.has(ii)) amCode.delete(ii)
+                }
+            },
+            changeNewProp(e, type, ii) {
+                const frmCode = this.DynamicVar.get('FrameCode')
+                const prop = frmCode.Propers[ii]
+                if ('acmtp' == type) {
+                    let acs = e
+                    switch (e) {
+                        case AccessInit[2][this.PLang]: // init
+                            acs = this.AccessInit[2][0]
+                            let a0 = prop[0].split(' ')
+                            prop[0] = a0[0]
+                            if (prop[2].length) prop[2] = ''
+                            break;
+                        case AccessInit[1][this.PLang]: // set
+                            prop[2] = 'void'
+                            break;
+                        case AccessInit[0][this.PLang]: // get
+                            if ('void' == prop[2]) prop[2] = 'string'
+                            if (!prop[2].length) prop[2] = 'string'
+                            break;
+                        default: break;
+                    }
+                    prop[3] = acs
+                    return
+                }
+                const target = e.target
+                let txt = target.textContent
+                switch (type) {
+                    case 'access modify key': prop[0] = txt
+                        break;
+                    case 'access modify name': prop[1] = txt
+                        break;
+                    case 'access modify type': prop[2] = txt
+                        break;
+                    case 'code context':
+                        txt = target.value
+                        prop[4] = txt
+                        setHeight(target, target.value)
                         break;
                     default: break;
                 }

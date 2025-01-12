@@ -99,7 +99,8 @@ const MxRect = {
             const dmVar = this.$root.DynamicVar
             dmVar.set('FrameCode', {
                 type: 2, item,
-                iFields: JSON.parse(JSON.stringify(item.Fields))
+                iFields: JSON.parse(JSON.stringify(item.Fields)),
+                iPropes: JSON.parse(JSON.stringify(item.Properties)),
             })
             this.$root.$nextTick(() => {
                 document.body.querySelectorAll(`textarea.objedit-vwcode`).forEach(el => {
