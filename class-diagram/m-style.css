@@ -14,7 +14,11 @@
 .vwheader:hover>.ctledit { display: inline-block; }
 .cpoint {cursor: pointer;}
 .p36 { padding: 3px 6px; }
-[contenteditable="plaintext-only"] {border-bottom: 1px solid #ffffff96;}
+
+[contenteditable="true"] {border-bottom: 1px solid #ffffff96;}
+[contenteditable="true"]:empty:before {
+    content: attr(data-placeholder); color: #98989898; /* Màu placeholder */
+}
 .mformedit {
     min-width: calc(100vw / 2); max-width: calc(100vw - 60px); min-height: 320px; max-height: calc(100vh - 30px);
     display: inline-block;  padding: 18px; transform: translate(-50%, -50%);

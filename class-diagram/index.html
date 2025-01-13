@@ -66,23 +66,27 @@
             :sources="StructTypes.map(x => x[PLang])"
             @change:value="$e => changeTypeObject($e)">
           </menu-list>
-          <span contenteditable="plaintext-only"
+          <span contenteditable="true"
             @input="e => onChange(e, 'class name')"
             @keypress="e => preventKeyPress(e, [13, 32])"
-            class="p36" v-html="EditObject.item.Name"></span>
+            data-placeholder="NameOfClass"
+            class="p36 ceditable" v-html="EditObject.item.Name"></span>
         </div>
         <div v-for="(field, ii) in EditObject.iFields"
           :key="'oldfield_' + field.AcModify"
           style="margin-bottom: 2px; display: flex;align-items: center;">
           <span @keypress="e => preventKeyPress(e, [13])"
             @input="e => onChange(e, 'field acmodify', ii)"
-            class="p36" contenteditable="plaintext-only">{{getTxtAcModify(field.AcModify)}}</span>
+            data-placeholder="AccessoriOfField"
+            class="p36 ceditable" contenteditable="true">{{getTxtAcModify(field.AcModify)}}</span>
           <span @keypress="e => preventKeyPress(e, [13, 32])"
             @input="e => onChange(e, 'field name', ii)"
-            class="p36" contenteditable="plaintext-only" v-html="field.Name"></span>
+            data-placeholder="NameOfField"
+            class="p36 ceditable" contenteditable="true" v-html="field.Name"></span>
           <span @keypress="e => preventKeyPress(e, [13])"
             @input="e => onChange(e, 'field type', ii)"
-            class="p36" contenteditable="plaintext-only" v-html="field.Type"></span>
+            data-placeholder="TypeOfField"
+            class="p36 ceditable" contenteditable="true" v-html="field.Type"></span>
           <span style="margin-left: 12px;cursor: pointer;"
             @click.stop="e => removeField(ii)"><i class="bi bi-trash3"></i></span>
         </div>
@@ -92,13 +96,16 @@
             style="margin-bottom: 2px; display: flex;align-items: center;">
             <span @keypress="e => preventKeyPress(e, [13])"
               @blur="e => onEditNewField(e, 'field acmodify', ii)"
-              class="p36" contenteditable="true">{{field.AcModify}}</span>
+              data-placeholder="AccessoriOfNewField"
+              class="p36 ceditable" contenteditable="true">{{field.AcModify}}</span>
             <span @keypress="e => preventKeyPress(e, [13, 32])"
               @blur="e => onEditNewField(e, 'field name', ii)"
-              class="p36" contenteditable="true" v-html="field.Name"></span>
+              data-placeholder="NameOfNewField"
+              class="p36 ceditable" contenteditable="true" v-html="field.Name"></span>
             <span @keypress="e => preventKeyPress(e, [13, 32])"
               @blur="e => onEditNewField(e, 'field type', ii)"
-              class="p36" contenteditable="true" v-html="field.Type"></span>
+              data-placeholder="TypeOfNewField"
+              class="p36 ceditable" contenteditable="true" v-html="field.Type"></span>
             <span style="margin-left: 12px;cursor: pointer;"
               @click.stop="e => removeField(ii, true)"><i class="bi bi-trash3"></i></span>
           </div>
@@ -109,9 +116,10 @@
           style="margin-bottom: 2px;"
           :style="[0 == ii ? {marginTop: '10px'} : null]">
           <div style="display: flex;align-items: center;">
-            <span class="p36" @keypress="e => preventKeyPress(e, [13])"
+            <span class="p36 ceditable" @keypress="e => preventKeyPress(e, [13])"
               @input="e => onChange(e, 'access modify key', ii)"
-              contenteditable="plaintext-only">{{getTxtAcModify(prp[0])}}</span>
+              data-placeholder="AccessoriOfProperty"
+              contenteditable="true">{{getTxtAcModify(prp[0])}}</span>
             
             <menu-list :value="getAccessors(prp[3])" :isfix="true"
               :sources="AccessInit.map(x => x[PLang])"
@@ -120,18 +128,21 @@
 
             <span @keypress="e => preventKeyPress(e, [13])"
               @input="e => onChange(e, 'access modify name', ii)"
-              class="p36" contenteditable="plaintext-only" 
+              class="p36 ceditable" contenteditable="true" 
+              data-placeholder="NameOfProperty"
               v-html="prp[1]"></span>
-              <span v-if="getReturnType(prp[3])"><i>return</i>
-                <span @input="e => onChange(e, 'access modify type', ii)"
-                  @keypress="e => preventKeyPress(e, [13, 32])"
-                  contenteditable="plaintext-only" class="p36" v-html="prp[2]"></span>
-              </span>
+            <span v-if="getReturnType(prp[3])"><i>return</i>
+              <span @input="e => onChange(e, 'access modify type', ii)"
+                @keypress="e => preventKeyPress(e, [13, 32])"
+                data-placeholder="ReturnTypeOfProperty"
+                contenteditable="true" class="p36 ceditable" v-html="prp[2]"></span>
+            </span>
             <span style="margin-left: 12px;cursor: pointer;"
               @click.stop="e => removeProperty(ii, false)"><i class="bi bi-trash3"></i></span>
           </div>
           <textarea v-if="getTxtType(EditObject.item.type) != 'interface'" class="objedit-vwcode"
             style="width: 100%; min-height: 90px;border-radius: 6px;border: none;"
+            placeholder="ContentCodeOfProperty"
             @paste="pasteTxtArea" @keyup.enter="keyUpTxtArea" @keyup.delete="keyUpTxtArea"
             @change="e => onChange(e, 'code context', ii)">{{prp[4]}}</textarea>
         </div>
@@ -140,8 +151,9 @@
             style="margin-bottom: 2px;"
             :style="[0 == ii ? {marginTop: '10px'} : null]">
           <div style="display: flex;align-items: center;">
-            <span class="p36" @keypress="e => preventKeyPress(e, [13])"
+            <span class="p36 ceditable" @keypress="e => preventKeyPress(e, [13])"
               @blur="e => changeNewProp(e, 'access modify key', ii)"
+              data-placeholder="AccessoriOfProperty"
               contenteditable="true">{{prp[0]}}</span>
             <menu-list :value="getAccessors(prp[3])" :isfix="true"
               :sources="AccessInit.map(x => x[PLang])"
@@ -150,12 +162,12 @@
 
             <span @keypress="e => preventKeyPress(e, [13])"
               @blur="e => changeNewProp(e, 'access modify name', ii)"
-              class="p36" contenteditable="true" 
+              class="p36 ceditable" contenteditable="true" 
               v-html="prp[1]"></span>
             <span v-if="getReturnType(prp[3])"><i>return</i>
               <span @blur="e => changeNewProp(e, 'access modify type', ii)"
                 @keypress="e => preventKeyPress(e, [13, 32])"
-                contenteditable="true" class="p36" v-html="prp[2]"></span>
+                contenteditable="true" class="p36 ceditable" v-html="prp[2]"></span>
             </span>
             <span style="margin-left: 12px;cursor: pointer;"
               @click.stop="e => removeProperty(ii, false)"><i class="bi bi-trash3"></i></span>

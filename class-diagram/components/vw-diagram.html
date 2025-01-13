@@ -83,7 +83,7 @@
             <div v-for="(prp, ii) in ListProperty"
                 @click="e => showCodeBody(ii, 0)">
                 &nbsp;<span>{{prp[0]}}</span>&nbsp;
-                <span contenteditable="plaintext-only"
+                <span contenteditable="true"
                     @keypress="e => $root.preventKeyPress(e, [13, 32])"
                     @blur="e => onDoneEdit(e, 'property', ii)">{{prp[1]}}</span>
                 &nbsp;<span>{{prp[2]}}</span>
