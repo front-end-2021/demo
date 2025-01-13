@@ -242,7 +242,7 @@ const RectClass = {
             const target = e.target
             switch (type) {
                 case 'class name':
-                    target.setAttribute('contenteditable', 'plaintext-only')
+                    target.setAttribute('contenteditable', 'true')
                     target.focus()
                     break;
                 default: break;
