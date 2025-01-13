@@ -97,6 +97,7 @@ const MxRect = {
             const item = this.item
             // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
             const dmVar = this.$root.DynamicVar
+            dmVar.delete('FViewCode')
             dmVar.set('FrameCode', {
                 type: 2, item,
                 iFields: JSON.parse(JSON.stringify(item.Fields)),
@@ -143,6 +144,11 @@ const RectClass = {
         'rect-enum': RectEnum,
     },
     methods: {
+        clearDyVar() {
+            const dmVar = this.$root.DynamicVar
+            dmVar.delete('FrameCode')
+            dmVar.delete('FViewCode')
+        },
         getFragProp(prp) {
             let acModify = prp[0]
             acModify = acModify.replace(' override', '')
@@ -221,13 +227,14 @@ const RectClass = {
                 }
                 let html = hljs.highlight(txt, { language: 'cs' }).value
                 const dmVar = this.$root.DynamicVar
-                dmVar.set('FrameCode', {
+                dmVar.delete('FrameCode')
+                dmVar.set('FViewCode', {
                     top, left, html, type: 1
                 })
                 this.$root.$nextTick(() => {
                     let vwFcode = document.body.querySelector(`#dnb-viewcode`)
                     if (vwFcode) {
-                        let frmCode = dmVar.get('FrameCode')
+                        let frmCode = dmVar.get('FViewCode')
                         let offF = vwFcode.getBoundingClientRect()
                         let maxY = offF.top + offF.height
                         if (window.innerHeight < maxY) {

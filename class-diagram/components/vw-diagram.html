@@ -74,9 +74,9 @@
         </div>
         <div v-if="0 < ExtendFields.length + item.Fields.length"
             style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
-            <i @click.stop="e => { $root.DynamicVar.delete('FrameCode') }" style="display: block;"
+            <i @click.stop="clearDyVar" style="display: block;"
                 v-for="field in ExtendFields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</i>
-            <div @click.stop="e => { $root.DynamicVar.delete('FrameCode') }"
+            <div @click.stop="clearDyVar"
                 v-for="field in item.Fields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</div>
         </div>
         <div style="font-size: 14px;font-weight: 100;padding-right: 6px;">

@@ -21,7 +21,7 @@ Promise.all([
                 MinY: 10, MaxY: 880,
                 ListClass: getListCls(),
                 DynamicVar: new Map(),
-                //'PopMenu', 'FrameCode': {top,left,html,type,item}, DragElm (Dùng kéo các khung class)
+                //'PopMenu', 'FViewCode', 'FrameCode': {top,left,html,type,item}, DragElm (Dùng kéo các khung class)
                 NewClassName: null,
                 StructTypes: StructTypes,
                 AccessInit: AccessInit,
@@ -37,17 +37,19 @@ Promise.all([
             },
             ViewCode() {
                 const dmVar = this.DynamicVar
-                if (dmVar.has('FrameCode')) {
-                    let frmCode = dmVar.get('FrameCode')
-                    if (1 == frmCode.type) return frmCode
+                if (dmVar.has('FViewCode')) {
+                    return dmVar.get('FViewCode')
+                    // let frmCode = dmVar.get('FViewCode')
+                    // if (1 == frmCode.type) return frmCode
                 }
                 return null
             },
             EditObject() {
                 const dmVar = this.DynamicVar
                 if (dmVar.has('FrameCode')) {
-                    let frmCode = dmVar.get('FrameCode')
-                    if (2 == frmCode.type) return frmCode
+                    return dmVar.get('FrameCode')
+                    // let frmCode = dmVar.get('FrameCode')
+                    // if (2 == frmCode.type) return frmCode
                 }
                 return null
             },
@@ -194,7 +196,18 @@ Promise.all([
             },
             changeTypeObject(val) {
                 console.log('change type object ', val)
-                //getTxtType(EditObject.item.type)
+                const frmCode = this.DynamicVar.get('FrameCode')
+                const ii = this.PLang
+                switch (val) {
+                    case StructTypes[0][ii]:
+                        break;
+                    case StructTypes[1][ii]:
+                        break;
+                    case StructTypes[2][ii]:
+                        break;
+                    case StructTypes[3][ii]:
+                        break;
+                }
             },
             getReturnType(acs) {
                 if (typeof acs != 'string') return false;
