@@ -61,7 +61,7 @@
     <div v-if="EditObject"
       class="mformedit">
         <div style="margin-bottom: 12px; display: flex;align-items: center;">
-          <!-- <span class="p36">{{getTxtType(EditObject.item.type)}}</span> -->
+          
           <menu-list :value="getTxtType(EditObject.item.type)" :isfix="true"
             :sources="StructTypes.map(x => x[PLang])"
             @change:value="$e => changeTypeObject($e)">
@@ -70,7 +70,9 @@
             @input="e => onChange(e, 'class name')"
             @keypress="e => preventKeyPress(e, [13, 32])"
             data-placeholder="NameOfClass"
-            class="p36 ceditable" v-html="EditObject.item.Name"></span>
+            class="p36 ceditable" v-html="EditObject.item.Name">
+          </span>
+          
         </div>
         <div v-for="(field, ii) in EditObject.iFields"
           :key="'oldfield_' + field.AcModify"

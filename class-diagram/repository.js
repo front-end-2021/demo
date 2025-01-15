@@ -5,7 +5,7 @@ export function getListCls() {
     let id = getId(name)
     let type = StructTypes[2][0]    //'instant class'
     lstCls.push({
-        id: id, Name: name, type,
+        id: id, Name: name, type, toIds: [],
         top: 30, left: 90, width: 220, height: 100,
         Fields: [
             { AcModify: '#', Name: 'name', Type: 'String' },
@@ -35,7 +35,7 @@ export function getListCls() {
     tIds = [id]
     type = StructTypes[1][0]    //'abstract class'
     lstCls.push({
-        id: id, type, Name: name, 
+        id: id, type, Name: name, toIds: [],
         top: 70, left: 1024, width: 150, height: 100,
         Fields: [
             { AcModify: '+', Name: 'age', Type: 'Int' },
@@ -63,7 +63,7 @@ export function getListCls() {
     tIds.push(id)
     type = StructTypes[0][0]    //'interface'
     lstCls.push({
-        id: id, type: 'interface', Name: name, 
+        id: id, type, Name: name, toIds: [],
         top: 500, left: 1200, width: 150, height: 100,
         Fields: [], Properties: [
             ['+', 'Fly()', 'void', AccessInit[1][0]],
@@ -73,7 +73,7 @@ export function getListCls() {
     id = getId(name)
     tIds.push(id)
     lstCls.push({
-        id: id, type, Name: name, 
+        id: id, type, Name: name, toIds: [],
         top: 500, left: 1400, width: 150, height: 100,
         Fields: [], Properties: [
             ['+', 'Quack()', 'void', AccessInit[1][0]],
@@ -107,7 +107,7 @@ export function getListCls() {
     id = getId(name)
     type = StructTypes[1][0]    //'abstract class'
     lstCls.push({
-        id: id, type, Name: name, 
+        id: id, type, Name: name, toIds: [],
         top: 290, left: 480, width: 220, height: 120,
         Fields: [
             { AcModify: '#', Name: 'description', Type: 'String' },
@@ -181,9 +181,7 @@ export function getListCls() {
     lstCls.push({
         id: id, type, Name: name, toIds: tIds,
         top: 660, left: 490, width: 220, height: 120,
-        Fields: [
-            
-        ],
+        Fields: [ ],
         Properties: [
             ['+', 'Soy(Beverage b)', '', AccessInit[2][0], `beverage = b`],
             ['+ override', 'getDescription()', 'List<String>', AccessInit[0][0]],

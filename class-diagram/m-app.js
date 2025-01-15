@@ -593,6 +593,60 @@ Promise.all([
                     }
                 }
             },
+            getListInherit(item) {
+                if (StructTypes[3][0] == item.type) return []   // 'enum'
+                if (StructTypes[1][0] == item.type) return []   // 'abstract class'
+                let lst = this.ListClass
+                const lstCls = []
+                const lstItf = []
+                for (let ii = 0, cls; ii < lst.length; ii++) {
+                    cls = lst[ii]
+                    switch (cls.type) {
+                        case StructTypes[0][0]: // 'interface'
+                            lstItf.push(cls)
+                            break;
+                        case StructTypes[1][0]: // 'abstract class'
+                        case StructTypes[2][0]: // 'instant'
+                            lstCls.push(cls)
+                            break;
+                        default: break;
+                    }
+                }
+                const lstIdTo = item.toIds
+                if (lstItf.length && lstIdTo && lstIdTo.length) {
+                    const itfIds = []
+                    for (let ii = 0, cls; ii < lst.length; ii++) {
+                        cls = lst[ii]
+                        if (!lstIdTo.includes(cls.id)) continue;
+                        if (StructTypes[0][0] == cls.type)
+                            itfIds.push(cls.id)     // interface
+                    }
+                    for (let ii = lstItf.length - 1, itf; -1 < ii; ii--) {
+                        itf = lstItf[ii]
+                        if (!itfIds.includes(itf.id)) continue
+                        lstItf.splice(ii, 1)    // remove at ii
+                    }
+                }
+                if (StructTypes[0][0] == item.type) return lstItf   // interface
+                // class
+                if (!lstIdTo || !lstIdTo.length) return lst;
+
+                for (let ii = 0, cls; ii < lst.length; ii++) {
+                    cls = lst[ii]
+                    if (!lstIdTo.includes(cls.id)) continue;
+                    if (StructTypes[1][0] == cls.type || StructTypes[2][0] == cls.type) {
+                        // 'abstract class' || 'instant class'
+                        lstCls.splice(0)
+                        break;
+                    }
+                }
+                if (!lstCls.length) return lstItf;
+                if (!lstItf.length) return lstCls;
+                lst = []
+                for (let ii = 0; ii < lstItf.length; ii++) lst.push(lstItf[ii])
+                for (let ii = 0; ii < lstCls.length; ii++) lst.push(lstCls[ii])
+                return lst
+            },
         },
         //  beforeCreate() { },
         //  created() { },
