@@ -49,9 +49,17 @@ export const StructTypes = [
     ['abstract class', 'abstract class'],
     ['instant class', 'class'],
     ['enum', 'enum'],
+    ['struct', 'struct'],
 ]
 export const AccessInit = [
     ['get', 'get'],
     ['set', 'set'],
     ['init', 'Constructor']
+]
+export const ListKeyword = [
+    'int', 'float', 'double', 'char',
+    'if', 'else', 'switch', 'case',
+    'for', 'while', 'do', 'break', 'continue',
+    'return', 'void', 'static',
+    'try', 'catch', 'finally', 'throw',
 ]
