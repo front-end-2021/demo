@@ -35,7 +35,7 @@
     </section>
 </template>
 <template id="tmp-rect-enum">
-    <div :id="item.id" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
+    <div :id="'cls_' + item.id" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
             position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
@@ -48,7 +48,7 @@
 </template>
 <template id="tmp-rect-class">
     <rect-enum v-if="'enum' == item.type" :item="item"></rect-enum>
-    <div v-else :id="item.id" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
+    <div v-else :id="'cls_' + item.id" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
             position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">

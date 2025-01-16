@@ -68,7 +68,7 @@ const MxRect = {
                 Top: this.item.top,
                 Left: this.item.left
             })
-            const itemEl = document.body.querySelector(`#dnb-vw-main #${this.item.id}`)
+            const itemEl = document.body.querySelector(`#dnb-vw-main #cls_${this.item.id}`)
             itemEl.style.zIndex = '1'
             itemEl.style.backgroundColor = 'white'
         },

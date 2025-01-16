@@ -2,10 +2,10 @@ import { StructTypes, AccessInit } from "./common.js"
 export function getListCls() {
     let lstCls = []
     let name = 'Account'
-    let id = getId(name)
+    let id = 1; //getId(name)
     let type = StructTypes[2][0]    //'instant class'
     lstCls.push({
-        id: id, Name: name, type, toIds: [],
+        id: id++, Name: name, type, toIds: [],
         top: 30, left: 90, width: 220, height: 100,
         Fields: [
             { AcModify: '#', Name: 'name', Type: 'String' },
@@ -19,7 +19,7 @@ export function getListCls() {
     })
     let tIds = [id]
     name = 'Contact'
-    id = getId(name)
+    id++// = getId(name)
     lstCls.push({
         id: id, Name: name, toIds: tIds, type,
         top: 30, left: 380, width: 210, height: 100,
@@ -31,7 +31,7 @@ export function getListCls() {
         ]
     })
     name = 'Animal'
-    id = getId(name)
+    id++// = getId(name)
     tIds = [id]
     type = StructTypes[1][0]    //'abstract class'
     lstCls.push({
@@ -46,7 +46,7 @@ export function getListCls() {
         ]
     })
     name = 'Zebra'
-    id = getId(name)
+    id++// = getId(name)
     type = StructTypes[2][0]    //'instant class'
     lstCls.push( {
         id: id, type, Name: name, toIds: tIds,
@@ -59,7 +59,7 @@ export function getListCls() {
     })
     tIds = [...tIds]
     name = 'iFly'
-    id = getId(name)
+    id++// = getId(name)
     tIds.push(id)
     type = StructTypes[0][0]    //'interface'
     lstCls.push({
@@ -70,7 +70,7 @@ export function getListCls() {
         ]
     })
     name = 'iQuack'
-    id = getId(name)
+    id++// = getId(name)
     tIds.push(id)
     lstCls.push({
         id: id, type, Name: name, toIds: [],
@@ -80,7 +80,7 @@ export function getListCls() {
         ]
     })
     name = 'Duck'
-    id = getId(name)
+    id++// = getId(name)
     type = StructTypes[2][0]    //'instant class'
     lstCls.push({
         id: id, type, Name: name, toIds: tIds,
@@ -92,7 +92,7 @@ export function getListCls() {
         ]
     })
     name = 'Size'
-    id = getId(name)
+    id++// = getId(name)
     type = StructTypes[3][0]    //'enum'
     lstCls.push({
         id: id, type, Name: name, 
@@ -104,7 +104,7 @@ export function getListCls() {
         ], Properties: []
     })
     name = 'Beverage'
-    id = getId(name)
+    id++// = getId(name)
     type = StructTypes[1][0]    //'abstract class'
     lstCls.push({
         id: id, type, Name: name, toIds: [],
@@ -121,7 +121,7 @@ export function getListCls() {
     })
     tIds = [id]
     name = 'Decaf'
-    id = getId(name)
+    id++// = getId(name)
     type = StructTypes[2][0]    //'instant class'
     lstCls.push({
         id: id, type, Name: name, toIds: tIds,
@@ -132,7 +132,7 @@ export function getListCls() {
         ]
     })
     name = 'Espresso'
-    id = getId(name)
+    id++// = getId(name)
     lstCls.push({
         id: id, type, Name: name, toIds: tIds,
         top: 480, left: 290, width: 220, height: 120,
@@ -142,7 +142,7 @@ export function getListCls() {
         ]
     })
     name = 'DarkRoast'
-    id = getId(name)
+    id++// = getId(name)
     lstCls.push({
         id: id, type, Name: name, toIds: tIds,
         top: 480, left: 510, width: 220, height: 120,
@@ -152,7 +152,7 @@ export function getListCls() {
         ]
     })
     name = 'HouseBlend'
-    id = getId(name)
+    id++// = getId(name)
     lstCls.push({
         id: id, type, Name: name, toIds: tIds,
         top: 480, left: 750, width: 220, height: 120,
@@ -162,7 +162,7 @@ export function getListCls() {
         ]
     })
     name = 'CondimentDecorator'
-    id = getId(name)
+    id++// = getId(name)
     type = StructTypes[1][0]    //'abstract class'
     lstCls.push({
         id: id, type, Name: name, toIds: tIds,
@@ -176,7 +176,7 @@ export function getListCls() {
     })
     tIds = [id]
     name = 'Soy'
-    id = getId(name)
+    id++// = getId(name)
     type = StructTypes[2][0]    //'instant class'
     lstCls.push({
         id: id, type, Name: name, toIds: tIds,
