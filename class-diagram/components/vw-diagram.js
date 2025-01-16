@@ -99,9 +99,10 @@ const MxRect = {
             const dmVar = this.$root.DynamicVar
             dmVar.delete('FViewCode')
             dmVar.set('FrameCode', {
-                type: 2, item,
+                type: item.type, item,
                 iFields: JSON.parse(JSON.stringify(item.Fields)),
                 iPropes: JSON.parse(JSON.stringify(item.Properties)),
+                eItem: JSON.parse(JSON.stringify(item))
             })
             this.$root.$nextTick(() => {
                 document.body.querySelectorAll(`textarea.objedit-vwcode`).forEach(el => {
@@ -269,8 +270,7 @@ const RectClass = {
                     break;
                 default: break;
             }
-            const dmVar = this.$root.DynamicVar
-            dmVar.delete('FrameCode')
+            this.$root.clearDyVar()
         },
     },
     computed: {

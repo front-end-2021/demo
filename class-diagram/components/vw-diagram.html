@@ -4,15 +4,12 @@
             :style="[{ width: $root.MinX + 'px'}]">
             <h3 style="margin: 0;">left side</h3>
             <div>
-                <menu-list :value="$root.Langs[$root.PLang]" :isfix="true"
-                    :sources="$root.Langs"
+                <menu-list :value="$root.Langs[$root.PLang]" :isfix="true" :sources="$root.Langs"
                     @change:value="$e => changeLanguage($e)">
                 </menu-list>
             </div>
             <div style="display: inline-block;border: 1px solid rgb(0, 0, 0);
-                width: calc(100% - 10px);cursor: default;border-radius: 4px;"
-                @mousedown="onMouseDown"
-                id="cls-sample">
+                width: calc(100% - 10px);cursor: default;border-radius: 4px;" @mousedown="onMouseDown" id="cls-sample">
                 <div style="font-size: 18px;font-weight: bold;text-align: center;
                     border-bottom: 1px solid black;">ClassName</div>
                 <div style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
@@ -23,56 +20,42 @@
                 </div>
             </div>
         </div>
-        <div id="dnb-vw-main" style="position: relative;"
-            :style="[{ width: $root.MaxX - $root.MinX + 'px' }]">
-            <canvas id="dnb-mcanvas" :width="$root.MaxX - $root.MinX" height="870" 
-                style="border:1px solid #000000;">
+        <div id="dnb-vw-main" style="position: relative;" :style="[{ width: $root.MaxX - $root.MinX + 'px' }]">
+            <canvas id="dnb-mcanvas" :width="$root.MaxX - $root.MinX" height="870" style="border:1px solid #000000;">
                 Your browser does not support the HTML canvas tag.
             </canvas>
             <div style="position: absolute;top: 0;left: 0;
             width: 100%;height: 870px;
             border: 1px solid rgb(0, 0, 0);">
-                <rect-class v-for="wItm in $root.ListClass" 
-                    :item="wItm"></rect-class>
-                <rect-class v-if="$root.NewClassName != null" 
-                    :item="$root.NewClassName"></rect-class>
+                <rect-class v-for="wItm in $root.ListClass" :item="wItm"></rect-class>
+                <rect-class v-if="$root.NewClassName != null" :item="$root.NewClassName"></rect-class>
             </div>
-            
+
         </div>
     </section>
 </template>
-
 <template id="tmp-rect-enum">
-    <div :id="item.id"
-        style="display: inline-block;border: 1px solid rgb(0, 0, 0);
+    <div :id="item.id" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
             position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
-            <i class="bi bi-arrows-move cpoint ctlmove"
-                @mousedown="onMouseDown"></i>
-            <i class="bi bi-pen cpoint ctledit"
-                @click.stop="editObject"></i>
+            <i class="bi bi-arrows-move cpoint ctlmove" @mousedown="onMouseDown"></i>
+            <i class="bi bi-pen cpoint ctledit" @click.stop="editObject"></i>
             <span style="font-weight: bold;">enum {{item.Name}}</span>
         </div>
-        <div style="font-size: 16px; font-weight: 300;padding: 0 6px;">
-            {{TxtField}}
-        </div>
+        <div style="font-size: 16px; font-weight: 300;padding: 0 6px;">{{TxtField}}</div>
     </div>
 </template>
 <template id="tmp-rect-class">
     <rect-enum v-if="'enum' == item.type" :item="item"></rect-enum>
-    <div v-else :id="item.id"
-        style="display: inline-block;border: 1px solid rgb(0, 0, 0);
+    <div v-else :id="item.id" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
             position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
-            <i class="bi bi-arrows-move cpoint ctlmove"
-                @mousedown="onMouseDown"></i>
-            <i class="bi bi-pen cpoint ctledit"
-                @click.stop="editObject"></i>
-            <span style="font-weight: bold;" 
-                @dblclick="e => onEditable(e, 'class name')"
-                @keypress="e => $root.preventKeyPress(e, [13, 32])"
+            <i class="bi bi-arrows-move cpoint ctlmove" @mousedown="onMouseDown"></i>
+            <i class="bi bi-pen cpoint ctledit" @click.stop="editObject"></i>
+            <span style="font-weight: bold;" @dblclick="e => onEditable(e, 'class name')"
+                @keypress="e => $root.preventKeyPress(e, [13, 32])" 
                 @blur="e => onDoneEdit(e, 'class name')"
                 @click="e => showCodeBody(null, e)">{{ClassName}}</span>
             <span v-if="ExtendsView" v-html="ExtendsView"></span>
@@ -82,17 +65,16 @@
             style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
             <i @click.stop="$root.clearDyVar" style="display: block;"
                 v-for="field in ExtendFields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</i>
-            <div @click.stop="$root.clearDyVar"
-                v-for="field in item.Fields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</div>
+            <div @click.stop="$root.clearDyVar" 
+                v-for="field in item.Fields">&nbsp;{{field.AcModify}} {{field.Name}}:{{field.Type}}
+            </div>
         </div>
         <div style="font-size: 14px;font-weight: 100;padding-right: 6px;">
-            <div v-for="(prp, ii) in ListProperty"
-                @click="e => showCodeBody(ii, 0)">
-                &nbsp;<span>{{prp[0]}}</span>&nbsp;
-                <span contenteditable="true"
+            <div v-for="(prp, ii) in ListProperty" 
+                @click="e => showCodeBody(ii, 0)">&nbsp;<span>{{prp[0]}}</span>&nbsp;<span 
+                    contenteditable="true" 
                     @keypress="e => $root.preventKeyPress(e, [13, 32])"
-                    @blur="e => onDoneEdit(e, 'property', ii)">{{prp[1]}}</span>
-                &nbsp;<span>{{prp[2]}}</span>
+                    @blur="e => onDoneEdit(e, 'property', ii)">{{prp[1]}}</span>&nbsp;<span>{{prp[2]}}</span>
             </div>
             <i v-for="(prp, ii) in ExtendProperties" 
                 @click.stop="e => showCodeBody(ii, item.Properties.length)"
@@ -101,23 +83,31 @@
     </div>
 </template>
 <template id="tmp-menu-list">
-    <span class="wrap-mnlist"
-        style="position: relative;cursor:default;"
+    <span class="wrap-mnlist" style="position: relative;cursor:default;"
         :style="[ListSrc.length ? { minWidth: '82px' } : null]">
         <span v-if="!ListSrc.length" @click="openLstSrc">{{value}}</span>
-        <span v-else class="dnb-mnlst"
-          style="display: inline-flex; flex-direction: column;
+        <span v-else class="dnb-mnlst" style="display: inline-flex; flex-direction: column;
             position: absolute; z-index: 1;
             background-color: white; top: -12px;width: max-content;
             box-shadow: 0 .125rem .25rem #00000030;">
-          <span v-for="acs in ListSrc"
-            @click.stop="e => changeValue(acs)"
-            style="border-bottom: solid 1px #e3e3e3; 
-            box-sizing: border-box;width: 100%;"
-            :style="[acs == this.value ? {
+            <span v-for="acs in ListSrc" @click.stop="e => changeValue(acs)" style="border-bottom: solid 1px #e3e3e3; 
+            box-sizing: border-box;width: 100%;" :style="[acs == this.value ? {
                 backgroundColor: '#dbdbdb'
-            } : null]"
-            class="p36">{{acs}}</span>
+            } : null]" class="p36">{{acs}}</span>
         </span>
-      </span>
+    </span>
+</template>
+<template id="tmp-drp-search">
+    <div style="position: relative;display: inline-block;width: 60px;height: 48px;">
+        <div style="position: absolute;top:0;left: 0;display: flex;flex-direction: column;
+                min-width: 66px;min-height: 120px;">
+            <input type="text" placeholder="typing to search by name..." 
+                style="width: 100%;"
+                v-model="TxtSearch" @input="inSearch"/>
+            <div class="dr_lst-wrap">
+                <div v-for="item in ListSrc"
+                    @click.stop="e => selectItem(item)">{{item.Name}}</div>
+            </div>
+        </div>
+    </div>
 </template>
