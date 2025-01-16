@@ -3,6 +3,12 @@
         <div id="dnb-vwtab-left" style="display: inline-flex;flex-direction: column;"
             :style="[{ width: $root.MinX + 'px'}]">
             <h3 style="margin: 0;">left side</h3>
+            <div>
+                <menu-list :value="$root.Langs[$root.PLang]" :isfix="true"
+                    :sources="$root.Langs"
+                    @change:value="$e => changeLanguage($e)">
+                </menu-list>
+            </div>
             <div style="display: inline-block;border: 1px solid rgb(0, 0, 0);
                 width: calc(100% - 10px);cursor: default;border-radius: 4px;"
                 @mousedown="onMouseDown"
@@ -69,14 +75,14 @@
                 @keypress="e => $root.preventKeyPress(e, [13, 32])"
                 @blur="e => onDoneEdit(e, 'class name')"
                 @click="e => showCodeBody(null, e)">{{ClassName}}</span>
-            <span v-if="ExtendsView">:&nbsp;<i>{{ExtendsView}}</i></span>
+            <span v-if="ExtendsView" v-html="ExtendsView"></span>
             <span v-else></span>
         </div>
         <div v-if="0 < ExtendFields.length + item.Fields.length"
             style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
-            <i @click.stop="clearDyVar" style="display: block;"
+            <i @click.stop="$root.clearDyVar" style="display: block;"
                 v-for="field in ExtendFields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</i>
-            <div @click.stop="clearDyVar"
+            <div @click.stop="$root.clearDyVar"
                 v-for="field in item.Fields">&nbsp;{{field.AcModify}} {{field.Name}}: {{field.Type}}</div>
         </div>
         <div style="font-size: 14px;font-weight: 100;padding-right: 6px;">

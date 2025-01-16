@@ -26,6 +26,7 @@ Promise.all([
                 StructTypes: StructTypes,
                 AccessInit: AccessInit,
                 PLang: 1,
+                Langs: ['Uml', 'CSharp', 'Java'],
             }
         },
         computed: {
@@ -592,6 +593,11 @@ Promise.all([
                         dmVar.delete('PopMenu')
                     }
                 }
+            },
+            clearDyVar() {
+                const dmVar = this.$root.DynamicVar
+                dmVar.delete('FrameCode')
+                dmVar.delete('FViewCode')
             },
             getListInherit(item) {
                 if (StructTypes[3][0] == item.type) return []   // 'enum'

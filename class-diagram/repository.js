@@ -11,10 +11,10 @@ export function getListCls() {
             { AcModify: '#', Name: 'name', Type: 'String' },
             { AcModify: '#', Name: 'emailAddress', Type: 'String' },
         ], Properties: [
-            ['+', 'GetName()', 'String', AccessInit[0][0], `return this.Name`],
+            ['+', 'GetName()', 'string', AccessInit[0][0], `return this.Name`],
             ['+', 'SetName(String n)', 'void', AccessInit[1][0], `this.Name = n`],
-            ['+', 'GetEmailAddress()', 'String', AccessInit[0][0], `return emailAddress`],
-            ['+', 'SetEmailAddress(String e)', 'void', AccessInit[1][0], `emailAddress = e`],
+            ['+', 'GetEmailAddress()', 'string', AccessInit[0][0], `return emailAddress`],
+            ['+', 'SetEmailAddress(string e)', 'void', AccessInit[1][0], `emailAddress = e`],
         ]
     })
     let tIds = [id]
@@ -24,10 +24,10 @@ export function getListCls() {
         id: id, Name: name, toIds: tIds, type,
         top: 30, left: 380, width: 210, height: 100,
         Fields: [
-            { AcModify: '-', Name: 'faxNumber', Type: 'String' },
+            { AcModify: '-', Name: 'faxNumber', Type: 'string' },
         ], Properties: [
-            ['+', 'GetFaxNumber()', 'Int', AccessInit[0][0]],
-            ['+', 'SetFaxNumber(Int f)', 'void', AccessInit[1][0], `faxNumber = f`],
+            ['+', 'GetFaxNumber()', 'int', AccessInit[0][0]],
+            ['+', 'SetFaxNumber(int f)', 'void', AccessInit[1][0], `faxNumber = f`],
         ]
     })
     name = 'Animal'
@@ -38,11 +38,11 @@ export function getListCls() {
         id: id, type, Name: name, toIds: [],
         top: 70, left: 1024, width: 150, height: 100,
         Fields: [
-            { AcModify: '+', Name: 'age', Type: 'Int' },
-            { AcModify: '+', Name: 'gender', Type: 'String' },
+            { AcModify: '+', Name: 'age', Type: 'int' },
+            { AcModify: '+', Name: 'gender', Type: 'string' },
         ], Properties: [
-            ['+', 'IsMammal()', 'Bool', AccessInit[0][0]],
-            ['+', 'Mate()', 'Int', AccessInit[0][0]],
+            ['+', 'IsMammal()', 'bool', AccessInit[0][0]],
+            ['+', 'Mate()', 'int', AccessInit[0][0]],
         ]
     })
     name = 'Zebra'
@@ -52,7 +52,7 @@ export function getListCls() {
         id: id, type, Name: name, toIds: tIds,
         top: 270, left: 1280, width: 150, height: 100,
         Fields: [
-            { AcModify: '+', Name: 'isWild', Type: 'String' },
+            { AcModify: '+', Name: 'isWild', Type: 'string' },
         ], Properties: [
             ['+', 'Run()', 'void', AccessInit[1][0]],
         ]
@@ -86,7 +86,7 @@ export function getListCls() {
         id: id, type, Name: name, toIds: tIds,
         top: 270, left: 880, width: 150, height: 100,
         Fields: [
-            { AcModify: '+', Name: 'beakColor', Type: 'String' },
+            { AcModify: '+', Name: 'beakColor', Type: 'string' },
         ], Properties: [
             ['+', 'Swim()', 'void', AccessInit[1][0]],
         ]
@@ -110,10 +110,10 @@ export function getListCls() {
         id: id, type, Name: name, toIds: [],
         top: 290, left: 480, width: 220, height: 120,
         Fields: [
-            { AcModify: '#', Name: 'description', Type: 'String' },
+            { AcModify: '#', Name: 'description', Type: 'string' },
             { AcModify: '#', Name: 'size', Type: 'Size' },
         ], Properties: [
-            ['+ virtual', 'getDescription()', 'Bool', AccessInit[0][0], `return new List<String>() { description }`],
+            ['+ virtual', 'getDescription()', 'bool', AccessInit[0][0], `return new List<string>() { description }`],
             ['+ abstract', 'cost()', 'double', AccessInit[0][0], ],
             ['+', 'getSize()', 'Size', AccessInit[0][0], 'return size'],
             ['+', 'SetSize(Size s)', 'void', AccessInit[1][0], 'size = s'],
@@ -171,7 +171,7 @@ export function getListCls() {
             { AcModify: '+', Name: 'beverage', Type: 'Beverage' },
         ],
         Properties: [
-            ['#', 'CountDes(String des)', 'List<String>', AccessInit[1][0]],
+            ['#', 'CountDes(string des)', 'List<string>', AccessInit[1][0]],
         ]
     })
     tIds = [id]
@@ -184,7 +184,7 @@ export function getListCls() {
         Fields: [ ],
         Properties: [
             ['+', 'Soy(Beverage b)', '', AccessInit[2][0], `beverage = b`],
-            ['+ override', 'getDescription()', 'List<String>', AccessInit[0][0]],
+            ['+ override', 'getDescription()', 'List<string>', AccessInit[0][0]],
             ['+ override', 'cost()', 'double', AccessInit[0][0]],
         ]
     })

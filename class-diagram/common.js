@@ -45,11 +45,11 @@ export function processLines(txt) {
     return arrLn.join('\n')
 }
 export const StructTypes = [
-    ['interface', 'interface'],
-    ['abstract class', 'abstract class'],
-    ['instant class', 'class'],
-    ['enum', 'enum'],
-    ['struct', 'struct'],
+    ['interface', 'interface', 'interface'],
+    ['abstract class', 'abstract class', 'abstract class'],
+    ['instant class', 'class', 'class'],
+    ['enum', 'enum', 'enum'],
+    ['struct', 'struct', 'struct'],
 ]
 export const AccessInit = [
     ['get', 'get'],
