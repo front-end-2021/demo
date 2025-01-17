@@ -79,7 +79,14 @@
             class="p36 ceditable" v-html="entry.item.Name">
           </span>
           <i>{{ViewExtend}}</i>
-          <i class="bi bi-plus-circle-dotted"></i>
+          <drplst-search v-if="IsDrpExtend"
+              :sources="ListExtend"
+              :ids="entry.toIds"
+              @select:id="$e => addExtend($e)"
+              @remove:id="$e => removeExtend($e)"></drplst-search>
+          <i v-else-if="$root.canExtend(entry.item)"
+            @click.stop="showDrpSearch"
+            class="bi bi-code-square" style="margin-left: 6px;"></i>
         </div>
         <div v-for="(field, ii) in entry.iFields"
           :key="'oldfield_' + field.AcModify"

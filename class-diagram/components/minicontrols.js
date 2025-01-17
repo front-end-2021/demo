@@ -5,6 +5,7 @@ export const PopDropdownSearch = {
     name: "Drop_Search",
     display: "Drop.Search",
     props: ['ids', 'sources'],
+    emits: ['select:id', 'remove:id'],
     data() {
         return {
             TxtSearch: '',
@@ -15,14 +16,29 @@ export const PopDropdownSearch = {
 
     },
     methods: {
-        isSelect(item) { return this.ids.includes(item.id) },
+        bgSelect(item) {
+            if (this.ids.includes(item.id)) return {
+                backgroundColor: '#d1d1d1'
+            }
+        },
         inSearch(e) {
             console.log('in search ', e.target)
+            const target = e.target
+            let str = target.value
+            str = str.trim()
+            this.ListSrc = this.getLstSrc(str)
         },
-        selectItem(item) {
-            const id = item.id
-            const name = item.Name
+        getLstSrc(str) {
+            if (!str.length) return this.sources
+            const lst = []
+            for (let ii = 0, src; ii < this.sources.length; ii++) {
+                src = this.sources[ii]
+                if (src.Name.includes(str)) lst.push(src)
+            }
+            return lst
         },
+        selectItem(item) { this.$emit('select:id', item.id) },
+        removeItem(item) { this.$emit('remove:id', item.id) },
     },
 }
 const MxForm = {
@@ -70,11 +86,13 @@ export const FormEdit = {
     display: "Form.Edit",
     components: {
         'menu-list': MenuList,
+        'drplst-search': PopDropdownSearch,
     },
     mixins: [MxForm],
     data() {
         return {
             AccessInit: AccessInit,
+            IsDrpExtend: false,
         }
     },
     computed: {
@@ -87,9 +105,63 @@ export const FormEdit = {
             lst = lst.filter(x => x[0].includes('class'))
             return lst.map(x => x[root.PLang])
         },
-        ViewExtend() {
-            const item = this.entry.item
-            return this.$root.getExtend(item)
+        ViewExtend() { return this.$root.getExtend(this.entry) },
+        ListExtend() {
+            let isClass = this.$root.canExtend(this.entry.item)
+            if (!isClass) return []
+            const idsTo = this.entry.toIds
+            if (!idsTo) return []
+            const lst = []
+            const lstSrc = this.$root.ListClass
+            let lsEx = []
+            const itemId = this.entry.item.id
+            for (let ii = 0, src; ii < lstSrc.length; ii++) {
+                src = lstSrc[ii]
+                if (itemId == src.id) continue;
+                if (src.type.includes('enum')) continue
+                if (src.type.includes('struct')) continue
+                if (src.toIds && src.toIds.includes(itemId)) continue
+                if (idsTo.includes(src.id) && src.type.includes('class'))
+                    lsEx.push(src.id)
+                lst.push(src)
+            }
+            if (this.entry.type.includes('abstract')) {
+                if (lsEx.length) {
+                    for (let ii = lst.length - 1, src; -1 < ii; ii--) {
+                        src = lst[ii]
+                        if (src.type.includes('interface')) continue
+                        if (src.type.includes('abstract')) {
+                            if (lsEx.includes(src.id)) continue
+                        }
+                        lst.splice(ii, 1)
+                    }
+                }
+                for (let ii = lst.length - 1, src; -1 < ii; ii--) {
+                    src = lst[ii]
+                    if (src.type.includes('abstract')) continue
+                    if (src.type.includes('interface')) continue
+                    lst.splice(ii, 1)
+                }
+                return lst
+            }
+            if ('class' == isClass) {
+                if (lsEx.length) {
+                    for (let ii = lst.length - 1, src; -1 < ii; ii--) {
+                        src = lst[ii]
+                        if (lsEx.includes(src.id)) continue
+                        if (src.type.includes('class')) lst.splice(ii, 1)
+                    }
+                }
+                return lst
+            }
+            if ('itf_' == isClass) {
+                for (let ii = lst.length - 1, src; -1 < ii; ii--) {
+                    src = lst[ii]
+                    if (src.type.includes('interface')) continue
+                    lst.splice(ii, 1)
+                }
+                return lst
+            }
         },
     },
     methods: {
@@ -407,6 +479,7 @@ export const FormEdit = {
             const frmCode = this.$root.DynamicVar.get('FrameCode')
             const mItem = frmCode.MItem
             const item = frmCode.item
+            item.toIds = frmCode.toIds
             if (!mItem) {
                 item.Fields = frmCode.iFields
                 addNewFields.call(this)
@@ -537,6 +610,20 @@ export const FormEdit = {
                     item.Properties.push(prp)
                 }
             }
+        },
+        addExtend(id) {
+            const idsTo = this.entry.toIds
+            idsTo.push(id)
+            this.IsDrpExtend = false
+        },
+        removeExtend(id) {
+            const idsTo = this.entry.toIds
+            let ii = idsTo.indexOf(id)
+            if (-1 < ii) idsTo.splice(ii, 1)
+            this.IsDrpExtend = false
+        },
+        showDrpSearch() {
+            this.IsDrpExtend = true
         },
     }
 }

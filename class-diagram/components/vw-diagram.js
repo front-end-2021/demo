@@ -100,12 +100,16 @@ const MxRect = {
             // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
             const dmVar = this.$root.DynamicVar
             dmVar.delete('FViewCode')
-            dmVar.set('FrameCode', {
-                type: item.type, item,
+            const entry = {
+                id: item.id,
+                type: item.type,
+                item,
                 iFields: JSON.parse(JSON.stringify(item.Fields)),
                 iPropes: JSON.parse(JSON.stringify(item.Properties)),
                 eItem: JSON.parse(JSON.stringify(item))
-            })
+            }
+            if (item.toIds) entry.toIds = [...item.toIds]
+            dmVar.set('FrameCode', entry)
             this.$root.$nextTick(() => {
                 document.body.querySelectorAll(`textarea.objedit-vwcode`).forEach(el => {
                     let txt = el.value

@@ -22,7 +22,8 @@ Promise.all([
                 MinY: 10, MaxY: 880,
                 ListClass: getListCls(),
                 DynamicVar: new Map(),
-                //'PopMenu', 'FViewCode', 'FrameCode': {top,left,html,type,item}, DragElm (Dùng kéo các khung class)
+                /* PopMenu, FViewCode, FrameCode: {top,left,html,type,item}, 
+                *  DragElm (Dùng kéo các khung class),  */
                 NewClassName: null,
 
                 PLang: 1,
@@ -59,6 +60,12 @@ Promise.all([
             IndexPage(val) { setLocal(6, val) },
         },
         methods: {
+            canExtend(item) {
+                let hasTyp = item.type
+                if (hasTyp.includes('class')) return 'class'
+                hasTyp = item.type
+                if (hasTyp.includes('interface')) return 'itf_'
+            },
             selectPage(index) { this.IndexPage = index },
             trackMouse(event) {
                 let x = event.clientX;
@@ -296,7 +303,7 @@ Promise.all([
                             else extend = `${tag} ${lst.join(', ')}`
                         }
                         if (extend.length) {
-                            if(hTag2) extend = `<${hTag2}>&nbsp;${extend}</${hTag2}>`
+                            if (hTag2) extend = `<${hTag2}>&nbsp;${extend}</${hTag2}>`
                             else extend = ' ' + extend
                         }
                     } else {

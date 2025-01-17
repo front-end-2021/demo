@@ -98,15 +98,21 @@
     </span>
 </template>
 <template id="tmp-drp-search">
-    <div style="position: relative;display: inline-block;width: 60px;height: 48px;">
-        <div style="position: absolute;top:0;left: 0;display: flex;flex-direction: column;
-                min-width: 66px;min-height: 120px;">
+    <div style="position: relative;display: inline-block;width: 12px;height: 24px;">
+        <div style="position: absolute;top: 0px;left: 0px;display: flex;
+                flex-direction: column;min-width: 66px;min-height: 66px;
+                background-color: white;padding: 4px;border-radius: 5px;width: 174px;">
             <input type="text" placeholder="typing to search by name..." 
-                style="width: 100%;"
+                style="width: calc(100% - 10px);border-color: transparent;height: 20px;"
                 v-model="TxtSearch" @input="inSearch"/>
-            <div class="dr_lst-wrap">
+            <div class="dr_lst-wrap" style="max-height: 120px; overflow: auto;">
                 <div v-for="item in ListSrc"
-                    @click.stop="e => selectItem(item)">{{item.Name}}</div>
+                    style="padding: 3px;cursor: pointer; margin-top: 1px;
+                    display: grid;grid-template-columns: auto 16px;"
+                    :style="[bgSelect(item)]">
+                    <span @click.stop="e => selectItem(item)">{{item.Name}}</span>
+                    <i class="bi bi-x" @click.stop="e => removeItem(item)"></i>
+                </div>
             </div>
         </div>
     </div>
