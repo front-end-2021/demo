@@ -58,6 +58,8 @@ const MxRect = {
         onMouseDown(event) {
             const dmVar = this.$root.DynamicVar
             if (dmVar.has('DragElm')) return;
+            if (dmVar.has('FrameCode')) return;
+            dmVar.delete('FViewCode')
             const off = this.$el.getBoundingClientRect()
             let x = this.$root.MinX
             let y = this.$root.MinY
@@ -176,8 +178,8 @@ const RectClass = {
         },
         showCodeBody(ii, offI) {
             const item = this.item
-            let clsName = this.FormCsFormat[0]
-            let txtF = this.FormCsFormat[1]
+            let clsName = this.FormatCode[0]
+            let txtF = this.FormatCode[1]
             let txtFnc = `${txtF}\n`
             let lstPrp = [...item.Properties, ...this.ExtendProperties]
             for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
@@ -270,7 +272,7 @@ const RectClass = {
                     break;
                 default: break;
             }
-            this.$root.clearDyVar()
+            this.$root.closePopupForm()
         },
     },
     computed: {
@@ -295,7 +297,7 @@ const RectClass = {
             }
             return lst
         },
-        FormCsFormat() {
+        FormatCode() {
             const item = this.item
             let clsName = item.Name
             const ii = this.$root.PLang
@@ -311,55 +313,7 @@ const RectClass = {
                     break;
                 default: break;
             }
-            let extend = ''
-            const tIds = item.toIds
-            if (tIds && tIds.length) {
-                let lst = this.$root.ListClass
-                const lsCls = []
-                const lstItf = []
-                for (let jj = 0, cls; jj < lst.length; jj++) {
-                    cls = lst[jj]
-                    if (item.id == cls.id) continue;  // it-self
-                    if (!tIds.includes(cls.id)) continue;
-                    switch (cls.type) {
-                        case StructTypes[0][0]: // 'interface'
-                            lstItf.push(cls)
-                            break;  // switch
-                        case StructTypes[1][0]: // 'abstract class'
-                        case StructTypes[2][0]: // 'class'
-                            lsCls.push(cls)
-                            break;  // switch
-                        default: break;  // switch
-                    }
-                }
-                if (2 == ii) {    // java
-                    let tag = ''
-                    if (lsCls.length) {
-                        lst = lsCls.map(xx => xx.Name)
-                        tag = `extends`
-                        extend = `${tag} ${lst.join(', ')}`
-                    }
-                    if (lstItf.length) {
-                        lst = lstItf.map(xx => xx.Name)
-                        tag = `implements`
-                        if (extend.length)
-                            extend += ` ${tag} ${lst.join(', ')}`
-                        else extend = `${tag} ${lst.join(', ')}`
-                    }
-                    if (extend.length) extend = ' ' + extend
-                } else {
-                    if (lsCls.length) {
-                        lst = lsCls.map(xx => xx.Name)
-                        extend = `${lst.join(', ')}`
-                    }
-                    if (lstItf.length) {
-                        lst = lstItf.map(xx => xx.Name)
-                        if (extend.length) extend += `, ${lst.join(', ')}`
-                        else extend = `${lst.join(', ')}`
-                    }
-                    if (extend.length) { extend = `: ${extend}` }
-                }
-            }
+            let extend = this.$root.getExtend(item)
             if (extend.length) clsName += extend
             clsName = `${clsName}\n{\n`
             let txtF = ``
@@ -401,34 +355,7 @@ const RectClass = {
                     default: break;  // switch
                 }
             }
-            let extend = ''
-            if (2 == this.$root.PLang) {    // java
-                let tag = ''
-                if (lsCls.length) {
-                    lst = lsCls.map(xx => xx.Name)
-                    tag = `<small>extends</small>`
-                    extend = `${tag} ${lst.join(', ')}`
-                } else extend = ''
-                if (lstItf.length) {
-                    lst = lstItf.map(xx => xx.Name)
-                    tag = `<small>implements</small>`
-                    if (extend.length)
-                        extend += ` ${tag} ${lst.join(', ')}`
-                    else extend = `${tag} ${lst.join(', ')}`
-                }
-                if (extend.length) extend = ' ' + extend
-            } else if (1 == this.$root.PLang) {  // CSharp
-                if (lsCls.length) {
-                    lst = lsCls.map(xx => xx.Name)
-                    extend = `${lst.join(', ')}`
-                }
-                if (lstItf.length) {
-                    lst = lstItf.map(xx => xx.Name)
-                    if (extend.length) extend += `, ${lst.join(', ')}`
-                    else extend = `${lst.join(', ')}`
-                }
-                if (extend.length) { extend = `: <i>${extend}</i>` }
-            }
+            let extend = this.$root.getExtend(this.item, `small`, `i`)
             if (!extend.length) return null
             return extend
         },
@@ -533,9 +460,10 @@ export const ViewDiagram = {
             return false
         },
         onMouseDown(event) {
-            // if(null !== this.$root.NewClassName) return;
             const dmVar = this.$root.DynamicVar
             if (dmVar.has('DragElm')) return;
+            if (dmVar.has('FrameCode')) return;
+            dmVar.delete('FViewCode')
             const off = this.$el.querySelector('#cls-sample').getBoundingClientRect()
             let x = this.$root.MinX
             let y = this.$root.MinY
@@ -563,7 +491,7 @@ export const ViewDiagram = {
             itemEl.style.backgroundColor = 'white'
         },
         changeLanguage(val) {
-            this.$root.clearDyVar()
+            this.$root.closePopupForm()
             const langs = this.$root.Langs
             for (let ii = 0; ii < langs.length; ii++) {
                 if (langs[ii] == val) {

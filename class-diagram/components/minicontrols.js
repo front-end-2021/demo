@@ -87,6 +87,10 @@ export const FormEdit = {
             lst = lst.filter(x => x[0].includes('class'))
             return lst.map(x => x[root.PLang])
         },
+        ViewExtend() {
+            const item = this.entry.item
+            return this.$root.getExtend(item)
+        },
     },
     methods: {
         changeTypeObject(val) {

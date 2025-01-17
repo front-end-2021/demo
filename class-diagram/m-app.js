@@ -24,7 +24,7 @@ Promise.all([
                 DynamicVar: new Map(),
                 //'PopMenu', 'FViewCode', 'FrameCode': {top,left,html,type,item}, DragElm (Dùng kéo các khung class)
                 NewClassName: null,
-              
+
                 PLang: 1,
                 Langs: ['Uml', 'CSharp', 'Java'],
             }
@@ -95,7 +95,8 @@ Promise.all([
                 const dmVar = this.DynamicVar
                 if (dmVar.has('DragElm')) {
                     const dgElm = dmVar.get('DragElm')
-                    const itemEl = document.body.querySelector(`#dnb-vw-main #${dgElm.Item.id}`)
+                    let itemEl = `#dnb-vw-main #cls_${dgElm.Item.id}`
+                    itemEl = document.body.querySelector(itemEl)
                     itemEl.style.zIndex = ''
                     itemEl.style.backgroundColor = ''
                     const dItem = dgElm.Item
@@ -118,7 +119,7 @@ Promise.all([
                 }
                 function areaBlocks(id) {
                     const lst = []
-                    const lstCls = this.$root.ListClass
+                    const lstCls = this.ListClass
                     for (let ii = 0, item; ii < lstCls.length; ii++) {
                         item = lstCls[ii]
                         if (item.id === id) continue
@@ -142,7 +143,7 @@ Promise.all([
                 }
             },
             getPoints() {
-                const lstCls = this.$root.ListClass
+                const lstCls = this.ListClass
                 const points = []
                 for (let ii = 0, item; ii < lstCls.length; ii++) {
                     item = lstCls[ii]
@@ -180,9 +181,9 @@ Promise.all([
                 return hash1.toString(CryptoJS.enc.Hex) == hash2.toString(CryptoJS.enc.Hex)
             },
             closePMenu(e) {
-                const dmVar = this.$root.DynamicVar
+                const dmVar = this.DynamicVar
                 if (dmVar.has('PopMenu')) {
-                    document.removeEventListener('click', this.$root.closePMenu)
+                    document.removeEventListener('click', this.closePMenu)
                     const target = e.target
                     if (!target.closest('.wrap-mnlist')) {
                         let popM = dmVar.get('PopMenu')
@@ -192,7 +193,12 @@ Promise.all([
                 }
             },
             clearDyVar() {
-                const dmVar = this.$root.DynamicVar
+                const dmVar = this.DynamicVar
+                dmVar.delete('FrameCode')
+                dmVar.delete('FViewCode')
+            },
+            closePopupForm() {
+                const dmVar = this.DynamicVar
                 dmVar.delete('FrameCode')
                 dmVar.delete('FViewCode')
             },
@@ -249,6 +255,67 @@ Promise.all([
                 for (let ii = 0; ii < lstItf.length; ii++) lst.push(lstItf[ii])
                 for (let ii = 0; ii < lstCls.length; ii++) lst.push(lstCls[ii])
                 return lst
+            },
+            getExtend(item, hTag1, hTag2) {
+                let extend = ''
+                const ii = this.PLang
+                const tIds = item.toIds
+                if (tIds && tIds.length) {
+                    let lst = this.ListClass
+                    const lsCls = []
+                    const lstItf = []
+                    for (let jj = 0, cls; jj < lst.length; jj++) {
+                        cls = lst[jj]
+                        if (item.id == cls.id) continue;  // it-self
+                        if (!tIds.includes(cls.id)) continue;
+                        switch (cls.type) {
+                            case StructTypes[0][0]: // 'interface'
+                                lstItf.push(cls)
+                                break;  // switch
+                            case StructTypes[1][0]: // 'abstract class'
+                            case StructTypes[2][0]: // 'class'
+                                lsCls.push(cls)
+                                break;  // switch
+                            default: break;  // switch
+                        }
+                    }
+                    if (2 == ii) {    // java
+                        let tag = ''
+                        if (lsCls.length) {
+                            lst = lsCls.map(xx => xx.Name)
+                            tag = `extends`
+                            if (hTag1) tag = `<${hTag1}>${tag}</${hTag1}>`
+                            extend = `${tag} ${lst.join(', ')}`
+                        }
+                        if (lstItf.length) {
+                            lst = lstItf.map(xx => xx.Name)
+                            tag = `implements`
+                            if (hTag1) tag = `<${hTag1}>${tag}</${hTag1}>`
+                            if (extend.length)
+                                extend += ` ${tag} ${lst.join(', ')}`
+                            else extend = `${tag} ${lst.join(', ')}`
+                        }
+                        if (extend.length) {
+                            if(hTag2) extend = `<${hTag2}>&nbsp;${extend}</${hTag2}>`
+                            else extend = ' ' + extend
+                        }
+                    } else {
+                        if (lsCls.length) {
+                            lst = lsCls.map(xx => xx.Name)
+                            extend = `${lst.join(', ')}`
+                        }
+                        if (lstItf.length) {
+                            lst = lstItf.map(xx => xx.Name)
+                            if (extend.length) extend += `, ${lst.join(', ')}`
+                            else extend = `${lst.join(', ')}`
+                        }
+                        if (extend.length) {
+                            if (hTag2) extend = `: <${hTag2}>${extend}</${hTag2}>`
+                            else extend = `: ${extend}`
+                        }
+                    }
+                }
+                return extend
             },
         },
         //  beforeCreate() { },

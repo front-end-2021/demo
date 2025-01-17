@@ -78,7 +78,8 @@
             data-placeholder="NameOfClass"
             class="p36 ceditable" v-html="entry.item.Name">
           </span>
-          
+          <i>{{ViewExtend}}</i>
+          <i class="bi bi-plus-circle-dotted"></i>
         </div>
         <div v-for="(field, ii) in entry.iFields"
           :key="'oldfield_' + field.AcModify"
