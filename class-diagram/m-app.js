@@ -3,7 +3,7 @@ import { createApp } from 'vue'
 import { drawExtension, drawImplement } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
-import { StructTypes } from './common.js'
+import { StructTypes, isInterface, isClass } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
 Promise.all([
@@ -60,11 +60,11 @@ Promise.all([
             IndexPage(val) { setLocal(6, val) },
         },
         methods: {
-            canExtend(item) {
-                let hasTyp = item.type
-                if (hasTyp.includes('class')) return 'class'
-                hasTyp = item.type
-                if (hasTyp.includes('interface')) return 'itf_'
+            canExtend(type) {
+                let hasTyp = type
+                if (isClass(hasTyp)) return 'class'
+                hasTyp = type
+                if (isInterface(hasTyp)) return 'itf_'
             },
             selectPage(index) { this.IndexPage = index },
             trackMouse(event) {
@@ -145,8 +145,8 @@ Promise.all([
                 ctx.clearRect(0, 0, c.width, c.height);
                 for (let ii = 0; ii < points.length; ii++) {
                     const [p0, p1] = points[ii]
-                    if (p0[4].includes('class')) drawExtension.call(ctx, p0, p1, 8)
-                    if (p0[4].includes('interface')) drawImplement.call(ctx, p0, p1, 6)
+                    if (isClass(p0[4])) drawExtension.call(ctx, p0, p1, 8)
+                    if (isInterface(p0[4])) drawImplement.call(ctx, p0, p1, 6)
                 }
             },
             getPoints() {

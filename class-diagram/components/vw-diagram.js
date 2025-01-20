@@ -1,4 +1,5 @@
-import { setHeight, processLines, StructTypes } from "../common.js";
+import { setHeight, processLines, StructTypes, 
+    isAbstract } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
     name: "Menu_List",
@@ -172,7 +173,7 @@ const RectClass = {
             let type = prp[2]
             let txt = `${acModify} ${type} ${name}`
             if ('interface' == this.item.type) return `${txt};\n`
-            if (acModify.includes('abstract') && !prp[4]) return `${txt};\n`
+            if (isAbstract(acModify) && !prp[4]) return `${txt};\n`
             let returnType = prp[3]
             returnType = returnType.toLowerCase()
             if (returnType.includes('init')) {
@@ -490,7 +491,7 @@ export const ViewDiagram = {
                 offX: left - event.clientX,
                 offY: top - event.clientY
             })
-            const itemEl = document.body.querySelector(`#dnb-vw-main #${id}`)
+            const itemEl = document.body.querySelector(`#dnb-vw-main #cls_${id}`)
             itemEl.style.zIndex = '1'
             itemEl.style.backgroundColor = 'white'
         },

@@ -1,3 +1,4 @@
+body, .dr_lst-wrap {scrollbar-width: thin;}
 .vwheader {
     font-size: 18px;text-align: center;border-bottom: 1px solid black;
     padding-left: 24px; padding-right: 24px; position: relative;
@@ -20,9 +21,11 @@
     content: attr(data-placeholder); color: #98989898; /* Màu placeholder */
 }
 .mformedit {
-    min-width: calc(100vw / 2); max-width: calc(100vw - 60px); min-height: 320px; max-height: calc(100vh - 30px);
-    display: inline-block;  padding: 18px; transform: translate(-50%, -50%);
-    box-sizing: border-box; border-radius: 10px; position: fixed; overflow-y: auto;
+    min-width: calc(100vw / 3); max-width: calc(100vw - 60px); 
+    min-height: 320px; max-height: calc(100vh - 30px);
+    display: inline-block;  padding: 18px; 
+    transform: translate(-50%, -50%); box-sizing: border-box; 
+    border-radius: 10px; position: fixed; overflow-y: auto;
     background-color: rgb(168 215 255); top: 50%; left: 50%;
 }
 .dnb-mnlst > *:hover {background-color: #efefef;}

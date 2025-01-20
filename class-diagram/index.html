@@ -78,20 +78,22 @@
             data-placeholder="NameOfClass"
             class="p36 ceditable" v-html="entry.item.Name">
           </span>
-          <i>{{ViewExtend}}</i>
+          <i style="margin-right: 6px;">{{ViewExtend}}</i>
           <drplst-search v-if="IsDrpExtend"
               :sources="ListExtend"
               :ids="entry.toIds"
               @select:id="$e => addExtend($e)"
-              @remove:id="$e => removeExtend($e)"></drplst-search>
-          <i v-else-if="$root.canExtend(entry.item)"
+              @remove:id="$e => removeExtend($e)"
+              @on:exit="$e => hideDrpSearch()"></drplst-search>
+          <i v-else-if="$root.canExtend(entry.type)"
             @click.stop="showDrpSearch"
             class="bi bi-code-square" style="margin-left: 6px;"></i>
         </div>
         <div v-for="(field, ii) in entry.iFields"
           :key="'oldfield_' + field.AcModify"
           style="margin-bottom: 2px; display: flex;align-items: center;">
-          <span @keypress="e => $root.preventKeyPress(e, [13])"
+          <span v-if="HasPropers"
+            @keypress="e => $root.preventKeyPress(e, [13])"
             @input="e => onChange(e, 'field acmodify', ii)"
             @blur="e => onBlurEditable(e, 'field acmodify', ii)"
             data-placeholder="AccessoriOfField" contenteditable="true"
@@ -102,7 +104,8 @@
             data-placeholder="NameOfField"
             class="p36 ceditable" contenteditable="true" 
             v-html="field.Name"></span>
-          <span @keypress="e => $root.preventKeyPress(e, [13])"
+          <span v-if="HasPropers"
+            @keypress="e => $root.preventKeyPress(e, [13])"
             @input="e => onChange(e, 'field type', ii)"
             @blur="e => onBlurEditable(e, 'field type', ii)"
             data-placeholder="TypeOfField"
@@ -115,7 +118,8 @@
           <div v-for="(field, ii) in entry.Fields"
             :key="'newfield_' + field.ii"
             style="margin-bottom: 2px; display: flex;align-items: center;">
-            <span @keypress="e => $root.preventKeyPress(e, [13])"
+            <span v-if="HasPropers"
+              @keypress="e => $root.preventKeyPress(e, [13])"
               @blur="e => onEditNewField(e, 'field acmodify', ii)"
               data-placeholder="AccessoriOfNewField" contenteditable="true"
               class="p36 ceditable">{{field.AcModify}}</span>
@@ -123,7 +127,8 @@
               @blur="e => onEditNewField(e, 'field name', ii)"
               data-placeholder="NameOfNewField"
               class="p36 ceditable" contenteditable="true" v-html="field.Name"></span>
-            <span @keypress="e => $root.preventKeyPress(e, [13, 32])"
+            <span v-if="HasPropers"
+              @keypress="e => $root.preventKeyPress(e, [13, 32])"
               @blur="e => onEditNewField(e, 'field type', ii)"
               data-placeholder="TypeOfNewField"
               class="p36 ceditable" contenteditable="true" v-html="field.Type"></span>
@@ -131,9 +136,11 @@
               @click.stop="e => removeField(ii, true)"><i class="bi bi-trash3"></i></span>
           </div>
         </div>
-        <span style="cursor: pointer;"
+        <span v-if="'itf_' != $root.canExtend(entry.type)" 
+          style="cursor: pointer;"
             @click.stop="addField">[new Field]</span>
-        <div v-for="(prp, ii) in entry.iPropes"
+        <div v-if="HasPropers"
+          v-for="(prp, ii) in entry.iPropes"
           style="margin-bottom: 2px;"
           :style="[0 == ii ? {marginTop: '10px'} : null]">
           <div style="display: flex;align-items: center;">

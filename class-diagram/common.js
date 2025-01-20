@@ -44,6 +44,26 @@ export function processLines(txt) {
     }
     return arrLn.join('\n')
 }
+export function isAbstract(type) {
+    if (typeof type != 'string' || !type.length) return false
+    if (type.includes('abstract')) return true
+    return false
+}
+export function isClass(type) {
+    if (typeof type != 'string' || !type.length) return false
+    if (type.includes('class')) return true
+    return false
+}
+export function isInterface(type) {
+    if (typeof type != 'string' || !type.length) return false
+    if (type.includes('interface')) return true
+    return false
+}
+export function isEnum(type) {
+    if (typeof type != 'string' || !type.length) return false
+    if (type.includes('enum')) return true;
+    return false
+}
 export const StructTypes = [
     ['interface', 'interface', 'interface'],
     ['abstract class', 'abstract class', 'abstract class'],

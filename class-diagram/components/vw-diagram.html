@@ -114,6 +114,11 @@
                     <i class="bi bi-x" @click.stop="e => removeItem(item)"></i>
                 </div>
             </div>
+            <i class="bi bi-x-lg cpoint"
+                style="position: absolute;top: -9px;right: -9px;display: inline-flex;
+                width: 24px;height: 24px;align-items: center;justify-content: center;
+                background-color: #fcfcfc;border-radius: 6px;"
+                @click.stop="e => $emit('on:exit')"></i>
         </div>
     </div>
 </template>

@@ -1,19 +1,22 @@
-import { StructTypes, AccessInit, setHeight } from "../common.js"
+import {
+    StructTypes, AccessInit, setHeight,
+    isAbstract, isInterface, isClass
+} from "../common.js"
 import { MenuList } from "./vw-diagram.js"
 export const PopDropdownSearch = {
     template: `#tmp-drp-search`,
     name: "Drop_Search",
     display: "Drop.Search",
     props: ['ids', 'sources'],
-    emits: ['select:id', 'remove:id'],
+    emits: ['select:id', 'remove:id', 'on:exit'],
     data() {
         return {
             TxtSearch: '',
             ListSrc: this.sources
         }
     },
-    created() {
-
+    mounted() {
+        document.addEventListener('keyup', this.pressEscKey)
     },
     methods: {
         bgSelect(item) {
@@ -39,6 +42,14 @@ export const PopDropdownSearch = {
         },
         selectItem(item) { this.$emit('select:id', item.id) },
         removeItem(item) { this.$emit('remove:id', item.id) },
+        pressEscKey(event) {
+            if ('Escape' == event.key) {
+                this.$emit('on:exit')
+            }
+        },
+    },
+    beforeUnmount() {
+        document.removeEventListener('keyup', this.pressEscKey)
     },
 }
 const MxForm = {
@@ -50,7 +61,7 @@ const MxForm = {
 
             const type = this.entry.type
             if (typeof type != 'string') return false
-            if (!type.includes('class')) return false
+            if (!isClass(type)) return false
             const idsTo = this.entry.item.toIds
             if (idsTo && idsTo.length) return false
             return true
@@ -60,18 +71,18 @@ const MxForm = {
             if (typeof type != 'string') return
             const ii = this.$root.PLang
             if (StructTypes[1][0] == type) return StructTypes[1][ii]
-            if (type.includes('class')) return StructTypes[2][ii]
+            if (isClass(type)) return StructTypes[2][ii]
             return type
         },
         HasCode() {
             const type = this.entry.type
-            if (type.includes('class')) return true
+            if (isClass(type)) return true
             return false
         },
         HasPropers() {
             const type = this.entry.type
-            if (type.includes('class')) return true
-            if (type.includes('interface')) return true
+            if (isClass(type)) return true      // class/abstrac
+            if (isInterface(type)) return true
             if (type.includes('struct')) return true
             return false
         },
@@ -96,41 +107,46 @@ export const FormEdit = {
         }
     },
     computed: {
+        IsNew() {
+            if ('cls-classname' == this.entry.item.id)
+                return true;
+            return false
+        },
         StrucTypes() {
             const root = this.$root
             let lst = StructTypes
-            if ('cls-classname' == this.entry.item.id)
-                return lst.map(x => x[root.PLang]);
+            if (this.IsNew) return lst.map(x => x[root.PLang]);
 
-            lst = lst.filter(x => x[0].includes('class'))
+            lst = lst.filter(x => isClass(x[0]))
             return lst.map(x => x[root.PLang])
         },
         ViewExtend() { return this.$root.getExtend(this.entry) },
         ListExtend() {
-            let isClass = this.$root.canExtend(this.entry.item)
+            const entry = this.entry
+            let isClass = this.$root.canExtend(entry.item.type)
             if (!isClass) return []
-            const idsTo = this.entry.toIds
+            const idsTo = entry.toIds
             if (!idsTo) return []
             const lst = []
             const lstSrc = this.$root.ListClass
             let lsEx = []
-            const itemId = this.entry.item.id
+            const itemId = entry.item.id
             for (let ii = 0, src; ii < lstSrc.length; ii++) {
                 src = lstSrc[ii]
                 if (itemId == src.id) continue;
-                if (src.type.includes('enum')) continue
+                if (isEnum(src.type)) continue
                 if (src.type.includes('struct')) continue
                 if (src.toIds && src.toIds.includes(itemId)) continue
-                if (idsTo.includes(src.id) && src.type.includes('class'))
+                if (idsTo.includes(src.id) && isClass(src.type))
                     lsEx.push(src.id)
                 lst.push(src)
             }
-            if (this.entry.type.includes('abstract')) {
+            if (isAbstract(entry.type)) {
                 if (lsEx.length) {
                     for (let ii = lst.length - 1, src; -1 < ii; ii--) {
                         src = lst[ii]
-                        if (src.type.includes('interface')) continue
-                        if (src.type.includes('abstract')) {
+                        if (isInterface(src.type)) continue
+                        if (isAbstract(src.type)) {
                             if (lsEx.includes(src.id)) continue
                         }
                         lst.splice(ii, 1)
@@ -138,8 +154,8 @@ export const FormEdit = {
                 }
                 for (let ii = lst.length - 1, src; -1 < ii; ii--) {
                     src = lst[ii]
-                    if (src.type.includes('abstract')) continue
-                    if (src.type.includes('interface')) continue
+                    if (isAbstract(src.type)) continue
+                    if (isInterface(src.type)) continue
                     lst.splice(ii, 1)
                 }
                 return lst
@@ -149,7 +165,7 @@ export const FormEdit = {
                     for (let ii = lst.length - 1, src; -1 < ii; ii--) {
                         src = lst[ii]
                         if (lsEx.includes(src.id)) continue
-                        if (src.type.includes('class')) lst.splice(ii, 1)
+                        if (isClass(src.type)) lst.splice(ii, 1)
                     }
                 }
                 return lst
@@ -157,7 +173,7 @@ export const FormEdit = {
             if ('itf_' == isClass) {
                 for (let ii = lst.length - 1, src; -1 < ii; ii--) {
                     src = lst[ii]
-                    if (src.type.includes('interface')) continue
+                    if (isInterface(src.type)) continue
                     lst.splice(ii, 1)
                 }
                 return lst
@@ -330,20 +346,19 @@ export const FormEdit = {
         },
         addField() {
             const frmCode = this.$root.DynamicVar.get('FrameCode')
+            let item = { Name: 'fieldName' }
+            if (this.HasPropers) {
+                item = { AcModify: 'private', Name: 'fieldName', Type: 'String' }
+            }
             if (!frmCode.Fields) {
-                frmCode.Fields = [{
-                    ii: 0,
-                    AcModify: 'private', Name: 'fieldName', Type: 'String'
-                }]
+                item.ii = 0
+                frmCode.Fields = [item]
             } else {
                 if (frmCode.Fields.filter(x => 'fieldName' == x.Name).length) {
                     return;
                 }
-                let ii = frmCode.Fields.length
-                frmCode.Fields.push({
-                    ii: ii,
-                    AcModify: 'private', Name: 'fieldName', Type: 'String'
-                })
+                item.ii = frmCode.Fields.length
+                frmCode.Fields.push(item)
             }
         },
         getAccessors(acs) {
@@ -614,16 +629,17 @@ export const FormEdit = {
         addExtend(id) {
             const idsTo = this.entry.toIds
             idsTo.push(id)
-            this.IsDrpExtend = false
         },
         removeExtend(id) {
             const idsTo = this.entry.toIds
             let ii = idsTo.indexOf(id)
             if (-1 < ii) idsTo.splice(ii, 1)
-            this.IsDrpExtend = false
         },
         showDrpSearch() {
             this.IsDrpExtend = true
+        },
+        hideDrpSearch() {
+            this.IsDrpExtend = false
         },
     }
 }
