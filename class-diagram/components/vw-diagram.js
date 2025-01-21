@@ -1,5 +1,7 @@
-import { setHeight, processLines, StructTypes, 
-    isAbstract } from "../common.js";
+import {
+    setHeight, processLines, StructTypes,
+    isAbstract, convertSymb, convertAccessors
+} from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
     name: "Menu_List",
@@ -56,6 +58,21 @@ export const MenuList = {
 const MxRect = {
     props: ['item'],
     methods: {
+        verifyEditItem(item) {
+            let cItem = JSON.parse(JSON.stringify(item))
+            for (let ii = 0, field; ii < cItem.Fields.length; ii++) {
+                field = cItem.Fields[ii]
+                field.AcModify = convertSymb(field.AcModify)
+            }
+            const il = this.$root.PLang
+            for (let ii = 0, prp; ii < cItem.Properties.length; ii++) {
+                prp = cItem.Properties[ii]
+                prp[0] = convertSymb(prp[0])
+                prp[3] = convertAccessors(prp[3], il)
+            }
+
+            return cItem
+        },
         onMouseDown(event) {
             const dmVar = this.$root.DynamicVar
             if (dmVar.has('DragElm')) return;
@@ -101,13 +118,17 @@ const MxRect = {
             // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
             const dmVar = this.$root.DynamicVar
             dmVar.delete('FViewCode')
+            let cItem = this.verifyEditItem(item)
+
             const entry = {
+                item,
+                cItem,
+
+                eItem: JSON.parse(JSON.stringify(item)),
                 id: item.id,
                 type: item.type,
-                item,
                 iFields: JSON.parse(JSON.stringify(item.Fields)),
                 iPropes: JSON.parse(JSON.stringify(item.Properties)),
-                eItem: JSON.parse(JSON.stringify(item))
             }
             if (item.toIds) entry.toIds = [...item.toIds]
             dmVar.set('FrameCode', entry)

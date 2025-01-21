@@ -60,12 +60,12 @@ Promise.all([
             IndexPage(val) { setLocal(6, val) },
         },
         methods: {
-            canExtend(type) {
-                let hasTyp = type
-                if (isClass(hasTyp)) return 'class'
-                hasTyp = type
-                if (isInterface(hasTyp)) return 'itf_'
-            },
+            // canExtend(type) {
+            //     let hasTyp = type
+            //     if (isClass(hasTyp)) return 'class'
+            //     hasTyp = type
+            //     if (isInterface(hasTyp)) return 'itf_'
+            // },
             selectPage(index) { this.IndexPage = index },
             trackMouse(event) {
                 let x = event.clientX;

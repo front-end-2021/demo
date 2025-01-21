@@ -108,7 +108,7 @@
             <div class="dr_lst-wrap" style="max-height: 120px; overflow: auto;">
                 <div v-for="item in ListSrc"
                     style="padding: 3px;cursor: pointer; margin-top: 1px;
-                    display: grid;grid-template-columns: auto 16px;"
+                    display: grid;grid-template-columns: auto 16px;border-radius: 4px;"
                     :style="[bgSelect(item)]">
                     <span @click.stop="e => selectItem(item)">{{item.Name}}</span>
                     <i class="bi bi-x" @click.stop="e => removeItem(item)"></i>

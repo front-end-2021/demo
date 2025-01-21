@@ -64,6 +64,19 @@ export function isEnum(type) {
     if (type.includes('enum')) return true;
     return false
 }
+export function convertSymb(symb, isStr) {
+    if (typeof symb != 'string') return
+    if (isStr) {
+        symb = symb.toLowerCase()
+        if (symb.includes('public')) return symb.replace('public', '+')
+        if (symb.includes('private')) return symb.replace('private', '-')
+        if (symb.includes('protected')) return symb.replace('protected', '#')
+        return
+    }
+    if (symb.includes('+')) return symb.replace('+', 'public')
+    if (symb.includes('-')) return symb.replace('-', 'private')
+    if (symb.includes('#')) return symb.replace('#', 'protected')
+}
 export const StructTypes = [
     ['interface', 'interface', 'interface'],
     ['abstract class', 'abstract class', 'abstract class'],
@@ -83,3 +96,17 @@ export const ListKeyword = [
     'return', 'void', 'static',
     'try', 'catch', 'finally', 'throw',
 ]
+export function convertAccessors(acs, il) {
+    let txt = acs
+    if (typeof il == 'number') {
+        if (acs.includes(AccessInit[2][0])) txt = AccessInit[2][il]
+        return txt
+    }
+    if (acs.includes(AccessInit[2][1])) txt = AccessInit[2][0]
+    return txt
+}
+export function clearSpace(str, nm) {
+    if (typeof str != 'string') return nm
+    str = str.trim()
+    return str.replaceAll(' ', '')
+}
