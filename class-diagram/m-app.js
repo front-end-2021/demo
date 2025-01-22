@@ -66,6 +66,17 @@ Promise.all([
             //     hasTyp = type
             //     if (isInterface(hasTyp)) return 'itf_'
             // },
+            verifyNewItem(item){
+                let newName = item.Name
+                let lstCls = this.ListClass; 
+                const maxId = Math.max(...lstCls.map(x => x.id))
+                lstCls = lstCls.filter(x => newName === x.Name)
+                if(lstCls.length) {
+                    item.Name = `${newName}${lstCls.length}`
+                }
+                item.id = maxId + 1
+                return item
+            },
             selectPage(index) { this.IndexPage = index },
             trackMouse(event) {
                 let x = event.clientX;
