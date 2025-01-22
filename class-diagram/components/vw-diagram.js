@@ -124,11 +124,11 @@ const MxRect = {
                 item,
                 cItem,
 
-                eItem: JSON.parse(JSON.stringify(item)),
-                id: item.id,
-                type: item.type,
-                iFields: JSON.parse(JSON.stringify(item.Fields)),
-                iPropes: JSON.parse(JSON.stringify(item.Properties)),
+                // eItem: JSON.parse(JSON.stringify(item)),
+                // id: item.id,
+                // type: item.type,
+                // iFields: JSON.parse(JSON.stringify(item.Fields)),
+                // iPropes: JSON.parse(JSON.stringify(item.Properties)),
             }
             if (item.toIds) entry.toIds = [...item.toIds]
             dmVar.set('FrameCode', entry)
@@ -497,7 +497,7 @@ export const ViewDiagram = {
             let top = off.top - y
             const id = 'cls-classname'
             this.$root.NewClassName = {
-                id, type: 'instant class', Name: 'ClassName',
+                id, type: 'instant class', Name: 'ClassName', toIds: [],
                 top, left, width: 220, height: 100,
                 Fields: [
                     { AcModify: '#', Name: 'fieldName', Type: 'String' },
@@ -512,9 +512,11 @@ export const ViewDiagram = {
                 offX: left - event.clientX,
                 offY: top - event.clientY
             })
-            const itemEl = document.body.querySelector(`#dnb-vw-main #cls_${id}`)
-            itemEl.style.zIndex = '1'
-            itemEl.style.backgroundColor = 'white'
+            this.$nextTick(() => {
+                const itemEl = document.body.querySelector(`#dnb-vw-main #cls_${id}`)
+                itemEl.style.zIndex = '1'
+                itemEl.style.backgroundColor = 'white'
+            })
         },
         changeLanguage(val) {
             this.$root.closePopupForm()
