@@ -1,5 +1,5 @@
 import {
-    setHeight, processLines, StructTypes,
+    setHeight, processLines, StructTypes, objNewCls,
     isAbstract, convertSymb, convertAccessors
 } from "../common.js";
 export const MenuList = {
@@ -496,17 +496,14 @@ export const ViewDiagram = {
             let left = off.left - x
             let top = off.top - y
             const id = 'cls-classname'
-            this.$root.NewClassName = {
-                id, type: 'instant class', Name: 'ClassName', toIds: [],
-                top, left, width: 220, height: 100,
-                Fields: [
-                    { AcModify: '#', Name: 'fieldName', Type: 'String' },
-                ], Properties: [
-                    ['+', 'ClassName', '', 'init'],
-                    ['+', 'GetFunction()', 'String', 'get'],
-                    ['+', 'SetFunction()', 'void', 'set'],
-                ]
-            }
+            this.$root.NewClassName = objNewCls(null, id, top, left)
+            // { id, type: 'instant class', Name: 'ClassName', toIds: [],
+            //     top, left, width: 220, height: 100, Fields: [
+            //         { AcModify: '#', Name: 'fieldName', Type: 'String' },
+            //     ], Properties: [ ['+', 'ClassName', '', 'init'],
+            //         ['+', 'GetFunction()', 'String', 'get'],
+            //         ['+', 'SetFunction()', 'void', 'set'],
+            //     ] }
             this.$root.DynamicVar.set('DragElm', {
                 Item: this.$root.NewClassName,
                 offX: left - event.clientX,

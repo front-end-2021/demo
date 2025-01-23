@@ -190,8 +190,3 @@ export function getListCls() {
     })
     return lstCls
 }
-function getId(name) {
-    let lwName = name.toLowerCase()
-    lwName = lwName.replaceAll(' ', '_')
-    return `cls-${lwName}`
-}

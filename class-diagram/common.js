@@ -110,3 +110,39 @@ export function clearSpace(str, nm) {
     str = str.trim()
     return str.replaceAll(' ', '')
 }
+export function objNewCls(nCls, id, top, left) {
+    const fNm = 'fieldName'
+    const cNm = 'ClassName'
+    const gFn = 'GetFunction()'
+    const sFn = 'SetFunction()'
+    if (!nCls) {
+        return {
+            id, type: 'instant class', Name: cNm, toIds: [],
+            top, left, width: 220, height: 100,
+            Fields: [
+                { AcModify: '#', Name: fNm, Type: 'String' },
+            ],
+            Properties: [
+                ['+', cNm, '', 'init'],
+                ['+', gFn, 'String', 'get'],
+                ['+', sFn, 'void', 'set'],
+            ]
+        }
+    }
+    if (typeof nCls.Name != 'string') return null
+    nCls.Name = nCls.Name.trim()
+    if (cNm == nCls.Name) return null
+    let lst = nCls.Fields
+    nCls.Fields = lst.filter(x => x.Name != fNm)
+    lst = nCls.Properties
+    nCls.Properties = lst.filter(x => x[1] != cNm && x[1] != gFn && x[1] != sFn)
+    if (nCls.type.includes('struct')) {
+        delete nCls.toIds
+    } else if (isEnum(nCls.type)) {
+        nCls.Fields = nCls.Fields.map(x => { return { Name: x.Name } })
+        nCls.Properties = []
+        delete nCls.toIds
+    } else if (isInterface(nCls.type)) {
+        nCls.Fields = []
+    }
+}

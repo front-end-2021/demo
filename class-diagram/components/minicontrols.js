@@ -1,5 +1,5 @@
 import {
-    StructTypes, AccessInit, setHeight,
+    StructTypes, AccessInit, setHeight, objNewCls,
     isAbstract, isInterface, isClass, isEnum,
     clearSpace, convertSymb, convertAccessors,
 } from "../common.js"
@@ -364,20 +364,20 @@ export const FormEdit = {
             this.onCloseEdit()
             function onNewItem(newItem) {
                 let lstCls = this.$root.ListClass;
-                const nItem = verifyNewItem.call(this, newItem)
+                let nItem = objNewCls(newItem)
+                if (!nItem) {
+                    this.$root.NewClassName = null
+                    return;
+                }
+                nItem = verifyNewItem.call(this, nItem)
+                debugger
                 if (isAbstract(nItem.type)) {
 
                 }
                 if (isClass(nItem.type)) {
 
                 }
-                if (isInterface(nItem.type)) {
-
-                }
-                if (isEnum(nItem.type)) {
-
-                }
-
+                // lstCls.push(nItem)
                 function verifyNewItem(item) {
                     let newName = item.Name
                     const maxId = Math.max(...lstCls.map(x => x.id))
