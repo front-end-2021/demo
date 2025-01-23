@@ -1,7 +1,7 @@
 import {
     StructTypes, AccessInit, setHeight, objNewCls,
     isAbstract, isInterface, isClass, isEnum,
-    clearSpace, convertSymb, convertAccessors,
+    clearSpace, verifySave, convertAccessors,
 } from "../common.js"
 import { MenuList } from "./vw-diagram.js"
 export const PopDropdownSearch = {
@@ -348,42 +348,45 @@ export const FormEdit = {
             name = clearSpace(name, item.Name)
             item.Name = name
             item.toIds = mItem.toIds
-            for (let ii = 0, field; ii < mItem.Fields.length; ii++) {
-                field = mItem.Fields[ii]
-                field.AcModify = convertSymb(field.AcModify, true)
-            }
+            verifySave(mItem, this.$root.PLang, true)
+            // for (let ii = 0, field; ii < mItem.Fields.length; ii++) {
+            //     field = mItem.Fields[ii]
+            //     field.AcModify = convertSymb(field.AcModify, true)
+            // }
             item.Fields = mItem.Fields
-            for (let ii = 0, prp; ii < mItem.Properties.length; ii++) {
-                prp = mItem.Properties[ii]
-                prp[0] = convertSymb(prp[0], true)
-                prp[3] = convertAccessors(prp[3])
-            }
+            // for (let ii = 0, prp; ii < mItem.Properties.length; ii++) {
+            //     prp = mItem.Properties[ii]
+            //     prp[0] = convertSymb(prp[0], true)
+            //     prp[3] = convertAccessors(prp[3])
+            // }
             item.Properties = mItem.Properties
             item.toIds = mItem.toIds
 
             this.onCloseEdit()
             function onNewItem(newItem) {
-                let lstCls = this.$root.ListClass;
+                const lstCls = this.$root.ListClass;
                 let nItem = objNewCls(newItem)
                 if (!nItem) {
                     this.$root.NewClassName = null
                     return;
                 }
                 nItem = verifyNewItem.call(this, nItem)
+                verifySave(nItem, this.$root.PLang, true)
+                // if (isAbstract(nItem.type)) {
+
+                // }
+                // if (isClass(nItem.type)) {
+
+                // }
+                lstCls.push(nItem)
                 debugger
-                if (isAbstract(nItem.type)) {
-
-                }
-                if (isClass(nItem.type)) {
-
-                }
-                // lstCls.push(nItem)
+                this.$root.NewClassName = null
                 function verifyNewItem(item) {
                     let newName = item.Name
                     const maxId = Math.max(...lstCls.map(x => x.id))
-                    lstCls = lstCls.filter(x => newName === x.Name)
-                    if (lstCls.length) {
-                        item.Name = `${newName}${lstCls.length}`
+                    const lstN = lstCls.filter(x => newName === x.Name)
+                    if (lstN.length) {
+                        item.Name = `${newName}${lstN.length}`
                     }
                     item.id = maxId + 1
                     return item

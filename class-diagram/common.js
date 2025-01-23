@@ -138,11 +138,27 @@ export function objNewCls(nCls, id, top, left) {
     nCls.Properties = lst.filter(x => x[1] != cNm && x[1] != gFn && x[1] != sFn)
     if (nCls.type.includes('struct')) {
         delete nCls.toIds
-    } else if (isEnum(nCls.type)) {
+        return nCls
+    }
+    if (isEnum(nCls.type)) {
         nCls.Fields = nCls.Fields.map(x => { return { Name: x.Name } })
         nCls.Properties = []
         delete nCls.toIds
-    } else if (isInterface(nCls.type)) {
+        return nCls
+    }
+    if (isInterface(nCls.type)) {
         nCls.Fields = []
+    }
+    return nCls
+}
+export function verifySave(cItem, il, isView) {
+    for (let ii = 0, field; ii < cItem.Fields.length; ii++) {
+        field = cItem.Fields[ii]
+        field.AcModify = convertSymb(field.AcModify, isView)
+    }
+    for (let ii = 0, prp; ii < cItem.Properties.length; ii++) {
+        prp = cItem.Properties[ii]
+        prp[0] = convertSymb(prp[0], isView)
+        prp[3] = convertAccessors(prp[3], il)
     }
 }

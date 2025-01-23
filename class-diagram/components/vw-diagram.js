@@ -1,6 +1,7 @@
 import {
     setHeight, processLines, StructTypes, objNewCls,
-    isAbstract, convertSymb, convertAccessors
+    isAbstract, convertSymb, convertAccessors,
+    verifySave
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
@@ -58,21 +59,21 @@ export const MenuList = {
 const MxRect = {
     props: ['item'],
     methods: {
-        verifyEditItem(item) {
-            let cItem = JSON.parse(JSON.stringify(item))
-            for (let ii = 0, field; ii < cItem.Fields.length; ii++) {
-                field = cItem.Fields[ii]
-                field.AcModify = convertSymb(field.AcModify)
-            }
-            const il = this.$root.PLang
-            for (let ii = 0, prp; ii < cItem.Properties.length; ii++) {
-                prp = cItem.Properties[ii]
-                prp[0] = convertSymb(prp[0])
-                prp[3] = convertAccessors(prp[3], il)
-            }
+        // verifyEditItem(item, il) {
+        //     let cItem = JSON.parse(JSON.stringify(item))
+        //     for (let ii = 0, field; ii < cItem.Fields.length; ii++) {
+        //         field = cItem.Fields[ii]
+        //         field.AcModify = convertSymb(field.AcModify)
+        //     }
+        //     const il = this.$root.PLang
+        //     for (let ii = 0, prp; ii < cItem.Properties.length; ii++) {
+        //         prp = cItem.Properties[ii]
+        //         prp[0] = convertSymb(prp[0])
+        //         prp[3] = convertAccessors(prp[3], il)
+        //     }
 
-            return cItem
-        },
+        //     return cItem
+        // },
         onMouseDown(event) {
             const dmVar = this.$root.DynamicVar
             if (dmVar.has('DragElm')) return;
@@ -118,7 +119,8 @@ const MxRect = {
             // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
             const dmVar = this.$root.DynamicVar
             dmVar.delete('FViewCode')
-            let cItem = this.verifyEditItem(item)
+            let cItem = JSON.parse(JSON.stringify(item))
+            verifySave(cItem, this.$root.PLang)// this.verifyEditItem(item)
 
             const entry = {
                 item,
@@ -211,9 +213,9 @@ const RectClass = {
             for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
                 prp = lstPrp[jj]
                 txtP = this.getCsFormat(prp)
-                txtP = txtP.replace('+', '  public')
-                txtP = txtP.replace('-', '  private')
-                txtP = txtP.replace('#', '  protected')
+                txtP = convertSymb(txtP) // txtP.replace('+', '  public')
+                txtP = convertSymb(txtP) // txtP.replace('-', '  private')
+                txtP = convertSymb(txtP) // txtP.replace('#', '  protected')
                 if (jj - offI == ii) {
                     let pCode = prp[4]
                     let hasEnter = false
