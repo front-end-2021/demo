@@ -3,7 +3,10 @@ import { createApp } from 'vue'
 import { drawExtension, drawImplement } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
-import { StructTypes, isInterface, isClass } from './common.js'
+import {
+    StructTypes, isInterface, verifySave,
+    isClass, setHeight, inOverview,
+} from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
 Promise.all([
@@ -41,8 +44,7 @@ Promise.all([
                 const dmVar = this.DynamicVar
                 if (dmVar.has('FViewCode')) {
                     return dmVar.get('FViewCode')
-                    // let frmCode = dmVar.get('FViewCode')
-                    // if (1 == frmCode.type) return frmCode
+
                 }
                 return null
             },
@@ -50,8 +52,7 @@ Promise.all([
                 const dmVar = this.DynamicVar
                 if (dmVar.has('FrameCode')) {
                     return dmVar.get('FrameCode')
-                    // let frmCode = dmVar.get('FrameCode')
-                    // if (2 == frmCode.type) return frmCode
+
                 }
                 return null
             },
@@ -66,8 +67,8 @@ Promise.all([
             //     hasTyp = type
             //     if (isInterface(hasTyp)) return 'itf_'
             // },
-            
-           // selectPage(index) { this.IndexPage = index },
+
+            // selectPage(index) { this.IndexPage = index },
             trackMouse(event) {
                 let x = event.clientX;
                 let y = event.clientY;
@@ -108,37 +109,41 @@ Promise.all([
                     itemEl.style.zIndex = ''
                     itemEl.style.backgroundColor = ''
                     const dItem = dgElm.Item
-                    if (isOverView.call(this, dItem.id, dItem.left, dItem.top, dItem.width, dItem.height)) {
+                    if ('cls-classname' == dgElm.Item.id) {
+                        this.editObject(dgElm.Item)
+                    }
+                    //else if (isOverView.call(this, dItem.id, dItem.left, dItem.top, dItem.width, dItem.height)) {
+                    else if (inOverview(dItem, this.ListClass)) {
                         this.setTopLeft(dItem, dgElm.Left, dgElm.Top)
                         this.drawLines(this.getPoints())
                     }
                 }
                 dmVar.delete('DragElm')
 
-                function isOverView(id, x, y, w, h) {
-                    const lstArea = areaBlocks.call(this, id)
-                    for (let ii = 0; ii < lstArea.length; ii++) {
-                        const [x0, y0, w0, h0] = lstArea[ii]
-                        if (x + w < x0 - 30 || x0 + w0 < x - 30) continue
-                        if (y + h < y0 - 30 || y0 + h0 < y - 30) continue
-                        return true
-                    }
-                    return false
-                }
-                function areaBlocks(id) {
-                    const lst = []
-                    const lstCls = this.ListClass
-                    for (let ii = 0, item; ii < lstCls.length; ii++) {
-                        item = lstCls[ii]
-                        if (item.id === id) continue
-                        let x = item.left
-                        let y = item.top
-                        let w = item.width
-                        let h = item.height
-                        lst.push([x, y, w, h])
-                    }
-                    return lst
-                }
+                // function isOverView(id, x, y, w, h) {
+                //     const lstArea = areaBlocks.call(this, id)
+                //     for (let ii = 0; ii < lstArea.length; ii++) {
+                //         const [x0, y0, w0, h0] = lstArea[ii]
+                //         if (x + w < x0 - 30 || x0 + w0 < x - 30) continue
+                //         if (y + h < y0 - 30 || y0 + h0 < y - 30) continue
+                //         return true
+                //     }
+                //     return false
+                // }
+                // function areaBlocks(id) {
+                //     const lst = []
+                //     const lstCls = this.ListClass
+                //     for (let ii = 0, item; ii < lstCls.length; ii++) {
+                //         item = lstCls[ii]
+                //         if (item.id === id) continue
+                //         let x = item.left
+                //         let y = item.top
+                //         let w = item.width
+                //         let h = item.height
+                //         lst.push([x, y, w, h])
+                //     }
+                //     return lst
+                // }
             },
             drawLines(points) {
                 const c = document.getElementById(`dnb-mcanvas`);
@@ -210,60 +215,26 @@ Promise.all([
                 dmVar.delete('FrameCode')
                 dmVar.delete('FViewCode')
             },
-            // getListInherit(item) {
-            //     if (StructTypes[3][0] == item.type) return []   // 'enum'
-            //     if (StructTypes[1][0] == item.type) return []   // 'abstract class'
-            //     let lst = this.ListClass
-            //     const lstCls = []
-            //     const lstItf = []
-            //     for (let ii = 0, cls; ii < lst.length; ii++) {
-            //         cls = lst[ii]
-            //         switch (cls.type) {
-            //             case StructTypes[0][0]: // 'interface'
-            //                 lstItf.push(cls)
-            //                 break;
-            //             case StructTypes[1][0]: // 'abstract class'
-            //             case StructTypes[2][0]: // 'instant'
-            //                 lstCls.push(cls)
-            //                 break;
-            //             default: break;
-            //         }
-            //     }
-            //     const lstIdTo = item.toIds
-            //     if (lstItf.length && lstIdTo && lstIdTo.length) {
-            //         const itfIds = []
-            //         for (let ii = 0, cls; ii < lst.length; ii++) {
-            //             cls = lst[ii]
-            //             if (!lstIdTo.includes(cls.id)) continue;
-            //             if (StructTypes[0][0] == cls.type)
-            //                 itfIds.push(cls.id)     // interface
-            //         }
-            //         for (let ii = lstItf.length - 1, itf; -1 < ii; ii--) {
-            //             itf = lstItf[ii]
-            //             if (!itfIds.includes(itf.id)) continue
-            //             lstItf.splice(ii, 1)    // remove at ii
-            //         }
-            //     }
-            //     if (StructTypes[0][0] == item.type) return lstItf   // interface
-            //     // class
-            //     if (!lstIdTo || !lstIdTo.length) return lst;
+            editObject(item) {
+                // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
+                const dmVar = this.DynamicVar
+                dmVar.delete('FViewCode')
+                let cItem = JSON.parse(JSON.stringify(item))
+                verifySave(cItem, this.PLang)
 
-            //     for (let ii = 0, cls; ii < lst.length; ii++) {
-            //         cls = lst[ii]
-            //         if (!lstIdTo.includes(cls.id)) continue;
-            //         if (StructTypes[1][0] == cls.type || StructTypes[2][0] == cls.type) {
-            //             // 'abstract class' || 'instant class'
-            //             lstCls.splice(0)
-            //             break;
-            //         }
-            //     }
-            //     if (!lstCls.length) return lstItf;
-            //     if (!lstItf.length) return lstCls;
-            //     lst = []
-            //     for (let ii = 0; ii < lstItf.length; ii++) lst.push(lstItf[ii])
-            //     for (let ii = 0; ii < lstCls.length; ii++) lst.push(lstCls[ii])
-            //     return lst
-            // },
+                const entry = {
+                    item,
+                    cItem,
+                }
+                //if (item.toIds) entry.toIds = [...item.toIds]
+                dmVar.set('FrameCode', entry)
+                this.$nextTick(() => {
+                    document.body.querySelectorAll(`textarea.objedit-vwcode`).forEach(el => {
+                        let txt = el.value
+                        setHeight(el, txt)
+                    })
+                })
+            },
             getExtend(item, hTag1, hTag2) {
                 let extend = ''
                 const ii = this.PLang

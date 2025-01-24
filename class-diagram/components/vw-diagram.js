@@ -114,33 +114,27 @@ const MxRect = {
 
             }
         },
-        editObject() {
-            const item = this.item
-            // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
-            const dmVar = this.$root.DynamicVar
-            dmVar.delete('FViewCode')
-            let cItem = JSON.parse(JSON.stringify(item))
-            verifySave(cItem, this.$root.PLang)// this.verifyEditItem(item)
+        // editObject() {
+        //     const item = this.item
+        //     // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
+        //     const dmVar = this.$root.DynamicVar
+        //     dmVar.delete('FViewCode')
+        //     let cItem = JSON.parse(JSON.stringify(item))
+        //     verifySave(cItem, this.$root.PLang)// this.verifyEditItem(item)
 
-            const entry = {
-                item,
-                cItem,
-
-                // eItem: JSON.parse(JSON.stringify(item)),
-                // id: item.id,
-                // type: item.type,
-                // iFields: JSON.parse(JSON.stringify(item.Fields)),
-                // iPropes: JSON.parse(JSON.stringify(item.Properties)),
-            }
-            if (item.toIds) entry.toIds = [...item.toIds]
-            dmVar.set('FrameCode', entry)
-            this.$root.$nextTick(() => {
-                document.body.querySelectorAll(`textarea.objedit-vwcode`).forEach(el => {
-                    let txt = el.value
-                    setHeight(el, txt)
-                })
-            })
-        },
+        //     const entry = {
+        //         item,
+        //         cItem,
+        //     }
+        //     //if (item.toIds) entry.toIds = [...item.toIds]
+        //     dmVar.set('FrameCode', entry)
+        //     this.$root.$nextTick(() => {
+        //         document.body.querySelectorAll(`textarea.objedit-vwcode`).forEach(el => {
+        //             let txt = el.value
+        //             setHeight(el, txt)
+        //         })
+        //     })
+        // },
     },
     mounted() {
         const off = this.$el.getBoundingClientRect()
@@ -498,16 +492,11 @@ export const ViewDiagram = {
             let left = off.left - x
             let top = off.top - y
             const id = 'cls-classname'
-            this.$root.NewClassName = objNewCls(null, id, top, left)
-            // { id, type: 'instant class', Name: 'ClassName', toIds: [],
-            //     top, left, width: 220, height: 100, Fields: [
-            //         { AcModify: '#', Name: 'fieldName', Type: 'String' },
-            //     ], Properties: [ ['+', 'ClassName', '', 'init'],
-            //         ['+', 'GetFunction()', 'String', 'get'],
-            //         ['+', 'SetFunction()', 'void', 'set'],
-            //     ] }
+            const tpNwItem = objNewCls(null, id, top, left)
+            this.$root.NewClassName = tpNwItem
+            
             this.$root.DynamicVar.set('DragElm', {
-                Item: this.$root.NewClassName,
+                Item: tpNwItem,
                 offX: left - event.clientX,
                 offY: top - event.clientY
             })

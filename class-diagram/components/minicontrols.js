@@ -2,6 +2,7 @@ import {
     StructTypes, AccessInit, setHeight, objNewCls,
     isAbstract, isInterface, isClass, isEnum,
     clearSpace, verifySave, convertAccessors,
+    PropName,
 } from "../common.js"
 import { MenuList } from "./vw-diagram.js"
 export const PopDropdownSearch = {
@@ -324,15 +325,16 @@ export const FormEdit = {
             const mItem = frmCode.cItem
             if (!mItem.Properties) {
                 mItem.Properties = [
-                    ['public', 'ProperName()', 'string', AccessInit[0][0], '']
+                    ['public', PropName, 'string', AccessInit[0][0], '']
                 ]
             } else {
-                if (mItem.Properties.find(x => 'ProperName()' == x[1])) return;
-                mItem.Properties.push(['public', 'ProperName()', 'string', AccessInit[0][0], ''])
+                if (mItem.Properties.find(x => PropName == x[1])) return;
+                mItem.Properties.push(['public', PropName, 'string', AccessInit[0][0], ''])
             }
         },
         onCloseEdit() {
             this.$root.DynamicVar.delete('FrameCode')
+            this.$root.NewClassName = null
         },
         onSaveChange() {
             const frmCode = this.$root.DynamicVar.get('FrameCode')
@@ -349,16 +351,9 @@ export const FormEdit = {
             item.Name = name
             item.toIds = mItem.toIds
             verifySave(mItem, this.$root.PLang, true)
-            // for (let ii = 0, field; ii < mItem.Fields.length; ii++) {
-            //     field = mItem.Fields[ii]
-            //     field.AcModify = convertSymb(field.AcModify, true)
-            // }
+            
             item.Fields = mItem.Fields
-            // for (let ii = 0, prp; ii < mItem.Properties.length; ii++) {
-            //     prp = mItem.Properties[ii]
-            //     prp[0] = convertSymb(prp[0], true)
-            //     prp[3] = convertAccessors(prp[3])
-            // }
+            
             item.Properties = mItem.Properties
             item.toIds = mItem.toIds
 
@@ -372,14 +367,9 @@ export const FormEdit = {
                 }
                 nItem = verifyNewItem.call(this, nItem)
                 verifySave(nItem, this.$root.PLang, true)
-                // if (isAbstract(nItem.type)) {
-
-                // }
-                // if (isClass(nItem.type)) {
-
-                // }
+                // if (isAbstract(nItem.type)) { }
+                // if (isClass(nItem.type)) { }
                 lstCls.push(nItem)
-                debugger
                 this.$root.NewClassName = null
                 function verifyNewItem(item) {
                     let newName = item.Name

@@ -110,11 +110,10 @@ export function clearSpace(str, nm) {
     str = str.trim()
     return str.replaceAll(' ', '')
 }
+export const PropName = 'ProperName()'
 export function objNewCls(nCls, id, top, left) {
     const fNm = 'fieldName'
     const cNm = 'ClassName'
-    const gFn = 'GetFunction()'
-    const sFn = 'SetFunction()'
     if (!nCls) {
         return {
             id, type: 'instant class', Name: cNm, toIds: [],
@@ -123,9 +122,7 @@ export function objNewCls(nCls, id, top, left) {
                 { AcModify: '#', Name: fNm, Type: 'String' },
             ],
             Properties: [
-                ['+', cNm, '', 'init'],
-                ['+', gFn, 'String', 'get'],
-                ['+', sFn, 'void', 'set'],
+                ['+', PropName, 'String', 'get'],
             ]
         }
     }
@@ -135,7 +132,7 @@ export function objNewCls(nCls, id, top, left) {
     let lst = nCls.Fields
     nCls.Fields = lst.filter(x => x.Name != fNm)
     lst = nCls.Properties
-    nCls.Properties = lst.filter(x => x[1] != cNm && x[1] != gFn && x[1] != sFn)
+    nCls.Properties = lst.filter(x => x[1] != cNm && x[1] != PropName)
     if (nCls.type.includes('struct')) {
         delete nCls.toIds
         return nCls
@@ -160,5 +157,34 @@ export function verifySave(cItem, il, isView) {
         prp = cItem.Properties[ii]
         prp[0] = convertSymb(prp[0], isView)
         prp[3] = convertAccessors(prp[3], il)
+    }
+}
+export function inOverview(item, items) {
+    const lstArea = areaBlocks(item.id)
+    let x = items.left, 
+        y = items.top, 
+        w = items.width, 
+        h = items.height
+    
+    for (let ii = 0; ii < lstArea.length; ii++) {
+        const [x0, y0, w0, h0] = lstArea[ii]
+        if (x + w < x0 - 30 || x0 + w0 < x - 30) continue
+        if (y + h < y0 - 30 || y0 + h0 < y - 30) continue
+        return true
+    }
+    return false
+
+    function areaBlocks(id) {
+        const lst = []
+        for (let ii = 0, item; ii < items.length; ii++) {
+            item = items[ii]
+            if (item.id === id) continue
+            let x = item.left
+            let y = item.top
+            let w = item.width
+            let h = item.height
+            lst.push([x, y, w, h])
+        }
+        return lst
     }
 }
