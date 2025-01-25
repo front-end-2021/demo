@@ -59,21 +59,7 @@ export const MenuList = {
 const MxRect = {
     props: ['item'],
     methods: {
-        // verifyEditItem(item, il) {
-        //     let cItem = JSON.parse(JSON.stringify(item))
-        //     for (let ii = 0, field; ii < cItem.Fields.length; ii++) {
-        //         field = cItem.Fields[ii]
-        //         field.AcModify = convertSymb(field.AcModify)
-        //     }
-        //     const il = this.$root.PLang
-        //     for (let ii = 0, prp; ii < cItem.Properties.length; ii++) {
-        //         prp = cItem.Properties[ii]
-        //         prp[0] = convertSymb(prp[0])
-        //         prp[3] = convertAccessors(prp[3], il)
-        //     }
-
-        //     return cItem
-        // },
+        
         onMouseDown(event) {
             const dmVar = this.$root.DynamicVar
             if (dmVar.has('DragElm')) return;
@@ -114,27 +100,25 @@ const MxRect = {
 
             }
         },
-        // editObject() {
-        //     const item = this.item
-        //     // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
-        //     const dmVar = this.$root.DynamicVar
-        //     dmVar.delete('FViewCode')
-        //     let cItem = JSON.parse(JSON.stringify(item))
-        //     verifySave(cItem, this.$root.PLang)// this.verifyEditItem(item)
-
-        //     const entry = {
-        //         item,
-        //         cItem,
-        //     }
-        //     //if (item.toIds) entry.toIds = [...item.toIds]
-        //     dmVar.set('FrameCode', entry)
-        //     this.$root.$nextTick(() => {
-        //         document.body.querySelectorAll(`textarea.objedit-vwcode`).forEach(el => {
-        //             let txt = el.value
-        //             setHeight(el, txt)
-        //         })
-        //     })
-        // },
+        deleteCls(item) {
+            const lstCls = this.$root.ListClass
+            let ii = lstCls.findIndex(x => x.id == item.id)
+            if (-1 < ii) {
+                let ids = item.toIds ? item.toIds : []
+                lstCls.splice(ii, 1)
+                for (let jc = 0, cls; jc < lstCls.length; jc++) {
+                    cls = lstCls[jc]
+                    if (!cls.toIds) continue
+                    if (!cls.toIds.length) continue
+                    ii = cls.toIds.indexOf(item.id)
+                    if (-1 < ii) cls.toIds.splice(ii, 1)
+                }
+                if (ids.length) {
+                    this.$root.drawLines(this.$root.getPoints())
+                }
+            }
+        },
+        
     },
     mounted() {
         const off = this.$el.getBoundingClientRect()
@@ -494,7 +478,7 @@ export const ViewDiagram = {
             const id = 'cls-classname'
             const tpNwItem = objNewCls(null, id, top, left)
             this.$root.NewClassName = tpNwItem
-            
+
             this.$root.DynamicVar.set('DragElm', {
                 Item: tpNwItem,
                 offX: left - event.clientX,

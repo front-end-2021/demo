@@ -1,7 +1,7 @@
 body, .dr_lst-wrap {scrollbar-width: thin;}
 .vwheader {
     font-size: 18px;text-align: center;border-bottom: 1px solid black;
-    padding-left: 24px; padding-right: 24px; position: relative;
+    padding-left: 24px; padding-right: 45px; position: relative;
 
 }
 .ctlmove, .ctledit {
@@ -9,8 +9,7 @@ body, .dr_lst-wrap {scrollbar-width: thin;}
     position: absolute;top:1px;
     background-color: white; display: none;
 }
-.ctlmove { left: 0; }
-.ctledit { right: 0; }
+
 .vwheader:hover>.ctlmove,
 .vwheader:hover>.ctledit { display: inline-block; }
 .cpoint {cursor: pointer;}

@@ -39,9 +39,12 @@
             position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
-            <i class="bi bi-arrows-move cpoint ctlmove" @mousedown="onMouseDown"></i>
-            <i class="bi bi-pen cpoint ctledit" 
+            <i class="bi bi-arrows-move cpoint ctlmove" style="left: 0;"
+                @mousedown="onMouseDown"></i>
+            <i class="bi bi-pen cpoint ctledit" style="right:24px"
                 @click.stop="e => $root.editObject(item)"></i>
+            <i class="bi bi-x-lg cpoint ctledit" style="right: 0;"
+                @click.stop="e => deleteCls(item)"></i>
             <span style="font-weight: bold;">enum {{item.Name}}</span>
         </div>
         <div style="font-size: 16px; font-weight: 300;padding: 0 6px;">{{TxtField}}</div>
@@ -53,9 +56,12 @@
             position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
-            <i class="bi bi-arrows-move cpoint ctlmove" @mousedown="onMouseDown"></i>
-            <i class="bi bi-pen cpoint ctledit" 
+            <i class="bi bi-arrows-move cpoint ctlmove" style="left: 0;"
+                @mousedown="onMouseDown"></i>
+            <i class="bi bi-pen cpoint ctledit" style="right: 24px;"
                 @click.stop="e => $root.editObject(item)"></i>
+            <i class="bi bi-x-lg cpoint ctledit" style="right: 0;"
+                @click.stop="e => deleteCls(item)"></i>
             <span style="font-weight: bold;" @dblclick="e => onEditable(e, 'class name')"
                 @keypress="e => $root.preventKeyPress(e, [13, 32])" 
                 @blur="e => onDoneEdit(e, 'class name')"

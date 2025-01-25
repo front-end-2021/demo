@@ -65,17 +65,18 @@ export function isEnum(type) {
     return false
 }
 export function convertSymb(symb, isStr) {
-    if (typeof symb != 'string') return
+    if (typeof symb != 'string') return symb
     if (isStr) {
         symb = symb.toLowerCase()
         if (symb.includes('public')) return symb.replace('public', '+')
         if (symb.includes('private')) return symb.replace('private', '-')
         if (symb.includes('protected')) return symb.replace('protected', '#')
-        return ''
+        return symb
     }
-    if (symb.includes('+')) return symb.replace('+', 'public')
-    if (symb.includes('-')) return symb.replace('-', 'private')
-    if (symb.includes('#')) return symb.replace('#', 'protected')
+    if (symb.includes('+')) return symb.replace('+', '  public')
+    if (symb.includes('-')) return symb.replace('-', '  private')
+    if (symb.includes('#')) return symb.replace('#', '  protected')
+    return symb
 }
 export const StructTypes = [
     ['interface', 'interface', 'interface'],
@@ -85,9 +86,9 @@ export const StructTypes = [
     ['struct', 'struct', 'struct'],
 ]
 export const AccessInit = [
-    ['get', 'get'],
-    ['set', 'set'],
-    ['init', 'Constructor']
+    ['get', 'get', 'get'],
+    ['set', 'set', 'set'],
+    ['init', 'Constructor', 'Constructor']
 ]
 export const ListKeyword = [
     'int', 'float', 'double', 'char',
@@ -99,11 +100,14 @@ export const ListKeyword = [
 export function convertAccessors(acs, il) {
     let txt = acs
     if (typeof il == 'number') {
-        if (acs.includes(AccessInit[2][0])) txt = AccessInit[2][il]
+        if (acs.includes(AccessInit[2][0])) {
+            txt = AccessInit[2][il]
+            return txt
+        }
+        if (acs.includes(AccessInit[2][il])) txt = AccessInit[2][0]
         return txt
     }
-    if (acs.includes(AccessInit[2][1])) txt = AccessInit[2][0]
-    return txt
+    return ''
 }
 export function clearSpace(str, nm) {
     if (typeof str != 'string') return nm
@@ -161,11 +165,11 @@ export function verifySave(cItem, il, isView) {
 }
 export function inOverview(item, items) {
     const lstArea = areaBlocks(item.id)
-    let x = item.left, 
-        y = item.top, 
-        w = item.width, 
+    let x = item.left,
+        y = item.top,
+        w = item.width,
         h = item.height
-    
+
     for (let ii = 0; ii < lstArea.length; ii++) {
         const [x0, y0, w0, h0] = lstArea[ii]
         if (x + w < x0 - 30 || x0 + w0 < x - 30) continue
