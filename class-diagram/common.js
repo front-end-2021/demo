@@ -71,7 +71,7 @@ export function convertSymb(symb, isStr) {
         if (symb.includes('public')) return symb.replace('public', '+')
         if (symb.includes('private')) return symb.replace('private', '-')
         if (symb.includes('protected')) return symb.replace('protected', '#')
-        return
+        return ''
     }
     if (symb.includes('+')) return symb.replace('+', 'public')
     if (symb.includes('-')) return symb.replace('-', 'private')
@@ -161,10 +161,10 @@ export function verifySave(cItem, il, isView) {
 }
 export function inOverview(item, items) {
     const lstArea = areaBlocks(item.id)
-    let x = items.left, 
-        y = items.top, 
-        w = items.width, 
-        h = items.height
+    let x = item.left, 
+        y = item.top, 
+        w = item.width, 
+        h = item.height
     
     for (let ii = 0; ii < lstArea.length; ii++) {
         const [x0, y0, w0, h0] = lstArea[ii]

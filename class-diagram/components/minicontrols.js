@@ -340,39 +340,54 @@ export const FormEdit = {
             const frmCode = this.$root.DynamicVar.get('FrameCode')
             const mItem = frmCode.cItem
             if (typeof mItem.id != 'number') {
-                onNewItem.call(this, mItem)
+                let nItem = onNewItem.call(this, mItem)
+                this.$root.NewClassName = null
                 this.onCloseEdit()
+                if (nItem && nItem.toIds && nItem.toIds.length) {
+                    this.$root.drawLines(this.$root.getPoints())
+                }
                 return
             }
             const item = frmCode.item
             item.type = mItem.type
             let name = mItem.Name
             name = clearSpace(name, item.Name)
+            if (!name.length) {
+                this.onCloseEdit()
+                return
+            }
             item.Name = name
+            const changeToids = item.toIds.length != mItem.toIds.length
             item.toIds = mItem.toIds
             verifySave(mItem, this.$root.PLang, true)
-            
-            item.Fields = mItem.Fields
-            
-            item.Properties = mItem.Properties
-            item.toIds = mItem.toIds
 
+            item.Fields = mItem.Fields
+            item.Properties = mItem.Properties
+            
             this.onCloseEdit()
+            if (changeToids) {
+                this.$root.drawLines(this.$root.getPoints())
+            }
             function onNewItem(newItem) {
-                const lstCls = this.$root.ListClass;
                 let nItem = objNewCls(newItem)
                 if (!nItem) {
                     this.$root.NewClassName = null
                     return;
                 }
+                if (!nItem.Name.length) {
+                    this.$root.NewClassName = null
+                    return;
+                }
+                const lstCls = this.$root.ListClass;
                 nItem = verifyNewItem.call(this, nItem)
                 verifySave(nItem, this.$root.PLang, true)
                 // if (isAbstract(nItem.type)) { }
                 // if (isClass(nItem.type)) { }
                 lstCls.push(nItem)
-                this.$root.NewClassName = null
+                return nItem
                 function verifyNewItem(item) {
                     let newName = item.Name
+                    if (!newName.length) return item
                     const maxId = Math.max(...lstCls.map(x => x.id))
                     const lstN = lstCls.filter(x => newName === x.Name)
                     if (lstN.length) {
