@@ -212,8 +212,6 @@ export const FormEdit = {
             let txtC = target.textContent
             txtC = txtC.trim()
             if (!txtC.length) return;
-            console.log(txtC)
-            debugger
             switch (type) {
                 case 'class name':
                     mItem.Name = txtC
