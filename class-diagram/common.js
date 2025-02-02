@@ -68,14 +68,15 @@ export function convertSymb(symb, isStr) {
     if (typeof symb != 'string') return symb
     if (isStr) {
         symb = symb.toLowerCase()
-        if (symb.includes('public')) return symb.replace('public', '+')
-        if (symb.includes('private')) return symb.replace('private', '-')
-        if (symb.includes('protected')) return symb.replace('protected', '#')
+        symb = symb.trim()
+        if (symb.includes('public')) symb = symb.replace('public', '+')
+        if (symb.includes('private')) symb = symb.replace('private', '-')
+        if (symb.includes('protected')) symb = symb.replace('protected', '#')
         return symb
     }
-    if (symb.includes('+')) return symb.replace('+', '  public')
-    if (symb.includes('-')) return symb.replace('-', '  private')
-    if (symb.includes('#')) return symb.replace('#', '  protected')
+    if (symb.includes('+')) symb = symb.replace('+', '  public')
+    if (symb.includes('-')) symb = symb.replace('-', '  private')
+    if (symb.includes('#')) symb = symb.replace('#', '  protected')
     return symb
 }
 export const StructTypes = [

@@ -1,5 +1,5 @@
 import {
-    setHeight, processLines, StructTypes, objNewCls,
+    isInterface, processLines, StructTypes, objNewCls,
     isAbstract, convertSymb, convertAccessors,
     verifySave
 } from "../common.js";
@@ -59,7 +59,7 @@ export const MenuList = {
 const MxRect = {
     props: ['item'],
     methods: {
-        
+
         onMouseDown(event) {
             const dmVar = this.$root.DynamicVar
             if (dmVar.has('DragElm')) return;
@@ -118,7 +118,7 @@ const MxRect = {
                 }
             }
         },
-        
+
     },
     mounted() {
         const off = this.$el.getBoundingClientRect()
@@ -162,8 +162,10 @@ const RectClass = {
             let type = prp[2]
             let returnType = prp[3]
             returnType = returnType.toLowerCase()
-            let txt = [`${acModify} ${type}`, name, `{...}`]     // set
-            if (returnType.includes('init')) txt = [`${acModify}`, name, `{...}`]
+            let minCxt = `{...}`
+            if(isInterface(this.item.type)) minCxt = ''
+            let txt = [`${acModify} ${type}`, name, minCxt]     // set
+            if (returnType.includes('init')) txt = [`${acModify}`, name, minCxt]
             else if (returnType.includes('get'))
                 txt = [`${acModify}`, name, `: ${type} {...}`]
             return txt
@@ -173,7 +175,7 @@ const RectClass = {
             let name = prp[1]
             let type = prp[2]
             let txt = `${acModify} ${type} ${name}`
-            if ('interface' == this.item.type) return `${txt};\n`
+            if (isInterface(this.item.type)) return `${txt};\n`
             if (isAbstract(acModify) && !prp[4]) return `${txt};\n`
             let returnType = prp[3]
             returnType = returnType.toLowerCase()
@@ -192,14 +194,14 @@ const RectClass = {
                 prp = lstPrp[jj]
                 txtP = this.getCsFormat(prp)
                 txtP = convertSymb(txtP) // txtP.replace('+', '  public')
-                txtP = convertSymb(txtP) // txtP.replace('-', '  private')
-                txtP = convertSymb(txtP) // txtP.replace('#', '  protected')
+                // txtP = convertSymb(txtP) // txtP.replace('-', '  private')
+                // txtP = convertSymb(txtP) // txtP.replace('#', '  protected')
                 if (jj - offI == ii) {
                     let pCode = prp[4]
                     let hasEnter = false
-                    if ('interface' == item.type) { pCode = '' }
+                    if (isInterface(item.type)) { pCode = '' }
                     else if (!pCode) pCode = '/* empty */'
-                    else if ('abstract' == pCode) pCode = ''
+                    else if (isAbstract(pCode)) pCode = ''
                     else {
                         hasEnter = pCode.includes('\n')
                         if (!hasEnter) pCode += ';'
@@ -208,6 +210,8 @@ const RectClass = {
                     if (txtP.includes(`{...}`)) {
                         if (hasEnter) {
                             txtP = txtP.replace(`{...}`, `{\n${pCode}\n  }\n`)
+                        } else if (pCode == '/* empty */') {
+                            txtP = txtP.replace(`{...}`, `{ ${pCode} }\n`)
                         } else {
                             txtP = txtP.replace(`{...}`, `{\n    ${pCode}\n  }\n`)
                         }
