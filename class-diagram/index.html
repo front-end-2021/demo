@@ -113,11 +113,12 @@
           <span v-if="2 != Extendable" style="cursor: pointer;"
               @click.stop="addField">[new Field]</span>
         </div>
-        <div v-if="HasPropers"
-          v-for="(prp, ii) in entry.Properties"
+        <div v-for="(prp, ii) in entry.Properties"
+          :key="ii"
           style="margin-bottom: 2px;"
           :style="[0 == ii ? {marginTop: '10px'} : null]">
-          <div style="display: flex;align-items: center;">
+          <div v-if="HasPropers"
+            style="display: flex;align-items: center;">
             <span class="p36 ceditable" 
               @keypress="e => $root.preventKeyPress(e, [13])"
               @blur="e => onBlurEditable(e, 'access modify key', ii)"

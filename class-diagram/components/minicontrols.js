@@ -211,7 +211,14 @@ export const FormEdit = {
             let prpF
             let txtC = target.textContent
             txtC = txtC.trim()
-            if (!txtC.length) return;
+            switch (type) {
+                case 'code context':
+                    txtC = target.value
+                    break;
+                case 'class name':
+                case 'field acmodify': break;
+                default: break;
+            }
             switch (type) {
                 case 'class name':
                     mItem.Name = txtC
@@ -242,7 +249,7 @@ export const FormEdit = {
                     break;
                 case 'code context':
                     prpF = mItem.Properties[ii]
-                    prpF[4] = target.value
+                    prpF[4] = txtC
                     setHeight(target, target.value)
                     break;
                 default: break;

@@ -154,13 +154,17 @@ export function objNewCls(nCls, id, top, left) {
     return nCls
 }
 export function verifySave(cItem, il, isView) {
-    for (let ii = 0, field; ii < cItem.Fields.length; ii++) {
+    for (let ii = 0, field, txt; ii < cItem.Fields.length; ii++) {
         field = cItem.Fields[ii]
-        field.AcModify = convertSymb(field.AcModify, isView)
+        txt = field.AcModify
+        txt = convertSymb(txt, isView)
+        field.AcModify = txt.trim()
     }
-    for (let ii = 0, prp; ii < cItem.Properties.length; ii++) {
+    for (let ii = 0, prp, txt; ii < cItem.Properties.length; ii++) {
         prp = cItem.Properties[ii]
-        prp[0] = convertSymb(prp[0], isView)
+        txt = prp[0]
+        txt = convertSymb(txt, isView)
+        prp[0] = txt.trim()
         prp[3] = convertAccessors(prp[3], il)
     }
 }
