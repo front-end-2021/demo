@@ -146,7 +146,8 @@
           <textarea v-if="HasCode" class="objedit-vwcode"
             style="width: 100%; min-height: 90px;border-radius: 6px;border: none;"
             placeholder="ContentCodeOfProperty"
-            @paste="pasteTxtArea" @keyup.enter="keyUpTxtArea" @keyup.delete="keyUpTxtArea"
+            @paste="e => pasteTxtArea(e, ii)" 
+            @keyup.enter="keyUpTxtArea" @keyup.delete="keyUpTxtArea"
             @blur="e => onBlurEditable(e, 'code context', ii)"
             @change="e => onInput(e, 'code context', ii)">{{prp[4]}}</textarea>
         </div>

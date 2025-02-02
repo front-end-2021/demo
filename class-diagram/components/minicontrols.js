@@ -316,10 +316,14 @@ export const FormEdit = {
             let txt = target.value
             setHeight(target, txt)
         },
-        pasteTxtArea(e) {
+        pasteTxtArea(e, ii) {
+            const frmCode = this.$root.DynamicVar.get('FrameCode')
+            const mItem = frmCode.cItem
+            const target = e.target
+            let txt = target.value
+            let prpF = mItem.Properties[ii]
+            prpF[4] = txt
             setTimeout(() => {
-                let target = e.target
-                let txt = target.value
                 setHeight(target, txt)
             }, 111)
         },
@@ -384,8 +388,7 @@ export const FormEdit = {
                 const lstCls = this.$root.ListClass;
                 nItem = verifyNewItem.call(this, nItem)
                 verifySave(nItem, this.$root.PLang, true)
-                // if (isAbstract(nItem.type)) { }
-                // if (isClass(nItem.type)) { }
+
                 lstCls.push(nItem)
                 return nItem
                 function verifyNewItem(item) {
