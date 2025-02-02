@@ -100,14 +100,12 @@
           <span @keypress="e => $root.preventKeyPress(e, [13, 32])"
             @blur="e => onBlurEditable(e, 'field name', ii)"
             data-placeholder="NameOfField"
-            class="p36 ceditable" contenteditable="true" 
-            v-html="field.Name"></span>
+            class="p36 ceditable" contenteditable="true">{{field.Name}}</span>
           <span v-if="HasPropers"
             @keypress="e => $root.preventKeyPress(e, [13])"
             @blur="e => onBlurEditable(e, 'field type', ii)"
-            data-placeholder="TypeOfField"
-            class="p36 ceditable" contenteditable="true" 
-            v-html="field.Type"></span>
+            data-placeholder="TypeOfField" class="p36 ceditable" 
+            contenteditable="true">{{field.Type}}</span>
           <span style="margin-left: 12px;cursor: pointer;"
             @click.stop="e => removeField(ii)"><i class="bi bi-trash3"></i></span>
         </div>

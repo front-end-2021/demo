@@ -66,9 +66,9 @@ export function isEnum(type) {
 }
 export function convertSymb(symb, isStr) {
     if (typeof symb != 'string') return symb
+    symb = symb.trim()
     if (isStr) {
         symb = symb.toLowerCase()
-        symb = symb.trim()
         if (symb.includes('public')) symb = symb.replace('public', '+')
         if (symb.includes('private')) symb = symb.replace('private', '-')
         if (symb.includes('protected')) symb = symb.replace('protected', '#')

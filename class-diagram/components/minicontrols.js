@@ -209,33 +209,38 @@ export const FormEdit = {
             const mItem = frmCode.cItem
             const target = e.target
             let prpF
+            let txtC = target.textContent
+            txtC = txtC.trim()
+            if (!txtC.length) return;
+            console.log(txtC)
+            debugger
             switch (type) {
                 case 'class name':
-                    mItem.Name = target.textContent
+                    mItem.Name = txtC
                     break;
                 case 'field acmodify':
                     prpF = mItem.Fields[ii]
-                    prpF.AcModify = target.textContent
+                    prpF.AcModify = txtC
                     break;
                 case 'field name':
                     prpF = mItem.Fields[ii]
-                    prpF.Name = target.textContent
+                    prpF.Name = txtC
                     break;
                 case 'field type':
                     prpF = mItem.Fields[ii]
-                    prpF.Type = target.textContent
+                    prpF.Type = txtC
                     break;
                 case 'access modify key':
                     prpF = mItem.Properties[ii]
-                    prpF[0] = target.textContent
+                    prpF[0] = txtC
                     break;
                 case 'access modify name':
                     prpF = mItem.Properties[ii]
-                    prpF[1] = target.textContent
+                    prpF[1] = txtC
                     break;
                 case 'access modify type':
                     prpF = mItem.Properties[ii]
-                    prpF[2] = target.textContent
+                    prpF[2] = txtC
                     break;
                 case 'code context':
                     prpF = mItem.Properties[ii]
@@ -363,7 +368,7 @@ export const FormEdit = {
 
             item.Fields = mItem.Fields
             item.Properties = mItem.Properties
-            
+
             this.onCloseEdit()
             if (changeToids) {
                 this.$root.drawLines(this.$root.getPoints())
