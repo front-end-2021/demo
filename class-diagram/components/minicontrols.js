@@ -216,35 +216,42 @@ export const FormEdit = {
                     txtC = target.value
                     break;
                 case 'class name':
-                case 'field acmodify': break;
+                case 'field acmodify':
                 default: break;
             }
             switch (type) {
                 case 'class name':
+                    if (checkRevertHtml(mItem.Name)) return
                     mItem.Name = txtC
                     break;
                 case 'field acmodify':
                     prpF = mItem.Fields[ii]
+                    if (checkRevertHtml(prpF.AcModify)) return
                     prpF.AcModify = txtC
                     break;
                 case 'field name':
                     prpF = mItem.Fields[ii]
+                    if (checkRevertHtml(prpF.Name)) return
                     prpF.Name = txtC
                     break;
                 case 'field type':
                     prpF = mItem.Fields[ii]
+                    if (checkRevertHtml(prpF.Type)) return
                     prpF.Type = txtC
                     break;
                 case 'access modify key':
                     prpF = mItem.Properties[ii]
+                    if (checkRevertHtml(prpF[0])) return
                     prpF[0] = txtC
                     break;
                 case 'access modify name':
                     prpF = mItem.Properties[ii]
+                    if (checkRevertHtml(prpF[1])) return
                     prpF[1] = txtC
                     break;
                 case 'access modify type':
                     prpF = mItem.Properties[ii]
+                    if (checkRevertHtml(prpF[2])) return
                     prpF[2] = txtC
                     break;
                 case 'code context':
@@ -253,6 +260,13 @@ export const FormEdit = {
                     setHeight(target, target.value)
                     break;
                 default: break;
+            }
+            function checkRevertHtml(txt) {
+                if (!txtC.length) {
+                    target.innerHTML = txt
+                    return true
+                }
+                return false
             }
         },
         removeField(ii) {
