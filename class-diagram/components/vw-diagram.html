@@ -28,7 +28,7 @@
                 color: white; border-radius: 6px; cursor: pointer; margin: 1px 9px; grid-template-columns: auto 0;">
                 <label for="file-import" style="cursor: pointer;">Import txt</label>
                 <input type="file" id="file-import" style="opacity: 0;"
-                    @change="handleFileSelection"/>
+                    accept=".txt" @change="handleFileSelection"/>
             </div>
             </div>
         <div id="dnb-vw-main" style="position: relative;" :style="[{ width: $root.MaxX - $root.MinX + 'px' }]">
