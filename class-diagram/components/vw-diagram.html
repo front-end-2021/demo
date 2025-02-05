@@ -19,7 +19,18 @@
                     <div>&nbsp;List Property</div>
                 </div>
             </div>
-        </div>
+            <div style="display: inline-flex; width: 108px; height: 28px;
+                background-color: rgb(77, 107, 254); align-items: center; justify-content: center;
+                color: white; border-radius: 6px; margin: 9px;cursor: pointer;"
+                @click.stop="exportDiagram">Download</div>
+            <div style="display: grid; width: 108px; height: 28px;
+                    background-color: rgb(77, 107, 254); align-items: center; justify-content: center;
+                color: white; border-radius: 6px; cursor: pointer; margin: 1px 9px; grid-template-columns: auto 0;">
+                <label for="file-import" style="cursor: pointer;">Import txt</label>
+                <input type="file" id="file-import" style="opacity: 0;"
+                    @change="handleFileSelection"/>
+            </div>
+            </div>
         <div id="dnb-vw-main" style="position: relative;" :style="[{ width: $root.MaxX - $root.MinX + 'px' }]">
             <canvas id="dnb-mcanvas" :width="$root.MaxX - $root.MinX" height="870" style="border:1px solid #000000;">
                 Your browser does not support the HTML canvas tag.

@@ -1,7 +1,6 @@
 import {
     isInterface, processLines, StructTypes, objNewCls,
-    isAbstract, convertSymb, convertAccessors,
-    verifySave
+    isAbstract, convertSymb,
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
@@ -163,7 +162,7 @@ const RectClass = {
             let returnType = prp[3]
             returnType = returnType.toLowerCase()
             let minCxt = `{...}`
-            if(isInterface(this.item.type)) minCxt = ''
+            if (isInterface(this.item.type)) minCxt = ''
             let txt = [`${acModify} ${type}`, name, minCxt]     // set
             if (returnType.includes('init')) txt = [`${acModify}`, name, minCxt]
             else if (returnType.includes('get'))
@@ -468,6 +467,36 @@ export const ViewDiagram = {
                 }
             }
             return false
+        },
+        exportDiagram() {
+            let lstCls = this.$root.ListClass
+            download(JSON.stringify(lstCls), "List_Class.txt", "text/plain");
+        },
+        handleFileSelection(event) {
+            const file = event.target.files[0];
+            const $root = this.$root
+            // Validate file existence and type
+            if (!file) {
+                showMessage("No file selected. Please choose a file.", "error");
+                return;
+            }
+
+            if (!file.type.startsWith("text")) {
+                showMessage("Unsupported file type. Please select a text file.", "error");
+                return;
+            }
+
+            // Read the file
+            const reader = new FileReader();
+            reader.onload = () => {
+                const txt = reader.result;
+                $root.ListClass = JSON.parse(txt)
+                $root.$nextTick(this.buildLines)
+            };
+            reader.onerror = () => {
+                showMessage("Error reading the file. Please try again.", "error");
+            };
+            reader.readAsText(file);
         },
         onMouseDown(event) {
             const dmVar = this.$root.DynamicVar
