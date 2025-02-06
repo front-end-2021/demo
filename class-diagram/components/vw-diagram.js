@@ -490,7 +490,21 @@ export const ViewDiagram = {
             const reader = new FileReader();
             reader.onload = () => {
                 const txt = reader.result;
-                $root.ListClass = truncateIds(JSON.parse(txt))
+                const lst = truncateIds(JSON.parse(txt))
+
+                // #region verify name
+                let lstN = lst.map(x => x.Name)         // init list name
+                for (let ii = lst.length - 1, nItm; -1 < ii; ii--) {
+                    nItm = lst[ii]
+                    const nms = lstN.filter(x => nItm.Name === x)
+                    if (1 < nms.length) {
+                        nItm.Name += `${nms.length - 1}`
+                        lstN = lst.map(x => x.Name) // update list name
+                    }
+                }
+                // #endregion
+
+                $root.ListClass = lst
                 $root.$nextTick(this.buildLines)
             };
             reader.onerror = () => {
