@@ -39,7 +39,7 @@
             </canvas>
             <div id="dnb-vwdiagrams"
                 style="position: absolute;top: 0;left: 0; height: 870px;"
-                :style="[{width: ($root.MaxX) + 'px'}]">
+                :style="[{width: ($root.MaxX - $root.MinX) + 'px'}]">
                 <rect-class v-for="wItm in $root.ListClass" :item="wItm"></rect-class>
                 <rect-class v-if="$root.NewClassName != null" :item="$root.NewClassName"></rect-class>
             </div>

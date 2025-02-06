@@ -278,8 +278,8 @@ Promise.all([
                 let mxX = Math.max(...lst.map(x => x.left + x.width))
                 let mxY = Math.max(...lst.map(x => x.top + x.height))
                 
-                this.MaxX = mxX + offXy
-                this.MaxY = mxY + offXy
+                this.MaxX = mxX + offXy + this.MinX
+                this.MaxY = mxY + offXy + this.MinY
 
                 cvns.setAttribute('width', mxX + offXy)
                 cvns.setAttribute('height', mxY + offXy)
