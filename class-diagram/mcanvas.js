@@ -1,6 +1,8 @@
 
-export function drawImplement(p0, p1, width) {
+export function drawImplement(p0, p1, width, color) {
+    color = color || 'black'
     const ctx = this
+    ctx.strokeStyle = color;
     ctx.beginPath();
     ctx.setLineDash([9]);
     let [x0, y0, x1, y1] = computeXY(p0, p1)
@@ -26,6 +28,39 @@ export function drawImplement(p0, p1, width) {
     ctx.lineTo(xx2, yy2);
 
     ctx.stroke();
+}
+export function drawComposition(p0, p1, width, height, color) {
+    color = color || 'black'
+    const ctx = this
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    let [x0, y0, x1, y1] = computeXY(p0, p1)
+    fillCirle(ctx, x0, y0, 1, 'black')
+
+    let [a, b] = linearCoeffict([x0, y0], [x1, y1]);    // phuong trinh duong thang (p0, p1)
+    let [xhf, yhf] = getOpPoint([x0, y0], [x1, y1], a, b, Math.round(height / 2))
+    let [xx1, yy1, xx2, yy2] = poitsArg90([xhf, yhf], [a, b], width)
+
+    let [xx0, yy0] = getOpPoint([x0, y0], [x1, y1], a, b, height)
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1); //ctx.lineTo(xx0, yy0);
+    ctx.moveTo(xx0, yy0);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    // Create path
+    let region = new Path2D();
+    region.moveTo(xx0, yy0);
+    region.lineTo(xx1, yy1);
+    region.lineTo(x1, y1);
+    region.lineTo(xx2, yy2);
+    region.closePath();
+    // Fill path
+    ctx.fillStyle = color;
+    ctx.fill(region, "evenodd");
+
 }
 function poitsArg90(pp0, ab, width) {
     let [xx0, yy0] = pp0
@@ -113,15 +148,17 @@ function fillCirle(ctx, x0, y0, r, color) {
     ctx.fillStyle = color;
     ctx.fill();
 }
-export function drawExtension(p0, p1, width) {
+export function drawExtension(p0, p1, width, color) {
+    color = color || 'black'
     const ctx = this
+    ctx.strokeStyle = color;
     ctx.beginPath();
     ctx.setLineDash([]);
     let [x0, y0, x1, y1] = computeXY(p0, p1)
     fillCirle(ctx, x0, y0, 1, 'black')
 
     let [a, b] = linearCoeffict([x0, y0], [x1, y1]);    // phuong trinh duong thang (p0, p1)
-    let [xx0, yy0] = getOpPoint([x0, y0], [x1, y1], a, b, width * 3)
+    let [xx0, yy0] = getOpPoint([x0, y0], [x1, y1], a, b, Math.ceil(width * 2.7))
 
     ctx.moveTo(x0, y0);
     ctx.lineTo(xx0, yy0);

@@ -1,6 +1,6 @@
 // #region import
 import { createApp } from 'vue'
-import { drawExtension, drawImplement } from './mcanvas.js'
+import { drawExtension, drawImplement, drawComposition } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import {
@@ -123,10 +123,15 @@ Promise.all([
                 const c = document.getElementById(`dnb-mcanvas`);
                 const ctx = c.getContext("2d");
                 ctx.clearRect(0, 0, c.width, c.height);
+                let xx = 0
                 for (let ii = 0; ii < points.length; ii++) {
                     const [p0, p1] = points[ii]
-                    if (isClass(p0[4])) drawExtension.call(ctx, p0, p1, 8)
-                    if (isInterface(p0[4])) drawImplement.call(ctx, p0, p1, 6)
+                    if (isClass(p0[4])) {
+                        if(0 < xx) drawComposition.call(ctx, p0, p1, 6, 18, '#8b8b8b')
+                        else drawExtension.call(ctx, p0, p1, 6, '#8b8b8b')
+                        xx++
+                    }
+                    if (isInterface(p0[4])) drawImplement.call(ctx, p0, p1, 6, '#8b8b8b')
                 }
             },
             getPoints() {
