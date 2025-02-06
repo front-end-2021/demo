@@ -1,6 +1,6 @@
 import {
     isInterface, processLines, StructTypes, objNewCls,
-    isAbstract, convertSymb,
+    isAbstract, convertSymb, truncateIds,
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
@@ -469,10 +469,10 @@ export const ViewDiagram = {
             return false
         },
         exportDiagram() {
-            let lstCls = this.$root.ListClass
+            let lstCls = truncateIds(this.$root.ListClass)
             download(JSON.stringify(lstCls), "List_Class.txt", "text/plain");
         },
-        handleFileSelection(event) {
+        importDiagram(event) {
             const file = event.target.files[0];
             const $root = this.$root
             // Validate file existence and type
@@ -490,7 +490,7 @@ export const ViewDiagram = {
             const reader = new FileReader();
             reader.onload = () => {
                 const txt = reader.result;
-                $root.ListClass = JSON.parse(txt)
+                $root.ListClass = truncateIds(JSON.parse(txt))
                 $root.$nextTick(this.buildLines)
             };
             reader.onerror = () => {

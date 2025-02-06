@@ -197,3 +197,35 @@ export function inOverview(item, items) {
         return lst
     }
 }
+export function truncateIds(oList) {
+    const nList = JSON.parse(JSON.stringify(oList))     // copy
+    const mpIds = []
+    for (let ii = 0, item; ii < oList.length; ii++) {
+        item = oList[ii]
+        mpIds.push([item.id, ii + 1])       // [oldId, newId]
+    }
+    if (!mpIds.filter(x => x[0] != x[1]).length) return oList
+
+    for (let ii = 0, item; ii < mpIds.length; ii++) {
+        item = mpIds[ii]
+
+        updateToIds(item[0], item[1])       // 1st update others
+
+        if (item[0] === item[1]) continue;  // old = new
+
+        let nItem = nList[ii]
+        nItem.id = item[1]                  // 2nd
+    }
+    return nList
+
+    function updateToIds(oId, nId) {
+        for (let ii = 0, item; ii < nList.length; ii++) {
+            item = nList[ii]
+            if (!item.toIds || !item.toIds.length) continue;
+            if (item.id === oId) continue;           // itself
+            let ij = item.toIds.indexOf(oId)
+            if (ij < 0) continue
+            item.toIds.splice(ij, 1, nId)   // replace
+        }
+    }
+}

@@ -4,6 +4,7 @@ export function getListCls() {
     let name = 'Account'
     let id = 1; //getId(name)
     let type = StructTypes[2][0]    //'instant class'
+    let tIds = [id]
     lstCls.push({
         id: id++, Name: name, type, toIds: [],
         top: 30, left: 90, width: 220, height: 100,
@@ -17,7 +18,6 @@ export function getListCls() {
             ['+', 'SetEmailAddress(string e)', 'void', AccessInit[1][0], `emailAddress = e`],
         ]
     })
-    let tIds = [id]
     name = 'Contact'
     id++// = getId(name)
     lstCls.push({
