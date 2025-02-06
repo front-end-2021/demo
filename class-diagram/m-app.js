@@ -195,7 +195,7 @@ Promise.all([
                 dmVar.delete('FViewCode')
             },
             editObject(item) {
-                // {id, type, Name, toIds, top, left, width, height, Fields, Properties }
+                // {id, type, Name, toIds, top, left, width, height, Fields, Methods }
                 const dmVar = this.DynamicVar
                 dmVar.delete('FViewCode')
                 let cItem = JSON.parse(JSON.stringify(item))
@@ -308,12 +308,11 @@ Promise.all([
 
             this.updateSizeCanvas()
             this.$nextTick(() => {
+                this.updateSizeCanvas()
                 this.drawLines(this.getPoints())
             })
         },
-        updated() {
-
-        },
+        //updated() { },
     })
     app.mount('#m-app')
 

@@ -113,7 +113,7 @@
           <span v-if="2 != Extendable" style="cursor: pointer;"
               @click.stop="addField">[new Field]</span>
         </div>
-        <div v-for="(prp, ii) in entry.Properties"
+        <div v-for="(prp, ii) in entry.Methods"
           :key="ii"
           style="margin-bottom: 2px;"
           :style="[0 == ii ? {marginTop: '10px'} : null]">

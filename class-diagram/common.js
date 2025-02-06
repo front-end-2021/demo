@@ -126,7 +126,7 @@ export function objNewCls(nCls, id, top, left) {
             Fields: [
                 { AcModify: '#', Name: fNm, Type: 'String' },
             ],
-            Properties: [
+            Methods: [
                 ['+', PropName, 'String', 'get'],
             ]
         }
@@ -136,15 +136,15 @@ export function objNewCls(nCls, id, top, left) {
     if (cNm == nCls.Name) return null
     let lst = nCls.Fields
     nCls.Fields = lst.filter(x => x.Name != fNm)
-    lst = nCls.Properties
-    nCls.Properties = lst.filter(x => x[1] != cNm && x[1] != PropName)
+    lst = nCls.Methods
+    nCls.Methods = lst.filter(x => x[1] != cNm && x[1] != PropName)
     if (nCls.type.includes('struct')) {
         delete nCls.toIds
         return nCls
     }
     if (isEnum(nCls.type)) {
         nCls.Fields = nCls.Fields.map(x => { return { Name: x.Name } })
-        nCls.Properties = []
+        nCls.Methods = []
         delete nCls.toIds
         return nCls
     }
@@ -160,8 +160,8 @@ export function verifySave(cItem, il, isView) {
         txt = convertSymb(txt, isView)
         field.AcModify = txt.trim()
     }
-    for (let ii = 0, prp, txt; ii < cItem.Properties.length; ii++) {
-        prp = cItem.Properties[ii]
+    for (let ii = 0, prp, txt; ii < cItem.Methods.length; ii++) {
+        prp = cItem.Methods[ii]
         txt = prp[0]
         txt = convertSymb(txt, isView)
         prp[0] = txt.trim()
@@ -228,4 +228,11 @@ export function truncateIds(oList) {
             item.toIds.splice(ij, 1, nId)   // replace
         }
     }
+}
+export function hasnMethod(item) {
+    if (!item.Methods || !item.Methods.length) return true
+    return false
+}
+export function setFunctions(item, lst) {
+    item.Methods = lst
 }

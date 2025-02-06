@@ -1,6 +1,6 @@
 import {
     isInterface, processLines, StructTypes, objNewCls,
-    isAbstract, convertSymb, truncateIds,
+    isAbstract, convertSymb, truncateIds, hasnMethod, isClass
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
@@ -53,7 +53,6 @@ export const MenuList = {
             dmVar.delete('PopMenu')
         },
     },
-    //beforeUnmount(){ },
 }
 const MxRect = {
     props: ['item'],
@@ -128,14 +127,14 @@ const MxRect = {
         this.setWidthHeight()
 
     },
-    // beforeUnmount() { },
+    
 }
 const RectEnum = {
     template: `#tmp-rect-enum`,
     name: "Rect_Class",
     display: "Rect.Class",
     mixins: [MxRect],
-    //methods: { },
+    
     computed: {
         TxtField() {
             return this.item.Fields.map(x => x.Name).join(', ')
@@ -188,7 +187,7 @@ const RectClass = {
             let clsName = this.FormatCode[0]
             let txtF = this.FormatCode[1]
             let txtFnc = `${txtF}\n`
-            let lstPrp = [...item.Properties, ...this.ExtendProperties]
+            let lstPrp = [...item.Methods, ...this.ExtProperties]
             for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
                 prp = lstPrp[jj]
                 txtP = this.getCsFormat(prp)
@@ -276,7 +275,7 @@ const RectClass = {
                     item.Name = name
                     break;
                 case 'property':
-                    const prp = this.item.Properties[ii]
+                    const prp = this.item.Methods[ii]
                     prp[1] = name
                     break;
                 default: break;
@@ -295,8 +294,8 @@ const RectClass = {
         },
         ListProperty() {
             const lst = []
-            for (let ii = 0, prp; ii < this.item.Properties.length; ii++) {
-                prp = this.item.Properties[ii]
+            for (let ii = 0, prp; ii < this.item.Methods.length; ii++) {
+                prp = this.item.Methods[ii]
                 let txt = this.getFragProp(prp)
                 lst.push(txt)
             }
@@ -371,22 +370,22 @@ const RectClass = {
             if (!parent) return []
             return parent.Fields
         },
-        ExtendProperties() {
+        ExtProperties() {
             const item = this.item
             if (isInterface(item.type)) return []
             let tIds = item.toIds
             if (!tIds || !tIds.length) return []
             const lstCls = this.$root.ListClass
-            const prps = item.Properties
+            const prps = item.Methods
             const lst = []
             for (let ii = 0, xx, oPrp; ii < lstCls.length; ii++) {
                 xx = lstCls[ii]
                 if (xx.id == item.id) continue   // it-self
-                if (!xx.Properties || !xx.Properties.length) continue;
+                if (hasnMethod(xx)) continue;
                 if (!tIds.includes(xx.id)) continue
                 if (isInterface(xx.type)) continue
-                for (let jj = 0, prp; jj < xx.Properties.length; jj++) {
-                    prp = xx.Properties[jj]
+                for (let jj = 0, prp; jj < xx.Methods.length; jj++) {
+                    prp = xx.Methods[jj]
                     const name = prp[1]
                     oPrp = prps.find(xx => name == xx[1])
                     if (oPrp) {
@@ -403,26 +402,26 @@ const RectClass = {
     beforeMount() {
         const item = this.item
         if (!isInterface(item.type)) {
-            // extend Properties
+            // extend Method_s
             let tIds = item.toIds
             if (tIds && tIds.length) {
                 const lstCls = this.$root.ListClass
-                const prps = item.Properties
+                const prps = item.Methods
                 const lst = []
                 for (let ii = 0, xx; ii < lstCls.length; ii++) {
                     xx = lstCls[ii]
                     if (xx.id == item.id) continue   // it-self
-                    if (!xx.Properties || !xx.Properties.length) continue;
+                    if (hasnMethod(xx)) continue;
                     if (!tIds.includes(xx.id)) continue
-                    for (let jj = 0, prp, oPrp; jj < xx.Properties.length; jj++) {
-                        prp = xx.Properties[jj]
+                    for (let jj = 0, prp, oPrp; jj < xx.Methods.length; jj++) {
+                        prp = xx.Methods[jj]
                         oPrp = prps.find(pp => prp[1] == pp[1])
                         if (oPrp && oPrp[0].includes('override')) continue
                         if (xx.type.includes('instant')) continue
                         lst.push(prp)
                     }
                 }
-                const extendPrps = this.ExtendProperties
+                const extendPrps = this.ExtProperties
                 for (let ii = lst.length - 1, prp; -1 < ii; ii--) {
                     prp = lst[ii]
                     if (extendPrps.find(pp => prp[1] == pp[1])) continue
@@ -544,7 +543,6 @@ export const ViewDiagram = {
             }
         },
     },
-    //beforeUnmount() { },
     mounted() {
         this.setWithCanvas()
         this.buildLines()

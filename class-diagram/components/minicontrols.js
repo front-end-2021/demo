@@ -2,7 +2,7 @@ import {
     StructTypes, AccessInit, setHeight, objNewCls,
     isAbstract, isInterface, isClass, isEnum,
     clearSpace, verifySave, convertAccessors,
-    PropName,
+    PropName, hasnMethod,
 } from "../common.js"
 import { MenuList } from "./vw-diagram.js"
 export const PopDropdownSearch = {
@@ -240,22 +240,22 @@ export const FormEdit = {
                     prpF.Type = txtC
                     break;
                 case 'access modify key':
-                    prpF = mItem.Properties[ii]
+                    prpF = mItem.Methods[ii]
                     if (checkRevertHtml(prpF[0])) return
                     prpF[0] = txtC
                     break;
                 case 'access modify name':
-                    prpF = mItem.Properties[ii]
+                    prpF = mItem.Methods[ii]
                     if (checkRevertHtml(prpF[1])) return
                     prpF[1] = txtC
                     break;
                 case 'access modify type':
-                    prpF = mItem.Properties[ii]
+                    prpF = mItem.Methods[ii]
                     if (checkRevertHtml(prpF[2])) return
                     prpF[2] = txtC
                     break;
                 case 'code context':
-                    prpF = mItem.Properties[ii]
+                    prpF = mItem.Methods[ii]
                     prpF[4] = txtC
                     setHeight(target, target.value)
                     break;
@@ -292,7 +292,7 @@ export const FormEdit = {
             let acs = txt
             const frmCode = this.$root.DynamicVar.get('FrameCode')
             const mItem = frmCode.cItem
-            const prp = mItem.Properties[ii]
+            const prp = mItem.Methods[ii]
             const il = this.$root.PLang
             switch (txt) {
                 case AccessInit[2][il]: // init
@@ -320,8 +320,8 @@ export const FormEdit = {
         removeProperty(ii) {
             const frmCode = this.$root.DynamicVar.get('FrameCode')
             const mItem = frmCode.cItem
-            if (!mItem.Properties || !mItem.Properties.length) return;
-            mItem.Properties.splice(ii, 1)
+            if (hasnMethod(mItem)) return;
+            mItem.Methods.splice(ii, 1)
         },
         onInput(e, type, ii) {
             const target = e.target
@@ -342,7 +342,7 @@ export const FormEdit = {
             const mItem = frmCode.cItem
             const target = e.target
             let txt = target.value
-            let prpF = mItem.Properties[ii]
+            let prpF = mItem.Methods[ii]
             prpF[4] = txt
             setTimeout(() => {
                 setHeight(target, txt)
@@ -351,13 +351,13 @@ export const FormEdit = {
         addProperty() {
             const frmCode = this.$root.DynamicVar.get('FrameCode')
             const mItem = frmCode.cItem
-            if (!mItem.Properties) {
-                mItem.Properties = [
+            if (hasnMethod(mItem)) {
+                mItem.Methods = [
                     ['public', PropName, 'string', AccessInit[0][0], '']
                 ]
             } else {
-                if (mItem.Properties.find(x => PropName == x[1])) return;
-                mItem.Properties.push(['public', PropName, 'string', AccessInit[0][0], ''])
+                if (mItem.Methods.find(x => PropName == x[1])) return;
+                mItem.Methods.push(['public', PropName, 'string', AccessInit[0][0], ''])
             }
         },
         onCloseEdit() {
@@ -390,7 +390,7 @@ export const FormEdit = {
             verifySave(mItem, this.$root.PLang, true)
 
             item.Fields = mItem.Fields
-            item.Properties = mItem.Properties
+            item.Methods = mItem.Methods
 
             this.onCloseEdit()
             if (changeToids) {
