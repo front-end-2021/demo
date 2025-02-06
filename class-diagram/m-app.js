@@ -270,12 +270,24 @@ Promise.all([
                 }
                 return extend
             },
+            updateSizeCanvas() {
+                const cvns = document.querySelector(`#dnb-mcanvas`)
+                if (!cvns) return
+                let offXy = 180
+                const lst = this.ListClass
+                let mxX = Math.max(...lst.map(x => x.left + x.width))
+                let mxY = Math.max(...lst.map(x => x.top + x.height))
+                
+                this.MaxX = mxX + offXy
+                this.MaxY = mxY + offXy
+
+                cvns.setAttribute('width', mxX + offXy)
+                cvns.setAttribute('height', mxY + offXy)
+            },
         },
         //  beforeCreate() { },
         //  created() { },
-        beforeMount() {
-            this.MaxX = window.innerWidth
-        },
+        //beforeMount() { },
         mounted() {
             values.forEach((path, ii) => {
                 let pDom = document.body.querySelector(`.dnb-imp-html[dnbpath="${path}"]`)
@@ -288,7 +300,15 @@ Promise.all([
 
             document.addEventListener('mousemove', this.trackMouse)
             document.addEventListener("keyup", this.onKeyUp);
-        }
+
+            this.updateSizeCanvas()
+            this.$nextTick(() => {
+                this.drawLines(this.getPoints())
+            })
+        },
+        updated() {
+
+        },
     })
     app.mount('#m-app')
 

@@ -1,5 +1,5 @@
 <template id="tmp-vw-diagram">
-    <section style="display: flex;width: calc(100vw - 16px);">
+    <section style="display: flex;">
         <div id="dnb-vwtab-left" style="display: inline-flex;flex-direction: column;"
             :style="[{ width: $root.MinX + 'px'}]">
             <h3 style="margin: 0;">left side</h3>
@@ -31,13 +31,15 @@
                     accept=".txt" @change="handleFileSelection"/>
             </div>
             </div>
-        <div id="dnb-vw-main" style="position: relative;" :style="[{ width: $root.MaxX - $root.MinX + 'px' }]">
-            <canvas id="dnb-mcanvas" :width="$root.MaxX - $root.MinX" height="870" style="border:1px solid #000000;">
+        <div id="dnb-vw-main" 
+            style="position: relative; border:1px solid rgb(0, 0, 0); overflow: auto;
+                width:calc(100vw - 32px);height: calc(100vw - 279px);" >
+            <canvas id="dnb-mcanvas" width="780" height="870" style="background-color: #dedede;">
                 Your browser does not support the HTML canvas tag.
             </canvas>
-            <div style="position: absolute;top: 0;left: 0;
-            width: 100%;height: 870px;
-            border: 1px solid rgb(0, 0, 0);">
+            <div id="dnb-vwdiagrams"
+                style="position: absolute;top: 0;left: 0; height: 870px;"
+                :style="[{width: ($root.MaxX) + 'px'}]">
                 <rect-class v-for="wItm in $root.ListClass" :item="wItm"></rect-class>
                 <rect-class v-if="$root.NewClassName != null" :item="$root.NewClassName"></rect-class>
             </div>
