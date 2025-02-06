@@ -1,6 +1,6 @@
 import {
     isInterface, processLines, StructTypes, objNewCls,
-    isAbstract, convertSymb, truncateIds, hasnMethod, isClass
+    isAbstract, convertSymb, truncateIds, hasnMethod, isClass, 
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
@@ -57,7 +57,6 @@ export const MenuList = {
 const MxRect = {
     props: ['item'],
     methods: {
-
         onMouseDown(event) {
             const dmVar = this.$root.DynamicVar
             if (dmVar.has('DragElm')) return;
@@ -66,6 +65,11 @@ const MxRect = {
             const off = this.$el.getBoundingClientRect()
             let x = this.$root.MinX
             let y = this.$root.MinY
+            let wrp = document.body.querySelector(`#dnb-vw-main`)
+            if (!wrp) return
+            x -= wrp.scrollLeft
+            
+            document.addEventListener('keydown', this.$root.disableSrollDown)
             this.$root.DynamicVar.set('DragElm', {
                 Item: this.item,
                 offX: off.left - event.clientX - x,
@@ -73,7 +77,7 @@ const MxRect = {
                 Top: this.item.top,
                 Left: this.item.left
             })
-            const itemEl = document.body.querySelector(`#dnb-vw-main #cls_${this.item.id}`)
+            const itemEl = wrp.querySelector(`#cls_${this.item.id}`)
             itemEl.style.zIndex = '1'
             itemEl.style.backgroundColor = 'white'
         },
@@ -127,14 +131,14 @@ const MxRect = {
         this.setWidthHeight()
 
     },
-    
+
 }
 const RectEnum = {
     template: `#tmp-rect-enum`,
     name: "Rect_Class",
     display: "Rect.Class",
     mixins: [MxRect],
-    
+
     computed: {
         TxtField() {
             return this.item.Fields.map(x => x.Name).join(', ')
@@ -463,30 +467,46 @@ export const ViewDiagram = {
             }
             return false
         },
+        verifyLst(list, isDel) {
+            if (isDel) {
+                for (let ii = list.length - 1, item; - 1 < ii; ii--) {
+                    item = list[ii]
+                    if (isInterface(item.type)) delete item.Fields
+                    else if (item.Methods && !item.Methods.length) delete item.Methods
+                    else if (!item.Fields.length) delete item.Fields
+                }
+                return
+            }
+            for (let ii = list.length - 1, item; - 1 < ii; ii--) {
+                item = list[ii]
+                if (!item.Methods) item.Methods = []
+                if (!item.Fields) item.Fields = []
+            }
+        },
         exportDiagram() {
-            let lstCls = truncateIds(this.$root.ListClass)
+            let lstCls = truncateIds(this.$root.ListClass)  // copy
+            this.verifyLst(lstCls, true)
             download(JSON.stringify(lstCls), "List_Class.txt", "text/plain");
         },
         importDiagram(event) {
             const file = event.target.files[0];
             const $root = this.$root
+            $root.clearDyVar()
             // Validate file existence and type
             if (!file) {
                 showMessage("No file selected. Please choose a file.", "error");
                 return;
             }
-
             if (!file.type.startsWith("text")) {
                 showMessage("Unsupported file type. Please select a text file.", "error");
                 return;
             }
-
             // Read the file
             const reader = new FileReader();
             reader.onload = () => {
                 const txt = reader.result;
-                const lst = truncateIds(JSON.parse(txt))
-
+                const lst = truncateIds(JSON.parse(txt))    // copy
+                this.verifyLst(lst)
                 // #region verify name
                 let lstN = lst.map(x => x.Name)         // init list name
                 for (let ii = lst.length - 1, nItm; -1 < ii; ii--) {
@@ -500,7 +520,8 @@ export const ViewDiagram = {
                 // #endregion
 
                 $root.ListClass = lst
-                $root.$nextTick(this.buildLines)
+                this.buildLines()
+                //$root.$nextTick(this.buildLines)
             };
             reader.onerror = () => {
                 showMessage("Error reading the file. Please try again.", "error");
@@ -512,6 +533,9 @@ export const ViewDiagram = {
             if (dmVar.has('DragElm')) return;
             if (dmVar.has('FrameCode')) return;
             dmVar.delete('FViewCode')
+            let wrp = document.body.querySelector(`#dnb-vw-main`)
+            if (!wrp) return
+            document.addEventListener('keydown', this.$root.disableSrollDown)
             const off = this.$el.querySelector('#cls-sample').getBoundingClientRect()
             let x = this.$root.MinX
             let y = this.$root.MinY
@@ -527,7 +551,7 @@ export const ViewDiagram = {
                 offY: top - event.clientY
             })
             this.$nextTick(() => {
-                const itemEl = document.body.querySelector(`#dnb-vw-main #cls_${id}`)
+                const itemEl = wrp.querySelector(`#cls_${id}`)
                 itemEl.style.zIndex = '1'
                 itemEl.style.backgroundColor = 'white'
             })

@@ -1,4 +1,4 @@
-import { StructTypes, AccessInit, setFunctions } from "./common.js"
+import { StructTypes, AccessInit } from "./common.js"
 export function getListCls() {
     let lstCls = []
     let name = 'Account'
@@ -8,11 +8,11 @@ export function getListCls() {
     let dItm = {
         id: id++, Name: name, type, toIds: [],
         top: 30, left: 90, width: 220, height: 100,
-        Fields: [
-            { AcModify: '#', Name: 'name', Type: 'String' },
-            { AcModify: '#', Name: 'emailAddress', Type: 'String' },
-        ],
     }
+    setFilds(dItm, [
+        { AcModify: '#', Name: 'name', Type: 'String' },
+        { AcModify: '#', Name: 'emailAddress', Type: 'String' },
+    ])
     setFunctions(dItm, [
         ['+', 'GetName()', 'string', AccessInit[0][0], `return this.Name`],
         ['+', 'SetName(String n)', 'void', AccessInit[1][0], `this.Name = n`],
@@ -25,10 +25,10 @@ export function getListCls() {
     dItm = {
         id: id, Name: name, toIds: tIds, type,
         top: 30, left: 380, width: 210, height: 100,
-        Fields: [
-            { AcModify: '-', Name: 'faxNumber', Type: 'string' },
-        ],
     }
+    setFilds(dItm, [
+        { AcModify: '-', Name: 'faxNumber', Type: 'string' },
+    ])
     setFunctions(dItm, [
         ['+', 'GetFaxNumber()', 'int', AccessInit[0][0]],
         ['+', 'SetFaxNumber(int f)', 'void', AccessInit[1][0], `faxNumber = f`],
@@ -41,11 +41,11 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name, toIds: [],
         top: 70, left: 1024, width: 150, height: 100,
-        Fields: [
-            { AcModify: '+', Name: 'age', Type: 'int' },
-            { AcModify: '+', Name: 'gender', Type: 'string' },
-        ],
     }
+    setFilds(dItm, [
+        { AcModify: '+', Name: 'age', Type: 'int' },
+        { AcModify: '+', Name: 'gender', Type: 'string' },
+    ])
     setFunctions(dItm, [
         ['+', 'IsMammal()', 'bool', AccessInit[0][0]],
         ['+', 'Mate()', 'int', AccessInit[0][0]],
@@ -57,10 +57,10 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top: 270, left: 1280, width: 150, height: 100,
-        Fields: [
-            { AcModify: '+', Name: 'isWild', Type: 'string' },
-        ],
     }
+    setFilds(dItm, [
+        { AcModify: '+', Name: 'isWild', Type: 'string' },
+    ])
     setFunctions(dItm, [
         ['+', 'Run()', 'void', AccessInit[1][0]],
     ])
@@ -73,8 +73,8 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name, toIds: [],
         top: 500, left: 1200, width: 150, height: 100,
-        Fields: [],
     }
+    setFilds(dItm, [])
     setFunctions(dItm, [
         ['+', 'Fly()', 'void', AccessInit[1][0]],
     ])
@@ -85,8 +85,8 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name, toIds: [],
         top: 500, left: 1400, width: 150, height: 100,
-        Fields: [],
     }
+    setFilds(dItm, [])
     setFunctions(dItm, [
         ['+', 'Quack()', 'void', AccessInit[1][0]],
     ])
@@ -97,10 +97,10 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top: 270, left: 880, width: 150, height: 100,
-        Fields: [
-            { AcModify: '+', Name: 'beakColor', Type: 'string' },
-        ],
     }
+    setFilds(dItm, [
+        { AcModify: '+', Name: 'beakColor', Type: 'string' },
+    ])
     setFunctions(dItm, [
         ['+', 'Swim()', 'void', AccessInit[1][0]],
     ])
@@ -111,12 +111,12 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name,
         top: 370, left: 90, width: 220, height: 250,
-        Fields: [
-            { Name: 'VENTI' },
-            { Name: 'GRANDE' },
-            { Name: 'TALL' },
-        ],
     }
+    setFilds(dItm, [
+        { Name: 'VENTI' },
+        { Name: 'GRANDE' },
+        { Name: 'TALL' },
+    ])
     setFunctions(dItm, [])
     lstCls.push(dItm)
     name = 'Beverage'
@@ -125,11 +125,11 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name, toIds: [],
         top: 290, left: 480, width: 220, height: 120,
-        Fields: [
-            { AcModify: '#', Name: 'description', Type: 'string' },
-            { AcModify: '#', Name: 'size', Type: 'Size' },
-        ],
     }
+    setFilds(dItm, [
+        { AcModify: '#', Name: 'description', Type: 'string' },
+        { AcModify: '#', Name: 'size', Type: 'Size' },
+    ])
     setFunctions(dItm, [
         ['+ virtual', 'getDescription()', 'bool', AccessInit[0][0], `return new List<string>() { description }`],
         ['+ abstract', 'cost()', 'double', AccessInit[0][0],],
@@ -144,8 +144,8 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top: 480, left: 90, width: 220, height: 120,
-        Fields: [],
     }
+    setFilds(dItm, [])
     setFunctions(dItm, [
         ['+', 'Decaf()', '', AccessInit[2][0], `description = "Decaf"`],
         ['+ override', 'cost()', 'double', AccessInit[0][0], 'return 1.05'],
@@ -156,8 +156,8 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top: 480, left: 290, width: 220, height: 120,
-        Fields: [],
     }
+    setFilds(dItm, [])
     setFunctions(dItm, [
         ['+', 'Espresso()', '', AccessInit[2][0], `description = "Espresso"`],
         ['+ override', 'cost()', 'double', AccessInit[0][0], 'return 1.99'],
@@ -168,8 +168,8 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top: 480, left: 510, width: 220, height: 120,
-        Fields: [],
     }
+    setFilds(dItm, [])
     setFunctions(dItm, [
         ['+', 'DarkRoast()', '', AccessInit[2][0], `description = "DarkRoast"`],
         ['+ override', 'cost()', 'double', AccessInit[0][0], 'return 0.99'],
@@ -180,8 +180,8 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top: 480, left: 750, width: 220, height: 120,
-        Fields: [],
     }
+    setFilds(dItm, [])
     setFunctions(dItm, [
         ['+', 'HouseBlend()', '', AccessInit[2][0], `description = "House Blend Coffee"`],
         ['+ override', 'cost()', 'double', AccessInit[0][0], 'return 0.89'],
@@ -193,10 +193,10 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top: 660, left: 90, width: 220, height: 120,
-        Fields: [
-            { AcModify: '+', Name: 'beverage', Type: 'Beverage' },
-        ],
     }
+    setFilds(dItm, [
+        { AcModify: '+', Name: 'beverage', Type: 'Beverage' },
+    ])
     setFunctions(dItm, [
         ['#', 'CountDes(string des)', 'List<string>', AccessInit[1][0]],
     ])
@@ -208,8 +208,8 @@ export function getListCls() {
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top: 660, left: 490, width: 220, height: 120,
-        Fields: [],
     }
+    setFilds(dItm, [])
     setFunctions(dItm, [
         ['+', 'Soy(Beverage b)', '', AccessInit[2][0], `beverage = b`],
         ['+ override', 'getDescription()', 'List<string>', AccessInit[0][0]],
@@ -217,4 +217,10 @@ export function getListCls() {
     ])
     lstCls.push(dItm)
     return lstCls
+    function setFunctions(item, lst) {
+        item.Methods = lst
+    }
+    function setFilds(item, lst) {
+        item.Fields = lst
+    }
 }

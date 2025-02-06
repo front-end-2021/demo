@@ -204,7 +204,7 @@ export function truncateIds(oList) {
         item = oList[ii]
         mpIds.push([item.id, ii + 1])       // [oldId, newId]
     }
-    if (!mpIds.filter(x => x[0] != x[1]).length) return oList
+    if (!mpIds.filter(x => x[0] != x[1]).length) return nList
 
     for (let ii = 0, item; ii < mpIds.length; ii++) {
         item = mpIds[ii]
@@ -232,7 +232,4 @@ export function truncateIds(oList) {
 export function hasnMethod(item) {
     if (!item.Methods || !item.Methods.length) return true
     return false
-}
-export function setFunctions(item, lst) {
-    item.Methods = lst
 }

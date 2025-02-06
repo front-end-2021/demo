@@ -4,8 +4,7 @@ import { drawExtension, drawImplement, drawComposition } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import {
-    StructTypes, isInterface, verifySave,
-    isClass, setHeight, inOverview,
+    StructTypes, isInterface, verifySave, isClass, setHeight, inOverview,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -100,12 +99,20 @@ Promise.all([
                 dItem.left = left
                 dItem.top = top
             },
+            disableSrollDown(event) {
+                if (event.keyCode === 32) {  // back-space
+                    event.preventDefault();
+                    return
+                }
+            },
             onKeyUp(evt) {
+                let wrp = document.body.querySelector(`#dnb-vw-main`)
+                if (!wrp) return
                 const dmVar = this.DynamicVar
                 if (dmVar.has('DragElm')) {
                     const dgElm = dmVar.get('DragElm')
-                    let itemEl = `#dnb-vw-main #cls_${dgElm.Item.id}`
-                    itemEl = document.body.querySelector(itemEl)
+                    let itemEl = `#cls_${dgElm.Item.id}`
+                    itemEl = wrp.querySelector(itemEl)
                     itemEl.style.zIndex = ''
                     itemEl.style.backgroundColor = ''
                     const dItem = dgElm.Item
@@ -116,10 +123,13 @@ Promise.all([
                         this.setTopLeft(dItem, dgElm.Left, dgElm.Top)
                         this.drawLines(this.getPoints())
                     }
+                    document.removeEventListener('keydown', this.disableSrollDown)
+
                 }
                 dmVar.delete('DragElm')
             },
             drawLines(points) {
+                this.updateSizeCanvas()
                 const c = document.getElementById(`dnb-mcanvas`);
                 const ctx = c.getContext("2d");
                 ctx.clearRect(0, 0, c.width, c.height);
@@ -127,7 +137,7 @@ Promise.all([
                 for (let ii = 0; ii < points.length; ii++) {
                     const [p0, p1] = points[ii]
                     if (isClass(p0[4])) {
-                        if(0 < xx) drawComposition.call(ctx, p0, p1, 6, 18, '#8b8b8b')
+                        if (0 < xx) drawComposition.call(ctx, p0, p1, 6, 18, '#8b8b8b')
                         else drawExtension.call(ctx, p0, p1, 6, '#8b8b8b')
                         xx++
                     }
@@ -276,18 +286,28 @@ Promise.all([
                 return extend
             },
             updateSizeCanvas() {
-                const cvns = document.querySelector(`#dnb-mcanvas`)
+                const cvns = document.body.querySelector(`#dnb-mcanvas`)
                 if (!cvns) return
+                let wrp = document.body.querySelector(`#dnb-vw-main`)
+                let minW = 1080, minH = 300
+                if (wrp) {
+                    minW = wrp.offsetWidth
+                    minH = wrp.offsetHeight
+                }
                 let offXy = 180
                 const lst = this.ListClass
                 let mxX = Math.max(...lst.map(x => x.left + x.width))
+                mxX += offXy
+                if (mxX < minW) mxX = minW - 21
                 let mxY = Math.max(...lst.map(x => x.top + x.height))
-                
-                this.MaxX = mxX + offXy + this.MinX
-                this.MaxY = mxY + offXy + this.MinY
+                mxY += offXy
+                if (mxY < minH) mxY = minH
 
-                cvns.setAttribute('width', mxX + offXy)
-                cvns.setAttribute('height', mxY + offXy)
+                this.MaxX = mxX + this.MinX
+                this.MaxY = mxY + this.MinY
+
+                cvns.setAttribute('width', mxX)
+                cvns.setAttribute('height', mxY)
             },
         },
         //  beforeCreate() { },
@@ -308,7 +328,6 @@ Promise.all([
 
             this.updateSizeCanvas()
             this.$nextTick(() => {
-                this.updateSizeCanvas()
                 this.drawLines(this.getPoints())
             })
         },
