@@ -10,8 +10,8 @@ export function getListCls() {
         top: 30, left: 90, width: 220, height: 100,
     }
     setFilds(dItm, [
-        { AcModify: '#', Name: 'name', Type: 'String' },
-        { AcModify: '#', Name: 'emailAddress', Type: 'String' },
+        { Visible: '#', Name: 'name', Type: 'String' },
+        { Visible: '#', Name: 'emailAddress', Type: 'String' },
     ])
     setFunctions(dItm, [
         ['+', 'GetName()', 'string', AccessInit[0][0], `return this.Name`],
@@ -27,7 +27,7 @@ export function getListCls() {
         top: 30, left: 380, width: 210, height: 100,
     }
     setFilds(dItm, [
-        { AcModify: '-', Name: 'faxNumber', Type: 'string' },
+        { Visible: '-', Name: 'faxNumber', Type: 'string' },
     ])
     setFunctions(dItm, [
         ['+', 'GetFaxNumber()', 'int', AccessInit[0][0]],
@@ -43,8 +43,8 @@ export function getListCls() {
         top: 70, left: 1024, width: 150, height: 100,
     }
     setFilds(dItm, [
-        { AcModify: '+', Name: 'age', Type: 'int' },
-        { AcModify: '+', Name: 'gender', Type: 'string' },
+        { Visible: '+', Name: 'age', Type: 'int' },
+        { Visible: '+', Name: 'gender', Type: 'string' },
     ])
     setFunctions(dItm, [
         ['+', 'IsMammal()', 'bool', AccessInit[0][0]],
@@ -59,7 +59,7 @@ export function getListCls() {
         top: 270, left: 1280, width: 150, height: 100,
     }
     setFilds(dItm, [
-        { AcModify: '+', Name: 'isWild', Type: 'string' },
+        { Visible: '+', Name: 'isWild', Type: 'string' },
     ])
     setFunctions(dItm, [
         ['+', 'Run()', 'void', AccessInit[1][0]],
@@ -99,7 +99,7 @@ export function getListCls() {
         top: 270, left: 880, width: 150, height: 100,
     }
     setFilds(dItm, [
-        { AcModify: '+', Name: 'beakColor', Type: 'string' },
+        { Visible: '+', Name: 'beakColor', Type: 'string' },
     ])
     setFunctions(dItm, [
         ['+', 'Swim()', 'void', AccessInit[1][0]],
@@ -127,8 +127,8 @@ export function getListCls() {
         top: 290, left: 480, width: 220, height: 120,
     }
     setFilds(dItm, [
-        { AcModify: '#', Name: 'description', Type: 'string' },
-        { AcModify: '#', Name: 'size', Type: 'Size' },
+        { Visible: '#', Name: 'description', Type: 'string' },
+        { Visible: '#', Name: 'size', Type: 'Size' },
     ])
     setFunctions(dItm, [
         ['+ virtual', 'getDescription()', 'bool', AccessInit[0][0], `return new List<string>() { description }`],
@@ -195,7 +195,7 @@ export function getListCls() {
         top: 660, left: 90, width: 220, height: 120,
     }
     setFilds(dItm, [
-        { AcModify: '+', Name: 'beverage', Type: 'Beverage' },
+        { Visible: '+', Name: 'beverage', Type: 'Beverage' },
     ])
     setFunctions(dItm, [
         ['#', 'CountDes(string des)', 'List<string>', AccessInit[1][0]],

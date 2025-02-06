@@ -90,13 +90,13 @@
             class="bi bi-code-square" style="margin-left: 6px;"></i>
         </div>
         <div v-for="(field, ii) in entry.Fields"
-          :key="'oldfield_' + field.AcModify"
+          :key="'oldfield_' + field.Visible"
           style="margin-bottom: 2px; display: flex;align-items: center;">
           <span v-if="HasPropers"
             @keypress="e => $root.preventKeyPress(e, [13])"
             @blur="e => onBlurEditable(e, 'field acmodify', ii)"
             data-placeholder="AccessoriOfField" contenteditable="true"
-            class="p36 ceditable">{{field.AcModify}}</span>
+            class="p36 ceditable">{{field.Visible}}</span>
           <span @keypress="e => $root.preventKeyPress(e, [13, 32])"
             @blur="e => onBlurEditable(e, 'field name', ii)"
             data-placeholder="NameOfField"

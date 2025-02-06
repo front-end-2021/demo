@@ -226,8 +226,8 @@ export const FormEdit = {
                     break;
                 case 'field acmodify':
                     prpF = mItem.Fields[ii]
-                    if (checkRevertHtml(prpF.AcModify)) return
-                    prpF.AcModify = txtC
+                    if (checkRevertHtml(prpF.Visible)) return
+                    prpF.Visible = txtC
                     break;
                 case 'field name':
                     prpF = mItem.Fields[ii]
@@ -280,7 +280,7 @@ export const FormEdit = {
             const mItem = frmCode.cItem
             let fld = { Name: 'fieldName' }
             if (this.HasPropers) {
-                fld = { AcModify: 'private', Name: 'fieldName', Type: 'String' }
+                fld = { Visible: 'private', Name: 'fieldName', Type: 'String' }
             }
             if (!mItem.Fields) mItem.Fields = [fld]
             else {

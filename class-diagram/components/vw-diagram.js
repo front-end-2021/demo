@@ -328,7 +328,7 @@ const RectClass = {
             let lstF = [...item.Fields, ...this.ExtendFields]
             for (let jj = 0, field; jj < lstF.length; jj++) {
                 field = lstF[jj]
-                switch (field.AcModify) {
+                switch (field.Visible) {
                     case '#': txtF += `  protected ${field.Type} ${field.Name};\n`
                         break;
                     case '+': txtF += `  public ${field.Type} ${field.Name};\n`

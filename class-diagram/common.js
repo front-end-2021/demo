@@ -124,7 +124,7 @@ export function objNewCls(nCls, id, top, left) {
             id, type: 'instant class', Name: cNm, toIds: [],
             top, left, width: 220, height: 100,
             Fields: [
-                { AcModify: '#', Name: fNm, Type: 'String' },
+                { Visible: '#', Name: fNm, Type: 'String' },
             ],
             Methods: [
                 ['+', PropName, 'String', 'get'],
@@ -156,9 +156,9 @@ export function objNewCls(nCls, id, top, left) {
 export function verifySave(cItem, il, isView) {
     for (let ii = 0, field, txt; ii < cItem.Fields.length; ii++) {
         field = cItem.Fields[ii]
-        txt = field.AcModify
+        txt = field.Visible
         txt = convertSymb(txt, isView)
-        field.AcModify = txt.trim()
+        field.Visible = txt.trim()
     }
     for (let ii = 0, prp, txt; ii < cItem.Methods.length; ii++) {
         prp = cItem.Methods[ii]
