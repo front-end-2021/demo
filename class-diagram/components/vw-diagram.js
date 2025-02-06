@@ -288,14 +288,10 @@ const RectClass = {
         ClassName() {
             const item = this.item
             let clsName = item.Name
-            switch (item.type) {
-                case StructTypes[1][0]:
-                    return `abstract ${clsName}`
-                case StructTypes[2][0]: // 'instant class'
-                case StructTypes[0][0]: //'interface'
-                    return clsName
-                default: return '';
-            }
+            if (isAbstract(item.type)) return `abstract ${clsName}`
+            if (isInterface(item.type)) return clsName
+            if (isClass(item.type)) return clsName
+            return ''
         },
         ListProperty() {
             const lst = []
@@ -377,7 +373,7 @@ const RectClass = {
         },
         ExtendProperties() {
             const item = this.item
-            if ('interface' == item.type) return []
+            if (isInterface(item.type)) return []
             let tIds = item.toIds
             if (!tIds || !tIds.length) return []
             const lstCls = this.$root.ListClass
@@ -388,7 +384,7 @@ const RectClass = {
                 if (xx.id == item.id) continue   // it-self
                 if (!xx.Properties || !xx.Properties.length) continue;
                 if (!tIds.includes(xx.id)) continue
-                if ('interface' == xx.type) continue
+                if (isInterface(xx.type)) continue
                 for (let jj = 0, prp; jj < xx.Properties.length; jj++) {
                     prp = xx.Properties[jj]
                     const name = prp[1]
@@ -406,7 +402,7 @@ const RectClass = {
     },
     beforeMount() {
         const item = this.item
-        if ('interface' != item.type) {
+        if (!isInterface(item.type)) {
             // extend Properties
             let tIds = item.toIds
             if (tIds && tIds.length) {
