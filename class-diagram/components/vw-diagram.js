@@ -1,6 +1,6 @@
 import {
-    isInterface, processLines, StructTypes, objNewCls,
-    isAbstract, convertSymb, truncateIds, hasnMethod, isClass, 
+    isInterface, processLines, StructTypes, objNewCls, verifyName,
+    isAbstract, convertSymb, truncateIds, hasnMethod, isClass,
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
@@ -68,7 +68,7 @@ const MxRect = {
             let wrp = document.body.querySelector(`#dnb-vw-main`)
             if (!wrp) return
             x -= wrp.scrollLeft
-            
+
             document.addEventListener('keydown', this.$root.disableSrollDown)
             this.$root.DynamicVar.set('DragElm', {
                 Item: this.item,
@@ -508,14 +508,15 @@ export const ViewDiagram = {
                 const lst = truncateIds(JSON.parse(txt))    // copy
                 this.verifyLst(lst)
                 // #region verify name
-                let lstN = lst.map(x => x.Name)         // init list name
+               // let lstN = lst.map(x => x.Name.replace(/\d+/g, ''))         // init list name
                 for (let ii = lst.length - 1, nItm; -1 < ii; ii--) {
                     nItm = lst[ii]
-                    const nms = lstN.filter(x => nItm.Name === x)
-                    if (1 < nms.length) {
-                        nItm.Name += `${nms.length - 1}`
-                        lstN = lst.map(x => x.Name) // update list name
-                    }
+                    nItm.Name = verifyName(nItm.Name, lst)
+                    // const nms = lstN.filter(x => nItm.Name === x)
+                    // if (1 < nms.length) {
+                    //     nItm.Name += `${nms.length - 1}`
+                    //     lstN = lst.map(x => x.Name.replace(/\d+/g, '')) // update list name
+                    // }
                 }
                 // #endregion
 

@@ -233,3 +233,24 @@ export function hasnMethod(item) {
     if (!item.Methods || !item.Methods.length) return true
     return false
 }
+export function verifyName(name, lst) {
+    let vName = name
+    let lstN = lst.map(x => x.Name.replace(/\d+/g, '')) // init list name remove number
+    let nms = lstN.filter(x => vName === x)
+    while (1 < nms.length) {
+        vName = `${name}${nms.length - 1}`
+        nms = lstN.filter(x => vName === x)
+    }
+    return vName
+}
+function removeNum(str) {
+    //str = "Đây là chuỗi chứa các số: 123, 456 và 789.";
+    return str.replace(/\d+/g, '');
+    //console.log(newStr); // Output: "Đây là chuỗi chứa các số: ,  và ."
+}
+function buildExtends(lst, isDel) {
+    let names = lst.map(x => x.Name)
+    for (let ii = 0, item; ii < lst.length; ii++) {
+
+    }
+}
