@@ -236,10 +236,11 @@ export function hasnMethod(item) {
 export function verifyName(name, lst) {
     let vName = name
     let lstN = lst.map(x => x.Name.replace(/\d+/g, '')) // init list name remove number
+    let lstNo = lst.map(x => x.Name)
     let nms = lstN.filter(x => vName === x)
     while (1 < nms.length) {
         vName = `${name}${nms.length - 1}`
-        nms = lstN.filter(x => vName === x)
+        nms = lstNo.filter(x => vName === x)
     }
     return vName
 }
