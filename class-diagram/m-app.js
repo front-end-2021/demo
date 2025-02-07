@@ -19,9 +19,9 @@ Promise.all([
         },
         data() {
             return {
-                IndexPage: 0,
                 MinX: 150, MaxX: 150 + 1754,
                 MinY: 10, MaxY: 880,
+                DiagName: 'Demo',
                 ListClass: getListCls(),
                 DynamicVar: new Map(),
                 /* PopMenu, FViewCode, FrameCode: {top,left,html,type,item}, 
@@ -34,10 +34,7 @@ Promise.all([
         },
         computed: {
             CompPage() {
-                switch (this.IndexPage) {
-                    case 0: return 'view-diagram';
-                    default: break;
-                }
+                return 'view-diagram';
             },
             ViewCode() {
                 const dmVar = this.DynamicVar
@@ -57,7 +54,7 @@ Promise.all([
             },
         },
         watch: {
-            IndexPage(val) { setLocal(6, val) },
+            //ListClass(val) { },
         },
         methods: {
             // canExtend(type) {
@@ -66,8 +63,6 @@ Promise.all([
             //     hasTyp = type
             //     if (isInterface(hasTyp)) return 'itf_'
             // },
-
-            // selectPage(index) { this.IndexPage = index },
             trackMouse(event) {
                 let x = event.clientX;
                 let y = event.clientY;

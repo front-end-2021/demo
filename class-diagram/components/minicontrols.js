@@ -416,17 +416,19 @@ export const FormEdit = {
                     let newName = item.Name
                     if (!newName.length) return item
                     const maxId = Math.max(...lstCls.map(x => x.id))
-                    let lstOnm = lstCls.map(x => x.Name.replace(/\d+/g, ''))    // init list name
-                    let lstN = lstOnm.filter(x => newName === x)
-                    if (0 < lstN.length) {
-                        newName = `${newName}${lstN.length}`
-                        lstOnm = lstCls.map(x => x.Name)
-                        lstN = lstOnm.filter(x => newName === x)
-                        if (0 < lstN.length) newName = `${newName}${lstN.length}`
-                        item.Name = newName
+                    let lstNo = lstCls.map(x => x.Name)
+                    if (lstNo.includes(newName)) {
+                        let index = 1
+                        newName = `${item.Name}${index}`
+                        while (lstNo.includes(newName)) {
+                            index += 1
+                            newName = `${item.Name}${index}`
+                        }
                     }
+                    item.Name = newName
                     item.id = maxId + 1
                     return item
+
                 }
             }
         },

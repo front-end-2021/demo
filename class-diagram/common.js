@@ -233,25 +233,50 @@ export function hasnMethod(item) {
     if (!item.Methods || !item.Methods.length) return true
     return false
 }
-// function verifyName(name, lst) {
-//     let vName = name
-//     let lstN = lst.map(x => x.Name.replace(/\d+/g, '')) // init list name remove number
-//     let lstNo = lst.map(x => x.Name)
-//     let nms = lstN.filter(x => vName === x)
-//     while (1 < nms.length) {
-//         vName = `${name}${nms.length - 1}`
-//         nms = lstNo.filter(x => vName === x)
-//     }
-//     return vName
-// }
-function removeNum(str) {
-    //str = "Đây là chuỗi chứa các số: 123, 456 và 789.";
-    return str.replace(/\d+/g, '');
-    //console.log(newStr); // Output: "Đây là chuỗi chứa các số: ,  và ."
+export function verifyName(name, lstNo) {
+    let vName = name
+    let nms = lstNo.filter(x => vName === x)
+    if (nms.length < 2) return vName
+    let index = 1
+    vName = `${name}${index}`
+    while (lstNo.includes(vName)) {
+        index += 1
+        vName = `${name}${index}`
+    }
+    return vName
+
 }
+// function extractEndDigits(str) {
+//     // Sử dụng regex để tìm các chữ số ở cuối chuỗi
+//     const match = str.match(/\d+$/);
+//     return match ? match[0] : ''
+// }
+// function removeEndDigits(str) {
+//     // Sử dụng regex để tìm và loại bỏ các chữ số ở cuối chuỗi
+//     return str.replace(/\d+$/, '');
+// }
+// function removeNum(str) {
+//     //str = "Đây là chuỗi chứa các số: 123, 456 và 789.";
+//     return str.replace(/\d+/g, '');
+//     //console.log(newStr); // Output: "Đây là chuỗi chứa các số: ,  và ."
+// }
 function buildExtends(lst, isDel) {
     let names = lst.map(x => x.Name)
     for (let ii = 0, item; ii < lst.length; ii++) {
 
     }
+}
+function removeExtraSpaces(str) {
+    if (typeof str != 'string') return str
+    // Sử dụng regex để thay thế nhiều khoảng trắng liên tiếp bằng một khoảng trắng duy nhất
+    return str.replace(/\s+/g, ' ').trim();
+}
+function removeSpecialChar(str) {
+    if (typeof str != 'string') return str
+    let regex = /[^a-zA-Z0-9+\-*/\()\s]/g;
+    return str.replace(regex, '')
+}
+export function verifyExportTxt(str) {
+    let txt = removeSpecialChar(str)
+    return removeExtraSpaces(txt)
 }

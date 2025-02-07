@@ -1,6 +1,7 @@
 import {
     isInterface, processLines, StructTypes, objNewCls,
     isAbstract, convertSymb, truncateIds, hasnMethod, isClass,
+    verifyExportTxt, verifyName,
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
@@ -392,10 +393,7 @@ const RectClass = {
                     prp = xx.Methods[jj]
                     const name = prp[1]
                     oPrp = prps.find(xx => name == xx[1])
-                    if (oPrp) {
-                        if (oPrp[0].includes('override')) continue
-                        lst.push(prp)
-                    } else {
+                    if (!oPrp) {
                         lst.push(prp)
                     }
                 }
@@ -486,7 +484,12 @@ export const ViewDiagram = {
         exportDiagram() {
             let lstCls = truncateIds(this.$root.ListClass)  // copy
             this.verifyLst(lstCls, true)
-            download(JSON.stringify(lstCls), "List_Class.txt", "text/plain");
+            let Name = this.$root.DiagName
+            let entry = {
+                Name,
+                Classes: lstCls,
+            }
+            download(JSON.stringify(entry), `${Name.replaceAll(' ', '-')}.txt`, "text/plain");
         },
         importDiagram(event) {
             const file = event.target.files[0];
@@ -505,33 +508,46 @@ export const ViewDiagram = {
             const reader = new FileReader();
             reader.onload = () => {
                 const txt = reader.result;
-                const lst = truncateIds(JSON.parse(txt))    // copy
+                let entry = JSON.parse(txt)
+                this.$root.DiagName = entry.Name
+                const lst = truncateIds(entry.Classes)    // copy
                 this.verifyLst(lst)
                 // #region verify name
-                let lstN = lst.map(x => x.Name.replace(/\d+/g, '')) // init list name remove number
                 let lstNo = lst.map(x => x.Name)
                 for (let ii = lst.length - 1, nItm; -1 < ii; ii--) {
                     nItm = lst[ii]
-                    nItm.Name = verifyName(nItm.Name)
+                    let vNm = verifyName(nItm.Name, lstNo)
+                    if (nItm.Name !== vNm) {
+                        nItm.Name = vNm
+                        lstNo = lst.map(x => x.Name)
+                    }
+
                 }
                 // #endregion
 
                 $root.ListClass = lst
                 this.buildLines()
-                function verifyName(name) {
-                    let vName = name
-                    let nms = lstN.filter(x => vName === x)
-                    while (1 < nms.length) {
-                        vName = `${name}${nms.length - 1}`
-                        nms = lstNo.filter(x => vName === x)
-                    }
-                    return vName
-                }
+
             };
             reader.onerror = () => {
                 showMessage("Error reading the file. Please try again.", "error");
             };
             reader.readAsText(file);
+        },
+        onBlurEdit(e, type) {
+            const target = e.target
+            let txtC = target.textContent
+            txtC = txtC.trim()
+            if (!txtC.length) {
+                target.innerHTML = this.$root.DiagName
+                return
+            }
+            switch (type) {
+                case 'diagram name':
+                    this.$root.DiagName = verifyExportTxt(txtC)
+                    break;
+                default: break;
+            }
         },
         onMouseDown(event) {
             const dmVar = this.$root.DynamicVar
