@@ -1,5 +1,5 @@
 import {
-    isInterface, processLines, StructTypes, objNewCls, verifyName,
+    isInterface, processLines, StructTypes, objNewCls,
     isAbstract, convertSymb, truncateIds, hasnMethod, isClass,
 } from "../common.js";
 export const MenuList = {
@@ -508,21 +508,25 @@ export const ViewDiagram = {
                 const lst = truncateIds(JSON.parse(txt))    // copy
                 this.verifyLst(lst)
                 // #region verify name
-               // let lstN = lst.map(x => x.Name.replace(/\d+/g, ''))         // init list name
+                let lstN = lst.map(x => x.Name.replace(/\d+/g, '')) // init list name remove number
+                let lstNo = lst.map(x => x.Name)
                 for (let ii = lst.length - 1, nItm; -1 < ii; ii--) {
                     nItm = lst[ii]
-                    nItm.Name = verifyName(nItm.Name, lst)
-                    // const nms = lstN.filter(x => nItm.Name === x)
-                    // if (1 < nms.length) {
-                    //     nItm.Name += `${nms.length - 1}`
-                    //     lstN = lst.map(x => x.Name.replace(/\d+/g, '')) // update list name
-                    // }
+                    nItm.Name = verifyName(nItm.Name)
                 }
                 // #endregion
 
                 $root.ListClass = lst
                 this.buildLines()
-                //$root.$nextTick(this.buildLines)
+                function verifyName(name) {
+                    let vName = name
+                    let nms = lstN.filter(x => vName === x)
+                    while (1 < nms.length) {
+                        vName = `${name}${nms.length - 1}`
+                        nms = lstNo.filter(x => vName === x)
+                    }
+                    return vName
+                }
             };
             reader.onerror = () => {
                 showMessage("Error reading the file. Please try again.", "error");
