@@ -637,6 +637,7 @@ export const ViewDiagram = {
                 showMessage("Error reading the file. Please try again.", "error");
             };
             reader.readAsText(file);
+            function showMessage(txt) { alert(txt) }
         },
         onBlurEdit(e, type) {
             const target = e.target
