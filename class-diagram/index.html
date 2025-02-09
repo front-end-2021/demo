@@ -77,7 +77,7 @@
             data-placeholder="NameOfClass"
             class="p36 ceditable" v-html="entry.Name">
           </span>
-          <i style="margin-right: 6px;">{{ViewExtend}}</i>
+          <i v-for="exv in ViewExtends">{{exv[0]}}&nbsp;{{exv[1]}}&nbsp;</i>
           <drplst-search v-if="IsDrpExtend"
               :sources="ListExtend"
               :ids="entry.toIds"

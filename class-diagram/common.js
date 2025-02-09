@@ -157,12 +157,14 @@ export function verifySave(cItem, il, isView) {
     for (let ii = 0, field, txt; ii < cItem.Fields.length; ii++) {
         field = cItem.Fields[ii]
         txt = field.Visible
+        if (typeof txt != 'string') continue;
         txt = convertSymb(txt, isView)
         field.Visible = txt.trim()
     }
     for (let ii = 0, prp, txt; ii < cItem.Methods.length; ii++) {
         prp = cItem.Methods[ii]
         txt = prp[0]
+        if (typeof txt != 'string') continue;
         txt = convertSymb(txt, isView)
         prp[0] = txt.trim()
         prp[3] = convertAccessors(prp[3], il)
@@ -279,4 +281,23 @@ function removeSpecialChar(str) {
 export function verifyExportTxt(str) {
     let txt = removeSpecialChar(str)
     return removeExtraSpaces(txt)
+}
+export function getLstExt(id, tIds, prps, lstCls, fnc) {
+    const lst = []
+    for (let ii = 0, xx, oPrp; ii < lstCls.length; ii++) {
+        xx = lstCls[ii]
+        if (xx.id == id) continue   // it-self
+        if(fnc(xx.type)) continue
+        if (hasnMethod(xx)) continue;
+        if (!tIds.includes(xx.id)) continue
+        for (let jj = 0, prp, name; jj < xx.Methods.length; jj++) {
+            prp = xx.Methods[jj]
+            name = prp[1]
+            oPrp = prps.find(xx => name == xx[1])
+            if (!oPrp) {
+                lst.push(prp)
+            }
+        }
+    }
+    return lst
 }

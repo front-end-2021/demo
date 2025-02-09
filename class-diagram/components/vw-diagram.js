@@ -1,6 +1,6 @@
 import {
     isInterface, processLines, StructTypes, objNewCls,
-    isAbstract, convertSymb, truncateIds, hasnMethod, isClass,
+    isAbstract, convertSymb, truncateIds, hasnMethod, getLstExt,
     verifyExportTxt, verifyName,
 } from "../common.js";
 export const MenuList = {
@@ -136,8 +136,8 @@ const MxRect = {
 }
 const RectEnum = {
     template: `#tmp-rect-enum`,
-    name: "Rect_Class",
-    display: "Rect.Class",
+    name: "Rect_Enum",
+    display: "Rect.Enum",
     mixins: [MxRect],
 
     computed: {
@@ -146,15 +146,8 @@ const RectEnum = {
         },
     },
 }
-const RectClass = {
-    template: `#tmp-rect-class`,
-    name: "Rect_Class",
-    display: "Rect.Class",
-    //props: [],
-    mixins: [MxRect],
-    components: {
-        'rect-enum': RectEnum,
-    },
+
+const MxClsItf = {      // mixin: Class, Abstract, Interface
     methods: {
         getFragProp(prp) {
             let acModify = prp[0]
@@ -173,88 +166,33 @@ const RectClass = {
                 txt = [`${acModify}`, name, `: ${type} {...}`]
             return txt
         },
-        getCsFormat(prp) {
-            let acModify = prp[0]
-            let name = prp[1]
-            let type = prp[2]
-            let txt = `${acModify} ${type} ${name}`
-            if (isInterface(this.item.type)) return `${txt};\n`
-            if (isAbstract(acModify) && !prp[4]) return `${txt};\n`
-            let returnType = prp[3]
-            returnType = returnType.toLowerCase()
-            if (returnType.includes('init')) {
-                txt = `${acModify} ${name}`
+        setFragViewCode(txt) {
+            let off = this.$el.getBoundingClientRect()
+            let top = off.top - 12
+            let left = off.left + off.width
+            left = Math.ceil(left)
+            if (window.innerWidth < left + 360) {
+                left -= 360
+                left -= off.width
             }
-            return `${txt} {...}`
-        },
-        showCodeBody(ii, offI) {
-            const item = this.item
-            let clsName = this.FormatCode[0]
-            let txtF = this.FormatCode[1]
-            let txtFnc = `${txtF}\n`
-            let lstPrp = [...item.Methods, ...this.ExtProperties]
-            for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
-                prp = lstPrp[jj]
-                txtP = this.getCsFormat(prp)
-                txtP = convertSymb(txtP) // txtP.replace('+', '  public')
-                // txtP = convertSymb(txtP) // txtP.replace('-', '  private')
-                // txtP = convertSymb(txtP) // txtP.replace('#', '  protected')
-                if (jj - offI == ii) {
-                    let pCode = prp[4]
-                    let hasEnter = false
-                    if (isInterface(item.type)) { pCode = '' }
-                    else if (!pCode) pCode = '/* empty */'
-                    else if (isAbstract(pCode)) pCode = ''
-                    else {
-                        hasEnter = pCode.includes('\n')
-                        if (!hasEnter) pCode += ';'
-                        else pCode = processLines(pCode)
+            let html = hljs.highlight(txt, { language: 'cs' }).value
+            const dmVar = this.$root.DynamicVar
+            dmVar.delete('FrameCode')
+            dmVar.set('FViewCode', {
+                top, left, html, type: 1
+            })
+            this.$root.$nextTick(() => {
+                let vwFcode = document.body.querySelector(`#dnb-viewcode`)
+                if (vwFcode) {
+                    let frmCode = dmVar.get('FViewCode')
+                    let offF = vwFcode.getBoundingClientRect()
+                    let maxY = offF.top + offF.height
+                    if (window.innerHeight < maxY) {
+                        frmCode.top -= (maxY - window.innerHeight + 6)
+                        vwFcode.style.top = `${frmCode.top}px`
                     }
-                    if (txtP.includes(`{...}`)) {
-                        if (hasEnter) {
-                            txtP = txtP.replace(`{...}`, `{\n${pCode}\n  }\n`)
-                        } else if (pCode == '/* empty */') {
-                            txtP = txtP.replace(`{...}`, `{ ${pCode} }\n`)
-                        } else {
-                            txtP = txtP.replace(`{...}`, `{\n    ${pCode}\n  }\n`)
-                        }
-                    }
-                } else if (txtP.includes(`{...}`)) {
-                    txtP = txtP.replace(`{...}`, `{ ... }\n`)
                 }
-                txtFnc += `${txtP}`
-            }
-            let txt = `${clsName}${txtFnc}}`
-            //console.log(txt)
-            setFragViewCode.call(this, txt)
-            function setFragViewCode(txt) {
-                let off = this.$el.getBoundingClientRect()
-                let top = off.top - 12
-                let left = off.left + off.width
-                left = Math.ceil(left)
-                if (window.innerWidth < left + 360) {
-                    left -= 360
-                    left -= off.width
-                }
-                let html = hljs.highlight(txt, { language: 'cs' }).value
-                const dmVar = this.$root.DynamicVar
-                dmVar.delete('FrameCode')
-                dmVar.set('FViewCode', {
-                    top, left, html, type: 1
-                })
-                this.$root.$nextTick(() => {
-                    let vwFcode = document.body.querySelector(`#dnb-viewcode`)
-                    if (vwFcode) {
-                        let frmCode = dmVar.get('FViewCode')
-                        let offF = vwFcode.getBoundingClientRect()
-                        let maxY = offF.top + offF.height
-                        if (window.innerHeight < maxY) {
-                            frmCode.top -= (maxY - window.innerHeight + 6)
-                            vwFcode.style.top = `${frmCode.top}px`
-                        }
-                    }
-                })
-            }
+            })
         },
         onEditable(e, type, ii) {
             const target = e.target
@@ -287,46 +225,15 @@ const RectClass = {
             }
             this.$root.closePopupForm()
         },
-    },
-    computed: {
-        ClassName() {
-            const item = this.item
-            let clsName = item.Name
-            if (isAbstract(item.type)) return `abstract ${clsName}`
-            if (isInterface(item.type)) return clsName
-            if (isClass(item.type)) return clsName
-            return ''
+        getAcModf(prp) {
+            let acModify = prp[0]
+            let name = prp[1]
+            let type = prp[2]
+            return `${acModify} ${type} ${name}`
         },
-        ListProperty() {
-            const lst = []
-            for (let ii = 0, prp; ii < this.item.Methods.length; ii++) {
-                prp = this.item.Methods[ii]
-                let txt = this.getFragProp(prp)
-                lst.push(txt)
-            }
-            return lst
-        },
-        FormatCode() {
-            const item = this.item
-            let clsName = item.Name
-            const ii = this.$root.PLang
-            switch (item.type) {
-                case StructTypes[1][0]: // 'abstract class'
-                    clsName = `public ${StructTypes[1][ii]} ${clsName}`
-                    break;
-                case StructTypes[2][0]: // 'class'
-                    clsName = `public ${StructTypes[2][ii]} ${clsName}`
-                    break;
-                case StructTypes[0][0]: // 'interface'
-                    clsName = `public ${StructTypes[0][ii]} ${clsName}`
-                    break;
-                default: break;
-            }
-            let extend = this.$root.getExtend(item)
-            if (extend.length) clsName += extend
-            clsName = `${clsName}\n{\n`
-            let txtF = ``
-            let lstF = [...item.Fields, ...this.ExtendFields]
+        getTxtFields(item, extnFields) {
+            let txtF = ''
+            let lstF = [...item.Fields, ...extnFields]
             for (let jj = 0, field; jj < lstF.length; jj++) {
                 field = lstF[jj]
                 switch (field.Visible) {
@@ -339,12 +246,13 @@ const RectClass = {
                     default: break;
                 }
             }
-            return [clsName, txtF]
+            return txtF
         },
-        ExtendsView() {
-            if (StructTypes[3][0] == this.item.type) return null
+    },
+    computed: {
+        ViewExtends() {
             const tIds = this.item.toIds
-            if (!tIds || !tIds.length) return null
+            if (!tIds || !tIds.length) return ''
             let lst = this.$root.ListClass
             const itemId = this.item.id
             const lsCls = []
@@ -353,21 +261,144 @@ const RectClass = {
                 cls = lst[ii]
                 if (itemId == cls.id) continue;  // it-self
                 if (!tIds.includes(cls.id)) continue;
-                switch (cls.type) {
-                    case StructTypes[0][0]: // 'interface'
-                        lstItf.push(cls)
-                        break;  // switch
-                    case StructTypes[1][0]: // 'abstract class'
-                    case StructTypes[2][0]: // 'instant'
-                        lsCls.push(cls)
-                        break;  // switch
-                    default: break;  // switch
-                }
+                if (isInterface(cls.type)) lstItf.push(cls)
+                else lsCls.push(cls)
             }
-            let extend = this.$root.getExtend(this.item, `small`, `i`)
-            if (!extend.length) return null
-            return extend
+            return this.$root.getLsExtends(lsCls, lstItf, this.$root.PLang)
         },
+        ListProperty() {
+            const lst = []
+            for (let ii = 0, prp; ii < this.item.Methods.length; ii++) {
+                prp = this.item.Methods[ii]
+                let txt = this.getFragProp(prp)
+                lst.push(txt)
+            }
+            return lst
+        },
+    },
+}
+const RectInterface = {
+    template: `#tmp-rect-class`,
+    name: "Rect_Abstract",
+    display: "Rect.Abstract",
+    mixins: [MxRect, MxClsItf],
+    methods: {
+        getCsFormat(prp) {
+            let txt = this.getAcModf(prp)
+            return `${txt};\n`
+        },
+        showCodeBody(ii, offI) {
+            const item = this.item
+            let clsName = this.FormatCode[0]
+            let txtF = this.FormatCode[1]
+            let txtFnc = `${txtF}\n`
+            let lstPrp = [...item.Methods, ...this.ExtProperties]
+            for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
+                prp = lstPrp[jj]
+                txtP = this.getCsFormat(prp)
+                txtP = convertSymb(txtP) // txtP.replace('+', '  public')
+                txtFnc += `${txtP}`
+            }
+            let txt = `${clsName}${txtFnc}}`
+            this.setFragViewCode(txt)
+        },
+    },
+    computed: {
+        ClassName() {
+            const item = this.item
+            let clsName = item.Name
+            return clsName
+        },
+        FormatCode() {
+            const item = this.item
+            let clsName = item.Name
+            const ii = this.$root.PLang
+            clsName = `public ${StructTypes[0][ii]} ${clsName}`
+            let extds = this.ViewExtends
+            let exnd = ''
+            if (extds.length) {
+                switch (ii) {
+                    case 1:
+                        exnd = extds.join(' ')
+                        break;
+                    case 2:
+                        exnd = extds[0].join(' ')
+                        if (1 < extds.length) exnd += extds[1].join(' ')
+                        break;
+                    default: break;
+                }
+                clsName += exnd
+            }
+            clsName = `${clsName}\n{\n`
+            return [clsName, '']
+        },
+        ExtendFields() { return [] },
+        ExtProperties() {
+            const item = this.item
+            let tIds = item.toIds
+            if (!tIds || !tIds.length) return []
+            const lstCls = this.$root.ListClass
+            const prps = item.Methods
+            const lst = getLstExt(item.id, tIds, prps, lstCls, (type) => !isInterface(type))
+            return lst
+        },
+    },
+}
+const MxOjClass = {
+    methods: {
+        getCsFormat(prp) {
+            let acModify = prp[0]
+            let name = prp[1]
+            let txt = this.getAcModf(prp)
+            if (isAbstract(acModify) && !prp[4]) return `${txt};\n`
+            let returnType = prp[3]
+            returnType = returnType.toLowerCase()
+            if (returnType.includes('init')) {
+                txt = `${acModify} ${name}`
+            }
+            return `${txt} {...}`
+        },
+        showCodeBody(ii, offI) {
+            const item = this.item
+            let clsName = this.FormatCode[0]
+            let txtF = this.FormatCode[1]
+            let txtFnc = `${txtF}\n`
+            let lstPrp = [...item.Methods, ...this.ExtProperties]
+            for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
+                prp = lstPrp[jj]
+                txtP = this.getCsFormat(prp)
+                txtP = convertSymb(txtP) // txtP.replace('+', '  public')
+                if (jj - offI == ii) {
+                    let pCode = prp[4]
+                    let hasEnter = false
+                    if (!pCode) pCode = '/* empty */'
+                    else if (isAbstract(pCode)) pCode = ''
+                    else {
+                        hasEnter = pCode.includes('\n')
+                        if (!hasEnter) pCode += ';'
+                        else pCode = processLines(pCode)
+                    }
+                    if (txtP.includes(`{...}`)) {
+                        if (hasEnter) {
+                            txtP = txtP.replace(`{...}`, `{\n${pCode}\n  }\n`)
+                        } else if (pCode == '/* empty */') {
+                            txtP = txtP.replace(`{...}`, `{ ${pCode} }\n`)
+                        } else {
+                            txtP = txtP.replace(`{...}`, `{\n    ${pCode}\n  }\n`)
+                        }
+                    }
+                } else if (txtP.includes(`{...}`)) {
+                    txtP = txtP.replace(`{...}`, `{ ... }\n`)
+                }
+                txtFnc += `${txtP}`
+            }
+            let txt = `${clsName}${txtFnc}}`
+            //console.log(txt)
+            this.setFragViewCode(txt)
+
+        },
+    },
+    computed: {
         ExtendFields() {
             let tIds = this.item.toIds
             if (!tIds || !tIds.length) return []
@@ -375,62 +406,134 @@ const RectClass = {
             if (!parent) return []
             return parent.Fields
         },
+        FormatCode() {
+            const item = this.item
+            let clsName = item.Name
+            const ii = this.$root.PLang
+            switch (item.type) {
+                case StructTypes[1][0]: // 'abstract class'
+                    clsName = `public ${StructTypes[1][ii]} ${clsName}`
+                    break;
+                case StructTypes[2][0]: // 'class'
+                    clsName = `public ${StructTypes[2][ii]} ${clsName}`
+                    break;
+                default: break;
+            }
+            let extds = this.ViewExtends
+            let exnd = ''
+            if (extds.length) {
+                switch (ii) {
+                    case 1:
+                        exnd += extds[0][0]
+                        exnd += ` ${extds[0][1]}`
+                        break;
+                    case 2:
+                        exnd += extds[0].join(' ')
+                        if (1 < extds.length) exnd += extds[1].join(' ')
+                        break;
+                    default: break;
+                }
+                clsName += exnd
+            }
+            clsName = `${clsName}\n{\n`
+            let txtF = this.getTxtFields(item, this.ExtendFields)
+            return [clsName, txtF]
+        },
         ExtProperties() {
             const item = this.item
-            if (isInterface(item.type)) return []
             let tIds = item.toIds
             if (!tIds || !tIds.length) return []
             const lstCls = this.$root.ListClass
             const prps = item.Methods
-            const lst = []
-            for (let ii = 0, xx, oPrp; ii < lstCls.length; ii++) {
-                xx = lstCls[ii]
-                if (xx.id == item.id) continue   // it-self
-                if (hasnMethod(xx)) continue;
-                if (!tIds.includes(xx.id)) continue
-                if (isInterface(xx.type)) continue
-                for (let jj = 0, prp; jj < xx.Methods.length; jj++) {
-                    prp = xx.Methods[jj]
-                    const name = prp[1]
-                    oPrp = prps.find(xx => name == xx[1])
-                    if (!oPrp) {
-                        lst.push(prp)
-                    }
-                }
-            }
+            const lst = getLstExt(item.id, tIds, prps, lstCls, (type) => isInterface(type))
             return lst
         },
     },
     beforeMount() {
         const item = this.item
-        if (!isInterface(item.type)) {
-            // extend Method_s
-            let tIds = item.toIds
-            if (tIds && tIds.length) {
-                const lstCls = this.$root.ListClass
-                const prps = item.Methods
-                const lst = []
-                for (let ii = 0, xx; ii < lstCls.length; ii++) {
-                    xx = lstCls[ii]
-                    if (xx.id == item.id) continue   // it-self
-                    if (hasnMethod(xx)) continue;
-                    if (!tIds.includes(xx.id)) continue
-                    for (let jj = 0, prp, oPrp; jj < xx.Methods.length; jj++) {
-                        prp = xx.Methods[jj]
-                        oPrp = prps.find(pp => prp[1] == pp[1])
-                        if (oPrp && oPrp[0].includes('override')) continue
-                        if (xx.type.includes('instant')) continue
-                        lst.push(prp)
-                    }
-                }
-                const extendPrps = this.ExtProperties
-                for (let ii = lst.length - 1, prp; -1 < ii; ii--) {
-                    prp = lst[ii]
-                    if (extendPrps.find(pp => prp[1] == pp[1])) continue
-                    prps.unshift(JSON.parse(JSON.stringify(prp)))
+        // extend Method_s
+        let tIds = item.toIds
+        if (tIds && tIds.length) {
+            const lstCls = this.$root.ListClass
+            const prps = item.Methods
+            const lst = []
+            for (let ii = 0, xx; ii < lstCls.length; ii++) {
+                xx = lstCls[ii]
+                if (xx.id == item.id) continue   // it-self
+                if (hasnMethod(xx)) continue;
+                if (!tIds.includes(xx.id)) continue
+                for (let jj = 0, prp, oPrp; jj < xx.Methods.length; jj++) {
+                    prp = xx.Methods[jj]
+                    oPrp = prps.find(pp => prp[1] == pp[1])
+                    if (oPrp && oPrp[0].includes('override')) continue
+                    if (xx.type.includes('instant')) continue
+                    lst.push(prp)
                 }
             }
+            const extendPrps = this.ExtProperties
+            for (let ii = lst.length - 1, prp; -1 < ii; ii--) {
+                prp = lst[ii]
+                if (extendPrps.find(pp => prp[1] == pp[1])) continue
+                prps.unshift(JSON.parse(JSON.stringify(prp)))
+            }
         }
+    },
+}
+const RectAbstract = {
+    template: `#tmp-rect-class`,
+    name: "Rect_Abstract",
+    display: "Rect.Abstract",
+    mixins: [MxRect, MxClsItf, MxOjClass],
+    computed: {
+        ClassName() {
+            const item = this.item
+            let clsName = item.Name
+            return `abstract ${clsName}`
+        },
+    },
+}
+const RectClass = {
+    template: `#tmp-rect-class`,
+    name: "Rect_Class",
+    display: "Rect.Class",
+    mixins: [MxRect, MxClsItf, MxOjClass],
+    computed: {
+        ClassName() {
+            const item = this.item
+            let clsName = item.Name
+            return clsName
+        },
+    },
+
+}
+const WrapRect = {
+    template: `#tmp-wrap-rect`,
+    name: "Rect_Wrap",
+    display: "Rect.Wrap",
+    props: ['item'],
+    components: {
+        'rect-interface': RectInterface,
+        'rect-abstract': RectAbstract,
+        'rect-class': RectClass,
+        'rect-enum': RectEnum,
+        'rect-struct': RectClass,
+    },
+    computed: {
+        CompRect() {
+            switch (this.item.type) {
+                case StructTypes[0][0]:
+                    return 'rect-interface'
+                case StructTypes[1][0]:
+                    return 'rect-abstract'
+                case StructTypes[2][0]:
+                    return 'rect-class'
+                case StructTypes[3][0]:
+                    return 'rect-enum'
+                case StructTypes[4][0]:
+                    return 'rect-struct'
+                default: return null;
+            }
+        },
     },
 }
 export const ViewDiagram = {
@@ -438,6 +541,7 @@ export const ViewDiagram = {
     name: "View_Diagram",
     display: "View.Diagram",
     components: {
+        'rect-wrap': WrapRect,
         'rect-class': RectClass,
         'menu-list': MenuList,
     },

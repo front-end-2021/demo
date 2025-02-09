@@ -2,8 +2,7 @@
     <section style="display: flex;">
         <div id="dnb-vwtab-left" style="display: inline-flex;flex-direction: column;"
             :style="[{ width: $root.MinX + 'px'}]">
-            <h3 style="margin: 0;" contenteditable="true"
-                @keypress="e => $root.preventKeyPress(e, [13])"
+            <h3 style="margin: 0;" contenteditable="true" @keypress="e => $root.preventKeyPress(e, [13])"
                 @blur="e => onBlurEdit(e, 'diagram name')">{{$root.DiagName}}</h3>
             <div>
                 <menu-list :value="$root.Langs[$root.PLang]" :isfix="true" :sources="$root.Langs"
@@ -11,8 +10,7 @@
                 </menu-list>
             </div>
             <div style="display: inline-block;border: 1px solid rgb(0, 0, 0);
-                width: calc(100% - 10px);cursor: default;border-radius: 4px;" 
-                @mousedown="onMouseDown" id="cls-sample">
+                width: calc(100% - 10px);cursor: default;border-radius: 4px;" @mousedown="onMouseDown" id="cls-sample">
                 <div style="font-size: 18px;font-weight: bold;text-align: center;
                     border-bottom: 1px solid black;">ClassName</div>
                 <div style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
@@ -24,84 +22,76 @@
             </div>
             <div style="display: inline-flex; width: 108px; height: 28px;
                 background-color: rgb(77, 107, 254); align-items: center; justify-content: center;
-                color: white; border-radius: 6px; margin: 9px;cursor: pointer;"
-                @click.stop="exportDiagram">Save data</div>
+                color: white; border-radius: 6px; margin: 9px;cursor: pointer;" @click.stop="exportDiagram">Save data
+            </div>
             <div style="display: grid; width: 108px; height: 28px;
                     background-color: rgb(77, 107, 254); align-items: center; justify-content: center;
                 color: white; border-radius: 6px; cursor: pointer; margin: 1px 9px; grid-template-columns: auto 0;">
                 <label for="file-import" style="cursor: pointer;">Import data</label>
-                <input type="file" id="file-import" style="opacity: 0;"
-                    accept=".txt" @change="importDiagram"/>
+                <input type="file" id="file-import" style="opacity: 0;" accept=".txt" @change="importDiagram" />
             </div>
-            </div>
-        <div id="dnb-vw-main" 
-            style="position: relative; border:1px solid rgb(0, 0, 0); overflow: auto;
-                width:calc(100vw - 32px);height: calc(100vh - 36px);" >
+        </div>
+        <div id="dnb-vw-main" style="position: relative; border:1px solid rgb(0, 0, 0); overflow: auto;
+                width:calc(100vw - 32px);height: calc(100vh - 36px);">
             <canvas id="dnb-mcanvas" width="780" height="870" style="background-color: #dedede;">
                 Your browser does not support the HTML canvas tag.
             </canvas>
-            <div id="dnb-vwdiagrams"
-                style="position: absolute;top: 0;left: 0; height: 870px;"
+            <div id="dnb-vwdiagrams" style="position: absolute;top: 0;left: 0; height: 870px;"
                 :style="[{width: ($root.MaxX - $root.MinX) + 'px'}]">
-                <rect-class v-for="wItm in $root.ListClass" :item="wItm"></rect-class>
+                <rect-wrap v-for="wItm in $root.ListClass" :item="wItm"
+                    :key="'id=' + wItm.id + ',type=' + wItm.type"></rect-wrap>
                 <rect-class v-if="$root.NewClassName != null" :item="$root.NewClassName"></rect-class>
             </div>
 
         </div>
     </section>
 </template>
+<template id="tmp-wrap-rect">
+    <component v-bind:is="CompRect" :item="item"></component>
+</template>
 <template id="tmp-rect-enum">
     <div :id="'cls_' + item.id" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
             position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
-            <i class="bi bi-arrows-move cpoint ctlmove" style="left: 0;"
-                @mousedown="onMouseDown"></i>
-            <i class="bi bi-pen cpoint ctledit" style="right:24px"
-                @click.stop="e => $root.editObject(item)"></i>
-            <i class="bi bi-x-lg cpoint ctledit" style="right: 0;"
-                @click.stop="e => deleteCls(item)"></i>
+            <i class="bi bi-arrows-move cpoint ctlmove" style="left: 0;" @mousedown="onMouseDown"></i>
+            <i class="bi bi-pen cpoint ctledit" style="right:24px" @click.stop="e => $root.editObject(item)"></i>
+            <i class="bi bi-x-lg cpoint ctledit" style="right: 0;" @click.stop="e => deleteCls(item)"></i>
             <span style="font-weight: bold;">enum {{item.Name}}</span>
         </div>
         <div style="font-size: 16px; font-weight: 300;padding: 0 6px;">{{TxtField}}</div>
     </div>
 </template>
 <template id="tmp-rect-class">
-    <rect-enum v-if="'enum' == item.type" :item="item"></rect-enum>
-    <div v-else :id="'cls_' + item.id" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
+    <div :id="'cls_' + item.id" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
             position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <div class="vwheader">
-            <i class="bi bi-arrows-move cpoint ctlmove" style="left: 0;"
-                @mousedown="onMouseDown"></i>
-            <i class="bi bi-pen cpoint ctledit" style="right: 24px;"
-                @click.stop="e => $root.editObject(item)"></i>
-            <i class="bi bi-x-lg cpoint ctledit" style="right: 0;"
-                @click.stop="e => deleteCls(item)"></i>
+            <i class="bi bi-arrows-move cpoint ctlmove" style="left: 0;" @mousedown="onMouseDown"></i>
+            <i class="bi bi-pen cpoint ctledit" style="right: 24px;" @click.stop="e => $root.editObject(item)"></i>
+            <i class="bi bi-x-lg cpoint ctledit" style="right: 0;" @click.stop="e => deleteCls(item)"></i>
             <span style="font-weight: bold;" @dblclick="e => onEditable(e, 'class name')"
-                @keypress="e => $root.preventKeyPress(e, [13, 32])" 
-                @blur="e => onDoneEdit(e, 'class name')"
+                @keypress="e => $root.preventKeyPress(e, [13, 32])" @blur="e => onDoneEdit(e, 'class name')"
                 @click="e => showCodeBody(null, e)">{{ClassName}}</span>
-            <span v-if="ExtendsView" v-html="ExtendsView"></span>
-            <span v-else></span>
+            <span v-for="exv in ViewExtends">
+                <small>{{exv[0]}}&nbsp;</small><i>{{exv[1]}}</i>
+            </span>
         </div>
         <div v-if="0 < ExtendFields.length + item.Fields.length"
             style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
             <i @click.stop="$root.clearDyVar" style="display: block;"
                 v-for="field in ExtendFields">&nbsp;{{field.Visible}} {{field.Name}}: {{field.Type}}</i>
-            <div @click.stop="$root.clearDyVar" 
-                v-for="field in item.Fields">&nbsp;{{field.Visible}} {{field.Name}}:{{field.Type}}
+            <div @click.stop="$root.clearDyVar" v-for="field in item.Fields">&nbsp;{{field.Visible}}
+                {{field.Name}}:{{field.Type}}
             </div>
         </div>
         <div style="font-size: 14px;font-weight: 100;padding-right: 6px;">
-            <div v-for="(prp, ii) in ListProperty" 
-                @click="e => showCodeBody(ii, 0)">&nbsp;<span>{{prp[0]}}</span>&nbsp;<span 
-                    contenteditable="true" 
+            <div v-for="(prp, ii) in ListProperty" @click="e => showCodeBody(ii, 0)">
+                &nbsp;<span>{{prp[0]}}</span>&nbsp;<span contenteditable="true"
                     @keypress="e => $root.preventKeyPress(e, [13, 32])"
                     @blur="e => onDoneEdit(e, 'property', ii)">{{prp[1]}}</span>&nbsp;<span>{{prp[2]}}</span>
             </div>
-            <i v-for="(prp, ii) in ExtProperties" 
-                @click.stop="e => showCodeBody(ii, item.Methods.length)"
+            <i v-for="(prp, ii) in ExtProperties" @click.stop="e => showCodeBody(ii, item.Methods.length)"
                 style="display: block;">&nbsp;{{getFragProp(prp).join(' ')}}</i>
         </div>
     </div>
@@ -126,23 +116,19 @@
         <div style="position: absolute;top: 0px;left: 0px;display: flex;
                 flex-direction: column;min-width: 66px;min-height: 66px;
                 background-color: white;padding: 4px;border-radius: 5px;width: 174px;">
-            <input type="text" placeholder="typing to search by name..." 
-                style="width: calc(100% - 10px);border-color: transparent;height: 20px;"
-                v-model="TxtSearch" @input="inSearch"/>
+            <input type="text" placeholder="typing to search by name..."
+                style="width: calc(100% - 10px);border-color: transparent;height: 20px;" v-model="TxtSearch"
+                @input="inSearch" />
             <div class="dr_lst-wrap" style="max-height: 120px; overflow: auto;">
-                <div v-for="item in ListSrc" :key="item.id"
-                    style="padding: 3px;cursor: pointer; margin-top: 1px;
-                    display: grid;grid-template-columns: auto 16px;border-radius: 4px;"
-                    :style="[bgSelect(item)]">
+                <div v-for="item in ListSrc" :key="item.id" style="padding: 3px;cursor: pointer; margin-top: 1px;
+                    display: grid;grid-template-columns: auto 16px;border-radius: 4px;" :style="[bgSelect(item)]">
                     <span @click.stop="e => selectItem(item)">{{item.Name}}</span>
                     <i class="bi bi-x" @click.stop="e => removeItem(item)"></i>
                 </div>
             </div>
-            <i class="bi bi-x-lg cpoint"
-                style="position: absolute;top: -9px;right: -9px;display: inline-flex;
+            <i class="bi bi-x-lg cpoint" style="position: absolute;top: -9px;right: -9px;display: inline-flex;
                 width: 24px;height: 24px;align-items: center;justify-content: center;
-                background-color: #fcfcfc;border-radius: 6px;"
-                @click.stop="e => $emit('on:exit')"></i>
+                background-color: #fcfcfc;border-radius: 6px;" @click.stop="e => $emit('on:exit')"></i>
         </div>
     </div>
 </template>

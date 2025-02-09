@@ -5,6 +5,7 @@ import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import {
     StructTypes, isInterface, verifySave, isClass, setHeight, inOverview,
+    isAbstract
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -219,66 +220,100 @@ Promise.all([
                     })
                 })
             },
-            getExtend(item, hTag1, hTag2) {
-                let extend = ''
-                const ii = this.PLang
-                const tIds = item.toIds
-                if (tIds && tIds.length) {
-                    let lst = this.ListClass
-                    const lsCls = []
-                    const lstItf = []
-                    for (let jj = 0, cls; jj < lst.length; jj++) {
-                        cls = lst[jj]
-                        if (item.id == cls.id) continue;  // it-self
-                        if (!tIds.includes(cls.id)) continue;
-                        switch (cls.type) {
-                            case StructTypes[0][0]: // 'interface'
-                                lstItf.push(cls)
-                                break;  // switch
-                            case StructTypes[1][0]: // 'abstract class'
-                            case StructTypes[2][0]: // 'class'
-                                lsCls.push(cls)
-                                break;  // switch
-                            default: break;  // switch
-                        }
-                    }
-                    if (2 == ii) {    // java
-                        let tag = ''
+            // getExtend(item, hTag1, hTag2) {
+            //     let extend = ''
+            //     const tIds = item.toIds
+            //     if (tIds && tIds.length) {
+            //         let lst = this.ListClass
+            //         const lsCls = []
+            //         const lstItf = []
+            //         for (let jj = 0, cls; jj < lst.length; jj++) {
+            //             cls = lst[jj]
+            //             if (item.id == cls.id) continue;  // it-self
+            //             if (!tIds.includes(cls.id)) continue;
+            //             switch (cls.type) {
+            //                 case StructTypes[0][0]: // 'interface'
+            //                     lstItf.push(cls)
+            //                     break;  // switch
+            //                 case StructTypes[1][0]: // 'abstract class'
+            //                 case StructTypes[2][0]: // 'class'
+            //                     lsCls.push(cls)
+            //                     break;  // switch
+            //                 default: break;  // switch
+            //             }
+            //         }
+            //         extend = this.getExtends(hTag1, hTag2, lsCls, lstItf)
+            //     }
+            //     return extend
+            // },
+            // getExtends(hTag1, hTag2, lsCls, lstItf) {
+            //     let extend = ''
+            //     const ii = this.PLang
+            //     let lst = this.ListClass
+            //     if (2 == ii) {    // java
+            //         let tag = ''
+            //         if (lsCls.length) {
+            //             lst = lsCls.map(xx => xx.Name)
+            //             tag = `extends`
+            //             if (hTag1) tag = `<${hTag1}>${tag}</${hTag1}>`
+            //             extend = `${tag} ${lst.join(', ')}`
+            //         }
+            //         if (lstItf.length) {
+            //             lst = lstItf.map(xx => xx.Name)
+            //             tag = `implements`
+            //             if (hTag1) tag = `<${hTag1}>${tag}</${hTag1}>`
+            //             if (extend.length)
+            //                 extend += ` ${tag} ${lst.join(', ')}`
+            //             else extend = `${tag} ${lst.join(', ')}`
+            //         }
+            //         if (extend.length) {
+            //             if (hTag2) extend = `<${hTag2}>&nbsp;${extend}</${hTag2}>`
+            //             else extend = ' ' + extend
+            //         }
+            //     } else {
+            //         if (lsCls.length) {
+            //             lst = lsCls.map(xx => xx.Name)
+            //             extend = `${lst.join(', ')}`
+            //         }
+            //         if (lstItf.length) {
+            //             lst = lstItf.map(xx => xx.Name)
+            //             if (extend.length) extend += `, ${lst.join(', ')}`
+            //             else extend = `${lst.join(', ')}`
+            //         }
+            //         if (extend.length) {
+            //             if (hTag2) extend = `: <${hTag2}>${extend}</${hTag2}>`
+            //             else extend = `: ${extend}`
+            //         }
+            //     }
+            //     return extend
+            // },
+            getLsExtends(lsCls, lstItf, iLang) {
+                let lst = this.ListClass
+                let arrExt = []
+                switch (iLang) {
+                    case 1:     //  C#
+                        let extds = []
                         if (lsCls.length) {
-                            lst = lsCls.map(xx => xx.Name)
-                            tag = `extends`
-                            if (hTag1) tag = `<${hTag1}>${tag}</${hTag1}>`
-                            extend = `${tag} ${lst.join(', ')}`
+                            extds = lsCls.map(xx => xx.Name)
                         }
                         if (lstItf.length) {
                             lst = lstItf.map(xx => xx.Name)
-                            tag = `implements`
-                            if (hTag1) tag = `<${hTag1}>${tag}</${hTag1}>`
-                            if (extend.length)
-                                extend += ` ${tag} ${lst.join(', ')}`
-                            else extend = `${tag} ${lst.join(', ')}`
+                            extds = extds.concat(lst)
                         }
-                        if (extend.length) {
-                            if (hTag2) extend = `<${hTag2}>&nbsp;${extend}</${hTag2}>`
-                            else extend = ' ' + extend
-                        }
-                    } else {
+                        arrExt.push([':', extds.join(', ')])
+                        return arrExt
+                    case 2:     // Java
                         if (lsCls.length) {
                             lst = lsCls.map(xx => xx.Name)
-                            extend = `${lst.join(', ')}`
+                            arrExt.push([' extends', lst.join(', ')])
                         }
                         if (lstItf.length) {
                             lst = lstItf.map(xx => xx.Name)
-                            if (extend.length) extend += `, ${lst.join(', ')}`
-                            else extend = `${lst.join(', ')}`
+                            arrExt.push([' implements', lst.join(', ')])
                         }
-                        if (extend.length) {
-                            if (hTag2) extend = `: <${hTag2}>${extend}</${hTag2}>`
-                            else extend = `: ${extend}`
-                        }
-                    }
+                        return arrExt
+                    default: return arrExt;
                 }
-                return extend
             },
             updateSizeCanvas() {
                 const cvns = document.body.querySelector(`#dnb-mcanvas`)

@@ -118,7 +118,22 @@ export const FormEdit = {
             lst = lst.filter(x => isClass(x[0]))
             return lst.map(x => x[root.PLang])
         },
-        ViewExtend() { return this.$root.getExtend(this.entry) },
+        ViewExtends() {
+            const tIds = this.entry.toIds
+            if (!tIds || !tIds.length) return ''
+            let lst = this.$root.ListClass
+            const itemId = this.entry.id
+            const lsCls = []
+            const lstItf = []
+            for (let ii = 0, cls; ii < lst.length; ii++) {
+                cls = lst[ii]
+                if (itemId == cls.id) continue;  // it-self
+                if (!tIds.includes(cls.id)) continue;
+                if(isInterface(cls.type)) lstItf.push(cls)
+                else lsCls.push(cls)
+            }
+            return this.$root.getLsExtends(lsCls, lstItf, this.$root.PLang)
+        },
         Extendable() {
             const mItem = this.entry
             if (isClass(mItem.type)) return 1
