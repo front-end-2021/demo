@@ -11,11 +11,11 @@
   </link>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/downloadjs@1.4.7/download.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/1c-light.min.css" 
-    integrity="sha512-kM8PiTB2J9j9MJxP4pg5Morv1nvatwpY0xsNsHDpHobti6+sdvObgLPhJ7lOIHYUqQmTAUAE+CaTcQXR47XO2w==" 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/1c-light.min.css"
+    integrity="sha512-kM8PiTB2J9j9MJxP4pg5Morv1nvatwpY0xsNsHDpHobti6+sdvObgLPhJ7lOIHYUqQmTAUAE+CaTcQXR47XO2w=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js" 
-    integrity="sha512-EBLzUL8XLl+va/zAsmXwS7Z2B1F9HUHkZwyS/VKwh3S7T/U0nF4BaU29EP/ZSf6zgiIxYAnKLu6bJ8dqpmX5uw==" 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"
+    integrity="sha512-EBLzUL8XLl+va/zAsmXwS7Z2B1F9HUHkZwyS/VKwh3S7T/U0nF4BaU29EP/ZSf6zgiIxYAnKLu6bJ8dqpmX5uw=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <script type="importmap">
@@ -45,14 +45,11 @@
 
     <component :is="CompPage" v-cloak></component>
 
-    <div v-if="ViewCode"
-      style="min-width: 360px; min-height: 250px; box-sizing: border-box;
+    <div v-if="ViewCode" style="min-width: 360px; min-height: 250px; box-sizing: border-box;
             position: fixed; left: calc(249px + 220px); top: calc(39px - 12px);
-            border-radius: 10px; background-color: #cde5f9; padding: 18px;"
-      :style="[{
+            border-radius: 10px; background-color: #cde5f9; padding: 18px;" :style="[{
       top: ViewCode.top + 'px', left: ViewCode.left + 'px'
-     }]"
-      id="dnb-viewcode">
+     }]" id="dnb-viewcode">
       <pre><code class="language-csharp" v-html="ViewCode.html"></code></pre>
       <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
         background-color: white;position: absolute;right: 5px;top: 5px;border-radius: 6px;padding-top: 4px;"
@@ -65,107 +62,77 @@
   </main>
   <template id="tmp-form-edit">
     <div class="mformedit">
-        <div style="margin-bottom: 12px; display: flex;align-items: center;">
-          <menu-list v-if="IsSelectTyp" 
-            :value="TxtType" :isfix="true" :sources="StrucTypes"
-            @change:value="$e => changeTypeObject($e)">
-          </menu-list>
-          <span v-else>{{TxtType}}</span>
-          <span contenteditable="true"
-            @blur="e => onBlurEditable(e, 'class name')"
-            @keypress="e => $root.preventKeyPress(e, [13, 32])"
-            data-placeholder="NameOfClass"
-            class="p36 ceditable" v-html="entry.Name">
-          </span>
-          <i v-for="exv in ViewExtends">{{exv[0]}}&nbsp;{{exv[1]}}&nbsp;</i>
-          <drplst-search v-if="IsDrpExtend"
-              :sources="ListExtend"
-              :ids="entry.toIds"
-              :type="entry.type"
-              @select:id="$e => addExtend($e)"
-              @remove:id="$e => removeExtend($e)"
-              @on:exit="$e => hideDrpSearch()"></drplst-search>
-          <i v-else-if="Extendable"
-            @click.stop="showDrpSearch"
-            class="bi bi-code-square" style="margin-left: 6px;"></i>
-        </div>
-        <div v-for="(field, ii) in entry.Fields"
-          :key="'oldfield_' + field.Visible"
+      <div style="margin-bottom: 12px; display: flex;align-items: center;">
+        <menu-list v-if="IsSelectTyp" :value="TxtType" :isfix="true" :sources="StrucTypes"
+          @change:value="$e => changeTypeObject($e)">
+        </menu-list>
+        <span v-else>{{TxtType}}</span>
+        <span contenteditable="true" @blur="e => onBlurEditable(e, 'class name')"
+          @keypress="e => $root.preventKeyPress(e, [13, 32])" data-placeholder="NameOfClass" class="p36 ceditable"
+          v-html="entry.Name">
+        </span>
+        <i v-for="exv in ViewExtends">{{exv[0]}}&nbsp;{{exv[1]}}&nbsp;</i>
+        <drplst-search v-if="IsDrpExtend" :sources="ListExtend" :ids="entry.toIds" :type="entry.type"
+          @select:id="$e => addExtend($e)" @remove:id="$e => removeExtend($e)"
+          @on:exit="$e => hideDrpSearch()"></drplst-search>
+        <i v-else-if="Extendable" @click.stop="showDrpSearch" class="bi bi-code-square" style="margin-left: 6px;"></i>
+      </div>
+      <div v-if="Extendable != 2">
+        <div v-for="(field, ii) in entry.Fields" :key="'oldfield_' + field.Visible"
           style="margin-bottom: 2px; display: flex;align-items: center;">
-          <span v-if="HasPropers"
-            @keypress="e => $root.preventKeyPress(e, [13])"
-            @blur="e => onBlurEditable(e, 'field acmodify', ii)"
-            data-placeholder="AccessoriOfField" contenteditable="true"
-            class="p36 ceditable">{{field.Visible}}</span>
-          <span @keypress="e => $root.preventKeyPress(e, [13, 32])"
-            @blur="e => onBlurEditable(e, 'field name', ii)"
-            data-placeholder="NameOfField"
-            class="p36 ceditable" contenteditable="true">{{field.Name}}</span>
-          <span v-if="HasPropers"
-            @keypress="e => $root.preventKeyPress(e, [13])"
-            @blur="e => onBlurEditable(e, 'field type', ii)"
-            data-placeholder="TypeOfField" class="p36 ceditable" 
+          <span v-if="HasPropers" @keypress="e => $root.preventKeyPress(e, [13])"
+            @blur="e => onBlurEditable(e, 'field acmodify', ii)" data-placeholder="AccessoriOfField"
+            contenteditable="true" class="p36 ceditable">{{field.Visible}}</span>
+          <span @keypress="e => $root.preventKeyPress(e, [13, 32])" @blur="e => onBlurEditable(e, 'field name', ii)"
+            data-placeholder="NameOfField" class="p36 ceditable" contenteditable="true">{{field.Name}}</span>
+          <span v-if="HasPropers" @keypress="e => $root.preventKeyPress(e, [13])"
+            @blur="e => onBlurEditable(e, 'field type', ii)" data-placeholder="TypeOfField" class="p36 ceditable"
             contenteditable="true">{{field.Type}}</span>
-          <span style="margin-left: 12px;cursor: pointer;"
-            @click.stop="e => removeField(ii)"><i class="bi bi-trash3"></i></span>
+          <span style="margin-left: 12px;cursor: pointer;" @click.stop="e => removeField(ii)"><i
+              class="bi bi-trash3"></i></span>
         </div>
-        <div>
-          <span v-if="2 != Extendable" style="cursor: pointer;"
-              @click.stop="addField">[new Field]</span>
-        </div>
-        <div v-for="(prp, ii) in entry.Methods"
-          :key="ii"
-          style="margin-bottom: 2px;"
-          :style="[0 == ii ? {marginTop: '10px'} : null]">
-          <div v-if="HasPropers"
-            style="display: flex;align-items: center;">
-            <span class="p36 ceditable" 
-              @keypress="e => $root.preventKeyPress(e, [13])"
-              @blur="e => onBlurEditable(e, 'access modify key', ii)"
-              data-placeholder="AccessoriOfProperty"
-              contenteditable="true">{{prp[0]}}</span>
-            
-            <menu-list :value="prp[3]" :isfix="true"
-              :sources="AccessInit.map(x => x[$root.PLang])"
-              @change:value="$event => changeAccessor(ii, $event)">
-            </menu-list>
+        <span v-if="2 != Extendable" style="cursor: pointer;display: inline-block;" 
+          @click.stop="addField">[new Field]</span>
+      </div>
+      <div v-for="(prp, ii) in entry.Methods" :key="ii" style="margin-bottom: 2px;"
+        :style="[0 == ii ? {marginTop: '10px'} : null]">
+        <div v-if="HasPropers" style="display: flex;align-items: center;">
+          <span class="p36 ceditable" @keypress="e => $root.preventKeyPress(e, [13])"
+            @blur="e => onBlurEditable(e, 'access modify key', ii)" data-placeholder="AccessoriOfProperty"
+            contenteditable="true">{{prp[0]}}</span>
 
-            <span @keypress="e => $root.preventKeyPress(e, [13])"
-              @blur="e => onBlurEditable(e, 'access modify name', ii)"
-              class="p36 ceditable" contenteditable="true" 
-              data-placeholder="NameOfProperty"
-              v-html="prp[1]"></span>
-            <span v-if="isReturnType(prp[3])"><i>return</i>
-              <span @blur="e => onBlurEditable(e, 'access modify type', ii)"
-                @keypress="e => $root.preventKeyPress(e, [13, 32])"
-                data-placeholder="ReturnTypeOfProperty"
-                contenteditable="true" class="p36 ceditable" v-html="prp[2]"></span>
-            </span>
-            <span style="margin-left: 12px;cursor: pointer;"
-              @click.stop="e => removeProperty(ii)"><i class="bi bi-trash3"></i></span>
-          </div>
-          <textarea v-if="HasCode" class="objedit-vwcode"
-            style="width: 100%; min-height: 90px;border-radius: 6px;border: none;"
-            placeholder="ContentCodeOfProperty"
-            @paste="e => pasteTxtArea(e, ii)" 
-            @keyup.enter="keyUpTxtArea" @keyup.delete="keyUpTxtArea"
-            @blur="e => onBlurEditable(e, 'code context', ii)"
-            @change="e => onInput(e, 'code context', ii)">{{prp[4]}}</textarea>
+          <menu-list :value="prp[3]" :isfix="true" :sources="AccessInit.map(x => x[$root.PLang])"
+            @change:value="$event => changeAccessor(ii, $event)">
+          </menu-list>
+
+          <span @keypress="e => $root.preventKeyPress(e, [13])" @blur="e => onBlurEditable(e, 'access modify name', ii)"
+            class="p36 ceditable" contenteditable="true" data-placeholder="NameOfProperty" v-html="prp[1]"></span>
+          <span v-if="isReturnType(prp[3])"><i>return</i>
+            <span @blur="e => onBlurEditable(e, 'access modify type', ii)"
+              @keypress="e => $root.preventKeyPress(e, [13, 32])" data-placeholder="ReturnTypeOfProperty"
+              contenteditable="true" class="p36 ceditable" v-html="prp[2]"></span>
+          </span>
+          <span style="margin-left: 12px;cursor: pointer;" @click.stop="e => removeProperty(ii)"><i
+              class="bi bi-trash3"></i></span>
         </div>
-        <div>
-          <span v-if="HasPropers" style="cursor: pointer;"
-            @click.stop="addProperty">[new Property]</span>
-        </div>
-        <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
+        <textarea v-if="HasCode" class="objedit-vwcode"
+          style="width: 100%; min-height: 90px;border-radius: 6px;border: none;" placeholder="ContentCodeOfProperty"
+          @paste="e => pasteTxtArea(e, ii)" @keyup.enter="keyUpTxtArea" @keyup.delete="keyUpTxtArea"
+          @blur="e => onBlurEditable(e, 'code context', ii)"
+          @change="e => onInput(e, 'code context', ii)">{{prp[4]}}</textarea>
+      </div>
+      <div>
+        <span v-if="HasPropers" style="cursor: pointer;" @click.stop="addProperty">[new Property]</span>
+      </div>
+      <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
           background-color: white;position: absolute;right: 35px;top: 5px;
-          border-radius: 6px;padding-top: 4px;"
-          class="bi bi-floppy cpoint" @click.stop="onSaveChange"></i>
-        <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
+          border-radius: 6px;padding-top: 4px;" class="bi bi-floppy cpoint" @click.stop="onSaveChange"></i>
+      <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
         background-color: white;position: absolute;right: 5px;top: 5px;border-radius: 6px;padding-top: 4px;"
         class="bi bi-x-lg cpoint" @click.stop="onCloseEdit"></i>
     </div>
   </template>
-  
+
   <span class="dnb-imp-html" dnbpath="./components/vw-diagram.html"></span>
 
   <script type="module" src="m-app.js"></script>
