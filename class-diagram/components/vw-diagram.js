@@ -100,7 +100,7 @@ const MxRect = {
             const lstCls = this.$root.ListClass
             let ii = lstCls.findIndex(x => x.id == item.id)
             if (-1 < ii) {
-                let ids = item.toIds ? item.toIds : []
+                //let ids = item.toIds ? item.toIds : []
                 lstCls.splice(ii, 1)
                 for (let jc = 0, cls; jc < lstCls.length; jc++) {
                     cls = lstCls[jc]
@@ -109,10 +109,8 @@ const MxRect = {
                     ii = cls.toIds.indexOf(item.id)
                     if (-1 < ii) cls.toIds.splice(ii, 1)
                 }
-              //  if (ids.length) {
-                    this.$root.updateSizeCanvas()               // delete item
-                    this.$root.$nextTick(this.$root.drawCanvas) // delete item
-             //   }
+                this.$root.updateSizeCanvas()               // delete item
+                this.$root.$nextTick(this.$root.drawCanvas) // delete item
             }
         },
 
@@ -673,5 +671,5 @@ export const ViewDiagram = {
             }
         },
     },
-    
+
 }
