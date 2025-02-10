@@ -170,7 +170,7 @@ export function verifySave(cItem, il, isView) {
         prp[3] = convertAccessors(prp[3], il)
     }
 }
-export function isNotOverlap(item, items) {
+export function isOverlap(item, items) {
     const lstArea = areaBlocks(item.id)
     let x = item.left,
         y = item.top,

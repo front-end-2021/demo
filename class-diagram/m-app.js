@@ -4,7 +4,7 @@ import { drawExtension, drawImplement, drawGrid, drawComposition } from './mcanv
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import {
-    isInterface, verifySave, setHeight, isNotOverlap,
+    isInterface, verifySave, setHeight, isOverlap,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -62,7 +62,11 @@ Promise.all([
             //ListClass(val) { },
         },
         methods: {
-            drawCanvas() {
+            drawCanvas(isChange) {
+                if (typeof isChange == 'boolean' && isChange) {
+                    drawCtx.call(this)
+                    return
+                }
                 const lstCls = this.ListClass
                 const linesImpl = []
                 const linesExtn = []
@@ -89,24 +93,27 @@ Promise.all([
                         linesExtn.push([[x0, y0, w0, h0], [x1, y1, w1, h1]])
                     }
                 }
-                let hasChange = false
+                isChange = false
                 let strO = JSON.stringify(this.ImplLines)
                 let strN = JSON.stringify(linesImpl)
                 if (strO != strN) {
                     this.ImplLines = linesImpl
-                    hasChange = true
-                  //  console.log('is change implements', strO, strN)
+                    isChange = true
+                    //  console.log('is change implements', strO, strN)
                 }
                 strO = JSON.stringify(this.ExtnLines)
                 strN = JSON.stringify(linesExtn)
                 if (strO != strN) {
                     this.ExtnLines = linesExtn
-                    hasChange = true
-                  //  console.log('is change extends', strO, strN)
+                    isChange = true
+                    //  console.log('is change extends', strO, strN)
                 }
 
-                if (hasChange) {
-                  //  console.trace()
+                if (isChange) {
+                    //  console.trace()
+                    drawCtx.call(this)
+                }
+                function drawCtx() {
                     const c = document.getElementById('dnb-mcanvas');
                     const ctx = c.getContext("2d");
                     ctx.clearRect(0, 0, c.width, c.height);
@@ -141,9 +148,7 @@ Promise.all([
 
                     if (x - 20 < this.MinX) return;
                     if (y < this.MinY + 20) return;
-                    if (this.MaxY + 3 < y + dItem.height) return;
-                    if (this.MaxX < x + dItem.width - 6) return;
-
+                    
                     if (dItem.left != left || dItem.top != top) {
                         this.setTopLeft(dItem, left, top)
 
@@ -173,14 +178,18 @@ Promise.all([
                     itemEl.style.zIndex = ''
                     itemEl.style.backgroundColor = ''
                     const dItem = dgElm.Item
+
                     if ('cls-classname' == dgElm.Item.id) {
                         this.editObject(dgElm.Item)
                     }
-                    else if (isNotOverlap(dItem, this.ListClass)) {
+                    else if (isOverlap(dItem, this.ListClass)) {
+                        // revert
                         this.setTopLeft(dItem, dgElm.Left, dgElm.Top)
-
-                        this.updateSizeCanvas()         // key up => end dnd item
-                        this.$nextTick(this.drawCanvas) // key up => end dnd item
+                        this.updateSizeCanvas()         // key up => end dnd item => revert
+                        this.$nextTick(this.drawCanvas) // key up => end dnd item => revert
+                    } else {
+                        this.updateSizeCanvas()             // key up => end dnd item
+                        this.drawCanvas(true)    // key up => end dnd item
                     }
                     document.removeEventListener('keydown', this.disableSrollDown)
 
