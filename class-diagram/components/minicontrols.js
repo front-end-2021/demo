@@ -387,8 +387,8 @@ export const FormEdit = {
                 this.$root.NewClassName = null
                 this.onCloseEdit()
                 if (nItem && nItem.toIds && nItem.toIds.length) {
-                    this.$root.drawCanvas()     // new item
-                    // this.$root.drawLines(this.$root.getPoints())
+                    this.$root.updateSizeCanvas()               // new item
+                    this.$root.$nextTick(this.$root.drawCanvas) // new item
                 }
                 return
             }
@@ -410,8 +410,9 @@ export const FormEdit = {
 
             this.onCloseEdit()
             if (changeToids) {
-                this.$root.drawCanvas()     // save change
-                // this.$root.drawLines(this.$root.getPoints())
+                this.$root.updateSizeCanvas()               // save change
+                this.$root.$nextTick(this.$root.drawCanvas) // save change
+                
             }
             function onNewItem(newItem) {
                 let nItem = objNewCls(newItem)

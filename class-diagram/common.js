@@ -170,7 +170,7 @@ export function verifySave(cItem, il, isView) {
         prp[3] = convertAccessors(prp[3], il)
     }
 }
-export function inOverview(item, items) {
+export function isNotOverlap(item, items) {
     const lstArea = areaBlocks(item.id)
     let x = item.left,
         y = item.top,
@@ -300,31 +300,4 @@ export function getLstExt(id, tIds, prps, lstCls, fnc) {
         }
     }
     return lst
-}
-export function isEqlLsPoints(olds, news) {
-    if (olds.length != news.length) return false;
-    let strO = ''
-    for (let ii = olds.length - 1, p0, p1, tx0, tx1; -1 < ii; ii--) {
-        p0 = olds[ii][0]
-        p1 = olds[ii][1]
-        tx0 = `${p0[0]}-${p0[1]}-${p0[2]}-${p0[3]}`
-        tx1 = `${p1[0]}-${p1[1]}-${p1[2]}-${p1[3]}`
-        strO += `${tx0}_${tx1}`
-    }
-    let strN = ''
-    for (let ii = news.length - 1, p0, p1, tx0, tx1; -1 < ii; ii--) {
-        p0 = news[ii][0]
-        p1 = news[ii][1]
-        tx0 = `${p0[0]}-${p0[1]}-${p0[2]}-${p0[3]}`
-        tx1 = `${p1[0]}-${p1[1]}-${p1[2]}-${p1[3]}`
-        strN += `${tx0}_${tx1}`
-    }
-    console.log(strO, strN)
-    let hsO = CryptoJS.MD5(strO);   //CryptoJS.SHA256(strO);
-    hsO = hsO.toString(CryptoJS.enc.Base64)     // speed > Hex
-    let hsN = CryptoJS.MD5(strN);
-    hsN = hsN.toString(CryptoJS.enc.Base64)
-    console.log(hsO, hsN)
-    if (hsO == hsN) return true;
-    return false
 }

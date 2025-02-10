@@ -197,3 +197,20 @@ function directToD(p, d, a, b) {
     let x2 = (-B - Math.sqrt(B * B - 4 * A * C)) / (2 * A);
     return [x1, x2]
 }
+export function drawGrid(bw, bh, size, color) {
+    color = color || '#dedede'
+    const ctx = this
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    const p = 0
+    for (let x = 0; x <= bw; x += size) {
+        ctx.moveTo(0.5 + x + p, p);
+        ctx.lineTo(0.5 + x + p, bh + p);
+    }
+    for (let x = 0; x <= bh; x += size) {
+        ctx.moveTo(p, 0.5 + x + p);
+        ctx.lineTo(bw + p, 0.5 + x + p);
+    }
+    ctx.strokeStyle = color;
+    ctx.stroke();
+}

@@ -1,11 +1,10 @@
 // #region import
 import { createApp } from 'vue'
-import { drawExtension, drawImplement, drawComposition } from './mcanvas.js'
+import { drawExtension, drawImplement, drawGrid, drawComposition } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import {
-    StructTypes, isInterface, verifySave, isClass, setHeight, inOverview,
-    isEqlLsPoints,
+    isInterface, verifySave, setHeight, isNotOverlap,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -91,30 +90,37 @@ Promise.all([
                     }
                 }
                 let hasChange = false
-                if (!isEqlLsPoints(this.ImplLines, linesImpl)) {
+                let strO = JSON.stringify(this.ImplLines)
+                let strN = JSON.stringify(linesImpl)
+                if (strO != strN) {
                     this.ImplLines = linesImpl
                     hasChange = true
-                    console.log('is change implements', JSON.stringify(this.ImplLines), JSON.stringify(linesImpl))
+                  //  console.log('is change implements', strO, strN)
                 }
-                if (!isEqlLsPoints(this.ExtnLines, linesExtn)) {
+                strO = JSON.stringify(this.ExtnLines)
+                strN = JSON.stringify(linesExtn)
+                if (strO != strN) {
                     this.ExtnLines = linesExtn
                     hasChange = true
-                    console.log('is change extends', JSON.stringify(this.ExtnLines), JSON.stringify(linesExtn))
+                  //  console.log('is change extends', strO, strN)
                 }
 
                 if (hasChange) {
-                    
-                    this.updateSizeCanvas()
-                    const c = document.getElementById(`dnb-mcanvas`);
+                  //  console.trace()
+                    const c = document.getElementById('dnb-mcanvas');
                     const ctx = c.getContext("2d");
                     ctx.clearRect(0, 0, c.width, c.height);
-                    for (let ii = linesImpl.length - 1; -1 < ii; ii--) {
-                        const [p0, p1] = linesImpl[ii]
+                    drawGrid.call(ctx, c.width, c.height, 10, '#f5f5f5')
+                    let lstLns = this.ImplLines
+                    for (let ii = lstLns.length - 1; -1 < ii; ii--) {
+                        const [p0, p1] = lstLns[ii]
                         drawImplement.call(ctx, p0, p1, 6, '#8b8b8b')
                     }
-                    for (let ii = linesExtn.length - 1; -1 < ii; ii--) {
-                        const [p0, p1] = linesExtn[ii]
+                    lstLns = this.ExtnLines
+                    for (let ii = lstLns.length - 1; -1 < ii; ii--) {
+                        const [p0, p1] = lstLns[ii]
                         drawExtension.call(ctx, p0, p1, 6, '#8b8b8b')
+                        //drawComposition.call(ctx, p0, p1, 6, 18, '#8b8b8b')
                     }
                 }
             },
@@ -135,13 +141,13 @@ Promise.all([
 
                     if (x - 20 < this.MinX) return;
                     if (y < this.MinY + 20) return;
-                    if (this.MaxY + 3 < y + dItem.height) return
-
+                    if (this.MaxY + 3 < y + dItem.height) return;
                     if (this.MaxX < x + dItem.width - 6) return;
+
                     if (dItem.left != left || dItem.top != top) {
                         this.setTopLeft(dItem, left, top)
+
                         this.drawCanvas()       // dragging item
-                        //this.drawLines(this.getPoints())
                     }
                 }
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
@@ -170,58 +176,16 @@ Promise.all([
                     if ('cls-classname' == dgElm.Item.id) {
                         this.editObject(dgElm.Item)
                     }
-                    else if (inOverview(dItem, this.ListClass)) {
+                    else if (isNotOverlap(dItem, this.ListClass)) {
                         this.setTopLeft(dItem, dgElm.Left, dgElm.Top)
-                        this.drawCanvas()       // key up dnd item
-                        //this.drawLines(this.getPoints())
+
+                        this.updateSizeCanvas()         // key up => end dnd item
+                        this.$nextTick(this.drawCanvas) // key up => end dnd item
                     }
                     document.removeEventListener('keydown', this.disableSrollDown)
 
                 }
                 dmVar.delete('DragElm')
-            },
-            drawLines(points) {
-                this.updateSizeCanvas()
-                const c = document.getElementById(`dnb-mcanvas`);
-                const ctx = c.getContext("2d");
-                ctx.clearRect(0, 0, c.width, c.height);
-                let xx = 0
-                for (let ii = 0; ii < points.length; ii++) {
-                    const [p0, p1] = points[ii]
-                    if (isClass(p0[4])) {
-                        if (0 < xx) drawComposition.call(ctx, p0, p1, 6, 18, '#8b8b8b')
-                        else drawExtension.call(ctx, p0, p1, 6, '#8b8b8b')
-                        xx++
-                    }
-                    if (isInterface(p0[4])) drawImplement.call(ctx, p0, p1, 6, '#8b8b8b')
-                }
-            },
-            getPoints() {
-                const lstCls = this.ListClass
-                const points = []
-                for (let ii = 0, item; ii < lstCls.length; ii++) {
-                    item = lstCls[ii]
-                    if (!item.toIds || !item.toIds.length) continue;
-                    let cIds = item.toIds
-                    let x0 = item.left + 1
-                    let y0 = item.top
-                    for (let jj = 0, Jtem; jj < lstCls.length; jj++) {
-                        if (jj == ii) continue;
-                        Jtem = lstCls[jj]
-                        let iiT = cIds.indexOf(Jtem.id)
-                        if (iiT < 0) continue
-                        let w0 = item.width
-                        let h0 = item.height
-                        let x1 = Jtem.left
-                        let y1 = Jtem.top
-                        let w1 = Jtem.width
-                        let h1 = Jtem.height
-                        const cType = Jtem.type
-                        points.push([[x0, y0, w0, h0, cType], [x1, y1, w1, h1]])
-                        // points.push([[x0, y0, item.id, w0, h0, cType], [x1, y1, Jtem.id, w1, h1]])
-                    }
-                }
-                return points;
             },
             preventKeyPress(e, codes) {
                 if (e.which === 13) {
@@ -229,10 +193,6 @@ Promise.all([
                     e.preventDefault()
                 }
                 if (codes.includes(e.which)) e.preventDefault()
-            },
-            equalHas(txt1, txt2) {
-                let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)
-                return hash1.toString(CryptoJS.enc.Hex) == hash2.toString(CryptoJS.enc.Hex)
             },
             closePMenu(e) {
                 const dmVar = this.DynamicVar
@@ -328,6 +288,10 @@ Promise.all([
                 cvns.setAttribute('width', mxX)
                 cvns.setAttribute('height', mxY)
             },
+            // equalHas(txt1, txt2) {
+            //     let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)
+            //     return hash1.toString(CryptoJS.enc.Hex) == hash2.toString(CryptoJS.enc.Hex)
+            // },
         },
         //  beforeCreate() { },
         //  created() { },
@@ -339,19 +303,17 @@ Promise.all([
             })
 
             // const message = "123456";
-            // const hash = CryptoJS.SHA256(message);
-            // console.log('test sha256', hash.toString(CryptoJS.enc.Hex));
+            // const hash = CryptoJS.SHA256(message);//CryptoJS.MD5(message);
+            // console.log(hash.toString(CryptoJS.enc.Hex));
+            // console.log(hash.toString(CryptoJS.enc.Base64));// speed > Hex
 
             document.addEventListener('mousemove', this.trackMouse)
             document.addEventListener("keyup", this.onKeyUp);
 
-            this.updateSizeCanvas()
-            this.$nextTick(() => {
-                this.drawCanvas()       // mounted
-                //this.drawLines(this.getPoints())
-            })
+            this.updateSizeCanvas()         // mount-ed
+            this.$nextTick(this.drawCanvas) // mount-ed
         },
-        //updated() { },
+        //updated(){ console.log('updated') }
     })
     app.mount('#m-app')
 

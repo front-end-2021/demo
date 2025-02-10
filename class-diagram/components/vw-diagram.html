@@ -1,5 +1,5 @@
 <template id="tmp-vw-diagram">
-    <div style="display: flex;">
+    <div style="display: flex;" :minx="$root.MinX" :maxx="$root.MaxX" :miny="$root.MinY" :maxy="$root.MaxY">
         <nav id="dnb-vwtab-left" style="display: inline-flex;flex-direction: column;"
             :style="[{ width: $root.MinX + 'px'}]">
             <h3 style="margin: 0;" contenteditable="true" @keypress="e => $root.preventKeyPress(e, [13])"
@@ -31,9 +31,9 @@
                 <input type="file" id="file-import" style="opacity: 0;" accept=".txt" @change="importDiagram" />
             </div>
         </nav>
-        <article id="dnb-vw-main" style="position: relative; border:1px solid rgb(0, 0, 0); overflow: auto;
+        <article id="dnb-vw-main" style="position: relative; border:1px solid #dedede; overflow: auto;
                 width:calc(100vw - 32px);height: calc(100vh - 36px);">
-            <canvas id="dnb-mcanvas" width="780" height="870" style="background-color: #dedede;">
+            <canvas id="dnb-mcanvas" width="780" height="870" >
                 Your browser does not support the HTML canvas tag.
             </canvas>
             <div id="dnb-vwdiagrams" style="position: absolute;top: 0;left: 0; height: 870px;"
@@ -47,7 +47,8 @@
     </div>
 </template>
 <template id="tmp-wrap-rect">
-    <div :id="'cls_' + item.id" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
+    <div :id="'cls_' + item.id" :w="item.width" :h="item.height" :x="item.left" :y="item.top"
+        style="display: inline-block;border: 1px solid rgb(0, 0, 0);
             position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <component v-bind:is="CompRect" :item="item">

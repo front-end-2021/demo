@@ -86,22 +86,14 @@ const MxRect = {
             let w = this.item.width
             let cW = this.$el.offsetWidth
             cW = Math.ceil(cW)
-            let isChange = false
             if (w != cW) {
                 this.item.width = cW
-                isChange = true
             }
             let h = this.item.height
             let cH = this.$el.offsetHeight
             cH = Math.ceil(cH)
             if (h != cH) {
                 this.item.height = cH
-                isChange = true
-            }
-            if (isChange) {
-                this.$root.drawCanvas()     // set size
-                //this.$root.drawLines(this.$root.getPoints())
-
             }
         },
         deleteCls(item) {
@@ -118,8 +110,8 @@ const MxRect = {
                     if (-1 < ii) cls.toIds.splice(ii, 1)
                 }
                 if (ids.length) {
-                    this.$root.drawCanvas()     // delete item
-                    //this.$root.drawLines(this.$root.getPoints())
+                    this.$root.updateSizeCanvas()               // delete item
+                    this.$root.$nextTick(this.$root.drawCanvas) // delete item
                 }
             }
         },
@@ -554,23 +546,6 @@ export const ViewDiagram = {
         return {}
     },
     methods: {
-        // buildLines() {
-        //     const points = this.$root.getPoints()
-        //     this.$root.drawLines(points)
-
-        // },
-        setWithCanvas() {
-            const vwM = document.getElementById('dnb-vw-main')
-            if (vwM) {
-                const offW = vwM.offsetWidth
-                const cv = document.getElementById(`dnb-mcanvas`);
-                if (cv.width != offW) {
-                    cv.width = offW
-                    return true
-                }
-            }
-            return false
-        },
         verifyLst(list, isDel) {
             if (isDel) {
                 for (let ii = list.length - 1, item; - 1 < ii; ii--) {
@@ -632,8 +607,8 @@ export const ViewDiagram = {
                 // #endregion
 
                 $root.ListClass = lst
-                this.$root.drawCanvas() // import
-                //this.buildLines()
+                this.$root.updateSizeCanvas()               // import
+                this.$root.$nextTick(this.$root.drawCanvas) // import
 
             };
             reader.onerror = () => {
@@ -691,20 +666,12 @@ export const ViewDiagram = {
             for (let ii = 0; ii < langs.length; ii++) {
                 if (langs[ii] == val) {
                     this.$root.PLang = ii
+                    this.$root.updateSizeCanvas()               // change lang
+                    this.$root.$nextTick(this.$root.drawCanvas) // change lang
                     break;
                 }
             }
         },
     },
-    mounted() {
-        this.setWithCanvas()
-      //  this.$root.drawCanvas()
-        //this.buildLines()
-    },
-    updated() {
-        if (this.setWithCanvas()) {
-         //   this.$root.drawCanvas()
-            //this.buildLines()
-        }
-    },
+    
 }
