@@ -99,7 +99,8 @@ const MxRect = {
                 isChange = true
             }
             if (isChange) {
-                this.$root.drawLines(this.$root.getPoints())
+                this.$root.drawCanvas()     // set size
+                //this.$root.drawLines(this.$root.getPoints())
 
             }
         },
@@ -117,7 +118,8 @@ const MxRect = {
                     if (-1 < ii) cls.toIds.splice(ii, 1)
                 }
                 if (ids.length) {
-                    this.$root.drawLines(this.$root.getPoints())
+                    this.$root.drawCanvas()     // delete item
+                    //this.$root.drawLines(this.$root.getPoints())
                 }
             }
         },
@@ -279,8 +281,8 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
 }
 const RectInterface = {
     template: `#tmp-rect-class`,
-    name: "Rect_Abstract",
-    display: "Rect.Abstract",
+    name: "Rect_Interface",
+    display: "Rect.Interface",
     mixins: [MxRect, MxClsItf],
     methods: {
         getCsFormat(prp) {
@@ -494,8 +496,8 @@ const RectAbstract = {
 }
 const RectClass = {
     template: `#tmp-rect-class`,
-    name: "Rect_Class",
-    display: "Rect.Class",
+    name: "Rect_Insclass",
+    display: "Rect.Insclass",
     mixins: [MxRect, MxClsItf, MxOjClass],
     computed: {
         ClassName() {
@@ -552,11 +554,11 @@ export const ViewDiagram = {
         return {}
     },
     methods: {
-        buildLines() {
-            const points = this.$root.getPoints()
-            this.$root.drawLines(points)
+        // buildLines() {
+        //     const points = this.$root.getPoints()
+        //     this.$root.drawLines(points)
 
-        },
+        // },
         setWithCanvas() {
             const vwM = document.getElementById('dnb-vw-main')
             if (vwM) {
@@ -630,7 +632,8 @@ export const ViewDiagram = {
                 // #endregion
 
                 $root.ListClass = lst
-                this.buildLines()
+                this.$root.drawCanvas() // import
+                //this.buildLines()
 
             };
             reader.onerror = () => {
@@ -695,9 +698,13 @@ export const ViewDiagram = {
     },
     mounted() {
         this.setWithCanvas()
-        this.buildLines()
+      //  this.$root.drawCanvas()
+        //this.buildLines()
     },
     updated() {
-        if (this.setWithCanvas()) this.buildLines()
+        if (this.setWithCanvas()) {
+         //   this.$root.drawCanvas()
+            //this.buildLines()
+        }
     },
 }

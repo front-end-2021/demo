@@ -5,7 +5,7 @@ import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import {
     StructTypes, isInterface, verifySave, isClass, setHeight, inOverview,
-    isAbstract
+    isEqlLsPoints,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -24,6 +24,11 @@ Promise.all([
                 MinY: 10, MaxY: 880,
                 DiagName: 'Demo',
                 ListClass: getListCls(),
+                CompLines: [],  // Composition
+                ImplLines: [],  // Inheritance implement
+                ExtnLines: [],  // Inheritance extend
+                AssoLines: [],  // Association
+                AggrLines: [],  // Aggregation
                 DynamicVar: new Map(),
                 /* PopMenu, FViewCode, FrameCode: {top,left,html,type,item}, 
                 *  DragElm (Dùng kéo các khung class),  */
@@ -58,12 +63,61 @@ Promise.all([
             //ListClass(val) { },
         },
         methods: {
-            // canExtend(type) {
-            //     let hasTyp = type
-            //     if (isClass(hasTyp)) return 'class'
-            //     hasTyp = type
-            //     if (isInterface(hasTyp)) return 'itf_'
-            // },
+            drawCanvas() {
+                const lstCls = this.ListClass
+                const linesImpl = []
+                const linesExtn = []
+                for (let ii = lstCls.length - 1, item; -1 < ii; ii--) {
+                    item = lstCls[ii]
+                    if (!item.toIds || !item.toIds.length) continue;
+                    let x0 = item.left + 1
+                    let y0 = item.top
+                    for (let jj = lstCls.length - 1, Jtem; -1 < jj; jj--) {
+                        if (jj == ii) continue;
+                        Jtem = lstCls[jj]
+                        if (!item.toIds.includes(Jtem.id)) continue
+                        let w0 = item.width
+                        let h0 = item.height
+                        let x1 = Jtem.left
+                        let y1 = Jtem.top
+                        let w1 = Jtem.width
+                        let h1 = Jtem.height
+                        if (isInterface(Jtem.type)) {
+                            linesImpl.push([[x0, y0, w0, h0], [x1, y1, w1, h1]])
+                            continue
+                        }
+                        // class
+                        linesExtn.push([[x0, y0, w0, h0], [x1, y1, w1, h1]])
+                    }
+                }
+                let hasChange = false
+                if (!isEqlLsPoints(this.ImplLines, linesImpl)) {
+                    this.ImplLines = linesImpl
+                    hasChange = true
+                    console.log('is change implements', JSON.stringify(this.ImplLines), JSON.stringify(linesImpl))
+                }
+                if (!isEqlLsPoints(this.ExtnLines, linesExtn)) {
+                    this.ExtnLines = linesExtn
+                    hasChange = true
+                    console.log('is change extends', JSON.stringify(this.ExtnLines), JSON.stringify(linesExtn))
+                }
+
+                if (hasChange) {
+                    
+                    this.updateSizeCanvas()
+                    const c = document.getElementById(`dnb-mcanvas`);
+                    const ctx = c.getContext("2d");
+                    ctx.clearRect(0, 0, c.width, c.height);
+                    for (let ii = linesImpl.length - 1; -1 < ii; ii--) {
+                        const [p0, p1] = linesImpl[ii]
+                        drawImplement.call(ctx, p0, p1, 6, '#8b8b8b')
+                    }
+                    for (let ii = linesExtn.length - 1; -1 < ii; ii--) {
+                        const [p0, p1] = linesExtn[ii]
+                        drawExtension.call(ctx, p0, p1, 6, '#8b8b8b')
+                    }
+                }
+            },
             trackMouse(event) {
                 let x = event.clientX;
                 let y = event.clientY;
@@ -86,7 +140,8 @@ Promise.all([
                     if (this.MaxX < x + dItem.width - 6) return;
                     if (dItem.left != left || dItem.top != top) {
                         this.setTopLeft(dItem, left, top)
-                        this.drawLines(this.getPoints())
+                        this.drawCanvas()       // dragging item
+                        //this.drawLines(this.getPoints())
                     }
                 }
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
@@ -117,7 +172,8 @@ Promise.all([
                     }
                     else if (inOverview(dItem, this.ListClass)) {
                         this.setTopLeft(dItem, dgElm.Left, dgElm.Top)
-                        this.drawLines(this.getPoints())
+                        this.drawCanvas()       // key up dnd item
+                        //this.drawLines(this.getPoints())
                     }
                     document.removeEventListener('keydown', this.disableSrollDown)
 
@@ -220,73 +276,6 @@ Promise.all([
                     })
                 })
             },
-            // getExtend(item, hTag1, hTag2) {
-            //     let extend = ''
-            //     const tIds = item.toIds
-            //     if (tIds && tIds.length) {
-            //         let lst = this.ListClass
-            //         const lsCls = []
-            //         const lstItf = []
-            //         for (let jj = 0, cls; jj < lst.length; jj++) {
-            //             cls = lst[jj]
-            //             if (item.id == cls.id) continue;  // it-self
-            //             if (!tIds.includes(cls.id)) continue;
-            //             switch (cls.type) {
-            //                 case StructTypes[0][0]: // 'interface'
-            //                     lstItf.push(cls)
-            //                     break;  // switch
-            //                 case StructTypes[1][0]: // 'abstract class'
-            //                 case StructTypes[2][0]: // 'class'
-            //                     lsCls.push(cls)
-            //                     break;  // switch
-            //                 default: break;  // switch
-            //             }
-            //         }
-            //         extend = this.getExtends(hTag1, hTag2, lsCls, lstItf)
-            //     }
-            //     return extend
-            // },
-            // getExtends(hTag1, hTag2, lsCls, lstItf) {
-            //     let extend = ''
-            //     const ii = this.PLang
-            //     let lst = this.ListClass
-            //     if (2 == ii) {    // java
-            //         let tag = ''
-            //         if (lsCls.length) {
-            //             lst = lsCls.map(xx => xx.Name)
-            //             tag = `extends`
-            //             if (hTag1) tag = `<${hTag1}>${tag}</${hTag1}>`
-            //             extend = `${tag} ${lst.join(', ')}`
-            //         }
-            //         if (lstItf.length) {
-            //             lst = lstItf.map(xx => xx.Name)
-            //             tag = `implements`
-            //             if (hTag1) tag = `<${hTag1}>${tag}</${hTag1}>`
-            //             if (extend.length)
-            //                 extend += ` ${tag} ${lst.join(', ')}`
-            //             else extend = `${tag} ${lst.join(', ')}`
-            //         }
-            //         if (extend.length) {
-            //             if (hTag2) extend = `<${hTag2}>&nbsp;${extend}</${hTag2}>`
-            //             else extend = ' ' + extend
-            //         }
-            //     } else {
-            //         if (lsCls.length) {
-            //             lst = lsCls.map(xx => xx.Name)
-            //             extend = `${lst.join(', ')}`
-            //         }
-            //         if (lstItf.length) {
-            //             lst = lstItf.map(xx => xx.Name)
-            //             if (extend.length) extend += `, ${lst.join(', ')}`
-            //             else extend = `${lst.join(', ')}`
-            //         }
-            //         if (extend.length) {
-            //             if (hTag2) extend = `: <${hTag2}>${extend}</${hTag2}>`
-            //             else extend = `: ${extend}`
-            //         }
-            //     }
-            //     return extend
-            // },
             getLsExtends(lsCls, lstItf, iLang) {
                 let lst = this.ListClass
                 let arrExt = []
@@ -349,16 +338,17 @@ Promise.all([
                 if (pDom) pDom.remove();
             })
 
-            const message = "123456";
-            const hash = CryptoJS.SHA256(message);
-            console.log('test sha256', hash.toString(CryptoJS.enc.Hex));
+            // const message = "123456";
+            // const hash = CryptoJS.SHA256(message);
+            // console.log('test sha256', hash.toString(CryptoJS.enc.Hex));
 
             document.addEventListener('mousemove', this.trackMouse)
             document.addEventListener("keyup", this.onKeyUp);
 
             this.updateSizeCanvas()
             this.$nextTick(() => {
-                this.drawLines(this.getPoints())
+                this.drawCanvas()       // mounted
+                //this.drawLines(this.getPoints())
             })
         },
         //updated() { },

@@ -1,9 +1,5 @@
 body, .dr_lst-wrap {scrollbar-width: thin;}
-.vwheader {
-    font-size: 18px;text-align: center;border-bottom: 1px solid black;
-    padding-left: 24px; padding-right: 45px; position: relative;
 
-}
 .ctlmove, .ctledit {
     width: 22px;height: calc(100% - 1px);
     position: absolute;top:1px;

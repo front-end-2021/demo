@@ -1,6 +1,6 @@
 <template id="tmp-vw-diagram">
-    <section style="display: flex;">
-        <div id="dnb-vwtab-left" style="display: inline-flex;flex-direction: column;"
+    <div style="display: flex;">
+        <nav id="dnb-vwtab-left" style="display: inline-flex;flex-direction: column;"
             :style="[{ width: $root.MinX + 'px'}]">
             <h3 style="margin: 0;" contenteditable="true" @keypress="e => $root.preventKeyPress(e, [13])"
                 @blur="e => onBlurEdit(e, 'diagram name')">{{$root.DiagName}}</h3>
@@ -30,8 +30,8 @@
                 <label for="file-import" style="cursor: pointer;">Import data</label>
                 <input type="file" id="file-import" style="opacity: 0;" accept=".txt" @change="importDiagram" />
             </div>
-        </div>
-        <div id="dnb-vw-main" style="position: relative; border:1px solid rgb(0, 0, 0); overflow: auto;
+        </nav>
+        <article id="dnb-vw-main" style="position: relative; border:1px solid rgb(0, 0, 0); overflow: auto;
                 width:calc(100vw - 32px);height: calc(100vh - 36px);">
             <canvas id="dnb-mcanvas" width="780" height="870" style="background-color: #dedede;">
                 Your browser does not support the HTML canvas tag.
@@ -43,33 +43,40 @@
                 <rect-class v-if="$root.NewClassName != null" :item="$root.NewClassName"></rect-class>
             </div>
 
-        </div>
-    </section>
+        </article>
+    </div>
 </template>
 <template id="tmp-wrap-rect">
-    <component v-bind:is="CompRect" :item="item"></component>
-</template>
-<template id="tmp-rect-enum">
     <div :id="'cls_' + item.id" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
             position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
-        <div class="vwheader">
-            <i class="bi bi-arrows-move cpoint ctlmove" style="left: 0;" @mousedown="onMouseDown"></i>
-            <i class="bi bi-pen cpoint ctledit" style="right:24px" @click.stop="e => $root.editObject(item)"></i>
-            <i class="bi bi-x-lg cpoint ctledit" style="right: 0;" @click.stop="e => deleteCls(item)"></i>
+        <component v-bind:is="CompRect" :item="item">
+            <template #menu="sPrp">
+                <i class="bi bi-arrows-move cpoint ctlmove" style="left: 0;" @mousedown="sPrp.mddnd"></i>
+                <i class="bi bi-pen cpoint ctledit" style="right:24px" @click.stop="e => sPrp.ckedt(item)"></i>
+                <i class="bi bi-x-lg cpoint ctledit" style="right: 0;" @click.stop="e => sPrp.ckdel(item)"></i>
+            </template>
+        </component>
+    </div>
+    
+</template>
+<template id="tmp-rect-enum">
+    <section class="wrp-enum">
+        <div class="vwheader" style="font-size: 18px;text-align: center;border-bottom: 1px solid black;
+    padding-left: 24px; padding-right: 45px; position: relative;">
+            <slot name="menu" :mddnd="onMouseDown" :ckedt="$root.editObject" :ckdel="deleteCls"></slot>
+            
             <span style="font-weight: bold;">enum {{item.Name}}</span>
         </div>
         <div style="font-size: 16px; font-weight: 300;padding: 0 6px;">{{TxtField}}</div>
-    </div>
+    </section>
 </template>
 <template id="tmp-rect-class">
-    <div :id="'cls_' + item.id" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
-            position: inherit;cursor: default;border-radius: 4px;"
-        :style="{top: item.top + 'px', left: item.left + 'px'}">
-        <div class="vwheader">
-            <i class="bi bi-arrows-move cpoint ctlmove" style="left: 0;" @mousedown="onMouseDown"></i>
-            <i class="bi bi-pen cpoint ctledit" style="right: 24px;" @click.stop="e => $root.editObject(item)"></i>
-            <i class="bi bi-x-lg cpoint ctledit" style="right: 0;" @click.stop="e => deleteCls(item)"></i>
+    <section class="wrp-cls">
+        <div class="vwheader" style="font-size: 18px;text-align: center;border-bottom: 1px solid black;
+    padding-left: 24px; padding-right: 45px; position: relative;">
+            <slot name="menu" :mddnd="onMouseDown" :ckedt="$root.editObject" :ckdel="deleteCls"></slot>
+            
             <span style="font-weight: bold;" @dblclick="e => onEditable(e, 'class name')"
                 @keypress="e => $root.preventKeyPress(e, [13, 32])" @blur="e => onDoneEdit(e, 'class name')"
                 @click="e => showCodeBody(null, e)">{{ClassName}}</span>
@@ -94,7 +101,7 @@
             <i v-for="(prp, ii) in ExtProperties" @click.stop="e => showCodeBody(ii, item.Methods.length)"
                 style="display: block;">&nbsp;{{getFragProp(prp).join(' ')}}</i>
         </div>
-    </div>
+    </section>
 </template>
 <template id="tmp-menu-list">
     <span class="wrap-mnlist" style="position: relative;cursor:default;"

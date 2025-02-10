@@ -129,7 +129,7 @@ export const FormEdit = {
                 cls = lst[ii]
                 if (itemId == cls.id) continue;  // it-self
                 if (!tIds.includes(cls.id)) continue;
-                if(isInterface(cls.type)) lstItf.push(cls)
+                if (isInterface(cls.type)) lstItf.push(cls)
                 else lsCls.push(cls)
             }
             return this.$root.getLsExtends(lsCls, lstItf, this.$root.PLang)
@@ -387,7 +387,8 @@ export const FormEdit = {
                 this.$root.NewClassName = null
                 this.onCloseEdit()
                 if (nItem && nItem.toIds && nItem.toIds.length) {
-                    this.$root.drawLines(this.$root.getPoints())
+                    this.$root.drawCanvas()     // new item
+                    // this.$root.drawLines(this.$root.getPoints())
                 }
                 return
             }
@@ -409,7 +410,8 @@ export const FormEdit = {
 
             this.onCloseEdit()
             if (changeToids) {
-                this.$root.drawLines(this.$root.getPoints())
+                this.$root.drawCanvas()     // save change
+                // this.$root.drawLines(this.$root.getPoints())
             }
             function onNewItem(newItem) {
                 let nItem = objNewCls(newItem)
