@@ -109,10 +109,10 @@ const MxRect = {
                     ii = cls.toIds.indexOf(item.id)
                     if (-1 < ii) cls.toIds.splice(ii, 1)
                 }
-                if (ids.length) {
+              //  if (ids.length) {
                     this.$root.updateSizeCanvas()               // delete item
                     this.$root.$nextTick(this.$root.drawCanvas) // delete item
-                }
+             //   }
             }
         },
 
