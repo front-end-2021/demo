@@ -1,12 +1,21 @@
-
+export function drawAssociation(p0, p1, color) {
+    const ctx = this
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    let [x0, y0, x1, y1] = computeXY(p0, p1)
+    fillCirle(ctx, x0, y0, 1, color)
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+}
 export function drawImplement(p0, p1, width, color) {
-    color = color || 'black'
     const ctx = this
     ctx.strokeStyle = color;
     ctx.beginPath();
     ctx.setLineDash([9]);
     let [x0, y0, x1, y1] = computeXY(p0, p1)
-    fillCirle(ctx, x0, y0, 1, 'black')
+    fillCirle(ctx, x0, y0, 1, color)
 
     let [a, b] = linearCoeffict([x0, y0], [x1, y1]);    // phuong trinh duong thang (p0, p1)
     let [xx0, yy0] = getOpPoint([x0, y0], [x1, y1], a, b, width * 2)
@@ -30,13 +39,12 @@ export function drawImplement(p0, p1, width, color) {
     ctx.stroke();
 }
 export function drawComposition(p0, p1, width, height, color) {
-    color = color || 'black'
     const ctx = this
     ctx.strokeStyle = color;
     ctx.beginPath();
     ctx.setLineDash([]);
     let [x0, y0, x1, y1] = computeXY(p0, p1)
-    fillCirle(ctx, x0, y0, 1, 'black')
+    fillCirle(ctx, x0, y0, 1, color)
 
     let [a, b] = linearCoeffict([x0, y0], [x1, y1]);    // phuong trinh duong thang (p0, p1)
     let [xhf, yhf] = getOpPoint([x0, y0], [x1, y1], a, b, Math.round(height / 2))
@@ -44,7 +52,7 @@ export function drawComposition(p0, p1, width, height, color) {
 
     let [xx0, yy0] = getOpPoint([x0, y0], [x1, y1], a, b, height)
     ctx.moveTo(x0, y0);
-    ctx.lineTo(x1, y1); //ctx.lineTo(xx0, yy0);
+    ctx.lineTo(x1, y1);
     ctx.moveTo(xx0, yy0);
     ctx.stroke();
 
@@ -149,31 +157,33 @@ function fillCirle(ctx, x0, y0, r, color) {
     ctx.fill();
 }
 export function drawExtension(p0, p1, width, color) {
-    color = color || 'black'
     const ctx = this
     ctx.strokeStyle = color;
     ctx.beginPath();
     ctx.setLineDash([]);
     let [x0, y0, x1, y1] = computeXY(p0, p1)
-    fillCirle(ctx, x0, y0, 1, 'black')
+    fillCirle(ctx, x0, y0, 1, color)
 
     let [a, b] = linearCoeffict([x0, y0], [x1, y1]);    // phuong trinh duong thang (p0, p1)
     let [xx0, yy0] = getOpPoint([x0, y0], [x1, y1], a, b, Math.ceil(width * 2.7))
 
     ctx.moveTo(x0, y0);
     ctx.lineTo(xx0, yy0);
-
-    let [xx1, yy1, xx2, yy2] = poitsArg90([xx0, yy0], [a, b], width)
-
-    ctx.moveTo(xx1, yy1);
-    ctx.lineTo(xx2, yy2);
-    ctx.moveTo(xx2, yy2);
-
-    ctx.lineTo(x1, y1);
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(xx1, yy1);
     ctx.stroke();
 
+    let [xx1, yy1, xx2, yy2] = poitsArg90([xx0, yy0], [a, b], width)
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    // Create path
+    let region = new Path2D();
+    region.moveTo(xx0, yy0);    // mid
+    region.lineTo(xx1, yy1);    // left
+    region.lineTo(x1, y1);      // top
+    region.lineTo(xx2, yy2);    // right
+    region.closePath();
+    // Fill path
+    ctx.fillStyle = color;
+    ctx.fill(region, "evenodd");
 }
 function linearCoeffict(p0, p1) {
     let x0 = p0[0], y0 = p0[1];
@@ -198,7 +208,6 @@ function directToD(p, d, a, b) {
     return [x1, x2]
 }
 export function drawGrid(bw, bh, size, color) {
-    color = color || '#dedede'
     const ctx = this
     ctx.beginPath();
     ctx.setLineDash([]);

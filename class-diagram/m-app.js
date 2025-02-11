@@ -1,6 +1,9 @@
 // #region import
 import { createApp } from 'vue'
-import { drawExtension, drawImplement, drawGrid, drawComposition } from './mcanvas.js'
+import {
+    drawExtension, drawImplement, drawGrid,
+    drawComposition, drawAssociation
+} from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import {
@@ -68,6 +71,8 @@ Promise.all([
                     return
                 }
                 const lstCls = this.ListClass
+                const mName = new Map(lstCls.map(x => [x.Name, x]))
+
                 const linesImpl = []
                 const linesExtn = []
                 for (let ii = lstCls.length - 1, item; -1 < ii; ii--) {
@@ -93,6 +98,7 @@ Promise.all([
                         linesExtn.push([[x0, y0, w0, h0], [x1, y1, w1, h1]])
                     }
                 }
+                const linesAsso = getLnsAssociation(lstCls, mName)
                 isChange = false
                 let strO = JSON.stringify(this.ImplLines)
                 let strN = JSON.stringify(linesImpl)
@@ -106,9 +112,13 @@ Promise.all([
                 if (strO != strN) {
                     this.ExtnLines = linesExtn
                     isChange = true
-                    //  console.log('is change extends', strO, strN)
                 }
-
+                strO = JSON.stringify(this.AssoLines)
+                strN = JSON.stringify(linesAsso)
+                if (strO != strN) {
+                    this.AssoLines = linesAsso
+                    isChange = true
+                }
                 if (isChange) {
                     //  console.trace()
                     drawCtx.call(this)
@@ -127,8 +137,51 @@ Promise.all([
                     for (let ii = lstLns.length - 1; -1 < ii; ii--) {
                         const [p0, p1] = lstLns[ii]
                         drawExtension.call(ctx, p0, p1, 6, '#8b8b8b')
+                    }
+                    lstLns = this.AssoLines
+                    for (let ii = lstLns.length - 1; -1 < ii; ii--) {
+                        const [p0, p1] = lstLns[ii]
+                        drawAssociation.call(ctx, p0, p1, '#8b8b8b')
                         //drawComposition.call(ctx, p0, p1, 6, 18, '#8b8b8b')
                     }
+                }
+                function getLnsAssociation(lstCls, mName) {
+                    const lnsAso = []
+                    const mTypF = new Map()
+                    for (let ii = lstCls.length - 1, item; -1 < ii; ii--) {
+                        item = lstCls[ii]
+                        for (let ff = item.Fields.length - 1, field; -1 < ff; ff--) {
+                            field = item.Fields[ff]
+                            if (mName.has(field.Type)) {
+                                if (mTypF.has(field.Type)) {
+                                    const lsItm = mTypF.get(field.Type)
+                                    if (!lsItm.find(x => Object.is(x, item))) {
+                                        lsItm.push(item)
+                                    }
+                                } else {
+                                    mTypF.set(field.Type, [item])
+                                }
+                            }
+                        }
+                    }
+                    if (mTypF.size < 1) return lnsAso
+                    let des, src, x0, y0, w0, h0, x1, y1, w1, h1
+                    for (const [name, items] of mTypF) {
+                        des = mName.get(name)
+                        x1 = des.left
+                        y1 = des.top
+                        w1 = des.width
+                        h1 = des.height
+                        for (let ii = items.length - 1; -1 < ii; ii--) {
+                            src = items[ii]
+                            x0 = src.left + 1
+                            y0 = src.top
+                            w0 = src.width
+                            h0 = src.height
+                            lnsAso.push([[x0, y0, w0, h0], [x1, y1, w1, h1]])
+                        }
+                    }
+                    return lnsAso
                 }
             },
             trackMouse(event) {
@@ -148,7 +201,7 @@ Promise.all([
 
                     if (x - 20 < this.MinX) return;
                     if (y < this.MinY + 20) return;
-                    
+
                     if (dItem.left != left || dItem.top != top) {
                         this.setTopLeft(dItem, left, top)
 
