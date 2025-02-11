@@ -352,3 +352,34 @@ function indexesRabinKarp(pat, txt, q) {
     }
     return lstI
 }
+function indexesBoyerMoore(text, pattern) {
+    const m = pattern.length;
+    const n = text.length;
+    const badChar = Array(256).fill(-1);
+
+    // Tạo bảng bad character
+    for (let i = 0; i < m; i++) {
+        badChar[pattern.charCodeAt(i)] = i;
+    }
+    const lsI = []
+    let s = 0; // s là vị trí dịch chuyển của mẫu so với văn bản
+    let j = -1
+    while (s <= (n - m)) {
+        j = m - 1;
+
+        // Giảm j khi các ký tự của mẫu và văn bản khớp nhau
+        while (0 <= j && pattern[j] === text[s + j]) {
+            j--;
+        }
+
+        // Nếu mẫu khớp hoàn toàn với văn bản
+        if (j < 0) {
+            //console.log("Pattern found at index " + s);
+            lsI.push(s)
+            s += (s + m < n) ? m - badChar[text.charCodeAt(s + m)] : 1;
+        } else {
+            s += Math.max(1, j - badChar[text.charCodeAt(s + j)]);
+        }
+    }
+    return lsI
+}
