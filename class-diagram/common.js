@@ -333,3 +333,68 @@ function indexesBoyerMoore(text, pattern) {
     }
     return lsI
 }
+class AhoCorasick {
+    constructor(patterns) {
+        this.setPatterns(patterns)
+    }
+    buildTrie(patterns) {
+        for (const pattern of patterns) {
+            let node = this.trie;
+            for (const char of pattern) {
+                if (!node[char]) {
+                    node[char] = {};
+                }
+                node = node[char];
+            }
+            node.isEnd = true;
+        }
+    }
+    buildFailureLinks() {
+        const queue = [];
+        for (const char in this.trie) {
+            this.trie[char].fail = this.trie;
+            queue.push(this.trie[char]);
+        }
+
+        while (queue.length > 0) {
+            const node = queue.shift();
+            for (const char in node) {
+                if (char === 'fail' || char === 'isEnd') continue;
+                let fail = node.fail;
+                while (fail && !fail[char]) {
+                    fail = fail.fail;
+                }
+                node[char].fail = fail ? fail[char] : this.trie;
+                queue.push(node[char]);
+            }
+        }
+    }
+    setPatterns(patterns) {
+        this.trie = {};
+        this.buildTrie(patterns);
+        this.buildFailureLinks();
+    }
+    indexes(text) {
+        let node = this.trie;
+        const results = [];
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            while (node && !node[char]) {
+                node = node.fail;
+            }
+            node = node ? node[char] : this.trie;
+            if (node.isEnd) {
+                results.push(i);
+            }
+        }
+        return results;
+    }
+}
+//// Ví dụ sử dụng
+// let patterns = ["apple", "banana", "cherry"];
+// const ac = new AhoCorasick(patterns);
+// let text = `This function simply follows edges of Trie of all words in arr[]. It is cherry
+//           represented as 2D array g[][] wherebanana
+//           we store next state for current state I have an apple and a banana. and character`;
+// let result = ac.indexes(text);
+// console.log(result); // In ra các vị trí tìm thấy các mẫu
