@@ -287,7 +287,7 @@ export function getLstExt(id, tIds, prps, lstCls, fnc) {
     for (let ii = 0, xx, oPrp; ii < lstCls.length; ii++) {
         xx = lstCls[ii]
         if (xx.id == id) continue   // it-self
-        if(fnc(xx.type)) continue
+        if (fnc(xx.type)) continue
         if (hasnMethod(xx)) continue;
         if (!tIds.includes(xx.id)) continue
         for (let jj = 0, prp, name; jj < xx.Methods.length; jj++) {
@@ -300,4 +300,55 @@ export function getLstExt(id, tIds, prps, lstCls, fnc) {
         }
     }
     return lst
+}
+
+/* pat -> pattern 
+   txt -> text 
+   q -> A prime number 
+*/
+function indexesRabinKarp(pat, txt, q) {
+    let d = 256;
+    let M = pat.length;
+    let N = txt.length;
+    let i, j;
+
+    // Hash value for pattern 
+    let p = 0;
+
+    // Hash value for txt 
+    let t = 0, h = 1;
+
+    // The value of h would be "pow(d, M-1) % q" 
+    for (i = 0; i < M - 1; i++) h = (h * d) % q;
+
+    // Calculate the hash value of pattern and first window of text 
+    for (i = 0; i < M; i++) {
+        p = (d * p + pat[i].charCodeAt()) % q;
+        t = (d * t + txt[i].charCodeAt()) % q;
+    }
+    const lstI = []
+    // Slide the pattern over text one by one 
+    for (i = 0; i <= N - M; i++) {
+        // Check the hash values of current window of text and pattern
+        if (p == t) {
+            /* Check for characters one by one */
+            for (j = 0; j < M; j++) {
+                if (txt[i + j] != pat[j]) break;
+            }
+
+            // If p == t and pat[0...M-1] = txt[i, i+1, ...i+M-1] 
+            if (j == M) { //console.log("Pattern found at index " + i);
+                lstI.push(i)
+            }
+        }
+
+        // Calculate hash value for next window of text: Remove leading digit, add trailing digit 
+        if (i < N - M) {
+            t = (d * (t - txt[i].charCodeAt() * h) + txt[i + M].charCodeAt()) % q;
+
+            // We might get negative value of t, converting it to positive 
+            if (t < 0) t = (t + q);
+        }
+    }
+    return lstI
 }
