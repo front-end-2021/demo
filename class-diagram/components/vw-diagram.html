@@ -81,7 +81,7 @@
             
             <span style="font-weight: bold;" @dblclick="e => onEditable(e, 'class name')"
                 @keypress="e => $root.preventKeyPress(e, [13, 32])" @blur="e => onDoneEdit(e, 'class name')"
-                @click="e => showCodeBody(null, e)">{{ClassName}}</span>
+                @click="e => showCodeBody(null, -1)">{{ClassName}}</span>
             <span v-for="exv in ViewExtends">
                 <small>{{exv[0]}}&nbsp;</small><i>{{exv[1]}}</i>
             </span>
@@ -89,18 +89,19 @@
         <div v-if="0 < ExtendFields.length + item.Fields.length"
             style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
             <i @click.stop="$root.clearDyVar" style="display: block;"
-                v-for="field in ExtendFields">&nbsp;{{field.Visible}} {{field.Name}}: {{field.Type}}</i>
-            <div @click.stop="$root.clearDyVar" v-for="field in item.Fields">&nbsp;{{field.Visible}}
-                {{field.Name}}:{{field.Type}}
+                v-for="field in ExtendFields">&nbsp;{{vwVisible(field.Visible)}} {{field.Name}}: {{field.Type}}</i>
+            <div @click.stop="$root.clearDyVar" 
+                v-for="field in item.Fields">&nbsp;{{vwVisible(field.Visible)}} {{field.Name}}:{{field.Type}}
             </div>
         </div>
         <div style="font-size: 14px;font-weight: 100;padding-right: 6px;">
             <div v-for="(prp, ii) in ListProperty" @click="e => showCodeBody(ii, 0)">
-                &nbsp;<span>{{prp[0]}}</span>&nbsp;<span contenteditable="true"
+                &nbsp;<span>{{vwVisible(prp[0])}}</span>&nbsp;<span contenteditable="true"
                     @keypress="e => $root.preventKeyPress(e, [13, 32])"
                     @blur="e => onDoneEdit(e, 'property', ii)">{{prp[1]}}</span>&nbsp;<span>{{prp[2]}}</span>
             </div>
-            <i v-for="(prp, ii) in ExtProperties" @click.stop="e => showCodeBody(ii, item.Methods.length)"
+            <i v-for="(prp, ii) in ExtProperties" 
+                @click.stop="e => showCodeBody(ii, item.Methods.length)"
                 style="display: block;">&nbsp;{{getFragProp(prp).join(' ')}}</i>
         </div>
     </section>

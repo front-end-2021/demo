@@ -9,6 +9,7 @@ import { getListCls } from './repository.js'
 import {
     verifySave, setHeight, isOverlap,
     isAbstract, isClass, isInterface, isStruct, isEnum,
+    AhoCorasick,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -188,8 +189,59 @@ Promise.all([
                     }
                     return lnsAso
                 }
-                function getLnsComposition() {
+                function getAggreations() {
+                    const lns = []
+                    let mTypF = new Map()
+                    for (let ii = lsClass.length - 1, item; -1 < ii; ii--) {
+                        item = lsClass[ii]
+                        mTypF = new Map()
+                        for (let ff = item.Fields.length - 1, field; -1 < ff; ff--) {
+                            field = item.Fields[ff]
+                            if (mpClass.has(field.Type)) {
+                                if (mTypF.has(field.Type)) mTypF.get(field.Type).push(field.Name)
+                                else mTypF.set(field.Type, [field.Name])
+                            }
+                        }
+                        if (mTypF.size) {
 
+                        }
+                    }
+
+                }
+                function getCompositions() {
+                    const lns = []
+                    let mTypF = new Map()
+                    for (let ii = lsClass.length - 1, item; -1 < ii; ii--) {
+                        item = lsClass[ii]
+                        mTypF = new Map()
+                        for (let ff = item.Fields.length - 1, field; -1 < ff; ff--) {
+                            field = item.Fields[ff]
+                            if (mpClass.has(field.Type)) {
+                                let construc = hasInit(item, field.Type)
+                                if (construc) {
+                                    if (mTypF.has(field.Type)) mTypF.get(field.Type).push(field.Name)
+                                    else mTypF.set(field.Type, [field.Name])
+                                }
+                            }
+                        }
+                        if (mTypF.size) {
+
+                        }
+                    }
+                    function hasInit(item, vName) {
+                        let patterns = [` ${vName} `, ` ${vName};`, `new ${vName}`];
+                        let ac = new AhoCorasick(patterns)
+                        for (let mm = item.Methods.length - 1, mth; -1 < mm; mm--) {
+                            mth = item.Methods[mm]
+                            if (AccessInit[2][0] == mth[3]) {   // init
+                                let code = mth[4]
+                                let index = ac.indexOf(code);
+                                if (-1 < index) return mth
+                                let iiN = mth[1].indexOf(` ${vName} `)
+                                if (0 < iiN) return mth
+                            }
+                        }
+                    }
                 }
                 function isEqLines(lsLine1, lsLine2) {
                     let strO = JSON.stringify(lsLine1)

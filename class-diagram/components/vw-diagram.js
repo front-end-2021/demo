@@ -143,10 +143,10 @@ const RectEnum = {
 const MxClsItf = {      // mixin: Class, Abstract, Interface
     methods: {
         getFragProp(prp) {
-            let acModify = prp[0]
-            acModify = acModify.replace(' override', '')
-            acModify = acModify.replace(' virtual', '')
-            acModify = acModify.replace(' abstract', '')
+            let acModify = this.vwVisible(prp[0])
+            // acModify = acModify.replace(' override', '')
+            // acModify = acModify.replace(' virtual', '')
+            // acModify = acModify.replace(' abstract', '')
             let name = prp[1]
             let type = prp[2]
             let returnType = prp[3]
@@ -241,6 +241,13 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
             }
             return txtF
         },
+        vwVisible(str) {
+            let txt = str.replaceAll('static', '')
+            txt = txt.replaceAll('override', '')
+            txt = txt.replaceAll('virtual', '')
+            txt = txt.replaceAll('abstract', '')
+            return txt.trim()
+        },
     },
     computed: {
         ViewExtends() {
@@ -289,8 +296,8 @@ const RectInterface = {
             for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
                 prp = lstPrp[jj]
                 txtP = this.getCsFormat(prp)
-                txtP = convertSymb(txtP) // txtP.replace('+', '  public')
-                txtFnc += `${txtP}`
+                txtP = `  ${convertSymb(txtP)}` // txtP.replace('+', '  public')
+                txtFnc += `${txtP}\n`
             }
             let txt = `${clsName}${txtFnc}}`
             this.setFragViewCode(txt)
@@ -359,9 +366,9 @@ const MxOjClass = {
             let lstPrp = [...item.Methods, ...this.ExtProperties]
             for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
                 prp = lstPrp[jj]
-                txtP = this.getCsFormat(prp)
-                txtP = convertSymb(txtP) // txtP.replace('+', '  public')
-                if (jj - offI == ii) {
+                txtP = this.getCsFormat(prp); console.log(txtP, jj, offI, ii)
+                txtP = `  ${convertSymb(txtP)}` // txtP.replace('+', '  public')
+                if (jj - offI === ii) {
                     let pCode = prp[4]
                     let hasEnter = false
                     if (!pCode) pCode = '/* empty */'
@@ -373,17 +380,17 @@ const MxOjClass = {
                     }
                     if (txtP.includes(`{...}`)) {
                         if (hasEnter) {
-                            txtP = txtP.replace(`{...}`, `{\n${pCode}\n  }\n`)
+                            txtP = txtP.replace(`{...}`, `{\n${pCode}\n  }`)
                         } else if (pCode == '/* empty */') {
-                            txtP = txtP.replace(`{...}`, `{ ${pCode} }\n`)
+                            txtP = txtP.replace(`{...}`, `{ ${pCode} }`)
                         } else {
-                            txtP = txtP.replace(`{...}`, `{\n    ${pCode}\n  }\n`)
+                            txtP = txtP.replace(`{...}`, `{\n    ${pCode}\n  }`)
                         }
                     }
                 } else if (txtP.includes(`{...}`)) {
-                    txtP = txtP.replace(`{...}`, `{ ... }\n`)
+                    txtP = txtP.replace(`{...}`, `{ ... }`)
                 }
-                txtFnc += `${txtP}`
+                txtFnc += `${txtP}\n`
             }
             let txt = `${clsName}${txtFnc}}`
             //console.log(txt)

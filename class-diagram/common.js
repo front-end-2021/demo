@@ -79,9 +79,9 @@ export function convertSymb(symb, isStr) {
         if (symb.includes('protected')) symb = symb.replace('protected', '#')
         return symb
     }
-    if (symb.includes('+')) symb = symb.replace('+', '  public')
-    if (symb.includes('-')) symb = symb.replace('-', '  private')
-    if (symb.includes('#')) symb = symb.replace('#', '  protected')
+    if (symb.includes('+')) symb = symb.replace('+', 'public')
+    if (symb.includes('-')) symb = symb.replace('-', 'private')
+    if (symb.includes('#')) symb = symb.replace('#', 'protected')
     return symb
 }
 export const StructTypes = [
@@ -338,7 +338,7 @@ function indexesBoyerMoore(text, pattern) {
     }
     return lsI
 }
-class AhoCorasick {
+export class AhoCorasick {
     constructor(patterns) {
         this.setPatterns(patterns)
     }
@@ -393,6 +393,20 @@ class AhoCorasick {
             }
         }
         return results;
+    }
+    indexOf(text) {
+        let node = this.trie;
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            while (node && !node[char]) {
+                node = node.fail;
+            }
+            node = node ? node[char] : this.trie;
+            if (node.isEnd) {
+                return i
+            }
+        }
+        return -1
     }
 }
 //// Ví dụ sử dụng
