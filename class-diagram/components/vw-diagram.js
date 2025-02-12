@@ -69,6 +69,7 @@ const MxRect = {
             let wrp = document.body.querySelector(`#dnb-vw-main`)
             if (!wrp) return
             x -= wrp.scrollLeft
+            y -= wrp.scrollTop
 
             document.addEventListener('keydown', this.$root.disableSrollDown)
             this.$root.DynamicVar.set('DragElm', {
@@ -671,5 +672,7 @@ export const ViewDiagram = {
             }
         },
     },
-
+    computed: {
+        VwHeight() { return `calc(100vh - 18px - ${this.$root.MinY}px)` },
+    },
 }

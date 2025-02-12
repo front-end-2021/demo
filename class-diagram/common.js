@@ -64,6 +64,11 @@ export function isEnum(type) {
     if (type.includes('enum')) return true;
     return false
 }
+export function isStruct(type) {
+    if (typeof type != 'string' || !type.length) return false
+    if (type.includes('struct')) return true;
+    return false
+}
 export function convertSymb(symb, isStr) {
     if (typeof symb != 'string') return symb
     symb = symb.trim()

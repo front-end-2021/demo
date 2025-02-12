@@ -7,7 +7,8 @@ import {
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import {
-    isInterface, verifySave, setHeight, isOverlap,
+    verifySave, setHeight, isOverlap,
+    isAbstract, isClass, isInterface, isStruct, isEnum,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -23,7 +24,7 @@ Promise.all([
         data() {
             return {
                 MinX: 150, MaxX: 150 + 1754,
-                MinY: 10, MaxY: 880,
+                MinY: 30, MaxY: 880,
                 DiagName: 'Demo',
                 ListClass: getListCls(),
                 CompLines: [],  // Composition
@@ -71,54 +72,66 @@ Promise.all([
                     return
                 }
                 const lstCls = this.ListClass
+                const lsClass = []
+                const lsAbstrac = []
+                const lsInteface = []
+                const lsEnum = []
+                const lsStruct = []
+                for (let ii = lstCls.length - 1, item; -1 < ii; ii--) {
+                    item = lstCls[ii]
+                    if (isInterface(item.type)) {
+                        lsInteface.push(item)
+                        continue
+                    }
+                    if (isAbstract(item.type)) {
+                        lsAbstrac.push(item)
+                        continue
+                    }
+                    if (isClass(item.type)) {
+                        lsClass.push(item)
+                        continue
+                    }
+                    if (isEnum(item.type)) {
+                        lsEnum.push(item)
+                        continue
+                    }
+                    if (isStruct(item.type)) {
+                        lsStruct.push(item)
+                        continue
+                    }
+                }
+
+                const mpClass = new Map(lsClass.map(x => [x.Name, x]))
+                const mpAbstrc = new Map(lsAbstrac.map(x => [x.Name, x]))
+                const mpIntefc = new Map(lsInteface.map(x => [x.Name, x]))
                 const mName = new Map(lstCls.map(x => [x.Name, x]))
 
                 const linesImpl = []
                 const linesExtn = []
                 for (let ii = lstCls.length - 1, item; -1 < ii; ii--) {
                     item = lstCls[ii]
+                    if (isEnum(item.type)) continue
                     if (!item.toIds || !item.toIds.length) continue;
-                    let x0 = item.left + 1
-                    let y0 = item.top
-                    for (let jj = lstCls.length - 1, Jtem; -1 < jj; jj--) {
-                        if (jj == ii) continue;
-                        Jtem = lstCls[jj]
-                        if (!item.toIds.includes(Jtem.id)) continue
-                        let w0 = item.width
-                        let h0 = item.height
-                        let x1 = Jtem.left
-                        let y1 = Jtem.top
-                        let w1 = Jtem.width
-                        let h1 = Jtem.height
-                        if (isInterface(Jtem.type)) {
-                            linesImpl.push([[x0, y0, w0, h0], [x1, y1, w1, h1]])
-                            continue
-                        }
-                        // class
-                        linesExtn.push([[x0, y0, w0, h0], [x1, y1, w1, h1]])
-                    }
+                    buildLines(item, lsInteface, linesImpl)
+                    buildLines(item, lsClass, linesExtn)
+                    buildLines(item, lsAbstrac, linesExtn)
                 }
-                const linesAsso = getLnsAssociation(lstCls, mName)
+                const linesAsso = getLnsAssociation(lstCls)
                 isChange = false
-                let strO = JSON.stringify(this.ImplLines)
-                let strN = JSON.stringify(linesImpl)
-                if (strO != strN) {
+
+                if (!isEqLines(this.ImplLines, linesImpl)) {
                     this.ImplLines = linesImpl
                     isChange = true
-                    //  console.log('is change implements', strO, strN)
                 }
-                strO = JSON.stringify(this.ExtnLines)
-                strN = JSON.stringify(linesExtn)
-                if (strO != strN) {
+                if (!isEqLines(this.ExtnLines, linesExtn)) {
                     this.ExtnLines = linesExtn
                     isChange = true
                 }
-                strO = JSON.stringify(this.AssoLines)
-                strN = JSON.stringify(linesAsso)
-                if (strO != strN) {
+                if (!isEqLines(this.AssoLines, linesAsso)) {
                     this.AssoLines = linesAsso
                     isChange = true
                 }
+
                 if (isChange) {
                     //  console.trace()
                     drawCtx.call(this)
@@ -145,7 +158,7 @@ Promise.all([
                         //drawComposition.call(ctx, p0, p1, 6, 18, '#8b8b8b')
                     }
                 }
-                function getLnsAssociation(lstCls, mName) {
+                function getLnsAssociation(lstCls) {
                     const lnsAso = []
                     const mTypF = new Map()
                     for (let ii = lstCls.length - 1, item; -1 < ii; ii--) {
@@ -165,23 +178,39 @@ Promise.all([
                         }
                     }
                     if (mTypF.size < 1) return lnsAso
-                    let des, src, x0, y0, w0, h0, x1, y1, w1, h1
+                    let des, src
                     for (const [name, items] of mTypF) {
                         des = mName.get(name)
-                        x1 = des.left
-                        y1 = des.top
-                        w1 = des.width
-                        h1 = des.height
                         for (let ii = items.length - 1; -1 < ii; ii--) {
                             src = items[ii]
-                            x0 = src.left + 1
-                            y0 = src.top
-                            w0 = src.width
-                            h0 = src.height
-                            lnsAso.push([[x0, y0, w0, h0], [x1, y1, w1, h1]])
+                            pushLines(lnsAso, src, des)
                         }
                     }
                     return lnsAso
+                }
+                function getLnsComposition() {
+
+                }
+                function isEqLines(lsLine1, lsLine2) {
+                    let strO = JSON.stringify(lsLine1)
+                    let strN = JSON.stringify(lsLine2)
+                    if (strO != strN) return false
+                    return true
+                }
+                function buildLines(item, lsLns, lsLine) {
+                    for (let jj = lsLns.length - 1, Jtem; -1 < jj; jj--) {
+                        Jtem = lsLns[jj]
+                        if (item.id == Jtem.id) continue // it-self
+                        if (!item.toIds.includes(Jtem.id)) continue
+                        pushLines(lsLine, item, Jtem)
+                    }
+                }
+                function pushLines(lsLine, src, des) {
+                    let x0 = src.left + 1, y0 = src.top
+                    let w0 = src.width, h0 = src.height
+                    let x1 = des.left, y1 = des.top
+                    let w1 = des.width, h1 = des.height
+                    lsLine.push([[x0, y0, w0, h0], [x1, y1, w1, h1]])
                 }
             },
             trackMouse(event) {

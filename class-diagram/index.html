@@ -31,16 +31,15 @@
 
 <body style="margin: 8px;">
   <main id="m-app" v-cloak>
-    <header class="">
-      <section class="">
-
-      </section>
-      <nav class="">
+    <header class="" 
+      style="display: flex;"
+      :style="{height: MinY + 'px'}">
+      <nav class="ap-nav" style="flex-grow: 1;">
 
       </nav>
-      <section class="">
-
-      </section>
+      <small style="width: 120px;display: inline-block;">
+        Mouse: <small id="dnb-app-log"></small>
+      </small>
     </header>
 
     <component :is="CompPage"></component>
@@ -56,9 +55,6 @@
         class="bi bi-x-lg cpoint" @click.stop="e => { DynamicVar.delete('FViewCode')}"></i>
     </div>
     <form-edit v-if="EditObject" :entry="EditObject.cItem"></form-edit>
-    <div>
-      Trace log: <span id="dnb-app-log"></span>
-    </div>
   </main>
   <template id="tmp-form-edit">
     <div class="mformedit">
