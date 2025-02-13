@@ -69,7 +69,12 @@ export function drawComposition(p0, p1, width, height, color, lsTxt) {
     ctx.fill(region, "evenodd");
     if (lsTxt.length) {
         ctx.font = "11px sans-serif"
-        ctx.fillText(lsTxt.join(', '), xx0 + width, yy0 + height);
+        let str = lsTxt.join(', ')
+        let tx = xx0 + width
+        if (x0 < x1) tx = xx0 - 3 * width - 3 * str.length
+        let ty = yy0 + height
+        if (y0 < y1) ty = yy0 - width
+        ctx.fillText(str, tx, ty);
     }
 }
 export function drawAggregation(p0, p1, width, height, color, lsTxt) {
@@ -102,7 +107,12 @@ export function drawAggregation(p0, p1, width, height, color, lsTxt) {
     ctx.stroke();
     if (lsTxt.length) {
         ctx.font = "11px sans-serif"
-        ctx.fillText(lsTxt.join(', '), xx0 + width, yy0 + height);
+        let str = lsTxt.join(', ')
+        let tx = xx0 + width
+        if (x0 < x1) tx = xx0 - 3 * width - 3 * str.length
+        let ty = yy0 + height
+        if (y0 < y1) ty = yy0 - width
+        ctx.fillText(str, tx, ty);
     }
 }
 function poitsArg90(pp0, ab, width) {
