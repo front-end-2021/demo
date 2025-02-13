@@ -112,11 +112,11 @@ const MxRect = {
                 }
 
                 for (ii = lstCls.length - 1; -1 < ii; ii--) {
-                    this.$root.buildMapPoints(lstCls[ii])
+                    this.$root.buildMapPoints(lstCls[ii])   // delete item
                 }
                 this.$root.updateSizeCanvas()               // delete item
                 this.$root.$nextTick(this.$root.drawInCnvs) // delete item
-              //  this.$root.$nextTick(this.$root.drawCanvas) // delete item
+                
             }
         },
 
@@ -620,12 +620,11 @@ export const ViewDiagram = {
                 $root.ListClass = lst
                 $root.MpPoints.clear()
                 for (ii = lst.length - 1; -1 < ii; ii--) {
-                    $root.buildMapPoints(lst[ii])
+                    $root.buildMapPoints(lst[ii])   // import
                 }
-                $root.updateSizeCanvas()               // import
+                $root.updateSizeCanvas()          // import
                 $root.$nextTick($root.drawInCnvs) // import
-              //  $root.$nextTick($root.drawCanvas) // import
-
+                
             };
             reader.onerror = () => {
                 showMessage("Error reading the file. Please try again.", "error");
@@ -684,7 +683,7 @@ export const ViewDiagram = {
                     this.$root.PLang = ii
                     this.$root.updateSizeCanvas()               // change lang
                     this.$root.$nextTick(this.$root.drawInCnvs) // change lang
-                  //  this.$root.$nextTick(this.$root.drawCanvas) // change lang
+                  
                     break;
                 }
             }

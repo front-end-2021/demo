@@ -168,18 +168,17 @@ Promise.all([
                 }
             },
             drawInCnvs() {
-                this.drawCanvas()
-                return
                 const c = document.getElementById('dnb-mcanvas');
                 const ctx = c.getContext("2d");
                 ctx.clearRect(0, 0, c.width, c.height);
                 drawGrid.call(ctx, c.width, c.height, 10, '#f5f5f5')
                 const mPoints = this.MpPoints
                 if (mPoints.size < 1) return;
-
+                let src
                 let x0, y0, w0, h0
                 let x1, y1, w1, h1
-                for (const [src, point] of mPoints) {
+                for (const [id, point] of mPoints) {
+                    src = point.item
                     x0 = src.left + 1;
                     y0 = src.top
                     w0 = src.width
@@ -221,7 +220,7 @@ Promise.all([
                 }
 
             },
-            drawCanvas(isChange) {
+            drawCanvas(isChange) {          // Khong dung` nua
                 if (typeof isChange == 'boolean' && isChange) {
                     drawCtx.call(this)
                     return
@@ -441,7 +440,7 @@ Promise.all([
                         this.setTopLeft(dItem, left, top)
 
                         this.drawInCnvs()       // dragging item
-                        //  this.drawCanvas()       // dragging item
+
                     }
                 }
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
@@ -476,12 +475,12 @@ Promise.all([
                         this.setTopLeft(dItem, dgElm.Left, dgElm.Top)
                         this.updateSizeCanvas()         // key up => end dnd item => revert
                         this.$nextTick(this.drawInCnvs) // key up => end dnd item => revert
-                        //   this.$nextTick(this.drawCanvas) // key up => end dnd item => revert
+
                     } else {
 
                         this.updateSizeCanvas()             // key up => end dnd item
                         this.drawInCnvs()    // key up => end dnd item
-                        //  this.drawCanvas(true)    // key up => end dnd item
+
                     }
                     document.removeEventListener('keydown', this.disableSrollDown)
 
@@ -598,7 +597,7 @@ Promise.all([
         created() {
             let lsCls = this.ListClass
             for (let ii = lsCls.length - 1; -1 < ii; ii--) {
-                this.buildMapPoints(lsCls[ii])
+                this.buildMapPoints(lsCls[ii])      // create-d
             }
 
         },
@@ -619,7 +618,7 @@ Promise.all([
 
             this.updateSizeCanvas()         // mount-ed
             this.$nextTick(this.drawInCnvs) // mount-ed
-            // this.$nextTick(this.drawCanvas) // mount-ed
+
         },
         //updated(){ console.log('updated') }
     })

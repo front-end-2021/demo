@@ -387,11 +387,11 @@ export const FormEdit = {
                 this.$root.NewClassName = null
                 this.onCloseEdit()
                 if(nItem) {
-                    this.$root.buildMapPoints(nItem)
+                    this.$root.buildMapPoints(nItem)                // new item
                     if (nItem.toIds && nItem.toIds.length) {
                         this.$root.updateSizeCanvas()               // new item
                         this.$root.$nextTick(this.$root.drawInCnvs) // new item
-                      //  this.$root.$nextTick(this.$root.drawCanvas) // new item
+                        
                     }
                 }
                 return
@@ -411,12 +411,12 @@ export const FormEdit = {
 
             item.Fields = mItem.Fields
             item.Methods = mItem.Methods
-            this.$root.buildMapPoints(item)
+            this.$root.buildMapPoints(item)                 // save change
             this.onCloseEdit()
             if (changeToids) {
                 this.$root.updateSizeCanvas()               // save change
                 this.$root.$nextTick(this.$root.drawInCnvs) // save change
-              //  this.$root.$nextTick(this.$root.drawCanvas) // save change
+                
             }
             function onNewItem(newItem) {
                 let nItem = objNewCls(newItem)
