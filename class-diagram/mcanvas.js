@@ -22,11 +22,10 @@ export function drawImplement(p0, p1, width, color) {
 
     ctx.moveTo(x0, y0);
     ctx.lineTo(xx0, yy0);
-
     ctx.stroke();
+
     ctx.beginPath();
     ctx.setLineDash([]);
-
     let [xx1, yy1, xx2, yy2] = poitsArg90([xx0, yy0], [a, b], width)
 
     ctx.moveTo(xx0, yy0);
@@ -38,7 +37,7 @@ export function drawImplement(p0, p1, width, color) {
 
     ctx.stroke();
 }
-export function drawComposition(p0, p1, width, height, color) {
+export function drawComposition(p0, p1, width, height, color, lsTxt) {
     const ctx = this
     ctx.strokeStyle = color;
     ctx.beginPath();
@@ -68,7 +67,43 @@ export function drawComposition(p0, p1, width, height, color) {
     // Fill path
     ctx.fillStyle = color;
     ctx.fill(region, "evenodd");
+    if (lsTxt.length) {
+        ctx.font = "11px sans-serif"
+        ctx.fillText(lsTxt.join(', '), xx0 + width, yy0 + height);
+    }
+}
+export function drawAggregation(p0, p1, width, height, color, lsTxt) {
+    const ctx = this
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    let [x0, y0, x1, y1] = computeXY(p0, p1)
+    fillCirle(ctx, x0, y0, 1, color)
 
+    let [a, b] = linearCoeffict([x0, y0], [x1, y1]);    // phuong trinh duong thang (p0, p1)
+    let [xhf, yhf] = getOpPoint([x0, y0], [x1, y1], a, b, Math.round(height / 2))
+    let [xx1, yy1, xx2, yy2] = poitsArg90([xhf, yhf], [a, b], width)
+
+    let [xx0, yy0] = getOpPoint([x0, y0], [x1, y1], a, b, height)
+
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(xx0, yy0);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    ctx.moveTo(xx0, yy0);
+    ctx.lineTo(xx1, yy1);
+    ctx.moveTo(xx1, yy1);
+    ctx.lineTo(x1, y1);
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(xx2, yy2);
+    ctx.lineTo(xx0, yy0);
+    ctx.stroke();
+    if (lsTxt.length) {
+        ctx.font = "11px sans-serif"
+        ctx.fillText(lsTxt.join(', '), xx0 + width, yy0 + height);
+    }
 }
 function poitsArg90(pp0, ab, width) {
     let [xx0, yy0] = pp0

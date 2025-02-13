@@ -2,7 +2,7 @@
 import { createApp } from 'vue'
 import {
     drawExtension, drawImplement, drawGrid,
-    drawComposition, drawAssociation
+    drawComposition, drawAssociation, drawAggregation,
 } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
@@ -67,6 +67,8 @@ Promise.all([
         methods: {
             buildMapPoints(rItem) {
                 if (!rItem.toIds || !rItem.toIds.length) return     // verify
+                if (isEnum(rItem.type)) return     // verify
+                if (isStruct(rItem.type)) return     // verify
 
                 const mPoints = this.MpPoints
                 const lstCls = this.ListClass
@@ -108,31 +110,96 @@ Promise.all([
                 let lsAggr = []     // [item]
 
                 if (isInterface(rItem.type)) {
-
                     buildLsImplment()
-
-                } else if (isAbstract(rItem.type)) {
-
+                    setPoints()
+                    return
+                }
+                let mapField = new Map()        // [item, fieldName]
+                let mapAggre = new Map()        // [Name, item]
+                for (let ff = rItem.Fields.length - 1, fld; -1 < ff; ff--) {
+                    fld = rItem.Fields[ff]
+                    if (mClass.has(fld.Type)) {
+                        setMpFld(mClass.get(fld.Type), fld)
+                        continue
+                    }
+                    if (mAbstrac.has(fld.Type)) {
+                        setMpFld(mAbstrac.get(fld.Type), fld)
+                        continue
+                    }
+                    if (mInterface.has(fld.Type)) {
+                        setMpFld(mInterface.get(fld.Type), fld)
+                        continue
+                    }
+                }
+                console.log(rItem.Name, mapField)
+                console.log(rItem.Name, mapAggre)
+                if (isAbstract(rItem.type)) {
                     buildLsExtend(mAbstrac)
                     buildLsImplment()
-
-                } else if (isClass(rItem.type)) {
-
+                    pruneMap(mapAggre)
+                    pruneMap(mapField)
+                    truncMpFld()
+                    buildLsAssociation()
+                    buildLsComposition()
+                    buildLsAggregation()
+                    setPoints()
+                    return
+                }
+                if (isClass(rItem.type)) {
                     buildLsExtend(mAbstrac)
                     buildLsExtend(mClass)
                     buildLsImplment()
-
-                } else if (isEnum(rItem.type)) {
-
-                } else if (isStruct(rItem.type)) {
-
+                    pruneMap(mapAggre)
+                    pruneMap(mapField)
+                    truncMpFld()
+                    buildLsAssociation()
+                    buildLsComposition()
+                    buildLsAggregation()
+                    setPoints()
+                    return
                 }
-                if (0 < lsImpl.length + lsExtn.length + lsComp.length + lsAsso.length + lsAggr.length) {
-                    const point = initPoint(rItem, lsImpl, lsExtn, lsComp, lsAsso, lsAggr)
 
-                    mPoints.set(rItem.id, point)
-                } else if (mPoints.has(rItem.id)) {
-                    mPoints.delete(rItem.id)
+                function setMpFld(item, fld) {
+                    if (isGlobal(fld.Visible)) {
+                        if (mapAggre.has(item)) mapAggre.get(item).push(fld.Name)
+                        else mapAggre.set(item, [fld.Name])
+                        return
+                    }
+                    if (mapField.has(item)) {
+                        mapField.get(item).push(fld.Name)
+                    } else mapField.set(item, [fld.Name])
+                }
+                function pruneMap(mapFld) {
+                    for (const [item, fName] of mapFld) {
+                        if (lsExtn.find(x => x.id == item.id)) {
+                            mapFld.delete(item)
+                            continue
+                        }
+                        if (lsImpl.find(x => x.id == item.id)) {
+                            mapFld.delete(item)
+                            continue
+                        }
+                    }
+                }
+                function truncMpFld() {
+                    for (const [item, fName] of mapField) {
+                        if (mapAggre.has(item)) {
+                            mapField.delete(item)
+                        }
+                    }
+                }
+                function isGlobal(vsble) {
+                    if (vsble.includes('static')) return true
+                    return false
+                }
+                function setPoints() {
+                    if (0 < lsImpl.length + lsExtn.length + lsComp.length + lsAsso.length + lsAggr.length) {
+                        const point = initPoint(rItem, lsImpl, lsExtn, lsComp, lsAsso, lsAggr)
+
+                        mPoints.set(rItem.id, point)
+                    } else if (mPoints.has(rItem.id)) {
+                        mPoints.delete(rItem.id)
+                    }
                 }
 
                 function buildLsImplment() {
@@ -153,7 +220,16 @@ Promise.all([
 
                 }
                 function buildLsComposition() {
-
+                    for (const [item, fNames] of mapField) {
+                        if (item.id == rItem.id) continue // it-self
+                        lsComp.push([item, fNames])
+                    }
+                }
+                function buildLsAggregation() {
+                    for (const [item, fNames] of mapAggre) {
+                        if (item.id == rItem.id) continue // it-self
+                        lsAggr.push([item, fNames])
+                    }
                 }
             },
             drawInCnvs() {
@@ -197,13 +273,23 @@ Promise.all([
                         h1 = des.height
                         drawAssociation.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], '#8b8b8b')
                     }
-                    for (let ii = point.Compositions.length - 1; -1 < ii; ii--) {
-                        des = point.Compositions[ii]
+                    for (let ii = point.Compositions.length - 1, com; -1 < ii; ii--) {
+                        com = point.Compositions[ii]
+                        des = com[0]
                         x1 = des.left
                         y1 = des.top
                         w1 = des.width
                         h1 = des.height
-                        drawComposition.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], 6, 18, '#8b8b8b')
+                        drawComposition.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], 6, 18, '#8b8b8b', com[1])
+                    }
+                    for (let ii = point.Aggregations.length - 1, agg; -1 < ii; ii--) {
+                        agg = point.Aggregations[ii]
+                        des = agg[0]
+                        x1 = des.left
+                        y1 = des.top
+                        w1 = des.width
+                        h1 = des.height
+                        drawAggregation.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], 6, 18, '#8b8b8b', agg[1])
                     }
 
                 }
