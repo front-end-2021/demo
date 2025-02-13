@@ -131,8 +131,8 @@ Promise.all([
                         continue
                     }
                 }
-                console.log(rItem.Name, mapField)
-                console.log(rItem.Name, mapAggre)
+               // console.log(rItem.Name, mapField)
+               // console.log(rItem.Name, mapAggre)
                 if (isAbstract(rItem.type)) {
                     buildLsExtend(mAbstrac)
                     buildLsImplment()
@@ -248,7 +248,7 @@ Promise.all([
                     y0 = src.top
                     w0 = src.width
                     h0 = src.height
-                    //console.log(JSON.parse(JSON.stringify(src)), JSON.parse(JSON.stringify(point)))
+                    
                     for (let ii = point.Implements.length - 1; -1 < ii; ii--) {
                         des = point.Implements[ii]
                         x1 = des.left
