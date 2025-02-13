@@ -23,6 +23,7 @@ Promise.all([
             'form-edit': FormEdit,
         },
         data() {
+
             return {
                 MinX: 150, MaxX: 150 + 1754,
                 MinY: 30, MaxY: 880,
@@ -33,6 +34,7 @@ Promise.all([
                 ExtnLines: [],  // Inheritance extend
                 AssoLines: [],  // Association
                 AggrLines: [],  // Aggregation
+                MpPoints: new Map(),
                 DynamicVar: new Map(),
                 /* PopMenu, FViewCode, FrameCode: {top,left,html,type,item}, 
                 *  DragElm (Dùng kéo các khung class),  */
@@ -67,6 +69,158 @@ Promise.all([
             //ListClass(val) { },
         },
         methods: {
+            buildMapPoints(rItem) {
+                if (!rItem.toIds || !rItem.toIds.length) return     // verify
+
+                const mPoints = this.MpPoints
+                const lstCls = this.ListClass
+
+                const mClass = new Map()        // [Name, item]
+                const mAbstrac = new Map()
+                const mInterface = new Map()
+                const mEnum = new Map()
+                const mStruct = new Map()
+                // #region build map data
+                for (let ii = lstCls.length - 1, item; -1 < ii; ii--) {
+                    item = lstCls[ii]
+                    if (isInterface(item.type)) {
+                        mInterface.set(item.Name, item)
+                        continue
+                    }
+                    if (isAbstract(item.type)) {
+                        mAbstrac.set(item.Name, item)
+                        continue
+                    }
+                    if (isClass(item.type)) {
+                        mClass.set(item.Name, item)
+                        continue
+                    }
+                    if (isEnum(item.type)) {
+                        mEnum.set(item.Name, item)
+                        continue
+                    }
+                    if (isStruct(item.type)) {
+                        mStruct.set(item.Name, item)
+                        continue
+                    }
+                }
+                // #endregion
+                let lsImpl = []     // [item]
+                let lsExtn = []     // [item]
+                let lsComp = []     // [item]
+                let lsAsso = []     // [item]
+                let lsAggr = []     // [item]
+
+                if (isInterface(rItem.type)) {
+
+                    buildLsImplment()
+
+                } else if (isAbstract(rItem.type)) {
+
+                    buildLsExtend(mAbstrac)
+                    buildLsImplment()
+
+                } else if (isClass(rItem.type)) {
+
+                    buildLsExtend(mAbstrac)
+                    buildLsExtend(mClass)
+                    buildLsImplment()
+
+                } else if (isEnum(rItem.type)) {
+
+                } else if (isStruct(rItem.type)) {
+
+                }
+                if (0 < lsImpl.length + lsExtn.length + lsComp.length + lsAsso.length + lsAggr.length) {
+                    const point = {
+                        item: rItem,
+                        Implements: lsImpl,
+                        Extends: lsExtn,
+                        Compositions: lsComp,
+                        Associations: lsAsso,
+                        Aggregations: lsAggr,
+                    }
+
+                    mPoints.set(rItem.id, point)
+                } else if (mPoints.has(rItem.id)) {
+                    mPoints.delete(rItem.id)
+                }
+
+                function buildLsImplment() {
+                    for (const [name, item] of mInterface) {
+                        if (item.id == rItem.id) continue // it-self
+                        if (!rItem.toIds.includes(item.id)) continue
+                        lsImpl.push(item)
+                    }
+                }
+                function buildLsExtend(mapCls) {
+                    for (const [name, item] of mapCls) {
+                        if (item.id == rItem.id) continue // it-self
+                        if (!rItem.toIds.includes(item.id)) continue
+                        lsExtn.push(item)
+                    }
+                }
+                function buildLsAssociation() {
+
+                }
+                function buildLsComposition() {
+
+                }
+            },
+            drawInCnvs() {
+                this.drawCanvas()
+                return
+                const c = document.getElementById('dnb-mcanvas');
+                const ctx = c.getContext("2d");
+                ctx.clearRect(0, 0, c.width, c.height);
+                drawGrid.call(ctx, c.width, c.height, 10, '#f5f5f5')
+                const mPoints = this.MpPoints
+                if (mPoints.size < 1) return;
+
+                let x0, y0, w0, h0
+                let x1, y1, w1, h1
+                for (const [src, point] of mPoints) {
+                    x0 = src.left + 1;
+                    y0 = src.top
+                    w0 = src.width
+                    h0 = src.height
+                    console.log(JSON.parse(JSON.stringify(src)), JSON.parse(JSON.stringify(point)))
+                    for (let ii = point.Implements.length - 1, des; -1 < ii; ii--) {
+                        des = point.Implements[ii]
+                        x1 = des.left
+                        y1 = des.top
+                        w1 = des.width
+                        h1 = des.height
+                        drawImplement.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], 6, '#8b8b8b')
+                    }
+                    for (let ii = point.Extends.length - 1, des; -1 < ii; ii--) {
+                        des = point.Extends[ii]
+                        x1 = des.left
+                        y1 = des.top
+                        w1 = des.width
+                        h1 = des.height
+                        drawExtension.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], 6, '#8b8b8b')
+                    }
+                    for (let ii = point.Associations.length - 1, des; -1 < ii; ii--) {
+                        des = point.Associations[ii]
+                        x1 = des.left
+                        y1 = des.top
+                        w1 = des.width
+                        h1 = des.height
+                        drawAssociation.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], '#8b8b8b')
+                    }
+                    for (let ii = point.Compositions.length - 1, des; -1 < ii; ii--) {
+                        des = point.Compositions[ii]
+                        x1 = des.left
+                        y1 = des.top
+                        w1 = des.width
+                        h1 = des.height
+                        drawComposition.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], 6, 18, '#8b8b8b')
+                    }
+
+                }
+
+            },
             drawCanvas(isChange) {
                 if (typeof isChange == 'boolean' && isChange) {
                     drawCtx.call(this)
@@ -286,7 +440,8 @@ Promise.all([
                     if (dItem.left != left || dItem.top != top) {
                         this.setTopLeft(dItem, left, top)
 
-                        this.drawCanvas()       // dragging item
+                        this.drawInCnvs()       // dragging item
+                        //  this.drawCanvas()       // dragging item
                     }
                 }
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
@@ -320,10 +475,13 @@ Promise.all([
                         // revert
                         this.setTopLeft(dItem, dgElm.Left, dgElm.Top)
                         this.updateSizeCanvas()         // key up => end dnd item => revert
-                        this.$nextTick(this.drawCanvas) // key up => end dnd item => revert
+                        this.$nextTick(this.drawInCnvs) // key up => end dnd item => revert
+                        //   this.$nextTick(this.drawCanvas) // key up => end dnd item => revert
                     } else {
+
                         this.updateSizeCanvas()             // key up => end dnd item
-                        this.drawCanvas(true)    // key up => end dnd item
+                        this.drawInCnvs()    // key up => end dnd item
+                        //  this.drawCanvas(true)    // key up => end dnd item
                     }
                     document.removeEventListener('keydown', this.disableSrollDown)
 
@@ -437,7 +595,13 @@ Promise.all([
             // },
         },
         //  beforeCreate() { },
-        //  created() { },
+        created() {
+            let lsCls = this.ListClass
+            for (let ii = lsCls.length - 1; -1 < ii; ii--) {
+                this.buildMapPoints(lsCls[ii])
+            }
+
+        },
         //beforeMount() { },
         mounted() {
             values.forEach((path, ii) => {
@@ -454,7 +618,8 @@ Promise.all([
             document.addEventListener("keyup", this.onKeyUp);
 
             this.updateSizeCanvas()         // mount-ed
-            this.$nextTick(this.drawCanvas) // mount-ed
+            this.$nextTick(this.drawInCnvs) // mount-ed
+            // this.$nextTick(this.drawCanvas) // mount-ed
         },
         //updated(){ console.log('updated') }
     })

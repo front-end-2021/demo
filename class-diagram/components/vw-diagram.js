@@ -101,7 +101,7 @@ const MxRect = {
             const lstCls = this.$root.ListClass
             let ii = lstCls.findIndex(x => x.id == item.id)
             if (-1 < ii) {
-                //let ids = item.toIds ? item.toIds : []
+                this.$root.MpPoints.clear()
                 lstCls.splice(ii, 1)
                 for (let jc = 0, cls; jc < lstCls.length; jc++) {
                     cls = lstCls[jc]
@@ -110,8 +110,13 @@ const MxRect = {
                     ii = cls.toIds.indexOf(item.id)
                     if (-1 < ii) cls.toIds.splice(ii, 1)
                 }
+
+                for (ii = lstCls.length - 1; -1 < ii; ii--) {
+                    this.$root.buildMapPoints(lstCls[ii])
+                }
                 this.$root.updateSizeCanvas()               // delete item
-                this.$root.$nextTick(this.$root.drawCanvas) // delete item
+                this.$root.$nextTick(this.$root.drawInCnvs) // delete item
+              //  this.$root.$nextTick(this.$root.drawCanvas) // delete item
             }
         },
 
@@ -596,7 +601,7 @@ export const ViewDiagram = {
             reader.onload = () => {
                 const txt = reader.result;
                 let entry = JSON.parse(txt)
-                this.$root.DiagName = entry.Name
+                $root.DiagName = entry.Name
                 const lst = truncateIds(entry.Classes)    // copy
                 this.verifyLst(lst)
                 // #region verify name
@@ -613,8 +618,13 @@ export const ViewDiagram = {
                 // #endregion
 
                 $root.ListClass = lst
-                this.$root.updateSizeCanvas()               // import
-                this.$root.$nextTick(this.$root.drawCanvas) // import
+                $root.MpPoints.clear()
+                for (ii = lst.length - 1; -1 < ii; ii--) {
+                    $root.buildMapPoints(lst[ii])
+                }
+                $root.updateSizeCanvas()               // import
+                $root.$nextTick($root.drawInCnvs) // import
+              //  $root.$nextTick($root.drawCanvas) // import
 
             };
             reader.onerror = () => {
@@ -673,7 +683,8 @@ export const ViewDiagram = {
                 if (langs[ii] == val) {
                     this.$root.PLang = ii
                     this.$root.updateSizeCanvas()               // change lang
-                    this.$root.$nextTick(this.$root.drawCanvas) // change lang
+                    this.$root.$nextTick(this.$root.drawInCnvs) // change lang
+                  //  this.$root.$nextTick(this.$root.drawCanvas) // change lang
                     break;
                 }
             }
