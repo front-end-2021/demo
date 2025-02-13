@@ -619,7 +619,7 @@ export const ViewDiagram = {
 
                 $root.ListClass = lst
                 $root.MpPoints.clear()
-                for (ii = lst.length - 1; -1 < ii; ii--) {
+                for (let ii = lst.length - 1; -1 < ii; ii--) {
                     $root.buildMapPoints(lst[ii])   // import
                 }
                 $root.updateSizeCanvas()          // import
