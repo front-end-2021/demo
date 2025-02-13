@@ -29,7 +29,7 @@ Promise.all([
                 MinY: 30, MaxY: 880,
                 DiagName: 'Demo',
                 ListClass: getListCls(),
-                
+
                 MpPoints: new Map(),
                 DynamicVar: new Map(),
                 /* PopMenu, FViewCode, FrameCode: {top,left,html,type,item}, 
@@ -328,7 +328,7 @@ Promise.all([
                 })
             },
             getLsExtends(lsCls, lstItf, iLang) {
-                let lst = this.ListClass
+                let lst = []//this.ListClass
                 let arrExt = []
                 switch (iLang) {
                     case 1:     //  C#

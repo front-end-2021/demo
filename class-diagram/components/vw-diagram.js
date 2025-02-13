@@ -255,21 +255,30 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
         },
     },
     computed: {
+        // ViewExtends() {
+        //     const tIds = this.item.toIds
+        //     if (!tIds || !tIds.length) return ''
+        //     let lst = this.$root.ListClass
+        //     const itemId = this.item.id
+        //     const lsCls = []
+        //     const lstItf = []
+        //     for (let ii = 0, cls; ii < lst.length; ii++) {
+        //         cls = lst[ii]
+        //         if (itemId == cls.id) continue;  // it-self
+        //         if (!tIds.includes(cls.id)) continue;
+        //         if (isInterface(cls.type)) lstItf.push(cls)
+        //         else lsCls.push(cls)
+        //     }
+        //     return this.$root.getLsExtends(lsCls, lstItf, this.$root.PLang)
+        // },
         ViewExtends() {
             const tIds = this.item.toIds
             if (!tIds || !tIds.length) return ''
-            let lst = this.$root.ListClass
+            const mPoints = this.$root.MpPoints
             const itemId = this.item.id
-            const lsCls = []
-            const lstItf = []
-            for (let ii = 0, cls; ii < lst.length; ii++) {
-                cls = lst[ii]
-                if (itemId == cls.id) continue;  // it-self
-                if (!tIds.includes(cls.id)) continue;
-                if (isInterface(cls.type)) lstItf.push(cls)
-                else lsCls.push(cls)
-            }
-            return this.$root.getLsExtends(lsCls, lstItf, this.$root.PLang)
+            if (!mPoints.has(itemId)) return ''
+            let point = mPoints.get(itemId)
+            return this.$root.getLsExtends(point.Extends, point.Implements, this.$root.PLang)
         },
         ListProperty() {
             const lst = []
