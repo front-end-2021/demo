@@ -116,7 +116,7 @@ const MxRect = {
                 }
                 this.$root.updateSizeCanvas()               // delete item
                 this.$root.$nextTick(this.$root.drawInCnvs) // delete item
-                
+
             }
         },
 
@@ -340,12 +340,12 @@ const RectInterface = {
         ExtendFields() { return [] },
         ExtProperties() {
             const item = this.item
-            let tIds = item.toIds
-            if (!tIds || !tIds.length) return []
-            const lstCls = this.$root.ListClass
-            const prps = item.Methods
-            const lst = getLstExt(item.id, tIds, prps, lstCls, (type) => !isInterface(type))
-            return lst
+            if (!item.toIds || !item.toIds.length) return []
+            const mPoints = this.$root.MpPoints
+            if (!mPoints.has(item.id)) return []
+            const point = mPoints.get(item.id)
+            if (!point.Implements.length) return []
+            return getLstExt(item.Methods, point.Implements)
         },
     },
 }
@@ -446,11 +446,16 @@ const MxOjClass = {
         },
         ExtProperties() {
             const item = this.item
-            let tIds = item.toIds
-            if (!tIds || !tIds.length) return []
-            const lstCls = this.$root.ListClass
-            const prps = item.Methods
-            const lst = getLstExt(item.id, tIds, prps, lstCls, (type) => isInterface(type))
+            if (!item.toIds || !item.toIds.length) return []
+            const mPoints = this.$root.MpPoints
+            if (!mPoints.has(item.id)) return []
+            const point = mPoints.get(item.id)
+            if (point.Extends.length + point.Implements.length < 1) return []
+            let lst = getLstExt(item.Methods, point.Extends)
+            let lst2 = getLstExt(item.Methods, point.Implements)
+            for (let ii = 0; ii < lst2.length; ii++) {
+                lst.push(lst2[ii])
+            }
             return lst
         },
     },
@@ -624,7 +629,7 @@ export const ViewDiagram = {
                 }
                 $root.updateSizeCanvas()          // import
                 $root.$nextTick($root.drawInCnvs) // import
-                
+
             };
             reader.onerror = () => {
                 showMessage("Error reading the file. Please try again.", "error");
@@ -683,7 +688,7 @@ export const ViewDiagram = {
                     this.$root.PLang = ii
                     this.$root.updateSizeCanvas()               // change lang
                     this.$root.$nextTick(this.$root.drawInCnvs) // change lang
-                  
+
                     break;
                 }
             }

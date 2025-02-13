@@ -287,26 +287,28 @@ export function verifyExportTxt(str) {
     let txt = removeSpecialChar(str)
     return removeExtraSpaces(txt)
 }
-export function getLstExt(id, tIds, prps, lstCls, fnc) {
+export function getLstExt(lsMthd, items) {
     const lst = []
-    for (let ii = 0, xx, oPrp; ii < lstCls.length; ii++) {
-        xx = lstCls[ii]
-        if (xx.id == id) continue   // it-self
-        if (fnc(xx.type)) continue
-        if (hasnMethod(xx)) continue;
-        if (!tIds.includes(xx.id)) continue
-        for (let jj = 0, prp, name; jj < xx.Methods.length; jj++) {
-            prp = xx.Methods[jj]
-            name = prp[1]
-            oPrp = prps.find(xx => name == xx[1])
-            if (!oPrp) {
-                lst.push(prp)
-            }
+    for (let ii = 0, item; ii < items.length; ii++) {
+        item = items[ii]
+        for (let jj = 0, prp, oPrp; jj < item.Methods.length; jj++) {
+            prp = item.Methods[jj]
+            oPrp = lsMthd.find(xx => prp[1] == xx[1])
+            if (!oPrp) lst.push(prp)
         }
     }
     return lst
 }
-
+export function initPoint(rItem, lsImpl, lsExtn, lsComp, lsAsso, lsAggr) {
+    return {
+        item: rItem,
+        Implements: lsImpl,
+        Extends: lsExtn,
+        Compositions: lsComp,
+        Associations: lsAsso,
+        Aggregations: lsAggr,
+    }
+}
 function indexesBoyerMoore(text, pattern) {
     const m = pattern.length;
     const n = text.length;

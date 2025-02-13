@@ -3,6 +3,7 @@ import {
     isAbstract, isInterface, isClass, isEnum,
     clearSpace, verifySave, convertAccessors,
     PropName, hasnMethod,
+    isStruct,
 } from "../common.js"
 import { MenuList } from "./vw-diagram.js"
 export const PopDropdownSearch = {
@@ -140,21 +141,21 @@ export const FormEdit = {
             if (isInterface(mItem.type)) return 2
             return 0
         },
-        ListExtend() {
+        ListExtend() {                  // source search dropdown list
             const mItem = this.entry
             if (!this.Extendable) return []
             const idsTo = mItem.toIds
             if (!idsTo) return []
-            const lst = []
-            const lstSrc = this.$root.ListClass
-            let lsEx = []
+            let lst = []
             const itemId = mItem.id
+            let lstSrc = this.$root.ListClass
+            lstSrc = lstSrc.filter(src => src.id != itemId)
+            lstSrc = lstSrc.filter(src => !isEnum(src.type))
+            lstSrc = lstSrc.filter(src => !isStruct(src.type))
+            lstSrc = lstSrc.filter(src => !src.toIds || !src.toIds.includes(itemId))
+            let lsEx = []
             for (let ii = 0, src; ii < lstSrc.length; ii++) {
                 src = lstSrc[ii]
-                if (itemId == src.id) continue;
-                if (isEnum(src.type)) continue
-                if (src.type.includes('struct')) continue
-                if (src.toIds && src.toIds.includes(itemId)) continue
                 if (idsTo.includes(src.id) && isClass(src.type))
                     lsEx.push(src.id)
                 lst.push(src)
@@ -386,12 +387,12 @@ export const FormEdit = {
                 let nItem = onNewItem.call(this, mItem)
                 this.$root.NewClassName = null
                 this.onCloseEdit()
-                if(nItem) {
+                if (nItem) {
                     this.$root.buildMapPoints(nItem)                // new item
                     if (nItem.toIds && nItem.toIds.length) {
                         this.$root.updateSizeCanvas()               // new item
                         this.$root.$nextTick(this.$root.drawInCnvs) // new item
-                        
+
                     }
                 }
                 return
@@ -404,8 +405,10 @@ export const FormEdit = {
                 this.onCloseEdit()
                 return
             }
+            const mPoints = this.$root.MpPoints
+            mPoints.delete(item.id)
+
             item.Name = name
-            const changeToids = item.toIds.length != mItem.toIds.length
             item.toIds = mItem.toIds
             verifySave(mItem, this.$root.PLang, true)
 
@@ -413,11 +416,9 @@ export const FormEdit = {
             item.Methods = mItem.Methods
             this.$root.buildMapPoints(item)                 // save change
             this.onCloseEdit()
-            if (changeToids) {
-                this.$root.updateSizeCanvas()               // save change
-                this.$root.$nextTick(this.$root.drawInCnvs) // save change
-                
-            }
+            this.$root.$nextTick(this.$root.updateSizeCanvas) // save change
+            this.$root.$nextTick(this.$root.drawInCnvs) // save change
+
             function onNewItem(newItem) {
                 let nItem = objNewCls(newItem)
                 if (!nItem) {

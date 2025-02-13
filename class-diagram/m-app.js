@@ -7,7 +7,7 @@ import {
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import {
-    verifySave, setHeight, isOverlap,
+    verifySave, setHeight, isOverlap, initPoint,
     isAbstract, isClass, isInterface, isStruct, isEnum,
     AhoCorasick,
 } from './common.js'
@@ -29,11 +29,7 @@ Promise.all([
                 MinY: 30, MaxY: 880,
                 DiagName: 'Demo',
                 ListClass: getListCls(),
-                CompLines: [],  // Composition
-                ImplLines: [],  // Inheritance implement
-                ExtnLines: [],  // Inheritance extend
-                AssoLines: [],  // Association
-                AggrLines: [],  // Aggregation
+                
                 MpPoints: new Map(),
                 DynamicVar: new Map(),
                 /* PopMenu, FViewCode, FrameCode: {top,left,html,type,item}, 
@@ -132,14 +128,7 @@ Promise.all([
 
                 }
                 if (0 < lsImpl.length + lsExtn.length + lsComp.length + lsAsso.length + lsAggr.length) {
-                    const point = {
-                        item: rItem,
-                        Implements: lsImpl,
-                        Extends: lsExtn,
-                        Compositions: lsComp,
-                        Associations: lsAsso,
-                        Aggregations: lsAggr,
-                    }
+                    const point = initPoint(rItem, lsImpl, lsExtn, lsComp, lsAsso, lsAggr)
 
                     mPoints.set(rItem.id, point)
                 } else if (mPoints.has(rItem.id)) {
@@ -174,7 +163,7 @@ Promise.all([
                 drawGrid.call(ctx, c.width, c.height, 10, '#f5f5f5')
                 const mPoints = this.MpPoints
                 if (mPoints.size < 1) return;
-                let src
+                let src, des
                 let x0, y0, w0, h0
                 let x1, y1, w1, h1
                 for (const [id, point] of mPoints) {
@@ -183,8 +172,8 @@ Promise.all([
                     y0 = src.top
                     w0 = src.width
                     h0 = src.height
-                    console.log(JSON.parse(JSON.stringify(src)), JSON.parse(JSON.stringify(point)))
-                    for (let ii = point.Implements.length - 1, des; -1 < ii; ii--) {
+                    //console.log(JSON.parse(JSON.stringify(src)), JSON.parse(JSON.stringify(point)))
+                    for (let ii = point.Implements.length - 1; -1 < ii; ii--) {
                         des = point.Implements[ii]
                         x1 = des.left
                         y1 = des.top
@@ -192,7 +181,7 @@ Promise.all([
                         h1 = des.height
                         drawImplement.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], 6, '#8b8b8b')
                     }
-                    for (let ii = point.Extends.length - 1, des; -1 < ii; ii--) {
+                    for (let ii = point.Extends.length - 1; -1 < ii; ii--) {
                         des = point.Extends[ii]
                         x1 = des.left
                         y1 = des.top
@@ -200,7 +189,7 @@ Promise.all([
                         h1 = des.height
                         drawExtension.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], 6, '#8b8b8b')
                     }
-                    for (let ii = point.Associations.length - 1, des; -1 < ii; ii--) {
+                    for (let ii = point.Associations.length - 1; -1 < ii; ii--) {
                         des = point.Associations[ii]
                         x1 = des.left
                         y1 = des.top
@@ -208,7 +197,7 @@ Promise.all([
                         h1 = des.height
                         drawAssociation.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], '#8b8b8b')
                     }
-                    for (let ii = point.Compositions.length - 1, des; -1 < ii; ii--) {
+                    for (let ii = point.Compositions.length - 1; -1 < ii; ii--) {
                         des = point.Compositions[ii]
                         x1 = des.left
                         y1 = des.top
@@ -219,204 +208,6 @@ Promise.all([
 
                 }
 
-            },
-            drawCanvas(isChange) {          // Khong dung` nua
-                if (typeof isChange == 'boolean' && isChange) {
-                    drawCtx.call(this)
-                    return
-                }
-                const lstCls = this.ListClass
-                const lsClass = []
-                const lsAbstrac = []
-                const lsInteface = []
-                const lsEnum = []
-                const lsStruct = []
-                for (let ii = lstCls.length - 1, item; -1 < ii; ii--) {
-                    item = lstCls[ii]
-                    if (isInterface(item.type)) {
-                        lsInteface.push(item)
-                        continue
-                    }
-                    if (isAbstract(item.type)) {
-                        lsAbstrac.push(item)
-                        continue
-                    }
-                    if (isClass(item.type)) {
-                        lsClass.push(item)
-                        continue
-                    }
-                    if (isEnum(item.type)) {
-                        lsEnum.push(item)
-                        continue
-                    }
-                    if (isStruct(item.type)) {
-                        lsStruct.push(item)
-                        continue
-                    }
-                }
-
-                const mpClass = new Map(lsClass.map(x => [x.Name, x]))
-                const mpAbstrc = new Map(lsAbstrac.map(x => [x.Name, x]))
-                const mpIntefc = new Map(lsInteface.map(x => [x.Name, x]))
-                const mName = new Map(lstCls.map(x => [x.Name, x]))
-
-                const linesImpl = []
-                const linesExtn = []
-                for (let ii = lstCls.length - 1, item; -1 < ii; ii--) {
-                    item = lstCls[ii]
-                    if (isEnum(item.type)) continue
-                    if (!item.toIds || !item.toIds.length) continue;
-                    buildLines(item, lsInteface, linesImpl)
-                    buildLines(item, lsClass, linesExtn)
-                    buildLines(item, lsAbstrac, linesExtn)
-                }
-                const linesAsso = getLnsAssociation(lstCls)
-                isChange = false
-
-                if (!isEqLines(this.ImplLines, linesImpl)) {
-                    this.ImplLines = linesImpl
-                    isChange = true
-                }
-                if (!isEqLines(this.ExtnLines, linesExtn)) {
-                    this.ExtnLines = linesExtn
-                    isChange = true
-                }
-                if (!isEqLines(this.AssoLines, linesAsso)) {
-                    this.AssoLines = linesAsso
-                    isChange = true
-                }
-
-                if (isChange) {
-                    //  console.trace()
-                    drawCtx.call(this)
-                }
-                function drawCtx() {
-                    const c = document.getElementById('dnb-mcanvas');
-                    const ctx = c.getContext("2d");
-                    ctx.clearRect(0, 0, c.width, c.height);
-                    drawGrid.call(ctx, c.width, c.height, 10, '#f5f5f5')
-                    let lstLns = this.ImplLines
-                    for (let ii = lstLns.length - 1; -1 < ii; ii--) {
-                        const [p0, p1] = lstLns[ii]
-                        drawImplement.call(ctx, p0, p1, 6, '#8b8b8b')
-                    }
-                    lstLns = this.ExtnLines
-                    for (let ii = lstLns.length - 1; -1 < ii; ii--) {
-                        const [p0, p1] = lstLns[ii]
-                        drawExtension.call(ctx, p0, p1, 6, '#8b8b8b')
-                    }
-                    lstLns = this.AssoLines
-                    for (let ii = lstLns.length - 1; -1 < ii; ii--) {
-                        const [p0, p1] = lstLns[ii]
-                        drawAssociation.call(ctx, p0, p1, '#8b8b8b')
-                        //drawComposition.call(ctx, p0, p1, 6, 18, '#8b8b8b')
-                    }
-                }
-                function getLnsAssociation(lstCls) {
-                    const lnsAso = []
-                    const mTypF = new Map()
-                    for (let ii = lstCls.length - 1, item; -1 < ii; ii--) {
-                        item = lstCls[ii]
-                        for (let ff = item.Fields.length - 1, field; -1 < ff; ff--) {
-                            field = item.Fields[ff]
-                            if (mName.has(field.Type)) {
-                                if (mTypF.has(field.Type)) {
-                                    const lsItm = mTypF.get(field.Type)
-                                    if (!lsItm.find(x => Object.is(x, item))) {
-                                        lsItm.push(item)
-                                    }
-                                } else {
-                                    mTypF.set(field.Type, [item])
-                                }
-                            }
-                        }
-                    }
-                    if (mTypF.size < 1) return lnsAso
-                    let des, src
-                    for (const [name, items] of mTypF) {
-                        des = mName.get(name)
-                        for (let ii = items.length - 1; -1 < ii; ii--) {
-                            src = items[ii]
-                            pushLines(lnsAso, src, des)
-                        }
-                    }
-                    return lnsAso
-                }
-                function getAggreations() {
-                    const lns = []
-                    let mTypF = new Map()
-                    for (let ii = lsClass.length - 1, item; -1 < ii; ii--) {
-                        item = lsClass[ii]
-                        mTypF = new Map()
-                        for (let ff = item.Fields.length - 1, field; -1 < ff; ff--) {
-                            field = item.Fields[ff]
-                            if (mpClass.has(field.Type)) {
-                                if (mTypF.has(field.Type)) mTypF.get(field.Type).push(field.Name)
-                                else mTypF.set(field.Type, [field.Name])
-                            }
-                        }
-                        if (mTypF.size) {
-
-                        }
-                    }
-
-                }
-                function getCompositions() {
-                    const lns = []
-                    let mTypF = new Map()
-                    for (let ii = lsClass.length - 1, item; -1 < ii; ii--) {
-                        item = lsClass[ii]
-                        mTypF = new Map()
-                        for (let ff = item.Fields.length - 1, field; -1 < ff; ff--) {
-                            field = item.Fields[ff]
-                            if (mpClass.has(field.Type)) {
-                                let construc = hasInit(item, field.Type)
-                                if (construc) {
-                                    if (mTypF.has(field.Type)) mTypF.get(field.Type).push(field.Name)
-                                    else mTypF.set(field.Type, [field.Name])
-                                }
-                            }
-                        }
-                        if (mTypF.size) {
-
-                        }
-                    }
-                    function hasInit(item, vName) {
-                        let patterns = [` ${vName} `, ` ${vName};`, `new ${vName}`];
-                        let ac = new AhoCorasick(patterns)
-                        for (let mm = item.Methods.length - 1, mth; -1 < mm; mm--) {
-                            mth = item.Methods[mm]
-                            if (AccessInit[2][0] == mth[3]) {   // init
-                                let code = mth[4]
-                                let index = ac.indexOf(code);
-                                if (-1 < index) return mth
-                                let iiN = mth[1].indexOf(` ${vName} `)
-                                if (0 < iiN) return mth
-                            }
-                        }
-                    }
-                }
-                function isEqLines(lsLine1, lsLine2) {
-                    let strO = JSON.stringify(lsLine1)
-                    let strN = JSON.stringify(lsLine2)
-                    if (strO != strN) return false
-                    return true
-                }
-                function buildLines(item, lsLns, lsLine) {
-                    for (let jj = lsLns.length - 1, Jtem; -1 < jj; jj--) {
-                        Jtem = lsLns[jj]
-                        if (item.id == Jtem.id) continue // it-self
-                        if (!item.toIds.includes(Jtem.id)) continue
-                        pushLines(lsLine, item, Jtem)
-                    }
-                }
-                function pushLines(lsLine, src, des) {
-                    let x0 = src.left + 1, y0 = src.top
-                    let w0 = src.width, h0 = src.height
-                    let x1 = des.left, y1 = des.top
-                    let w1 = des.width, h1 = des.height
-                    lsLine.push([[x0, y0, w0, h0], [x1, y1, w1, h1]])
-                }
             },
             trackMouse(event) {
                 let x = event.clientX;
