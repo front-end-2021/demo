@@ -133,7 +133,7 @@ export function objNewCls(nCls, id, top, left) {
                 { Visible: '#', Name: fNm, Type: 'String' },
             ],
             Methods: [
-                ['+', PropName, 'String', 'get'],
+                ['+', PropName, 'void', AccessInit[1][0]],
             ]
         }
     }

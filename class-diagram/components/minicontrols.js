@@ -330,7 +330,7 @@ export const FormEdit = {
         },
         isReturnType(acs) {
             if (typeof acs != 'string') return false;
-            if (acs.includes('get')) return true
+            if (acs.includes(AccessInit[0][0])) return true
             return false
         },
         removeProperty(ii) {
@@ -369,11 +369,11 @@ export const FormEdit = {
             const mItem = frmCode.cItem
             if (hasnMethod(mItem)) {
                 mItem.Methods = [
-                    ['public', PropName, 'string', AccessInit[0][0], '']
+                    ['public', PropName, 'void', AccessInit[1][0], '']
                 ]
             } else {
                 if (mItem.Methods.find(x => PropName == x[1])) return;
-                mItem.Methods.push(['public', PropName, 'string', AccessInit[0][0], ''])
+                mItem.Methods.push(['public', PropName, 'void', AccessInit[1][0], ''])
             }
         },
         onCloseEdit() {
@@ -408,7 +408,7 @@ export const FormEdit = {
                 this.onCloseEdit()
                 return
             }
-            
+
             root.MpPoints.clear()
             item.Name = name
             item.toIds = mItem.toIds
@@ -417,7 +417,6 @@ export const FormEdit = {
             item.Fields = mItem.Fields
             item.Methods = mItem.Methods
 
-            // root.ListClass = JSON.parse(JSON.stringify(lstCls))
             for (let ii = lstCls.length - 1; -1 < ii; ii--) {
                 root.buildMapPoints(lstCls[ii])      // save change
             }
@@ -438,7 +437,7 @@ export const FormEdit = {
                 }
                 nItem = verifyNewItem.call(this, nItem)
                 verifySave(nItem, this.$root.PLang, true)
-
+                if (!lstCls.length) nItem.id = 1
                 lstCls.push(nItem)
                 return nItem
                 function verifyNewItem(item) {

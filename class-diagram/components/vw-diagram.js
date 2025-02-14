@@ -1,6 +1,6 @@
 import {
     isInterface, processLines, StructTypes, objNewCls,
-    isAbstract, convertSymb, truncateIds, hasnMethod, getLstExt,
+    isAbstract, convertSymb, truncateIds, AccessInit, getLstExt,
     verifyExportTxt, verifyName,
 } from "../common.js";
 export const MenuList = {
@@ -171,7 +171,7 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
             if (isInterface(this.item.type)) minCxt = ''
             let txt = [`${acModify} ${type}`, name, minCxt]     // set
             if (returnType.includes('init')) txt = [`${acModify}`, name, minCxt]
-            else if (returnType.includes('get'))
+            else if (returnType.includes(AccessInit[0][0]))
                 txt = [`${acModify}`, name, `: ${type} {...}`]
             return txt
         },
