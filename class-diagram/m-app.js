@@ -10,6 +10,7 @@ import {
     verifySave, setHeight, isOverlap, initPoint,
     isAbstract, isClass, isInterface, isStruct, isEnum,
     AhoCorasick,
+    getStringBetween,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -116,23 +117,24 @@ Promise.all([
                 }
                 let mapField = new Map()        // [item, fieldName]
                 let mapAggre = new Map()        // [Name, item]
-                for (let ff = rItem.Fields.length - 1, fld; -1 < ff; ff--) {
+                for (let ff = rItem.Fields.length - 1, fld, type; -1 < ff; ff--) {
                     fld = rItem.Fields[ff]
-                    if (mClass.has(fld.Type)) {
-                        setMpFld(mClass.get(fld.Type), fld)
+                    type = getFieldType(fld.Type)
+                    if (mClass.has(type)) {
+                        setMpFld(mClass.get(type), fld)
                         continue
                     }
-                    if (mAbstrac.has(fld.Type)) {
-                        setMpFld(mAbstrac.get(fld.Type), fld)
+                    if (mAbstrac.has(type)) {
+                        setMpFld(mAbstrac.get(type), fld)
                         continue
                     }
-                    if (mInterface.has(fld.Type)) {
-                        setMpFld(mInterface.get(fld.Type), fld)
+                    if (mInterface.has(type)) {
+                        setMpFld(mInterface.get(type), fld)
                         continue
                     }
                 }
-               // console.log(rItem.Name, mapField)
-               // console.log(rItem.Name, mapAggre)
+                // console.log(rItem.Name, mapField)
+                // console.log(rItem.Name, mapAggre)
                 if (isAbstract(rItem.type)) {
                     buildLsExtend(mAbstrac)
                     buildLsImplment()
@@ -158,7 +160,12 @@ Promise.all([
                     setPoints()
                     return
                 }
-
+                function getFieldType(fType) {
+                    if (fType.includes('<')) {
+                        return getStringBetween(fType, '<', '>')
+                    }
+                    return fType
+                }
                 function setMpFld(item, fld) {
                     if (isGlobal(fld.Visible)) {
                         if (mapAggre.has(item)) mapAggre.get(item).push(fld.Name)
@@ -248,7 +255,7 @@ Promise.all([
                     y0 = src.top
                     w0 = src.width
                     h0 = src.height
-                    
+
                     for (let ii = point.Implements.length - 1; -1 < ii; ii--) {
                         des = point.Implements[ii]
                         x1 = des.left

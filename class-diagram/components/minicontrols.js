@@ -381,17 +381,19 @@ export const FormEdit = {
             this.$root.NewClassName = null
         },
         onSaveChange() {
-            const frmCode = this.$root.DynamicVar.get('FrameCode')
+            const root = this.$root
+            const frmCode = root.DynamicVar.get('FrameCode')
             const mItem = frmCode.cItem
+            const lstCls = root.ListClass;
             if (typeof mItem.id != 'number') {
                 let nItem = onNewItem.call(this, mItem)
-                this.$root.NewClassName = null
+                root.NewClassName = null
                 this.onCloseEdit()
                 if (nItem) {
-                    this.$root.buildMapPoints(nItem)                // new item
+                    root.buildMapPoints(nItem)                // new item
                     if (nItem.toIds && nItem.toIds.length) {
-                        this.$root.updateSizeCanvas()               // new item
-                        this.$root.$nextTick(this.$root.drawInCnvs) // new item
+                        root.updateSizeCanvas()               // new item
+                        root.$nextTick(root.drawInCnvs) // new item
 
                     }
                 }
@@ -405,19 +407,23 @@ export const FormEdit = {
                 this.onCloseEdit()
                 return
             }
-            const mPoints = this.$root.MpPoints
-            mPoints.delete(item.id)
-
+            
+            root.MpPoints.clear()
             item.Name = name
             item.toIds = mItem.toIds
-            verifySave(mItem, this.$root.PLang, true)
+            verifySave(mItem, root.PLang, true)
 
             item.Fields = mItem.Fields
             item.Methods = mItem.Methods
-            this.$root.buildMapPoints(item)                 // save change
+
+            // root.ListClass = JSON.parse(JSON.stringify(lstCls))
+            for (let ii = lstCls.length - 1; -1 < ii; ii--) {
+                root.buildMapPoints(lstCls[ii])      // save change
+            }
+            
             this.onCloseEdit()
-            this.$root.$nextTick(this.$root.updateSizeCanvas) // save change
-            this.$root.$nextTick(this.$root.drawInCnvs) // save change
+            root.$nextTick(root.updateSizeCanvas) // save change
+            root.$nextTick(root.drawInCnvs) // save change
 
             function onNewItem(newItem) {
                 let nItem = objNewCls(newItem)
@@ -429,7 +435,6 @@ export const FormEdit = {
                     this.$root.NewClassName = null
                     return;
                 }
-                const lstCls = this.$root.ListClass;
                 nItem = verifyNewItem.call(this, nItem)
                 verifySave(nItem, this.$root.PLang, true)
 

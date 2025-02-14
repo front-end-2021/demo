@@ -380,8 +380,8 @@ const MxOjClass = {
             let lstPrp = [...item.Methods, ...this.ExtProperties]
             for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
                 prp = lstPrp[jj]
-                txtP = this.getCsFormat(prp); console.log(txtP, jj, offI, ii)
-                txtP = `  ${convertSymb(txtP)}` // txtP.replace('+', '  public')
+                txtP = this.getCsFormat(prp); 
+                txtP = `  ${convertSymb(txtP)}`
                 if (jj - offI === ii) {
                     let pCode = prp[4]
                     let hasEnter = false
@@ -407,7 +407,6 @@ const MxOjClass = {
                 txtFnc += `${txtP}\n`
             }
             let txt = `${clsName}${txtFnc}}`
-            //console.log(txt)
             this.setFragViewCode(txt)
 
         },
@@ -468,35 +467,35 @@ const MxOjClass = {
             return lst
         },
     },
-    beforeMount() {
-        const item = this.item
-        // extend Method_s
-        let tIds = item.toIds
-        if (tIds && tIds.length) {
-            const lstCls = this.$root.ListClass
-            const prps = item.Methods
-            const lst = []
-            for (let ii = 0, xx; ii < lstCls.length; ii++) {
-                xx = lstCls[ii]
-                if (xx.id == item.id) continue   // it-self
-                if (hasnMethod(xx)) continue;
-                if (!tIds.includes(xx.id)) continue
-                for (let jj = 0, prp, oPrp; jj < xx.Methods.length; jj++) {
-                    prp = xx.Methods[jj]
-                    oPrp = prps.find(pp => prp[1] == pp[1])
-                    if (oPrp && oPrp[0].includes('override')) continue
-                    if (xx.type.includes('instant')) continue
-                    lst.push(prp)
-                }
-            }
-            const extendPrps = this.ExtProperties
-            for (let ii = lst.length - 1, prp; -1 < ii; ii--) {
-                prp = lst[ii]
-                if (extendPrps.find(pp => prp[1] == pp[1])) continue
-                prps.unshift(JSON.parse(JSON.stringify(prp)))
-            }
-        }
-    },
+   // beforeMount() {
+       // const item = this.item
+        //// extend Method_s
+      //  let tIds = item.toIds
+       // if (tIds && tIds.length) {
+            // const lstCls = this.$root.ListClass
+            // const prps = item.Methods
+            // const lst = []
+            // for (let ii = 0, xx; ii < lstCls.length; ii++) {
+            //     xx = lstCls[ii]
+            //     if (xx.id == item.id) continue   // it-self
+            //     if (hasnMethod(xx)) continue;
+            //     if (!tIds.includes(xx.id)) continue
+            //     for (let jj = 0, prp, oPrp; jj < xx.Methods.length; jj++) {
+            //         prp = xx.Methods[jj]
+            //         oPrp = prps.find(pp => prp[1] == pp[1])
+            //         if (oPrp && oPrp[0].includes('override')) continue
+            //         if (xx.type.includes('instant')) continue
+            //         lst.push(prp)
+            //     }
+            // }
+            //const extendPrps = this.ExtProperties
+            // for (let ii = lst.length - 1, prp; -1 < ii; ii--) {
+            //     prp = lst[ii]
+            //     if (extendPrps.find(pp => prp[1] == pp[1])) continue
+            //     prps.unshift(JSON.parse(JSON.stringify(prp)))
+            // }
+       // }
+   // },
 }
 const RectAbstract = {
     template: `#tmp-rect-class`,
@@ -627,7 +626,6 @@ export const ViewDiagram = {
                         nItm.Name = vNm
                         lstNo = lst.map(x => x.Name)
                     }
-
                 }
                 // #endregion
 
@@ -638,7 +636,7 @@ export const ViewDiagram = {
                 }
                 $root.updateSizeCanvas()          // import
                 $root.$nextTick($root.drawInCnvs) // import
-
+                event.target.value = ''
             };
             reader.onerror = () => {
                 showMessage("Error reading the file. Please try again.", "error");

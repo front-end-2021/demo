@@ -309,6 +309,12 @@ export function initPoint(rItem, lsImpl, lsExtn, lsComp, lsAsso, lsAggr) {
         Aggregations: lsAggr,
     }
 }
+export function getStringBetween(str, startChar, endChar) {
+    // Tạo regex để khớp với chuỗi giữa hai ký tự cụ thể
+    const regex = new RegExp(`${startChar}(.*?)${endChar}`);
+    const match = str.match(regex);
+    return match ? match[1] : '';
+}
 function indexesBoyerMoore(text, pattern) {
     const m = pattern.length;
     const n = text.length;
