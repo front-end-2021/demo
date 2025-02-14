@@ -275,7 +275,7 @@ Promise.all([
                         y1 = des.top
                         w1 = des.width
                         h1 = des.height
-                        drawAssociation.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], '#8b8b8b')
+                        drawAssociation.call(ctx, [x0, y0, w0, h0], [x1, y1, w1, h1], '#dddddd')
                     }
                     for (let ii = point.Compositions.length - 1, com; -1 < ii; ii--) {
                         com = point.Compositions[ii]
