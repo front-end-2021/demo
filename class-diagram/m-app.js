@@ -107,14 +107,13 @@ Promise.all([
                 let lsExtn = []     // List<item>
                 let lsComp = []     // List<[item, lsTxt]>
                 let lsAggr = []     // List<[item, lsTxt]>
-
                 if (isInterface(rItem.type)) {
                     buildLsImplment()
                     setPoints()
                     return
                 }
                 let mapField = new Map()        // [item, fieldName]
-                let mapAggre = new Map()        // [Name, item]
+                let mStatic = new Map()        // [Name, item]
                 for (let ff = rItem.Fields.length - 1, fld, type; -1 < ff; ff--) {
                     fld = rItem.Fields[ff]
                     type = getFieldType(fld.Type)
@@ -131,12 +130,10 @@ Promise.all([
                         continue
                     }
                 }
-                // console.log(rItem.Name, mapField)
-                // console.log(rItem.Name, mapAggre)
                 if (isAbstract(rItem.type)) {
                     buildLsExtend(mAbstrac)
                     buildLsImplment()
-                    pruneMap(mapAggre)
+                    pruneMap(mStatic)
                     pruneMap(mapField)
                     truncMpFld()
 
@@ -149,7 +146,7 @@ Promise.all([
                     buildLsExtend(mAbstrac)
                     buildLsExtend(mClass)
                     buildLsImplment()
-                    pruneMap(mapAggre)
+                    pruneMap(mStatic)
                     pruneMap(mapField)
                     truncMpFld()
 
@@ -166,8 +163,8 @@ Promise.all([
                 }
                 function setMpFld(item, fld) {
                     if (isGlobal(fld.Visible)) {
-                        if (mapAggre.has(item)) mapAggre.get(item).push(fld.Name)
-                        else mapAggre.set(item, [fld.Name])
+                        if (mStatic.has(item)) mStatic.get(item).push(fld.Name)
+                        else mStatic.set(item, [fld.Name])
                         return
                     }
                     if (mapField.has(item)) {
@@ -188,7 +185,7 @@ Promise.all([
                 }
                 function truncMpFld() {
                     for (const [item, fName] of mapField) {
-                        if (mapAggre.has(item)) {
+                        if (mStatic.has(item)) {
                             mapField.delete(item)
                         }
                     }
@@ -206,7 +203,6 @@ Promise.all([
                         mPoints.delete(rItem.id)
                     }
                 }
-
                 function buildLsImplment() {
                     for (const [name, item] of mInterface) {
                         if (item.id == rItem.id) continue // it-self
@@ -221,15 +217,14 @@ Promise.all([
                         lsExtn.push(item)
                     }
                 }
-
                 function buildLsComposition() {
-                    for (const [item, fNames] of mapField) {
+                    for (const [item, fNames] of mStatic) {
                         if (item.id == rItem.id) continue // it-self
                         lsComp.push([item, fNames])
                     }
                 }
                 function buildLsAggregation() {
-                    for (const [item, fNames] of mapAggre) {
+                    for (const [item, fNames] of mapField) {
                         if (item.id == rItem.id) continue // it-self
                         lsAggr.push([item, fNames])
                     }
