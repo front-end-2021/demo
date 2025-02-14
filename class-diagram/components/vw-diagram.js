@@ -114,6 +114,7 @@ const MxRect = {
                 for (ii = lstCls.length - 1; -1 < ii; ii--) {
                     this.$root.buildMapPoints(lstCls[ii])   // delete item
                 }
+                this.$root.buildAssociation()               // delete item
                 this.$root.updateSizeCanvas()               // delete item
                 this.$root.$nextTick(this.$root.drawInCnvs) // delete item
 
@@ -634,6 +635,7 @@ export const ViewDiagram = {
                 for (let ii = lst.length - 1; -1 < ii; ii--) {
                     $root.buildMapPoints(lst[ii])   // import
                 }
+                $root.buildAssociation()        // import
                 $root.updateSizeCanvas()          // import
                 $root.$nextTick($root.drawInCnvs) // import
                 event.target.value = ''

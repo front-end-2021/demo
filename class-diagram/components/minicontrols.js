@@ -391,6 +391,7 @@ export const FormEdit = {
                 this.onCloseEdit()
                 if (nItem) {
                     root.buildMapPoints(nItem)                // new item
+                    root.buildAssociation()               // new item
                     if (nItem.toIds && nItem.toIds.length) {
                         root.updateSizeCanvas()               // new item
                         root.$nextTick(root.drawInCnvs) // new item
@@ -420,7 +421,7 @@ export const FormEdit = {
             for (let ii = lstCls.length - 1; -1 < ii; ii--) {
                 root.buildMapPoints(lstCls[ii])      // save change
             }
-            
+            root.buildAssociation()             // save change
             this.onCloseEdit()
             root.$nextTick(root.updateSizeCanvas) // save change
             root.$nextTick(root.drawInCnvs) // save change

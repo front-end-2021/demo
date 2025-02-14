@@ -302,6 +302,19 @@ Promise.all([
                 }
 
             },
+            buildAssociation() {
+
+                const mPoints = this.MpPoints
+                let item, agg
+                for (const [id, point] of mPoints) {
+
+                    for (let ii = point.Aggregations.length - 1; -1 < ii; ii--) {
+                        agg = point.Aggregations[ii]
+                        item = agg[0] 
+
+                    }
+                }
+            },
             trackMouse(event) {
                 let x = event.clientX;
                 let y = event.clientY;
@@ -483,7 +496,7 @@ Promise.all([
             for (let ii = lsCls.length - 1; -1 < ii; ii--) {
                 this.buildMapPoints(lsCls[ii])      // create-d
             }
-
+            this.buildAssociation()         // create-d
         },
         //beforeMount() { },
         mounted() {
