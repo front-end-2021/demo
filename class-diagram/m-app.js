@@ -9,7 +9,6 @@ import { getListCls } from './repository.js'
 import {
     verifySave, setHeight, isOverlap, initPoint,
     isAbstract, isClass, isInterface, isStruct, isEnum,
-    AhoCorasick,
     getStringBetween,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
@@ -441,6 +440,8 @@ Promise.all([
                 const dmVar = this.DynamicVar
                 dmVar.delete('FrameCode')
                 dmVar.delete('FViewCode')
+                dmVar.delete('PopMenu')
+                dmVar.delete('DragElm')
             },
             closePopupForm() {
                 const dmVar = this.DynamicVar

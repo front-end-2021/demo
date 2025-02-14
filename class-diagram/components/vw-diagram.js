@@ -98,6 +98,10 @@ const MxRect = {
             }
         },
         deleteCls(item) {
+            const dmVar = this.$root.DynamicVar
+            if (dmVar.has('FrameCode')) {
+                return
+            }
             const lstCls = this.$root.ListClass
             let ii = lstCls.findIndex(x => x.id == item.id)
             if (-1 < ii) {
@@ -120,7 +124,13 @@ const MxRect = {
 
             }
         },
-
+        editCls(item) {
+            const dmVar = this.$root.DynamicVar
+            if (dmVar.has('FrameCode')) {
+                return
+            }
+            this.$root.editObject(item)
+        },
     },
     mounted() {
         const off = this.$el.getBoundingClientRect()
@@ -194,9 +204,15 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
             })
         },
         onEditable(e, type, ii) {
+            const dmVar = this.$root.DynamicVar
+            if (dmVar.has('FrameCode')) {
+                return
+            }
+            this.$root.closePopupForm()
             const target = e.target
             switch (type) {
                 case 'class name':
+                case 'property':
                     target.setAttribute('contenteditable', 'true')
                     target.focus()
                     break;
@@ -211,18 +227,28 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
             switch (type) {
                 case 'class name':
                     target.removeAttribute('contenteditable')
-                    if (StructTypes[1][0] == item.type)
-                        name = name.replace('abstract', '');
-                    name = name.replaceAll(' ', '')
-                    item.Name = name
+                    if (!name.length) {
+                        target.innerHTML = item.Name
+                    } else {
+                        if (StructTypes[1][0] == item.type)
+                            name = name.replace('abstract', '');
+                        name = name.replaceAll(' ', '')
+                        item.Name = name
+                        this.$root.$nextTick(this.$root.drawInCnvs)
+                    }
                     break;
                 case 'property':
+                    target.removeAttribute('contenteditable')
                     const prp = this.item.Methods[ii]
-                    prp[1] = name
+                    if (!name.length) {
+                        target.innerHTML = prp[1]
+                    } else {
+                        prp[1] = name
+                        this.$root.$nextTick(this.$root.drawInCnvs)
+                    }
                     break;
                 default: break;
             }
-            this.$root.closePopupForm()
         },
         getAcModf(prp) {
             let acModify = prp[0]
@@ -253,6 +279,13 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
             txt = txt.replaceAll('virtual', '')
             txt = txt.replaceAll('abstract', '')
             return txt.trim()
+        },
+        clkField(field) {
+            const dmVar = this.$root.DynamicVar
+            if (dmVar.has('FrameCode')) {
+                return
+            }
+            this.$root.clearDyVar()
         },
     },
     computed: {
@@ -303,6 +336,10 @@ const RectInterface = {
             return `${txt};\n`
         },
         showCodeBody(ii, offI) {
+            const dmVar = this.$root.DynamicVar
+            if (dmVar.has('FrameCode')) {
+                return
+            }
             const item = this.item
             let clsName = this.FormatCode[0]
             let txtF = this.FormatCode[1]
@@ -374,6 +411,10 @@ const MxOjClass = {
             return `${txt} {...}`
         },
         showCodeBody(ii, offI) {
+            const dmVar = this.$root.DynamicVar
+            if (dmVar.has('FrameCode')) {
+                return
+            }
             const item = this.item
             let clsName = this.FormatCode[0]
             let txtF = this.FormatCode[1]
@@ -561,7 +602,6 @@ export const ViewDiagram = {
     display: "View.Diagram",
     components: {
         'rect-wrap': WrapRect,
-        'rect-class': RectClass,
         'menu-list': MenuList,
     },
     //inject: [''],
@@ -712,6 +752,15 @@ export const ViewDiagram = {
                     break;
                 }
             }
+        },
+        newDiagram() {
+            this.$root.ListClass.splice(0)
+            this.$root.MpPoints.clear()
+            this.$root.DiagName = 'New Diagram'
+
+            this.$root.clearDyVar()
+            this.$root.drawInCnvs()
+
         },
     },
     computed: {

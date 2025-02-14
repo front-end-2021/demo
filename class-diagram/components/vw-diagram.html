@@ -22,6 +22,10 @@
             </div>
             <div style="display: inline-flex; width: 108px; height: 28px;
                 background-color: rgb(77, 107, 254); align-items: center; justify-content: center;
+                color: white; border-radius: 6px; margin: 9px;cursor: pointer;" @click.stop="newDiagram">New Diagram
+            </div>
+            <div style="display: inline-flex; width: 108px; height: 28px;
+                background-color: rgb(77, 107, 254); align-items: center; justify-content: center;
                 color: white; border-radius: 6px; margin: 9px;cursor: pointer;" @click.stop="exportDiagram">Save data
             </div>
             <div style="display: grid; width: 108px; height: 28px;
@@ -41,7 +45,8 @@
                 :style="[{width: ($root.MaxX - $root.MinX) + 'px'}]">
                 <rect-wrap v-for="wItm in $root.ListClass" :item="wItm"
                     :key="'id=' + wItm.id + ',type=' + wItm.type"></rect-wrap>
-                <rect-class v-if="$root.NewClassName != null" :item="$root.NewClassName"></rect-class>
+                <rect-wrap v-if="$root.NewClassName != null" :item="$root.NewClassName"
+                    :key="'id=' + $root.NewClassName.id"></rect-wrap>
             </div>
 
         </article>
@@ -66,7 +71,7 @@
     <section class="wrp-enum">
         <div class="vwheader" style="font-size: 18px;text-align: center;border-bottom: 1px solid black;
     padding-left: 24px; padding-right: 45px; position: relative;">
-            <slot name="menu" :mddnd="onMouseDown" :ckedt="$root.editObject" :ckdel="deleteCls"></slot>
+            <slot name="menu" :mddnd="onMouseDown" :ckedt="editCls" :ckdel="deleteCls"></slot>
             
             <span style="font-weight: bold;">enum {{item.Name}}</span>
         </div>
@@ -76,8 +81,8 @@
 <template id="tmp-rect-class">
     <section class="wrp-cls">
         <div class="vwheader" style="font-size: 18px;text-align: center;border-bottom: 1px solid black;
-    padding-left: 24px; padding-right: 45px; position: relative;">
-            <slot name="menu" :mddnd="onMouseDown" :ckedt="$root.editObject" :ckdel="deleteCls"></slot>
+    padding-left: 24px; padding-right: 45px; position: relative;min-height: 18px;">
+            <slot name="menu" :mddnd="onMouseDown" :ckedt="editCls" :ckdel="deleteCls"></slot>
             
             <span style="font-weight: bold;" @dblclick="e => onEditable(e, 'class name')"
                 @keypress="e => $root.preventKeyPress(e, [13, 32])" @blur="e => onDoneEdit(e, 'class name')"
@@ -93,14 +98,15 @@
                 <span>&nbsp;{{vwVisible(field.Visible)}}&nbsp;{{field.Name}}:&nbsp;</span>
                 <small style="font-weight: bold;">{{field.Type}}</small>
             </i>
-            <div @click.stop="$root.clearDyVar" v-for="field in item.Fields">
+            <div v-for="field in item.Fields" @click.stop="e => clkField(field)">
                 <span>&nbsp;{{vwVisible(field.Visible)}}&nbsp;{{field.Name}}:&nbsp;</span>
                 <small style="font-weight: bold;">{{field.Type}}</small>
             </div>
         </div>
         <div style="font-size: 14px;font-weight: 100;padding-right: 6px;">
             <div v-for="(prp, ii) in ListProperty" @click="e => showCodeBody(ii, 0)">
-                &nbsp;<span>{{vwVisible(prp[0])}}</span>&nbsp;<span contenteditable="true"
+                &nbsp;<span>{{vwVisible(prp[0])}}</span>&nbsp;<span
+                    @dblclick="e => onEditable(e, 'property')"    
                     @keypress="e => $root.preventKeyPress(e, [13, 32])"
                     @blur="e => onDoneEdit(e, 'property', ii)">{{prp[1]}}</span>&nbsp;<span>{{prp[2]}}</span>
             </div>

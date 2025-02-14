@@ -96,13 +96,13 @@ export const AccessInit = [
     ['set', 'set', 'set'],
     ['init', 'Constructor', 'Constructor']
 ]
-export const ListKeyword = [
-    'int', 'float', 'double', 'char',
-    'if', 'else', 'switch', 'case',
-    'for', 'while', 'do', 'break', 'continue',
-    'return', 'void', 'static',
-    'try', 'catch', 'finally', 'throw',
-]
+// export const ListKeyword = [
+//     'int', 'float', 'double', 'char',
+//     'if', 'else', 'switch', 'case',
+//     'for', 'while', 'do', 'break', 'continue',
+//     'return', 'void', 'static',
+//     'try', 'catch', 'finally', 'throw',
+// ]
 export function convertAccessors(acs, il) {
     let txt = acs
     if (typeof il == 'number') {
@@ -125,8 +125,9 @@ export function objNewCls(nCls, id, top, left) {
     const fNm = 'fieldName'
     const cNm = 'ClassName'
     if (!nCls) {
+        let type = StructTypes[2][0]    //'instant class'
         return {
-            id, type: 'instant class', Name: cNm, toIds: [],
+            id, type, Name: cNm, toIds: [],
             top, left, width: 220, height: 100,
             Fields: [
                 { Visible: '#', Name: fNm, Type: 'String' },
@@ -267,12 +268,6 @@ export function verifyName(name, lstNo) {
 //     return str.replace(/\d+/g, '');
 //     //console.log(newStr); // Output: "Đây là chuỗi chứa các số: ,  và ."
 // }
-function buildExtends(lst, isDel) {
-    let names = lst.map(x => x.Name)
-    for (let ii = 0, item; ii < lst.length; ii++) {
-
-    }
-}
 function removeExtraSpaces(str) {
     if (typeof str != 'string') return str
     // Sử dụng regex để thay thế nhiều khoảng trắng liên tiếp bằng một khoảng trắng duy nhất
@@ -347,7 +342,7 @@ function indexesBoyerMoore(text, pattern) {
     }
     return lsI
 }
-export class AhoCorasick {
+class AhoCorasick {
     constructor(patterns) {
         this.setPatterns(patterns)
     }
