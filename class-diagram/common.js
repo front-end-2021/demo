@@ -315,6 +315,7 @@ export function getStringBetween(str, startChar, endChar) {
     const match = str.match(regex);
     return match ? match[1] : '';
 }
+
 function indexesBoyerMoore(text, pattern) {
     const m = pattern.length;
     const n = text.length;

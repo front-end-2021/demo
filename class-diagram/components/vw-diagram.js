@@ -381,7 +381,7 @@ const MxOjClass = {
             let lstPrp = [...item.Methods, ...this.ExtProperties]
             for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
                 prp = lstPrp[jj]
-                txtP = this.getCsFormat(prp); 
+                txtP = this.getCsFormat(prp);
                 txtP = `  ${convertSymb(txtP)}`
                 if (jj - offI === ii) {
                     let pCode = prp[4]
@@ -468,35 +468,35 @@ const MxOjClass = {
             return lst
         },
     },
-   // beforeMount() {
-       // const item = this.item
-        //// extend Method_s
-      //  let tIds = item.toIds
-       // if (tIds && tIds.length) {
-            // const lstCls = this.$root.ListClass
-            // const prps = item.Methods
-            // const lst = []
-            // for (let ii = 0, xx; ii < lstCls.length; ii++) {
-            //     xx = lstCls[ii]
-            //     if (xx.id == item.id) continue   // it-self
-            //     if (hasnMethod(xx)) continue;
-            //     if (!tIds.includes(xx.id)) continue
-            //     for (let jj = 0, prp, oPrp; jj < xx.Methods.length; jj++) {
-            //         prp = xx.Methods[jj]
-            //         oPrp = prps.find(pp => prp[1] == pp[1])
-            //         if (oPrp && oPrp[0].includes('override')) continue
-            //         if (xx.type.includes('instant')) continue
-            //         lst.push(prp)
-            //     }
-            // }
-            //const extendPrps = this.ExtProperties
-            // for (let ii = lst.length - 1, prp; -1 < ii; ii--) {
-            //     prp = lst[ii]
-            //     if (extendPrps.find(pp => prp[1] == pp[1])) continue
-            //     prps.unshift(JSON.parse(JSON.stringify(prp)))
-            // }
-       // }
-   // },
+    // beforeMount() {
+    // const item = this.item
+    //// extend Method_s
+    //  let tIds = item.toIds
+    // if (tIds && tIds.length) {
+    // const lstCls = this.$root.ListClass
+    // const prps = item.Methods
+    // const lst = []
+    // for (let ii = 0, xx; ii < lstCls.length; ii++) {
+    //     xx = lstCls[ii]
+    //     if (xx.id == item.id) continue   // it-self
+    //     if (hasnMethod(xx)) continue;
+    //     if (!tIds.includes(xx.id)) continue
+    //     for (let jj = 0, prp, oPrp; jj < xx.Methods.length; jj++) {
+    //         prp = xx.Methods[jj]
+    //         oPrp = prps.find(pp => prp[1] == pp[1])
+    //         if (oPrp && oPrp[0].includes('override')) continue
+    //         if (xx.type.includes('instant')) continue
+    //         lst.push(prp)
+    //     }
+    // }
+    //const extendPrps = this.ExtProperties
+    // for (let ii = lst.length - 1, prp; -1 < ii; ii--) {
+    //     prp = lst[ii]
+    //     if (extendPrps.find(pp => prp[1] == pp[1])) continue
+    //     prps.unshift(JSON.parse(JSON.stringify(prp)))
+    // }
+    // }
+    // },
 }
 const RectAbstract = {
     template: `#tmp-rect-class`,
@@ -595,7 +595,18 @@ export const ViewDiagram = {
                 Name,
                 Classes: lstCls,
             }
-            download(JSON.stringify(entry), `${Name.replaceAll(' ', '-')}.txt`, "text/plain");
+            let name = Name.replaceAll(' ', '-')
+            let target = document.getElementById('dnb-vw-main')
+            html2canvas(target).then(canvas => {
+                const zip = new JSZip();
+                canvas.toBlob(function (data) {
+                    zip.file(`${name}.txt`, JSON.stringify(entry));
+                    zip.file(`${name}.jpg`, data);
+                    zip.generateAsync({ type: "blob" }).then(function (content) {
+                        saveAs(content, `${name}.zip`);
+                    })
+                })
+            })
         },
         importDiagram(event) {
             const file = event.target.files[0];
