@@ -302,11 +302,11 @@ export function getLstExt(lsMthd, items) {
 export function initPoint(rItem, lsImpl, lsExtn, lsComp, lsAsso, lsAggr) {
     return {
         item: rItem,
-        Implements: lsImpl,
-        Extends: lsExtn,
-        Compositions: lsComp,
-        Associations: lsAsso,
-        Aggregations: lsAggr,
+        Implements: lsImpl,     // List<item>
+        Extends: lsExtn,        // List<item>
+        Compositions: lsComp,   // List<[item, lsTxt]>
+        Aggregations: lsAggr,   // List<[item, lsTxt]>
+        Associations: lsAsso,   // List<item>
     }
 }
 export function getStringBetween(str, startChar, endChar) {

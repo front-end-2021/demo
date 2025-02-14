@@ -104,11 +104,10 @@ Promise.all([
                     }
                 }
                 // #endregion
-                let lsImpl = []     // [item]
-                let lsExtn = []     // [item]
-                let lsComp = []     // [item]
-                let lsAsso = []     // [item]
-                let lsAggr = []     // [item]
+                let lsImpl = []     // List<item>
+                let lsExtn = []     // List<item>
+                let lsComp = []     // List<[item, lsTxt]>
+                let lsAggr = []     // List<[item, lsTxt]>
 
                 if (isInterface(rItem.type)) {
                     buildLsImplment()
@@ -141,7 +140,7 @@ Promise.all([
                     pruneMap(mapAggre)
                     pruneMap(mapField)
                     truncMpFld()
-                    buildLsAssociation()
+
                     buildLsComposition()
                     buildLsAggregation()
                     setPoints()
@@ -154,7 +153,7 @@ Promise.all([
                     pruneMap(mapAggre)
                     pruneMap(mapField)
                     truncMpFld()
-                    buildLsAssociation()
+
                     buildLsComposition()
                     buildLsAggregation()
                     setPoints()
@@ -200,8 +199,8 @@ Promise.all([
                     return false
                 }
                 function setPoints() {
-                    if (0 < lsImpl.length + lsExtn.length + lsComp.length + lsAsso.length + lsAggr.length) {
-                        const point = initPoint(rItem, lsImpl, lsExtn, lsComp, lsAsso, lsAggr)
+                    if (0 < lsImpl.length + lsExtn.length + lsComp.length + lsAggr.length) {
+                        const point = initPoint(rItem, lsImpl, lsExtn, lsComp, [], lsAggr)
 
                         mPoints.set(rItem.id, point)
                     } else if (mPoints.has(rItem.id)) {
@@ -223,9 +222,7 @@ Promise.all([
                         lsExtn.push(item)
                     }
                 }
-                function buildLsAssociation() {
 
-                }
                 function buildLsComposition() {
                     for (const [item, fNames] of mapField) {
                         if (item.id == rItem.id) continue // it-self
@@ -303,15 +300,52 @@ Promise.all([
 
             },
             buildAssociation() {
-
                 const mPoints = this.MpPoints
                 let item, agg
                 for (const [id, point] of mPoints) {
-
+                    if (point.Aggregations.length < 2) continue;
+                    let lsAgg = []
                     for (let ii = point.Aggregations.length - 1; -1 < ii; ii--) {
                         agg = point.Aggregations[ii]
-                        item = agg[0] 
+                        item = agg[0]
+                        lsAgg.push(item)    // move ref
+                    }
 
+                    for (let ii = lsAgg.length - 1; 0 < ii; ii--) {
+                        item = lsAgg[ii]
+                        let lsAsso = []     // [item]
+                        for (let jj = ii - 1, oItem; -1 < jj; jj--) {
+                            oItem = lsAgg[jj]
+                            lsAsso.push(oItem)
+                        }
+                        if (mPoints.has(item.id)) {
+                            let aPoint = mPoints.get(item.id)
+                            for (let jj = lsAsso.length - 1, aso; -1 < jj; jj--) {
+                                aso = lsAsso[jj]
+                                if (aPoint.Extends.find(x => x.id == aso.id)) {
+                                    lsAsso.splice(jj, 1)
+                                    continue
+                                }
+                                if (aPoint.Implements.find(x => x.id == aso.id)) {
+                                    lsAsso.splice(jj, 1)
+                                    continue
+                                }
+                                if (aPoint.Compositions.find(x => x[0].id == aso.id)) {
+                                    lsAsso.splice(jj, 1)
+                                    continue
+                                }
+                                if (aPoint.Aggregations.find(x => x[0].id == aso.id)) {
+                                    lsAsso.splice(jj, 1)
+                                    continue
+                                }
+                            }
+                            for (let jj = 0; jj < lsAsso.length; jj++) {
+                                aPoint.Associations.push(lsAsso[jj])
+                            }
+                        } else {
+                            let aPoint = initPoint(item, [], [], [], lsAsso, [])
+                            mPoints.set(item.id, aPoint)
+                        }
                     }
                 }
             },
