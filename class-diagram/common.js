@@ -268,6 +268,14 @@ export function verifyName(name, lstNo) {
 //     return str.replace(/\d+/g, '');
 //     //console.log(newStr); // Output: "Đây là chuỗi chứa các số: ,  và ."
 // }
+export function addStrFirst(txt, str) {
+    let lines = txt.split('\n')
+    for (let ll = lines.length - 1, txLn; -1 < ll; ll--) {
+        txLn = lines[ll]
+        lines[ll] = `${str}${txLn}`
+    }
+    return lines.join('\n')
+}
 export function removeExtraSpaces(str) {
     if (typeof str != 'string') return str
     // Sử dụng regex để thay thế nhiều khoảng trắng liên tiếp bằng một khoảng trắng duy nhất

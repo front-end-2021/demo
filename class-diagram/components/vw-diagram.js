@@ -1,6 +1,7 @@
 import {
     isInterface, processLines, StructTypes, objNewCls, verifyExportTxt,
     isAbstract, convertSymb, truncateIds, getLstExt, verifyName,
+    addStrFirst,
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
@@ -388,8 +389,12 @@ const MxOjClass = {
                         pCode = '/* empty */'
                         txtP = txtP.replace(`{...}`, `{ ${pCode} }`)
                     } else {
-                        if (pCode[0] !== '' || pCode[1] !== '' || pCode[2] !== '') pCode = '   ' + pCode
-                        txtP = txtP.replace(`{...}`, `{\n ${pCode}\n  }`)
+                        let hasEnter = pCode.includes('\n')
+                        if (hasEnter) txtP = txtP.replace(`{...}`, `{\n${addStrFirst(pCode, '     ')}\n  }`)
+                        else if (pCode[0] !== '' || pCode[1] !== '' || pCode[2] !== '') pCode = '   ' + pCode
+                        {
+                            txtP = txtP.replace(`{...}`, `{\n ${pCode}\n  }`)
+                        }
                     }
                 } else if (jj - offI === ii) {
                     let pCode = prp[5]
@@ -403,7 +408,7 @@ const MxOjClass = {
                     }
                     if (txtP.includes(`{...}`)) {
                         if (hasEnter) {
-                            txtP = txtP.replace(`{...}`, `{\n${pCode}\n  }`)
+                            txtP = txtP.replace(`{...}`, `{\n${addStrFirst(pCode, '     ')}\n  }`)
                         } else if (pCode == '/* empty */') {
                             txtP = txtP.replace(`{...}`, `{ ${pCode} }`)
                         } else {
