@@ -11,12 +11,12 @@
             </div>
             <div style="display: inline-block;border: 1px solid rgb(0, 0, 0);
                 width: calc(100% - 10px);cursor: default;border-radius: 4px;" @mousedown="onMouseDown" id="cls-sample">
-                <div style="font-size: 18px;font-weight: bold;text-align: center;
+                <div style="font-size: 16px;font-weight: bold;text-align: center;
                     border-bottom: 1px solid black;">ClassName</div>
-                <div style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
+                <div style="font-size: 14px; font-weight: 300;border-bottom: 1px solid black;">
                     <div>&nbsp;List Fields</div>
                 </div>
-                <div style="font-size: 14px;font-weight: 100;">
+                <div style="font-size: 12px;font-weight: 100;">
                     <div>&nbsp;List Property</div>
                 </div>
             </div>
@@ -48,7 +48,21 @@
                 <rect-wrap v-if="$root.NewClassName != null" :item="$root.NewClassName"
                     :key="'id=' + $root.NewClassName.id"></rect-wrap>
             </div>
-
+            <div v-if="$root.ViewCode" id="dnb-viewcode"
+                    style="min-width: 360px; min-height: 250px; box-sizing: border-box;
+                        position: fixed; left: calc(249px + 220px); top: calc(39px - 12px);
+                        max-height: calc(100vh - 69px); overflow: auto; 
+                        border-radius: 10px; background-color: #cde5f9; padding: 10px;" 
+                    :style="[{
+                        top: $root.ViewCode.top + 'px', left: $root.ViewCode.left + 'px',
+                        }]">
+                <pre style="margin-top: 10px;"><code class="language-csharp" v-html="$root.ViewCode.html"></code></pre>
+                <i class="bi bi-x-lg cpoint"
+                    style="width: 24px;height: 20px;display: inline-block;text-align: center;
+                        background-color: white; border-radius: 6px;padding-top: 4px;
+                        position: absolute;right: 3px;top: 2px;"
+                    @click.stop="e => { $root.DynamicVar.delete('FViewCode')}"></i>
+            </div>
         </article>
     </div>
 </template>
@@ -69,10 +83,9 @@
 </template>
 <template id="tmp-rect-enum">
     <section class="wrp-enum">
-        <div class="vwheader" style="font-size: 18px;text-align: center;border-bottom: 1px solid black;
-    padding-left: 24px; padding-right: 45px; position: relative;">
+        <div class="vwheader" style="font-size: 16px;text-align: center;border-bottom: 1px solid black;
+            padding-left: 24px; padding-right: 45px; position: relative;">
             <slot name="menu" :mddnd="onMouseDown" :ckedt="editCls" :ckdel="deleteCls"></slot>
-            
             <span style="font-weight: bold;">enum {{item.Name}}</span>
         </div>
         <div style="font-size: 16px; font-weight: 300;padding: 0 6px;">{{TxtField}}</div>
@@ -80,19 +93,18 @@
 </template>
 <template id="tmp-rect-class">
     <section class="wrp-cls">
-        <div class="vwheader" style="font-size: 18px;text-align: center;border-bottom: 1px solid black;
-    padding-left: 24px; padding-right: 45px; position: relative;min-height: 18px;">
+        <div class="vwheader" style="font-size: 16px;text-align: center;border-bottom: 1px solid black;
+            padding-left: 24px; padding-right: 45px; position: relative;min-height: 18px;">
             <slot name="menu" :mddnd="onMouseDown" :ckedt="editCls" :ckdel="deleteCls"></slot>
-            
             <span style="font-weight: bold;" @dblclick="e => onEditable(e, 'class name')"
                 @keypress="e => $root.preventKeyPress(e, [13, 32])" @blur="e => onDoneEdit(e, 'class name')"
-                @click="e => showCodeBody(null, -1)">{{ClassName}}</span>
+                @click="e => showCodeBody(-1989, -1989)">{{ClassName}}</span>
             <span v-for="exv in ViewExtends">
                 <small>{{exv[0]}}&nbsp;</small><i>{{exv[1]}}</i>
             </span>
         </div>
         <div v-if="0 < ExtendFields.length + item.Fields.length"
-            style="font-size: 16px; font-weight: 300;border-bottom: 1px solid black;">
+            style="font-size: 14px; border-bottom: 1px solid black;">
             <i @click.stop="$root.clearDyVar" style="display: block;"
                 v-for="field in ExtendFields">
                 <span>&nbsp;{{vwVisible(field.Visible)}}&nbsp;{{field.Name}}:&nbsp;</span>
@@ -103,16 +115,26 @@
                 <small style="font-weight: bold;">{{field.Type}}</small>
             </div>
         </div>
-        <div style="font-size: 14px;font-weight: 100;padding-right: 6px;">
-            <div v-for="(prp, ii) in ListProperty" @click="e => showCodeBody(ii, 0)">
-                &nbsp;<span>{{vwVisible(prp[0])}}</span>&nbsp;<span
-                    @dblclick="e => onEditable(e, 'property')"    
+        <div style="font-size: 14px;padding-right: 6px;padding-left: 6px;word-spacing: -6px;">
+            <div v-for="(prp, ii) in item.Methods" 
+                @click="e => showCodeBody(ii, 0)">
+                <span style="padding-right: 6px;font-size: 12px;">{{vwVisible(prp[0])}}</span>
+                <span style="font-size: 10px;padding-right: 6px;"
+                    v-if="0 < prp[3].length">{{prp[3]}}</span>
+                <span 
+                    @dblclick="e => onEditable(e, 'methd name')"    
                     @keypress="e => $root.preventKeyPress(e, [13, 32])"
-                    @blur="e => onDoneEdit(e, 'property', ii)">{{prp[1]}}</span>&nbsp;<span>{{prp[2]}}</span>
+                    @blur="e => onDoneEdit(e, 'methd name', ii)">{{prp[1]}}</span>
+                <span style="font-size: 10px;word-spacing: 0;">({{prp[2]}})</span>
             </div>
-            <i v-for="(prp, ii) in ExtProperties" 
-                @click.stop="e => showCodeBody(ii, item.Methods.length)"
-                style="display: block;">&nbsp;{{getFragProp(prp).join(' ')}}</i>
+            <small v-for="(prp, ii) in ExtProperties" style="display: block;"
+                @click.stop="e => showCodeBody(ii, item.Methods.length)">
+                <i style="padding-right: 6px;font-size: 12px;">{{vwVisible(prp[0])}}</i>
+                <i style="padding-right: 6px;font-size: 10px;"
+                    v-if="0 < prp[3].length">{{prp[3]}}</i>
+                <i style="padding-right: 0;">{{prp[1]}}</i>
+                <i style="font-size: 10px;word-spacing: 0;">({{prp[2]}})</i>
+            </small>
         </div>
     </section>
 </template>
@@ -132,7 +154,8 @@
     </span>
 </template>
 <template id="tmp-drp-search">
-    <div style="position: relative;display: inline-block;width: 12px;height: 24px;">
+    <h6 class="wrp-drpsearch"
+        style="position: relative;display: inline-block;width: 12px;height: 24px;font-size: 12px;font-weight: normal;">
         <div style="position: absolute;top: 0px;left: 0px;display: flex;
                 flex-direction: column;min-width: 66px;min-height: 66px;
                 background-color: white;padding: 4px;border-radius: 5px;width: 174px;">
@@ -150,5 +173,5 @@
                 width: 24px;height: 24px;align-items: center;justify-content: center;
                 background-color: #fcfcfc;border-radius: 6px;" @click.stop="e => $emit('on:exit')"></i>
         </div>
-    </div>
+    </h6>
 </template>

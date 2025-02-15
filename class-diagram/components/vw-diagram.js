@@ -1,7 +1,6 @@
 import {
-    isInterface, processLines, StructTypes, objNewCls,
-    isAbstract, convertSymb, truncateIds, AccessInit, getLstExt,
-    verifyExportTxt, verifyName,
+    isInterface, processLines, StructTypes, objNewCls, verifyExportTxt,
+    isAbstract, convertSymb, truncateIds, getLstExt, verifyName,
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
@@ -158,23 +157,6 @@ const RectEnum = {
 
 const MxClsItf = {      // mixin: Class, Abstract, Interface
     methods: {
-        getFragProp(prp) {
-            let acModify = this.vwVisible(prp[0])
-            // acModify = acModify.replace(' override', '')
-            // acModify = acModify.replace(' virtual', '')
-            // acModify = acModify.replace(' abstract', '')
-            let name = prp[1]
-            let type = prp[2]
-            let returnType = prp[3]
-            returnType = returnType.toLowerCase()
-            let minCxt = `{...}`
-            if (isInterface(this.item.type)) minCxt = ''
-            let txt = [`${acModify} ${type}`, name, minCxt]     // set
-            if (returnType.includes('init')) txt = [`${acModify}`, name, minCxt]
-            else if (returnType.includes(AccessInit[0][0]))
-                txt = [`${acModify}`, name, `: ${type} {...}`]
-            return txt
-        },
         setFragViewCode(txt) {
             let off = this.$el.getBoundingClientRect()
             let top = off.top - 12
@@ -196,8 +178,8 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
                     let frmCode = dmVar.get('FViewCode')
                     let offF = vwFcode.getBoundingClientRect()
                     let maxY = offF.top + offF.height
-                    if (window.innerHeight < maxY) {
-                        frmCode.top -= (maxY - window.innerHeight + 6)
+                    if (window.innerHeight - 39 < maxY) {
+                        frmCode.top -= (maxY - window.innerHeight + 6 + 18)
                         vwFcode.style.top = `${frmCode.top}px`
                     }
                 }
@@ -212,7 +194,7 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
             const target = e.target
             switch (type) {
                 case 'class name':
-                case 'property':
+                case 'methd name':
                     target.setAttribute('contenteditable', 'true')
                     target.focus()
                     break;
@@ -237,7 +219,7 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
                         this.$root.$nextTick(this.$root.drawInCnvs)
                     }
                     break;
-                case 'property':
+                case 'methd name':
                     target.removeAttribute('contenteditable')
                     const prp = this.item.Methods[ii]
                     if (!name.length) {
@@ -253,8 +235,9 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
         getAcModf(prp) {
             let acModify = prp[0]
             let name = prp[1]
-            let type = prp[2]
-            return `${acModify} ${type} ${name}`
+            let params = prp[2]
+            let type = prp[3]
+            return `${acModify} ${type} ${name}(${params})`
         },
         getTxtFields(item, extnFields) {
             let txtF = ''
@@ -289,22 +272,6 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
         },
     },
     computed: {
-        // ViewExtends() {
-        //     const tIds = this.item.toIds
-        //     if (!tIds || !tIds.length) return ''
-        //     let lst = this.$root.ListClass
-        //     const itemId = this.item.id
-        //     const lsCls = []
-        //     const lstItf = []
-        //     for (let ii = 0, cls; ii < lst.length; ii++) {
-        //         cls = lst[ii]
-        //         if (itemId == cls.id) continue;  // it-self
-        //         if (!tIds.includes(cls.id)) continue;
-        //         if (isInterface(cls.type)) lstItf.push(cls)
-        //         else lsCls.push(cls)
-        //     }
-        //     return this.$root.getLsExtends(lsCls, lstItf, this.$root.PLang)
-        // },
         ViewExtends() {
             const tIds = this.item.toIds
             if (!tIds || !tIds.length) return ''
@@ -313,15 +280,6 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
             if (!mPoints.has(itemId)) return ''
             let point = mPoints.get(itemId)
             return this.$root.getLsExtends(point.Extends, point.Implements, this.$root.PLang)
-        },
-        ListProperty() {
-            const lst = []
-            for (let ii = 0, prp; ii < this.item.Methods.length; ii++) {
-                prp = this.item.Methods[ii]
-                let txt = this.getFragProp(prp)
-                lst.push(txt)
-            }
-            return lst
         },
     },
 }
@@ -348,7 +306,7 @@ const RectInterface = {
             for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
                 prp = lstPrp[jj]
                 txtP = this.getCsFormat(prp)
-                txtP = `  ${convertSymb(txtP)}` // txtP.replace('+', '  public')
+                txtP = `  ${convertSymb(txtP)}`
                 txtFnc += `${txtP}\n`
             }
             let txt = `${clsName}${txtFnc}}`
@@ -424,8 +382,17 @@ const MxOjClass = {
                 prp = lstPrp[jj]
                 txtP = this.getCsFormat(prp);
                 txtP = `  ${convertSymb(txtP)}`
-                if (jj - offI === ii) {
-                    let pCode = prp[4]
+                if (-1989 == offI && ii === offI) {
+                    let pCode = prp[5]
+                    if (typeof pCode != 'string') {
+                        pCode = '/* empty */'
+                        txtP = txtP.replace(`{...}`, `{ ${pCode} }`)
+                    } else {
+                        if (pCode[0] !== '' || pCode[1] !== '' || pCode[2] !== '') pCode = '   ' + pCode
+                        txtP = txtP.replace(`{...}`, `{\n ${pCode}\n  }`)
+                    }
+                } else if (jj - offI === ii) {
+                    let pCode = prp[5]
                     let hasEnter = false
                     if (!pCode) pCode = '/* empty */'
                     else if (isAbstract(pCode)) pCode = ''
@@ -443,7 +410,7 @@ const MxOjClass = {
                             txtP = txtP.replace(`{...}`, `{\n    ${pCode}\n  }`)
                         }
                     }
-                } else if (txtP.includes(`{...}`)) {
+                } else {
                     txtP = txtP.replace(`{...}`, `{ ... }`)
                 }
                 txtFnc += `${txtP}\n`
@@ -509,35 +476,6 @@ const MxOjClass = {
             return lst
         },
     },
-    // beforeMount() {
-    // const item = this.item
-    //// extend Method_s
-    //  let tIds = item.toIds
-    // if (tIds && tIds.length) {
-    // const lstCls = this.$root.ListClass
-    // const prps = item.Methods
-    // const lst = []
-    // for (let ii = 0, xx; ii < lstCls.length; ii++) {
-    //     xx = lstCls[ii]
-    //     if (xx.id == item.id) continue   // it-self
-    //     if (hasnMethod(xx)) continue;
-    //     if (!tIds.includes(xx.id)) continue
-    //     for (let jj = 0, prp, oPrp; jj < xx.Methods.length; jj++) {
-    //         prp = xx.Methods[jj]
-    //         oPrp = prps.find(pp => prp[1] == pp[1])
-    //         if (oPrp && oPrp[0].includes('override')) continue
-    //         if (xx.type.includes('instant')) continue
-    //         lst.push(prp)
-    //     }
-    // }
-    //const extendPrps = this.ExtProperties
-    // for (let ii = lst.length - 1, prp; -1 < ii; ii--) {
-    //     prp = lst[ii]
-    //     if (extendPrps.find(pp => prp[1] == pp[1])) continue
-    //     prps.unshift(JSON.parse(JSON.stringify(prp)))
-    // }
-    // }
-    // },
 }
 const RectAbstract = {
     template: `#tmp-rect-class`,

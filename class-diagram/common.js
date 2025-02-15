@@ -133,7 +133,7 @@ export function objNewCls(nCls, id, top, left) {
                 { Visible: '#', Name: fNm, Type: 'String' },
             ],
             Methods: [
-                ['+', PropName, 'void', AccessInit[1][0]],
+                ['+', PropName, '', 'void', AccessInit[1][0]],
             ]
         }
     }
@@ -173,7 +173,7 @@ export function verifySave(cItem, il, isView) {
         if (typeof txt != 'string') continue;
         txt = convertSymb(txt, isView)
         prp[0] = txt.trim()
-        prp[3] = convertAccessors(prp[3], il)
+        prp[4] = convertAccessors(prp[4], il)
     }
 }
 export function isOverlap(item, items) {
@@ -268,7 +268,7 @@ export function verifyName(name, lstNo) {
 //     return str.replace(/\d+/g, '');
 //     //console.log(newStr); // Output: "Đây là chuỗi chứa các số: ,  và ."
 // }
-function removeExtraSpaces(str) {
+export function removeExtraSpaces(str) {
     if (typeof str != 'string') return str
     // Sử dụng regex để thay thế nhiều khoảng trắng liên tiếp bằng một khoảng trắng duy nhất
     return str.replace(/\s+/g, ' ').trim();
@@ -288,7 +288,7 @@ export function getLstExt(lsMthd, items) {
         item = items[ii]
         for (let jj = 0, prp, oPrp; jj < item.Methods.length; jj++) {
             prp = item.Methods[jj]
-            oPrp = lsMthd.find(xx => prp[1] == xx[1])
+            oPrp = lsMthd.find(xx => prp[1] == xx[1] && prp[2] == xx[2])
             if (!oPrp) lst.push(prp)
         }
     }

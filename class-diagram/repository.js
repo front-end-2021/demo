@@ -14,10 +14,10 @@ export function getListCls() {
         { Visible: '#', Name: 'emailAddress', Type: 'String' },
     ])
     setFunctions(dItm, [
-        ['+', 'GetName()', 'string', AccessInit[0][0], `return this.Name`],
-        ['+', 'SetName(String n)', 'void', AccessInit[1][0], `this.Name = n`],
-        ['+', 'GetEmailAddress()', 'string', AccessInit[0][0], `return emailAddress`],
-        ['+', 'SetEmailAddress(string e)', 'void', AccessInit[1][0], `emailAddress = e`],
+        ['+', 'GetName', '', 'string', AccessInit[0][0], `return this.Name`],
+        ['+', 'SetName', 'String n', 'void', AccessInit[1][0], `this.Name = n`],
+        ['+', 'GetEmailAddress', '', 'string', AccessInit[0][0], `return emailAddress`],
+        ['+', 'SetEmailAddress', 'string e', 'void', AccessInit[1][0], `emailAddress = e`],
     ])
     lstCls.push(dItm)
     name = 'Contact'
@@ -30,8 +30,8 @@ export function getListCls() {
         { Visible: '-', Name: 'faxNumber', Type: 'string' },
     ])
     setFunctions(dItm, [
-        ['+', 'GetFaxNumber()', 'int', AccessInit[0][0]],
-        ['+', 'SetFaxNumber(int f)', 'void', AccessInit[1][0], `faxNumber = f`],
+        ['+', 'GetFaxNumber', '', 'int', AccessInit[0][0]],
+        ['+', 'SetFaxNumber', 'int f', 'void', AccessInit[1][0], `faxNumber = f`],
     ])
     lstCls.push(dItm)
     name = 'Animal'
@@ -47,8 +47,8 @@ export function getListCls() {
         { Visible: '+', Name: 'gender', Type: 'string' },
     ])
     setFunctions(dItm, [
-        ['+', 'IsMammal()', 'bool', AccessInit[0][0]],
-        ['+', 'Mate()', 'int', AccessInit[0][0]],
+        ['+', 'IsMammal', '', 'bool', AccessInit[0][0]],
+        ['+', 'Mate', '', 'int', AccessInit[0][0]],
     ])
     lstCls.push(dItm)
     name = 'Zebra'
@@ -62,7 +62,7 @@ export function getListCls() {
         { Visible: '+', Name: 'isWild', Type: 'string' },
     ])
     setFunctions(dItm, [
-        ['+', 'Run()', 'void', AccessInit[1][0]],
+        ['+', 'Run', '', 'void', AccessInit[1][0]],
     ])
     lstCls.push(dItm)
     tIds = [...tIds]
@@ -76,7 +76,7 @@ export function getListCls() {
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
-        ['+', 'Fly()', 'void', AccessInit[1][0]],
+        ['+', 'Fly', '', 'void', AccessInit[1][0]],
     ])
     lstCls.push(dItm)
     name = 'iQuack'
@@ -88,7 +88,7 @@ export function getListCls() {
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
-        ['+', 'Quack()', 'void', AccessInit[1][0]],
+        ['+', 'Quack', '', 'void', AccessInit[1][0]],
     ])
     lstCls.push(dItm)
     name = 'Duck'
@@ -102,7 +102,7 @@ export function getListCls() {
         { Visible: '+', Name: 'beakColor', Type: 'string' },
     ])
     setFunctions(dItm, [
-        ['+', 'Swim()', 'void', AccessInit[1][0]],
+        ['+', 'Swim', '', 'void', AccessInit[1][0]],
     ])
     lstCls.push(dItm)
     name = 'Size'
@@ -131,10 +131,10 @@ export function getListCls() {
         { Visible: '#', Name: 'size', Type: 'Size' },
     ])
     setFunctions(dItm, [
-        ['+ virtual', 'getDescription()', 'bool', AccessInit[0][0], `return new List<string>() { description }`],
-        ['+ abstract', 'cost()', 'double', AccessInit[0][0],],
-        ['+', 'getSize()', 'Size', AccessInit[0][0], 'return size'],
-        ['+', 'SetSize(Size s)', 'void', AccessInit[1][0], 'size = s'],
+        ['+ virtual', 'getDescription', '', 'bool', AccessInit[0][0], `return new List<string>() { description }`],
+        ['+ abstract', 'cost', '', 'double', AccessInit[0][0],],
+        ['+', 'getSize', '', 'Size', AccessInit[0][0], 'return size'],
+        ['+', 'SetSize', 'Size s', 'void', AccessInit[1][0], 'size = s'],
     ])
     lstCls.push(dItm)
     tIds = [id]
@@ -147,8 +147,8 @@ export function getListCls() {
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
-        ['+', 'Decaf()', '', AccessInit[2][0], `description = "Decaf"`],
-        ['+ override', 'cost()', 'double', AccessInit[0][0], 'return 1.05'],
+        ['+', 'Decaf', '', '', AccessInit[2][0], `description = "Decaf"`],
+        ['+ override', 'cost', '', 'double', AccessInit[0][0], 'return 1.05'],
     ])
     lstCls.push(dItm)
     name = 'Espresso'
@@ -159,8 +159,8 @@ export function getListCls() {
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
-        ['+', 'Espresso()', '', AccessInit[2][0], `description = "Espresso"`],
-        ['+ override', 'cost()', 'double', AccessInit[0][0], 'return 1.99'],
+        ['+', 'Espresso', '', '', AccessInit[2][0], `description = "Espresso"`],
+        ['+ override', 'cost', '', 'double', AccessInit[0][0], 'return 1.99'],
     ])
     lstCls.push(dItm)
     name = 'DarkRoast'
@@ -171,8 +171,8 @@ export function getListCls() {
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
-        ['+', 'DarkRoast()', '', AccessInit[2][0], `description = "DarkRoast"`],
-        ['+ override', 'cost()', 'double', AccessInit[0][0], 'return 0.99'],
+        ['+', 'DarkRoast', '', '', AccessInit[2][0], `description = "DarkRoast"`],
+        ['+ override', 'cost', '', 'double', AccessInit[0][0], 'return 0.99'],
     ])
     lstCls.push(dItm)
     name = 'HouseBlend'
@@ -183,8 +183,8 @@ export function getListCls() {
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
-        ['+', 'HouseBlend()', '', AccessInit[2][0], `description = "House Blend Coffee"`],
-        ['+ override', 'cost()', 'double', AccessInit[0][0], 'return 0.89'],
+        ['+', 'HouseBlend', '', '', AccessInit[2][0], `description = "House Blend Coffee"`],
+        ['+ override', 'cost', '', 'double', AccessInit[0][0], 'return 0.89'],
     ])
     lstCls.push(dItm)
     name = 'CondimentDecorator'
@@ -198,7 +198,7 @@ export function getListCls() {
         { Visible: '+', Name: 'beverage', Type: 'Beverage' },
     ])
     setFunctions(dItm, [
-        ['#', 'CountDes(string des)', 'List<string>', AccessInit[1][0]],
+        ['#', 'CountDes', 'string des', 'List<string>', AccessInit[1][0]],
     ])
     lstCls.push(dItm)
     tIds = [id]
@@ -211,9 +211,9 @@ export function getListCls() {
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
-        ['+', 'Soy(Beverage b)', '', AccessInit[2][0], `beverage = b`],
-        ['+ override', 'getDescription()', 'List<string>', AccessInit[0][0]],
-        ['+ override', 'cost()', 'double', AccessInit[0][0]],
+        ['+', 'Soy', 'Beverage b', '', AccessInit[2][0], `beverage = b`],
+        ['+ override', 'getDescription', '', 'List<string>', AccessInit[0][0]],
+        ['+ override', 'cost', '', 'double', AccessInit[0][0]],
     ])
     lstCls.push(dItm)
     return lstCls

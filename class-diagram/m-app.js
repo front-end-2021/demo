@@ -32,8 +32,10 @@ Promise.all([
 
                 MpPoints: new Map(),
                 DynamicVar: new Map(),
-                /* PopMenu, FViewCode, FrameCode: {top,left,html,type,item}, 
-                *  DragElm (Dùng kéo các khung class),  */
+                /* PopMenu, Drop-Search,
+                *  FViewCode, FrameCode: {top,left,html,type,item}, 
+                *  DragElm (Dùng kéo các khung class),
+                * */
                 NewClassName: null,
 
                 PLang: 1,
@@ -431,13 +433,7 @@ Promise.all([
                     }
                 }
             },
-            clearDyVar() {
-                const dmVar = this.DynamicVar
-                dmVar.delete('FrameCode')
-                dmVar.delete('FViewCode')
-                dmVar.delete('PopMenu')
-                dmVar.delete('DragElm')
-            },
+            clearDyVar() { this.DynamicVar.clear() },
             closePopupForm() {
                 const dmVar = this.DynamicVar
                 dmVar.delete('FrameCode')
@@ -542,6 +538,17 @@ Promise.all([
 
             document.addEventListener('mousemove', this.trackMouse)
             document.addEventListener("keyup", this.onKeyUp);
+            document.addEventListener('click', (e) => {
+                const dmVar = this.DynamicVar
+                if (dmVar.has('Drop-Search')) {
+                    const target = e.target
+                    if (!target.closest('h6.wrp-drpsearch')) {
+                        const fEdit = dmVar.get('Drop-Search')
+                        fEdit.hideDrpSearch()
+                    }
+                }
+                //console.log('click ', e, e.target, dmVar)
+            });
 
             this.updateSizeCanvas()         // mount-ed
             this.$nextTick(this.drawInCnvs) // mount-ed

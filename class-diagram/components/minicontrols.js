@@ -2,8 +2,7 @@ import {
     StructTypes, AccessInit, setHeight, objNewCls,
     isAbstract, isInterface, isClass, isEnum,
     clearSpace, verifySave, convertAccessors,
-    PropName, hasnMethod,
-    isStruct,
+    PropName, hasnMethod, removeExtraSpaces, isStruct,
 } from "../common.js"
 import { MenuList } from "./vw-diagram.js"
 export const PopDropdownSearch = {
@@ -228,7 +227,7 @@ export const FormEdit = {
             let txtC = target.textContent
             txtC = txtC.trim()
             switch (type) {
-                case 'code context':
+                case 'methd body code':
                     txtC = target.value
                     break;
                 case 'class name':
@@ -255,24 +254,29 @@ export const FormEdit = {
                     if (checkRevertHtml(prpF.Type)) return
                     prpF.Type = txtC
                     break;
-                case 'access modify key':
-                    prpF = mItem.Methods[ii]
+                case 'methd access type':
+                    prpF = mItem.Methods[ii]    // acc-type
                     if (checkRevertHtml(prpF[0])) return
                     prpF[0] = txtC
                     break;
-                case 'access modify name':
+                case 'methd name':
                     prpF = mItem.Methods[ii]
                     if (checkRevertHtml(prpF[1])) return
                     prpF[1] = txtC
                     break;
-                case 'access modify type':
+                case 'methd params':
                     prpF = mItem.Methods[ii]
                     if (checkRevertHtml(prpF[2])) return
-                    prpF[2] = txtC
+                    prpF[2] = removeExtraSpaces(txtC)
                     break;
-                case 'code context':
+                case 'methd return type':
                     prpF = mItem.Methods[ii]
-                    prpF[4] = txtC
+                    if (checkRevertHtml(prpF[3])) return
+                    prpF[3] = txtC
+                    break;
+                case 'methd body code':
+                    prpF = mItem.Methods[ii]    // body_code
+                    prpF[5] = txtC
                     setHeight(target, target.value)
                     break;
                 default: break;
@@ -315,18 +319,18 @@ export const FormEdit = {
                     acs = this.AccessInit[2][0]
                     let a0 = prp[0].split(' ')
                     prp[0] = a0[0]
-                    if (prp[2].length) prp[2] = ''
+                    if (prp[3].length) prp[3] = ''
                     break;
                 case AccessInit[1][il]: // set
-                    prp[2] = 'void'
+                    prp[3] = 'void'
                     break;
                 case AccessInit[0][il]: // get
-                    if ('void' == prp[2]) prp[2] = 'string'
-                    if (!prp[2].length) prp[2] = 'string'
+                    if ('void' == prp[3]) prp[3] = 'string'
+                    if (!prp[3].length) prp[3] = 'string'
                     break;
                 default: break;
             }
-            prp[3] = convertAccessors(acs, il)
+            prp[4] = convertAccessors(acs, il)
         },
         isReturnType(acs) {
             if (typeof acs != 'string') return false;
@@ -342,7 +346,7 @@ export const FormEdit = {
         onInput(e, type, ii) {
             const target = e.target
             switch (type) {
-                case 'code context':
+                case 'methd body code':
                     setHeight(target, target.value)
                     break;
                 default: return;
@@ -359,7 +363,7 @@ export const FormEdit = {
             const target = e.target
             let txt = target.value
             let prpF = mItem.Methods[ii]
-            prpF[4] = txt
+            prpF[5] = txt
             setTimeout(() => {
                 setHeight(target, txt)
             }, 111)
@@ -369,11 +373,11 @@ export const FormEdit = {
             const mItem = frmCode.cItem
             if (hasnMethod(mItem)) {
                 mItem.Methods = [
-                    ['public', PropName, 'void', AccessInit[1][0], '']
+                    ['public', PropName, '', 'void', AccessInit[1][0], '']
                 ]
             } else {
                 if (mItem.Methods.find(x => PropName == x[1])) return;
-                mItem.Methods.push(['public', PropName, 'void', AccessInit[1][0], ''])
+                mItem.Methods.push(['public', PropName, '', 'void', AccessInit[1][0], ''])
             }
         },
         onCloseEdit() {
@@ -471,9 +475,14 @@ export const FormEdit = {
         },
         showDrpSearch() {
             this.IsDrpExtend = true
+            this.$root.DynamicVar.set('Drop-Search', this)
         },
         hideDrpSearch() {
             this.IsDrpExtend = false
+            this.$root.DynamicVar.delete('Drop-Search')
         },
-    }
+    },
+    beforeUnmount() {
+        this.$root.DynamicVar.delete('Drop-Search')
+    },
 }

@@ -1,4 +1,4 @@
-body, .dr_lst-wrap {scrollbar-width: thin;}
+body, .dr_lst-wrap, .mformedit, #dnb-viewcode {scrollbar-width: thin;}
 
 .ctlmove, .ctledit {
     width: 22px;height: calc(100% - 1px);
@@ -10,6 +10,7 @@ body, .dr_lst-wrap {scrollbar-width: thin;}
 .vwheader:hover>.ctledit { display: inline-block; }
 .cpoint {cursor: pointer;}
 .p36 { padding: 3px 6px; }
+.p3-0 { padding: 3px 0; }
 
 [contenteditable="true"] {border-bottom: 1px solid #ffffff96;}
 [contenteditable="true"]:empty:before {
