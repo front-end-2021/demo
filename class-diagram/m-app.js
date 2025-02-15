@@ -68,7 +68,6 @@ Promise.all([
         },
         methods: {
             buildMapPoints(rItem) {
-                if (!rItem.toIds || !rItem.toIds.length) return     // verify
                 if (isEnum(rItem.type)) return     // verify
                 if (isStruct(rItem.type)) return     // verify
 
@@ -206,6 +205,7 @@ Promise.all([
                     }
                 }
                 function buildLsImplment() {
+                    if (!rItem.toIds || !rItem.toIds.length) return     // verify
                     for (const [name, item] of mInterface) {
                         if (item.id == rItem.id) continue // it-self
                         if (!rItem.toIds.includes(item.id)) continue
@@ -213,6 +213,7 @@ Promise.all([
                     }
                 }
                 function buildLsExtend(mapCls) {
+                    if (!rItem.toIds || !rItem.toIds.length) return     // verify
                     for (const [name, item] of mapCls) {
                         if (item.id == rItem.id) continue // it-self
                         if (!rItem.toIds.includes(item.id)) continue
