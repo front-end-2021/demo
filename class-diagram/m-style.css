@@ -22,7 +22,7 @@ body, .dr_lst-wrap, .mformedit, #dnb-viewcode {scrollbar-width: thin;}
     display: inline-block;  padding: 18px; 
     transform: translate(-50%, -50%); box-sizing: border-box; 
     border-radius: 10px; position: fixed; overflow-y: auto;
-    background-color: rgb(168 215 255); top: 50%; left: 50%;
+    background-color: #e5e5e5; top: 50%; left: 50%;
 }
 .dnb-mnlst > *:hover {background-color: #efefef;}
 .dr_lst-wrap > *:hover {background-color: #efefef;}

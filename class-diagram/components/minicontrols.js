@@ -38,9 +38,11 @@ export const PopDropdownSearch = {
             if (typeof str != 'string') return sources
             if (!str.length) return sources
             const lst = []
-            for (let ii = 0, src; ii < this.sources.length; ii++) {
+            for (let ii = 0, src, name; ii < this.sources.length; ii++) {
                 src = this.sources[ii]
-                if (src.Name.includes(str)) lst.push(src)
+                name = src.Name
+                name = name.toLowerCase()
+                if (name.includes(str)) lst.push(src)
             }
             return lst
         },
@@ -86,9 +88,8 @@ export const FormEdit = {
             const mItem = this.entry
             if (typeof mItem.id != 'number') return true
             if (typeof mItem.type != 'string') return false
-            if (!isClass(mItem.type)) return false
-            if (mItem.toIds && mItem.toIds.length) return false
-            return true
+            if (isClass(mItem.type)) return true
+            return false
         },
         TxtType() {
             const mItem = this.entry

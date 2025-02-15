@@ -47,11 +47,11 @@
     </header>
 
     <component :is="CompPage"></component>
-
+    <div v-if="EditObject" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #00000063;"></div>
     <form-edit v-if="EditObject" :entry="EditObject.cItem"></form-edit>
   </main>
   <template id="tmp-form-edit">
-    <div class="mformedit">
+    <div class="mformedit" style="z-index: 3;">
       <div style="margin-bottom: 12px; display: flex;align-items: center;">
         <menu-list v-if="IsSelectTyp" :value="TxtType" :isfix="true" :sources="StrucTypes"
           @change:value="$e => changeTypeObject($e)">
