@@ -120,7 +120,7 @@ export function clearSpace(str, nm) {
     str = str.trim()
     return str.replaceAll(' ', '')
 }
-export const PropName = 'ProperName()'
+export const PropName = 'ProperName'
 export function objNewCls(nCls, id, top, left) {
     const fNm = 'fieldName'
     const cNm = 'ClassName'

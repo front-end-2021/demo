@@ -100,7 +100,7 @@
                 @keypress="e => $root.preventKeyPress(e, [13, 32])" @blur="e => onDoneEdit(e, 'class name')"
                 @click="e => showCodeBody(-1989, -1989)">{{ClassName}}</span>
             <span v-for="exv in ViewExtends">
-                <small>{{exv[0]}}&nbsp;</small><i>{{exv[1]}}</i>
+                <small>{{exv[0]}}&nbsp;</small><small>{{exv[1]}}</small>
             </span>
         </div>
         <div v-if="0 < ExtendFields.length + item.Fields.length"
