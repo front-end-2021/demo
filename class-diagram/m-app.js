@@ -4,6 +4,7 @@ import {
     drawExtension, drawImplement, drawGrid,
     drawComposition, drawAssociation, drawAggregation,
     computeXY,
+    fillCirle,
 } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
@@ -86,10 +87,8 @@ Promise.all([
                 let coX, coY, cooW, cooH
                 coX = Math.floor(cls.left / cellSize)
                 coY = Math.floor(cls.top / cellSize)
-                cooW = Math.ceil((cls.width + cls.left) / cellSize)
-                cooH = Math.ceil((cls.top + cls.height) / cellSize)
-                if (0 < coX) coX--
-                if (0 < coY) coY--
+                cooW = Math.floor((cls.width + cls.left) / cellSize)
+                cooH = Math.floor((cls.top + cls.height) / cellSize)
                 for (let xx = coX; xx <= cooW; xx++) {
                     for (let yy = coY; yy <= cooH; yy++) {
                         grid[yy][xx] = cellBlock
@@ -354,36 +353,44 @@ Promise.all([
                     y0 = src.top - cellSize
                     w0 = src.width
                     h0 = src.height
-                    for (let ii = point.Extends.length - 1; -1 < ii; ii--) {
+                    let [ssX, ssY] = getCooXy(x0, y0)
+                    startNode = new Node(ssX, ssY, 0, 0);
+                    let ii = 0
+                   // for (ii = point.Extends.length - 1; -1 < ii; ii--) {
                         des = point.Extends[ii]
-                        x1 = des.left - cellSize
+                        x1 = des.left
                         y1 = des.top - cellSize
                         w1 = des.width
                         h1 = des.height
-                        let [ssX, ssY] = getCooXy(x0, y0)
-                        let [eeX, eeY] = getCooXy(x1, y1)
-                        startNode = new Node(ssX, ssY, 0, 0);
+                        let [eeX, eeY] = getCooXy(60, 0)
                         endNode = new Node(eeX, eeY, 0, 0);
                         path = aStar2D(startNode, endNode, grid);
                         console.log('extends', src.Name, des.Name, path)
                         console.log(ssX, ssY)
-                        console.log(eeX, eeY)
+                        console.log(des.left, des.top, eeX, eeY)
                         console.groupEnd()
                         drawPath(path)
-                    }
+                   // }
+                   break
                 }
                 function drawPath(path) {
                     if (!path.length) return
-                    ctx.strokeStyle = 'red';
+                    let color = 'red'
+                    ctx.strokeStyle = color
                     ctx.beginPath();
                     let i = 0
                     let x = path[i].x
                     let y = path[i].y
-                    ctx.moveTo(y * cellSize + cellSize / 2, x * cellSize + cellSize / 2);
+                    x = x * cellSize + cellSize / 2
+                    y = y * cellSize + cellSize / 2
+                    ctx.moveTo(y, x);
+                    fillCirle(ctx, x, y, 3, color)
                     for (i = 1; i < path.length; i++) {
                         x = path[i].x
                         y = path[i].y
-                        ctx.lineTo(y * cellSize + cellSize / 2, x * cellSize + cellSize / 2);
+                        x = x * cellSize + cellSize / 2
+                        y = y * cellSize + cellSize / 2
+                        ctx.lineTo(y, x);
                     }
                     ctx.stroke();
                 }

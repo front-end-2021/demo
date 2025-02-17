@@ -195,7 +195,7 @@ export function computeXY(p0, p1) {
     else if (isBotY1) y1 += (h1 - 1);
     return [x0, y0, x1, y1]
 }
-function fillCirle(ctx, x0, y0, r, color) {
+export function fillCirle(ctx, x0, y0, r, color) {
     ctx.beginPath();
     ctx.arc(x0, y0, r, 0, 2 * Math.PI);
     ctx.fillStyle = color;
