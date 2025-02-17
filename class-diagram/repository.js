@@ -2,12 +2,14 @@ import { StructTypes, AccessInit } from "./common.js"
 export function getListCls() {
     let lstCls = []
     let name = 'Account'
-    let id = 1; //getId(name)
+    let id = 1;
     let type = StructTypes[2][0]    //'instant class'
     let tIds = [id]
+    let top = 30
+    let left = 90
     let dItm = {
         id: id++, Name: name, type, toIds: [],
-        top: 30, left: 90, width: 220, height: 100,
+        top, left, width: 220, height: 100,
     }
     setFilds(dItm, [
         { Visible: '#', Name: 'name', Type: 'String' },
@@ -21,10 +23,11 @@ export function getListCls() {
     ])
     lstCls.push(dItm)
     name = 'Contact'
-    id++// = getId(name)
+    id++
+    left = 380
     dItm = {
         id: id, Name: name, toIds: tIds, type,
-        top: 30, left: 380, width: 210, height: 100,
+        top, left, width: 210, height: 100,
     }
     setFilds(dItm, [
         { Visible: '-', Name: 'faxNumber', Type: 'string' },
@@ -35,12 +38,14 @@ export function getListCls() {
     ])
     lstCls.push(dItm)
     name = 'Animal'
-    id++// = getId(name)
+    id++
     tIds = [id]
     type = StructTypes[1][0]    //'abstract class'
+    top = 70
+    left = 1024
     dItm = {
         id: id, type, Name: name, toIds: [],
-        top: 70, left: 1024, width: 150, height: 100,
+        top, left, width: 150, height: 100,
     }
     setFilds(dItm, [
         { Visible: '+', Name: 'age', Type: 'int' },
@@ -52,11 +57,13 @@ export function getListCls() {
     ])
     lstCls.push(dItm)
     name = 'Zebra'
-    id++// = getId(name)
+    id++
     type = StructTypes[2][0]    //'instant class'
+    top = 270
+    left = 1280
     dItm = {
         id: id, type, Name: name, toIds: tIds,
-        top: 270, left: 1280, width: 150, height: 100,
+        top, left, width: 150, height: 100,
     }
     setFilds(dItm, [
         { Visible: '+', Name: 'isWild', Type: 'string' },
@@ -67,12 +74,14 @@ export function getListCls() {
     lstCls.push(dItm)
     tIds = [...tIds]
     name = 'iFly'
-    id++// = getId(name)
+    id++
     tIds.push(id)
     type = StructTypes[0][0]    //'interface'
+    top = 500
+    left = 1200
     dItm = {
         id: id, type, Name: name, toIds: [],
-        top: 500, left: 1200, width: 150, height: 100,
+        top, left, width: 150, height: 100,
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
@@ -80,11 +89,13 @@ export function getListCls() {
     ])
     lstCls.push(dItm)
     name = 'iQuack'
-    id++// = getId(name)
+    id++
     tIds.push(id)
+    top = 500
+    left = 1400
     dItm = {
         id: id, type, Name: name, toIds: [],
-        top: 500, left: 1400, width: 150, height: 100,
+        top, left, width: 150, height: 100,
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
@@ -92,11 +103,13 @@ export function getListCls() {
     ])
     lstCls.push(dItm)
     name = 'Duck'
-    id++// = getId(name)
+    id++
     type = StructTypes[2][0]    //'instant class'
+    top = 270
+    left = 880
     dItm = {
         id: id, type, Name: name, toIds: tIds,
-        top: 270, left: 880, width: 150, height: 100,
+        top, left, width: 150, height: 100,
     }
     setFilds(dItm, [
         { Visible: '+', Name: 'beakColor', Type: 'string' },
@@ -106,11 +119,13 @@ export function getListCls() {
     ])
     lstCls.push(dItm)
     name = 'Size'
-    id++// = getId(name)
+    id++
     type = StructTypes[3][0]    //'enum'
+    top = 370
+    left = 90
     dItm = {
         id: id, type, Name: name,
-        top: 370, left: 90, width: 220, height: 250,
+        top, left, width: 220, height: 250,
     }
     setFilds(dItm, [
         { Name: 'VENTI' },
@@ -120,11 +135,13 @@ export function getListCls() {
     setFunctions(dItm, [])
     lstCls.push(dItm)
     name = 'Beverage'
-    id++// = getId(name)
+    id++
     type = StructTypes[1][0]    //'abstract class'
+    top = 290
+    left = 480
     dItm = {
         id: id, type, Name: name, toIds: [],
-        top: 290, left: 480, width: 220, height: 120,
+        top, left, width: 220, height: 120,
     }
     setFilds(dItm, [
         { Visible: '#', Name: 'description', Type: 'string' },
@@ -139,11 +156,13 @@ export function getListCls() {
     lstCls.push(dItm)
     tIds = [id]
     name = 'Decaf'
-    id++// = getId(name)
+    id++
     type = StructTypes[2][0]    //'instant class'
+    top = 480
+    left = 90
     dItm = {
         id: id, type, Name: name, toIds: tIds,
-        top: 480, left: 90, width: 220, height: 120,
+        top, left, width: 220, height: 120,
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
@@ -152,10 +171,12 @@ export function getListCls() {
     ])
     lstCls.push(dItm)
     name = 'Espresso'
-    id++// = getId(name)
+    id++
+    top = 480
+    left = 290
     dItm = {
         id: id, type, Name: name, toIds: tIds,
-        top: 480, left: 290, width: 220, height: 120,
+        top, left, width: 220, height: 120,
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
@@ -164,10 +185,12 @@ export function getListCls() {
     ])
     lstCls.push(dItm)
     name = 'DarkRoast'
-    id++// = getId(name)
+    id++
+    top = 480
+    left = 510
     dItm = {
         id: id, type, Name: name, toIds: tIds,
-        top: 480, left: 510, width: 220, height: 120,
+        top, left, width: 220, height: 120,
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
@@ -176,10 +199,12 @@ export function getListCls() {
     ])
     lstCls.push(dItm)
     name = 'HouseBlend'
-    id++// = getId(name)
+    id++
+    top = 480
+    left = 750
     dItm = {
         id: id, type, Name: name, toIds: tIds,
-        top: 480, left: 750, width: 220, height: 120,
+        top, left, width: 220, height: 120,
     }
     setFilds(dItm, [])
     setFunctions(dItm, [
@@ -188,11 +213,13 @@ export function getListCls() {
     ])
     lstCls.push(dItm)
     name = 'CondimentDecorator'
-    id++// = getId(name)
+    id++
     type = StructTypes[1][0]    //'abstract class'
+    top = 660
+    left = 90
     dItm = {
         id: id, type, Name: name, toIds: tIds,
-        top: 660, left: 90, width: 220, height: 120,
+        top, left, width: 220, height: 120,
     }
     setFilds(dItm, [
         { Visible: '+', Name: 'beverage', Type: 'Beverage' },
@@ -203,11 +230,13 @@ export function getListCls() {
     lstCls.push(dItm)
     tIds = [id]
     name = 'Soy'
-    id++// = getId(name)
+    id++
     type = StructTypes[2][0]    //'instant class'
+    top = 660
+    left = 710
     dItm = {
         id: id, type, Name: name, toIds: tIds,
-        top: 660, left: 490, width: 220, height: 120,
+        top, left, width: 220, height: 120,
     }
     setFilds(dItm, [])
     setFunctions(dItm, [

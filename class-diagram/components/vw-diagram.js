@@ -2,6 +2,9 @@ import {
     isInterface, processLines, StructTypes, objNewCls, verifyExportTxt,
     isAbstract, convertSymb, truncateIds, getLstExt, verifyName,
     addStrFirst,
+    getRows,
+    getCols,
+    genBoards,
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
@@ -87,14 +90,25 @@ const MxRect = {
             let w = this.item.width
             let cW = this.$el.offsetWidth
             cW = Math.ceil(cW)
+            let isChange = false
+            
             if (w != cW) {
                 this.item.width = cW
+                isChange = true
             }
             let h = this.item.height
             let cH = this.$el.offsetHeight
             cH = Math.ceil(cH)
             if (h != cH) {
                 this.item.height = cH
+                isChange = true
+            }
+            if (isChange) {
+               // console.log('change size ', this.item.Name)
+                this.$root.clearBlock(this.item)
+                this.$root.buildBlock(this.item)
+                this.$root.$nextTick(this.$root.drawInCnvs)
+                this.$root.$nextTick(this.$root.drawBlocks)
             }
         },
         deleteCls(item) {

@@ -96,13 +96,6 @@ export const AccessInit = [
     ['set', 'set', 'set'],
     ['init', 'Constructor', 'Constructor']
 ]
-// export const ListKeyword = [
-//     'int', 'float', 'double', 'char',
-//     'if', 'else', 'switch', 'case',
-//     'for', 'while', 'do', 'break', 'continue',
-//     'return', 'void', 'static',
-//     'try', 'catch', 'finally', 'throw',
-// ]
 export function convertAccessors(acs, il) {
     let txt = acs
     if (typeof il == 'number') {
@@ -119,6 +112,120 @@ export function clearSpace(str, nm) {
     if (typeof str != 'string') return nm
     str = str.trim()
     return str.replaceAll(' ', '')
+}
+export const cellSize = 10
+export const cellEmpty = 'E'
+export const cellBlock = 'B'
+export function getRows(height) { return height / cellSize }
+export function getCols(width) { return width / cellSize }
+export function genBoards(rows, cols) {
+    let brd = [], i, j, row
+    for (i = 0; i < rows; i++) {
+        row = [];
+        for (j = 0; j < cols; j++) row.push(cellEmpty);
+        brd.push(row);
+    }
+    return brd
+}
+export function addBlocks(board, lstXy) {
+    for (let [x, y] of lstXy) board[y][x] = cellBlock
+}
+export class Node {
+    constructor(x, y, cost, heuristic) {
+        this.x = x;
+        this.y = y;
+        this.cost = cost;
+        this.heuristic = heuristic;
+        this.parent = null;
+    }
+    get f() { return this.cost + this.heuristic; }
+}
+export function aStar2D(start, end, grid) {
+    const openSet = new Map();
+    const blokedSet = new Set()
+    openSet.set(0, start);
+    let lowestIndex, current, neighbors
+    while (0 < openSet.size) {
+        lowestIndex = 0;
+        for (const [i, n0de] of openSet) {
+            if (n0de.f < openSet.get(lowestIndex).f) lowestIndex = i
+        }
+
+        current = openSet.get(lowestIndex)
+        if (current.x === end.x && current.y === end.y) {
+            const path = [];
+            let temp = current;
+            while (temp) {
+                path.push(temp);
+                temp = temp.parent;
+            }
+            return path.reverse();
+        }
+        removeIndex(openSet, lowestIndex)
+        blokedSet.add(`${current.x},${current.y}`);
+
+        neighbors = getNeighbors(current, grid);
+        for (const neighbor of neighbors) {
+            if (blokedSet.has(`${neighbor.x},${neighbor.y}`)) continue;
+
+            const tentativeG = current.cost + 1;
+            let newPath = false;
+            if (!isN0de(openSet, neighbor)) {
+                newPath = true;
+                neighbor.heuristic = heuristic(neighbor, end);
+                addN0de(openSet, neighbor)
+            } else if (tentativeG < neighbor.cost) { newPath = true }
+
+            if (newPath) {
+                neighbor.cost = tentativeG;
+                neighbor.parent = current;
+            }
+        }
+    }
+    return [];
+    function heuristic(a, b) { return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) }
+    function removeIndex(mSet, key) {
+        let lwei = key
+        while (lwei < mSet.size - 1) {
+            mSet.set(lwei, mSet.get(lwei + 1))
+            lwei++
+        }
+        lwei = mSet.size - 1
+        mSet.delete(lwei)
+    }
+    function getNeighbors(n0d, grid) {
+        const neighbors = [];
+        const { x, y } = n0d;
+        if (0 < x && cellEmpty == grid[x - 1][y]) neighbors.push(new Node(x - 1, y, n0d.cost + 1, 0));
+        if (x < grid.length - 1 && cellEmpty == grid[x + 1][y]) neighbors.push(new Node(x + 1, y, n0d.cost + 1, 0));
+        if (0 < y && cellEmpty == grid[x][y - 1]) neighbors.push(new Node(x, y - 1, n0d.cost + 1, 0));
+        if (y < grid[0].length - 1 && cellEmpty == grid[x][y + 1]) neighbors.push(new Node(x, y + 1, n0d.cost + 1, 0));
+        return neighbors;
+    }
+    function addN0de(mSet, n0de) {
+        let key = mSet.size
+        mSet.set(key, n0de)
+    }
+    function isN0de(mSet, n0de) {
+        for (const [i, nd] of mSet) {
+            if (n0de.x != nd.x) continue
+            if (n0de.y != nd.y) continue
+            return true
+        }
+        return false
+    }
+}
+export function getCooXy(x, y) {
+    let coX = Math.floor(x / cellSize)
+    let coY = Math.floor(y / cellSize)
+    return [coX, coY]
+}
+export function switchPoint(grid, coX, coY) {
+    let point = grid[coY]
+    if (!point) return
+    if (typeof point != 'string') return
+    if (cellEmpty === point) grid[coY][coX] = cellBlock
+    else grid[coY][coX] = cellEmpty
 }
 export const PropName = 'ProperName'
 export function objNewCls(nCls, id, top, left) {
@@ -254,20 +361,6 @@ export function verifyName(name, lstNo) {
     return vName
 
 }
-// function extractEndDigits(str) {
-//     // Sử dụng regex để tìm các chữ số ở cuối chuỗi
-//     const match = str.match(/\d+$/);
-//     return match ? match[0] : ''
-// }
-// function removeEndDigits(str) {
-//     // Sử dụng regex để tìm và loại bỏ các chữ số ở cuối chuỗi
-//     return str.replace(/\d+$/, '');
-// }
-// function removeNum(str) {
-//     //str = "Đây là chuỗi chứa các số: 123, 456 và 789.";
-//     return str.replace(/\d+/g, '');
-//     //console.log(newStr); // Output: "Đây là chuỗi chứa các số: ,  và ."
-// }
 export function addStrFirst(txt, str) {
     let lines = txt.split('\n')
     for (let ll = lines.length - 1, txLn; -1 < ll; ll--) {
@@ -356,14 +449,14 @@ class AhoCorasick {
     }
     buildTrie(patterns) {
         for (const pattern of patterns) {
-            let node = this.trie;
+            let n0d = this.trie;
             for (const char of pattern) {
-                if (!node[char]) {
-                    node[char] = {};
+                if (!n0d[char]) {
+                    n0d[char] = {};
                 }
-                node = node[char];
+                n0d = n0d[char];
             }
-            node.isEnd = true;
+            n0d.isEnd = true;
         }
     }
     buildFailureLinks() {
@@ -374,15 +467,15 @@ class AhoCorasick {
         }
 
         while (queue.length > 0) {
-            const node = queue.shift();
-            for (const char in node) {
+            const n0d = queue.shift();
+            for (const char in n0d) {
                 if (char === 'fail' || char === 'isEnd') continue;
-                let fail = node.fail;
+                let fail = n0d.fail;
                 while (fail && !fail[char]) {
                     fail = fail.fail;
                 }
-                node[char].fail = fail ? fail[char] : this.trie;
-                queue.push(node[char]);
+                n0d[char].fail = fail ? fail[char] : this.trie;
+                queue.push(n0d[char]);
             }
         }
     }
@@ -392,29 +485,29 @@ class AhoCorasick {
         this.buildFailureLinks();
     }
     indexes(text) {
-        let node = this.trie;
+        let n0d = this.trie;
         const results = [];
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
-            while (node && !node[char]) {
-                node = node.fail;
+            while (n0d && !n0d[char]) {
+                n0d = n0d.fail;
             }
-            node = node ? node[char] : this.trie;
-            if (node.isEnd) {
+            n0d = n0d ? n0d[char] : this.trie;
+            if (n0d.isEnd) {
                 results.push(i);
             }
         }
         return results;
     }
     indexOf(text) {
-        let node = this.trie;
+        let n0d = this.trie;
         for (let i = 0; i < text.length; i++) {
             const char = text[i];
-            while (node && !node[char]) {
-                node = node.fail;
+            while (n0d && !n0d[char]) {
+                n0d = n0d.fail;
             }
-            node = node ? node[char] : this.trie;
-            if (node.isEnd) {
+            n0d = n0d ? n0d[char] : this.trie;
+            if (n0d.isEnd) {
                 return i
             }
         }

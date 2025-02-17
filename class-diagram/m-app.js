@@ -3,13 +3,16 @@ import { createApp } from 'vue'
 import {
     drawExtension, drawImplement, drawGrid,
     drawComposition, drawAssociation, drawAggregation,
+    computeXY,
 } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import {
-    verifySave, setHeight, isOverlap, initPoint,
+    verifySave, setHeight, isOverlap, initPoint, getStringBetween,
     isAbstract, isClass, isInterface, isStruct, isEnum,
-    getStringBetween,
+    genBoards, getRows, getCols, cellSize, cellBlock, cellEmpty,
+    aStar2D, Node,
+    getCooXy,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -23,10 +26,20 @@ Promise.all([
             'form-edit': FormEdit,
         },
         data() {
+            let MinX = 150
+            let MaxX = MinX + 1754
+            let MinY = 30
+            let MaxY = 880
+            const border = 2    // 1px * 2
+            let rows = getRows(MaxY - MinY - border)
+            let cols = getCols(MaxX - MinX - border)
+            let Board = genBoards(rows, cols)
 
             return {
-                MinX: 150, MaxX: 150 + 1754,
-                MinY: 30, MaxY: 880,
+                MinX, MaxX,
+                MinY, MaxY,
+                Board,
+                BlokedMap: new Map(),
                 DiagName: 'Demo',
                 ListClass: getListCls(),
 
@@ -67,6 +80,33 @@ Promise.all([
             //ListClass(val) { },
         },
         methods: {
+            buildBlock(cls) {
+                const grid = this.Board
+                const mapBlk = this.BlokedMap
+                let coX, coY, cooW, cooH
+                coX = Math.floor(cls.left / cellSize)
+                coY = Math.floor(cls.top / cellSize)
+                cooW = Math.ceil((cls.width + cls.left) / cellSize)
+                cooH = Math.ceil((cls.top + cls.height) / cellSize)
+                if (0 < coX) coX--
+                if (0 < coY) coY--
+                for (let xx = coX; xx <= cooW; xx++) {
+                    for (let yy = coY; yy <= cooH; yy++) {
+                        grid[yy][xx] = cellBlock
+                        mapBlk.set(cls.id, [coX, coY, cooW, cooH])
+                    }
+                }
+            },
+            clearBlock(cls) {
+                const mapBlk = this.BlokedMap
+                const grid = this.Board
+                const [coX, coY, cooW, cooH] = mapBlk.get(cls.id)
+                for (let xx = coX; xx <= cooW; xx++) {
+                    for (let yy = coY; yy <= cooH; yy++) {
+                        grid[yy][xx] = cellEmpty
+                    }
+                }
+            },
             buildMapPoints(rItem) {
                 if (isEnum(rItem.type)) return     // verify
                 if (isStruct(rItem.type)) return     // verify
@@ -237,7 +277,8 @@ Promise.all([
                 const c = document.getElementById('dnb-mcanvas');
                 const ctx = c.getContext("2d");
                 ctx.clearRect(0, 0, c.width, c.height);
-                drawGrid.call(ctx, c.width, c.height, 10, '#f5f5f5')
+                drawGrid.call(ctx, c.width, c.height, cellSize, '#f5f5f5')
+
                 const mPoints = this.MpPoints
                 if (mPoints.size < 1) return;
                 let src, des
@@ -295,6 +336,98 @@ Promise.all([
 
                 }
 
+            },
+            drawPaths() {
+                const c = document.getElementById('dnb-mcanvas');
+                const ctx = c.getContext("2d");
+                const mPoints = this.MpPoints
+                if (mPoints.size < 1) return;
+
+                const grid = this.Board
+                let src, des
+                let x0, y0, w0, h0
+                let x1, y1, w1, h1
+                let path = [], startNode, endNode
+                for (const [id, point] of mPoints) {
+                    src = point.item
+                    x0 = src.left + 1;
+                    y0 = src.top
+                    w0 = src.width
+                    h0 = src.height
+                    for (let ii = point.Implements.length - 1; -1 < ii; ii--) {
+                        des = point.Implements[ii]
+                        x1 = des.left
+                        y1 = des.top
+                        w1 = des.width
+                        h1 = des.height
+                        let [sX, sY, eX, eY] = computeXY([x0, y0, w0, h0], [x1, y1, w1, h1])
+                        let [ssX, ssY] = getCooXy(sX, sY)
+                        let [eeX, eeY] = getCooXy(eX, eY)
+                        startNode = new Node(ssX, ssY, 0, 0);
+                        endNode = new Node(eeX, eeY, 0, 0);
+                        path = aStar2D(startNode, endNode, grid);
+                        console.group('implements', src.Name, des.Name, path)
+                        console.log(sX, sY, ssX, ssY)
+                        console.log(eX, eY, eeX, eeY)
+                        console.groupEnd()
+                        drawPath(path)
+                    }
+                    for (let ii = point.Extends.length - 1; -1 < ii; ii--) {
+                        des = point.Extends[ii]
+                        x1 = des.left
+                        y1 = des.top
+                        w1 = des.width
+                        h1 = des.height
+                        let [sX, sY, eX, eY] = computeXY([x0, y0, w0, h0], [x1, y1, w1, h1])
+                        let [ssX, ssY] = getCooXy(sX, sY)
+                        let [eeX, eeY] = getCooXy(eX, eY)
+                        startNode = new Node(ssX, ssY, 0, 0);
+                        endNode = new Node(eeX, eeY, 0, 0);
+                        path = aStar2D(startNode, endNode, grid);
+                        console.log('extends', src.Name, des.Name, path)
+                        console.log(sX, sY, ssX, ssY)
+                        console.log(eX, eY, eeX, eeY)
+                        console.groupEnd()
+                        drawPath(path)
+                    }
+                }
+                function drawPath(path) {
+                    if (!path.length) return
+                    ctx.strokeStyle = 'red';
+                    ctx.beginPath();
+                    let i = 0
+                    let x = path[i].x
+                    let y = path[i].y
+                    ctx.moveTo(y * cellSize + cellSize / 2, x * cellSize + cellSize / 2);
+                    for (i = 1; i < path.length; i++) {
+                        x = path[i].x
+                        y = path[i].y
+                        ctx.lineTo(y * cellSize + cellSize / 2, x * cellSize + cellSize / 2);
+                    }
+                    ctx.stroke();
+                }
+            },
+            drawBlocks() {
+                //const grid = this.Board
+                const c = document.getElementById('dnb-mcanvas');
+                const ctx = c.getContext("2d");
+                ctx.fillStyle = '#00000057';
+                const mapBlk = this.BlokedMap
+                for (const [id, point] of mapBlk) {
+                    const [coX, coY, cooW, cooH] = point
+                    for (let xx = coX; xx <= cooW; xx++) {
+                        for (let yy = coY; yy <= cooH; yy++) {
+                            ctx.fillRect(xx * cellSize, yy * cellSize, cellSize, cellSize)
+                        }
+                    }
+                }
+                // for (let i = 0, rl = grid.length; i < rl; i++) {
+                //     for (let j = 0, cl = grid[i].length; j < cl; j++) {
+                //         if (grid[i][j] === cellBlock) {
+                //             ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize)
+                //         }
+                //     }
+                // }
             },
             buildAssociation() {
                 const mPoints = this.MpPoints
@@ -403,11 +536,15 @@ Promise.all([
                         this.setTopLeft(dItem, dgElm.Left, dgElm.Top)
                         this.updateSizeCanvas()         // key up => end dnd item => revert
                         this.$nextTick(this.drawInCnvs) // key up => end dnd item => revert
+                        this.$nextTick(this.drawBlocks) // key up => end dnd item => revert
 
                     } else {
+                        this.clearBlock(dItem)
+                        this.buildBlock(dItem)
 
                         this.updateSizeCanvas()             // key up => end dnd item
                         this.drawInCnvs()    // key up => end dnd item
+                        this.drawBlocks()    // key up => end dnd item
 
                     }
                     document.removeEventListener('keydown', this.disableSrollDown)
@@ -520,8 +657,10 @@ Promise.all([
         //  beforeCreate() { },
         created() {
             let lsCls = this.ListClass
-            for (let ii = lsCls.length - 1; -1 < ii; ii--) {
-                this.buildMapPoints(lsCls[ii])      // create-d
+            for (let ii = lsCls.length - 1, cls; -1 < ii; ii--) {
+                cls = lsCls[ii]
+                this.buildBlock(cls)
+                this.buildMapPoints(cls)      // create-d
             }
             this.buildAssociation()         // create-d
         },
@@ -553,6 +692,8 @@ Promise.all([
 
             this.updateSizeCanvas()         // mount-ed
             this.$nextTick(this.drawInCnvs) // mount-ed
+            this.$nextTick(this.drawBlocks) // mount-ed
+            this.$nextTick(this.drawPaths) // mount-ed
 
         },
         //updated(){ console.log('updated') }
