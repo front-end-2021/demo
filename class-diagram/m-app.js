@@ -350,43 +350,24 @@ Promise.all([
                 let path = [], startNode, endNode
                 for (const [id, point] of mPoints) {
                     src = point.item
-                    x0 = src.left + 1;
-                    y0 = src.top
+                    x0 = src.left - cellSize
+                    y0 = src.top - cellSize
                     w0 = src.width
                     h0 = src.height
-                    for (let ii = point.Implements.length - 1; -1 < ii; ii--) {
-                        des = point.Implements[ii]
-                        x1 = des.left
-                        y1 = des.top
-                        w1 = des.width
-                        h1 = des.height
-                        let [sX, sY, eX, eY] = computeXY([x0, y0, w0, h0], [x1, y1, w1, h1])
-                        let [ssX, ssY] = getCooXy(sX, sY)
-                        let [eeX, eeY] = getCooXy(eX, eY)
-                        startNode = new Node(ssX, ssY, 0, 0);
-                        endNode = new Node(eeX, eeY, 0, 0);
-                        path = aStar2D(startNode, endNode, grid);
-                        console.group('implements', src.Name, des.Name, path)
-                        console.log(sX, sY, ssX, ssY)
-                        console.log(eX, eY, eeX, eeY)
-                        console.groupEnd()
-                        drawPath(path)
-                    }
                     for (let ii = point.Extends.length - 1; -1 < ii; ii--) {
                         des = point.Extends[ii]
-                        x1 = des.left
-                        y1 = des.top
+                        x1 = des.left - cellSize
+                        y1 = des.top - cellSize
                         w1 = des.width
                         h1 = des.height
-                        let [sX, sY, eX, eY] = computeXY([x0, y0, w0, h0], [x1, y1, w1, h1])
-                        let [ssX, ssY] = getCooXy(sX, sY)
-                        let [eeX, eeY] = getCooXy(eX, eY)
+                        let [ssX, ssY] = getCooXy(x0, y0)
+                        let [eeX, eeY] = getCooXy(x1, y1)
                         startNode = new Node(ssX, ssY, 0, 0);
                         endNode = new Node(eeX, eeY, 0, 0);
                         path = aStar2D(startNode, endNode, grid);
                         console.log('extends', src.Name, des.Name, path)
-                        console.log(sX, sY, ssX, ssY)
-                        console.log(eX, eY, eeX, eeY)
+                        console.log(ssX, ssY)
+                        console.log(eeX, eeY)
                         console.groupEnd()
                         drawPath(path)
                     }
@@ -421,13 +402,6 @@ Promise.all([
                         }
                     }
                 }
-                // for (let i = 0, rl = grid.length; i < rl; i++) {
-                //     for (let j = 0, cl = grid[i].length; j < cl; j++) {
-                //         if (grid[i][j] === cellBlock) {
-                //             ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize)
-                //         }
-                //     }
-                // }
             },
             buildAssociation() {
                 const mPoints = this.MpPoints
