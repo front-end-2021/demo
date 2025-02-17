@@ -11,8 +11,7 @@ import {
     verifySave, setHeight, isOverlap, initPoint, getStringBetween,
     isAbstract, isClass, isInterface, isStruct, isEnum,
     genBoards, getRows, getCols, cellSize, cellBlock, cellEmpty,
-    aStar2D, Node,
-    getCooXy,
+    aStar2D, Node, getCooXy, verifyExportTxt,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -26,7 +25,7 @@ Promise.all([
             'form-edit': FormEdit,
         },
         data() {
-            let MinX = 150
+            let MinX = 124
             let MaxX = MinX + 1754
             let MinY = 30
             let MaxY = 880
@@ -40,6 +39,7 @@ Promise.all([
                 MinY, MaxY,
                 Board,
                 BlokedMap: new Map(),
+
                 DiagName: 'Demo',
                 ListClass: getListCls(),
 
@@ -648,6 +648,21 @@ Promise.all([
 
                 cvns.setAttribute('width', mxX)
                 cvns.setAttribute('height', mxY)
+            },
+            onBlurEdit(e, type) {
+                const target = e.target
+                let txtC = target.textContent
+                txtC = txtC.trim()
+                switch (type) {
+                    case 'diagram name':
+                        if (!txtC.length) {
+                            target.innerHTML = this.DiagName
+                            return
+                        }
+                        this.DiagName = verifyExportTxt(txtC)
+                        break;
+                    default: break;
+                }
             },
             // equalHas(txt1, txt2) {
             //     let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)

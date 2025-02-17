@@ -1,5 +1,5 @@
 import {
-    isInterface, processLines, StructTypes, objNewCls, verifyExportTxt,
+    isInterface, processLines, StructTypes, objNewCls,
     isAbstract, convertSymb, truncateIds, getLstExt, verifyName,
     addStrFirst,
     getRows,
@@ -653,21 +653,6 @@ export const ViewDiagram = {
             };
             reader.readAsText(file);
             function showMessage(txt) { alert(txt) }
-        },
-        onBlurEdit(e, type) {
-            const target = e.target
-            let txtC = target.textContent
-            txtC = txtC.trim()
-            if (!txtC.length) {
-                target.innerHTML = this.$root.DiagName
-                return
-            }
-            switch (type) {
-                case 'diagram name':
-                    this.$root.DiagName = verifyExportTxt(txtC)
-                    break;
-                default: break;
-            }
         },
         onMouseDown(event) {
             const dmVar = this.$root.DynamicVar

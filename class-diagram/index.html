@@ -38,8 +38,11 @@
     <header class="" 
       style="display: flex;"
       :style="{height: MinY + 'px'}">
-      <nav class="ap-nav" style="flex-grow: 1;">
-
+      <nav class="ap-nav" style="flex-grow: 1;display: grid;grid-template-columns: calc(124px - 10px) auto;align-items: center;">
+          <h4 style="margin: 0;font-size: 14px;"><span style="color: #4d6bfe;">Class</span>-diagram</h4>
+          <h3 style="margin: 0;" contenteditable="true" 
+            @keypress="e => preventKeyPress(e, [13])"
+            @blur="e => onBlurEdit(e, 'diagram name')">{{DiagName}}</h3>
       </nav>
       <small style="width: 120px;display: inline-block;">
         Mouse: <small id="dnb-app-log"></small>
