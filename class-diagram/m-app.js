@@ -9,7 +9,7 @@ import { getListCls } from './repository.js'
 import {
     verifySave, setHeight, isOverlap, initPoint,
     isAbstract, isClass, isInterface, isStruct, isEnum,
-    getStringBetween,
+    getStringBetween, verifyExportTxt,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -25,7 +25,7 @@ Promise.all([
         data() {
 
             return {
-                MinX: 150, MaxX: 150 + 1754,
+                MinX: 124, MaxX: 150 + 1754,
                 MinY: 30, MaxY: 880,
                 DiagName: 'Demo',
                 ListClass: getListCls(),
@@ -511,6 +511,21 @@ Promise.all([
 
                 cvns.setAttribute('width', mxX)
                 cvns.setAttribute('height', mxY)
+            },
+            onBlurEdit(e, type) {
+                const target = e.target
+                let txtC = target.textContent
+                txtC = txtC.trim()
+                switch (type) {
+                    case 'diagram name':
+                        if (!txtC.length) {
+                            target.innerHTML = this.DiagName
+                            return
+                        }
+                        this.DiagName = verifyExportTxt(txtC)
+                        break;
+                    default: break;
+                }
             },
             // equalHas(txt1, txt2) {
             //     let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)

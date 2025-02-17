@@ -1,9 +1,8 @@
 <template id="tmp-vw-diagram">
     <div style="display: flex;" :minx="$root.MinX" :maxx="$root.MaxX" :miny="$root.MinY" :maxy="$root.MaxY">
-        <aside id="dnb-vwtab-left" style="display: inline-flex;flex-direction: column;"
+        <aside id="dnb-vwtab-left" style="display: inline-flex;flex-direction: column;row-gap:8px;"
             :style="[{ width: $root.MinX + 'px'}]">
-            <h3 style="margin: 0;" contenteditable="true" @keypress="e => $root.preventKeyPress(e, [13])"
-                @blur="e => onBlurEdit(e, 'diagram name')">{{$root.DiagName}}</h3>
+            
             <div>
                 <menu-list :value="$root.Langs[$root.PLang]" :isfix="true" :sources="$root.Langs"
                     @change:value="$e => changeLanguage($e)">
@@ -22,15 +21,16 @@
             </div>
             <div style="display: inline-flex; width: 108px; height: 28px;
                 background-color: rgb(77, 107, 254); align-items: center; justify-content: center;
-                color: white; border-radius: 6px; margin: 9px;cursor: pointer;" @click.stop="newDiagram">New Diagram
+                color: white; border-radius: 6px;cursor: pointer;" 
+                @click.stop="newDiagram">New Diagram
             </div>
             <div style="display: inline-flex; width: 108px; height: 28px;
                 background-color: rgb(77, 107, 254); align-items: center; justify-content: center;
-                color: white; border-radius: 6px; margin: 9px;cursor: pointer;" @click.stop="exportDiagram">Save data
+                color: white; border-radius: 6px; cursor: pointer;" @click.stop="exportDiagram">Save data
             </div>
             <div style="display: grid; width: 108px; height: 28px;
                     background-color: rgb(77, 107, 254); align-items: center; justify-content: center;
-                color: white; border-radius: 6px; cursor: pointer; margin: 1px 9px; grid-template-columns: auto 0;">
+                color: white; border-radius: 6px; cursor: pointer; grid-template-columns: auto 0;">
                 <label for="file-import" style="cursor: pointer;">Import data</label>
                 <input type="file" id="file-import" style="opacity: 0;" accept=".txt" @change="importDiagram" />
             </div>
@@ -139,17 +139,18 @@
     </section>
 </template>
 <template id="tmp-menu-list">
-    <span class="wrap-mnlist" style="position: relative;cursor:default;"
+    <div class="wrap-mnlist" style="position: relative;cursor:default;height: 20px;"
         :style="[ListSrc.length ? { minWidth: '82px' } : null]">
         <span v-if="!ListSrc.length" @click="openLstSrc">{{value}}</span>
-        <span v-else class="dnb-mnlst" style="display: inline-flex; flex-direction: column;
+        <div v-else class="dnb-mnlst" style="display: inline-flex; flex-direction: column;
             position: absolute; z-index: 1;
             background-color: white; top: -12px;width: max-content;
             box-shadow: 0 .125rem .25rem #00000030;">
-            <span v-for="acs in ListSrc" @click.stop="e => changeValue(acs)" style="border-bottom: solid 1px #e3e3e3; 
-            box-sizing: border-box;width: 100%;" :style="[acs == this.value ? {
-                backgroundColor: '#dbdbdb'
-            } : null]" class="p36">{{acs}}</span>
+            <span v-for="acs in ListSrc" @click.stop="e => changeValue(acs)" 
+                style="border-bottom: solid 1px #e3e3e3; box-sizing: border-box;width: 100%;min-width: 105px;" 
+                :style="[acs == this.value ? {
+                    backgroundColor: '#dbdbdb'
+                } : null]" class="p36">{{acs}}</span>
         </span>
     </span>
 </template>
