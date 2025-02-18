@@ -195,11 +195,13 @@ export function aStar2D(start, end, grid) {
     }
     function getNeighbors(n0d, grid) {
         const neighbors = [];
+        let rows = grid.length      // y
+        let cols = grid[0].length   // x
         const { x, y } = n0d;
         if (0 < x && cellEmpty == grid[x - 1][y]) neighbors.push(new Node(x - 1, y, n0d.cost + 1, 0));
-        if (x < grid.length - 1 && cellEmpty == grid[x + 1][y]) neighbors.push(new Node(x + 1, y, n0d.cost + 1, 0));
+        if (x < cols - 1 && cellEmpty == grid[x + 1][y]) neighbors.push(new Node(x + 1, y, n0d.cost + 1, 0));
         if (0 < y && cellEmpty == grid[x][y - 1]) neighbors.push(new Node(x, y - 1, n0d.cost + 1, 0));
-        if (y < grid[0].length - 1 && cellEmpty == grid[x][y + 1]) neighbors.push(new Node(x, y + 1, n0d.cost + 1, 0));
+        if (y < rows - 1 && cellEmpty == grid[x][y + 1]) neighbors.push(new Node(x, y + 1, n0d.cost + 1, 0));
         return neighbors;
     }
     function addN0de(mSet, n0de) {

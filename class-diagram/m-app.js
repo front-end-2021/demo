@@ -341,41 +341,30 @@ Promise.all([
                 const ctx = c.getContext("2d");
                 const mPoints = this.MpPoints
                 if (mPoints.size < 1) return;
-
+                const mapBlk = this.BlokedMap
                 const grid = this.Board
                 let src, des
-                let x0, y0, w0, h0
-                let x1, y1, w1, h1
                 let path = [], startNode, endNode
                 for (const [id, point] of mPoints) {
-                    src = point.item
-                    x0 = src.left - cellSize
-                    y0 = src.top - cellSize
-                    w0 = src.width
-                    h0 = src.height
-                    let [ssX, ssY] = getCooXy(x0, y0)
-                    startNode = new Node(ssX, ssY, 0, 0);
+                    src = mapBlk.get(point.item.id)
+                    let [ix0, iy0, iw0, ih0] = src
+                    startNode = new Node(ix0, iy0+2, 0, 0);
                     let ii = 0
                    // for (ii = point.Extends.length - 1; -1 < ii; ii--) {
-                        des = point.Extends[ii]
-                        x1 = des.left
-                        y1 = des.top - cellSize
-                        w1 = des.width
-                        h1 = des.height
-                        let [eeX, eeY] = getCooXy(60, 0)
-                        endNode = new Node(eeX, eeY, 0, 0);
+                        des = mapBlk.get(point.Extends[ii].id)
+                        let [ix1, iy1, iw1, ih1] = des
+                        endNode = new Node(iw1, iy1-1, 0, 0);
                         path = aStar2D(startNode, endNode, grid);
-                        console.log('extends', src.Name, des.Name, path)
-                        console.log(ssX, ssY)
-                        console.log(des.left, des.top, eeX, eeY)
+                        console.log('extends', src.Name, des.Name, des)
+                        console.log(src, des)
+                        console.log(path)
                         console.groupEnd()
-                        drawPath(path)
+                        drawPath(path, 'red')
                    // }
                    break
                 }
-                function drawPath(path) {
+                function drawPath(path, color) {
                     if (!path.length) return
-                    let color = 'red'
                     ctx.strokeStyle = color
                     ctx.beginPath();
                     let i = 0
@@ -383,14 +372,14 @@ Promise.all([
                     let y = path[i].y
                     x = x * cellSize + cellSize / 2
                     y = y * cellSize + cellSize / 2
-                    ctx.moveTo(y, x);
+                    ctx.moveTo(x, y);
                     fillCirle(ctx, x, y, 3, color)
                     for (i = 1; i < path.length; i++) {
                         x = path[i].x
                         y = path[i].y
                         x = x * cellSize + cellSize / 2
                         y = y * cellSize + cellSize / 2
-                        ctx.lineTo(y, x);
+                        ctx.lineTo(x, y);
                     }
                     ctx.stroke();
                 }
