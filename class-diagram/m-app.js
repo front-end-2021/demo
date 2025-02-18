@@ -102,7 +102,7 @@ Promise.all([
                 const [coX, coY, cooW, cooH] = mapBlk.get(cls.id)
                 for (let xx = coX; xx <= cooW; xx++) {
                     for (let yy = coY; yy <= cooH; yy++) {
-                        grid[yy][xx] = cellEmpty
+                        grid[xx][yy] = cellEmpty
                     }
                 }
             },
