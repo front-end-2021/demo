@@ -2,9 +2,6 @@ import {
     isInterface, processLines, StructTypes, objNewCls,
     isAbstract, convertSymb, truncateIds, getLstExt, verifyName,
     addStrFirst,
-    getRows,
-    getCols,
-    genBoards,
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,

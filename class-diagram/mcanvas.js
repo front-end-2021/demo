@@ -170,7 +170,7 @@ function inRangeXY(p, p0, p1) {
         return true
     }
 }
-export function computeXY(p0, p1) {
+function computeXY(p0, p1) {
     let x1 = p1[0], y1 = p1[1];
     let w1 = p1[2], h1 = p1[3]
     let x0 = p0[0], y0 = p0[1]

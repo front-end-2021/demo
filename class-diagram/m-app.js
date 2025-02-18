@@ -3,7 +3,6 @@ import { createApp } from 'vue'
 import {
     drawExtension, drawImplement, drawGrid,
     drawComposition, drawAssociation, drawAggregation,
-    computeXY,
     fillCirle,
 } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
@@ -11,8 +10,9 @@ import { getListCls } from './repository.js'
 import {
     verifySave, setHeight, isOverlap, initPoint, getStringBetween,
     isAbstract, isClass, isInterface, isStruct, isEnum,
-    genBoards, getRows, getCols, cellSize, cellBlock, cellEmpty,
-    aStar2D, Node, getCooXy, verifyExportTxt,
+    genBoards, getRows, getCols, cellSize, getIiXy, cellEmpty,
+    aStar2D, Node, verifyExportTxt,
+    addBlocks,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -31,8 +31,8 @@ Promise.all([
             let MinY = 30
             let MaxY = 880
             const border = 2    // 1px * 2
-            let rows = getRows(MaxY - MinY - border)
-            let cols = getCols(MaxX - MinX - border)
+            let rows = getRows(MaxX - MinX - border)
+            let cols = getCols(MaxY - MinY - border)
             let Board = genBoards(rows, cols)
 
             return {
@@ -83,7 +83,7 @@ Promise.all([
         methods: {
             buildBlock(cls) {
                 const grid = this.Board
-                const mapBlk = this.BlokedMap
+                const mapBlk = this.BlokedMap   // build block  {id, [coX, coY, cooW, cooH]}
                 let coX, coY, cooW, cooH
                 coX = Math.floor(cls.left / cellSize)
                 coY = Math.floor(cls.top / cellSize)
@@ -91,13 +91,13 @@ Promise.all([
                 cooH = Math.floor((cls.top + cls.height) / cellSize)
                 for (let xx = coX; xx <= cooW; xx++) {
                     for (let yy = coY; yy <= cooH; yy++) {
-                        grid[yy][xx] = cellBlock
+                        addBlocks(grid, [[xx, yy]])
                         mapBlk.set(cls.id, [coX, coY, cooW, cooH])
                     }
                 }
             },
             clearBlock(cls) {
-                const mapBlk = this.BlokedMap
+                const mapBlk = this.BlokedMap   // clear block
                 const grid = this.Board
                 const [coX, coY, cooW, cooH] = mapBlk.get(cls.id)
                 for (let xx = coX; xx <= cooW; xx++) {
@@ -276,7 +276,11 @@ Promise.all([
                 const c = document.getElementById('dnb-mcanvas');
                 const ctx = c.getContext("2d");
                 ctx.clearRect(0, 0, c.width, c.height);
-                drawGrid.call(ctx, c.width, c.height, cellSize, '#f5f5f5')
+                const grid = this.Board
+                let rows = grid.length      // x
+                let cols = grid[0].length   // y
+                drawGrid.call(ctx, rows * cellSize, cols * cellSize, cellSize, '#f5f5f5')
+
 
                 const mPoints = this.MpPoints
                 if (mPoints.size < 1) return;
@@ -341,27 +345,53 @@ Promise.all([
                 const ctx = c.getContext("2d");
                 const mPoints = this.MpPoints
                 if (mPoints.size < 1) return;
-                const mapBlk = this.BlokedMap
+                const mapBlk = this.BlokedMap   // draw path
                 const grid = this.Board
                 let src, des
+                let x0, y0, w0, h0
+                let x1, y1, w1, h1
                 let path = [], startNode, endNode
                 for (const [id, point] of mPoints) {
+                    x0 = point.item.left + 1;
+                    y0 = point.item.top
+                    w0 = point.item.width
+                    h0 = point.item.height
                     src = mapBlk.get(point.item.id)
                     let [ix0, iy0, iw0, ih0] = src
-                    startNode = new Node(ix0, iy0+2, 0, 0);
-                    let ii = 0
-                   // for (ii = point.Extends.length - 1; -1 < ii; ii--) {
-                        des = mapBlk.get(point.Extends[ii].id)
+
+                    for (let ii = point.Extends.length - 1, dItem; -1 < ii; ii--) {
+                        dItem = point.Extends[ii]
+                        x1 = dItem.left
+                        y1 = dItem.top
+                        w1 = dItem.width
+                        h1 = dItem.height
+
+                        let isLefX0 = x1 < x0
+                        if (isLefX0) ix0 -= 1
+                        let isBotY0 = y0 + h0 < y1
+                        if (isBotY0) iy0 += 5
+
+                        let [iix0, iiy0, iix1, iiy1] = getIiXy([x0, y0, w0, h0], [x1, y1, w1, h1])
+
+                        startNode = new Node(ix0, iy0, 0, 0);
+
+                        des = mapBlk.get(dItem.id)
                         let [ix1, iy1, iw1, ih1] = des
-                        endNode = new Node(iw1, iy1-1, 0, 0);
+
+                        let isLefX1 = x0 < x1
+                        if (isLefX1) ix1 -= 1
+                        let isBotY1 = y1 + h1 / 6 < y0
+                        if (isBotY1) iy1 += 3
+
+                        endNode = new Node(ix1, iy1, 0, 0);
                         path = aStar2D(startNode, endNode, grid);
-                        console.log('extends', src.Name, des.Name, des)
-                        console.log(src, des)
+                        console.group('extends', point.item.Name, dItem.Name)
+                        console.log(iix0, iiy0, iix1, iiy1)
                         console.log(path)
                         console.groupEnd()
                         drawPath(path, 'red')
-                   // }
-                   break
+                    }
+                    //break
                 }
                 function drawPath(path, color) {
                     if (!path.length) return
@@ -385,11 +415,11 @@ Promise.all([
                 }
             },
             drawBlocks() {
-                //const grid = this.Board
+                let color = '#00000057';
                 const c = document.getElementById('dnb-mcanvas');
                 const ctx = c.getContext("2d");
-                ctx.fillStyle = '#00000057';
-                const mapBlk = this.BlokedMap
+                ctx.fillStyle = color
+                const mapBlk = this.BlokedMap   // draw blocks
                 for (const [id, point] of mapBlk) {
                     const [coX, coY, cooW, cooH] = point
                     for (let xx = coX; xx <= cooW; xx++) {

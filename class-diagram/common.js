@@ -128,7 +128,7 @@ export function genBoards(rows, cols) {
     return brd
 }
 export function addBlocks(board, lstXy) {
-    for (let [x, y] of lstXy) board[y][x] = cellBlock
+    for (let [x, y] of lstXy) board[x][y] = cellBlock
 }
 export class Node {
     constructor(x, y, cost, heuristic) {
@@ -195,13 +195,13 @@ export function aStar2D(start, end, grid) {
     }
     function getNeighbors(n0d, grid) {
         const neighbors = [];
-        let rows = grid.length      // y
-        let cols = grid[0].length   // x
+        let rows = grid.length      // x
+        let cols = grid[0].length   // y
         const { x, y } = n0d;
         if (0 < x && cellEmpty == grid[x - 1][y]) neighbors.push(new Node(x - 1, y, n0d.cost + 1, 0));
-        if (x < cols - 1 && cellEmpty == grid[x + 1][y]) neighbors.push(new Node(x + 1, y, n0d.cost + 1, 0));
+        if (x < rows - 1 && cellEmpty == grid[x + 1][y]) neighbors.push(new Node(x + 1, y, n0d.cost + 1, 0));
         if (0 < y && cellEmpty == grid[x][y - 1]) neighbors.push(new Node(x, y - 1, n0d.cost + 1, 0));
-        if (y < rows - 1 && cellEmpty == grid[x][y + 1]) neighbors.push(new Node(x, y + 1, n0d.cost + 1, 0));
+        if (y < cols - 1 && cellEmpty == grid[x][y + 1]) neighbors.push(new Node(x, y + 1, n0d.cost + 1, 0));
         return neighbors;
     }
     function addN0de(mSet, n0de) {
@@ -217,10 +217,47 @@ export function aStar2D(start, end, grid) {
         return false
     }
 }
-export function getCooXy(x, y) {
-    let coX = Math.floor(x / cellSize)
-    let coY = Math.floor(y / cellSize)
-    return [coX, coY]
+export function getIiXy(p0, p1) {
+    let x1 = p1[0], y1 = p1[1];
+    let w1 = p1[2], h1 = p1[3]
+    let x0 = p0[0], y0 = p0[1]
+    let w0 = p0[2], h0 = p0[3]
+    let isLefX0 = x1 < x0
+    let isBotY0 = y0 + h0 < y1
+
+    let isCenY = (y0 <= y1 && y1 <= y0 + h0) || (y1 <= y0 && y0 <= y1 + h1)
+    let isCenX = (x0 <= x1 && x1 <= x0 + w0) || (x1 <= x0 && x0 <= x1 + w1)
+
+    let isLefX1 = x0 < x1
+    let isBotY1 = y1 + h1 / 6 < y0
+
+    if (isCenX) x0 += w0 / 2
+    else if (!isLefX0) x0 += w0;
+    if (isCenY) y0 += h0 / 2
+    else if (isBotY0) y0 += (h0 - 1)
+
+    if (isCenX) x1 += w1 / 2
+    else if (!isLefX1) x1 += w1;
+    if (isCenY) y1 += h1 / 2
+    else if (isBotY1) y1 += (h1 - 1);
+
+    if(isLefX0) {
+        x0 = Math.floor(x0 / cellSize)
+        y0 = Math.floor(y0 / cellSize)
+    } else if(isBotY0) {
+        x0 = Math.ceil(x0 / cellSize)
+        y0 = Math.floor(y0 / cellSize)
+    }
+    
+    if(isLefX1) {
+        x1 = Math.floor(x1 / cellSize)
+        y1 = Math.floor(y1 / cellSize)
+    } else if(isBotY0) {
+        x1 = Math.ceil(x1 / cellSize)
+        y1 = Math.floor(y1 / cellSize)
+    }
+    
+    return [x0, y0, x1, y1]
 }
 export function switchPoint(grid, coX, coY) {
     let point = grid[coY]
