@@ -10,7 +10,7 @@ import { getListCls } from './repository.js'
 import {
     verifySave, setHeight, isOverlap, initPoint, getStringBetween,
     isAbstract, isClass, isInterface, isStruct, isEnum,
-    genBoards, getRows, getCols, cellSize, getIiXy, cellEmpty,
+    genBoards, getRows, getCols, cellSize, cellEmpty,
     aStar2D, Node, verifyExportTxt,
     addBlocks,
 } from './common.js'
@@ -352,41 +352,40 @@ Promise.all([
                 let x1, y1, w1, h1
                 let path = [], startNode, endNode
                 for (const [id, point] of mPoints) {
-                    x0 = point.item.left + 1;
-                    y0 = point.item.top
-                    w0 = point.item.width
-                    h0 = point.item.height
+                    // x0 = point.item.left + 1;
+                    // y0 = point.item.top
+                    // w0 = point.item.width
+                    // h0 = point.item.height
                     src = mapBlk.get(point.item.id)
                     let [ix0, iy0, iw0, ih0] = src
 
                     for (let ii = point.Extends.length - 1, dItem; -1 < ii; ii--) {
                         dItem = point.Extends[ii]
-                        x1 = dItem.left
-                        y1 = dItem.top
-                        w1 = dItem.width
-                        h1 = dItem.height
+                        // x1 = dItem.left
+                        // y1 = dItem.top
+                        // w1 = dItem.width
+                        // h1 = dItem.height
 
-                        let isLefX0 = x1 < x0
-                        if (isLefX0) ix0 -= 1
-                        let isBotY0 = y0 + h0 < y1
-                        if (isBotY0) iy0 += 5
+                        // let isLefX0 = x1 < x0
+                        // if (isLefX0) ix0 -= 1
+                        // let isBotY0 = y0 + h0 < y1
+                        // if (isBotY0) iy0 += 5
 
-                        let [iix0, iiy0, iix1, iiy1] = getIiXy([x0, y0, w0, h0], [x1, y1, w1, h1])
-
-                        startNode = new Node(ix0, iy0, 0, 0);
+                        startNode = new Node(ix0-1, iy0-1, 0, 0);
 
                         des = mapBlk.get(dItem.id)
                         let [ix1, iy1, iw1, ih1] = des
 
-                        let isLefX1 = x0 < x1
-                        if (isLefX1) ix1 -= 1
-                        let isBotY1 = y1 + h1 / 6 < y0
-                        if (isBotY1) iy1 += 3
+                        // let isLefX1 = x0 < x1
+                        // if (isLefX1) ix1 -= 1
+                        // let isBotY1 = y1 + h1 / 6 < y0
+                        // if (isBotY1) iy1 += 3
 
-                        endNode = new Node(ix1, iy1, 0, 0);
+                        endNode = new Node(iw1+1, ih1+1, 0, 0);
                         path = aStar2D(startNode, endNode, grid);
                         console.group('extends', point.item.Name, dItem.Name)
-                        console.log(iix0, iiy0, iix1, iiy1)
+                        console.log(ix0, iy0, iw0, ih0)
+                        console.log(ix1, iy1, iw1, ih1)
                         console.log(path)
                         console.groupEnd()
                         drawPath(path, 'red')

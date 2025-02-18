@@ -59,8 +59,8 @@ export function getListCls() {
     name = 'Zebra'
     id++
     type = StructTypes[2][0]    //'instant class'
-    top = 270
-    left = 1280
+    top = 30
+    left = 1390
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top, left, width: 150, height: 100,
@@ -77,8 +77,8 @@ export function getListCls() {
     id++
     tIds.push(id)
     type = StructTypes[0][0]    //'interface'
-    top = 500
-    left = 1200
+    top = 290
+    left = 1460
     dItm = {
         id: id, type, Name: name, toIds: [],
         top, left, width: 150, height: 100,
@@ -91,8 +91,8 @@ export function getListCls() {
     name = 'iQuack'
     id++
     tIds.push(id)
-    top = 500
-    left = 1400
+    top = 210
+    left = 1460
     dItm = {
         id: id, type, Name: name, toIds: [],
         top, left, width: 150, height: 100,
@@ -105,8 +105,8 @@ export function getListCls() {
     name = 'Duck'
     id++
     type = StructTypes[2][0]    //'instant class'
-    top = 270
-    left = 880
+    top = 240
+    left = 1062
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top, left, width: 150, height: 100,
@@ -173,7 +173,7 @@ export function getListCls() {
     name = 'Espresso'
     id++
     top = 480
-    left = 290
+    left = 452
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top, left, width: 220, height: 120,
@@ -187,7 +187,7 @@ export function getListCls() {
     name = 'DarkRoast'
     id++
     top = 480
-    left = 510
+    left = 800
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top, left, width: 220, height: 120,
@@ -201,7 +201,7 @@ export function getListCls() {
     name = 'HouseBlend'
     id++
     top = 480
-    left = 750
+    left = 1160
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top, left, width: 220, height: 120,
