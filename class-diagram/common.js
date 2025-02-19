@@ -162,15 +162,17 @@ export function aStar2D(start, end, grid) {
             return path.reverse();
         }
         removeIndex(mPointOpen, lowestIndex)
-        sPointBlock.add(`${current.x},${current.y}`);
+        let keyP = getKeyXy(current)
+        sPointBlock.add(keyP);
         let sPointOpen = getOpenSet(mPointOpen)
         neighbors = getNeighbors(current, grid);
         for (const neighbor of neighbors) {
-            if (sPointBlock.has(`${neighbor.x},${neighbor.y}`)) continue;
+            keyP = getKeyXy(neighbor)
+            if (sPointBlock.has(keyP)) continue;
 
             const tentativeG = current.cost + 1;
             let newPath = false;
-            if (!sPointOpen.has(`${neighbor.x},${neighbor.y}`)) {
+            if (!sPointOpen.has(keyP)) {
                 newPath = true;
                 neighbor.heuristic = heuristic(neighbor, end);
                 addN0de(mPointOpen, neighbor)
@@ -213,6 +215,7 @@ export function aStar2D(start, end, grid) {
         for (const [i, nd] of mPoint) { setP.add(`${nd.x},${nd.y}`) }
         return setP
     }
+    function getKeyXy(point) { return `${point.x},${point.y}` }
 }
 export function switchPoint(grid, coX, coY) {
     let point = grid[coY]
