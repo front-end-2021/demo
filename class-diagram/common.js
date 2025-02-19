@@ -127,9 +127,7 @@ export function genBoards(rows, cols) {
     }
     return brd
 }
-export function addBlocks(board, lstXy) {
-    for (let [x, y] of lstXy) board[x][y] = cellBlock
-}
+export function setCell(board, ix, iy, value) { board[ix][iy] = value }
 export class Node {
     constructor(x, y, cost, heuristic) {
         this.x = x;
@@ -217,12 +215,10 @@ export function aStar2D(start, end, grid) {
     }
     function getKeyXy(point) { return `${point.x},${point.y}` }
 }
-export function switchPoint(grid, coX, coY) {
-    let point = grid[coY]
-    if (!point) return
-    if (typeof point != 'string') return
-    if (cellEmpty === point) grid[coY][coX] = cellBlock
-    else grid[coY][coX] = cellEmpty
+export function doInRange(ix0, iy0, ix1, iy1, fnc) {
+    for (let ix = ix0; ix <= ix1; ix++) {
+        for (let iy = iy0; iy <= iy1; iy++) fnc(ix, iy)
+    }
 }
 export const PropName = 'ProperName'
 export function objNewCls(nCls, id, top, left) {

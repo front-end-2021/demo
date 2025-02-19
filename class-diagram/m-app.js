@@ -11,8 +11,7 @@ import {
     verifySave, setHeight, isOverlap, initPoint, getStringBetween,
     isAbstract, isClass, isInterface, isStruct, isEnum,
     genBoards, getRows, getCols, cellSize, cellEmpty,
-    aStar2D, Node, verifyExportTxt,
-    addBlocks,
+    aStar2D, Node, verifyExportTxt, doInRange, setCell, cellBlock,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -83,28 +82,24 @@ Promise.all([
         methods: {
             buildBlock(cls) {
                 const grid = this.Board
-                const mapBlk = this.BlokedMap   // build block  {id, [coX, coY, cooW, cooH]}
-                let coX, coY, cooW, cooH
-                coX = Math.floor(cls.left / cellSize)
-                coY = Math.floor(cls.top / cellSize)
-                cooW = Math.floor((cls.width + cls.left) / cellSize)
-                cooH = Math.floor((cls.top + cls.height) / cellSize)
-                for (let xx = coX; xx <= cooW; xx++) {
-                    for (let yy = coY; yy <= cooH; yy++) {
-                        addBlocks(grid, [[xx, yy]])
-                        mapBlk.set(cls.id, [coX, coY, cooW, cooH])
-                    }
-                }
+                const mapBlk = this.BlokedMap   // build block  {id, [ix0, iy0, ix1, iy1]}
+                let ix0, iy0, ix1, iy1
+                ix0 = Math.floor(cls.left / cellSize)
+                iy0 = Math.floor(cls.top / cellSize)
+                ix1 = Math.floor((cls.width + cls.left) / cellSize)
+                iy1 = Math.floor((cls.top + cls.height) / cellSize)
+                mapBlk.set(cls.id, [ix0, iy0, ix1, iy1])
+                doInRange(ix0, iy0, ix1, iy1, (ix, iy) => {
+                    setCell(grid, ix, iy, cellBlock)
+                })
             },
             clearBlock(cls) {
                 const mapBlk = this.BlokedMap   // clear block
                 const grid = this.Board
-                const [coX, coY, cooW, cooH] = mapBlk.get(cls.id)
-                for (let xx = coX; xx <= cooW; xx++) {
-                    for (let yy = coY; yy <= cooH; yy++) {
-                        grid[xx][yy] = cellEmpty
-                    }
-                }
+                const [ix0, iy0, ix1, iy1] = mapBlk.get(cls.id)
+                doInRange(ix0, iy0, ix1, iy1, (ix, iy) => {
+                    setCell(grid, ix, iy, cellEmpty)
+                })
             },
             buildMapPoints(rItem) {
                 if (isEnum(rItem.type)) return     // verify
@@ -371,7 +366,7 @@ Promise.all([
                         // let isBotY0 = y0 + h0 < y1
                         // if (isBotY0) iy0 += 5
 
-                        startNode = new Node(ix0-1, iy0-1, 0, 0);
+                        startNode = new Node(ix0 - 1, iy0 - 1, 0, 0);
 
                         des = mapBlk.get(dItem.id)
                         let [ix1, iy1, iw1, ih1] = des
@@ -381,7 +376,7 @@ Promise.all([
                         // let isBotY1 = y1 + h1 / 6 < y0
                         // if (isBotY1) iy1 += 3
 
-                        endNode = new Node(iw1+1, ih1+1, 0, 0);
+                        endNode = new Node(iw1 + 1, ih1 + 1, 0, 0);
                         path = aStar2D(startNode, endNode, grid);
                         console.group('extends', point.item.Name, dItem.Name)
                         console.log(ix0, iy0, iw0, ih0)
@@ -420,12 +415,10 @@ Promise.all([
                 ctx.fillStyle = color
                 const mapBlk = this.BlokedMap   // draw blocks
                 for (const [id, point] of mapBlk) {
-                    const [coX, coY, cooW, cooH] = point
-                    for (let xx = coX; xx <= cooW; xx++) {
-                        for (let yy = coY; yy <= cooH; yy++) {
-                            ctx.fillRect(xx * cellSize, yy * cellSize, cellSize, cellSize)
-                        }
-                    }
+                    const [ix0, iy0, ix1, iy1] = point
+                    doInRange(ix0, iy0, ix1, iy1, (ix, iy) => {
+                        ctx.fillRect(ix * cellSize, iy * cellSize, cellSize, cellSize)
+                    })
                 }
             },
             buildAssociation() {
