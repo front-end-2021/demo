@@ -88,16 +88,17 @@ Promise.all([
                 iy0 = Math.floor(cls.top / cellSize)
                 ix1 = Math.floor((cls.width + cls.left) / cellSize)
                 iy1 = Math.floor((cls.top + cls.height) / cellSize)
-                mapBlk.set(cls.id, [ix0, iy0, ix1, iy1])
-                doInRange(ix0, iy0, ix1, iy1, (ix, iy) => {
+                let area = [ix0, iy0, ix1, iy1]
+                mapBlk.set(cls.id, area)
+                doInRange(area, (ix, iy) => {
                     setCell(grid, ix, iy, cellBlock)
                 })
             },
             clearBlock(cls) {
                 const mapBlk = this.BlokedMap   // clear block
                 const grid = this.Board
-                const [ix0, iy0, ix1, iy1] = mapBlk.get(cls.id)
-                doInRange(ix0, iy0, ix1, iy1, (ix, iy) => {
+                const area = mapBlk.get(cls.id)
+                doInRange(area, (ix, iy) => {
                     setCell(grid, ix, iy, cellEmpty)
                 })
             },
@@ -414,9 +415,8 @@ Promise.all([
                 const ctx = c.getContext("2d");
                 ctx.fillStyle = color
                 const mapBlk = this.BlokedMap   // draw blocks
-                for (const [id, point] of mapBlk) {
-                    const [ix0, iy0, ix1, iy1] = point
-                    doInRange(ix0, iy0, ix1, iy1, (ix, iy) => {
+                for (const [id, area] of mapBlk) {
+                    doInRange(area, (ix, iy) => {
                         ctx.fillRect(ix * cellSize, iy * cellSize, cellSize, cellSize)
                     })
                 }
