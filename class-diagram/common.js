@@ -141,17 +141,17 @@ export class Node {
     get f() { return this.cost + this.heuristic; }
 }
 export function aStar2D(start, end, grid) {
-    const openSet = new Map();
-    const blokedSet = new Set()
-    openSet.set(0, start);
+    const mPointOpen = new Map();
+    const sPointBlock = new Set()
+    mPointOpen.set(0, start);
     let lowestIndex, current, neighbors
-    while (0 < openSet.size) {
+    while (0 < mPointOpen.size) {
         lowestIndex = 0;
-        for (const [i, n0de] of openSet) {
-            if (n0de.f < openSet.get(lowestIndex).f) lowestIndex = i
+        for (const [i, n0de] of mPointOpen) {
+            if (n0de.f < mPointOpen.get(lowestIndex).f) lowestIndex = i
         }
 
-        current = openSet.get(lowestIndex)
+        current = mPointOpen.get(lowestIndex)
         if (current.x === end.x && current.y === end.y) {
             const path = [];
             let temp = current;
@@ -161,19 +161,19 @@ export function aStar2D(start, end, grid) {
             }
             return path.reverse();
         }
-        removeIndex(openSet, lowestIndex)
-        blokedSet.add(`${current.x},${current.y}`);
-
+        removeIndex(mPointOpen, lowestIndex)
+        sPointBlock.add(`${current.x},${current.y}`);
+        let sPointOpen = getOpenSet(mPointOpen)
         neighbors = getNeighbors(current, grid);
         for (const neighbor of neighbors) {
-            if (blokedSet.has(`${neighbor.x},${neighbor.y}`)) continue;
+            if (sPointBlock.has(`${neighbor.x},${neighbor.y}`)) continue;
 
             const tentativeG = current.cost + 1;
             let newPath = false;
-            if (!isN0de(openSet, neighbor)) {
+            if (!sPointOpen.has(`${neighbor.x},${neighbor.y}`)) {
                 newPath = true;
                 neighbor.heuristic = heuristic(neighbor, end);
-                addN0de(openSet, neighbor)
+                addN0de(mPointOpen, neighbor)
             } else if (tentativeG < neighbor.cost) { newPath = true }
 
             if (newPath) {
@@ -208,13 +208,10 @@ export function aStar2D(start, end, grid) {
         let key = mSet.size
         mSet.set(key, n0de)
     }
-    function isN0de(mSet, n0de) {
-        for (const [i, nd] of mSet) {
-            if (n0de.x != nd.x) continue
-            if (n0de.y != nd.y) continue
-            return true
-        }
-        return false
+    function getOpenSet(mPoint) {
+        const setP = new Set();
+        for (const [i, nd] of mPoint) { setP.add(`${nd.x},${nd.y}`) }
+        return setP
     }
 }
 export function switchPoint(grid, coX, coY) {
