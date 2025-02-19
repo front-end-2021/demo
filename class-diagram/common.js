@@ -168,17 +168,15 @@ export function aStar2D(start, end, grid) {
             keyP = getKeyXy(neighbor)
             if (sPointBlock.has(keyP)) continue;
 
-            const tentativeG = current.cost + 1;
-            let newPath = false;
+            let tentativeG = current.cost + 1;
             if (!sPointOpen.has(keyP)) {
-                newPath = true;
                 neighbor.heuristic = heuristic(neighbor, end);
                 addN0de(mPointOpen, neighbor)
-            } else if (tentativeG < neighbor.cost) { newPath = true }
-
-            if (newPath) {
-                neighbor.cost = tentativeG;
-                neighbor.parent = current;
+                updateNeighbor(neighbor, tentativeG, current)
+                continue
+            }
+            if (tentativeG < neighbor.cost) {
+                updateNeighbor(neighbor, tentativeG, current)
             }
         }
     }
@@ -214,6 +212,10 @@ export function aStar2D(start, end, grid) {
         return setP
     }
     function getKeyXy(point) { return `${point.x},${point.y}` }
+    function updateNeighbor(neighbor, tentativeG, current) {
+        neighbor.cost = tentativeG;
+        neighbor.parent = current;
+    }
 }
 export function doInRange([ix0, iy0, ix1, iy1], fnc) {
     for (let ix = ix0; ix <= ix1; ix++) {

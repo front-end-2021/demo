@@ -2,6 +2,7 @@ import {
     isInterface, processLines, StructTypes, objNewCls,
     isAbstract, convertSymb, truncateIds, getLstExt, verifyName,
     addStrFirst,
+    cellSize,
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
@@ -86,22 +87,24 @@ const MxRect = {
         setWidthHeight() {
             let w = this.item.width
             let cW = this.$el.offsetWidth
-            cW = Math.ceil(cW)
+            cW = Math.ceil(cW / cellSize) * cellSize
             let isChange = false
-            
+
             if (w != cW) {
                 this.item.width = cW
                 isChange = true
+                this.$el.style.width = `${cW-2}px`  // border
             }
             let h = this.item.height
             let cH = this.$el.offsetHeight
-            cH = Math.ceil(cH)
+            cH = Math.ceil(cH / cellSize) * cellSize
             if (h != cH) {
                 this.item.height = cH
                 isChange = true
+                this.$el.style.height = `${cH-2}px`
             }
             if (isChange) {
-               // console.log('change size ', this.item.Name)
+                // console.log('change size ', this.item.Name)
                 this.$root.clearBlock(this.item)
                 this.$root.buildBlock(this.item)
                 this.$root.$nextTick(this.$root.drawInCnvs)
@@ -148,11 +151,14 @@ const MxRect = {
         this.item.height = off.height
         this.setWidthHeight()
     },
+    beforeUpdate() {
+        this.$el.style.width = ''
+        this.$el.style.height = ''
+    },
     updated() {
         this.setWidthHeight()
 
     },
-
 }
 const RectEnum = {
     template: `#tmp-rect-enum`,

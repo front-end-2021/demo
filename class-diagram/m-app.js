@@ -342,6 +342,34 @@ Promise.all([
                 const mPoints = this.MpPoints
                 if (mPoints.size < 1) return;
                 const mapBlk = this.BlokedMap   // draw path
+                const setBlk = new Set()
+                for (const [id, area] of mapBlk) {
+                    doInRange(area, (ix, iy) => {
+                        setBlk.add(`${ix},${iy}`)
+                    })
+                }
+                function getY([x0, y0, w0, h0], [x1, y1, w1, h1]) {
+                    let xx0 = x0, yy0 = y0, xx1 = x1, yy1 = y1
+                    if (x0 + w0 < x1) {
+                        yy0 = h0 / 2 + y0       // center
+                        if (y0 + h0 < y1) {
+                            yy0 = y0 + h0 - 2 * cellSize     // bot
+                        } else if (y1 + h1 < y0) {
+                            yy0 = y0 + 2 * cellSize     // top
+                        }
+                    } else {
+
+                    }
+                    if (y0 < y1) {
+                        xx0 = w0 / 2 + x0       // center
+                        if (x0 + w0 < x1) {
+                            xx0 = x0 + w0 - 2 * cellSize     // bot
+                        } else if (x1 + w1 < x0) {
+                            xx0 = x0 + 2 * cellSize     // top
+                        }
+                    }
+
+                }
                 const grid = this.Board
                 let src, des
                 let x0, y0, w0, h0
@@ -480,6 +508,10 @@ Promise.all([
                     const dItem = dgElm.Item
                     let left = x + dgElm.offX
                     let top = y + dgElm.offY
+                    left = Math.round(left / cellSize)
+                    left = left * cellSize
+                    top = Math.round(top / cellSize)
+                    top = top * cellSize
 
                     if ('cls-classname' == dItem.id) {
                         this.setTopLeft(dItem, left, top)

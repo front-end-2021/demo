@@ -5,8 +5,8 @@ export function getListCls() {
     let id = 1;
     let type = StructTypes[2][0]    //'instant class'
     let tIds = [id]
-    let top = 30
-    let left = 90
+    let top = 10
+    let left = 10
     let dItm = {
         id: id++, Name: name, type, toIds: [],
         top, left, width: 220, height: 100,
