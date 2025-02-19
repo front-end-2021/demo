@@ -41,8 +41,8 @@ export function getListCls() {
     id++
     tIds = [id]
     type = StructTypes[1][0]    //'abstract class'
-    top = 70
-    left = 1024
+    top = 460
+    left = 1460
     dItm = {
         id: id, type, Name: name, toIds: [],
         top, left, width: 150, height: 100,
@@ -122,7 +122,7 @@ export function getListCls() {
     id++
     type = StructTypes[3][0]    //'enum'
     top = 370
-    left = 90
+    left = 1460
     dItm = {
         id: id, type, Name: name,
         top, left, width: 220, height: 250,
@@ -200,8 +200,8 @@ export function getListCls() {
     lstCls.push(dItm)
     name = 'HouseBlend'
     id++
-    top = 480
-    left = 1160
+    top = 30
+    left = 680
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top, left, width: 220, height: 120,
@@ -215,8 +215,8 @@ export function getListCls() {
     name = 'CondimentDecorator'
     id++
     type = StructTypes[1][0]    //'abstract class'
-    top = 660
-    left = 90
+    top = 260
+    left = 10
     dItm = {
         id: id, type, Name: name, toIds: tIds,
         top, left, width: 220, height: 120,
