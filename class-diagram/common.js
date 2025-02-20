@@ -222,6 +222,23 @@ export function doInRange([ix0, iy0, ix1, iy1], fnc) {
         for (let iy = iy0; iy <= iy1; iy++) fnc(ix, iy)
     }
 }
+export function build_iXiY(x, y) {
+    let ix = Math.floor(x / cellSize)
+    let iy = Math.floor(y / cellSize)
+    return [ix, iy]
+}
+export function build_xy(ix, iy) {
+    let x = ix * cellSize
+    let y = iy * cellSize
+    return [x, y]
+}
+export function build_key(ix, iy) { return `${ix}_${iy}` }
+export function gen_ixy(keyIxy) { return keyIxy.split('_') }
+export function getArea(cls) {
+    let [ix0, iy0] = build_iXiY(cls.left, cls.top)
+    let [ix1, iy1] = build_iXiY(cls.left + cls.width, cls.top + cls.height)
+    return [ix0, iy0, ix1, iy1]
+}
 export const PropName = 'ProperName'
 export function objNewCls(nCls, id, top, left) {
     const fNm = 'fieldName'

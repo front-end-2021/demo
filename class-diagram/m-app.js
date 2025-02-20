@@ -1,17 +1,17 @@
 // #region import
 import { createApp } from 'vue'
 import {
-    drawExtension, drawImplement, drawGrid,
+    drawExtension, drawImplement, drawGrid, fillCirle,
     drawComposition, drawAssociation, drawAggregation,
-    fillCirle,
 } from './mcanvas.js'
 import { ViewDiagram } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import {
     verifySave, setHeight, isOverlap, initPoint, getStringBetween,
-    isAbstract, isClass, isInterface, isStruct, isEnum,
-    genBoards, getRows, getCols, cellSize, cellEmpty,
-    aStar2D, Node, verifyExportTxt, doInRange, setCell, cellBlock,
+    isAbstract, isClass, isInterface, isStruct, isEnum, cellBlock,
+    genBoards, getRows, getCols, cellSize, cellEmpty, build_iXiY,
+    aStar2D, Node, verifyExportTxt, doInRange, setCell, build_key,
+    gen_ixy, build_xy, getArea,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -38,7 +38,8 @@ Promise.all([
                 MinX, MaxX,
                 MinY, MaxY,
                 Board,
-                BlokedMap: new Map(),
+                //  BlokedMap: new Map(),
+                BlokedSet: new Set(),
 
                 DiagName: 'Demo',
                 ListClass: getListCls(),
@@ -80,27 +81,47 @@ Promise.all([
             //ListClass(val) { },
         },
         methods: {
-            buildBlock(cls) {
+            // buildBlock(cls) {
+            //     const grid = this.Board
+            //     const mapBlk = this.BlokedMap   // build block  {id, [ix0, iy0, ix1, iy1]}
+            //     let [ix0, iy0] = build_iXiY(cls.left, cls.top)
+            //     let [ix1, iy1] = build_iXiY(cls.width + cls.left, cls.top + cls.height)
+            //     let area = [ix0, iy0, ix1, iy1]
+            //     mapBlk.set(cls.id, area)
+            //     doInRange(area, (ix, iy) => { setCell(grid, ix, iy, cellBlock) })
+            // },
+            // clearBlock(cls) {
+            //     const mapBlk = this.BlokedMap   // clear block
+            //     const grid = this.Board
+            //     const area = mapBlk.get(cls.id)
+            //     doInRange(area, (ix, iy) => {
+            //         setCell(grid, ix, iy, cellEmpty)
+            //     })
+            // },
+            closeBlock(cls) {
                 const grid = this.Board
-                const mapBlk = this.BlokedMap   // build block  {id, [ix0, iy0, ix1, iy1]}
-                let ix0, iy0, ix1, iy1
-                ix0 = Math.floor(cls.left / cellSize)
-                iy0 = Math.floor(cls.top / cellSize)
-                ix1 = Math.floor((cls.width + cls.left) / cellSize)
-                iy1 = Math.floor((cls.top + cls.height) / cellSize)
-                let area = [ix0, iy0, ix1, iy1]
-                mapBlk.set(cls.id, area)
+                const setBlk = this.BlokedSet
+                let area = getArea(cls)
+                console.group('close block ', cls.Name, area)
                 doInRange(area, (ix, iy) => {
+                    setBlk.add(build_key(ix, iy))
                     setCell(grid, ix, iy, cellBlock)
                 })
+                console.groupEnd()
             },
-            clearBlock(cls) {
-                const mapBlk = this.BlokedMap   // clear block
+            openBlock(item) {
                 const grid = this.Board
-                const area = mapBlk.get(cls.id)
+                const setBlk = this.BlokedSet
+                let area = getArea(item)
+                let keyIxy
+                console.group('open block ', item.Name)
                 doInRange(area, (ix, iy) => {
+                    keyIxy = build_key(ix, iy)
+                    setBlk.delete(keyIxy)
                     setCell(grid, ix, iy, cellEmpty)
                 })
+                console.log('old area', area)
+                console.groupEnd()
             },
             buildMapPoints(rItem) {
                 if (isEnum(rItem.type)) return     // verify
@@ -341,69 +362,25 @@ Promise.all([
                 const ctx = c.getContext("2d");
                 const mPoints = this.MpPoints
                 if (mPoints.size < 1) return;
-                const mapBlk = this.BlokedMap   // draw path
-                const setBlk = new Set()
-                for (const [id, area] of mapBlk) {
-                    doInRange(area, (ix, iy) => {
-                        setBlk.add(`${ix},${iy}`)
-                    })
-                }
-                function getY([x0, y0, w0, h0], [x1, y1, w1, h1]) {
-                    let xx0 = x0, yy0 = y0, xx1 = x1, yy1 = y1
-                    if (x0 + w0 < x1) {
-                        yy0 = h0 / 2 + y0       // center
-                        if (y0 + h0 < y1) {
-                            yy0 = y0 + h0 - 2 * cellSize     // bot
-                        } else if (y1 + h1 < y0) {
-                            yy0 = y0 + 2 * cellSize     // top
-                        }
-                    } else {
 
-                    }
-                    if (y0 < y1) {
-                        xx0 = w0 / 2 + x0       // center
-                        if (x0 + w0 < x1) {
-                            xx0 = x0 + w0 - 2 * cellSize     // bot
-                        } else if (x1 + w1 < x0) {
-                            xx0 = x0 + 2 * cellSize     // top
-                        }
-                    }
+                const setBlk = this.BlokedSet
 
-                }
+
                 const grid = this.Board
-                let src, des
-                let x0, y0, w0, h0
-                let x1, y1, w1, h1
+
+                let srcArea, desArea
                 let path = [], startNode, endNode
                 for (const [id, point] of mPoints) {
-                    // x0 = point.item.left + 1;
-                    // y0 = point.item.top
-                    // w0 = point.item.width
-                    // h0 = point.item.height
-                    src = mapBlk.get(point.item.id)
-                    let [ix0, iy0, iw0, ih0] = src
+                    srcArea = getArea(point.item)
+                    let [ix0, iy0, iw0, ih0] = srcArea
 
                     for (let ii = point.Extends.length - 1, dItem; -1 < ii; ii--) {
                         dItem = point.Extends[ii]
-                        // x1 = dItem.left
-                        // y1 = dItem.top
-                        // w1 = dItem.width
-                        // h1 = dItem.height
-
-                        // let isLefX0 = x1 < x0
-                        // if (isLefX0) ix0 -= 1
-                        // let isBotY0 = y0 + h0 < y1
-                        // if (isBotY0) iy0 += 5
 
                         startNode = new Node(ix0 - 1, iy0 - 1, 0, 0);
+                        desArea = getArea(dItem)
 
-                        des = mapBlk.get(dItem.id)
-                        let [ix1, iy1, iw1, ih1] = des
-
-                        // let isLefX1 = x0 < x1
-                        // if (isLefX1) ix1 -= 1
-                        // let isBotY1 = y1 + h1 / 6 < y0
-                        // if (isBotY1) iy1 += 3
+                        let [ix1, iy1, iw1, ih1] = desArea
 
                         endNode = new Node(iw1 + 1, ih1 + 1, 0, 0);
                         path = aStar2D(startNode, endNode, grid);
@@ -442,11 +419,11 @@ Promise.all([
                 const c = document.getElementById('dnb-mcanvas');
                 const ctx = c.getContext("2d");
                 ctx.fillStyle = color
-                const mapBlk = this.BlokedMap   // draw blocks
-                for (const [id, area] of mapBlk) {
-                    doInRange(area, (ix, iy) => {
-                        ctx.fillRect(ix * cellSize, iy * cellSize, cellSize, cellSize)
-                    })
+                const setBlk = this.BlokedSet
+                for (const keyIxy of setBlk) {
+                    let [ix, iy] = gen_ixy(keyIxy)
+                    let [x, y] = build_xy(ix, iy)
+                    ctx.fillRect(x, y, cellSize, cellSize)
                 }
             },
             buildAssociation() {
@@ -563,8 +540,10 @@ Promise.all([
                         this.$nextTick(this.drawBlocks) // key up => end dnd item => revert
 
                     } else {
-                        this.clearBlock(dItem)
-                        this.buildBlock(dItem)
+                        //  this.clearBlock(dItem)
+                        //  this.buildBlock(dItem)
+
+                        this.closeBlock(dItem)      // end dnd -> new pos
 
                         this.updateSizeCanvas()             // key up => end dnd item
                         this.drawInCnvs()    // key up => end dnd item
@@ -698,7 +677,9 @@ Promise.all([
             let lsCls = this.ListClass
             for (let ii = lsCls.length - 1, cls; -1 < ii; ii--) {
                 cls = lsCls[ii]
-                this.buildBlock(cls)
+                //   this.buildBlock(cls)
+
+                this.closeBlock(cls)         // create-d
                 this.buildMapPoints(cls)      // create-d
             }
             this.buildAssociation()         // create-d
@@ -735,7 +716,10 @@ Promise.all([
             this.$nextTick(this.drawPaths) // mount-ed
 
         },
-        //updated(){ console.log('updated') }
+        beforeUpdate() {
+            console.log('before updated')
+        },
+        updated() { console.log('updated') },
     })
     app.mount('#m-app')
 

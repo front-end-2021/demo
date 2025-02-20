@@ -3,6 +3,7 @@ import {
     isAbstract, convertSymb, truncateIds, getLstExt, verifyName,
     addStrFirst,
     cellSize,
+    getArea,
 } from "../common.js";
 export const MenuList = {
     template: `#tmp-menu-list`,
@@ -80,6 +81,7 @@ const MxRect = {
                 Top: this.item.top,
                 Left: this.item.left
             })
+            this.$root.openBlock(this.item)       // start dnd
             const itemEl = wrp.querySelector(`#cls_${this.item.id}`)
             itemEl.style.zIndex = '1'
             itemEl.style.backgroundColor = 'white'
@@ -89,26 +91,32 @@ const MxRect = {
             let cW = this.$el.offsetWidth
             cW = Math.ceil(cW / cellSize) * cellSize
             let isChange = false
-
             if (w != cW) {
+                this.$root.openBlock(this.item)     // before change width
                 this.item.width = cW
                 isChange = true
-                this.$el.style.width = `${cW-2}px`  // border
+                this.$el.style.width = `${cW - 2}px`  // border
             }
             let h = this.item.height
             let cH = this.$el.offsetHeight
             cH = Math.ceil(cH / cellSize) * cellSize
             if (h != cH) {
+                if (!isChange) {
+                    this.$root.openBlock(this.item)  // before change height
+                }
                 this.item.height = cH
                 isChange = true
-                this.$el.style.height = `${cH-2}px`
+                this.$el.style.height = `${cH - 2}px`
             }
             if (isChange) {
-                // console.log('change size ', this.item.Name)
-                this.$root.clearBlock(this.item)
-                this.$root.buildBlock(this.item)
-                this.$root.$nextTick(this.$root.drawInCnvs)
-                this.$root.$nextTick(this.$root.drawBlocks)
+                console.group('change size ', this.item.Name)
+                console.log(getArea(this.item))
+                console.groupEnd()
+                // this.$root.clearBlock(this.item)
+                //  this.$root.buildBlock(this.item)
+
+                this.$root.closeBlock(this.item)        // changed size
+               
             }
         },
         deleteCls(item) {
@@ -147,8 +155,6 @@ const MxRect = {
         },
     },
     mounted() {
-        const off = this.$el.getBoundingClientRect()
-        this.item.height = off.height
         this.setWidthHeight()
     },
     beforeUpdate() {
@@ -710,5 +716,13 @@ export const ViewDiagram = {
     },
     computed: {
         VwHeight() { return `calc(100vh - 18px - ${this.$root.MinY}px)` },
+    },
+    beforeUpdate() {
+        console.log('before updated View Diagram')
+    },
+    updated() { 
+        this.$root.drawInCnvs()
+        this.$root.drawBlocks()
+        console.log('updated View Diagram') 
     },
 }
