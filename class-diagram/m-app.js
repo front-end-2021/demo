@@ -9,9 +9,8 @@ import { getListCls } from './repository.js'
 import {
     verifySave, setHeight, isOverlap, initPoint, getStringBetween,
     isAbstract, isClass, isInterface, isStruct, isEnum, cellBlock,
-    genBoards, getRows, getCols, cellSize, cellEmpty, build_iXiY,
-    aStar2D, Node, verifyExportTxt, doInRange, setCell, build_key,
-    gen_ixy, build_xy, getArea,
+    genBoards, getRows, getCols, cellSize, cellEmpty, build_xy,
+    aStar2D, Node, verifyExportTxt, doInRange, setCell, getArea,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -38,8 +37,7 @@ Promise.all([
                 MinX, MaxX,
                 MinY, MaxY,
                 Board,
-                //  BlokedMap: new Map(),
-                BlokedSet: new Set(),
+                BlokedMap: new Map(),
 
                 DiagName: 'Demo',
                 ListClass: getListCls(),
@@ -81,47 +79,23 @@ Promise.all([
             //ListClass(val) { },
         },
         methods: {
-            // buildBlock(cls) {
-            //     const grid = this.Board
-            //     const mapBlk = this.BlokedMap   // build block  {id, [ix0, iy0, ix1, iy1]}
-            //     let [ix0, iy0] = build_iXiY(cls.left, cls.top)
-            //     let [ix1, iy1] = build_iXiY(cls.width + cls.left, cls.top + cls.height)
-            //     let area = [ix0, iy0, ix1, iy1]
-            //     mapBlk.set(cls.id, area)
-            //     doInRange(area, (ix, iy) => { setCell(grid, ix, iy, cellBlock) })
-            // },
-            // clearBlock(cls) {
-            //     const mapBlk = this.BlokedMap   // clear block
-            //     const grid = this.Board
-            //     const area = mapBlk.get(cls.id)
-            //     doInRange(area, (ix, iy) => {
-            //         setCell(grid, ix, iy, cellEmpty)
-            //     })
-            // },
             closeBlock(cls) {
                 const grid = this.Board
-                const setBlk = this.BlokedSet
                 let area = getArea(cls)
-                console.group('close block ', cls.Name, area)
+                const mapBlk = this.BlokedMap
                 doInRange(area, (ix, iy) => {
-                    setBlk.add(build_key(ix, iy))
                     setCell(grid, ix, iy, cellBlock)
                 })
-                console.groupEnd()
+                mapBlk.set(cls.id, area)
             },
             openBlock(item) {
                 const grid = this.Board
-                const setBlk = this.BlokedSet
                 let area = getArea(item)
-                let keyIxy
-                console.group('open block ', item.Name)
+                const mapBlk = this.BlokedMap
                 doInRange(area, (ix, iy) => {
-                    keyIxy = build_key(ix, iy)
-                    setBlk.delete(keyIxy)
                     setCell(grid, ix, iy, cellEmpty)
                 })
-                console.log('old area', area)
-                console.groupEnd()
+                mapBlk.delete(item.id)
             },
             buildMapPoints(rItem) {
                 if (isEnum(rItem.type)) return     // verify
@@ -363,9 +337,6 @@ Promise.all([
                 const mPoints = this.MpPoints
                 if (mPoints.size < 1) return;
 
-                const setBlk = this.BlokedSet
-
-
                 const grid = this.Board
 
                 let srcArea, desArea
@@ -419,11 +390,12 @@ Promise.all([
                 const c = document.getElementById('dnb-mcanvas');
                 const ctx = c.getContext("2d");
                 ctx.fillStyle = color
-                const setBlk = this.BlokedSet
-                for (const keyIxy of setBlk) {
-                    let [ix, iy] = gen_ixy(keyIxy)
-                    let [x, y] = build_xy(ix, iy)
-                    ctx.fillRect(x, y, cellSize, cellSize)
+                const mapBlk = this.BlokedMap
+                for (const [id, area] of mapBlk) {
+                    doInRange(area, (ix, iy) => {
+                        let [x, y] = build_xy(ix, iy)
+                        ctx.fillRect(x, y, cellSize, cellSize)
+                    })
                 }
             },
             buildAssociation() {
@@ -540,8 +512,6 @@ Promise.all([
                         this.$nextTick(this.drawBlocks) // key up => end dnd item => revert
 
                     } else {
-                        //  this.clearBlock(dItem)
-                        //  this.buildBlock(dItem)
 
                         this.closeBlock(dItem)      // end dnd -> new pos
 
@@ -677,7 +647,6 @@ Promise.all([
             let lsCls = this.ListClass
             for (let ii = lsCls.length - 1, cls; -1 < ii; ii--) {
                 cls = lsCls[ii]
-                //   this.buildBlock(cls)
 
                 this.closeBlock(cls)         // create-d
                 this.buildMapPoints(cls)      // create-d

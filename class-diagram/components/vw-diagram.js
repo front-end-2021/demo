@@ -112,9 +112,7 @@ const MxRect = {
                 console.group('change size ', this.item.Name)
                 console.log(getArea(this.item))
                 console.groupEnd()
-                // this.$root.clearBlock(this.item)
-                //  this.$root.buildBlock(this.item)
-
+                
                 this.$root.closeBlock(this.item)        // changed size
                
             }
