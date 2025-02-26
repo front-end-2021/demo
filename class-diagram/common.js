@@ -218,8 +218,8 @@ export function aStar2D(start, end, grid) {
     }
 }
 export function doInRange([ix0, iy0, ix1, iy1], fnc) {
-    for (let ix = ix0; ix <= ix1; ix++) {
-        for (let iy = iy0; iy <= iy1; iy++) fnc(ix, iy)
+    for (let ix = ix0; ix < ix1; ix++) {
+        for (let iy = iy0; iy < iy1; iy++) fnc(ix, iy)
     }
 }
 function build_iXiY(x, y) {

@@ -92,7 +92,6 @@ const MxRect = {
             cW = Math.ceil(cW / cellSize) * cellSize
             let isChange = false
             if (w != cW) {
-                this.$root.openBlock(this.item)     // before change width
                 this.item.width = cW
                 isChange = true
                 this.$el.style.width = `${cW - 2}px`  // border
@@ -101,9 +100,6 @@ const MxRect = {
             let cH = this.$el.offsetHeight
             cH = Math.ceil(cH / cellSize) * cellSize
             if (h != cH) {
-                if (!isChange) {
-                    this.$root.openBlock(this.item)  // before change height
-                }
                 this.item.height = cH
                 isChange = true
                 this.$el.style.height = `${cH - 2}px`
