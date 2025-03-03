@@ -9,7 +9,7 @@ import { getListCls } from './repository.js'
 import {
     verifySave, setHeight, isOverlap, initPoint, getStringBetween,
     isAbstract, isClass, isInterface, isStruct, isEnum, cellBlock,
-    genBoards, getRows, getCols, cellSize, cellEmpty, build_xy,
+    genBoards, getRows, getCols, cellSize, cellEmpty, build_xy, getPaths,
     aStar2D, Node, verifyExportTxt, doInRange, setCell, getArea,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
@@ -348,17 +348,37 @@ Promise.all([
                     for (let ii = point.Extends.length - 1, dItem; -1 < ii; ii--) {
                         dItem = point.Extends[ii]
 
-                        startNode = new Node(ix0 - 1, iy0 - 1, 0, 0);
                         desArea = getArea(dItem)
 
                         let [ix1, iy1, iw1, ih1] = desArea
 
-                        endNode = new Node(iw1 + 1, ih1 + 1, 0, 0);
+                        let iix0, iiy0, iix1, iiy1
+
+                        if (iw1 <= ix0) iix1 = iw1
+                        else if(iw0 <= ix1) iix1 = ix1
+                        else iix1 = Math.round((iw1 + ix1) / 2)
+
+                        if (iw0 <= ix1) iix0 = iw0
+                        else if(iw1 <= ix0) iix0 = ix0
+                        else iix0 = Math.round((iw0 + ix0) / 2)
+
+                        if (ih1 <= iy0) iiy0 = iy0
+                        else if (ih0 <= iy1) iiy0 = ih0
+                        else iiy0 = Math.round((ih0 + iy0) / 2)
+
+                        if (ih0 <= iy1) iiy1 = iy1
+                        else if (ih1 <= iy0) iiy1 = ih1
+                        else iiy1 = Math.round((ih1 + iy1) / 2)
+
+                        startNode = new Node(iix0, iiy0, 0, 0);
+                        endNode = new Node(iix1, iiy1, 0, 0);
                         path = aStar2D(startNode, endNode, grid);
+
                         console.group('extends', point.item.Name, dItem.Name)
-                        console.log(ix0, iy0, iw0, ih0)
-                        console.log(ix1, iy1, iw1, ih1)
-                        console.log(path)
+                        let midPath = getPaths(srcArea, desArea, grid)
+                        console.log('ix0, iy0, iw0, ih0 ', ix0, iy0, iw0, ih0)
+                        console.log('ix1, iy1, iw1, ih1 ', ix1, iy1, iw1, ih1)
+                        console.log('path ', path)
                         console.groupEnd()
                         drawPath(path, 'red')
                     }
