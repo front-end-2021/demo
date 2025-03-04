@@ -237,77 +237,53 @@ export function getArea(cls) {
     let [ix1, iy1] = build_iXiY(cls.left + cls.width, cls.top + cls.height)
     return [ix0, iy0, ix1, iy1]
 }
-export function getPaths(srcArea, desArea, grid) {
+export function getiixysd(srcArea, desArea) {
     let [ix0, iy0, iw0, ih0] = srcArea
     let [ix1, iy1, iw1, ih1] = desArea
     let iix0, iiy0, iix1, iiy1
+    const is1right = iw0 <= ix1     // is0Left
+    const is1left = iw1 <= ix0      // is0right
+    const is1top = ih1 <= iy0       // is0bot
+    const is1bot = ih0 <= iy1       // is0top
 
-    if (iw1 <= ix0) iix1 = iw1
-    else if (iw0 <= ix1) iix1 = ix1
+    if (is1left) iix1 = iw1
+    else if (is1right) iix1 = ix1
     else iix1 = Math.round((iw1 + ix1) / 2)
 
-    if (iw0 <= ix1) iix0 = iw0
-    else if (iw1 <= ix0) iix0 = ix0
-    else iix0 = Math.round((iw0 + ix0) / 2)
-
-    if (ih1 <= iy0) iiy0 = iy0
-    else if (ih0 <= iy1) iiy0 = ih0
-    else iiy0 = Math.round((ih0 + iy0) / 2)
-
-    if (ih0 <= iy1) iiy1 = iy1
-    else if (ih1 <= iy0) iiy1 = ih1
+    if (is1bot) iiy1 = iy1
+    else if (is1top) iiy1 = ih1
     else iiy1 = Math.round((ih1 + iy1) / 2)
 
-    let lsY = getAvaiMidLineY(iix0, iiy0, iix1, iiy1, grid)
-    if (0 < lsY.length) {
-        
-        console.log('iix0, iiy0, iix1, iiy1 ', iix0, iiy0, iix1, iiy1)
-        console.log('avail mid iy ', lsY)
+    if (is1top && is1left) {
+        iix1 = iw1 - 1
+    }
+    if(is1bot && is1right) {
+        iix1 -= 1
+    }
+   
+    if (is1right) iix0 = iw0
+    else if (is1left) iix0 = ix0
+    else iix0 = Math.round((iw0 + ix0) / 2)
 
-    }
-}
-function getAvaiMidLineY(ix0, iy0, ix1, iy1, grid) {
-    let minIx = Math.min(ix0, ix1)
-    let minIy = Math.min(iy0, iy1)
-    let maxIx = Math.max(ix0, ix1)
-    let maxIy = Math.max(iy0, iy1)
-    let midIy = Math.round((maxIy + minIy) / 2)
-    let collecIy = []
-    let iiy = -1
-    for (iiy = midIy + 1; iiy < maxIy; iiy++) {
-        collecIy.push(midIy + iiy - minIy)
-        collecIy.push(midIy + minIy - iiy)
-    }
-    iiy = midIy
-    let lsIy = []
-    while (collecIy.length) {
-        let iiy2 = checkHrlines(iiy)
-        if (iiy === iiy2) {
-            // ouput
-            //return [iiy]
-            lsIy.push(iiy)
-            iiy = collecIy.shift()
-        } else {
-            iiy = iiy2
-        }
-    }
-    return lsIy
-    function checkHrlines(mdIy) {
-        for (let iix = minIx; iix <= maxIx; iix++) {
-            if (cellBlock == grid[iix][mdIy]) return collecIy.shift()
-        }
-        return mdIy
-    }
-}
-function getAvaiLineX(ix, iy0, iy1, grid) {
-    let minIy = Math.min(iy0, iy1)
-    let maxIy = Math.max(iy0, iy1)
-    for (let iiy = minIy; iiy <= maxIy; iiy++) {
-        if (cellBlock == grid[ix][iiy]) {
+    if (is1top) iiy0 = iy0
+    else if (is1bot) iiy0 = ih0
+    else iiy0 = Math.round((ih0 + iy0) / 2)
 
-        }
+    if (iy1 < iy0 && is1right) {
+        iix0 = iw0 - 1
+        if (is1top) iiy0 = iy0 - 1
     }
+    if (is1top && (!is1left && !is1right)) {
+        iiy0 -= 1
+    }
+    if(is1bot) {
+        iiy1 -= 1
+        // if(!is1left && !is1right) iiy0 += 1
+    }
+    iix0 -= 1
+    return [iix0, iiy0, iix1, iiy1]
 }
+
 export const PropName = 'ProperName'
 export function objNewCls(nCls, id, top, left) {
     const fNm = 'fieldName'

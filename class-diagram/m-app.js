@@ -9,8 +9,9 @@ import { getListCls } from './repository.js'
 import {
     verifySave, setHeight, isOverlap, initPoint, getStringBetween,
     isAbstract, isClass, isInterface, isStruct, isEnum, cellBlock,
-    genBoards, getRows, getCols, cellSize, cellEmpty, build_xy, getPaths,
+    genBoards, getRows, getCols, cellSize, cellEmpty, build_xy, 
     aStar2D, Node, verifyExportTxt, doInRange, setCell, getArea,
+    getiixysd,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -351,54 +352,22 @@ Promise.all([
                         desArea = getArea(dItem)
 
                         let [ix1, iy1, iw1, ih1] = desArea
-
-                        let iix0, iiy0, iix1, iiy1
-                        const is1right = iw0 <= ix1     // is0Left
-                        const is1left = iw1 <= ix0      // is0right
-                        const is1top = ih1 <= iy0        // is0left
-
-                        if (is1left) iix1 = iw1
-                        else if (is1right) iix1 = ix1
-                        else iix1 = Math.round((iw1 + ix1) / 2)
-
-                        if (ih0 <= iy1) iiy1 = iy1
-                        else if (is1top) iiy1 = ih1
-                        else iiy1 = Math.round((ih1 + iy1) / 2)
-
-                        if (is1top && is1left) {
-                            iix1 = iw1 - 3
-                        }
-
-                        if (is1right) iix0 = iw0
-                        else if (is1left) iix0 = ix0
-                        else iix0 = Math.round((iw0 + ix0) / 2)
-
-                        if (is1top) iiy0 = iy0
-                        else if (ih0 <= iy1) iiy0 = ih0
-                        else iiy0 = Math.round((ih0 + iy0) / 2)
-
-                        if (iy1 < iy0 && is1right) {
-                            iix0 = iw0 - 1
-                            if (is1top) iiy0 = iy0 - 1
-                        }
-                        if (is1top && (!is1left && !is1right)) {
-                            iiy0 -= 1
-                        }
-                        iix0 -= 1
+                        let [iix0, iiy0, iix1, iiy1] = getiixysd(srcArea, desArea)
 
                         startNode = new Node(iix0, iiy0, 0, 0);
                         endNode = new Node(iix1, iiy1, 0, 0);
                         path = aStar2D(startNode, endNode, grid);
 
                         console.group('extends', point.item.Name, dItem.Name)
-                        let midPath = getPaths(srcArea, desArea, grid)
+                        
                         console.log('ix0, iy0, iw0, ih0 ', ix0, iy0, iw0, ih0)
                         console.log('ix1, iy1, iw1, ih1 ', ix1, iy1, iw1, ih1)
+                        console.log('iix0, iiy0, iix1, iiy1 ', iix0, iiy0, iix1, iiy1)
                         console.log('path ', path)
                         console.groupEnd()
                         drawPath(path, 'red')
                     }
-                    //break
+                    
                 }
                 function drawPath(path, color) {
                     if (!path.length) return
