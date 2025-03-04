@@ -259,10 +259,10 @@ export function getPaths(srcArea, desArea, grid) {
     else iiy1 = Math.round((ih1 + iy1) / 2)
 
     let lsY = getAvaiMidLineY(iix0, iiy0, iix1, iiy1, grid)
-    if (0 < lsY) {
-        const [iiy] = lsY
+    if (0 < lsY.length) {
+        
         console.log('iix0, iiy0, iix1, iiy1 ', iix0, iiy0, iix1, iiy1)
-        console.log('avail mid iy ', iiy)
+        console.log('avail mid iy ', lsY)
 
     }
 }
@@ -275,23 +275,26 @@ function getAvaiMidLineY(ix0, iy0, ix1, iy1, grid) {
     let collecIy = []
     let iiy = -1
     for (iiy = midIy + 1; iiy < maxIy; iiy++) {
-        collecIy.push(iiy - minIy)
-        collecIy.push(minIy - iiy)
+        collecIy.push(midIy + iiy - minIy)
+        collecIy.push(midIy + minIy - iiy)
     }
-    iiy = getHrlines(midIy)
+    iiy = midIy
+    let lsIy = []
     while (collecIy.length) {
-        let iiy2 = getHrlines(iiy)
+        let iiy2 = checkHrlines(iiy)
         if (iiy === iiy2) {
             // ouput
-            return [iiy]
+            //return [iiy]
+            lsIy.push(iiy)
+            iiy = collecIy.shift()
         } else {
             iiy = iiy2
         }
     }
-    return []
-    function getHrlines(mdIy) {
+    return lsIy
+    function checkHrlines(mdIy) {
         for (let iix = minIx; iix <= maxIx; iix++) {
-            if (1 == grid[iix][mdIy]) return collecIy.shift()
+            if (cellBlock == grid[iix][mdIy]) return collecIy.shift()
         }
         return mdIy
     }
@@ -300,7 +303,7 @@ function getAvaiLineX(ix, iy0, iy1, grid) {
     let minIy = Math.min(iy0, iy1)
     let maxIy = Math.max(iy0, iy1)
     for (let iiy = minIy; iiy <= maxIy; iiy++) {
-        if (1 == grid[ix][iiy]) {
+        if (cellBlock == grid[ix][iiy]) {
 
         }
     }
