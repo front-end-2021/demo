@@ -1,0 +1,32 @@
+<section id="app-modal">
+    
+    <component v-for="entry in $store.getters.ListModal"
+        :is="entry.item.type" :mo-item="entry.item"></component>
+    
+</section>
+<template id="tmp-comp-modal">
+    <div class="ui modal edit-user">
+        <i class="close icon" @click.stop="onExitClose"></i>
+
+        <div class="header">{{item.header}}</div>
+        <div class="image content">
+            <div class="ui medium image">
+                <img :src="item.img" style="border-radius: 8px;">
+            </div>
+            <div class="description">
+                <div class="ui header">{{item.content.head}}</div>
+                <p contenteditable="true" v-html="item.content.description" 
+                    @input="onChangeDes"
+                    style="min-height: 180px; width: 570px;"></p>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button" @click.stop="onExitClose">Nope</div>
+
+            <div class="ui positive right labeled icon button" 
+                @click.stop="onSaveClose">Yep, that's me<i
+                class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,201 @@
+<template id="tmp-comp-vw-task">
+    <div class="dnbHandle m-2 p-2 bg-008ff8 border-4px w344px d-inline-block cdefault"
+        @mouseenter="e => $root.Popup_UI = null">
+        <div class="wrap-info pos-relative">
+            <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+            <div class="wrp_menu"
+                @click.stop="e => showMenuEdit(11, e)">[Edit]</div>
+        </div>
+        <i class="bi bi-clock me-1 font12"></i>
+        <div class="font12 d-inline-block"
+            style="width: calc(100% - 16px);" 
+            v-html="ViewStartEnd"></div>
+        <div v-for="(todo, ii) in item.Todos" class="d-flex">
+            <span v-if="ii < 3">{{ii + 1}}.&nbsp;</span>
+            <span v-else @click.stop="showFormEdit"
+                class="cpointer">[ Expand... ]</span>
+            <span v-if="ii < 3"
+                @input="e => onChangeTodo(ii, e)"
+                style="flex-grow: 2;"
+                @keypress="onPreventEnter"
+                contenteditable="plaintext-only">{{todo}}</span>
+            <span v-if="ii < 3" class="cpointer"
+                @click.stop="e => removeTodo(ii)">[ - ]</span>
+        </div>
+        <span v-if="item.Todos.length < 4" 
+            class="font12" @click.stop="addTodo">[+ Todo]</span>
+    </div>
+</template>
+<template id="tmp-comp-vw-sub">
+    <div class="d-flex mb-2 minh87px">
+        <div class="p-2 bg-008ff8 border-l6px">
+            <div class="dnbHandle wrap-info w344px cdefault stick-top0 bg-008ff8">
+                <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+                <div class="wrp_menu"
+                    @click.stop="e => showMenuEdit(10, e)">[Edit]</div>
+                <div class="font12">
+                    <i class="bi bi-clock me-1"></i>
+                    <span v-html="ViewStartEnd"></span>
+                </div>
+            </div>
+            <div class="assign-user d-inline-grid cpointer"
+                @click.stop="e => showAssignUser(e)">
+                <i :class="[AssignU == null ? 'add' : '']"
+                    class="user icon"></i>{{AssignU == null ? 'Add User' : AssignU.Name}}</div>
+        </div>
+        <div v-if="0 == LoadState" 
+            class="ui segment" style="border: none;box-shadow: none;width: 100%;margin-top: 0;">
+            <div class="ui active inverted dimmer">
+              <div class="ui text loader">Loading</div>
+            </div>
+            <p></p>
+          </div>
+        <draggable v-else
+            v-model="ListTask" v-bind="DndTaskOptions" 
+            handle=".dnbHandle"
+            class="list-task p-2 border-r6px" >
+            <transition-group>
+                <comp-vw-task v-for="task in ListTask"
+                    :item="task"
+                    :key="task.Id">
+                </comp-vw-task>
+            </transition-group>
+        </draggable>
+    </div>
+</template>
+<template id="tmp-comp-vw-goal">
+    <div class="p-2 bg-e8e9e9 mt-2 border-4px d-flex" >
+        <div class="wrap-info d-flex dflex-col jc-sb"
+            @mouseenter="e => $root.Popup_UI = null">
+            <div class="dnbHandle w344px cdefault stick-top0 bg-e8e9e9" >
+                <div>{{item.Name}} ({{item.Id}}.{{item.ASort}})</div>
+                <div class="wrp_menu"
+                    @click.stop="e => showMenuEdit(9, e)">[Edit]</div>
+                <div class="font12">
+                    <i class="bi bi-clock me-1"></i>
+                    <span v-html="ViewStartEnd"></span>
+                </div>
+            </div>
+            <div class="pb-4 font12 w344px">
+                <div v-for="sub in ListSub"
+                    class="txt-elipsis">{{sub.Name}}</div>
+            </div>
+        </div>
+        <draggable v-model="ListSub" v-bind="DndSubOptions" 
+            class="list-sub p-2 border-d6px" 
+            handle=".dnbHandle">
+            <transition-group>
+                <comp-vw-sub v-for="sub in ListSub"
+                    :item="sub"
+                    :key="sub.Id"></comp-vw-sub>
+            </transition-group>
+        </draggable>
+    </div>
+</template>
+<template id="tmp-comp-vw-prd">
+    <div class="p-2" 
+        v-observe-visibility="{
+            callback: visibilityChanged,
+            throttle: 0, intersection: { threshold: 0 }
+        }">
+        <div v-if="IsVisible"
+            class="d-flex jc-sb p-2 bg-006bb9"
+            :class="[IsExpand ? 'border-u6px' : 'border-6px']">
+            <div class="d-grid" style="grid-template-columns: 24px auto;">
+                <span @click.stop="toggleExpand"
+                    style="text-align: center;"
+                    class="cpointer">{{IsExpand ? '[&minus;]' : '[+]'}}</span>
+                <div>{{item.Name}} ({{smpdid}})</div>
+            </div>
+            <div>{{GoalIds.length}}&nbsp;|&nbsp;{{SubIds.length}}&nbsp;|&nbsp;{{TaskIds.length}}</div>
+        </div>
+        <draggable v-if="IsVisible && IsExpand"
+            v-model="ListGoal" v-bind="DndGoalOptions" 
+            style="border: 1px solid #d6d6d6;"
+            class="list-goal p-2 border-d6px"
+            handle=".dnbHandle">
+            <transition-group>
+                <comp-vw-goal v-for="goal in ListGoal" 
+                    :item="goal"
+                    :key="goal.Id"></comp-vw-goal>
+            </transition-group>
+        </draggable>
+    </div>
+</template>
+<template id="tmp-comp-action-plan">
+    <section>
+        <drop-select :name="$root.UserAssign" :items="$root.Users" 
+        @set:index="$event => setUserAssign($event)">
+            <template #default>
+                <div class="default text">{{$root.UserAssign}}</div>
+            </template>
+        </drop-select>
+    </section>
+    <h1>4ct10n Pl_n</h1>
+    <section class="dnbViewAcPlan px20px" >
+        <div v-for="market in ListMarket" class="bg-008ff8 border-6px mb-3"
+            :key="market.Entry.Id">
+            <div v-for="subMk in market.SubMarkets" class="p-2">
+                <div class="d-grid p-2 bg-008ff8"
+                    style="grid-template-columns: 24px auto;padding-bottom: 0;">
+                    <span @click.stop="e => toggleExpand(subMk.Entry.Id, 4)"
+                        style="text-align: center;"
+                        class="cpointer">{{isExpand(subMk.Entry.Id, 4) ? '[&minus;]' : '[+]'}}</span>
+                    <div>{{market.Entry.Name}} / {{subMk.Entry.Name}}</div>
+                </div>
+                <comp-vw-prd v-if="isExpand(subMk.Entry.Id, 4)"
+                    v-for="product in subMk.Products"
+                    :key="product.SubmarketProductId + '_' + product.Entry.Id"
+                    :item="product.Entry"
+                    :smpdid="product.SubmarketProductId"></comp-vw-prd>
+            </div>
+        </div>
+        <div v-for="prdG in ProductGroups" class="bg-008ff8 border-6px mb-3"
+            :key="prdG.Entry.Id">
+            <div v-for="product in prdG.ListProduct" class="p-2">
+                <div class="d-grid p-2 bg-008ff8"
+                    style="grid-template-columns: 24px auto;">
+                    <span @click.stop="e => toggleExpand(product.Entry.Id, 6)"
+                        style="text-align: center;"
+                        class="cpointer">{{isExpand(product.Entry.Id, 6) ? '[&minus;]' : '[+]'}}</span>
+                    <div>{{prdG.Entry.Name}} (xy) / {{product.Entry.Name}}</div>
+                </div>
+                <comp-vw-prd v-if="isExpand(product.Entry.Id, 6)"
+                    v-for="subMk in product.SubMarkets"
+                    :key="subMk.SubmarketProductId + '_' + subMk.Entry.Id"
+                    :item="subMk.Entry"
+                    :smpdid="subMk.SubmarketProductId"></comp-vw-prd>
+            </div>
+        </div>
+    </section>
+    <div v-if="MenuAcPlan != null" 
+        class="d-inline-block p-1 bg-006bb9 menu_golsub border-4px"
+        @mouseleave="e => $root.Popup_UI = null"
+        :style="[MenuAcPlan.Style]">
+        <div class="p-2 cpointer menu_golsub-i mb1px border-4px"
+            @click.stop="e => MenuAcPlan.editItem(MenuAcPlan.Entry, MenuAcPlan.type)">Edit item</div>
+        <div v-if="9 == MenuAcPlan.type || 10 == MenuAcPlan.type"
+            class="p-2 cpointer menu_golsub-i mb1px border-4px"
+            @click.stop="e => MenuAcPlan.newChild(e)">New {{9 == MenuAcPlan.type ? 'Sub' : 'Task'}}</div>
+        <div @click.stop="e => MenuAcPlan.copyItem(MenuAcPlan.Entry, MenuAcPlan.type)"
+            class="p-2 cpointer menu_golsub-i mb1px border-4px">Copy</div>
+        <div @click.stop="e => MenuAcPlan.deleteItem(MenuAcPlan.Entry, MenuAcPlan.type)"
+            class="p-2 cpointer menu_golsub-i border-4px">Delete</div>
+    </div>
+    <div v-if="MenuAssignUser != null" 
+        class="menu-assign-user d-inline-block border-6px"
+        style="position: fixed; background-color: #cfcfcf; padding: 3px;" 
+        :style="[MenuAssignUser.Style]">
+        <div class="ma_u-item d-flex algi-s-cent cpointer p-2 cpointer menu_golsub-i mb1px border-4px"
+            @click.stop="e => MenuAssignUser.onSelect(null)"
+            :class="[!MenuAssignUser.Entry.UserId ? 'active' : '']">Un assign</div>
+        <div v-for="(person, ii) in $root.People" 
+            class="ma_u-item d-flex algi-s-cent cpointer p-2 cpointer menu_golsub-i mb1px border-4px"
+            @click.stop="e => MenuAssignUser.onSelect(person)"
+            :class="[MenuAssignUser.Entry.UserId == person.Id ? 'active' : '']"
+            style="margin-top: 6px;">
+            <span class="avta d-inline-block me-1 border-4px text-center"
+                >{{person.Name[0]}}</span>{{person.Name}}
+        </div>
+    </div>
+</template>

@@ -1,0 +1,242 @@
+<template id="tmp-comp-form-land">
+    <div class="ui modal" style="min-width: 344px;">
+        <i class="close icon" @click.stop="onExitClose"></i>
+        <div class="header">{{Title}}</div>
+        <div class="image content">
+            <div class="description">
+                <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
+                <span contenteditable="plaintext-only" v-html="item.Name" 
+                    class="d-inline-block p-2 dnbItemName" style="width: 234px;"
+                    @keypress="onKeyPressName"
+                    @input="onChangeName"></span>
+                <br>
+                <strong class="d-inline-block w81px py-2 pe-2">Description: </strong>
+                <span contenteditable="true" v-html="item.Description" 
+                    class="d-inline-block p-2" 
+                    style="min-width: 234px; min-height: 96px;max-width: 60%;max-height:66vh;overflow: auto;"
+                    @input="onChangeDes"
+                    style="min-height: 180px; width: 570px;"></span>
+                <br>
+                <label class="d-inline-block w81px py-2 pe-2"
+                    :for="'chbx-isnew-land-' + item.Id">Is New *</label><input 
+                    type="checkbox" 
+                    :id="'chbx-isnew-land-' + item.Id"
+                    v-model="item.IsNew" />
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button" 
+                @click.stop="onExitClose">Cancel</div>
+            <div class="ui positive right labeled icon button" 
+                @click.stop="onSaveClose">Save And Close<i
+                class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="tmp-comp-form-valuation">
+    <div class="ui modal">
+        <div class="header">{{$store.state.ContextLang.Valuation}}</div>
+        <div class="content" style="flex-direction: column;">
+            <div class="d-flex jc-sb" >
+                <h1>{{moItem.path}}</h1>
+                <span @click.stop="toggleActive" style="cursor: default;"
+                    ><i class="bi" :class="item.Active ? 'bi-check2-square' : 'bi-square'"
+                    ></i> {{$store.state.ContextLang.Active}}</span>
+            </div>
+            <div class="description">
+                <div class="d-flex my-3">
+                    <button class="me-2">New</button>
+                    <button class="me-2">Update</button>
+                    <button class="me-2">Delete</button>
+                    <span class="me-2">Dropdown</span>
+                    <button>Import template</button>
+                </div>
+                <div class="d-grid row-crite">
+                    <strong>{{$store.state.ContextLang.Criteria}}</strong>
+                    <strong>{{$store.state.ContextLang.Weighting}}</strong>
+                    <strong>{{$store.state.ContextLang.Valuation}}</strong>
+                    <span></span>
+                </div>
+                <div v-for="(cri, ci) in item.Criterias" 
+                    class="d-grid row-crite">
+                    <span>{{cri.Name}}</span>
+                    <drop-select :name="cri.Weight.toString()" :items="Weights" 
+                        @set:index="$event => setWeight(cri, $event)"
+                        style="min-width: 96px;max-width: 96px;">
+                        <template #default>
+                            <div class="text">{{cri.Weight}}</div>
+                        </template>
+                    </drop-select>
+                    <s-range :start="cri.Value" :style="{ width: '366px' }"
+                        @set:value="$event => setValue(cri, $event)"></s-range>
+                    <span @click.stop="e => deleteCriteria(ci)">Delete</span>
+                </div>
+                <div class="d-grid row-crite">
+                    <strong @click.stop="newCriteria">+ Criteria</strong>
+                    <strong>Total: {{TotalValue}}</strong>
+                </div>
+            </div>
+            <div>
+                Comments:
+                <div contenteditable="true" v-html="item.Comment" 
+                    @input="editComment"
+                    style="min-height: 90px;"></div>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui positive right labeled icon button" 
+                @click.stop="onSaveClose">Save And Close<i
+                class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="tmp-comp-mess-newland">
+    <div class="ui modal" style="width: 460px;">
+        <div class="header">{{moItem.title}}</div>
+        <div class="content">
+            <div class="description"></div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button" 
+                @click.stop="onExitClose">Reset Filter Land</div>
+            <div class="ui positive right labeled icon button" 
+                style="padding-right: 21px !important;"
+                @click.stop="onSaveClose">Filter Contain New Land</div>
+        </div>
+    </div>
+</template>
+<template id="tmp-comp-form-region">
+    <div class="ui modal" style="width: 344px;">
+        <i class="close icon" @click.stop="onExitClose"></i>
+        <div class="header">{{Title}}</div>
+        <div class="image content">
+            <div class="description">
+                <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
+                <span style="position: relative;">
+                    <span contenteditable="true" 
+                        v-html="item.Name" 
+                        class="d-inline-block p-2 dnbItemName" 
+                        data-content="Duplicate name"
+                        style="width: 234px;"
+                        @keypress="onKeyPressName"
+                        @input="onChangeName"></span>
+                </span>
+                <br>
+                <strong class="d-inline-block w81px py-2 pe-2">Description: </strong>
+                <span contenteditable="true" v-html="item.Description" 
+                    class="d-inline-block p-2" style="width: 234px; height: 96px;"
+                    @input="onChangeDes"
+                    style="min-height: 180px; width: 570px;"></span>
+                <br>
+                <strong class="d-inline-block w81px py-2 pe-2">Land*</strong>
+                <drop-rselect :f-id="moItem.data.LandId" 
+                    :items="LandActives" 
+                    @set:index="$event => setLandInActive($event)"
+                    :class="['grp-dropdown-min']">
+                    <template #default>
+                        <div class="text">{{LandActiveName}}</div>
+                    </template>
+                </drop-rselect>
+                <br>
+                <strong v-if="moItem.type == 'comp-form-region'"
+                    class="d-inline-block w81px py-2 pe-2">Currency*</strong>
+                <drop-rselect v-if="moItem.type == 'comp-form-region'"
+                    :name="moItem.data.Currency" 
+                    :items="$store.state.Currencies" 
+                    @set:index="$event => setCurrency($event)"
+                    style="min-width: 96px;max-width: 96px;">
+                    <template #default>
+                        <div class="text">{{moItem.data.Currency}}</div>
+                    </template>
+                </drop-rselect>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button" 
+                @click.stop="onExitClose">Cancel</div>
+            <div class="ui positive right labeled icon button" 
+                @click.stop="onSaveClose">Save And Close<i
+                class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="tmp-comp-form-goal">
+    <div class="ui modal">
+        <i class="close icon" @click.stop="onExitClose"></i>
+        <div class="header">{{moItem.title}}</div>
+        <div class="content">
+            <div class="description">
+                <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
+                <span style="position: relative;">
+                    <span contenteditable="plaintext-only" 
+                        v-html="item.Name" 
+                        class="d-inline-block p-2 dnbItemName" 
+                        data-content="Duplicate name"
+                        style="width: calc(100% - 81px);"
+                        @keypress="onKeyPressName"
+                        @input="onChangeName"></span>
+                </span>
+                <br>
+                <strong class="d-inline-block w81px py-2 pe-2">Description: </strong>
+                <span contenteditable="true" v-html="item.Description" 
+                    class="d-inline-block p-2" 
+                    style="width: calc(100% - 81px); height: 96px;"
+                    @input="onChangeDes"
+                    style="min-height: 180px; width: 570px;"></span>
+                <br>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui positive right labeled icon button" 
+                @click.stop="onSaveClose">Save And Close<i class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="tmp-comp-form-task">
+    <div class="ui modal">
+        <i class="close icon" @click.stop="onExitClose"></i>
+        <div class="header">{{moItem.title}}</div>
+        <div class="content">
+            <div class="description">
+                <strong class="d-inline-block w81px py-2 pe-2">Name: </strong>
+                <span style="position: relative;">
+                    <span contenteditable="plaintext-only" 
+                        v-html="item.Name" 
+                        class="d-inline-block p-2 dnbItemName" 
+                        data-content="Duplicate name"
+                        style="width: calc(100% - 81px);"
+                        @keypress="onKeyPressName"
+                        @input="onChangeName"></span>
+                </span>
+                <br>
+                <strong class="d-inline-block w81px py-2 pe-2">Description: </strong>
+                <span contenteditable="true" v-html="item.Description" 
+                    class="d-inline-block p-2" 
+                    style="width: calc(100% - 81px); height: 96px;"
+                    @input="onChangeDes"
+                    style="min-height: 180px; width: 570px;"></span>
+                <br>
+                <div class="d-flex">
+                    <strong class="d-inline-block w81px py-2 pe-2"
+                        style="padding-top: 0;">Todos: </strong>
+                    <ol style="width: calc(100% - 81px);margin-top: 0;">
+                        <li v-for="(todo, ii) in moItem.data.Todos"
+                            class="px-2 pb-2"
+                            @keypress="onKeyPressName"
+                            @input="e => onChangeTodo(e, ii)"
+                            contenteditable="plaintext-only" v-html="todo"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui positive right labeled icon button" 
+                @click.stop="onSaveClose">Save And Close<i class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,93 @@
+<template id="tmp-khuvuc-hangxe-namsx">
+    <div style="box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 20px 0px;
+                background-color: rgb(255, 255, 255); border-radius: .75rem; padding: 1rem;">
+        <div style="display: grid; grid-template-columns: 266px 364px 184px; gap: 18px;">
+            <div>
+                <div v-if="IsExpand" 
+                    style="font-weight: 600; margin-bottom: .5rem; color: rgb(27, 44, 93);">Khu vực</div>
+                <div v-else 
+                    style="color: rgb(27, 44, 93);">
+                    <span style="font-weight: 600;">Khu vực:</span>
+                    <span style="margin-left: 6px;">{{$root.LsRegion[$root.IndexRegion]}}</span>
+                </div>
+                <div v-if="IsExpand"
+                    style="scrollbar-width: none;gap: 10px;display: flex;flex-wrap: wrap;">
+                    <div v-for="(local, ii) in LsRegion"
+                        class="wrap-local"
+                        @click.stop="e => selectIndex(ii, 1)"
+                        :style="[
+                            ii == $root.IndexRegion ? { backgroundColor: 'rgb(255, 221, 0)' } : null
+                        ]">{{local}}</div>
+                    <div class="wrap-local"
+                        @click.stop="e => watchMore(1)">Xem thêm</div>
+                </div>
+            </div>
+            <div>
+                <div v-if="IsExpand" 
+                    style="font-weight: 600; margin-bottom: .5rem; color: rgb(27, 44, 93);">Hãng xe</div>
+                <div v-else 
+                    style="color: rgb(27, 44, 93);">
+                    <span style="font-weight: 600;">Hãng xe:</span>
+                    <span v-if="-1 < $root.IndexBrand" 
+                        style="margin-left: 6px;">{{$root.LsBrand[$root.IndexBrand][0]}}</span>
+                    <span v-else style="margin-left: 6px;">Tất cả</span>
+                </div>
+                <div v-if="IsExpand"
+                    style="scrollbar-width:none; gap: 32px; display: flex; flex-wrap: wrap;">
+                    <div class="wrap-brand" @click.stop="e => selectIndex(-1, 2)">
+                        <button class="btn-more" :style="[
+                        -1 == $root.IndexBrand ? { backgroundColor: 'rgb(255, 221, 0)' } : null
+                    ]">
+                            <span class="txt-plus">All</span>
+                        </button>
+                        <div class="txt-more">Tất cả</div>
+                    </div>
+                    <div v-for="(brand, ii) in LsBrand"
+                        class="wrap-brand"
+                        @click.stop="e => selectIndex(ii, 2)">
+                        <div class="wrap-logo"
+                            :style="[
+                            ii == $root.IndexBrand ? { backgroundColor: 'rgb(255, 221, 0)' } : null
+                        ]">
+                            <img alt="Toyota" loading="lazy" width="128" height="128"
+                                decoding="async" data-nimg="1" class="img-logo"
+                                :src="brand[1] + '?image_process=format,webp/resize,w_256'">
+                        </div>
+                        <div class="brand-name">{{brand[0]}}</div>
+                    </div>
+                    <div class="wrap-brand" @click.stop="e => watchMore(2)">
+                        <button class="btn-more">
+                            <span class="txt-plus">+</span>
+                        </button>
+                        <div class="txt-more">Xem thêm</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div v-if="IsExpand" 
+                    style="font-weight: 600; margin-bottom: .5rem; color: rgb(27, 44, 93);">Năm sản xuất</div>
+                <div v-else
+                    style="color: rgb(27, 44, 93);">
+                    <span style="font-weight: 600;">Năm sản xuất:</span>
+                    <span style="margin-left: 6px;">{{$root.LsYear[$root.IndexYear]}}</span>
+                </div>
+                <div v-if="IsExpand"
+                    style="scrollbar-width: none; gap: 10px; display: flex; flex-wrap: wrap;">
+                    <div v-for="(year, ii) in LsYear"
+                        class="wrap-year"
+                        @click.stop="e => selectIndex(ii, 3)"
+                        :style="[
+                            ii == $root.IndexYear ? { backgroundColor: 'rgb(255, 221, 0)' } : null
+                        ]">{{year}}</div>
+                    <div class="wrap-year"
+                        @click.stop="e => watchMore(3)">Xem thêm</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<template id="tmp-mua-xe">
+    <div>Mua bán xe ô tô giá tốt ưu đãi</div>
+    <khuvuc-hangxe-namsx></khuvuc-hangxe-namsx>
+    <div>Tổng: 580 xe đang bán</div>
+</template>
