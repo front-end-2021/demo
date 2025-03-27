@@ -22,7 +22,7 @@ Promise.all([
             return {
                 LsTab: ['Mua xe', 'Xe mới', 'Xe cũ', 'Xe đã bán', 'Cửa hàng xe cũ', 'Cửa hàng xe mới', 'Phụ kiện ô tô'],
                 IndexTab: 0,
-                LsRegion: ['Tất cả', 'Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Cần Thơ', 'Bình Dương', 'An Giang', 'Bà Rịa - Vũng Tàu', 
+                LsRegion: ['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Cần Thơ', 'Bình Dương', 'An Giang', 'Bà Rịa - Vũng Tàu', 
                     'Bắc Giang', 'Bắc Kạn', 'Bạc Liêu', 'Bắc Ninh', 'Bến Tre', 'Bình Định', 'Bình Phước', 'Bình Thuận', 'Cà Mau', 'Cao Bằng', 
                     'Đắk Lắk', 'Đắk Nông', 'Điện Biên', 'Đồng Nai', 'Đồng Tháp', 'Gia Lai', 'Hà Giang', 'Hà Nam', 'Hà Tĩnh', 'Hải Dương', 
                     'Hải Phòng', 'Hậu Giang', 'Hoà Bình', 'Hưng Yên', 'Khánh Hòa', 'Kiên Giang', 'Kon Tum', 'Lai Châu', 'Lâm Đồng', 
@@ -30,7 +30,7 @@ Promise.all([
                     'Quảng Nam', 'Quảng Ngãi' , 'Quảng Ninh', 'Quảng Trị', 'Sóc Trăng', 'Sơn La', 'Tây Ninh', 'Thái Bình', 'Thái Nguyên', 
                     'Thanh Hóa', 'Thừa Thiên Huế', 'Tiền Giang', 'Trà Vinh', 'Tuyên Quang', 'Vĩnh Long', 'Vĩnh Phúc', 'Yên Bái'
                 ],
-                IndexRegion: 0,
+                IndexRegion: -1,
                 LsBrand: [
                     ['Toyota', 'https://e-cdn.carpla.vn/carpla-ecom/cms/toyota-1741528722.299.jpg'],
                     ['Ford', 'https://e-cdn.carpla.vn/carpla-ecom/cms/rectangle-40-1688111384711-1740992338.565.jpg'],
@@ -57,10 +57,10 @@ Promise.all([
                 ],
                 IndexBrand: -1,
                 LsYear: [
-                    'Tất cả', '2025', '2024', '2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016', 
+                    '2025', '2024', '2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016', 
                     '2015', '2014', '2013', '2012', '2011', '2010', '2009', '2008', '2007', '2006'
                 ],
-                IndexYear: 0,
+                IndexYear: -1,
 
                 
             }

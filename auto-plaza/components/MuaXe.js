@@ -21,19 +21,20 @@ const KhuvucHangxeNamsx = {
         }
     },
     methods: {
-        selectIndex(ii, type){
-            switch(type) {
-                case 1: this.$root.IndexRegion = ii
+        selectIndex(ii, type) {
+            const root = this.$root
+            switch (type) {
+                case 1: root.IndexRegion = ii
                     break;
-                case 2: this.$root.IndexBrand = ii
+                case 2: root.IndexBrand = ii
                     break;
-                case 3: this.$root.IndexYear = ii
+                case 3: root.IndexYear = ii
                     break;
                 default: return;
             }
         },
         watchMore(type) {
-            switch(type) {
+            switch (type) {
                 case 1:
                     break;
                 case 2:
@@ -43,23 +44,26 @@ const KhuvucHangxeNamsx = {
                 default: return;
             }
         },
-        styleWidths() {
-            let lsWrap = []
-            let maxW = 0
-            this.$el.querySelectorAll('.wrap-local').forEach(wr => {
-                lsWrap.push(wr)
-                if (maxW < wr.offsetWidth) maxW = wr.offsetWidth
-            })
-            lsWrap.forEach(wr => {
-                if (wr.offsetWidth < maxW) {
-                    wr.style.width = `${maxW}px`
-                }
-            })
-
-        },
     },
-    mounted() {
-       // this.$nextTick(this.styleWidths)
+    computed: {
+        TxtKhuVuc() {
+            if (this.IsExpand) return
+            let ii = this.$root.IndexRegion
+            if (ii < 0) return 'Tất cả'
+            return this.$root.LsRegion[ii]
+        },
+        TxtHangXe() {
+            if (this.IsExpand) return
+            let ii = this.$root.IndexBrand
+            if (ii < 0) return 'Tất cả'
+            return this.$root.LsBrand[ii][0]
+        },
+        TxtNamSx() {
+            if (this.IsExpand) return
+            let ii = this.$root.IndexYear
+            if (ii < 0) return 'Tất cả'
+            return this.$root.LsYear[ii]
+        },
     },
 }
 export default {
