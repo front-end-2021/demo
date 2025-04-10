@@ -61,7 +61,7 @@ Promise.all([
                     '2015', '2014', '2013', '2012', '2011', '2010', '2009', '2008', '2007', '2006'
                 ],
                 IndexYear: -1,
-
+                LsXe: getLsXe(),
                 
             }
         },
@@ -105,3 +105,70 @@ Promise.all([
     app.mount('#app')
 
 }).catch(errStatus => { console.log('Woop!', errStatus) })
+function getLsXe(){
+    return [
+        {
+            Name: 'HYUNDAI I10 SEDAN MT TIÊU CHUẨN 2021 - ODO 32.500KM',
+            Start: 'một ngày trước',
+            HangXe: 'Hyundai',
+            Price: '310.000.000',
+            TraGop: 'chỉ từ 3,4 triệu/ tháng',
+            Contact: '0825.355.355',
+            QuangDuong: '32500 km',
+            LoaiBien: 'Biển tỉnh',
+            LoaiXe: 'Số sàn',
+            NhienLieu: 'Xăng',
+            ChoNgoi: '5 chỗ',
+            Location: 'Cần Thơ',
+            GaraName: 'CARPLA CẦN THƠ',
+            GaraImg: 'https://e-cdn.carpla.vn/carpla-ecom/c-1741164808.020.png',
+            DangBan: 18,
+            DaBan: 10,
+            GaraLink: '/cua-hang-xe-cu/carpla-can-tho',
+            Link: '/xe/hyundai-i10-sedan-mt-tiu-chun-2021-f8us0',
+            XeImg: 'https://e-cdn.carpla.vn/carpla-ecom/z6439673997267e1d3b8a9512245d8e61f5384c3523c6e-1742953300.575.jpg',
+        },
+        {
+            Name: 'HYUNDAI KONA ĐẶC BIỆT ATH 2021 - ODO 25.200KM',
+            Start: '4 giờ trước',
+            HangXe: 'Hyundai',
+            Price: '564.000.000',
+            TraGop: 'chỉ từ 6,3 triệu/ tháng',
+            Contact: '0768.002.555',
+            QuangDuong: '25200 km',
+            LoaiBien: 'Biển tỉnh',
+            LoaiXe: 'Số tự động',
+            NhienLieu: 'Xăng',
+            ChoNgoi: '5 chỗ',
+            Location: 'HỒ CHÍ MINH',
+            GaraName: 'CARPLA TP HỒ CHÍ MINH',
+            GaraImg: 'https://e-cdn.carpla.vn/carpla-ecom/c-1741164808.020.png',
+            DangBan: 19,
+            DaBan: 23,
+            GaraLink: '/cua-hang-xe-cu/carpla-can-tho',
+            Link: '/xe/hyundai-i10-sedan-mt-tiu-chun-2021-f8us0',
+            XeImg: 'https://e-cdn.carpla.vn/carpla-ecom/z6484396342646ef457dfa8e682dd6b92a8e6e5af6601f-1744096729.953.jpg',
+        },
+        {
+            Name: 'FORD RANGER XLS 2.0L 4x2 AT 2025 TRẮNG',
+            Start: '7 giờ trước',
+            HangXe: 'Ford',
+            Price: '707.000.000',
+            TraGop: 'chỉ từ 7,9 triệu/ tháng',
+            Contact: '0988.242.828',
+            QuangDuong: '55200 km',
+            LoaiBien: 'Biển tỉnh',
+            LoaiXe: 'Số tự động',
+            NhienLieu: 'Dầu',
+            ChoNgoi: '5 chỗ',
+            Location: 'Bình Thuận',
+            GaraName: 'BÌNH THUẬN FORD',
+            GaraImg: 'https://e-cdn.carpla.vn/carpla-ecom/avt-1741314091.208.jfif',
+            DangBan: 15,
+            DaBan: 1,
+            GaraLink: '/cua-hang-xe-moi/binh-thuan-ford',
+            Link: '/xe/ford-ranger-xls-20l-4x2-at-2025-trang-f8ukc',
+            XeImg: 'https://e-cdn.carpla.vn/carpla-ecom/ranger-xls5-1742195692.035.JPEG',
+        },
+    ]
+}

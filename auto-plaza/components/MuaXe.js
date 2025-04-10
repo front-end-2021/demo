@@ -1,5 +1,35 @@
+const InfoXe = {
+    template: `#tmp-info-xe`,
+    name: 'info.xe',
+    props: ['xe'],
+    data() {
+        return {
+            ShowBrand: true,
+            ShowLocal: true,
+        }
+    },
+    watch: {
+        '$root.IndexBrand'(ii) {
+            if (ii < 0) {
+                this.ShowBrand = true
+            } else {
+                let hangXe = this.$root.LsBrand[ii]
+                this.ShowBrand = this.xe.HangXe.toLowerCase() == hangXe[0].toLowerCase()
+            }
+        },
+        '$root.IndexRegion'(ii) {
+            if (ii < 0) {
+                this.ShowLocal = true
+            } else {
+                let local = this.$root.LsRegion[ii]
+                this.ShowLocal = this.xe.Location.toLowerCase() == local.toLowerCase()
+            }
+        },
+    },
+}
 const KhuvucHangxeNamsx = {
     template: `#tmp-khuvuc-hangxe-namsx`,
+    name: 'khuvuc.hangxe.namsx',
     data() {
         const lsRegion = []
         for (let ii = 0; ii < 10; ii++) {
@@ -70,6 +100,7 @@ export default {
     template: `#tmp-mua-xe`,
     components: {
         'khuvuc-hangxe-namsx': KhuvucHangxeNamsx,
+        'info-xe': InfoXe,
         //draggable: VueDraggableNext,
     },
 }

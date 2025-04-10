@@ -1,3 +1,35 @@
+
+@font-face {
+    font-family: fontCarpla;
+    src: url(/font/1286b733a974c61c-s.p.otf) format("opentype");
+    font-display: swap;
+    font-weight: 400;
+    font-style: normal
+}
+
+@font-face {
+    font-family: fontCarpla;
+    src: url(/font/5ff9c6da74a14371-s.p.otf) format("opentype");
+    font-display: swap;
+    font-weight: 500;
+    font-style: normal
+}
+
+@font-face {
+    font-family: fontCarpla;
+    src: url(/font/fdd80b05f62435d0-s.p.otf) format("opentype");
+    font-display: swap;
+    font-weight: 600;
+    font-style: normal
+}
+
+@font-face {
+    font-family: fontCarpla;
+    src: url(/font/2ef6d872b725ed03-s.p.otf) format("opentype");
+    font-display: swap;
+    font-weight: 700;
+    font-style: normal
+}
 *, :after, :before {
     box-sizing: border-box;
     border: 0 solid #e5e7eb;
