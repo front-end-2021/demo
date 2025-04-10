@@ -1,3 +1,4 @@
+
 const InfoXe = {
     template: `#tmp-info-xe`,
     name: 'info.xe',
@@ -6,6 +7,7 @@ const InfoXe = {
         return {
             ShowBrand: true,
             ShowLocal: true,
+            IsVisble: true,
         }
     },
     watch: {
@@ -24,6 +26,21 @@ const InfoXe = {
                 let local = this.$root.LsRegion[ii]
                 this.ShowLocal = this.xe.Location.toLowerCase() == local.toLowerCase()
             }
+        },
+    },
+    methods: {
+        visibleChanged(isVisible, entry) {
+            this.IsVisble = isVisible
+            const wrap = this.$el
+            if (!isVisible) {
+                if (!wrap.style.width.length) {
+                    let cStyle = window.getComputedStyle(wrap)
+                    wrap.style.width = cStyle.width
+                }
+            } else if (wrap.style.width.length) {
+                wrap.style.width = ''
+            }
+            //console.log(this.xe.Name, isVisible, entry)
         },
     },
 }
@@ -48,6 +65,7 @@ const KhuvucHangxeNamsx = {
             LsRegion: lsRegion,
             LsBrand: lsBrand,
             LsYear: lsYear,
+            IsVisble: true,
         }
     },
     methods: {
@@ -73,6 +91,19 @@ const KhuvucHangxeNamsx = {
                     break;
                 default: return;
             }
+        },
+        visibleChanged(isVisible, entry) {
+            this.IsVisble = isVisible
+            const wrap = this.$el
+            if (!isVisible) {
+                let cStyle = window.getComputedStyle(wrap)
+                if (!wrap.style.width.length) wrap.style.width = cStyle.width
+                if (!wrap.style.height.length) wrap.style.height = cStyle.height
+            } else {
+                if (wrap.style.width.length) wrap.style.width = ''
+                if (wrap.style.height.length) wrap.style.height = ''
+            }
+            
         },
     },
     computed: {

@@ -1,8 +1,10 @@
 <template id="tmp-khuvuc-hangxe-namsx">
-    <div style="box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 20px 0px;
+    <div v-observe-visibility="visibleChanged"
+        style="box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 20px 0px;
                 background-color: rgb(255, 255, 255); border-radius: .75rem; padding: 1rem;"
         @click.stop="e => IsExpand = !IsExpand">
-        <div style="display: grid; grid-template-columns: 266px 364px 184px; gap: 18px;">
+        <div v-if="IsVisble"
+            style="display: grid; grid-template-columns: 266px 364px 184px; gap: 18px;">
             <div v-if="IsExpand" >
                 <div style="font-weight: 600; margin-bottom: .5rem; color: rgb(27, 44, 93);">Khu vực</div>
                 <div style="scrollbar-width: none;gap: 10px;display: flex;flex-wrap: wrap;">
@@ -86,10 +88,12 @@
 </template>
 <template id="tmp-info-xe">
     <div v-if="ShowBrand && ShowLocal" 
+        v-observe-visibility="visibleChanged"
         style="height: 220px; flex-direction: row; 
     box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px; 
     display: inline-flex; margin-bottom: .75rem; overflow: hidden; border-radius: 8px; background-color: white;">
-        <div style="display: inline-grid; grid-template-columns: 294px 600px;">
+        <div v-if="IsVisble"
+            style="display: inline-grid; grid-template-columns: 294px 600px;">
             <a :href="xe.Link" style="position: relative; color: inherit; text-decoration: inherit;">
                 <img alt="" loading="lazy" width="640" height="480" decoding="async" data-nimg="1" 
                     :src="xe.XeImg + '?image_process=format,webp/resize,w_1920'" 
@@ -140,7 +144,8 @@
                 </div>
             </div>
         </div>
-        <div style="width: 280px; padding: 1rem; border-left-width: 1px; justify-content: space-between; flex-direction: column; flex-shrink: 0; display: flex;">
+        <div v-if="IsVisble"
+            style="width: 280px; padding: 1rem; border-left-width: 1px; justify-content: space-between; flex-direction: column; flex-shrink: 0; display: flex;">
             <div class="" style="gap: .5rem; justify-content: center; flex-direction: column; height: 100%; display: flex;">
                 <div style="align-items: center; flex-direction: column; gap: .5rem; justify-content: space-between; display: flex;">
                     <div style="display: flex; align-items: center;">
