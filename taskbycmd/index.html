@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Schedule management</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  </link>
+  <link rel="stylesheet" href="./m-style.css">
+  </link>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/1c-light.min.css"
+    integrity="sha512-kM8PiTB2J9j9MJxP4pg5Morv1nvatwpY0xsNsHDpHobti6+sdvObgLPhJ7lOIHYUqQmTAUAE+CaTcQXR47XO2w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"
+    integrity="sha512-EBLzUL8XLl+va/zAsmXwS7Z2B1F9HUHkZwyS/VKwh3S7T/U0nF4BaU29EP/ZSf6zgiIxYAnKLu6bJ8dqpmX5uw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
+        "vue-draggable-next": "https://cdn.jsdelivr.net/npm/vue-draggable-next@2.2.1/+esm"
+      }
+    }
+  </script>
+
+</head>
+
+<body style="margin: 8px; font-family: Consolas;">
+  <main id="m-app" v-cloak>
+    <header>
+      <view-commands></view-commands>
+    </header>
+
+    <section style="display: grid; grid-template-columns: auto 810px;">
+      <div>
+        <h3 style="margin-bottom: 3px;">List schedule</h3>
+        <div v-for="task in LsSchedule" :key="task.Id" 
+          style="display: grid; grid-template-columns: auto 300px 300px; gap: 12px;">
+          <div style="display: inline-flex; gap: 6px;">
+            <strong>{{task.Name}}</strong>
+            <div v-if="0 < task.Users.length">[{{task.Users.join(', ')}}]</div>
+          </div>
+          <div>From {{task.Begin.toLocaleString()}}</div>
+          <div>To {{task.End.toLocaleString()}}</div>
+        </div>
+      </div>
+      <div>
+        <h3 style="margin-bottom: 3px;">Available</h3>
+        <div v-for="item in LsAvailable" style="display: flex;gap: 12px;">
+          <div>From {{item.Begin.toLocaleString()}}</div>
+          <div>To {{item.End.toLocaleString()}}</div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <h3 style="margin-bottom: 3px;">List user</h3>
+      <div v-for="user in LsUser">{{user}}</div>
+    </section>
+  </main>
+
+  <span class="dnb-imp-html" dnbpath="./components/vw-diagram.html"></span>
+
+  <script type="module" src="m-app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+body, .dr_lst-wrap, .mformedit, #dnb-viewcode {scrollbar-width: thin;}
+
+.ctlmove, .ctledit {
+    width: 22px;height: calc(100% - 1px);
+    position: absolute;top:1px;
+    background-color: white; display: none;
+}
+
+.vwheader:hover>.ctlmove,
+.vwheader:hover>.ctledit { display: inline-block; }
+.cpoint {cursor: pointer;}
+.p36 { padding: 3px 6px; }
+.p3-0 { padding: 3px 0; }
+
+[contenteditable="true"] {border-bottom: 1px solid #ffffff96;}
+[contenteditable="true"]:empty:before {
+    content: attr(data-placeholder); color: #98989898; /* Màu placeholder */
+}
+.mformedit {
+    min-width: calc(100vw / 3); max-width: calc(100vw - 60px); 
+    min-height: 320px; max-height: calc(100vh - 30px);
+    display: inline-block;  padding: 18px; 
+    transform: translate(-50%, -50%); box-sizing: border-box; 
+    border-radius: 10px; position: fixed; overflow-y: auto;
+    background-color: #e5e5e5; top: 50%; left: 50%;
+}
+.dnb-mnlst > *:hover {background-color: #efefef;}
+.dr_lst-wrap > *:hover {background-color: #efefef;}

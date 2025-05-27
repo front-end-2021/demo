@@ -1,0 +1,8 @@
+<template id="tmp-commands">
+    <div style="display: grid; grid-template-columns: auto; gap: 8px;">
+        <div contenteditable="plaintext-only"
+            style="border: 1px solid gainsboro; border-radius: 6px;min-height: 60px;padding: 6px;"
+            @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}" 
+            @keyup.enter.prevent="processCompand">{{TxtCommand}}</div>
+    </div>
+</template>
