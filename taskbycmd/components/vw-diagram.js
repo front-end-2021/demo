@@ -1,5 +1,8 @@
 import { genKeyHex } from "../common.js";
-import { getCommands } from "../commands.js";
+import {
+    getCommands, ptrnNewShedules, patternNewPlans,
+    patternNewUser, patternEditUser
+} from "../commands.js";
 export const ViewCommands = {
     template: `#tmp-commands`,
     name: "View_Command",
@@ -8,15 +11,22 @@ export const ViewCommands = {
     // props: ['item'],
     data() {
         return {
-            TxtCommand: `New schedule Daily meeting from 9:30am to 9:45am. Create meeting Planning start 2:00pm end 5:00pm
-            new Timetable Retro meeting begin 10:00am end 12:00pm
+            TxtCommand: `New schedule Daily meeting from 9:30am to 9:45am. Make meeting Planning start 2:00pm end 5:00pm
+            create Timetable Retro meeting begin 10:00am end 12:00pm
             New user DaiNB. Assign user DaiNB to Daily meeting.
             Change man DaiNB to Dai Nguyen`,
+            TxtGuideNew: `${ptrnNewShedules.join(', ')}. ${patternNewPlans.join(', ')}`,
+            TxtGuideNewUser: `${patternNewUser.join(', ')}`,
+            TxtGuideEditUser: `${patternEditUser.join(', ')}`,
+            IsExpandGuide: true,
+            IsExpandGeNewTask: true,
+            IsExpandGeNewUser: true,
+            IsExpandGeEditUser: true,
         }
     },
     methods: {
         processCompand(e) {
-            const target = e.target
+            let target = this.$el.querySelector('.txt-command[contenteditable]')// e.target
             const txt = target.innerText
             const root = this.$root
             let [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser, mapEditUser, mapAssignUser] = getCommands(txt)
@@ -25,28 +35,12 @@ export const ViewCommands = {
             allCommandIndex.forEach(index => {
                 if (mapNewSchedule.has(index)) {
                     let obj = mapNewSchedule.get(index)
-                    let lsShedule = root.LsSchedule
-                    let ii = lsShedule.findIndex(item => 0 < compare(item, obj))
-                    if (-1 < ii) {
-                        genKeyHex(obj)
-                        lsShedule.splice(ii, 1, obj)
-                    } else {
-                        ii = lsShedule.findIndex(item => 0 == compare(item, obj))
-                        if (ii < 0) lsShedule.push(obj)
-                    }
+                    setSchedules(root.LsSchedule, obj)
                     changeSch = true
                 }
                 if (mapNewPlan.has(index)) {
                     let obj = mapNewPlan.get(index)
-                    let lsShedule = root.LsSchedule
-                    let ii = lsShedule.findIndex(item => 0 < compare(item, obj))
-                    if (-1 < ii) {
-                        genKeyHex(obj)
-                        lsShedule.splice(ii, 1, obj)
-                    } else {
-                        ii = lsShedule.findIndex(item => 0 == compare(item, obj))
-                        if (ii < 0) lsShedule.push(obj)
-                    }
+                    setSchedules(root.LsSchedule, obj)
                     changeSch = true
                 }
                 if (mapNewUser.has(index)) {
@@ -79,7 +73,10 @@ export const ViewCommands = {
                     }
                 }
             })
-            if (changeSch) root.computeAvailables()
+            if (changeSch) {
+                root.LsSchedule.sort((a, b) => a.Begin.getTime() - b.Begin.getTime())
+                root.computeAvailables()
+            }
             if (0 < mapNewUser.size + mapEditUser.size) {
                 root.LsUser = Array.from(sUser)
             }
@@ -92,7 +89,28 @@ export const ViewCommands = {
                 return -1
             }
             function isEqualDate(d1, d2) { return d1.toISOString() == d2.toISOString() }
-        }
+            function setSchedules(lsShedule, obj) {
+                let ii = lsShedule.findIndex(item => 0 < compare(item, obj))
+                if (-1 < ii) {
+                    let old = lsShedule[ii]
+                    let users = new Set([...old.Users, ...obj.Users])
+                    obj.Users = Array.from(users)
+                    genKeyHex(obj)
+                    lsShedule.splice(ii, 1, obj)
+                } else {
+                    ii = lsShedule.findIndex(item => 0 == compare(item, obj))
+                    if (ii < 0) lsShedule.push(obj)
+                }
+            }
+        },
+        clearCompand(){
+            let target = this.$el.querySelector('.txt-command[contenteditable]')
+            target.innerHTML = ''
+        },
+        fillCompand(){
+            let target = this.$el.querySelector('.txt-command[contenteditable]')
+            target.innerHTML = this.TxtCommand
+        },
     },
     computed: {
 

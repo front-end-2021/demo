@@ -1,8 +1,31 @@
 <template id="tmp-commands">
-    <div style="display: grid; grid-template-columns: auto; gap: 8px;">
-        <div contenteditable="plaintext-only"
-            style="border: 1px solid gainsboro; border-radius: 6px;min-height: 60px;padding: 6px;"
-            @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}" 
-            @keyup.enter.prevent="processCompand">{{TxtCommand}}</div>
+    <div style="display: grid; grid-template-columns: 789px auto; gap: 8px;">
+        <div style="display: grid; grid-template-rows: auto 42px; gap: 6px;">
+            <div class="txt-command"
+                contenteditable="plaintext-only"
+                @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}" 
+                @keyup.enter.prevent="processCompand">{{TxtCommand}}</div>
+            <div style="display: flex; gap: 6px;">
+                <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
+                    @click.stop="processCompand">Generate commands</div>
+                <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
+                    @click.stop="clearCompand">Clear commands</div>
+                <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
+                    @click.stop="fillCompand">Fill commands</div>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+            <strong style="cursor: pointer;"
+                @click.stop="e => this.IsExpandGuide = !this.IsExpandGuide">Guide {{ !this.IsExpandGuide ? '...' : ''}}</strong>
+            <div style="cursor: default;"
+                v-if="this.IsExpandGuide"><span style="cursor: pointer;"
+                        @click.stop="e => this.IsExpandGeNewTask = !this.IsExpandGeNewTask">New/edit:</span> <small>{{this.IsExpandGeNewTask ? TxtGuideNew : '[...]'}}</small></div>
+            <div style="cursor: default;"
+                v-if="this.IsExpandGuide"><span style="cursor: pointer;"
+                        @click.stop="e => this.IsExpandGeNewUser = !this.IsExpandGeNewUser">New user:</span> <small>{{this.IsExpandGeNewUser ? TxtGuideNewUser : '[...]'}}</small></div>
+            <div style="cursor: default;"
+                v-if="this.IsExpandGuide"><span style="cursor: pointer;"
+                        @click.stop="e => this.IsExpandGeEditUser = !this.IsExpandGeEditUser">Edit user:</span> <small>{{this.IsExpandGeEditUser ? TxtGuideEditUser : '[...]'}}</small></div>
+        </div>
     </div>
 </template>

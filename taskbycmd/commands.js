@@ -1,17 +1,19 @@
+export const ptrnNewShedules = ['new Schedule', 'new Timetable', 'new Agenda', 'new Calendar', 'new Planner', 'new Roadmap',
+    'make Schedule', 'make Timetable', 'make Agenda', 'make Calendar', 'make Planner', 'make Roadmap',
+    'create Schedule', 'create Timetable', 'create Agenda', 'create Calendar', 'create Planner', 'create Roadmap']
+export const patternNewPlans = ['new Appointment', 'new Meeting', 'new Event', 'new Reservation', 'new Booking', 'new Recurring event', 'new Single event', 'new Time slot',
+    'make Appointment', 'make Meeting', 'make Event', 'make Reservation', 'make Booking', 'make Recurring event', 'make Single event', 'make Time slot',
+    'create Appointment', 'create Meeting', 'create Event', 'create Reservation', 'create Booking', 'create Recurring event', 'create Single event', 'create Time slot']
+export const patternNewUser = ['new user', 'create user', 'new person', 'create person', 'new man', 'create man',
+    'new woman', 'create woman', 'new staff', 'create staff', 'new member', 'create member']
+export const patternEditUser = ['edit user from', 'edit user', 'edit person from', 'edit person', 'edit man from',
+    'edit man', 'edit woman from', 'edit woman', 'edit staff from', 'edit staff', 'edit member from', 'edit member',
+    'change user from', 'change user', 'change person from', 'change person', 'change man from', 'change man',
+    'change woman from', 'change woman', 'change staff from', 'change staff', 'change member from', 'change member']
+
 export function getCommands(text) {
-    const ptrnNewShedules = ['new Schedule', 'new Timetable', 'new Agenda', 'new Calendar', 'new Planner', 'new Roadmap',
-        'create Schedule', 'create Timetable', 'create Agenda', 'create Calendar', 'create Planner', 'create Roadmap']
     const patternTimes = ['Start time', 'End time', 'Valid from', 'Valid until', 'Cut-off time']
     const patternSpecTimes = ['from', 'begin', 'start', 'at', 'end', 'to']
-    const patternNewPlans = ['new Appointment', 'new Meeting', 'new Event', 'new Reservation', 'new Booking',
-        'new Recurring event', 'new Single event', 'new Time slot', 'create Appointment', 'create Meeting', 'create Event',
-        'create Reservation', 'create Booking', 'create Recurring event', 'create Single event', 'create Time slot']
-    const patternNewUser = ['new user', 'create user', 'new person', 'create person', 'new man', 'create man',
-        'new woman', 'create woman', 'new staff', 'create staff', 'new member', 'create member']
-    const patternEditUser = ['edit user from', 'edit user', 'edit person from', 'edit person', 'edit man from',
-        'edit man', 'edit woman from', 'edit woman', 'edit staff from', 'edit staff', 'edit member from', 'edit member',
-        'change user from', 'change user', 'change person from', 'change person', 'change man from', 'change man',
-        'change woman from', 'change woman', 'change staff from', 'change staff', 'change member from', 'change member']
     const ptrnAssignUser = ['add user', 'assign user', 'add person', 'assign person', 'add man', 'assign man',
         'add woman', 'assign woman', 'add lady', 'assign lady', 'add staff', 'assign staff', 'add member', 'assign member']
 
@@ -71,7 +73,7 @@ export function getCommands(text) {
         txt = arr[1]
         let lsStr = splitByKeywords(txt, [...patternEditUser, 'to'])
         if (2 == lsStr.length) {
-            lsStr = lsStr.map(str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/ )
+            lsStr = lsStr.map(str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/)
             mapEditUser.set(arr[0], lsStr)
         }
     }
@@ -83,24 +85,24 @@ export function getCommands(text) {
         txt = arr[1]
         let lsStr = splitByKeywords(txt, [...ptrnAssignUser, 'to'])
         if (2 == lsStr.length) {
-            lsStr = lsStr.map(str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/ )
+            lsStr = lsStr.map(str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/)
             mapAssignUser.set(arr[0], lsStr)
         }
     }
 
-    console.group('list index command')
-    console.log('new schedule ', lsIndexNewShedule)
-    console.log('new plan ', lsIndexNewPlan)
-    console.log('new user ', lsIndexNewUser)
-    console.log('edit user ', lsIndexEditUser)
-    console.log('assign user ', lsIndexAssignUser)
-    console.log('all index ', allCommandIndex)
-    console.log('ls new schedule ', mapNewSchedule)
-    console.log('ls new plan ', mapNewPlan)
-    console.log('ls new user ', mapNewUser)
-    console.log('ls edit user ', mapEditUser)
-    console.log('ls assign user ', mapAssignUser)
-    console.groupEnd()
+    // console.group('list index command')
+    // console.log('new schedule ', lsIndexNewShedule)
+    // console.log('new plan ', lsIndexNewPlan)
+    // console.log('new user ', lsIndexNewUser)
+    // console.log('edit user ', lsIndexEditUser)
+    // console.log('assign user ', lsIndexAssignUser)
+    // console.log('all index ', allCommandIndex)
+    // console.log('ls new schedule ', mapNewSchedule)
+    // console.log('ls new plan ', mapNewPlan)
+    // console.log('ls new user ', mapNewUser)
+    // console.log('ls edit user ', mapEditUser)
+    // console.log('ls assign user ', mapAssignUser)
+    // console.groupEnd()
 
     return [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser, mapEditUser, mapAssignUser]
     function mapLs(listI) {
@@ -171,6 +173,7 @@ function getUserNames(txt, patterns) {
     return uName.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "")   // Xóa dấu câu nếu xuất hiện cuối chuỗi
 }
 function parseTimeToDate(timeStr) {
+    timeStr = timeStr.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/
     timeStr = timeStr.replace(/(\d+)([ap]m)/i, "$1 $2"); // Chuẩn hóa định dạng (thêm dấu cách giữa giờ và AM/PM nếu chưa có)
     const date = new Date();        // Chuyển đổi thành đối tượng Date sử dụng new Date()
     let [time, period] = timeStr.split(" ");
