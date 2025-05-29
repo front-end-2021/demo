@@ -240,6 +240,12 @@ export const ViewCommands = {
                     let old = lsShedule[ii]
                     let users = new Set([...old.Users, ...obj.Users])
                     obj.Users = Array.from(users)
+                    obj.Begin.setFullYear(old.Begin.getFullYear())
+                    obj.End.setFullYear(old.End.getFullYear())
+                    obj.Begin.setMonth(old.Begin.getMonth())
+                    obj.End.setMonth(old.End.getMonth())
+                    obj.Begin.setDate(old.Begin.getDate())
+                    obj.End.setDate(old.End.getDate())
                     genKeyHex(obj)
                     lsShedule.splice(ii, 1, obj)
                 } else {
