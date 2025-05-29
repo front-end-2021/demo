@@ -1,9 +1,5 @@
-export const ptrnNewShedules = ['new Schedule', 'new Timetable', 'new Agenda', 'new Calendar', 'new Planner', 'new Roadmap',
-    'make Schedule', 'make Timetable', 'make Agenda', 'make Calendar', 'make Planner', 'make Roadmap',
-    'create Schedule', 'create Timetable', 'create Agenda', 'create Calendar', 'create Planner', 'create Roadmap']
-export const patternNewPlans = ['new Appointment', 'new Meeting', 'new Event', 'new Reservation', 'new Booking', 'new Recurring event', 'new Single event', 'new Time slot',
-    'make Appointment', 'make Meeting', 'make Event', 'make Reservation', 'make Booking', 'make Recurring event', 'make Single event', 'make Time slot',
-    'create Appointment', 'create Meeting', 'create Event', 'create Reservation', 'create Booking', 'create Recurring event', 'create Single event', 'create Time slot']
+export const ptrnNewShedules = ['make Schedule', 'make Timetable', 'make Agenda', 'make Calendar', 'make Planner', 'make Roadmap']
+export const patternNewPlans = ['make Appointment', 'make Meeting', 'make Event', 'make Reservation', 'make Booking', 'make Recurring event', 'make Single event', 'make Time slot']
 export const patternNewUser = ['new user', 'create user', 'new person', 'create person', 'new man', 'create man',
     'new woman', 'create woman', 'new staff', 'create staff', 'new member', 'create member']
 export const patternEditUser = ['edit user from', 'edit user', 'edit person from', 'edit person', 'edit man from',

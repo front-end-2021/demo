@@ -155,8 +155,8 @@ export const ViewCommands = {
     //inject: [''],
     data() {
         return {
-            TxtCommand: `New schedule Daily meeting from 9:30am to 9:45am. Make meeting Planning start 2:00pm end 5:00pm
-    create Timetable Retro meeting begin 10:00am end 12:00pm
+            TxtCommand: `Make schedule Daily meeting from 9:30am to 9:45am, make meeting Planning start 2:00pm end 5:00pm
+    Make Timetable Retro meeting begin 10:00am end 12:00pm
     New user DaiNB. Assign user DaiNB to Daily meeting, change man DaiNB to Dai Nguyen. 
     New man Bill Gate. Assign man Bill Gate to Daily meeting
     New man Elon Musk, assign man Elon Musk to Planning.`,
@@ -226,14 +226,23 @@ export const ViewCommands = {
                 root.LsUser = Array.from(sUser)
             }
             function compare(item, obj) {
-                if (item.Name == obj.Name && isEqualDate(obj.Begin, item.Begin) && isEqualDate(obj.End, item.End)) return 0
-                if (item.Name != obj.Name && isEqualDate(obj.Begin, item.Begin) && isEqualDate(obj.End, item.End)) return 1
-                if (item.Name == obj.Name && !isEqualDate(obj.Begin, item.Begin) && isEqualDate(obj.End, item.End)) return 2
-                if (item.Name == obj.Name && isEqualDate(obj.Begin, item.Begin) && !isEqualDate(obj.End, item.End)) return 3
-                if (item.Name == obj.Name && !isEqualDate(obj.Begin, item.Begin) && !isEqualDate(obj.End, item.End)) return 4
+                if (item.Name == obj.Name && isEqualTime(obj.Begin, item.Begin) && isEqualTime(obj.End, item.End)) return 0
+                if (item.Name != obj.Name && isEqualTime(obj.Begin, item.Begin) && isEqualTime(obj.End, item.End)) return 1
+                if (item.Name == obj.Name && !isEqualTime(obj.Begin, item.Begin) && isEqualTime(obj.End, item.End)) return 2
+                if (item.Name == obj.Name && isEqualTime(obj.Begin, item.Begin) && !isEqualTime(obj.End, item.End)) return 3
+                if (item.Name == obj.Name && !isEqualTime(obj.Begin, item.Begin) && !isEqualTime(obj.End, item.End)) return 4
                 return -1
             }
-            function isEqualDate(d1, d2) { return d1.toISOString() == d2.toISOString() }
+            function isEqualTime(d1, d2) {
+                let t1 = d1.getHours()
+                let t2 = d2.getHours()
+                if (t1 != t2) return false
+                t1 = d1.getMinutes()
+                t2 = d2.getMinutes()
+                if (t1 != t2) return false
+                return true
+            }
+            //function isEqualDate(d1, d2) { return d1.toISOString() == d2.toISOString() }
             function setSchedules(lsShedule, obj) {
                 let ii = lsShedule.findIndex(item => 0 < compare(item, obj))
                 if (-1 < ii) {
