@@ -6,7 +6,7 @@ import { ViewCommands, ViewSchedule } from './components/vw-diagram.js'
 Promise.all([
     includeHTML(`./components/vw-diagram.html`),
 ]).then((values) => {
-    const app = createApp({
+    createApp({
         name: `app-main`,
         components: {
             'view-commands': ViewCommands,
@@ -92,8 +92,7 @@ Promise.all([
         },
         beforeUpdate() { },
         updated() { },
-    })
-    app.mount('#m-app')
+    }).mount('#m-app')
 
 }).catch(errStatus => { console.log('Woop!', errStatus) })
 
