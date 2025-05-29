@@ -1,3 +1,27 @@
+<template id="tmp-schedule">
+    <div style="display: grid;grid-template-columns: auto 200px;margin-bottom: 6px;padding: 6px;
+            background-color: #cfcfcf3d;border-radius: 12px;">
+        <div style="display: flex;flex-direction: column;">
+            <strong>{{item.Name}}</strong>
+            <small>{{item.Users.join(', ')}}</small>
+        </div>
+        <div style="display: flex;gap: 8px; align-items: center;">
+            <div style="display: flex; flex-direction: column;">
+                <small v-for="txt in TxtTimes">{{txt}}</small>
+            </div>
+            <div style="display: flex; align-items: center;border-left: 2px solid #b0b0b0;padding-left: 6px;"
+                v-bind:style="{
+                    flexDirection: 1 < TxtDays.length ? 'column' : ''
+                }">
+                <span v-for="(txt, ii) in TxtDays"
+                    :key="txt" contenteditable="plaintext-only"
+                    v-bind:iiday="ii"
+                    @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}" 
+                    @keyup.enter.prevent="e => changeDay(ii, e)">{{txt}}</span>
+            </div>
+        </div>
+    </div>
+</template>
 <template id="tmp-commands">
     <div style="display: grid; grid-template-columns: 789px auto; gap: 8px;">
         <div style="display: grid; grid-template-rows: auto 42px; gap: 6px;">

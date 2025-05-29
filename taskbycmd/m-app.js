@@ -1,6 +1,6 @@
 // #region import
 import { createApp } from 'vue'
-import { ViewCommands } from './components/vw-diagram.js'
+import { ViewCommands, ViewSchedule } from './components/vw-diagram.js'
 
 // #endregion
 Promise.all([
@@ -10,6 +10,7 @@ Promise.all([
         name: `app-main`,
         components: {
             'view-commands': ViewCommands,
+            'view-schedule': ViewSchedule,
         },
         data() {
             let start = new Date();

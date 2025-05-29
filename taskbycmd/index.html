@@ -39,18 +39,12 @@
       <view-commands></view-commands>
     </header>
 
-    <section style="display: grid; grid-template-columns: auto 810px;">
+    <section style="display: grid; grid-template-columns: 610px auto; gap: 60px;">
       <div>
         <h3 style="margin-bottom: 3px;">List schedule</h3>
-        <div v-for="task in LsSchedule" :key="task.Id" 
-          style="display: grid; grid-template-columns: auto 300px 300px; gap: 12px;">
-          <div style="display: inline-flex; gap: 6px;">
-            <strong>{{task.Name}}</strong>
-            <div v-if="0 < task.Users.length">[{{task.Users.join(', ')}}]</div>
-          </div>
-          <div>From {{task.Begin.toLocaleString()}}</div>
-          <div>To {{task.End.toLocaleString()}}</div>
-        </div>
+        <view-schedule v-for="task in LsSchedule" 
+          :key="task.Name"
+          :item="task"></view-schedule>
       </div>
       <div>
         <h3 style="margin-bottom: 3px;">Available</h3>

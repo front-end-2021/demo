@@ -1,3 +1,9 @@
+export const MonthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+export function getValidDays(month, year) {
+    let lastDay = new Date(year, month, 0).getDate(); // Lấy ngày cuối cùng của tháng
+    let days = Array.from({ length: lastDay }, (_, i) => i + 1); // Tạo danh sách ngày từ 1 đến lastDay
+    return days;
+}
 export function genKeyHex(item) {
     let message = `${item.Name}${item.Start}${item.End}`
     const hash = CryptoJS.MD5(message);
