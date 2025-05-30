@@ -6,15 +6,15 @@ export const patternEditUser = ['edit user from', 'edit user', 'edit person from
     'edit man', 'edit woman from', 'edit woman', 'edit staff from', 'edit staff', 'edit member from', 'edit member',
     'change user from', 'change user', 'change person from', 'change person', 'change man from', 'change man',
     'change woman from', 'change woman', 'change staff from', 'change staff', 'change member from', 'change member']
-
+export const patternSearch = ['go search', 'go filter', 'go query']
 export function getCommands(text) {
     const patternTimes = ['Start time', 'End time', 'Valid from', 'Valid until', 'Cut-off time']
-    const patternSpecTimes = ['from', 'begin', 'start', 'at', 'end', 'to']
+    const patternSpecTimes = [' from ', ' begin ', ' start ', ' at ', ' end ', ' to ']
     const ptrnAssignUser = ['add user', 'assign user', 'add person', 'assign person', 'add man', 'assign man',
         'add woman', 'assign woman', 'add lady', 'assign lady', 'add staff', 'assign staff', 'add member', 'assign member']
 
-    let lsIndexNewShedule = KMPLsIndex(text, ptrnNewShedules)
-    let lsIndexNewPlan = KMPLsIndex(text, patternNewPlans)
+    let lsIndexNewShedule = KMPLsIndex(text, ptrnNewShedules.map(x => `${x} `))
+    let lsIndexNewPlan = KMPLsIndex(text, patternNewPlans.map(x => `${x} `))
     let lsIndexNewUser = KMPLsIndex(text, patternNewUser)
     let lsIndexEditUser = KMPLsIndex(text, patternEditUser)
     let lsIndexAssignUser = KMPLsIndex(text, ptrnAssignUser)
@@ -28,7 +28,8 @@ export function getCommands(text) {
     for (let ii = 0, arr, txt; ii < lsIndexNewShedule.length; ii++) {
         arr = lsIndexNewShedule[ii]
         txt = arr[1]
-        let arrTxt = getScheduleName(txt, ptrnNewShedules, patternSpecTimes)
+        let arrTxt = getScheduleName(txt, ptrnNewShedules.map(x => `${x} `), patternSpecTimes)
+        //console.log(arrTxt)
         if (Array.isArray(arrTxt) && 2 < arrTxt.length) {
             let [name, strStart, strEnd] = arrTxt
             let start = parseTimeToDate(strStart)
@@ -43,7 +44,7 @@ export function getCommands(text) {
     for (let ii = 0, arr, txt; ii < lsIndexNewPlan.length; ii++) {
         arr = lsIndexNewPlan[ii]
         txt = arr[1]
-        let arrTxt = getScheduleName(txt, patternNewPlans, patternSpecTimes)
+        let arrTxt = getScheduleName(txt, patternNewPlans.map(x => `${x} `), patternSpecTimes)
         if (Array.isArray(arrTxt) && 2 < arrTxt.length) {
             let [name, strStart, strEnd] = arrTxt
             let start = parseTimeToDate(strStart)
@@ -67,7 +68,7 @@ export function getCommands(text) {
     for (let ii = 0, arr, txt; ii < lsIndexEditUser.length; ii++) {
         arr = lsIndexEditUser[ii]
         txt = arr[1]
-        let lsStr = splitByKeywords(txt, [...patternEditUser, 'to'])
+        let lsStr = splitByKeywords(txt, [...patternEditUser, ' to '])
         if (2 == lsStr.length) {
             lsStr = lsStr.map(str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/)
             mapEditUser.set(arr[0], lsStr)
@@ -79,7 +80,7 @@ export function getCommands(text) {
     for (let ii = 0, arr, txt; ii < lsIndexAssignUser.length; ii++) {
         arr = lsIndexAssignUser[ii]
         txt = arr[1]
-        let lsStr = splitByKeywords(txt, [...ptrnAssignUser, 'to'])
+        let lsStr = splitByKeywords(txt, [...ptrnAssignUser, ' to '])
         if (2 == lsStr.length) {
             lsStr = lsStr.map(str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/)
             mapAssignUser.set(arr[0], lsStr)
@@ -191,6 +192,12 @@ function getScheduleName(text, sPatterns, ePatterns) {
         uName = uName.replace(regex, "");
     })
     let arrStr = splitByKeywords(uName, ePatterns)
+    if (3 < arrStr.length) {
+        let end = arrStr.pop()
+        let start = arrStr.pop()
+        let name = arrStr.join(' ')
+        return [name, start, end]
+    }
     return arrStr
 }
 function getScheduleObject(name, start, end) {

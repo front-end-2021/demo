@@ -50,6 +50,8 @@
             <div style="cursor: default;"
                 v-if="this.IsExpandGuide"><span style="cursor: pointer;"
                         @click.stop="e => this.IsExpandGeEditUser = !this.IsExpandGeEditUser">Edit user:</span> <small>{{this.IsExpandGeEditUser ? TxtGuideEditUser : '[...]'}}</small></div>
+            <div style="cursor: default;"
+                v-if="this.IsExpandGuide"><span style="cursor: pointer;">Search:</span> <small>{{TxtGuideSearch}}</small></div>
         </div>
     </div>
 </template>

@@ -1,7 +1,7 @@
 import { genKeyHex, MonthsShort, getValidDays } from "../common.js";
 import {
     getCommands, ptrnNewShedules, patternNewPlans,
-    patternNewUser, patternEditUser
+    patternNewUser, patternEditUser, patternSearch
 } from "../commands.js";
 export const ViewSchedule = {
     template: `#tmp-schedule`,
@@ -156,13 +156,37 @@ export const ViewCommands = {
     data() {
         return {
             TxtCommand: `Make schedule Daily meeting from 9:30am to 9:45am, make meeting Planning start 2:00pm end 5:00pm
-    Make Timetable Retro meeting begin 10:00am end 12:00pm
+    Make Timetable Retro meeting begin 10:00am end 12:00pm,
+make schedule Morning Briefing - Overview of the day’s agenda and key announcements from 08:00 to 08:30,
+make schedule Icebreaker & Warm-up [Fun activities to energize the team] from 08:30 to 09:30,
+make schedule Workshop Session 1 (Focused training or skill development session) from 09:30 to 10:45,
+make schedule Coffee Break - Time to relax and chat from 11:00 to 11:15,
+make schedule Group Collaboration (Brainstorming and teamwork exercises) from 11:15 to 12:30,
+make schedule Lunch Break - Social interaction and relaxation from 12:40 to 13:30,
+make schedule Workshop Session 2 [Hands-on exercises or case studies] from 13:45 to 15:00,
+make schedule Quick Break	Short refreshment before next session from 15:00 to 15:15,
+make schedule Presentation Time	Teams present their ideas or progress from 15:15 to 16:30,
+make schedule Networking & Discussion	Exchange contacts and share insights from 16:30 to 17:30,
+make schedule Problem-Solving Challenge	Teams work on a real-world scenario from 17:30 to 18:00,
+make schedule Creative Session	Art, music, or innovation-based activity from 18:00 to 19:00,
+make schedule Closing Remarks	Summary of the day and reflections  from 19:00 to 19:30,
+make schedule Evening Social Event	Dinner or entertainment to unwind  from 19:30 to 21:00
     New user DaiNB. Assign user DaiNB to Daily meeting, change man DaiNB to Dai Nguyen. 
     New man Bill Gate. Assign man Bill Gate to Daily meeting
-    New man Elon Musk, assign man Elon Musk to Planning.`,
+    New man Elon Musk, assign man Elon Musk to Planning.
+new person James, new person Michael, new person William, new person Benjamin, new person Alexander.
+new person Christopher, new person Matthew, new person Nathaniel, new person Jonathan, new person Daniel.
+new person Samuel, new person Henry, new person Nicholas, new person Thomas, new person Ryan, new person Charles.
+new person Joseph, new person David, new person Andrew, new person Patrick, new person Brandon, new person Ethan.
+new person Adam, new person Zachary, new person Lucas, new person Elizabeth, new person Olivia, new person Sophia.
+new person Emily, new person Charlotte, new person Isabella, new person Amelia, new person Abigail, new person Victoria.
+new person Grace, new person Natalie, new person Hannah, new person Samantha, new person Madison, new person Jessica.
+new person Katherine, new person Lauren, new person Rachel, new person Rebecca, new person Sarah, new person Evelyn.
+new person Julia, new person Caroline, new person Molly, new person Audrey`,
             TxtGuideNew: `${ptrnNewShedules.join(', ')}. ${patternNewPlans.join(', ')}`,
             TxtGuideNewUser: `${patternNewUser.join(', ')}`,
             TxtGuideEditUser: `${patternEditUser.join(', ')}`,
+            TxtGuideSearch: `${patternSearch.join(', ')}`,
             IsExpandGuide: true,
             IsExpandGeNewTask: true,
             IsExpandGeNewUser: true,

@@ -39,7 +39,7 @@
       <view-commands></view-commands>
     </header>
 
-    <section style="display: grid; grid-template-columns: 610px auto; gap: 60px;">
+    <section style="display: grid; grid-template-columns: 610px calc(789px - 610px) auto; gap: 60px;">
       <div>
         <h3 style="margin-bottom: 3px;">List schedule</h3>
         <view-schedule v-for="task in LsSchedule" 
@@ -47,16 +47,23 @@
           :item="task"></view-schedule>
       </div>
       <div>
-        <h3 style="margin-bottom: 3px;">Available</h3>
+        <h3 style="margin-bottom: 3px;">List user</h3>
+        <div v-for="user in LsUser" style="font-size: 14px;">{{user}}</div>
+      </div>
+      <div>
+        <h3>Demo commands</h3>
+        <p style="white-space: break-spaces;font-size: 14px;">{{TxtDemoNewShedule}}</p>
+        <div style="white-space: break-spaces;font-size: 14px;">{{TxtDemoNewUser}}</div>
+        <p style="white-space: break-spaces;font-size: 14px;">{{TxtDemoAssignUser}}</p>
+        <div style="white-space: break-spaces;font-size: 14px;">{{TxtDemoEditUser}}</div>
+      </div>
+    </section>
+    <section>
+      <h3 style="margin-bottom: 3px;">Available</h3>
         <div v-for="item in LsAvailable" style="display: flex;gap: 12px;">
           <div>From {{item.Begin.toLocaleString()}}</div>
           <div>To {{item.End.toLocaleString()}}</div>
         </div>
-      </div>
-    </section>
-    <section>
-      <h3 style="margin-bottom: 3px;">List user</h3>
-      <div v-for="user in LsUser">{{user}}</div>
     </section>
   </main>
 
