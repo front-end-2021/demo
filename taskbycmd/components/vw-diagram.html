@@ -1,5 +1,6 @@
 <template id="tmp-schedule">
-    <div style="display: grid;grid-template-columns: auto 200px;margin-bottom: 6px;padding: 6px;
+    <div v-if="'s' == ViewType"
+        style="display: grid;grid-template-columns: auto 200px;margin-bottom: 6px;padding: 6px;
             background-color: #cfcfcf3d;border-radius: 12px;">
         <div style="display: flex;flex-direction: column;">
             <strong>{{item.Name}}</strong>

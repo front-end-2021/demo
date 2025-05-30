@@ -13,16 +13,41 @@ export function getCommands(text) {
     const ptrnAssignUser = ['add user', 'assign user', 'add person', 'assign person', 'add man', 'assign man',
         'add woman', 'assign woman', 'add lady', 'assign lady', 'add staff', 'assign staff', 'add member', 'assign member']
 
+    const lsPttnSearch = [...patternSearch.map(x => `${x} name `), ...patternSearch.map(x => `${x} person `),
+    ...patternSearch.map(x => `${x} user `), ...patternSearch.map(x => `${x} member `)]
+    let lsIndexGoSearch = KMPLsIndex(text, lsPttnSearch)
     let lsIndexNewShedule = KMPLsIndex(text, ptrnNewShedules.map(x => `${x} `))
     let lsIndexNewPlan = KMPLsIndex(text, patternNewPlans.map(x => `${x} `))
     let lsIndexNewUser = KMPLsIndex(text, patternNewUser)
     let lsIndexEditUser = KMPLsIndex(text, patternEditUser)
     let lsIndexAssignUser = KMPLsIndex(text, ptrnAssignUser)
 
-    let allCommandIndex = new Set([...lsIndexNewShedule, ...lsIndexNewPlan, ...lsIndexNewUser, ...lsIndexEditUser, ...lsIndexAssignUser])
+    let allCommandIndex = new Set([...lsIndexGoSearch, ...lsIndexNewShedule, ...lsIndexNewPlan, ...lsIndexNewUser, ...lsIndexEditUser, ...lsIndexAssignUser])
     allCommandIndex = Array.from(allCommandIndex)
     allCommandIndex.sort((a, b) => a - b)
 
+    if (1 < lsIndexGoSearch.length) lsIndexGoSearch.length = 1
+    lsIndexGoSearch = mapLs(lsIndexGoSearch)
+    let mapGoSearch = new Map()
+    if (0 < lsIndexGoSearch.length) {
+        const lsTrim = lsPttnSearch.map(x => x.trim())
+        for (let ii = 0, arr, txt; ii < lsIndexGoSearch.length; ii++) {
+            arr = lsIndexGoSearch[ii]
+            txt = arr[1]
+            let lsStr = splitByKeywords(txt, lsPttnSearch)
+            if (lsStr.length) {
+                lsStr = lsStr.map(str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/)
+                for (let ll = lsStr.length - 1, str; -1 < ll; ll--) {
+                    str = lsStr[ll]
+                    if (lsTrim.includes(str)) lsStr.splice(ll, 1)
+                }
+                if (lsStr.length) {
+                    let str = lsStr[0]
+                    if (typeof str == 'string') mapGoSearch.set(arr[0], str)
+                }
+            }
+        }
+    }
     lsIndexNewShedule = mapLs(lsIndexNewShedule)
     let mapNewSchedule = new Map()
     for (let ii = 0, arr, txt; ii < lsIndexNewShedule.length; ii++) {
@@ -101,7 +126,8 @@ export function getCommands(text) {
     // console.log('ls assign user ', mapAssignUser)
     // console.groupEnd()
 
-    return [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser, mapEditUser, mapAssignUser]
+    return [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
+        mapEditUser, mapAssignUser, mapGoSearch]
     function mapLs(listI) {
         return listI.map(i0 => {
             let ij = allCommandIndex.indexOf(i0)

@@ -9,8 +9,15 @@ export const ViewSchedule = {
     display: "View.Schedule",
     props: ['item'],
     data() {
+        const root = this.$root
+        const item = this.item
+        let txtSearch = root.TxtSearchName.trim()
+        let view = 's'
+        if (txtSearch.length && !item.Name.includes(txtSearch)) {
+            view = 'h'
+        }
         return {
-
+            ViewType: view
         }
     },
     computed: {
@@ -147,6 +154,14 @@ export const ViewSchedule = {
             }
         },
     },
+    watch: {
+        '$root.TxtSearchName'(txtSearch) {
+            if (txtSearch.length) {
+                if (!this.item.Name.includes(txtSearch)) this.ViewType = 'h'
+                else this.ViewType = 's'
+            } else if ('h' == this.ViewType) this.ViewType = 's'
+        },
+    },
 }
 export const ViewCommands = {
     template: `#tmp-commands`,
@@ -198,10 +213,17 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
             let target = this.$el.querySelector('.txt-command[contenteditable]')// e.target
             const txt = target.innerText
             const root = this.$root
-            let [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser, mapEditUser, mapAssignUser] = getCommands(txt)
+            let [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
+                mapEditUser, mapAssignUser, mapGoSearch] = getCommands(txt)
+            if (!mapGoSearch.size) root.TxtSearchName = ''
             let changeSch = false
             let sUser = new Set(root.LsUser)
             allCommandIndex.forEach(index => {
+                if (mapGoSearch.has(index)) {
+                    root.TxtSearchName = mapGoSearch.get(index)
+                } else {
+                    root.TxtSearchName = ''
+                }
                 if (mapNewSchedule.has(index)) {
                     let obj = mapNewSchedule.get(index)
                     setSchedules(root.LsSchedule, obj)

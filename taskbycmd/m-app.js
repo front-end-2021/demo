@@ -23,6 +23,7 @@ Promise.all([
                 TimeLogStart: start,
                 TimeLogEnd: end,
                 LsUser: [],
+                TxtSearchName: '',
                 TxtDemoNewShedule: `Make schedule Daily meeting from 9:30am to 9:45am, make meeting Planning start 2:00pm end 5:00pm
                     Make Timetable Retro meeting begin 10:00am end 12:00pm,
                 make schedule Morning Briefing - Overview of the day’s agenda and key announcements from 08:00 to 08:30,
