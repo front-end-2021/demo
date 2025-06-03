@@ -137,7 +137,7 @@ export function getCommands(text) {
             return [i0, subTxt.trim()]
         })
     }
-    function isDate(d) { return d instanceof Date }
+    
 }
 function computeLPSArray(pattern) {
     let lps = Array(pattern.length).fill(0);
@@ -228,7 +228,7 @@ function getScheduleName(text, sPatterns, ePatterns) {
 }
 function getScheduleObject(name, start, end) {
     if (typeof name != 'string' || name.length < 3) return null
-    if (start instanceof Date && end instanceof Date) {
+    if (isDate(start) && isDate(end)) {
         let obj = { Name: name, Users: [] }
         if (start.getTime() < end.getTime()) {
             obj.Begin = start
@@ -240,6 +240,7 @@ function getScheduleObject(name, start, end) {
         return obj
     }
     return null
+    function isDate(d) { return d instanceof Date }
 }
 function splitByKeywords(text, keywords) {
     // Chuyển danh sách cụm từ thành regex, không phân biệt hoa thường

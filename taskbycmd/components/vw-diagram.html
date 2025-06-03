@@ -1,9 +1,37 @@
+<template id="tmp-form-schedule">
+    <section style="background-color: rgba(207, 207, 207, 0.24); border-radius: 12px; 
+            padding: 12px;min-height: calc(100vh - 270px); margin-top: 34px;">
+        <h3 style="margin: 0;">{{item.Name}}</h3>
+        <div style="min-height: 20px;">{{item.Users.join(', ')}}</div>
+         <div v-if="1 == TxtDays.length" style="display: flex;gap: 8px; align-items: center;">
+            <div style="display: flex; flex-direction: row;align-items: center;">
+                <small>{{TxtTimes[0]}}</small>&nbsp;-&nbsp;<small>{{TxtTimes[1]}}</small>
+            </div>
+            <div style="display: flex; align-items: center;border-left: 2px solid #b0b0b0;padding-left: 6px;"
+                v-bind:style="{
+                    flexDirection: 1 < TxtDays.length ? 'column' : ''
+                }">
+                <span v-for="(txt, ii) in TxtDays"
+                    :key="txt" v-bind:iiday="ii">{{txt}}</span>
+            </div>
+        </div>
+        <div v-else style="display: flex; flex-direction: row; align-items: center;">
+            <div style="display: flex; flex-direction: row;align-items: center;">
+                <small>{{TxtTimes[0]}}</small>&nbsp;<span>{{TxtDays[0]}}</span>
+            </div>
+            &nbsp;-&nbsp;
+            <div style="display: flex; flex-direction: row;align-items: center;">
+                <small>{{TxtTimes[1]}}</small>&nbsp;<span>{{TxtDays[1]}}</span>
+            </div>
+        </div>
+    </section>
+</template>
 <template id="tmp-schedule">
     <div v-if="'s' == ViewType"
         style="display: grid;grid-template-columns: auto 200px;margin-bottom: 6px;padding: 6px;
             background-color: #cfcfcf3d;border-radius: 12px;">
         <div style="display: flex;flex-direction: column;">
-            <strong>{{item.Name}}</strong>
+            <strong @click.stop="toggleForm" style="cursor: default;">{{item.Name}}</strong>
             <small>{{item.Users.join(', ')}}</small>
         </div>
         <div style="display: flex;gap: 8px; align-items: center;">
@@ -32,7 +60,7 @@
                 @keyup.enter.prevent="processCompand">{{TxtCommand}}</div>
             <div style="display: flex; gap: 6px;">
                 <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
-                    @click.stop="processCompand">Generate commands</div>
+                    @click.stop="generateCommands">Generate commands</div>
                 <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
                     @click.stop="clearCompand">Clear commands</div>
                 <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"

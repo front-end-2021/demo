@@ -3,23 +3,7 @@ import {
     getCommands, ptrnNewShedules, patternNewPlans,
     patternNewUser, patternEditUser, patternSearch
 } from "../commands.js";
-export const ViewSchedule = {
-    template: `#tmp-schedule`,
-    name: "View_Schedule",
-    display: "View.Schedule",
-    props: ['item'],
-    data() {
-        const root = this.$root
-        const item = this.item
-        let txtSearch = root.TxtSearchName.trim()
-        let view = 's'
-        if (txtSearch.length && !item.Name.includes(txtSearch)) {
-            view = 'h'
-        }
-        return {
-            ViewType: view
-        }
-    },
+const mxDate = {
     computed: {
         TxtTimes() {
             const item = this.item
@@ -41,6 +25,52 @@ export const ViewSchedule = {
             if (beginDate == endDate) return [beginDate]
             return [beginDate, endDate]
         },
+    },
+}
+export const FormSchedule = {
+    template: `#tmp-form-schedule`,
+    name: "Form_Schedule",
+    display: "Form.Schedule",
+    props: ['entry'],
+    mixins: [mxDate],
+    data() {
+        const item = this.entry.item
+        let copy = JSON.parse(JSON.stringify(item))
+        copy.Begin = new Date(item.Begin.getTime())
+        copy.End = new Date(item.End.getTime())
+        return {
+            item: copy
+        }
+    },
+    watch: {
+        'entry.item.Begin'(begin) {
+            this.item.Begin = new Date(begin.getTime())
+        },
+        'entry.item.End'(end) {
+            this.item.End = new Date(end.getTime())
+        },
+
+    },
+}
+export const ViewSchedule = {
+    template: `#tmp-schedule`,
+    name: "View_Schedule",
+    display: "View.Schedule",
+    props: ['item'],
+    mixins: [mxDate],
+    data() {
+        const root = this.$root
+        const item = this.item
+        let txtSearch = root.TxtSearchName.trim()
+        let view = 's'
+        if (txtSearch.length && !item.Name.includes(txtSearch)) {
+            view = 'h'
+        }
+        return {
+            ViewType: view
+        }
+    },
+    methods: {
         changeDay(ii, e) {
             let target = e.target
             let txt = target.innerText
@@ -153,6 +183,24 @@ export const ViewSchedule = {
                 return 0
             }
         },
+        toggleForm(e) {
+            const root = this.$root
+            const lisEdit = root.LsEdit
+            const item = this.item
+            const entry = {
+                item, ComponentName: 'form-schedule',
+            }
+            if (!lisEdit.length) {
+                lisEdit.push(entry)
+            } else {
+                let ii = lisEdit.findIndex(x => x.item.Name == item.Name)
+                if (-1 < ii) {
+                    lisEdit.splice(ii, 1)   // click it-self
+                    return
+                }
+                lisEdit.splice(0, 1, entry)
+            }
+        },
     },
     watch: {
         '$root.TxtSearchName'(txtSearch) {
@@ -186,7 +234,7 @@ make schedule Problem-Solving Challenge	Teams work on a real-world scenario from
 make schedule Creative Session	Art, music, or innovation-based activity from 18:00 to 19:00,
 make schedule Closing Remarks	Summary of the day and reflections  from 19:00 to 19:30,
 make schedule Evening Social Event	Dinner or entertainment to unwind  from 19:30 to 21:00
-    New user DaiNB. Assign user DaiNB to Daily meeting, change man DaiNB to Dai Nguyen. 
+    New user DaiNB. Assign user DaiNB to Daily meeting. 
     New man Bill Gate. Assign man Bill Gate to Daily meeting
     New man Elon Musk, assign man Elon Musk to Planning.
 new person James, new person Michael, new person William, new person Benjamin, new person Alexander.
@@ -210,7 +258,7 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
     },
     methods: {
         processCompand(e) {
-            let target = this.$el.querySelector('.txt-command[contenteditable]')// e.target
+            let target = e.target
             const txt = target.innerText
             const root = this.$root
             let [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
@@ -308,6 +356,12 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
                     if (ii < 0) lsShedule.push(obj)
                 }
             }
+        },
+        generateCommands() {
+            let target = this.$el.querySelector('.txt-command[contenteditable]')
+            this.processCompand({ target })
+            target.innerHTML = ''
+            this.IsExpandGuide = false
         },
         clearCompand() {
             let target = this.$el.querySelector('.txt-command[contenteditable]')

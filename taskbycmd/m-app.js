@@ -1,6 +1,6 @@
 // #region import
 import { createApp } from 'vue'
-import { ViewCommands, ViewSchedule } from './components/vw-diagram.js'
+import { ViewCommands, ViewSchedule, FormSchedule } from './components/vw-diagram.js'
 
 // #endregion
 Promise.all([
@@ -11,6 +11,7 @@ Promise.all([
         components: {
             'view-commands': ViewCommands,
             'view-schedule': ViewSchedule,
+            'form-schedule': FormSchedule,
         },
         data() {
             let start = new Date();
@@ -52,6 +53,7 @@ Promise.all([
                 new person Julia, new person Caroline, new person Molly, new person Audrey`,
                 TxtDemoAssignUser: `Assign user DaiNB to Daily meeting, assign man Bill Gate to Daily meeting, assign man Elon Musk to Planning.`,
                 TxtDemoEditUser: `change man DaiNB to Dai Nguyen. `,
+                LsEdit: [],
             }
         },
         // computed: { },

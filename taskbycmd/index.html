@@ -50,12 +50,18 @@
         <h3 style="margin-bottom: 3px;">List user</h3>
         <div v-for="user in LsUser" style="font-size: 14px;">{{user}}</div>
       </div>
-      <div>
+      <div v-if="0 == LsEdit.length">
         <h3>Demo commands</h3>
-        <p style="white-space: break-spaces;font-size: 14px;">{{TxtDemoNewShedule}}</p>
-        <div style="white-space: break-spaces;font-size: 14px;">{{TxtDemoNewUser}}</div>
-        <p style="white-space: break-spaces;font-size: 14px;">{{TxtDemoAssignUser}}</p>
-        <div style="white-space: break-spaces;font-size: 14px;">{{TxtDemoEditUser}}</div>
+        <p style="white-space: break-spaces;font-size: 13px;">{{TxtDemoNewShedule}}</p>
+        <div style="white-space: break-spaces;font-size: 13px;">{{TxtDemoNewUser}}</div>
+        <p style="white-space: break-spaces;font-size: 13px;">{{TxtDemoAssignUser}}</p>
+        <div style="white-space: break-spaces;font-size: 13px;">{{TxtDemoEditUser}}</div>
+      </div>
+      <div v-else>
+        <component v-for="edit in LsEdit"
+            :key="edit.item.Name"
+            v-bind:is="edit.ComponentName"
+            :entry="edit"></component>
       </div>
     </section>
     <section>
