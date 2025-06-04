@@ -28,8 +28,8 @@
 </template>
 <template id="tmp-schedule">
     <div v-if="'s' == ViewType"
-        style="display: grid;grid-template-columns: auto 200px;margin-bottom: 6px;padding: 6px;
-            background-color: #cfcfcf3d;border-radius: 12px;">
+        style="display: grid;grid-template-columns: auto 182px;margin-bottom: 6px;padding: 6px;
+            background-color: #cfcfcf3d;border-radius: 12px;gap:6px;">
         <div style="display: flex;flex-direction: column;">
             <strong @click.stop="toggleForm" style="cursor: default;">{{item.Name}}</strong>
             <small>{{item.Users.join(', ')}}</small>
