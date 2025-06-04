@@ -51,11 +51,7 @@
         <div v-for="user in LsUser" style="font-size: 14px;">{{user}}</div>
       </div>
       <div v-if="0 == LsEdit.length">
-        <h3>Demo commands</h3>
-        <p style="white-space: break-spaces;font-size: 13px;">{{TxtDemoNewShedule}}</p>
-        <div style="white-space: break-spaces;font-size: 13px;">{{TxtDemoNewUser}}</div>
-        <p style="white-space: break-spaces;font-size: 13px;">{{TxtDemoAssignUser}}</p>
-        <div style="white-space: break-spaces;font-size: 13px;">{{TxtDemoEditUser}}</div>
+        <h3 style="margin-top: 34px;">Details</h3>
       </div>
       <div v-else>
         <component v-for="edit in LsEdit"

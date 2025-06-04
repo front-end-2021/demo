@@ -52,7 +52,7 @@
     </div>
 </template>
 <template id="tmp-commands">
-    <div style="display: grid; grid-template-columns: 789px auto; gap: 8px;">
+    <div style="display: grid; grid-template-columns: calc(610px + 789px - 610px + 120px) auto; gap: 8px;">
         <div style="display: grid; grid-template-rows: auto 42px; gap: 6px;">
             <div class="txt-command"
                 contenteditable="plaintext-only"
@@ -65,22 +65,41 @@
                     @click.stop="clearCompand">Clear commands</div>
                 <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
                     @click.stop="fillCompand">Fill commands</div>
+                <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
+                    @click.stop="showGuide">Guide</div>
+                <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
+                    @click.stop="showDemoCommands">Demo commands</div>
             </div>
         </div>
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-            <strong style="cursor: pointer;"
-                @click.stop="e => this.IsExpandGuide = !this.IsExpandGuide">Guide {{ !this.IsExpandGuide ? '...' : ''}}</strong>
-            <div style="cursor: default;"
-                v-if="this.IsExpandGuide"><span style="cursor: pointer;"
-                        @click.stop="e => this.IsExpandGeNewTask = !this.IsExpandGeNewTask">New/edit:</span> <small>{{this.IsExpandGeNewTask ? TxtGuideNew : '[...]'}}</small></div>
-            <div style="cursor: default;"
-                v-if="this.IsExpandGuide"><span style="cursor: pointer;"
-                        @click.stop="e => this.IsExpandGeNewUser = !this.IsExpandGeNewUser">New user:</span> <small>{{this.IsExpandGeNewUser ? TxtGuideNewUser : '[...]'}}</small></div>
-            <div style="cursor: default;"
-                v-if="this.IsExpandGuide"><span style="cursor: pointer;"
-                        @click.stop="e => this.IsExpandGeEditUser = !this.IsExpandGeEditUser">Edit user:</span> <small>{{this.IsExpandGeEditUser ? TxtGuideEditUser : '[...]'}}</small></div>
-            <div style="cursor: default;"
-                v-if="this.IsExpandGuide"><span style="cursor: pointer;">Search:</span> <small>{{TxtGuideSearch}}</small></div>
+        <div style="display: flex; flex-direction: column; max-height: 92px;">
+            <div style="cursor: pointer;font-weight: bold;height: 100%;">Logs: </div>
+            <div id="vw-command-log" style="overflow: auto;">
+                <code v-for="log in $root.LisLog" style="display: block;cursor: default;"
+                    @click.stop="e => fillLogCommand(log)">{{log}}</code>
+            </div>
         </div>
     </div>
+</template>
+<template  id="tmp-demo-commands">
+    <section style="background-color: rgba(207, 207, 207, 0.24); margin-top: 34px;
+    border-radius: 12px; padding: 12px; min-height: calc(-270px + 100vh);">
+        <h3 style="margin-top: 0;">{{entry.Title}}</h3>
+        <p style="white-space: break-spaces;font-size: 13px;">{{entry.item.NewShedule}}</p>
+        <div style="white-space: break-spaces;font-size: 13px;">{{entry.item.NewUser}}</div>
+        <p style="white-space: break-spaces;font-size: 13px;">{{entry.item.AssignUser}}</p>
+        <div style="white-space: break-spaces;font-size: 13px;">{{entry.item.EditUser}}</div>
+    </section>
+</template>
+<template  id="tmp-guide-commands">
+    <section style="display: flex; flex-direction: column; gap: 6px;background-color: rgba(207, 207, 207, 0.24); margin-top: 34px;
+    border-radius: 12px; padding: 12px; min-height: calc(-270px + 100vh);">
+        <h3 style="margin-top: 0;">{{entry.Title}}</h3>
+        <div style="cursor: default;">
+            <span>New/edit:</span> <small>{{entry.item.NewShedule}}</small></div>
+        <div style="cursor: default;">
+            <span>New user:</span> <small>{{entry.item.NewUser}}</small></div>
+        <div style="cursor: default;">
+            <span>Edit user:</span> <small>{{entry.item.EditUser}}</small></div>
+        <div style="cursor: default;"><span>Search:</span> <small>{{entry.item.TxtSearch}}</small></div>
+    </section>
 </template>

@@ -9,6 +9,12 @@ export function genKeyHex(item) {
     const hash = CryptoJS.MD5(message);
     item.Id = hash.toString(CryptoJS.enc.Hex)
 }
+export function getArrTime(item) {
+    const tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
+    let beginTime = item.Begin.toLocaleTimeString('en-US', tConfix);
+    let endTime = item.End.toLocaleTimeString('en-US', tConfix);
+    return [beginTime, endTime]
+}
 function countEnter(txt) {
     if (typeof txt != 'string') return 0
     //https://charactercounter.com/count-characters-in-javascript

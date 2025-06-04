@@ -1,4 +1,4 @@
-import { genKeyHex, MonthsShort, getValidDays } from "../common.js";
+import { genKeyHex, MonthsShort, getValidDays, getArrTime } from "../common.js";
 import {
     getCommands, ptrnNewShedules, patternNewPlans,
     patternNewUser, patternEditUser, patternSearch
@@ -7,10 +7,7 @@ const mxDate = {
     computed: {
         TxtTimes() {
             const item = this.item
-            const tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
-            let beginTime = item.Begin.toLocaleTimeString('en-US', tConfix);
-            let endTime = item.End.toLocaleTimeString('en-US', tConfix);
-            return [beginTime, endTime]
+            return getArrTime(item)
         },
         TxtDays() {
             const item = this.item
@@ -246,14 +243,42 @@ new person Emily, new person Charlotte, new person Isabella, new person Amelia, 
 new person Grace, new person Natalie, new person Hannah, new person Samantha, new person Madison, new person Jessica.
 new person Katherine, new person Lauren, new person Rachel, new person Rebecca, new person Sarah, new person Evelyn.
 new person Julia, new person Caroline, new person Molly, new person Audrey`,
-            TxtGuideNew: `${ptrnNewShedules.join(', ')}. ${patternNewPlans.join(', ')}`,
-            TxtGuideNewUser: `${patternNewUser.join(', ')}`,
-            TxtGuideEditUser: `${patternEditUser.join(', ')}`,
-            TxtGuideSearch: `${patternSearch.join(', ')}`,
-            IsExpandGuide: true,
-            IsExpandGeNewTask: true,
-            IsExpandGeNewUser: true,
-            IsExpandGeEditUser: true,
+            TxtDemo: {
+                NewShedule: `Make schedule Daily meeting from 9:30am to 9:45am, make meeting Planning start 2:00pm end 5:00pm
+    Make Timetable Retro meeting begin 10:00am end 12:00pm,
+    make schedule Morning Briefing - Overview of the day’s agenda and key announcements from 08:00 to 08:30,
+    make schedule Icebreaker & Warm-up [Fun activities to energize the team] from 08:30 to 09:30,
+    make schedule Workshop Session 1 (Focused training or skill development session) from 09:30 to 10:45,
+    make schedule Coffee Break - Time to relax and chat from 11:00 to 11:15,
+    make schedule Group Collaboration (Brainstorming and teamwork exercises) from 11:15 to 12:30,
+    make schedule Lunch Break - Social interaction and relaxation from 12:40 to 13:30,
+    make schedule Workshop Session 2 [Hands-on exercises or case studies] from 13:45 to 15:00,
+    make schedule Quick Break	Short refreshment before next session from 15:00 to 15:15,
+    make schedule Presentation Time	Teams present their ideas or progress from 15:15 to 16:30,
+    make schedule Networking & Discussion	Exchange contacts and share insights from 16:30 to 17:30,
+    make schedule Problem-Solving Challenge	Teams work on a real-world scenario from 17:30 to 18:00,
+    make schedule Creative Session	Art, music, or innovation-based activity from 18:00 to 19:00,
+    make schedule Closing Remarks	Summary of the day and reflections  from 19:00 to 19:30,
+    make schedule Evening Social Event	Dinner or entertainment to unwind  from 19:30 to 21:00`,
+                NewUser: `New user DaiNB. New man Bill Gate. New man Elon Musk, 
+    new person James, new person Michael, new person William, new person Benjamin, new person Alexander.
+    new person Christopher, new person Matthew, new person Nathaniel, new person Jonathan, new person Daniel.
+    new person Samuel, new person Henry, new person Nicholas, new person Thomas, new person Ryan, new person Charles.
+    new person Joseph, new person David, new person Andrew, new person Patrick, new person Brandon, new person Ethan.
+    new person Adam, new person Zachary, new person Lucas, new person Elizabeth, new person Olivia, new person Sophia.
+    new person Emily, new person Charlotte, new person Isabella, new person Amelia, new person Abigail, new person Victoria.
+    new person Grace, new person Natalie, new person Hannah, new person Samantha, new person Madison, new person Jessica.
+    new person Katherine, new person Lauren, new person Rachel, new person Rebecca, new person Sarah, new person Evelyn.
+    new person Julia, new person Caroline, new person Molly, new person Audrey`,
+                AssignUser: `Assign user DaiNB to Daily meeting, assign man Bill Gate to Daily meeting, assign man Elon Musk to Planning.`,
+                EditUser: `change man DaiNB to Dai Nguyen. `,
+            },
+            TxtGuide: {
+                NewShedule: `${ptrnNewShedules.join(', ')}. ${patternNewPlans.join(', ')}`,
+                NewUser: `${patternNewUser.join(', ')}`,
+                EditUser: `${patternEditUser.join(', ')}`,
+                TxtSearch: `${patternSearch.join(', ')}`,
+            },
         }
     },
     methods: {
@@ -261,35 +286,40 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
             let target = e.target
             const txt = target.innerText
             const root = this.$root
+            const lsLog = root.LisLog
             let [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
                 mapEditUser, mapAssignUser, mapGoSearch] = getCommands(txt)
             if (!mapGoSearch.size) root.TxtSearchName = ''
             let changeSch = false
-            let sUser = new Set(root.LsUser)
+            const listUser = [...root.LsUser]
             allCommandIndex.forEach(index => {
                 if (mapGoSearch.has(index)) {
-                    root.TxtSearchName = mapGoSearch.get(index)
+                    let sTxt = mapGoSearch.get(index)
+                    root.TxtSearchName = sTxt
+                    lsLog.push(`${patternSearch[0]} name ${sTxt}`)
                 } else {
                     root.TxtSearchName = ''
                 }
                 if (mapNewSchedule.has(index)) {
                     let obj = mapNewSchedule.get(index)
-                    setSchedules(root.LsSchedule, obj)
+                    setSchedules(root.LsSchedule, obj, lsLog)
                     changeSch = true
                 }
                 if (mapNewPlan.has(index)) {
                     let obj = mapNewPlan.get(index)
-                    setSchedules(root.LsSchedule, obj)
+                    setSchedules(root.LsSchedule, obj, lsLog)
                     changeSch = true
                 }
                 if (mapNewUser.has(index)) {
                     let uName = mapNewUser.get(index)
-                    sUser.add(uName)
+                    listUser.push(uName)
+                    lsLog.push(`${patternNewUser[0]} ${uName}`)
                 }
                 if (mapEditUser.has(index)) {
                     let [oName, newName] = mapEditUser.get(index)
-                    sUser.delete(oName)
-                    sUser.add(newName)
+                    let nn = listUser.indexOf(oName)
+                    if (-1 < nn) listUser.splice(nn, 1, newName)
+                    lsLog.push(`Change user ${oName} to ${newName}`)
                     let lsShedule = root.LsSchedule
                     for (let ss = 0, task; ss < lsShedule.length; ss++) {
                         task = lsShedule[ss]
@@ -310,6 +340,7 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
                         assign.add(uName)
                         task.Users = Array.from(assign)
                     }
+                    lsLog.push(`Assign user ${uName} to ${taskName}`)
                 }
             })
             if (changeSch) {
@@ -317,8 +348,15 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
                 root.computeAvailables()
             }
             if (0 < mapNewUser.size + mapEditUser.size) {
-                root.LsUser = Array.from(sUser)
+                root.LsUser = listUser
             }
+            root.$nextTick(() => {
+                let element = document.body.querySelector(`#vw-command-log`)
+                element.scrollTo({
+                    top: element.scrollHeight,
+                    behavior: "smooth"
+                });
+            })
             function compare(item, obj) {
                 if (item.Name == obj.Name && isEqualTime(obj.Begin, item.Begin) && isEqualTime(obj.End, item.End)) return 0
                 if (item.Name != obj.Name && isEqualTime(obj.Begin, item.Begin) && isEqualTime(obj.End, item.End)) return 1
@@ -337,7 +375,7 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
                 return true
             }
             //function isEqualDate(d1, d2) { return d1.toISOString() == d2.toISOString() }
-            function setSchedules(lsShedule, obj) {
+            function setSchedules(lsShedule, obj, listLog) {
                 let ii = lsShedule.findIndex(item => 0 < compare(item, obj))
                 if (-1 < ii) {
                     let old = lsShedule[ii]
@@ -355,13 +393,14 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
                     ii = lsShedule.findIndex(item => 0 == compare(item, obj))
                     if (ii < 0) lsShedule.push(obj)
                 }
+                let arrTime = getArrTime(obj)
+                listLog.push(`${ptrnNewShedules[0]} ${obj.Name} from ${arrTime[0]} to ${arrTime[1]}`)
             }
         },
         generateCommands() {
             let target = this.$el.querySelector('.txt-command[contenteditable]')
             this.processCompand({ target })
             target.innerHTML = ''
-            this.IsExpandGuide = false
         },
         clearCompand() {
             let target = this.$el.querySelector('.txt-command[contenteditable]')
@@ -370,6 +409,30 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
         fillCompand() {
             let target = this.$el.querySelector('.txt-command[contenteditable]')
             target.innerHTML = this.TxtCommand
+        },
+        fillLogCommand(txt) {
+            let target = this.$el.querySelector('.txt-command[contenteditable]')
+            target.innerHTML = txt
+        },
+        showDemoCommands() {
+            const root = this.$root
+            const nameComp = 'view-demo-commands'
+            const item = this.TxtDemo
+            let entry = {
+                ComponentName: nameComp,
+                Title: `Demo commands`, item,
+            }
+            root.LsEdit = [entry]
+        },
+        showGuide() {
+            const root = this.$root
+            const item = this.TxtGuide
+            const nameComp = 'view-guide-commands'
+            let entry = {
+                ComponentName: nameComp,
+                Title: `Guide`, item
+            }
+            root.LsEdit = [entry]
         },
     },
     beforeUpdate() {
