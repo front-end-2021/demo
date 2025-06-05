@@ -1,17 +1,13 @@
-export const ptrnNewShedules = ['make Schedule', 'make Timetable', 'make Agenda', 'make Calendar', 'make Planner', 'make Roadmap']
-export const patternNewPlans = ['make Appointment', 'make Meeting', 'make Event', 'make Reservation', 'make Booking', 'make Recurring event', 'make Single event', 'make Time slot']
-export const patternNewUser = ['new user', 'create user', 'new person', 'create person', 'new man', 'create man',
-    'new woman', 'create woman', 'new staff', 'create staff', 'new member', 'create member']
-export const patternEditUser = ['edit user from', 'edit user', 'edit person from', 'edit person', 'edit man from',
-    'edit man', 'edit woman from', 'edit woman', 'edit staff from', 'edit staff', 'edit member from', 'edit member',
-    'change user from', 'change user', 'change person from', 'change person', 'change man from', 'change man',
-    'change woman from', 'change woman', 'change staff from', 'change staff', 'change member from', 'change member']
+export const ptrnNewShedules = ['make Schedule', 'make Agenda', 'make Roadmap']
+export const patternNewPlans = ['make Appointment', 'make Event', 'make Reservation']
+export const patternNewUser = ['new user', 'create user', 'new person', 'create person', 'new member', 'create member']
+export const patternEditUser = ['edit user from', 'edit user', 'edit person from', 'edit person', 'edit member from', 'edit member',
+    'change user from', 'change user', 'change person from', 'change person', 'change member from', 'change member']
 export const patternSearch = ['go search', 'go filter', 'go query']
 export function getCommands(text) {
     const patternTimes = ['Start time', 'End time', 'Valid from', 'Valid until', 'Cut-off time']
     const patternSpecTimes = [' from ', ' begin ', ' start ', ' at ', ' end ', ' to ']
-    const ptrnAssignUser = ['add user', 'assign user', 'add person', 'assign person', 'add man', 'assign man',
-        'add woman', 'assign woman', 'add lady', 'assign lady', 'add staff', 'assign staff', 'add member', 'assign member']
+    const ptrnAssignUser = ['add user', 'assign user', 'add person', 'assign person', 'add member', 'assign member']
 
     const lsPttnSearch = [...patternSearch.map(x => `${x} name `), ...patternSearch.map(x => `${x} person `),
     ...patternSearch.map(x => `${x} user `), ...patternSearch.map(x => `${x} member `)]

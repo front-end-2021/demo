@@ -1,4 +1,7 @@
-import { genKeyHex, MonthsShort, getValidDays, getArrTime } from "../common.js";
+import {
+    genKeyHex, MonthsShort, getValidDays,
+    getArrTime, randomInt
+} from "../common.js";
 import {
     getCommands, ptrnNewShedules, patternNewPlans,
     patternNewUser, patternEditUser, patternSearch
@@ -214,10 +217,9 @@ export const ViewCommands = {
     display: "View.Command",
     //inject: [''],
     data() {
-        return {
-            TxtCommand: `Make schedule Daily meeting from 9:30am to 9:45am, make meeting Planning start 2:00pm end 5:00pm
-    Make Timetable Retro meeting begin 10:00am end 12:00pm,
-make schedule Morning Briefing - Overview of the day’s agenda and key announcements from 08:00 to 08:30,
+        const txtSchedule = `Make schedule Daily meeting from 9:30am to 9:45am, make meeting Planning start 2:00pm end 5:00pm
+    Make Agenda Retro meeting begin 10:00am end 12:00pm,
+make Roadmap Morning Briefing - Overview of the day’s agenda and key announcements from 08:00 to 08:30,
 make schedule Icebreaker & Warm-up [Fun activities to energize the team] from 08:30 to 09:30,
 make schedule Workshop Session 1 (Focused training or skill development session) from 09:30 to 10:45,
 make schedule Coffee Break - Time to relax and chat from 11:00 to 11:15,
@@ -230,54 +232,23 @@ make schedule Networking & Discussion	Exchange contacts and share insights from 
 make schedule Problem-Solving Challenge	Teams work on a real-world scenario from 17:30 to 18:00,
 make schedule Creative Session	Art, music, or innovation-based activity from 18:00 to 19:00,
 make schedule Closing Remarks	Summary of the day and reflections  from 19:00 to 19:30,
-make schedule Evening Social Event	Dinner or entertainment to unwind  from 19:30 to 21:00
-    New user DaiNB. Assign user DaiNB to Daily meeting. 
-    New man Bill Gate. Assign man Bill Gate to Daily meeting
-    New man Elon Musk, assign man Elon Musk to Planning.
-new person James, new person Michael, new person William, new person Benjamin, new person Alexander.
-new person Christopher, new person Matthew, new person Nathaniel, new person Jonathan, new person Daniel.
-new person Samuel, new person Henry, new person Nicholas, new person Thomas, new person Ryan, new person Charles.
-new person Joseph, new person David, new person Andrew, new person Patrick, new person Brandon, new person Ethan.
-new person Adam, new person Zachary, new person Lucas, new person Elizabeth, new person Olivia, new person Sophia.
-new person Emily, new person Charlotte, new person Isabella, new person Amelia, new person Abigail, new person Victoria.
-new person Grace, new person Natalie, new person Hannah, new person Samantha, new person Madison, new person Jessica.
-new person Katherine, new person Lauren, new person Rachel, new person Rebecca, new person Sarah, new person Evelyn.
-new person Julia, new person Caroline, new person Molly, new person Audrey`,
+make schedule Evening Social Event	Dinner or entertainment to unwind  from 19:30 to 21:00`
+        const txtNewUser = `New user DaiNB, new person Bill Gate. New person Elon Musk, new user James, new user Michael.
+New user William, new user Benjamin, new user Alexander.
+new user Christopher, new user Matthew, new user Nathaniel, new user Jonathan, new user Daniel.
+new user Samuel, new user Henry, new user Nicholas, new user Thomas, new user Ryan, new user Charles.
+new user Joseph, new user David, new user Andrew, new user Patrick, new user Brandon, new user Ethan.
+new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Olivia, new user Sophia.`
+        const txtAssignU = `Assign user DaiNB to Daily meeting. Assign member Bill Gate to Daily meeting, assign member Elon Musk to Planning.`
+        const txtEditU = `change user DaiNB to Dai Nguyen. `
+        return {
+            TxtCommand: `${txtSchedule}.\n${txtNewUser}\n${txtAssignU}\n${txtEditU}`,
             TxtDemo: {
-                NewShedule: `Make schedule Daily meeting from 9:30am to 9:45am, make meeting Planning start 2:00pm end 5:00pm
-    Make Timetable Retro meeting begin 10:00am end 12:00pm,
-    make schedule Morning Briefing - Overview of the day’s agenda and key announcements from 08:00 to 08:30,
-    make schedule Icebreaker & Warm-up [Fun activities to energize the team] from 08:30 to 09:30,
-    make schedule Workshop Session 1 (Focused training or skill development session) from 09:30 to 10:45,
-    make schedule Coffee Break - Time to relax and chat from 11:00 to 11:15,
-    make schedule Group Collaboration (Brainstorming and teamwork exercises) from 11:15 to 12:30,
-    make schedule Lunch Break - Social interaction and relaxation from 12:40 to 13:30,
-    make schedule Workshop Session 2 [Hands-on exercises or case studies] from 13:45 to 15:00,
-    make schedule Quick Break	Short refreshment before next session from 15:00 to 15:15,
-    make schedule Presentation Time	Teams present their ideas or progress from 15:15 to 16:30,
-    make schedule Networking & Discussion	Exchange contacts and share insights from 16:30 to 17:30,
-    make schedule Problem-Solving Challenge	Teams work on a real-world scenario from 17:30 to 18:00,
-    make schedule Creative Session	Art, music, or innovation-based activity from 18:00 to 19:00,
-    make schedule Closing Remarks	Summary of the day and reflections  from 19:00 to 19:30,
-    make schedule Evening Social Event	Dinner or entertainment to unwind  from 19:30 to 21:00`,
-                NewUser: `New user DaiNB. New man Bill Gate. New man Elon Musk, 
-    new person James, new person Michael, new person William, new person Benjamin, new person Alexander.
-    new person Christopher, new person Matthew, new person Nathaniel, new person Jonathan, new person Daniel.
-    new person Samuel, new person Henry, new person Nicholas, new person Thomas, new person Ryan, new person Charles.
-    new person Joseph, new person David, new person Andrew, new person Patrick, new person Brandon, new person Ethan.
-    new person Adam, new person Zachary, new person Lucas, new person Elizabeth, new person Olivia, new person Sophia.
-    new person Emily, new person Charlotte, new person Isabella, new person Amelia, new person Abigail, new person Victoria.
-    new person Grace, new person Natalie, new person Hannah, new person Samantha, new person Madison, new person Jessica.
-    new person Katherine, new person Lauren, new person Rachel, new person Rebecca, new person Sarah, new person Evelyn.
-    new person Julia, new person Caroline, new person Molly, new person Audrey`,
-                AssignUser: `Assign user DaiNB to Daily meeting, assign man Bill Gate to Daily meeting, assign man Elon Musk to Planning.`,
-                EditUser: `change man DaiNB to Dai Nguyen. `,
-            },
-            TxtGuide: {
-                NewShedule: `${ptrnNewShedules.join(', ')}. ${patternNewPlans.join(', ')}`,
-                NewUser: `${patternNewUser.join(', ')}`,
-                EditUser: `${patternEditUser.join(', ')}`,
-                TxtSearch: `${patternSearch.join(', ')}`,
+                NewShedule: txtSchedule,
+                NewUser: txtNewUser,
+                AssignUser: txtAssignU,
+                EditUser: txtEditU,
+                Search: `Go search name Bre`
             },
         }
     },
@@ -295,8 +266,12 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
             allCommandIndex.forEach(index => {
                 if (mapGoSearch.has(index)) {
                     let sTxt = mapGoSearch.get(index)
+                    if (patternSearch.map(x => `${x.toLowerCase()} name`).includes(sTxt.trim().toLowerCase())) sTxt = ''
                     root.TxtSearchName = sTxt
-                    lsLog.push(`${patternSearch[0]} name ${sTxt}`)
+                    if (sTxt.length) {
+                        let cmd_ = patternSearch[randomInt(0, patternSearch.length)]
+                        lsLog.push(`${cmd_} name ${sTxt}`)
+                    }
                 } else {
                     root.TxtSearchName = ''
                 }
@@ -313,7 +288,8 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
                 if (mapNewUser.has(index)) {
                     let uName = mapNewUser.get(index)
                     listUser.push(uName)
-                    lsLog.push(`${patternNewUser[0]} ${uName}`)
+                    let cmd_ = patternNewUser[randomInt(0, patternNewUser.length)]
+                    lsLog.push(`${cmd_} ${uName}`)
                 }
                 if (mapEditUser.has(index)) {
                     let [oName, newName] = mapEditUser.get(index)
@@ -394,7 +370,8 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
                     if (ii < 0) lsShedule.push(obj)
                 }
                 let arrTime = getArrTime(obj)
-                listLog.push(`${ptrnNewShedules[0]} ${obj.Name} from ${arrTime[0]} to ${arrTime[1]}`)
+                let cmd_ = ptrnNewShedules[randomInt(0, ptrnNewShedules.length)]
+                listLog.push(`${cmd_} ${obj.Name} from ${arrTime[0]} to ${arrTime[1]}`)
             }
         },
         generateCommands() {
@@ -426,7 +403,12 @@ new person Julia, new person Caroline, new person Molly, new person Audrey`,
         },
         showGuide() {
             const root = this.$root
-            const item = this.TxtGuide
+            const item = {
+                NewShedule: `${ptrnNewShedules.join(', ')}. ${patternNewPlans.join(', ')}`,
+                NewUser: `${patternNewUser.join(', ')}`,
+                EditUser: `${patternEditUser.join(', ')}`,
+                TxtSearch: `${patternSearch.join(', ')}`,
+            }
             const nameComp = 'view-guide-commands'
             let entry = {
                 ComponentName: nameComp,

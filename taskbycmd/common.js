@@ -15,6 +15,11 @@ export function getArrTime(item) {
     let endTime = item.End.toLocaleTimeString('en-US', tConfix);
     return [beginTime, endTime]
 }
+export function randomInt(min, max) {
+    const minC = Math.ceil(min);
+    const maxF = Math.floor(max);
+    return Math.floor(Math.random() * (maxF - minC) + minC); // The maximum is exclusive and the minimum is inclusive
+}
 function countEnter(txt) {
     if (typeof txt != 'string') return 0
     //https://charactercounter.com/count-characters-in-javascript
