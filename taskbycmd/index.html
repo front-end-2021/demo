@@ -43,7 +43,7 @@
       <div>
         <h3 style="margin-bottom: 3px;">List schedule</h3>
         <view-schedule v-for="task in LsSchedule" 
-          :key="task.Name"
+          :key="task.Id"
           :item="task"></view-schedule>
       </div>
       <div>
@@ -55,7 +55,7 @@
       </div>
       <div v-else>
         <component v-for="edit in LsEdit"
-            :key="edit.item.Name"
+            :key="edit.item.Id"
             v-bind:is="edit.ComponentName"
             :entry="edit"></component>
       </div>

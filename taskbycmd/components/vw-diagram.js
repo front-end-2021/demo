@@ -4,7 +4,8 @@ import {
 } from "../common.js";
 import {
     getCommands, ptrnNewShedules, patternNewPlans,
-    patternNewUser, patternEditUser, patternSearch
+    patternNewUser, patternEditUser, patternSearch,
+    rmLastPunctuation,
 } from "../commands.js";
 const mxDate = {
     computed: {
@@ -43,13 +44,14 @@ export const FormSchedule = {
         }
     },
     watch: {
-        'entry.item.Begin'(begin) {
-            this.item.Begin = new Date(begin.getTime())
+        'entry.item.Begin'(begin) { this.item.Begin = new Date(begin.getTime()) },
+        'entry.item.End'(end) { this.item.End = new Date(end.getTime()) },
+        'entry.item'(item) {
+            let copy = JSON.parse(JSON.stringify(item))
+            copy.Begin = new Date(item.Begin.getTime())
+            copy.End = new Date(item.End.getTime())
+            this.item = copy
         },
-        'entry.item.End'(end) {
-            this.item.End = new Date(end.getTime())
-        },
-
     },
 }
 export const ViewSchedule = {
@@ -107,7 +109,7 @@ export const ViewSchedule = {
             if (0 == ii) oBegin.setMonth(iMonth)
             else oEnd.setMonth(iMonth)
             // #region verify day
-            let tDay = arr[1].replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/
+            let tDay = rmLastPunctuation(arr[1])
             let numDD = Number(tDay)
             if (isNaN(numDD)) {
                 target.innerHTML = lsTxtDay[ii]
@@ -204,10 +206,24 @@ export const ViewSchedule = {
     },
     watch: {
         '$root.TxtSearchName'(txtSearch) {
+            const vType = this.ViewType
             if (txtSearch.length) {
                 if (!this.item.Name.includes(txtSearch)) this.ViewType = 'h'
                 else this.ViewType = 's'
-            } else if ('h' == this.ViewType) this.ViewType = 's'
+            } else if ('h' == vType) this.ViewType = 's'
+        },
+        '$root.TxtSearchUser'(txtSearch) {
+            const vType = this.ViewType
+            if (txtSearch.length) {
+                const users = this.item.Users
+                if (!users.length) {
+                    if ('s' == vType) this.ViewType = 'h'
+                    return
+                }
+                let txtU = users.join(', ').toLowerCase()
+                if (!txtU.includes(txtSearch.trim())) this.ViewType = 'h'
+                else this.ViewType = 's'
+            } else if ('h' == vType) this.ViewType = 's'
         },
     },
 }
@@ -217,7 +233,7 @@ export const ViewCommands = {
     display: "View.Command",
     //inject: [''],
     data() {
-        const txtSchedule = `Make schedule Daily meeting from 9:30am to 9:45am, make meeting Planning start 2:00pm end 5:00pm
+        const txtSchedule = `Make schedule Daily meeting from 9:30am to 9:45am, make Agenda Planning start 2:00pm end 5:00pm
     Make Agenda Retro meeting begin 10:00am end 12:00pm,
 make Roadmap Morning Briefing - Overview of the day’s agenda and key announcements from 08:00 to 08:30,
 make schedule Icebreaker & Warm-up [Fun activities to energize the team] from 08:30 to 09:30,
@@ -259,37 +275,53 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             const root = this.$root
             const lsLog = root.LisLog
             let [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
-                mapEditUser, mapAssignUser, mapGoSearch] = getCommands(txt)
-            if (!mapGoSearch.size) root.TxtSearchName = ''
+                mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU] = getCommands(txt)
+            if (!mapGoSearchN.size) root.TxtSearchName = ''
+            if (!mapGoSearchU.size) root.TxtSearchUser = ''
             let changeSch = false
             const listUser = [...root.LsUser]
             allCommandIndex.forEach(index => {
-                if (mapGoSearch.has(index)) {
-                    let sTxt = mapGoSearch.get(index)
+                if (mapGoSearchN.has(index)) {
+                    let sTxt = mapGoSearchN.get(index)
                     if (patternSearch.map(x => `${x.toLowerCase()} name`).includes(sTxt.trim().toLowerCase())) sTxt = ''
                     root.TxtSearchName = sTxt
                     if (sTxt.length) {
                         let cmd_ = patternSearch[randomInt(0, patternSearch.length)]
                         lsLog.push(`${cmd_} name ${sTxt}`)
                     }
-                } else {
-                    root.TxtSearchName = ''
-                }
+                } else root.TxtSearchName = ''
+
+                if (mapGoSearchU.has(index)) {
+                    const arrN = ['person', 'user', 'member']
+                    const lsPttnSearchU = [...patternSearch.map(x => `${x.toLowerCase()} ${arrN[0]}`),
+                    ...patternSearch.map(x => `${x.toLowerCase()} ${arrN[1]}`),
+                    ...patternSearch.map(x => `${x.toLowerCase()} ${arrN[2]}`)]
+                    let sTxt = mapGoSearchU.get(index).toLowerCase()
+                    if (lsPttnSearchU.includes(sTxt.trim())) sTxt = ''
+                    root.TxtSearchUser = sTxt
+                    if (sTxt.length) {
+                        let cmd_ = patternSearch[randomInt(0, patternSearch.length)]
+                        lsLog.push(`${cmd_} ${arrN[randomInt(0, arrN.length)]} ${sTxt}`)
+                    }
+                } else root.TxtSearchUser = ''
+
                 if (mapNewSchedule.has(index)) {
                     let obj = mapNewSchedule.get(index)
-                    setSchedules(root.LsSchedule, obj, lsLog)
+                    setSchedules.call(root, obj, lsLog)
                     changeSch = true
                 }
                 if (mapNewPlan.has(index)) {
                     let obj = mapNewPlan.get(index)
-                    setSchedules(root.LsSchedule, obj, lsLog)
+                    setSchedules.call(root, obj, lsLog)
                     changeSch = true
                 }
                 if (mapNewUser.has(index)) {
                     let uName = mapNewUser.get(index)
-                    listUser.push(uName)
-                    let cmd_ = patternNewUser[randomInt(0, patternNewUser.length)]
-                    lsLog.push(`${cmd_} ${uName}`)
+                    if (!listUser.includes(uName)) {
+                        listUser.push(uName)
+                        let cmd_ = patternNewUser[randomInt(0, patternNewUser.length)]
+                        lsLog.push(`${cmd_} ${uName}`)
+                    }
                 }
                 if (mapEditUser.has(index)) {
                     let [oName, newName] = mapEditUser.get(index)
@@ -351,7 +383,8 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 return true
             }
             //function isEqualDate(d1, d2) { return d1.toISOString() == d2.toISOString() }
-            function setSchedules(lsShedule, obj, listLog) {
+            function setSchedules(obj, listLog) {
+                const lsShedule = this.LsSchedule
                 let ii = lsShedule.findIndex(item => 0 < compare(item, obj))
                 if (-1 < ii) {
                     let old = lsShedule[ii]
@@ -365,7 +398,13 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                     obj.End.setDate(old.End.getDate())
                     genKeyHex(obj)
                     lsShedule.splice(ii, 1, obj)
+                    const lisEdit = this.LsEdit
+                    if (lisEdit.length) {
+                        let eEntry = lisEdit.find(x => x.item.Name == old.Name)
+                        if (eEntry) eEntry.item = obj
+                    }
                 } else {
+                    genKeyHex(obj)
                     ii = lsShedule.findIndex(item => 0 == compare(item, obj))
                     if (ii < 0) lsShedule.push(obj)
                 }

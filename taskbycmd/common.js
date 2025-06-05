@@ -5,7 +5,7 @@ export function getValidDays(month, year) {
     return days;
 }
 export function genKeyHex(item) {
-    let message = `${item.Name}${item.Start}${item.End}`
+    let message = `${item.Name}${item.Begin}${item.End}`
     const hash = CryptoJS.MD5(message);
     item.Id = hash.toString(CryptoJS.enc.Hex)
 }

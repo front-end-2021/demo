@@ -39,6 +39,7 @@ Promise.all([
                 TimeLogEnd: end,
                 LsUser: [],
                 TxtSearchName: '',
+                TxtSearchUser: '',
                 LsEdit: [],
                 LisLog: [],
             }

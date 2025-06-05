@@ -9,41 +9,30 @@ export function getCommands(text) {
     const patternSpecTimes = [' from ', ' begin ', ' start ', ' at ', ' end ', ' to ']
     const ptrnAssignUser = ['add user', 'assign user', 'add person', 'assign person', 'add member', 'assign member']
 
-    const lsPttnSearch = [...patternSearch.map(x => `${x} name `), ...patternSearch.map(x => `${x} person `),
-    ...patternSearch.map(x => `${x} user `), ...patternSearch.map(x => `${x} member `)]
-    let lsIndexGoSearch = KMPLsIndex(text, lsPttnSearch)
+    const lsPttnSearchN = [...patternSearch.map(x => `${x} name `)]
+    const lsPttnSearchU = [...patternSearch.map(x => `${x} person `), ...patternSearch.map(x => `${x} user `), ...patternSearch.map(x => `${x} member `)]
+    let lsIISearchName = KMPLsIndex(text, lsPttnSearchN)
+    let lsIISearchUser = KMPLsIndex(text, lsPttnSearchU)
     let lsIndexNewShedule = KMPLsIndex(text, ptrnNewShedules.map(x => `${x} `))
     let lsIndexNewPlan = KMPLsIndex(text, patternNewPlans.map(x => `${x} `))
     let lsIndexNewUser = KMPLsIndex(text, patternNewUser)
     let lsIndexEditUser = KMPLsIndex(text, patternEditUser)
     let lsIndexAssignUser = KMPLsIndex(text, ptrnAssignUser)
 
-    let allCommandIndex = new Set([...lsIndexGoSearch, ...lsIndexNewShedule, ...lsIndexNewPlan, ...lsIndexNewUser, ...lsIndexEditUser, ...lsIndexAssignUser])
+    let allCommandIndex = new Set([...lsIISearchName, ...lsIISearchUser, ...lsIndexNewShedule, ...lsIndexNewPlan, ...lsIndexNewUser, ...lsIndexEditUser, ...lsIndexAssignUser])
     allCommandIndex = Array.from(allCommandIndex)
     allCommandIndex.sort((a, b) => a - b)
 
-    if (1 < lsIndexGoSearch.length) lsIndexGoSearch.length = 1
-    lsIndexGoSearch = mapLs(lsIndexGoSearch)
-    let mapGoSearch = new Map()
-    if (0 < lsIndexGoSearch.length) {
-        const lsTrim = lsPttnSearch.map(x => x.trim())
-        for (let ii = 0, arr, txt; ii < lsIndexGoSearch.length; ii++) {
-            arr = lsIndexGoSearch[ii]
-            txt = arr[1]
-            let lsStr = splitByKeywords(txt, lsPttnSearch)
-            if (lsStr.length) {
-                lsStr = lsStr.map(str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/)
-                for (let ll = lsStr.length - 1, str; -1 < ll; ll--) {
-                    str = lsStr[ll]
-                    if (lsTrim.includes(str)) lsStr.splice(ll, 1)
-                }
-                if (lsStr.length) {
-                    let str = lsStr[0]
-                    if (typeof str == 'string') mapGoSearch.set(arr[0], str)
-                }
-            }
-        }
-    }
+    if (1 < lsIISearchName.length) lsIISearchName.length = 1
+    lsIISearchName = mapLs(lsIISearchName)
+    let mapGoSearchN = new Map()
+    addMapSearch(mapGoSearchN, lsIISearchName, lsPttnSearchN)
+
+    if (1 < lsIISearchUser.length) lsIISearchUser.length = 1
+    lsIISearchUser = mapLs(lsIISearchUser)
+    let mapGoSearchU = new Map()
+    addMapSearch(mapGoSearchU, lsIISearchUser, lsPttnSearchU)
+    
     lsIndexNewShedule = mapLs(lsIndexNewShedule)
     let mapNewSchedule = new Map()
     for (let ii = 0, arr, txt; ii < lsIndexNewShedule.length; ii++) {
@@ -91,7 +80,7 @@ export function getCommands(text) {
         txt = arr[1]
         let lsStr = splitByKeywords(txt, [...patternEditUser, ' to '])
         if (2 == lsStr.length) {
-            lsStr = lsStr.map(str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/)
+            lsStr = lsStr.map(str => rmLastPunctuation(str))
             mapEditUser.set(arr[0], lsStr)
         }
     }
@@ -103,27 +92,12 @@ export function getCommands(text) {
         txt = arr[1]
         let lsStr = splitByKeywords(txt, [...ptrnAssignUser, ' to '])
         if (2 == lsStr.length) {
-            lsStr = lsStr.map(str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/)
+            lsStr = lsStr.map(str => rmLastPunctuation(str))
             mapAssignUser.set(arr[0], lsStr)
         }
     }
-
-    // console.group('list index command')
-    // console.log('new schedule ', lsIndexNewShedule)
-    // console.log('new plan ', lsIndexNewPlan)
-    // console.log('new user ', lsIndexNewUser)
-    // console.log('edit user ', lsIndexEditUser)
-    // console.log('assign user ', lsIndexAssignUser)
-    // console.log('all index ', allCommandIndex)
-    // console.log('ls new schedule ', mapNewSchedule)
-    // console.log('ls new plan ', mapNewPlan)
-    // console.log('ls new user ', mapNewUser)
-    // console.log('ls edit user ', mapEditUser)
-    // console.log('ls assign user ', mapAssignUser)
-    // console.groupEnd()
-
     return [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
-        mapEditUser, mapAssignUser, mapGoSearch]
+        mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU]
     function mapLs(listI) {
         return listI.map(i0 => {
             let ij = allCommandIndex.indexOf(i0)
@@ -133,7 +107,27 @@ export function getCommands(text) {
             return [i0, subTxt.trim()]
         })
     }
-    
+    function addMapSearch(mapSearch, lsIndex, lsPttn) {
+        if (0 < lsIndex.length) {
+            const lsTrim = lsPttn.map(x => x.trim())
+            for (let ii = 0, arr, txt; ii < lsIndex.length; ii++) {
+                arr = lsIndex[ii]
+                txt = arr[1]
+                let lsStr = splitByKeywords(txt, lsPttn)
+                if (lsStr.length) {
+                    lsStr = lsStr.map(str => rmLastPunctuation(str))
+                    for (let ll = lsStr.length - 1, str; -1 < ll; ll--) {
+                        str = lsStr[ll]
+                        if (lsTrim.includes(str)) lsStr.splice(ll, 1)
+                    }
+                    if (lsStr.length) {
+                        let str = lsStr[0]
+                        if (typeof str == 'string') mapSearch.set(arr[0], str)
+                    }
+                }
+            }
+        }
+    }
 }
 function computeLPSArray(pattern) {
     let lps = Array(pattern.length).fill(0);
@@ -189,10 +183,10 @@ function getUserNames(txt, patterns) {
     let arrStr = splitByKeywords(txt, patterns)
     if (!arrStr.length) return ''
     let uName = arrStr[0]
-    return uName.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "")   // Xóa dấu câu nếu xuất hiện cuối chuỗi
+    return rmLastPunctuation(uName)
 }
 function parseTimeToDate(timeStr) {
-    timeStr = timeStr.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/
+    timeStr = rmLastPunctuation(timeStr)
     timeStr = timeStr.replace(/(\d+)([ap]m)/i, "$1 $2"); // Chuẩn hóa định dạng (thêm dấu cách giữa giờ và AM/PM nếu chưa có)
     const date = new Date();        // Chuyển đổi thành đối tượng Date sử dụng new Date()
     let [time, period] = timeStr.split(" ");
@@ -245,3 +239,4 @@ function splitByKeywords(text, keywords) {
     // Dùng split() để tách chuỗi
     return text.split(rex).map(str => str.trim()).filter(str => str);
 }
+export function rmLastPunctuation(str) { return str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/ }
