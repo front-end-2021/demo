@@ -1,9 +1,10 @@
 <template id="tmp-form-schedule">
-    <section style="background-color: rgba(207, 207, 207, 0.24); border-radius: 12px; 
+    <section class="form-edit"
+        style="background-color: rgba(207, 207, 207, 0.24); border-radius: 12px; 
             padding: 12px;min-height: calc(100vh - 270px); margin-top: 34px;">
         <h3 style="margin: 0;">{{item.Name}}</h3>
         <div style="min-height: 20px;">{{item.Users.join(', ')}}</div>
-         <div v-if="1 == TxtDays.length" style="display: flex;gap: 8px; align-items: center;">
+        <div v-if="1 == TxtDays.length" style="display: flex;gap: 8px; align-items: center;">
             <div style="display: flex; flex-direction: row;align-items: center;">
                 <small>{{TxtTimes[0]}}</small>&nbsp;-&nbsp;<small>{{TxtTimes[1]}}</small>
             </div>
@@ -11,8 +12,7 @@
                 v-bind:style="{
                     flexDirection: 1 < TxtDays.length ? 'column' : ''
                 }">
-                <span v-for="(txt, ii) in TxtDays"
-                    :key="txt" v-bind:iiday="ii">{{txt}}</span>
+                <span v-for="(txt, ii) in TxtDays" :key="txt" v-bind:iiday="ii">{{txt}}</span>
             </div>
         </div>
         <div v-else style="display: flex; flex-direction: row; align-items: center;">
@@ -24,15 +24,39 @@
                 <small>{{TxtTimes[1]}}</small>&nbsp;<span>{{TxtDays[1]}}</span>
             </div>
         </div>
+        <div style="display: grid; grid-template-columns: 50% 50%; gap: 8px;">
+            <div>
+                <div class="cmd-task" contenteditable="plaintext-only"
+                    @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
+                    @keyup.enter.prevent="processCmdTask">{{TxtCmdTask}}</div>
+                <div v-for="task in item.Tasks"
+                    style="display: grid;grid-template-columns: 16px auto 72px;align-items: center;gap: 8px;"
+                    @click.stop="e => openFormTask(task)">
+                    <i v-if="!task.Finish" class="bi bi-square" 
+                        @click.stop="e => toggFinish(task)"></i>
+                    <i v-else class="bi bi-check-square"
+                        @click.stop="e => toggFinish(task)"></i>
+                    <span>{{task.Name}}</span>
+                    <span>{{getTimeDig(task)}}</span>
+                </div>
+            </div>
+            <div>
+                <strong v-if="TaskEdit != null">{{TaskEdit.Name}}</strong>
+                <div v-if="TaskEdit != null" contenteditable="true"
+                    @blur="blurTaskNote" v-html="TaskEdit.Note"></div>
+            </div>
+        </div>
     </section>
 </template>
 <template id="tmp-schedule">
-    <div v-if="'s' == ViewType"
-        style="display: grid;grid-template-columns: auto 182px;margin-bottom: 6px;padding: 6px;
+    <div v-if="'s' == ViewType" style="display: grid;grid-template-columns: auto 182px;margin-bottom: 6px;padding: 6px;
             background-color: #cfcfcf3d;border-radius: 12px;gap:6px;">
         <div style="display: flex;flex-direction: column;">
             <strong @click.stop="toggleForm" style="cursor: default;">{{item.Name}}</strong>
-            <small>{{item.Users.join(', ')}}</small>
+            <div style="display: grid; grid-template-columns: auto 114px;">
+                <small>{{item.Users.join(', ')}}</small>
+                <small>Tasks:&nbsp;{{TaskStatus}}</small>
+            </div>
         </div>
         <div style="display: flex;gap: 8px; align-items: center;">
             <div style="display: flex; flex-direction: column;">
@@ -42,10 +66,8 @@
                 v-bind:style="{
                     flexDirection: 1 < TxtDays.length ? 'column' : ''
                 }">
-                <span v-for="(txt, ii) in TxtDays"
-                    :key="txt" contenteditable="plaintext-only"
-                    v-bind:iiday="ii"
-                    @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}" 
+                <span v-for="(txt, ii) in TxtDays" :key="txt" contenteditable="plaintext-only" v-bind:iiday="ii"
+                    @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
                     @keyup.enter.prevent="e => changeDay(ii, e)">{{txt}}</span>
             </div>
         </div>
@@ -54,9 +76,8 @@
 <template id="tmp-commands">
     <div style="display: grid; grid-template-columns: calc(610px + 789px - 610px + 120px) auto; gap: 8px;">
         <div style="display: grid; grid-template-rows: auto 42px; gap: 6px;">
-            <div class="txt-command"
-                contenteditable="plaintext-only"
-                @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}" 
+            <div class="txt-command" contenteditable="plaintext-only"
+                @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
                 @keyup.enter.prevent="processCompand">{{TxtCommand}}</div>
             <div style="display: flex; gap: 6px;">
                 <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
@@ -80,8 +101,8 @@
         </div>
     </div>
 </template>
-<template  id="tmp-demo-commands">
-    <section style="background-color: rgba(207, 207, 207, 0.24); margin-top: 34px;
+<template id="tmp-demo-commands">
+    <section class="form-edit" style="background-color: rgba(207, 207, 207, 0.24); margin-top: 34px;
     border-radius: 12px; padding: 12px; min-height: calc(-270px + 100vh);">
         <h3 style="margin-top: 0;">{{entry.Title}}</h3>
         <p style="white-space: break-spaces;font-size: 13px;">{{entry.item.NewShedule}}</p>
@@ -91,16 +112,20 @@
         <div style="white-space: break-spaces;font-size: 13px;">{{entry.item.Search}}</div>
     </section>
 </template>
-<template  id="tmp-guide-commands">
-    <section style="display: flex; flex-direction: column; gap: 6px;background-color: rgba(207, 207, 207, 0.24); margin-top: 34px;
-    border-radius: 12px; padding: 12px; min-height: calc(-270px + 100vh);">
+<template id="tmp-guide-commands">
+    <section class="form-edit"
+        style="display: flex; flex-direction: column; gap: 6px;background-color: rgba(207, 207, 207, 0.24); margin-top: 34px;
+            border-radius: 12px; padding: 12px; min-height: calc(-270px + 100vh);">
         <h3 style="margin-top: 0;">{{entry.Title}}</h3>
         <div style="cursor: default;">
-            <span>New/edit:</span> <small>{{entry.item.NewShedule}}</small></div>
+            <span>New/edit:</span> <small>{{entry.item.NewShedule}}</small>
+        </div>
         <div style="cursor: default;">
-            <span>New user:</span> <small>{{entry.item.NewUser}}</small></div>
+            <span>New user:</span> <small>{{entry.item.NewUser}}</small>
+        </div>
         <div style="cursor: default;">
-            <span>Edit user:</span> <small>{{entry.item.EditUser}}</small></div>
+            <span>Edit user:</span> <small>{{entry.item.EditUser}}</small>
+        </div>
         <div style="cursor: default;"><span>Search:</span> <small>{{entry.item.TxtSearch}}</small></div>
     </section>
 </template>

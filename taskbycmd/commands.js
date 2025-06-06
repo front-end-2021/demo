@@ -4,8 +4,50 @@ export const patternNewUser = ['new user', 'create user', 'new person', 'create 
 export const patternEditUser = ['edit user from', 'edit user', 'edit person from', 'edit person', 'edit member from', 'edit member',
     'change user from', 'change user', 'change person from', 'change person', 'change member from', 'change member']
 export const patternSearch = ['go search', 'go filter', 'go query']
+export const ptrnNewTask = ['make Task']
+export function getCmdTask(text) {
+    let lsIndexTask = KMPLsIndex(text, ptrnNewTask.map(x => `${x} `))
+    let allCommandIndex = new Set(lsIndexTask)
+    allCommandIndex = Array.from(allCommandIndex)
+    allCommandIndex.sort((a, b) => a - b)
+
+    lsIndexTask = mapLs(lsIndexTask, allCommandIndex, text)
+    let mapTasks = new Map()
+    for (let ii = 0, arr, txt; ii < lsIndexTask.length; ii++) {
+        arr = lsIndexTask[ii]
+        txt = arr[1]
+        let arrTxt = getTaskName(txt, ptrnNewTask.map(x => `${x} `), [' due '])
+        //console.log(arrTxt)
+        if (Array.isArray(arrTxt) && 1 < arrTxt.length) {
+            let [name, strDue] = arrTxt
+            let due = parseTimeToDate(strDue)
+            let obj = getTaskObject(name, due)
+            if (obj) mapTasks.set(arr[0], obj)
+        }
+    }
+    return [allCommandIndex, mapTasks]
+    function getTaskObject(name, due) {
+        if (typeof name != 'string' || name.length < 3) return null
+        if (isDate(due)) return { Name: name, Finish: false, End: due, Note: '' }
+        return null
+    }
+    function getTaskName(text, sPatterns, ePatterns) {
+        let uName = text, regex
+        sPatterns.forEach(t => {
+            regex = new RegExp(t, "gi");
+            uName = uName.replace(regex, "");
+        })
+        let arrStr = splitByKeywords(uName, ePatterns)
+        if (2 < arrStr.length) {
+            let due = arrStr.pop()
+            let name = arrStr.join(' ')
+            return [name, due]
+        }
+        return arrStr
+    }
+}
 export function getCommands(text) {
-    const patternTimes = ['Start time', 'End time', 'Valid from', 'Valid until', 'Cut-off time']
+    //const patternTimes = ['Start time', 'End time', 'Valid from', 'Valid until', 'Cut-off time']
     const patternSpecTimes = [' from ', ' begin ', ' start ', ' at ', ' end ', ' to ']
     const ptrnAssignUser = ['add user', 'assign user', 'add person', 'assign person', 'add member', 'assign member']
 
@@ -19,21 +61,22 @@ export function getCommands(text) {
     let lsIndexEditUser = KMPLsIndex(text, patternEditUser)
     let lsIndexAssignUser = KMPLsIndex(text, ptrnAssignUser)
 
-    let allCommandIndex = new Set([...lsIISearchName, ...lsIISearchUser, ...lsIndexNewShedule, ...lsIndexNewPlan, ...lsIndexNewUser, ...lsIndexEditUser, ...lsIndexAssignUser])
+    let allCommandIndex = new Set([...lsIISearchName, ...lsIISearchUser, ...lsIndexNewShedule,
+    ...lsIndexNewPlan, ...lsIndexNewUser, ...lsIndexEditUser, ...lsIndexAssignUser])
     allCommandIndex = Array.from(allCommandIndex)
     allCommandIndex.sort((a, b) => a - b)
 
     if (1 < lsIISearchName.length) lsIISearchName.length = 1
-    lsIISearchName = mapLs(lsIISearchName)
+    lsIISearchName = mapLs(lsIISearchName, allCommandIndex, text)
     let mapGoSearchN = new Map()
     addMapSearch(mapGoSearchN, lsIISearchName, lsPttnSearchN)
 
     if (1 < lsIISearchUser.length) lsIISearchUser.length = 1
-    lsIISearchUser = mapLs(lsIISearchUser)
+    lsIISearchUser = mapLs(lsIISearchUser, allCommandIndex, text)
     let mapGoSearchU = new Map()
     addMapSearch(mapGoSearchU, lsIISearchUser, lsPttnSearchU)
-    
-    lsIndexNewShedule = mapLs(lsIndexNewShedule)
+
+    lsIndexNewShedule = mapLs(lsIndexNewShedule, allCommandIndex, text)
     let mapNewSchedule = new Map()
     for (let ii = 0, arr, txt; ii < lsIndexNewShedule.length; ii++) {
         arr = lsIndexNewShedule[ii]
@@ -49,7 +92,7 @@ export function getCommands(text) {
         }
     }
 
-    lsIndexNewPlan = mapLs(lsIndexNewPlan)
+    lsIndexNewPlan = mapLs(lsIndexNewPlan, allCommandIndex, text)
     let mapNewPlan = new Map()
     for (let ii = 0, arr, txt; ii < lsIndexNewPlan.length; ii++) {
         arr = lsIndexNewPlan[ii]
@@ -64,7 +107,7 @@ export function getCommands(text) {
         }
     }
 
-    lsIndexNewUser = mapLs(lsIndexNewUser)
+    lsIndexNewUser = mapLs(lsIndexNewUser, allCommandIndex, text)
     let mapNewUser = new Map()
     for (let ii = 0, arr, txt; ii < lsIndexNewUser.length; ii++) {
         arr = lsIndexNewUser[ii]
@@ -73,7 +116,7 @@ export function getCommands(text) {
         if (uName.length) mapNewUser.set(arr[0], uName)
     }
 
-    lsIndexEditUser = mapLs(lsIndexEditUser)
+    lsIndexEditUser = mapLs(lsIndexEditUser, allCommandIndex, text)
     let mapEditUser = new Map()
     for (let ii = 0, arr, txt; ii < lsIndexEditUser.length; ii++) {
         arr = lsIndexEditUser[ii]
@@ -85,7 +128,7 @@ export function getCommands(text) {
         }
     }
 
-    lsIndexAssignUser = mapLs(lsIndexAssignUser)
+    lsIndexAssignUser = mapLs(lsIndexAssignUser, allCommandIndex, text)
     let mapAssignUser = new Map()
     for (let ii = 0, arr, txt; ii < lsIndexAssignUser.length; ii++) {
         arr = lsIndexAssignUser[ii]
@@ -98,15 +141,6 @@ export function getCommands(text) {
     }
     return [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
         mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU]
-    function mapLs(listI) {
-        return listI.map(i0 => {
-            let ij = allCommandIndex.indexOf(i0)
-            let i1 = allCommandIndex[ij + 1]
-            if (typeof i1 != 'number') i1 = text.length
-            let subTxt = text.slice(i0, i1);
-            return [i0, subTxt.trim()]
-        })
-    }
     function addMapSearch(mapSearch, lsIndex, lsPttn) {
         if (0 < lsIndex.length) {
             const lsTrim = lsPttn.map(x => x.trim())
@@ -128,6 +162,45 @@ export function getCommands(text) {
             }
         }
     }
+    function getScheduleName(text, sPatterns, ePatterns) {
+        let uName = text, regex
+        sPatterns.forEach(t => {
+            regex = new RegExp(t, "gi");
+            uName = uName.replace(regex, "");
+        })
+        let arrStr = splitByKeywords(uName, ePatterns)
+        if (3 < arrStr.length) {
+            let end = arrStr.pop()
+            let start = arrStr.pop()
+            let name = arrStr.join(' ')
+            return [name, start, end]
+        }
+        return arrStr
+    }
+    function getScheduleObject(name, start, end) {
+        if (typeof name != 'string' || name.length < 3) return null
+        if (isDate(start) && isDate(end)) {
+            let obj = { Name: name, Users: [], Tasks: [] }
+            if (start.getTime() < end.getTime()) {
+                obj.Begin = start
+                obj.End = end
+            } else {
+                obj.Begin = end
+                obj.End = start
+            }
+            return obj
+        }
+        return null
+    }
+}
+function mapLs(listI, allCommandIndex, text) {
+    return listI.map(i0 => {
+        let ij = allCommandIndex.indexOf(i0)
+        let i1 = allCommandIndex[ij + 1]
+        if (typeof i1 != 'number') i1 = text.length
+        let subTxt = text.slice(i0, i1);
+        return [i0, subTxt.trim()]
+    })
 }
 function computeLPSArray(pattern) {
     let lps = Array(pattern.length).fill(0);
@@ -201,42 +274,11 @@ function parseTimeToDate(timeStr) {
     date.setHours(hours, minutes, 0, 0);
     return date;
 }
-function getScheduleName(text, sPatterns, ePatterns) {
-    let uName = text, regex
-    sPatterns.forEach(t => {
-        regex = new RegExp(t, "gi");
-        uName = uName.replace(regex, "");
-    })
-    let arrStr = splitByKeywords(uName, ePatterns)
-    if (3 < arrStr.length) {
-        let end = arrStr.pop()
-        let start = arrStr.pop()
-        let name = arrStr.join(' ')
-        return [name, start, end]
-    }
-    return arrStr
-}
-function getScheduleObject(name, start, end) {
-    if (typeof name != 'string' || name.length < 3) return null
-    if (isDate(start) && isDate(end)) {
-        let obj = { Name: name, Users: [] }
-        if (start.getTime() < end.getTime()) {
-            obj.Begin = start
-            obj.End = end
-        } else {
-            obj.Begin = end
-            obj.End = start
-        }
-        return obj
-    }
-    return null
-    function isDate(d) { return d instanceof Date }
-}
+function isDate(d) { return d instanceof Date }
 function splitByKeywords(text, keywords) {
     // Chuyển danh sách cụm từ thành regex, không phân biệt hoa thường
     const escapedKeywords = keywords.map(word => word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
     const rex = new RegExp(escapedKeywords.join('|'), 'gi'); // Tạo regex với flag 'gi'
-    // Dùng split() để tách chuỗi
     return text.split(rex).map(str => str.trim()).filter(str => str);
 }
 export function rmLastPunctuation(str) { return str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/ }

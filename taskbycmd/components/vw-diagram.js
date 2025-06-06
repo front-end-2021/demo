@@ -1,11 +1,11 @@
 import {
-    genKeyHex, MonthsShort, getValidDays,
-    getArrTime, randomInt
+    genKeyHex, MonthsShort, getValidDays, getArrTime, randomInt,
+    getTimeDigit, isEqualTime,
 } from "../common.js";
 import {
     getCommands, ptrnNewShedules, patternNewPlans,
     patternNewUser, patternEditUser, patternSearch,
-    rmLastPunctuation,
+    rmLastPunctuation, ptrnNewTask, getCmdTask,
 } from "../commands.js";
 const mxDate = {
     computed: {
@@ -40,7 +40,9 @@ export const FormSchedule = {
         copy.Begin = new Date(item.Begin.getTime())
         copy.End = new Date(item.End.getTime())
         return {
-            item: copy
+            item: copy,
+            TxtCmdTask: `${ptrnNewTask[randomInt(0, ptrnNewTask.length)]} Document log due 15:00`,
+            TaskEdit: null,
         }
     },
     watch: {
@@ -51,6 +53,79 @@ export const FormSchedule = {
             copy.Begin = new Date(item.Begin.getTime())
             copy.End = new Date(item.End.getTime())
             this.item = copy
+        },
+    },
+    methods: {
+        processCmdTask(e) {
+            let target = e.target
+            const txt = target.innerText
+            let [allCommandIndex, mapTasks] = getCmdTask(txt)
+            const item = this.item
+            allCommandIndex.forEach(index => {
+                if (mapTasks.has(index)) {
+                    let obj = mapTasks.get(index)
+                    setTasks(obj)
+                }
+            })
+            const oItem = this.entry.item
+            oItem.Tasks = item.Tasks
+            function compare(item, obj) {
+                if (item.Name == obj.Name && isEqualTime(obj.End, item.End)) return 0
+                if (item.Name != obj.Name && isEqualTime(obj.End, item.End)) return 1
+                if (item.Name == obj.Name && !isEqualTime(obj.End, item.End)) return 2
+                return -1
+            }
+            function setTasks(obj) {
+                if (!item.Tasks.length) {
+                    item.Tasks.push(obj)
+                    return
+                }
+                for (let tt = item.Tasks.length - 1, task; -1 < tt; tt--) {
+                    task = item.Tasks[tt]
+                    switch (compare(task, obj)) {
+                        case 1:     // edit name
+                            task.Name = obj.Name
+                            return;
+                        case 2:     // edit due
+                            task.End = obj.End
+                            return;
+                        default: break;
+                    }
+                }
+                item.Tasks.push(obj)
+            }
+        },
+        getTimeDig(task) {
+            const tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
+            return getTimeDigit(task.End, tConfix)
+        },
+        openFormTask(task) {
+            const edtTask = this.TaskEdit
+            if (!edtTask) {
+                this.TaskEdit = task;
+                return
+            }
+            if (Object.is(task, edtTask)) {
+                this.TaskEdit = null;
+                return
+            }
+            this.TaskEdit = task;
+        },
+        blurTaskNote(e) {
+            const edtTask = this.TaskEdit
+            let target = e.target
+            const txt = target.innerHTML
+            edtTask.Note = txt
+
+            const item = this.item
+            const oItem = this.entry.item
+            oItem.Tasks = item.Tasks
+        },
+        toggFinish(task) {
+            task.Finish = !task.Finish
+            const item = this.item
+            const oItem = this.entry.item
+            oItem.Tasks = item.Tasks
         },
     },
 }
@@ -226,6 +301,15 @@ export const ViewSchedule = {
             } else if ('h' == vType) this.ViewType = 's'
         },
     },
+    computed: {
+        TaskStatus() {
+            const item = this.item
+            const len = item.Tasks.length
+            if (!len) return '0/0'
+            let taskDone = item.Tasks.filter(t => !!t.Finish)
+            return `${taskDone.length}/${len}`
+        },
+    },
 }
 export const ViewCommands = {
     template: `#tmp-commands`,
@@ -372,15 +456,6 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 if (item.Name == obj.Name && isEqualTime(obj.Begin, item.Begin) && !isEqualTime(obj.End, item.End)) return 3
                 if (item.Name == obj.Name && !isEqualTime(obj.Begin, item.Begin) && !isEqualTime(obj.End, item.End)) return 4
                 return -1
-            }
-            function isEqualTime(d1, d2) {
-                let t1 = d1.getHours()
-                let t2 = d2.getHours()
-                if (t1 != t2) return false
-                t1 = d1.getMinutes()
-                t2 = d2.getMinutes()
-                if (t1 != t2) return false
-                return true
             }
             //function isEqualDate(d1, d2) { return d1.toISOString() == d2.toISOString() }
             function setSchedules(obj, listLog) {

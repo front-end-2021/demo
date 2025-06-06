@@ -22,8 +22,15 @@ html, .txt-command, #vw-command-log {
 ::-webkit-scrollbar-thumb:hover {
     background: #555; /* Màu khi di chuột */
 }
-
 body, .dr_lst-wrap, .mformedit, #dnb-viewcode {scrollbar-width: thin;}
+.form-edit [contenteditable="plaintext-only"], 
+.form-edit [contenteditable="true"] {
+    border: 1px solid #c2e7ff; white-space: break-spaces; 
+    border-radius: 6px; padding: 3px 6px; min-height: 30px; margin: 6px 0;
+}
+.form-edit [contenteditable="plaintext-only"]:focus-visible, 
+.form-edit [contenteditable="true"]:focus-visible { border-color: #1882c6; outline-color: #1882c6; }
+
 .txt-command {
     border: 1px solid #c2e7ff;border-radius: 12px;
     min-height: 26px;padding: 6px; white-space: break-spaces;
