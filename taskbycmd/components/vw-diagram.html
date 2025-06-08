@@ -27,6 +27,7 @@
         <div style="display: grid; grid-template-columns: 50% 50%; gap: 8px;">
             <div>
                 <div class="cmd-task" contenteditable="plaintext-only"
+                    style="margin-left: -6px;"
                     @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
                     @keyup.enter.prevent="processCmdTask">{{TxtCmdTask}}</div>
                 <div v-for="task in item.Tasks"
@@ -37,7 +38,7 @@
                     <i v-else class="bi bi-check-square"
                         @click.stop="e => toggFinish(task)"></i>
                     <span>{{task.Name}}</span>
-                    <span>{{getTimeDig(task)}}</span>
+                    <small>{{getTimeDig(task)}}</small>
                 </div>
             </div>
             <div>
@@ -49,30 +50,43 @@
     </section>
 </template>
 <template id="tmp-schedule">
-    <div v-if="'s' == ViewType" 
-        style="display: grid;grid-template-columns: auto 182px;margin-bottom: 6px;padding: 6px;
+    <div v-if="'s' == ViewType" >
+        <div style="display: grid;grid-template-columns: auto 182px;margin-bottom: 6px;padding: 6px;
             background-color: #cfcfcf3d;border-radius: 12px;gap:6px;position: relative;">
-        <div class="progess-line"
+            <div class="progess-line"
             style="position: absolute; top:0; left: 0; height: 3px;
             background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgb(231, 9, 248), rgba(0, 0, 0, 0));"></div>
-        <div style="display: flex;flex-direction: column;">
-            <strong @click.stop="toggleForm" style="cursor: default;">{{item.Name}}</strong>
-            <div style="display: grid; grid-template-columns: auto 114px;">
-                <small>{{item.Users.join(', ')}}</small>
-                <small>Tasks:&nbsp;{{TaskStatus}}</small>
+            <div style="display: flex;flex-direction: column;">
+                <strong @click.stop="toggleForm" style="cursor: default;">{{item.Name}}</strong>
+                <div style="display: grid; grid-template-columns: auto 114px;">
+                    <small>{{item.Users.join(', ')}}</small>
+                    <small>Tasks:&nbsp;{{TaskStatus}}</small>
+                </div>
+            </div>
+            <div style="display: flex;gap: 8px; align-items: center;">
+                <div style="display: flex; flex-direction: column;">
+                    <small v-for="txt in TxtTimes">{{txt}}</small>
+                </div>
+                <div style="display: flex; align-items: center;border-left: 2px solid #b0b0b0;padding-left: 6px;"
+                    v-bind:style="{
+                        flexDirection: 1 < TxtDays.length ? 'column' : ''
+                    }">
+                    <span v-for="(txt, ii) in TxtDays" :key="txt" contenteditable="plaintext-only" v-bind:iiday="ii"
+                        @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
+                        @keyup.enter.prevent="e => changeDay(ii, e)">{{txt}}</span>
+                </div>
             </div>
         </div>
-        <div style="display: flex;gap: 8px; align-items: center;">
-            <div style="display: flex; flex-direction: column;">
-                <small v-for="txt in TxtTimes">{{txt}}</small>
-            </div>
-            <div style="display: flex; align-items: center;border-left: 2px solid #b0b0b0;padding-left: 6px;"
-                v-bind:style="{
-                    flexDirection: 1 < TxtDays.length ? 'column' : ''
-                }">
-                <span v-for="(txt, ii) in TxtDays" :key="txt" contenteditable="plaintext-only" v-bind:iiday="ii"
-                    @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
-                    @keyup.enter.prevent="e => changeDay(ii, e)">{{txt}}</span>
+        <div>
+            <div v-for="task in item.Tasks" 
+                style="display: grid;grid-template-columns: 14px auto 90px;align-items: center;padding: 6px; margin-bottom: 6px;
+                background-color: rgba(207, 207, 207, 0.24);border-radius: 12px;gap: 6px;min-height: 30px;margin-left: 6px;">
+                <i v-if="!task.Finish" class="bi bi-square" style="font-size: 14px;"
+                    @click.stop="e => toggFinish(task)"></i>
+                <i v-else class="bi bi-check-square" style="font-size: 14px;"
+                    @click.stop="e => toggFinish(task)"></i>
+                <div>{{task.Name}}</div>
+                <small v-html="getTimeDig(task)"></small>
             </div>
         </div>
     </div>

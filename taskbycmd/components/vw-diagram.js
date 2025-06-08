@@ -28,6 +28,7 @@ const mxDate = {
         },
     },
 }
+
 export const FormSchedule = {
     template: `#tmp-form-schedule`,
     name: "Form_Schedule",
@@ -46,6 +47,7 @@ export const FormSchedule = {
         }
     },
     watch: {
+        'entry.item.Tasks'(ls) { this.item.Tasks = [...ls] },
         'entry.item.Begin'(begin) { this.item.Begin = new Date(begin.getTime()) },
         'entry.item.End'(end) { this.item.End = new Date(end.getTime()) },
         'entry.item'(item) {
@@ -101,10 +103,6 @@ export const FormSchedule = {
                 }
             }
         },
-        getTimeDig(task) {
-            const tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
-            return getTimeDigit(task.End, tConfix)
-        },
         openFormTask(task) {
             const edtTask = this.TaskEdit
             if (!edtTask) {
@@ -131,7 +129,15 @@ export const FormSchedule = {
             task.Finish = !task.Finish
             const item = this.item
             const oItem = this.entry.item
-            oItem.Tasks = item.Tasks
+            oItem.Tasks = [...item.Tasks]
+        },
+        getTimeDig(task) {
+            if (!task) return null
+            if (task.End instanceof Date) {
+                let tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
+                return getTimeDigit(task.End, tConfix)
+            }
+            return null
         },
     },
 }
@@ -276,12 +282,12 @@ export const ViewSchedule = {
             if (!lisEdit.length) {
                 lisEdit.push(entry)
             } else {
-                let ii = lisEdit.findIndex(x => x.item.Name == item.Name)
+                let ii = lisEdit.findIndex(x => x.item.Name === item.Name)
                 if (-1 < ii) {
                     lisEdit.splice(ii, 1)   // click it-self
                     return
                 }
-                lisEdit.splice(0, 1, entry)
+                lisEdit.splice(ii, 1, entry)
             }
         },
         setUiProcess() {
@@ -296,7 +302,18 @@ export const ViewSchedule = {
             }
             let line = this.$el.querySelector('.progess-line')
             line.style.width = `${cWidth}px`
-            console.log(cWidth, maxW)
+            //console.log(cWidth, maxW)
+        },
+        toggFinish(task) {
+            task.Finish = !task.Finish
+            this.item.Tasks = [...this.item.Tasks]
+        },
+        getTimeDig(task) {
+            let tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
+            let time = getTimeDigit(task.End, tConfix)
+            tConfix = { day: '2-digit', month: 'short', year: 'numeric' }
+            let date = task.End.toLocaleDateString('en-US', tConfix);
+            return `${time}<br>${date}`
         },
     },
     watch: {
@@ -319,6 +336,9 @@ export const ViewSchedule = {
                 if (!txtU.includes(txtSearch.trim())) this.ViewType = 'h'
                 else this.ViewType = 's'
             } else if ('h' == vType) this.ViewType = 's'
+        },
+        'item.Tasks'() {
+            this.setUiProcess()
         },
     },
     computed: {

@@ -144,7 +144,7 @@ Promise.all([
                 let pDom = document.body.querySelector(`.dnb-imp-html[dnbpath="${path}"]`)
                 if (pDom) pDom.remove();
             })
-            this.$nextTick(() => { this.setLoop('Schedules') })
+           // this.$nextTick(() => { this.setLoop('Schedules') })
             // const message = "123456";
             // const hash = CryptoJS.SHA256(message);//CryptoJS.MD5(message);
             // console.log(hash.toString(CryptoJS.enc.Hex));
@@ -154,7 +154,7 @@ Promise.all([
         },
         beforeUpdate() { },
         updated() {
-            this.setLoop('Schedules')
+           // this.setLoop('Schedules')
         },
     }).mount('#m-app')
 
