@@ -284,6 +284,20 @@ export const ViewSchedule = {
                 lisEdit.splice(0, 1, entry)
             }
         },
+        setUiProcess() {
+            const maxW = this.$el.offsetWidth
+            const item = this.item
+            const len = item.Tasks.length
+            let cWidth = 0
+            if (!len) cWidth = 0
+            else {
+                let taskDone = item.Tasks.filter(t => !!t.Finish)
+                cWidth = (taskDone.length / len) * maxW
+            }
+            let line = this.$el.querySelector('.progess-line')
+            line.style.width = `${cWidth}px`
+            console.log(cWidth, maxW)
+        },
     },
     watch: {
         '$root.TxtSearchName'(txtSearch) {
@@ -316,6 +330,9 @@ export const ViewSchedule = {
             return `${taskDone.length}/${len}`
         },
     },
+    beforeMount() { this.$root.setRefs(this, 'Schedules') },
+    mounted() { this.setUiProcess() },
+    beforeDestroy() { this.$root.setRefs(this, 'Schedules') },
 }
 export const ViewCommands = {
     template: `#tmp-commands`,

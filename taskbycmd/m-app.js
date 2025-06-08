@@ -42,6 +42,10 @@ Promise.all([
                 TxtSearchUser: '',
                 LsEdit: [],
                 LisLog: [],
+                LsRef: {
+                    Schedules: [],
+                },
+                Intervals: [],
             }
         },
         // computed: { },
@@ -88,6 +92,45 @@ Promise.all([
                     return freeSlots;
                 }
             },
+            setRefs(comp, type) {
+                const oRef = this.LsRef
+                let ls = []
+                switch (type) {
+                    case 'Schedules': ls = oRef.Schedules
+                        break;
+                    default: break;
+                }
+                let ii = ls.findIndex(x => Object.is(x, comp))
+                if (ii < 0) ls.push(comp)
+                else ls.splice(ii, 1)   // remove
+            },
+            setLoop(type) {
+                const intevals = this.Intervals
+                for (let ii = intevals.length - 1, iitem; -1 < ii; ii--) {
+                    iitem = intevals[ii]
+                    if (type === iitem[0]) {
+                        let intervalId = iitem[1]
+                        clearInterval(intervalId)
+                        intevals.splice(ii, 1)
+                    }
+                }
+                const oRef = this.LsRef
+                switch (type) {
+                    case 'Schedules':
+                        let ls = oRef.Schedules
+                        if (ls.length) {
+                            let intervalId = setInterval(() => {
+                                for (let iir = ls.length - 1, comp; -1 < iir; iir--) {
+                                    comp = ls[iir]
+                                    comp.setUiProcess()
+                                }
+                            }, 6000);  // 1 min = 60000
+                            intevals.push([type, intervalId])
+                        }
+                        break;
+                    default: break;
+                }
+            },
             // equalHas(txt1, txt2) {
             //     let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)
             //     return hash1.toString(CryptoJS.enc.Hex) == hash2.toString(CryptoJS.enc.Hex)
@@ -101,7 +144,7 @@ Promise.all([
                 let pDom = document.body.querySelector(`.dnb-imp-html[dnbpath="${path}"]`)
                 if (pDom) pDom.remove();
             })
-
+            this.$nextTick(() => { this.setLoop('Schedules') })
             // const message = "123456";
             // const hash = CryptoJS.SHA256(message);//CryptoJS.MD5(message);
             // console.log(hash.toString(CryptoJS.enc.Hex));
@@ -110,7 +153,9 @@ Promise.all([
 
         },
         beforeUpdate() { },
-        updated() { },
+        updated() {
+            this.setLoop('Schedules')
+        },
     }).mount('#m-app')
 
 }).catch(errStatus => { console.log('Woop!', errStatus) })

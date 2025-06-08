@@ -49,8 +49,12 @@
     </section>
 </template>
 <template id="tmp-schedule">
-    <div v-if="'s' == ViewType" style="display: grid;grid-template-columns: auto 182px;margin-bottom: 6px;padding: 6px;
-            background-color: #cfcfcf3d;border-radius: 12px;gap:6px;">
+    <div v-if="'s' == ViewType" 
+        style="display: grid;grid-template-columns: auto 182px;margin-bottom: 6px;padding: 6px;
+            background-color: #cfcfcf3d;border-radius: 12px;gap:6px;position: relative;">
+        <div class="progess-line"
+            style="position: absolute; top:0; left: 0; height: 3px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgb(231, 9, 248), rgba(0, 0, 0, 0));"></div>
         <div style="display: flex;flex-direction: column;">
             <strong @click.stop="toggleForm" style="cursor: default;">{{item.Name}}</strong>
             <div style="display: grid; grid-template-columns: auto 114px;">
