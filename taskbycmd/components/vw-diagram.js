@@ -64,6 +64,7 @@ export const FormSchedule = {
             allCommandIndex.forEach(index => {
                 if (mapTasks.has(index)) {
                     let obj = mapTasks.get(index)
+                    adjustDateOnly(obj.End, item.Begin, item.End)
                     setTasks(obj)
                 }
             })
@@ -83,16 +84,21 @@ export const FormSchedule = {
                 for (let tt = item.Tasks.length - 1, task; -1 < tt; tt--) {
                     task = item.Tasks[tt]
                     switch (compare(task, obj)) {
-                        case 1:     // edit name
-                            task.Name = obj.Name
+                        case 1: task.Name = obj.Name  // edit name
                             return;
-                        case 2:     // edit due
-                            task.End = obj.End
+                        case 2: task.End = obj.End  // edit due
                             return;
                         default: break;
                     }
                 }
                 item.Tasks.push(obj)
+            }
+            function adjustDateOnly(date, startDate, endDate) { // Điều chỉnh ngày, tháng, năm nếu cần
+                if (date < startDate) {
+                    date.setFullYear(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+                } else if (endDate < date) {
+                    date.setFullYear(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+                }
             }
         },
         getTimeDig(task) {
