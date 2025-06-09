@@ -28,7 +28,14 @@ export function getCmdTask(text) {
     return [allCommandIndex, mapTasks]
     function getTaskObject(name, due) {
         if (typeof name != 'string' || name.length < 3) return null
-        if (isDate(due)) return { Name: name, Finish: false, End: due, Note: '' }
+        if (isDate(due)) {
+            const tConfix = {
+                hour: '2-digit', minute: '2-digit', hour12: true,
+                day: '2-digit', month: 'short', year: 'numeric'
+            }
+            due = timeDigit(due, tConfix)
+            return { Name: name, Finish: false, End: due, Note: '' }
+        }
         return null
     }
     function getTaskName(text, sPatterns, ePatterns) {
@@ -188,10 +195,20 @@ export function getCommands(text) {
                 obj.Begin = end
                 obj.End = start
             }
+            const tConfix = {
+                hour: '2-digit', minute: '2-digit', hour12: true,
+                day: '2-digit', month: 'short', year: 'numeric'
+            }
+            obj.Begin = timeDigit(obj.Begin, tConfix)
+            obj.End = timeDigit(obj.End, tConfix)
             return obj
         }
         return null
     }
+}
+function timeDigit(date, tConfix) {
+    let lang = navigator.language || 'en-US'
+    return date.toLocaleTimeString(lang, tConfix)
 }
 function mapLs(listI, allCommandIndex, text) {
     return listI.map(i0 => {

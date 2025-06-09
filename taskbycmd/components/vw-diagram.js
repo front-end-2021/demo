@@ -19,13 +19,16 @@ const mxDate = {
         },
     },
     methods: {
-        getTxtDays(begin, end) {
+        getTxtDays(b, e) {
+            let begin = new Date(b)
+            let end = new Date(e)
+            let lang = navigator.language || 'en-US'
             const tConfix = { day: '2-digit', month: 'short', year: 'numeric' }
-            let beginDate = begin.toLocaleDateString('en-US', tConfix);
-            let endDate = end.toLocaleDateString('en-US', tConfix);
+            let beginDate = begin.toLocaleDateString(lang, tConfix);
+            let endDate = end.toLocaleDateString(lang, tConfix);
             if (beginDate == endDate) return [beginDate]
             return [beginDate, endDate]
-        },
+        }
     },
 }
 
@@ -38,8 +41,6 @@ export const FormSchedule = {
     data() {
         const item = this.entry.item
         let copy = JSON.parse(JSON.stringify(item))
-        copy.Begin = new Date(item.Begin.getTime())
-        copy.End = new Date(item.End.getTime())
         return {
             item: copy,
             TxtCmdTask: `${ptrnNewTask[randomInt(0, ptrnNewTask.length)]} Document log due 15:00`,
@@ -48,12 +49,10 @@ export const FormSchedule = {
     },
     watch: {
         'entry.item.Tasks'(ls) { this.item.Tasks = [...ls] },
-        'entry.item.Begin'(begin) { this.item.Begin = new Date(begin.getTime()) },
-        'entry.item.End'(end) { this.item.End = new Date(end.getTime()) },
+        'entry.item.Begin'(begin) { this.item.Begin = begin },
+        'entry.item.End'(end) { this.item.End = end },
         'entry.item'(item) {
             let copy = JSON.parse(JSON.stringify(item))
-            copy.Begin = new Date(item.Begin.getTime())
-            copy.End = new Date(item.End.getTime())
             this.item = copy
         },
     },
@@ -66,16 +65,17 @@ export const FormSchedule = {
             allCommandIndex.forEach(index => {
                 if (mapTasks.has(index)) {
                     let obj = mapTasks.get(index)
-                    adjustDateOnly(obj.End, item.Begin, item.End)
+                    obj.End = adjustDateOnly(obj.End, item.Begin, item.End)
                     setTasks(obj)
                 }
             })
             const oItem = this.entry.item
             oItem.Tasks = item.Tasks
             function compare(item, obj) {
-                if (item.Name == obj.Name && isEqualTime(obj.End, item.End)) return 0
-                if (item.Name != obj.Name && isEqualTime(obj.End, item.End)) return 1
-                if (item.Name == obj.Name && !isEqualTime(obj.End, item.End)) return 2
+                const equalTime = isEqualTime(obj.End, item.End)
+                if (item.Name == obj.Name && equalTime) return 0
+                if (item.Name != obj.Name && equalTime) return 1
+                if (item.Name == obj.Name && !equalTime) return 2
                 return -1
             }
             function setTasks(obj) {
@@ -90,17 +90,26 @@ export const FormSchedule = {
                             return;
                         case 2: task.End = obj.End  // edit due
                             return;
+                        case 0: return;
                         default: break;
                     }
                 }
                 item.Tasks.push(obj)
             }
-            function adjustDateOnly(date, startDate, endDate) { // Điều chỉnh ngày, tháng, năm nếu cần
+            function adjustDateOnly(d, sD, eD) { // Điều chỉnh ngày, tháng, năm nếu cần
+                let date = new Date(d)
+                let startDate = new Date(sD)
+                let endDate = new Date(eD)
                 if (date < startDate) {
                     date.setFullYear(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
                 } else if (endDate < date) {
                     date.setFullYear(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
                 }
+                const tConfix = {
+                    hour: '2-digit', minute: '2-digit', hour12: true,
+                    day: '2-digit', month: 'short', year: 'numeric'
+                }
+                return getTimeDigit(date, tConfix)
             }
         },
         openFormTask(task) {
@@ -133,9 +142,10 @@ export const FormSchedule = {
         },
         getTimeDig(task) {
             if (!task) return null
-            if (task.End instanceof Date) {
+            let end = new Date(task.End)
+            if (end instanceof Date) {
                 let tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
-                return getTimeDigit(task.End, tConfix)
+                return getTimeDigit(end, tConfix)
             }
             return null
         },
@@ -188,8 +198,8 @@ export const ViewSchedule = {
             }
             // #endregion
             const item = this.item
-            let oBeginT = item.Begin.getTime()
-            let oEndT = item.End.getTime()
+            let oBeginT = item.Begin
+            let oEndT = item.End
             let oBegin = new Date(oBeginT)
             let oEnd = new Date(oEndT)
 
@@ -226,9 +236,12 @@ export const ViewSchedule = {
             // #endregion
             if (0 == ii) oBegin.setFullYear(numYear)
             else oEnd.setFullYear(numYear)
-
-            let strBegin = item.Begin.toLocaleString()
-            let strEnd = item.End.toLocaleString()
+            const tConfix = {
+                hour: '2-digit', minute: '2-digit', hour12: true,
+                day: '2-digit', month: 'short', year: 'numeric'
+            }
+            let strBegin = getTimeDigit(new Date(oBeginT), tConfix)
+            let strEnd = getTimeDigit(new Date(oEndT), tConfix)
             oBeginT = oBegin.getTime()
             oEndT = oEnd.getTime()
             if (diffDay(oBegin, oEnd) < 0) {
@@ -239,8 +252,10 @@ export const ViewSchedule = {
                 oBegin = new Date(oEndT)
                 oEnd = new Date(oBeginT)
             }
-            if (oBegin.toLocaleString() != strBegin) item.Begin = oBegin
-            if (oEnd.toLocaleString() != strEnd) item.End = oEnd
+            oBegin = getTimeDigit(oBegin, tConfix)
+            if (oBegin != strBegin) item.Begin = oBegin
+            oEnd = getTimeDigit(oEnd, tConfix)
+            if (oEnd != strEnd) item.End = oEnd
             const newArr = this.getTxtDays(oBegin, oEnd)
             if (target.innerText != newArr[ii]) target.innerHTML = newArr[ii]
             if (newArr.length != lsTxtDay.length) {
@@ -309,10 +324,12 @@ export const ViewSchedule = {
             this.item.Tasks = [...this.item.Tasks]
         },
         getTimeDig(task) {
+            let lang = navigator.language || 'en-US'
             let tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
-            let time = getTimeDigit(task.End, tConfix)
+            let due = new Date(task.End)
+            let time = getTimeDigit(due, tConfix)
             tConfix = { day: '2-digit', month: 'short', year: 'numeric' }
-            let date = task.End.toLocaleDateString('en-US', tConfix);
+            let date = due.toLocaleDateString(lang, tConfix);
             return `${time}<br>${date}`
         },
     },
@@ -479,7 +496,11 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 }
             })
             if (changeSch) {
-                root.LsSchedule.sort((a, b) => a.Begin.getTime() - b.Begin.getTime())
+                root.LsSchedule.sort((a, b) => {
+                    let ab = new Date(a.Begin)
+                    let bb = new Date(b.Begin)
+                    return ab.getTime() - bb.getTime()
+                })
                 root.computeAvailables()
             }
             if (0 < mapNewUser.size + mapEditUser.size) {
@@ -493,11 +514,13 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 });
             })
             function compare(item, obj) {
-                if (item.Name == obj.Name && isEqualTime(obj.Begin, item.Begin) && isEqualTime(obj.End, item.End)) return 0
-                if (item.Name != obj.Name && isEqualTime(obj.Begin, item.Begin) && isEqualTime(obj.End, item.End)) return 1
-                if (item.Name == obj.Name && !isEqualTime(obj.Begin, item.Begin) && isEqualTime(obj.End, item.End)) return 2
-                if (item.Name == obj.Name && isEqualTime(obj.Begin, item.Begin) && !isEqualTime(obj.End, item.End)) return 3
-                if (item.Name == obj.Name && !isEqualTime(obj.Begin, item.Begin) && !isEqualTime(obj.End, item.End)) return 4
+                const eqTimeB = isEqualTime(obj.Begin, item.Begin)
+                const eqTimeE = isEqualTime(obj.End, item.End)
+                if (item.Name == obj.Name && eqTimeB && eqTimeE) return 0
+                if (item.Name != obj.Name && eqTimeB && eqTimeE) return 1
+                if (item.Name == obj.Name && !eqTimeB && eqTimeE) return 2
+                if (item.Name == obj.Name && eqTimeB && !eqTimeE) return 3
+                if (item.Name == obj.Name && !eqTimeB && !eqTimeE) return 4
                 return -1
             }
             //function isEqualDate(d1, d2) { return d1.toISOString() == d2.toISOString() }
@@ -508,12 +531,22 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                     let old = lsShedule[ii]
                     let users = new Set([...old.Users, ...obj.Users])
                     obj.Users = Array.from(users)
-                    obj.Begin.setFullYear(old.Begin.getFullYear())
-                    obj.End.setFullYear(old.End.getFullYear())
-                    obj.Begin.setMonth(old.Begin.getMonth())
-                    obj.End.setMonth(old.End.getMonth())
-                    obj.Begin.setDate(old.Begin.getDate())
-                    obj.End.setDate(old.End.getDate())
+
+                    let oBegin = new Date(old.Begin)
+                    let oEnd = new Date(old.End)
+                    let nBegin = new Date(obj.Begin)
+                    let nEnd = new Date(obj.End)
+                    oBegin.setHours(nBegin.getHours())
+                    oBegin.setMinutes(nBegin.getMinutes())
+                    oEnd.setHours(nEnd.getHours())
+                    oEnd.setMinutes(nEnd.getMinutes())
+                    const tConfix = {
+                        hour: '2-digit', minute: '2-digit', hour12: true,
+                        day: '2-digit', month: 'short', year: 'numeric'
+                    }
+                    obj.Begin = getTimeDigit(oBegin, tConfix)
+                    obj.End = getTimeDigit(oEnd, tConfix)
+
                     genKeyHex(obj)
                     lsShedule.splice(ii, 1, obj)
                     const lisEdit = this.LsEdit

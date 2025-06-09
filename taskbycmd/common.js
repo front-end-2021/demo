@@ -11,17 +11,24 @@ export function genKeyHex(item) {
 }
 export function getArrTime(item) {
     const tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
-    let beginTime = getTimeDigit(item.Begin, tConfix);
-    let endTime = getTimeDigit(item.End, tConfix);
+    let beginTime = new Date(item.Begin)
+    beginTime = getTimeDigit(beginTime, tConfix)
+    let endTime = new Date(item.End)
+    endTime = getTimeDigit(endTime, tConfix)
     return [beginTime, endTime]
 }
-export function getTimeDigit(date, tConfix) { return date.toLocaleTimeString('en-US', tConfix) }
+export function getTimeDigit(date, tConfix) {
+    let lang = navigator.language || 'en-US'
+    return date.toLocaleTimeString(lang, tConfix) 
+}
 export function randomInt(min, max) {
     const minC = Math.ceil(min);
     const maxF = Math.floor(max);
     return Math.floor(Math.random() * (maxF - minC) + minC); // The maximum is exclusive and the minimum is inclusive
 }
 export function isEqualTime(d1, d2) {
+    d1 = new Date(d1)
+    d2 = new Date(d2)
     let t1 = d1.getHours()
     let t2 = d2.getHours()
     if (t1 != t2) return false

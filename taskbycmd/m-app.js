@@ -52,7 +52,7 @@ Promise.all([
         // watch: { },
         methods: {
             computeAvailables() {
-                let lsShedule = this.LsSchedule.map(x => [x.Begin, x.End])
+                let lsShedule = this.LsSchedule.map(x => [new Date(x.Begin), new Date(x.End)])
                 let start = this.TimeLogStart
                 let end = this.TimeLogEnd
 
