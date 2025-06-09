@@ -19,7 +19,14 @@ export function getArrTime(item) {
 }
 export function getTimeDigit(date, tConfix) {
     let lang = navigator.language || 'en-US'
-    return date.toLocaleTimeString(lang, tConfix) 
+    if (!tConfix) {
+        tConfix = {
+            hour: '2-digit', minute: '2-digit', hour12: true,
+            day: '2-digit', month: 'short', year: 'numeric'
+        }
+        return date.toLocaleString(lang, tConfix)
+    }
+    return date.toLocaleTimeString(lang, tConfix)
 }
 export function randomInt(min, max) {
     const minC = Math.ceil(min);

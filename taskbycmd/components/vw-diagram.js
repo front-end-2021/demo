@@ -105,11 +105,7 @@ export const FormSchedule = {
                 } else if (endDate < date) {
                     date.setFullYear(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
                 }
-                const tConfix = {
-                    hour: '2-digit', minute: '2-digit', hour12: true,
-                    day: '2-digit', month: 'short', year: 'numeric'
-                }
-                return getTimeDigit(date, tConfix)
+                return getTimeDigit(date)
             }
         },
         openFormTask(task) {
@@ -236,12 +232,9 @@ export const ViewSchedule = {
             // #endregion
             if (0 == ii) oBegin.setFullYear(numYear)
             else oEnd.setFullYear(numYear)
-            const tConfix = {
-                hour: '2-digit', minute: '2-digit', hour12: true,
-                day: '2-digit', month: 'short', year: 'numeric'
-            }
-            let strBegin = getTimeDigit(new Date(oBeginT), tConfix)
-            let strEnd = getTimeDigit(new Date(oEndT), tConfix)
+
+            let strBegin = getTimeDigit(new Date(oBeginT))
+            let strEnd = getTimeDigit(new Date(oEndT))
             oBeginT = oBegin.getTime()
             oEndT = oEnd.getTime()
             if (diffDay(oBegin, oEnd) < 0) {
@@ -252,9 +245,9 @@ export const ViewSchedule = {
                 oBegin = new Date(oEndT)
                 oEnd = new Date(oBeginT)
             }
-            oBegin = getTimeDigit(oBegin, tConfix)
+            oBegin = getTimeDigit(oBegin)
             if (oBegin != strBegin) item.Begin = oBegin
-            oEnd = getTimeDigit(oEnd, tConfix)
+            oEnd = getTimeDigit(oEnd)
             if (oEnd != strEnd) item.End = oEnd
             const newArr = this.getTxtDays(oBegin, oEnd)
             if (target.innerText != newArr[ii]) target.innerHTML = newArr[ii]
@@ -327,9 +320,9 @@ export const ViewSchedule = {
             let lang = navigator.language || 'en-US'
             let tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
             let due = new Date(task.End)
-            let time = getTimeDigit(due, tConfix)
+            let time = due.toLocaleTimeString(lang, tConfix)
             tConfix = { day: '2-digit', month: 'short', year: 'numeric' }
-            let date = due.toLocaleDateString(lang, tConfix);
+            let date = due.toLocaleDateString(lang, tConfix)
             return `${time}<br>${date}`
         },
     },
@@ -540,12 +533,9 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                     oBegin.setMinutes(nBegin.getMinutes())
                     oEnd.setHours(nEnd.getHours())
                     oEnd.setMinutes(nEnd.getMinutes())
-                    const tConfix = {
-                        hour: '2-digit', minute: '2-digit', hour12: true,
-                        day: '2-digit', month: 'short', year: 'numeric'
-                    }
-                    obj.Begin = getTimeDigit(oBegin, tConfix)
-                    obj.End = getTimeDigit(oEnd, tConfix)
+
+                    obj.Begin = getTimeDigit(oBegin)
+                    obj.End = getTimeDigit(oEnd)
 
                     genKeyHex(obj)
                     lsShedule.splice(ii, 1, obj)
