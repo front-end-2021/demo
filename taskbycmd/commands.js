@@ -29,7 +29,7 @@ export function getCmdTask(text) {
     function getTaskObject(name, due) {
         if (typeof name != 'string' || name.length < 3) return null
         if (isDate(due)) {
-            due = timeDigit(due)
+            due = due.toISOString()
             return { Name: name, Finish: false, End: due, Note: '' }
         }
         return null
@@ -191,23 +191,12 @@ export function getCommands(text) {
                 obj.Begin = end
                 obj.End = start
             }
-            obj.Begin = timeDigit(obj.Begin)
-            obj.End = timeDigit(obj.End)
+            obj.Begin = obj.Begin.toISOString()
+            obj.End = obj.End.toISOString()
             return obj
         }
         return null
     }
-}
-function timeDigit(date, tConfix) {
-    let lang = navigator.language || 'en-US'
-    if (!tConfix) {
-        tConfix = {
-            hour: '2-digit', minute: '2-digit', hour12: true,
-            day: '2-digit', month: 'short', year: 'numeric'
-        }
-        return date.toLocaleString(lang, tConfix)
-    }
-    return date.toLocaleTimeString(lang, tConfix)
 }
 function mapLs(listI, allCommandIndex, text) {
     return listI.map(i0 => {

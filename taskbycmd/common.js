@@ -44,6 +44,18 @@ export function isEqualTime(d1, d2) {
     if (t1 != t2) return false
     return true
 }
+function convertDic(array, map, key) {
+    return array.reduce((acc, obj) => {
+        acc.set(obj[key], obj);
+        return acc;
+    }, map)
+}
+function convertSet(array, set) {
+    return array.reduce((acc, obj) => {
+        acc.add(obj);
+        return acc;
+    }, set)
+}
 function countEnter(txt) {
     if (typeof txt != 'string') return 0
     //https://charactercounter.com/count-characters-in-javascript

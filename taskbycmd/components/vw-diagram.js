@@ -105,7 +105,7 @@ export const FormSchedule = {
                 } else if (endDate < date) {
                     date.setFullYear(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
                 }
-                return getTimeDigit(date)
+                return date.toISOString()
             }
         },
         openFormTask(task) {
@@ -534,8 +534,8 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                     oEnd.setHours(nEnd.getHours())
                     oEnd.setMinutes(nEnd.getMinutes())
 
-                    obj.Begin = getTimeDigit(oBegin)
-                    obj.End = getTimeDigit(oEnd)
+                    obj.Begin = oBegin.toISOString()
+                    obj.End = oEnd.toISOString()
 
                     genKeyHex(obj)
                     lsShedule.splice(ii, 1, obj)
