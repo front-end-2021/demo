@@ -93,3 +93,62 @@ export function getStringBetween(str, startChar, endChar) {
     const match = str.match(regex);
     return match ? match[1] : '';
 }
+
+class Snowflake {
+    constructor(machineId = 1n) {
+        this.epoch = BigInt(1609459200000n); // Epoch của Twitter Snowflake (2021-01-01)
+        this.machineId = BigInt(machineId); // Machine ID (0-1023)
+        this.sequence = 0n; // Sequence number
+        this.lastTimestamp = 0n; // Last generated timestamp
+    }
+    currentTimestamp() { return BigInt(Date.now()) }  // Get the current timestamp in milliseconds
+
+    // Wait until the next millisecond if timestamps are the same
+    waitNextMillis(lastTimestamp) {
+        let timestamp = this.currentTimestamp();
+        while (timestamp <= lastTimestamp) { timestamp = this.currentTimestamp() }
+        return timestamp;
+    }
+
+    // Generate a unique Snowflake ID
+    generate() {
+        let timestamp = this.currentTimestamp();
+        if (timestamp === this.lastTimestamp) {
+            this.sequence = (this.sequence + 1n) & 4095n; // Sequence mask (12 bits)
+            if (this.sequence === 0n) { timestamp = this.waitNextMillis(this.lastTimestamp) }
+        } else { this.sequence = 0n }
+
+        this.lastTimestamp = timestamp;
+
+        // Construct the Snowflake ID (64 bits)
+        return (
+            ((timestamp - this.epoch) << 22n) | // Timestamp (41 bits)
+            (this.machineId << 12n) | // Machine ID (10 bits)
+            this.sequence // Sequence (12 bits)
+        )
+    }
+}
+function decodeSnowflake(snowflakeId) {
+    const timestamp = (BigInt(snowflakeId) >> 22n) + 1609459200000n; // Epoch của Twitter Snowflake (2021-01-01)
+    const machineId = (BigInt(snowflakeId) >> 12n) & 0x3FFn; // 10 bit cho máy chủ
+    const sequence = BigInt(snowflakeId) & 0xFFFn; // 12 bit cho số thứ tự
+    return {
+        timestamp: new Date(Number(timestamp)), // Chuyển timestamp thành ngày giờ
+        machineId: Number(machineId),
+        sequence: Number(sequence)
+    }
+}
+// Example usage
+let snowflake = new Snowflake(42n); // Custom epoch and machine ID
+let snowflakeId = snowflake.generate().toString()
+console.log(snowflakeId); // Generate a unique ID
+console.log(decodeSnowflake(snowflakeId))
+snowflakeId = snowflake.generate().toString()
+console.log(snowflakeId); // Generate a unique ID
+console.log(decodeSnowflake(snowflakeId))
+snowflakeId = snowflake.generate().toString()
+console.log(snowflakeId); // Generate a unique ID
+console.log(decodeSnowflake(snowflakeId))
+snowflakeId = snowflake.generate().toString()
+console.log(snowflakeId); // Generate a unique ID
+console.log(decodeSnowflake(snowflakeId))
