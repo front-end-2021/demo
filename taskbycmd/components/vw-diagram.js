@@ -567,10 +567,6 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             let target = this.$el.querySelector('.txt-command[contenteditable]')
             target.innerHTML = this.TxtCommand
         },
-        fillLogCommand(txt) {
-            let target = this.$el.querySelector('.txt-command[contenteditable]')
-            target.innerHTML = txt
-        },
         showDemoCommands() {
             const root = this.$root
             const nameComp = 'view-demo-commands'

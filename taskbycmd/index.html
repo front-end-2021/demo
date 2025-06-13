@@ -51,7 +51,11 @@
         <div v-for="user in LsUser" style="font-size: 14px;">{{user}}</div>
       </div>
       <div v-if="0 == LsEdit.length">
-        <h3 style="margin-top: 34px;">Details</h3>
+        <h3 style="margin-top: 34px;">Logs</h3>
+        <div id="vw-command-log" style="overflow: auto;">
+            <code v-for="log in LisLog" style="display: block;cursor: default;"
+                @click.stop="e => fillLogCommand(log)">{{log}}</code>
+        </div>
       </div>
       <div v-else>
         <component v-for="edit in LsEdit"
