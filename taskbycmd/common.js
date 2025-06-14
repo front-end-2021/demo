@@ -44,11 +44,19 @@ export function isEqualTime(d1, d2) {
     if (t1 != t2) return false
     return true
 }
-function convertDic(array, map, key) {
+export function convertDic(array, map, key) {
     return array.reduce((acc, obj) => {
         acc.set(obj[key], obj);
         return acc;
     }, map)
+}
+export function getLsChild(items, paId) {
+    const ls = []
+    for (let ii = 0, item; ii < items.length; ii++) {
+        item = items[ii]
+        if (item.ParentId == paId) ls.push(item)
+    }
+    return ls
 }
 function convertSet(array, set) {
     return array.reduce((acc, obj) => {

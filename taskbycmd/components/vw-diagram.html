@@ -30,13 +30,14 @@
                     style="margin-left: -6px;"
                     @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
                     @keyup.enter.prevent="processCmdTask">{{TxtCmdTask}}</div>
-                <div v-for="task in item.Tasks"
+                <div v-for="task in Tasks"
                     style="display: grid;grid-template-columns: 16px auto 72px;align-items: center;gap: 8px;"
                     @click.stop="e => openFormTask(task)">
-                    <i v-if="!task.Finish" class="bi bi-square" 
-                        @click.stop="e => toggFinish(task)"></i>
+                    <i v-if="!$root.ItemDones.has(task.Id)" 
+                        class="bi bi-square" 
+                        @click.stop="e => $root.toggFinish(task.Id)"></i>
                     <i v-else class="bi bi-check-square"
-                        @click.stop="e => toggFinish(task)"></i>
+                        @click.stop="e => $root.toggFinish(task.Id)"></i>
                     <span>{{task.Name}}</span>
                     <small>{{getTimeDig(task)}}</small>
                 </div>
@@ -78,13 +79,14 @@
             </div>
         </div>
         <div>
-            <div v-for="task in item.Tasks" 
+            <div v-for="task in Tasks" 
                 style="display: grid;grid-template-columns: 14px auto 90px;align-items: center;padding: 6px; margin-bottom: 6px;
                 background-color: rgba(207, 207, 207, 0.24);border-radius: 12px;gap: 6px;min-height: 30px;margin-left: 6px;">
-                <i v-if="!task.Finish" class="bi bi-square" style="font-size: 14px;"
-                    @click.stop="e => toggFinish(task)"></i>
+                <i v-if="!$root.ItemDones.has(task.Id)" 
+                    class="bi bi-square" style="font-size: 14px;"
+                    @click.stop="e => $root.toggFinish(task.Id)"></i>
                 <i v-else class="bi bi-check-square" style="font-size: 14px;"
-                    @click.stop="e => toggFinish(task)"></i>
+                    @click.stop="e => $root.toggFinish(task.Id)"></i>
                 <div>{{task.Name}}</div>
                 <small v-html="getTimeDig(task)"></small>
             </div>

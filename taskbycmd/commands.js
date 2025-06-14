@@ -31,8 +31,8 @@ export function getCmdTask(text, IdGenerator) {
         if (isDate(due)) {
             due = due.toISOString()
             return {
-                Name: name, Finish: false,
-                End: due, Note: '', Id: IdGenerator.generate().toString()
+                Name: name, End: due, Note: '',
+                Id: IdGenerator.generate().toString()
             }
         }
         return null
@@ -187,7 +187,7 @@ export function getCommands(text, IdGenerator) {
         if (typeof name != 'string' || name.length < 3) return null
         if (isDate(start) && isDate(end)) {
             let obj = {
-                Name: name, Users: [], Tasks: [],
+                Name: name, Users: [],
                 Id: IdGenerator.generate().toString()
             }
             if (start.getTime() < end.getTime()) {

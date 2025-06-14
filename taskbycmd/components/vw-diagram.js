@@ -1,6 +1,6 @@
 import {
     genKeyHex, MonthsShort, getValidDays, getArrTime, randomInt,
-    getTimeDigit, isEqualTime,
+    getTimeDigit, isEqualTime, getLsChild,
 } from "../common.js";
 import {
     getCommands, ptrnNewShedules, patternNewPlans,
@@ -41,14 +41,16 @@ export const FormSchedule = {
     data() {
         const item = this.entry.item
         let copy = JSON.parse(JSON.stringify(item))
+        let tasks = getLsChild(this.$root.LsTask, item.Id)
         return {
             item: copy,
             TxtCmdTask: `${ptrnNewTask[randomInt(0, ptrnNewTask.length)]} Document log due 15:00`,
             TaskEdit: null,
+            Tasks: tasks,
         }
     },
     watch: {
-        'entry.item.Tasks'(ls) { this.item.Tasks = [...ls] },
+        '$root.LsTask'(ls) { this.Tasks = getLsChild(ls, this.entry.item.Id) },
         'entry.item.Begin'(begin) { this.item.Begin = begin },
         'entry.item.End'(end) { this.item.End = end },
         'entry.item'(item) {
@@ -67,12 +69,12 @@ export const FormSchedule = {
                 if (mapTasks.has(index)) {
                     let obj = mapTasks.get(index)
                     obj.End = adjustDateOnly(obj.End, item.Begin, item.End)
+                    obj.ParentId = item.Id
                     setTasks(obj)
                 }
             })
-            const oItem = this.entry.item
-            oItem.Tasks = item.Tasks
             function compare(item, obj) {
+                if (item.ParentId != obj.ParentId) return 3
                 const equalTime = isEqualTime(obj.End, item.End)
                 if (item.Name == obj.Name && equalTime) return 0
                 if (item.Name != obj.Name && equalTime) return 1
@@ -80,22 +82,25 @@ export const FormSchedule = {
                 return -1
             }
             function setTasks(obj) {
-                if (!item.Tasks.length) {
-                    item.Tasks.push(obj)
+                if (!root.LsTask.length) {
+                    root.LsTask = [obj]
                     return
                 }
-                for (let tt = item.Tasks.length - 1, task; -1 < tt; tt--) {
-                    task = item.Tasks[tt]
+                const tasks = [...root.LsTask]  // copy
+                for (let tt = tasks.length - 1, task; -1 < tt; tt--) {
+                    task = tasks[tt]
                     switch (compare(task, obj)) {
                         case 1: task.Name = obj.Name  // edit name
                             return;
                         case 2: task.End = obj.End  // edit due
                             return;
                         case 0: return;
+                        case 3:
                         default: break;
                     }
                 }
-                item.Tasks.push(obj)
+                tasks.push(obj)
+                root.LsTask = tasks
             }
             function adjustDateOnly(d, sD, eD) { // Điều chỉnh ngày, tháng, năm nếu cần
                 let date = new Date(d)
@@ -126,16 +131,6 @@ export const FormSchedule = {
             let target = e.target
             const txt = target.innerHTML
             edtTask.Note = txt
-
-            const item = this.item
-            const oItem = this.entry.item
-            oItem.Tasks = item.Tasks
-        },
-        toggFinish(task) {
-            task.Finish = !task.Finish
-            const item = this.item
-            const oItem = this.entry.item
-            oItem.Tasks = [...item.Tasks]
         },
         getTimeDig(task) {
             if (!task) return null
@@ -162,8 +157,10 @@ export const ViewSchedule = {
         if (txtSearch.length && !item.Name.includes(txtSearch)) {
             view = 'h'
         }
+        const tasks = getLsChild(root.LsTask, item.Id)
         return {
-            ViewType: view
+            ViewType: view,
+            Tasks: tasks,
         }
     },
     methods: {
@@ -300,22 +297,18 @@ export const ViewSchedule = {
             }
         },
         setUiProcess() {
+            let setDone = this.$root.ItemDones
+            const tasks = this.Tasks
             const maxW = this.$el.offsetWidth
-            const item = this.item
-            const len = item.Tasks.length
+            const len = tasks.length
             let cWidth = 0
             if (!len) cWidth = 0
             else {
-                let taskDone = item.Tasks.filter(t => !!t.Finish)
+                let taskDone = tasks.filter(t => setDone.has(t.Id))
                 cWidth = (taskDone.length / len) * maxW
             }
             let line = this.$el.querySelector('.progess-line')
             line.style.width = `${cWidth}px`
-            //console.log(cWidth, maxW)
-        },
-        toggFinish(task) {
-            task.Finish = !task.Finish
-            this.item.Tasks = [...this.item.Tasks]
         },
         getTimeDig(task) {
             let lang = navigator.language || 'en-US'
@@ -348,16 +341,21 @@ export const ViewSchedule = {
                 else this.ViewType = 's'
             } else if ('h' == vType) this.ViewType = 's'
         },
-        'item.Tasks'() {
+        '$root.LsTask'(ls) {
+            this.Tasks = getLsChild(ls, this.item.Id)
+            this.$nextTick(this.setUiProcess)
+        },
+        '$root.ItemDones'(ls) {
             this.setUiProcess()
         },
     },
     computed: {
         TaskStatus() {
-            const item = this.item
-            const len = item.Tasks.length
+            let setDone = this.$root.ItemDones
+            const tasks = this.Tasks
+            const len = tasks.length
             if (!len) return '0/0'
-            let taskDone = item.Tasks.filter(t => !!t.Finish)
+            let taskDone = tasks.filter(t => setDone.has(t.Id))
             return `${taskDone.length}/${len}`
         },
     },
@@ -528,7 +526,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                     lsShedule.splice(ii, 1, obj)
                     const lisEdit = this.LsEdit
                     if (lisEdit.length) {
-                        let eEntry = lisEdit.find(x => x.item.Name == old.Name)
+                        let eEntry = lisEdit.find(x => x.item.Id == old.Id)
                         if (eEntry) eEntry.item = obj
                     }
                 } else {

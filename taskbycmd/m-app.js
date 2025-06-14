@@ -1,5 +1,5 @@
 // #region import
-import { Snowflake } from './common.js'
+import { Snowflake, convertDic } from './common.js'
 import { createApp } from 'vue'
 import { ViewCommands, ViewSchedule, FormSchedule } from './components/vw-diagram.js'
 // #endregion
@@ -34,6 +34,8 @@ Promise.all([
             end.setHours(17, 0, 0, 0);
             return {
                 LsSchedule: [],
+                LsTask: [],
+                ItemDones: new Set(),
                 LsAvailable: [],
                 TimeLogStart: start,
                 TimeLogEnd: end,
@@ -50,6 +52,10 @@ Promise.all([
         },
         computed: {
             IdGenerator() { return new Snowflake(42n) },
+            MapIds() {
+                let map = convertDic(this.LsSchedule, new Map(), 'Id')
+                return convertDic(this.LsTask, map, 'Id')
+            },
         },
         // watch: { },
         methods: {
@@ -109,6 +115,12 @@ Promise.all([
             fillLogCommand(txt) {
                 let target = document.body.querySelector('.txt-command[contenteditable]')
                 target.innerHTML = txt
+            },
+            toggFinish(id) {
+                let setDone = new Set(this.$root.ItemDones)
+                if (setDone.has(id)) setDone.delete(id)
+                else setDone.add(id)
+                this.$root.ItemDones = setDone
             },
             setLoop(type) {
                 const intevals = this.Intervals
