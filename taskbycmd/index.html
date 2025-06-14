@@ -43,7 +43,7 @@
       <div>
         <h3 style="margin-bottom: 3px;">List schedule</h3>
         <view-schedule v-for="task in LsSchedule" 
-          :key="task.Id"
+          :key="task.KeyMD5"
           :item="task"></view-schedule>
       </div>
       <div>

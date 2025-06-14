@@ -58,9 +58,10 @@ export const FormSchedule = {
     },
     methods: {
         processCmdTask(e) {
+            const root = this.$root
             let target = e.target
             const txt = target.innerText
-            let [allCommandIndex, mapTasks] = getCmdTask(txt)
+            let [allCommandIndex, mapTasks] = getCmdTask(txt, root.IdGenerator)
             const item = this.item
             allCommandIndex.forEach(index => {
                 if (mapTasks.has(index)) {
@@ -412,7 +413,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             const root = this.$root
             const lsLog = root.LisLog
             let [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
-                mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU] = getCommands(txt)
+                mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU] = getCommands(txt, root.IdGenerator)
             if (!mapGoSearchN.size) root.TxtSearchName = ''
             if (!mapGoSearchU.size) root.TxtSearchUser = ''
             let changeSch = false
@@ -518,26 +519,12 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             }
             //function isEqualDate(d1, d2) { return d1.toISOString() == d2.toISOString() }
             function setSchedules(obj, listLog) {
+                genKeyHex(obj)
                 const lsShedule = this.LsSchedule
                 let ii = lsShedule.findIndex(item => 0 < compare(item, obj))
                 if (-1 < ii) {
                     let old = lsShedule[ii]
-                    let users = new Set([...old.Users, ...obj.Users])
-                    obj.Users = Array.from(users)
-
-                    let oBegin = new Date(old.Begin)
-                    let oEnd = new Date(old.End)
-                    let nBegin = new Date(obj.Begin)
-                    let nEnd = new Date(obj.End)
-                    oBegin.setHours(nBegin.getHours())
-                    oBegin.setMinutes(nBegin.getMinutes())
-                    oEnd.setHours(nEnd.getHours())
-                    oEnd.setMinutes(nEnd.getMinutes())
-
-                    obj.Begin = oBegin.toISOString()
-                    obj.End = oEnd.toISOString()
-
-                    genKeyHex(obj)
+                    keepProps(obj, old)
                     lsShedule.splice(ii, 1, obj)
                     const lisEdit = this.LsEdit
                     if (lisEdit.length) {
@@ -545,13 +532,29 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                         if (eEntry) eEntry.item = obj
                     }
                 } else {
-                    genKeyHex(obj)
                     ii = lsShedule.findIndex(item => 0 == compare(item, obj))
                     if (ii < 0) lsShedule.push(obj)
                 }
                 let arrTime = getArrTime(obj)
                 let cmd_ = ptrnNewShedules[randomInt(0, ptrnNewShedules.length)]
                 listLog.push(`${cmd_} ${obj.Name} from ${arrTime[0]} to ${arrTime[1]}`)
+            }
+            function keepProps(obj, old) {
+                let users = new Set([...old.Users, ...obj.Users])
+                obj.Users = Array.from(users)
+
+                let oBegin = new Date(old.Begin)
+                let oEnd = new Date(old.End)
+                let nBegin = new Date(obj.Begin)
+                let nEnd = new Date(obj.End)
+                oBegin.setHours(nBegin.getHours())
+                oBegin.setMinutes(nBegin.getMinutes())
+                oEnd.setHours(nEnd.getHours())
+                oEnd.setMinutes(nEnd.getMinutes())
+
+                obj.Begin = oBegin.toISOString()
+                obj.End = oEnd.toISOString()
+                obj.Id = old.Id
             }
         },
         generateCommands() {

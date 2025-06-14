@@ -5,7 +5,7 @@ export const patternEditUser = ['edit user from', 'edit user', 'edit person from
     'change user from', 'change user', 'change person from', 'change person', 'change member from', 'change member']
 export const patternSearch = ['go search', 'go filter', 'go query']
 export const ptrnNewTask = ['make Task']
-export function getCmdTask(text) {
+export function getCmdTask(text, IdGenerator) {
     let lsIndexTask = KMPLsIndex(text, ptrnNewTask.map(x => `${x} `))
     let allCommandIndex = new Set(lsIndexTask)
     allCommandIndex = Array.from(allCommandIndex)
@@ -30,7 +30,10 @@ export function getCmdTask(text) {
         if (typeof name != 'string' || name.length < 3) return null
         if (isDate(due)) {
             due = due.toISOString()
-            return { Name: name, Finish: false, End: due, Note: '' }
+            return {
+                Name: name, Finish: false,
+                End: due, Note: '', Id: IdGenerator.generate().toString()
+            }
         }
         return null
     }
@@ -49,7 +52,7 @@ export function getCmdTask(text) {
         return arrStr
     }
 }
-export function getCommands(text) {
+export function getCommands(text, IdGenerator) {
     //const patternTimes = ['Start time', 'End time', 'Valid from', 'Valid until', 'Cut-off time']
     const patternSpecTimes = [' from ', ' begin ', ' start ', ' at ', ' end ', ' to ']
     const ptrnAssignUser = ['add user', 'assign user', 'add person', 'assign person', 'add member', 'assign member']
@@ -183,7 +186,10 @@ export function getCommands(text) {
     function getScheduleObject(name, start, end) {
         if (typeof name != 'string' || name.length < 3) return null
         if (isDate(start) && isDate(end)) {
-            let obj = { Name: name, Users: [], Tasks: [] }
+            let obj = {
+                Name: name, Users: [], Tasks: [],
+                Id: IdGenerator.generate().toString()
+            }
             if (start.getTime() < end.getTime()) {
                 obj.Begin = start
                 obj.End = end

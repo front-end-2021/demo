@@ -1,7 +1,8 @@
 // #region import
+import { Snowflake } from './common.js'
 import { createApp } from 'vue'
 import { ViewCommands, ViewSchedule, FormSchedule } from './components/vw-diagram.js'
-
+// #endregion
 const VwDemoCommands = {
     template: `#tmp-demo-commands`,
     name: "View_Demo_Command",
@@ -14,7 +15,6 @@ const VwGuideCommands = {
     display: "View.Guide.Command",
     props: ['entry'],
 }
-// #endregion
 Promise.all([
     includeHTML(`./components/vw-diagram.html`),
 ]).then((values) => {
@@ -48,7 +48,9 @@ Promise.all([
                 Intervals: [],
             }
         },
-        // computed: { },
+        computed: {
+            IdGenerator() { return new Snowflake(42n) },
+        },
         // watch: { },
         methods: {
             computeAvailables() {

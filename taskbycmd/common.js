@@ -7,7 +7,7 @@ export function getValidDays(month, year) {
 export function genKeyHex(item) {
     let message = `${item.Name}${item.Begin}${item.End}`
     const hash = CryptoJS.MD5(message);
-    item.Id = hash.toString(CryptoJS.enc.Hex)
+    item.KeyMD5 = hash.toString(CryptoJS.enc.Hex)
 }
 export function getArrTime(item) {
     const tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
@@ -94,7 +94,7 @@ export function getStringBetween(str, startChar, endChar) {
     return match ? match[1] : '';
 }
 
-class Snowflake {
+export class Snowflake {
     constructor(machineId = 1n) {
         this.epoch = BigInt(1609459200000n); // Epoch của Twitter Snowflake (2021-01-01)
         this.machineId = BigInt(machineId); // Machine ID (0-1023)
@@ -138,17 +138,17 @@ function decodeSnowflake(snowflakeId) {
         sequence: Number(sequence)
     }
 }
-// Example usage
-let snowflake = new Snowflake(42n); // Custom epoch and machine ID
-let snowflakeId = snowflake.generate().toString()
-console.log(snowflakeId); // Generate a unique ID
-console.log(decodeSnowflake(snowflakeId))
-snowflakeId = snowflake.generate().toString()
-console.log(snowflakeId); // Generate a unique ID
-console.log(decodeSnowflake(snowflakeId))
-snowflakeId = snowflake.generate().toString()
-console.log(snowflakeId); // Generate a unique ID
-console.log(decodeSnowflake(snowflakeId))
-snowflakeId = snowflake.generate().toString()
-console.log(snowflakeId); // Generate a unique ID
-console.log(decodeSnowflake(snowflakeId))
+// // Example usage
+// let snowflake = new Snowflake(42n); // Custom epoch and machine ID
+// let snowflakeId = snowflake.generate().toString()
+// console.log(snowflakeId); // Generate a unique ID
+// console.log(decodeSnowflake(snowflakeId))
+// snowflakeId = snowflake.generate().toString()
+// console.log(snowflakeId); // Generate a unique ID
+// console.log(decodeSnowflake(snowflakeId))
+// snowflakeId = snowflake.generate().toString()
+// console.log(snowflakeId); // Generate a unique ID
+// console.log(decodeSnowflake(snowflakeId))
+// snowflakeId = snowflake.generate().toString()
+// console.log(snowflakeId); // Generate a unique ID
+// console.log(decodeSnowflake(snowflakeId))
