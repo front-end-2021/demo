@@ -95,11 +95,13 @@ export function getStringBetween(str, startChar, endChar) {
 }
 
 export class Snowflake {
+    #lastTimestamp
+    #sequence
     constructor(machineId = 1n) {
         this.epoch = BigInt(1609459200000n); // Epoch của Twitter Snowflake (2021-01-01)
         this.machineId = BigInt(machineId); // Machine ID (0-1023)
-        this.sequence = 0n; // Sequence number
-        this.lastTimestamp = 0n; // Last generated timestamp
+        this.#sequence = 0n; // Sequence number
+        this.#lastTimestamp = 0n; // Last generated timestamp
     }
     currentTimestamp() { return BigInt(Date.now()) }  // Get the current timestamp in milliseconds
 
@@ -110,21 +112,20 @@ export class Snowflake {
         return timestamp;
     }
 
-    // Generate a unique Snowflake ID
-    generate() {
+    generate() {        // Generate a unique Snowflake ID
         let timestamp = this.currentTimestamp();
-        if (timestamp === this.lastTimestamp) {
-            this.sequence = (this.sequence + 1n) & 4095n; // Sequence mask (12 bits)
-            if (this.sequence === 0n) { timestamp = this.waitNextMillis(this.lastTimestamp) }
-        } else { this.sequence = 0n }
+        if (timestamp === this.#lastTimestamp) {
+            this.#sequence = (this.#sequence + 1n) & 4095n; // Sequence mask (12 bits)
+            if (this.#sequence === 0n) { timestamp = this.waitNextMillis(this.#lastTimestamp) }
+        } else { this.#sequence = 0n }
 
-        this.lastTimestamp = timestamp;
+        this.#lastTimestamp = timestamp;
 
         // Construct the Snowflake ID (64 bits)
         return (
             ((timestamp - this.epoch) << 22n) | // Timestamp (41 bits)
             (this.machineId << 12n) | // Machine ID (10 bits)
-            this.sequence // Sequence (12 bits)
+            this.#sequence // Sequence (12 bits)
         )
     }
     decode(snowflakeId) {
