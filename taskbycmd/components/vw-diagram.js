@@ -351,7 +351,6 @@ export const RowSchedule = {
         'item.End'(end) {
             let dE = new Date(end)
             let dNow = new Date()
-           // dNow.setHours(23, 59, 0, 0);
             let setDone = this.$root.ItemDones
             if (dE < dNow) {
                 if (!setDone.has(this.item.Id)) {
@@ -535,14 +534,17 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 return -1
             }
             //function isEqualDate(d1, d2) { return d1.toISOString() == d2.toISOString() }
-            function setSchedules(obj, listLog) {
+            function setSchedules(obj, lisLog) {
+                let isChange = false
                 genKeyHex(obj)
-                const lsShedule = this.LsSchedule
+                let lsShedule = this.LsSchedule
                 let ii = lsShedule.findIndex(item => 0 < compare(item, obj))
                 if (-1 < ii) {
+                    lsShedule = [...lsShedule]  // copy => new ref
                     let old = lsShedule[ii]
                     keepProps(obj, old)
                     lsShedule.splice(ii, 1, obj)
+                    isChange = true
                     const lisEdit = this.LsEdit
                     if (lisEdit.length) {
                         let eEntry = lisEdit.find(x => x.item.Id == old.Id)
@@ -550,11 +552,16 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                     }
                 } else {
                     ii = lsShedule.findIndex(item => 0 == compare(item, obj))
-                    if (ii < 0) lsShedule.push(obj)
+                    if (ii < 0) {
+                        lsShedule = [...lsShedule]
+                        lsShedule.push(obj)
+                        isChange = true
+                    }
                 }
+                if (isChange) this.LsSchedule = lsShedule
                 let arrTime = getArrTime(obj)
                 let cmd_ = ptrnNewShedules[randomInt(0, ptrnNewShedules.length)]
-                listLog.push(`${cmd_} ${obj.Name} from ${arrTime[0]} to ${arrTime[1]}`)
+                lisLog.push(`${cmd_} ${obj.Name} from ${arrTime[0]} to ${arrTime[1]}`)
             }
             function keepProps(obj, old) {
                 let users = new Set([...old.Users, ...obj.Users])
