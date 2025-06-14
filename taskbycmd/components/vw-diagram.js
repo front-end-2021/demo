@@ -143,10 +143,10 @@ export const FormSchedule = {
         },
     },
 }
-export const ViewSchedule = {
+export const RowSchedule = {
     template: `#tmp-schedule`,
-    name: "View_Schedule",
-    display: "View.Schedule",
+    name: "Row_Schedule",
+    display: "Row.Schedule",
     props: ['item'],
     mixins: [mxDate],
     data() {
@@ -345,8 +345,27 @@ export const ViewSchedule = {
             this.Tasks = getLsChild(ls, this.item.Id)
             this.$nextTick(this.setUiProcess)
         },
-        '$root.ItemDones'(ls) {
+        '$root.ItemDones'(set) {
             this.setUiProcess()
+        },
+        'item.End'(end) {
+            let dE = new Date(end)
+            let dNow = new Date()
+           // dNow.setHours(23, 59, 0, 0);
+            let setDone = this.$root.ItemDones
+            if (dE < dNow) {
+                if (!setDone.has(this.item.Id)) {
+                    setDone = new Set(setDone)
+                    setDone.add(this.item.Id)
+                    this.$root.ItemDones = setDone
+                }
+            } else {
+                if (setDone.has(this.item.Id)) {
+                    setDone = new Set(setDone)
+                    setDone.delete(this.item.Id)
+                    this.$root.ItemDones = setDone
+                }
+            }
         },
     },
     computed: {

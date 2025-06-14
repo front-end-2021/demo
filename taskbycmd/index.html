@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   </link>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="./m-style.css">
   </link>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -30,7 +31,6 @@
       }
     }
   </script>
-
 </head>
 
 <body style="margin: 8px; font-family: Consolas;">
@@ -42,9 +42,7 @@
     <section style="display: grid; grid-template-columns: 610px calc(789px - 610px) auto; gap: 60px;">
       <div>
         <h3 style="margin-bottom: 3px;">List schedule</h3>
-        <view-schedule v-for="task in LsSchedule" 
-          :key="task.KeyMD5"
-          :item="task"></view-schedule>
+        <view-schedule v-for="task in LsSchedule" :key="task.KeyMD5" :item="task"></view-schedule>
       </div>
       <div>
         <h3 style="margin-bottom: 3px;">List user</h3>
@@ -53,23 +51,20 @@
       <div v-if="0 == LsEdit.length">
         <h3 style="margin-top: 34px;">Logs</h3>
         <div id="vw-command-log" style="overflow: auto;">
-            <code v-for="log in LisLog" style="display: block;cursor: default;"
-                @click.stop="e => fillLogCommand(log)">{{log}}</code>
+          <code v-for="log in LisLog" style="display: block;cursor: default;"
+            @click.stop="e => fillLogCommand(log)">{{log}}</code>
         </div>
       </div>
       <div v-else>
-        <component v-for="edit in LsEdit"
-            :key="edit.item.Id"
-            v-bind:is="edit.ComponentName"
-            :entry="edit"></component>
+        <component v-for="edit in LsEdit" :key="edit.item.Id" v-bind:is="edit.ComponentName" :entry="edit"></component>
       </div>
     </section>
     <section>
       <h3 style="margin-bottom: 3px;">Available</h3>
-        <div v-for="item in LsAvailable" style="display: flex;gap: 12px;">
-          <div>From {{item.Begin.toLocaleString()}}</div>
-          <div>To {{item.End.toLocaleString()}}</div>
-        </div>
+      <div v-for="item in LsAvailable" style="display: flex;gap: 12px;">
+        <div>From {{item.Begin.toLocaleString()}}</div>
+        <div>To {{item.End.toLocaleString()}}</div>
+      </div>
     </section>
   </main>
 

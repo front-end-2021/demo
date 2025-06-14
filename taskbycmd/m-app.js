@@ -1,7 +1,7 @@
 // #region import
 import { Snowflake, convertDic } from './common.js'
 import { createApp } from 'vue'
-import { ViewCommands, ViewSchedule, FormSchedule } from './components/vw-diagram.js'
+import { ViewCommands, RowSchedule, FormSchedule } from './components/vw-diagram.js'
 // #endregion
 const VwDemoCommands = {
     template: `#tmp-demo-commands`,
@@ -22,7 +22,7 @@ Promise.all([
         name: `app-main`,
         components: {
             'view-commands': ViewCommands,
-            'view-schedule': ViewSchedule,
+            'view-schedule': RowSchedule,
             'form-schedule': FormSchedule,
             'view-demo-commands': VwDemoCommands,
             'view-guide-commands': VwGuideCommands,
@@ -117,11 +117,12 @@ Promise.all([
                 target.innerHTML = txt
             },
             toggFinish(id) {
-                let setDone = new Set(this.$root.ItemDones)
+                let setDone = new Set(this.ItemDones)
                 if (setDone.has(id)) setDone.delete(id)
                 else setDone.add(id)
-                this.$root.ItemDones = setDone
+                this.ItemDones = setDone
             },
+            isFinish(id) { return this.ItemDones.has(id) },
             setLoop(type) {
                 const intevals = this.Intervals
                 for (let ii = intevals.length - 1, iitem; -1 < ii; ii--) {

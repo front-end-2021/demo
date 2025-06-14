@@ -33,7 +33,7 @@
                 <div v-for="task in Tasks"
                     style="display: grid;grid-template-columns: 16px auto 72px;align-items: center;gap: 8px;"
                     @click.stop="e => openFormTask(task)">
-                    <i v-if="!$root.ItemDones.has(task.Id)" 
+                    <i v-if="!$root.isFinish(task.Id)" 
                         class="bi bi-square" 
                         @click.stop="e => $root.toggFinish(task.Id)"></i>
                     <i v-else class="bi bi-check-square"
@@ -58,7 +58,8 @@
             style="position: absolute; top:0; left: 0; height: 3px;
             background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgb(231, 9, 248), rgba(0, 0, 0, 0));"></div>
             <div style="display: flex;flex-direction: column;">
-                <strong @click.stop="toggleForm" style="cursor: default;">{{item.Name}}</strong>
+                <strong @click.stop="toggleForm" style="cursor: default;"
+                    v-bind:class="[$root.isFinish(item.Id) ? 'line-through' : '']">{{item.Name}}</strong>
                 <div style="display: grid; grid-template-columns: auto 114px;">
                     <small>{{item.Users.join(', ')}}</small>
                     <small>Tasks:&nbsp;{{TaskStatus}}</small>
@@ -82,7 +83,7 @@
             <div v-for="task in Tasks" 
                 style="display: grid;grid-template-columns: 14px auto 90px;align-items: center;padding: 6px; margin-bottom: 6px;
                 background-color: rgba(207, 207, 207, 0.24);border-radius: 12px;gap: 6px;min-height: 30px;margin-left: 6px;">
-                <i v-if="!$root.ItemDones.has(task.Id)" 
+                <i v-if="!$root.isFinish(task.Id)" 
                     class="bi bi-square" style="font-size: 14px;"
                     @click.stop="e => $root.toggFinish(task.Id)"></i>
                 <i v-else class="bi bi-check-square" style="font-size: 14px;"
