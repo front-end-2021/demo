@@ -127,28 +127,28 @@ export class Snowflake {
             this.sequence // Sequence (12 bits)
         )
     }
-}
-function decodeSnowflake(snowflakeId) {
-    const timestamp = (BigInt(snowflakeId) >> 22n) + 1609459200000n; // Epoch của Twitter Snowflake (2021-01-01)
-    const machineId = (BigInt(snowflakeId) >> 12n) & 0x3FFn; // 10 bit cho máy chủ
-    const sequence = BigInt(snowflakeId) & 0xFFFn; // 12 bit cho số thứ tự
-    return {
-        timestamp: new Date(Number(timestamp)), // Chuyển timestamp thành ngày giờ
-        machineId: Number(machineId),
-        sequence: Number(sequence)
+    decode(snowflakeId) {
+        const timestamp = (BigInt(snowflakeId) >> 22n) + this.epoch;
+        const machineId = (BigInt(snowflakeId) >> 12n) & 0x3FFn; // 10 bit cho máy chủ
+        const sequence = BigInt(snowflakeId) & 0xFFFn; // 12 bit cho số thứ tự
+        return {
+            timestamp: new Date(Number(timestamp)),
+            machineId: Number(machineId),
+            sequence: Number(sequence)
+        }
     }
 }
 // // Example usage
 // let snowflake = new Snowflake(42n); // Custom epoch and machine ID
 // let snowflakeId = snowflake.generate().toString()
 // console.log(snowflakeId); // Generate a unique ID
-// console.log(decodeSnowflake(snowflakeId))
+// console.log(snowflake.decode(snowflakeId))
 // snowflakeId = snowflake.generate().toString()
 // console.log(snowflakeId); // Generate a unique ID
-// console.log(decodeSnowflake(snowflakeId))
+// console.log(snowflake.decode(snowflakeId))
 // snowflakeId = snowflake.generate().toString()
 // console.log(snowflakeId); // Generate a unique ID
-// console.log(decodeSnowflake(snowflakeId))
+// console.log(snowflake.decode(snowflakeId))
 // snowflakeId = snowflake.generate().toString()
 // console.log(snowflakeId); // Generate a unique ID
-// console.log(decodeSnowflake(snowflakeId))
+// console.log(snowflake.decode(snowflakeId))
