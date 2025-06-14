@@ -432,8 +432,8 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU] = getCommands(txt, root.IdGenerator)
             if (!mapGoSearchN.size) root.TxtSearchName = ''
             if (!mapGoSearchU.size) root.TxtSearchUser = ''
-            let changeSch = false
-            const listUser = [...root.LsUser]
+            let listUser = root.LsUser
+            let lsShedule = root.LsSchedule
             allCommandIndex.forEach(index => {
                 if (mapGoSearchN.has(index)) {
                     let sTxt = mapGoSearchN.get(index)
@@ -462,42 +462,52 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 if (mapNewSchedule.has(index)) {
                     let obj = mapNewSchedule.get(index)
                     setSchedules.call(root, obj, lsLog)
-                    changeSch = true
                 }
                 if (mapNewPlan.has(index)) {
                     let obj = mapNewPlan.get(index)
                     setSchedules.call(root, obj, lsLog)
-                    changeSch = true
                 }
+            })
+            if (!Object.is(root.LsSchedule, lsShedule)) {
+                lsShedule.sort((a, b) => {
+                    let ab = new Date(a.Begin)
+                    let bb = new Date(b.Begin)
+                    return ab.getTime() - bb.getTime()
+                })
+                root.LsSchedule = lsShedule
+                root.computeAvailables()
+            }
+            allCommandIndex.forEach(index => {
                 if (mapNewUser.has(index)) {
                     let uName = mapNewUser.get(index)
-                    if (!listUser.includes(uName)) {
-                        listUser.push(uName)
+                    if (setUsers(uName)) {
                         let cmd_ = patternNewUser[randomInt(0, patternNewUser.length)]
                         lsLog.push(`${cmd_} ${uName}`)
                     }
                 }
                 if (mapEditUser.has(index)) {
                     let [oName, newName] = mapEditUser.get(index)
-                    let nn = listUser.indexOf(oName)
-                    if (-1 < nn) listUser.splice(nn, 1, newName)
-                    lsLog.push(`Change user ${oName} to ${newName}`)
-                    let lsShedule = root.LsSchedule
-                    for (let ss = 0, task; ss < lsShedule.length; ss++) {
-                        task = lsShedule[ss]
-                        if (task.Users.includes(oName)) {
-                            let assign = new Set(task.Users)
-                            assign.delete(oName)
-                            assign.add(newName)
-                            task.Users = Array.from(assign)
+                    if (setUsers(oName, newName)) {
+                        lsLog.push(`Change user ${oName} to ${newName}`)
+                        for (let ss = 0, task; ss < lsShedule.length; ss++) {
+                            task = lsShedule[ss]
+                            if (task.Users.includes(oName)) {
+                                let assign = new Set(task.Users)
+                                assign.delete(oName)
+                                assign.add(newName)
+                                task.Users = Array.from(assign)
+                            }
                         }
                     }
                 }
                 if (mapAssignUser.has(index)) {
                     let [uName, taskName] = mapAssignUser.get(index)
-                    let lsShedule = root.LsSchedule
                     let task = lsShedule.find(x => x.Name == taskName)
                     if (task) {
+                        if (setUsers(uName)) {
+                            let cmd_ = patternNewUser[randomInt(0, patternNewUser.length)]
+                            lsLog.push(`${cmd_} ${uName}`)
+                        }
                         let assign = new Set(task.Users)
                         assign.add(uName)
                         task.Users = Array.from(assign)
@@ -505,17 +515,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                     lsLog.push(`Assign user ${uName} to ${taskName}`)
                 }
             })
-            if (changeSch) {
-                root.LsSchedule.sort((a, b) => {
-                    let ab = new Date(a.Begin)
-                    let bb = new Date(b.Begin)
-                    return ab.getTime() - bb.getTime()
-                })
-                root.computeAvailables()
-            }
-            if (0 < mapNewUser.size + mapEditUser.size) {
-                root.LsUser = listUser
-            }
+            root.LsUser = listUser
             root.$nextTick(() => {
                 let element = document.body.querySelector(`#vw-command-log`)
                 element.scrollTo({
@@ -533,18 +533,14 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 if (item.Name == obj.Name && !eqTimeB && !eqTimeE) return 4
                 return -1
             }
-            //function isEqualDate(d1, d2) { return d1.toISOString() == d2.toISOString() }
             function setSchedules(obj, lisLog) {
-                let isChange = false
                 genKeyHex(obj)
-                let lsShedule = this.LsSchedule
                 let ii = lsShedule.findIndex(item => 0 < compare(item, obj))
                 if (-1 < ii) {
                     lsShedule = [...lsShedule]  // copy => new ref
                     let old = lsShedule[ii]
                     keepProps(obj, old)
                     lsShedule.splice(ii, 1, obj)
-                    isChange = true
                     const lisEdit = this.LsEdit
                     if (lisEdit.length) {
                         let eEntry = lisEdit.find(x => x.item.Id == old.Id)
@@ -553,12 +549,10 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 } else {
                     ii = lsShedule.findIndex(item => 0 == compare(item, obj))
                     if (ii < 0) {
-                        lsShedule = [...lsShedule]
+                        lsShedule = [...lsShedule]  // copy => new ref
                         lsShedule.push(obj)
-                        isChange = true
                     }
                 }
-                if (isChange) this.LsSchedule = lsShedule
                 let arrTime = getArrTime(obj)
                 let cmd_ = ptrnNewShedules[randomInt(0, ptrnNewShedules.length)]
                 lisLog.push(`${cmd_} ${obj.Name} from ${arrTime[0]} to ${arrTime[1]}`)
@@ -579,6 +573,19 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 obj.Begin = oBegin.toISOString()
                 obj.End = oEnd.toISOString()
                 obj.Id = old.Id
+            }
+            function setUsers(name, nName) {
+                let ii = listUser.findIndex(u => u.Name == name)
+                if (ii < 0) {
+                    listUser = [...listUser]    // copy change ref
+                    listUser.push({ Name: name, Id: root.IdGenerator.generate().toString() })
+                    return true
+                }
+                if (typeof nName == 'string') {
+                    listUser = [...listUser]    // copy change ref
+                    listUser[ii].Name = nName
+                    return true
+                }
             }
         },
         generateCommands() {
