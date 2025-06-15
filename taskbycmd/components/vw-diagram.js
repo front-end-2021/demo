@@ -1,6 +1,6 @@
 import {
     genKeyHex, MonthsShort, getValidDays, getArrTime, randomInt,
-    getTimeDigit, isEqualTime, getLsChild,
+    getTimeDigit, isEqualTime, getLsChild, convertDic,
 } from "../common.js";
 import {
     getCommands, ptrnNewShedules, patternNewPlans,
@@ -65,14 +65,19 @@ export const FormSchedule = {
             const txt = target.innerText
             let [allCommandIndex, mapTasks] = getCmdTask(txt, root.IdGenerator)
             const item = this.item
-            allCommandIndex.forEach(index => {
-                if (mapTasks.has(index)) {
-                    let obj = mapTasks.get(index)
-                    obj.End = adjustDateOnly(obj.End, item.Begin, item.End)
-                    obj.ParentId = item.Id
-                    setTasks(obj)
-                }
-            })
+            let tasks = root.LsTask
+            if (0 < allCommandIndex.length + mapTasks.size) {
+                tasks = [...tasks]  // copy => new ref
+                allCommandIndex.forEach(index => {
+                    if (mapTasks.has(index)) {
+                        let obj = mapTasks.get(index)
+                        obj.End = adjustDateOnly(obj.End, item.Begin, item.End)
+                        obj.ParentId = item.Id
+                        setTasks(obj)
+                    }
+                })
+                root.LsTask = tasks
+            }
             function compare(item, obj) {
                 if (item.ParentId != obj.ParentId) return 3
                 const equalTime = isEqualTime(obj.End, item.End)
@@ -82,11 +87,10 @@ export const FormSchedule = {
                 return -1
             }
             function setTasks(obj) {
-                if (!root.LsTask.length) {
-                    root.LsTask = [obj]
+                if (!tasks.length) {
+                    tasks.push(obj)
                     return
                 }
-                const tasks = [...root.LsTask]  // copy
                 for (let tt = tasks.length - 1, task; -1 < tt; tt--) {
                     task = tasks[tt]
                     switch (compare(task, obj)) {
@@ -100,7 +104,6 @@ export const FormSchedule = {
                     }
                 }
                 tasks.push(obj)
-                root.LsTask = tasks
             }
             function adjustDateOnly(d, sD, eD) { // Điều chỉnh ngày, tháng, năm nếu cần
                 let date = new Date(d)
