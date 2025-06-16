@@ -40,8 +40,12 @@ Promise.all([
                 TimeLogStart: start,
                 TimeLogEnd: end,
                 LsUser: [],
-                TxtSearchName: '',
-                TxtSearchUser: '',
+                Search: {
+                    Name: null,
+                    User: null,
+                    Ids: new Set(),
+                    HideIds: new Set(),
+                },
                 LsEdit: [],
                 LisLog: [],
                 LsRef: {
@@ -56,7 +60,12 @@ Promise.all([
                 return convertDic(this.LsTask, map, 'Id')
             },
         },
-        // watch: { },
+        watch: {
+            'Search.Name'(txt) { console.log('watch search name ', txt) },
+            'Search.User'(txt) { console.log('watch search user ', txt) },
+            //  'Search.Ids'(ids) { console.log('watch set visible Id ', ids) },
+            'Search.HideIds'(ids) { console.log('watch set invisible Id ', ids) },
+        },
         methods: {
             computeAvailables() {
                 let lsShedule = this.LsSchedule.map(x => [new Date(x.Begin), new Date(x.End)])
@@ -122,6 +131,75 @@ Promise.all([
                 this.ItemDones = setDone
             },
             isFinish(id) { return this.ItemDones.has(id) },
+            setSearch(txt, type) {
+                if (!hasText(txt)) txt = null   // verify
+                let sObject = this.Search
+                const lsShl = this.LsSchedule
+                const lsTsk = this.LsTask
+                let isLowerCase = false
+                let hasContext = false
+                let setId = new Set([...lsShl.map(x => x.Id), ...lsTsk.map(x => x.Id)])
+                let txtName = null, txtUser = null
+                if (hasText(sObject.Name)) txtName = sObject.Name
+                if (hasText(sObject.User)) txtUser = sObject.User
+                let setHide = sObject.HideIds
+                if (txtName || txtUser) { setId = sObject.Ids }
+                switch (type) {
+                    case 'name':
+                        if (txtName !== txt) {
+                            sObject.Name = txt
+                            txtName = txt
+                            setId = new Set(setId)
+                        }
+                        break;
+                    case 'user':
+                        if (txtUser !== txt) {
+                            sObject.User = txt
+                            txtUser = txt
+                            setId = new Set(setId)
+                        }
+                        break;
+                    default: break;
+                }
+                if (txtName || txtUser) {
+                    let avaiNames = new Set(lsShl.map(x => x.Id))
+                    if (txtName) {
+                        let avaiShls = lsShl.filter(x => x.Name == txtName || x.Name.includes(txtName))
+                        let avaiTsks = lsTsk.filter(x => x.Name == txtName || x.Name.includes(txtName))
+                        if (isLowerCase) {
+                            txtName = txtName.toLowerCase()
+                            avaiShls = lsShl.filter(x => x.Name.toLowerCase() == txtName || x.Name.toLowerCase().includes(txtName))
+                            avaiTsks = lsTsk.filter(x => x.Name.toLowerCase() == txtName || x.Name.toLowerCase().includes(txtName))
+                        }
+                        setHide = sObject.HideIds
+                        if (!hasContext) {
+                            setHide = avaiNames.difference(new Set(avaiShls.map(x => x.Id)))
+                        }
+                        avaiNames = new Set([...avaiShls.map(x => x.Id), ...avaiTsks.map(x => x.Id), ...avaiTsks.map(x => x.ParentId)])
+                    }
+                    let lUser = this.LsUser
+                    let avaiUsers = new Set(lsShl.map(x => x.Id))
+                    if (txtUser) {
+                        if (isLowerCase) {
+                            txtUser = txtUser.toLowerCase()
+                            lUser = lUser.filter(u => u.Name.toLowerCase() == txtUser || u.Name.toLowerCase().includes(txtUser))
+                        } else {
+                            lUser = lUser.filter(u => u.Name == txtUser || u.Name.includes(txtUser))
+                        }
+                        lUser = new Set(lUser.map(u => u.Name))
+                        avaiUsers = new Set(lsShl.filter(x => x.Users.some(t => lUser.has(t))).map(x => x.Id))
+                    }
+                    setId = avaiNames.intersection(avaiUsers)
+                }
+                if (!txtName) setHide = new Set()
+                sObject.Ids = setId
+                sObject.HideIds = setHide
+                function hasText(str) {
+                    if (typeof str != 'string') return false
+                    if (!str.trim().length) return false
+                    return true
+                }
+            },
             // equalHas(txt1, txt2) {
             //     let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)
             //     return hash1.toString(CryptoJS.enc.Hex) == hash2.toString(CryptoJS.enc.Hex)

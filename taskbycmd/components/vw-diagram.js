@@ -155,11 +155,12 @@ export const RowSchedule = {
     data() {
         const root = this.$root
         const item = this.item
-        let txtSearch = root.TxtSearchName.trim()
         let view = 's'
-        if (txtSearch.length && !item.Name.includes(txtSearch)) {
-            view = 'h'
-        }
+        const viewIds = root.Search.Ids
+        if (viewIds.has(item.Id)) {
+            const hideIds = root.Search.HideIds
+            if (hideIds.has(item.Id)) view = 'i'
+        } else view = 'h'
         const tasks = getLsChild(root.LsTask, item.Id)
         return {
             ViewType: view,
@@ -324,25 +325,17 @@ export const RowSchedule = {
         },
     },
     watch: {
-        '$root.TxtSearchName'(txtSearch) {
-            const vType = this.ViewType
-            if (txtSearch.length) {
-                if (!this.item.Name.includes(txtSearch)) this.ViewType = 'h'
-                else this.ViewType = 's'
-            } else if ('h' == vType) this.ViewType = 's'
-        },
-        '$root.TxtSearchUser'(txtSearch) {
-            const vType = this.ViewType
-            if (txtSearch.length) {
-                const users = this.item.Users
-                if (!users.length) {
-                    if ('s' == vType) this.ViewType = 'h'
-                    return
+        '$root.Search.Ids'(viewIds) {
+            const itemId = this.item.Id
+            //console.log('watch set visible Id ', itemId, viewIds)
+            if (viewIds.has(itemId)) {
+                const hideIds = this.$root.Search.HideIds
+                if (hideIds.has(itemId)) {
+                    this.ViewType = 'i'
+                } else {
+                    this.ViewType = 's'
                 }
-                let txtU = users.join(', ').toLowerCase()
-                if (!txtU.includes(txtSearch.trim())) this.ViewType = 'h'
-                else this.ViewType = 's'
-            } else if ('h' == vType) this.ViewType = 's'
+            } else this.ViewType = 'h'
         },
         '$root.LsTask'(ls) {
             this.Tasks = getLsChild(ls, this.item.Id)
@@ -433,34 +426,36 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             const lsLog = root.LisLog
             let [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
                 mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU] = getCommands(txt, root.IdGenerator)
-            if (!mapGoSearchN.size) root.TxtSearchName = ''
-            if (!mapGoSearchU.size) root.TxtSearchUser = ''
             let listUser = root.LsUser
             let lsShedule = root.LsSchedule
             allCommandIndex.forEach(index => {
                 if (mapGoSearchN.has(index)) {
                     let sTxt = mapGoSearchN.get(index)
                     if (patternSearch.map(x => `${x.toLowerCase()} name`).includes(sTxt.trim().toLowerCase())) sTxt = ''
-                    root.TxtSearchName = sTxt
+                    root.setSearch(sTxt, 'name')
                     if (sTxt.length) {
                         let cmd_ = patternSearch[randomInt(0, patternSearch.length)]
                         lsLog.push(`${cmd_} name ${sTxt}`)
                     }
-                } else root.TxtSearchName = ''
+                } else {
+                    root.setSearch(null, 'name')
+                }
 
                 if (mapGoSearchU.has(index)) {
                     const arrN = ['person', 'user', 'member']
                     const lsPttnSearchU = [...patternSearch.map(x => `${x.toLowerCase()} ${arrN[0]}`),
                     ...patternSearch.map(x => `${x.toLowerCase()} ${arrN[1]}`),
                     ...patternSearch.map(x => `${x.toLowerCase()} ${arrN[2]}`)]
-                    let sTxt = mapGoSearchU.get(index).toLowerCase()
-                    if (lsPttnSearchU.includes(sTxt.trim())) sTxt = ''
-                    root.TxtSearchUser = sTxt
+                    let sTxt = mapGoSearchU.get(index)
+                    if (lsPttnSearchU.includes(sTxt.trim().toLowerCase())) sTxt = ''
+                    root.setSearch(sTxt, 'user')
                     if (sTxt.length) {
                         let cmd_ = patternSearch[randomInt(0, patternSearch.length)]
                         lsLog.push(`${cmd_} ${arrN[randomInt(0, arrN.length)]} ${sTxt}`)
                     }
-                } else root.TxtSearchUser = ''
+                } else {
+                    root.setSearch('', 'user')
+                }
 
                 if (mapNewSchedule.has(index)) {
                     let obj = mapNewSchedule.get(index)
@@ -519,6 +514,12 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 }
             })
             root.LsUser = listUser
+            if (!mapGoSearchN.size) {
+                root.setSearch(null, 'name')
+            }
+            if (!mapGoSearchU.size) {
+                root.setSearch('', 'user')
+            }
             root.$nextTick(() => {
                 let element = document.body.querySelector(`#vw-command-log`)
                 element.scrollTo({
