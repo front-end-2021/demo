@@ -1,6 +1,5 @@
 <template id="tmp-form-schedule">
-    <section class="form-edit"
-        style="background-color: rgba(207, 207, 207, 0.24); border-radius: 12px; 
+    <section class="form-edit" style="background-color: rgba(207, 207, 207, 0.24); border-radius: 12px; 
             padding: 12px;min-height: calc(100vh - 270px); margin-top: 34px;">
         <h3 style="margin: 0;">{{item.Name}}</h3>
         <div style="min-height: 20px;">{{item.Users.join(', ')}}</div>
@@ -26,42 +25,39 @@
         </div>
         <div style="display: grid; grid-template-columns: 50% 50%; gap: 8px;">
             <div>
-                <div class="cmd-task" contenteditable="plaintext-only"
-                    style="margin-left: -6px;"
+                <div class="cmd-task" contenteditable="plaintext-only" style="margin-left: -6px;"
                     @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
                     @keyup.enter.prevent="processCmdTask">{{TxtCmdTask}}</div>
                 <div v-for="task in Tasks"
                     style="display: grid;grid-template-columns: 16px auto 72px;align-items: center;gap: 8px;"
                     @click.stop="e => openFormTask(task)">
-                    <i v-if="!$root.isFinish(task.Id)" 
-                        class="bi bi-square" 
+                    <i v-if="!$root.isFinish(task.Id)" class="bi bi-square"
                         @click.stop="e => $root.toggFinish(task.Id)"></i>
-                    <i v-else class="bi bi-check-square"
-                        @click.stop="e => $root.toggFinish(task.Id)"></i>
+                    <i v-else class="bi bi-check-square" @click.stop="e => $root.toggFinish(task.Id)"></i>
                     <span>{{task.Name}}</span>
                     <small>{{getTimeDig(task)}}</small>
                 </div>
             </div>
             <div>
                 <strong v-if="TaskEdit != null">{{TaskEdit.Name}}</strong>
-                <div v-if="TaskEdit != null" contenteditable="true"
-                    @blur="blurTaskNote" v-html="TaskEdit.Note"></div>
+                <div v-if="TaskEdit != null" contenteditable="true" @paste="$root.cleanHTML" @blur="blurTaskNote"
+                    v-html="TaskEdit.Note"></div>
             </div>
         </div>
     </section>
 </template>
 <template id="tmp-schedule">
-    <div v-if="'s' == ViewType" >
+    <div v-if="'s' == ViewType">
         <div style="display: grid;grid-template-columns: auto 182px;margin-bottom: 6px;padding: 6px;
             background-color: #cfcfcf3d;border-radius: 12px;gap:6px;position: relative;">
-            <div class="progess-line"
-            style="position: absolute; top:0; left: 0; height: 3px;
-            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgb(231, 9, 248), rgba(0, 0, 0, 0));"></div>
+            <div style="position: absolute; top:0; left: 0; height: 3px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgb(231, 9, 248), rgba(0, 0, 0, 0));"
+                v-bind:style="{width: StyleWidthDone}"></div>
             <div style="display: flex;flex-direction: column;">
                 <strong @click.stop="toggleForm" style="cursor: default;"
                     v-bind:class="[$root.isFinish(item.Id) ? 'line-through' : '']">{{item.Name}}</strong>
                 <div style="display: grid; grid-template-columns: auto 114px;">
-                    <small>{{item.Users.join(', ')}}</small>
+                    <small>{{TxtUsers}}</small>
                     <small>Tasks:&nbsp;{{TaskStatus}}</small>
                 </div>
             </div>
@@ -80,11 +76,10 @@
             </div>
         </div>
         <div>
-            <div v-for="task in Tasks" 
+            <div v-for="task in Tasks"
                 style="display: grid;grid-template-columns: 14px auto 90px;align-items: center;padding: 6px; margin-bottom: 6px;
                 background-color: rgba(207, 207, 207, 0.24);border-radius: 12px;gap: 6px;min-height: 30px;margin-left: 6px;">
-                <i v-if="!$root.isFinish(task.Id)" 
-                    class="bi bi-square" style="font-size: 14px;"
+                <i v-if="!$root.isFinish(task.Id)" class="bi bi-square" style="font-size: 14px;"
                     @click.stop="e => $root.toggFinish(task.Id)"></i>
                 <i v-else class="bi bi-check-square" style="font-size: 14px;"
                     @click.stop="e => $root.toggFinish(task.Id)"></i>
@@ -102,15 +97,20 @@
                 @keyup.enter.prevent="processCompand">{{TxtCommand}}</div>
             <div style="display: flex; gap: 6px;">
                 <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
-                    @click.stop="generateCommands">Generate commands</div>
+                    @click.stop="generateCommands">Generate</div>
                 <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
-                    @click.stop="clearCompand">Clear commands</div>
+                    @click.stop="clearCompand">Clear</div>
                 <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
                     @click.stop="fillCompand">Fill commands</div>
                 <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
-                    @click.stop="showGuide">Guide</div>
+                    @click.stop="showGuide">Guides</div>
                 <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
-                    @click.stop="showDemoCommands">Demo commands</div>
+                    @click.stop="showDemoCommands">Demos</div>
+                <input type="file" accept=".json" @change="getImport" style="max-width: 300px;"
+                    class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 
+                        hover:file:bg-blue-100 dark:file:bg-blue-600 dark:file:text-blue-100 dark:hover:file:bg-blue-500">
+                <div style="border-radius: 12px; background-color: rgb(194, 231, 255); display: inline-flex; align-items: center; text-align: center; cursor: pointer; height: 100%; padding: 0 14px;"
+                    @click.stop="genExport">Export</div>
             </div>
         </div>
         <div style="display: flex; flex-direction: column; max-height: 92px;">
@@ -134,8 +134,7 @@
     </section>
 </template>
 <template id="tmp-guide-commands">
-    <section class="form-edit"
-        style="display: flex; flex-direction: column; gap: 6px;background-color: rgba(207, 207, 207, 0.24); margin-top: 34px;
+    <section class="form-edit" style="display: flex; flex-direction: column; gap: 6px;background-color: rgba(207, 207, 207, 0.24); margin-top: 34px;
             border-radius: 12px; padding: 12px; min-height: calc(-270px + 100vh);">
         <h3 style="margin-top: 0;">{{entry.Title}}</h3>
         <div style="cursor: default;">

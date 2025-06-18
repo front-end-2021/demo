@@ -58,11 +58,49 @@ export function getLsChild(items, paId) {
     }
     return ls
 }
-function convertSet(array, set) {
+function insertPlainText(text) {
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(document.createTextNode(text));
+
+    // Đặt lại con trỏ sau đoạn vừa chèn
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+export function insertHTMLAtCursor(html) {
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+
+    const fragment = range.createContextualFragment(html);
+    range.insertNode(fragment);
+
+    // Đặt lại con trỏ sau nội dung vừa chèn
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+export function convertSet(array, set, key) {
+    if (typeof key == 'string' && key.length) {
+        return array.reduce((acc, obj) => {
+            acc.add(obj[key]);
+            return acc;
+        }, set)
+    }
     return array.reduce((acc, obj) => {
         acc.add(obj);
         return acc;
     }, set)
+}
+export function hasText(str) {
+    if (typeof str != 'string') return false
+    if (!str.trim().length) return false
+    return true
 }
 function countEnter(txt) {
     if (typeof txt != 'string') return 0

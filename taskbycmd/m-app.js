@@ -1,5 +1,5 @@
 // #region import
-import { Snowflake, convertDic } from './common.js'
+import { Snowflake, convertDic, insertHTMLAtCursor } from './common.js'
 import { createApp } from 'vue'
 import { ViewCommands, RowSchedule, FormSchedule } from './components/vw-diagram.js'
 // #endregion
@@ -48,17 +48,11 @@ Promise.all([
                 },
                 LsEdit: [],
                 LisLog: [],
-                LsRef: {
-                    Schedules: [],
-                },
+
             }
         },
         computed: {
             IdGenerator() { return new Snowflake(42n) },
-            MapIds() {
-                let map = convertDic(this.LsSchedule, new Map(), 'Id')
-                return convertDic(this.LsTask, map, 'Id')
-            },
         },
         watch: {
             'Search.Name'(txt) { console.log('watch search name ', txt) },
@@ -67,12 +61,12 @@ Promise.all([
             'Search.HideIds'(ids) { console.log('watch set invisible Id ', ids) },
         },
         methods: {
-            computeAvailables() {
-                let lsShedule = this.LsSchedule.map(x => [new Date(x.Begin), new Date(x.End)])
+            computeAvailables(lsShedule) {
+                let listSch = lsShedule.map(x => [new Date(x.Begin), new Date(x.End)])
                 let start = this.TimeLogStart
                 let end = this.TimeLogEnd
 
-                this.LsAvailable = findFreeTimeSlots(lsShedule, start, end)
+                this.LsAvailable = findFreeTimeSlots(listSch, start, end)
 
                 function findFreeTimeSlots(timeSlots, startOfDay, endOfDay) {
                     const timeToMinutes = time => {
@@ -108,18 +102,6 @@ Promise.all([
                     return freeSlots;
                 }
             },
-            setRefs(comp, type) {
-                const oRef = this.LsRef
-                let ls = []
-                switch (type) {
-                    case 'Schedules': ls = oRef.Schedules
-                        break;
-                    default: break;
-                }
-                let ii = ls.findIndex(x => Object.is(x, comp))
-                if (ii < 0) ls.push(comp)
-                else ls.splice(ii, 1)   // remove
-            },
             fillLogCommand(txt) {
                 let target = document.body.querySelector('.txt-command[contenteditable]')
                 target.innerHTML = txt
@@ -142,7 +124,6 @@ Promise.all([
                 let txtName = null, txtUser = null
                 if (hasText(sObject.Name)) txtName = sObject.Name
                 if (hasText(sObject.User)) txtUser = sObject.User
-                let setHide = sObject.HideIds
                 if (txtName || txtUser) { setId = sObject.Ids }
                 switch (type) {
                     case 'name':
@@ -161,7 +142,18 @@ Promise.all([
                         break;
                     default: break;
                 }
+                this.buildSearchData(txtName, txtUser, lsShl, lsTsk, isLowerCase, hasContext, setId)
+                function hasText(str) {
+                    if (typeof str != 'string') return false
+                    if (!str.trim().length) return false
+                    return true
+                }
+            },
+            buildSearchData(txtName, txtUser, lsShl, lsTsk, isLowerCase, hasContext, setId) {
+                const oSearch = this.Search
+                let setHide = oSearch.HideIds
                 if (txtName || txtUser) {
+                    if (!setId) setId = oSearch.Ids
                     let avaiNames = new Set(lsShl.map(x => x.Id))
                     if (txtName) {
                         let avaiShls = lsShl.filter(x => x.Name == txtName || x.Name.includes(txtName))
@@ -171,7 +163,6 @@ Promise.all([
                             avaiShls = lsShl.filter(x => x.Name.toLowerCase() == txtName || x.Name.toLowerCase().includes(txtName))
                             avaiTsks = lsTsk.filter(x => x.Name.toLowerCase() == txtName || x.Name.toLowerCase().includes(txtName))
                         }
-                        setHide = sObject.HideIds
                         if (!hasContext) {
                             setHide = avaiNames.difference(new Set(avaiShls.map(x => x.Id)))
                         }
@@ -190,14 +181,30 @@ Promise.all([
                         avaiUsers = new Set(lsShl.filter(x => x.Users.some(t => lUser.has(t))).map(x => x.Id))
                     }
                     setId = avaiNames.intersection(avaiUsers)
+                } else {
+                    if (!setId) setId = new Set([...lsShl.map(x => x.Id), ...lsTsk.map(x => x.Id)])
                 }
-                if (!txtName) setHide = new Set()
-                sObject.Ids = setId
-                sObject.HideIds = setHide
-                function hasText(str) {
-                    if (typeof str != 'string') return false
-                    if (!str.trim().length) return false
-                    return true
+                if (!txtName && setHide.size) setHide = new Set()
+                oSearch.HideIds = setHide
+                oSearch.Ids = setId
+            },
+            cleanHTML(e) {
+                e.preventDefault()
+                const html = e.clipboardData.getData('text/html') || ''
+                const text = e.clipboardData.getData('text/plain') || ''
+                // Làm sạch HTML nếu có, fallback sang plain text
+                const clean = DOMPurify.sanitize(html || text)
+                insertHTMLAtCursor(clean); // Chèn nội dung sạch vào vị trí con trỏ
+            },
+            setListSchedule(listSch) {
+                if (!Object.is(this.LsSchedule, listSch)) {
+                    listSch.sort((a, b) => {
+                        let ab = new Date(a.Begin)
+                        let bb = new Date(b.Begin)
+                        return ab.getTime() - bb.getTime()
+                    })
+                    this.LsSchedule = listSch
+                    this.computeAvailables(listSch)
                 }
             },
             // equalHas(txt1, txt2) {

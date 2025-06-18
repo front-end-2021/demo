@@ -1,6 +1,7 @@
 import {
     genKeyHex, MonthsShort, getValidDays, getArrTime, randomInt,
-    getTimeDigit, isEqualTime, getLsChild, convertDic,
+    getTimeDigit, isEqualTime, getLsChild, convertDic, convertSet,
+    hasText,
 } from "../common.js";
 import {
     getCommands, ptrnNewShedules, patternNewPlans,
@@ -156,11 +157,14 @@ export const RowSchedule = {
         const root = this.$root
         const item = this.item
         let view = 's'
-        const viewIds = root.Search.Ids
-        if (viewIds.has(item.Id)) {
-            const hideIds = root.Search.HideIds
-            if (hideIds.has(item.Id)) view = 'i'
-        } else view = 'h'
+        const oSearch = root.Search
+        if (hasText(oSearch.Name) || hasText(oSearch.User)) {
+            const viewIds = oSearch.Ids
+            if (viewIds.has(item.Id)) {
+                const hideIds = oSearch.HideIds
+                if (hideIds.has(item.Id)) view = 'i'
+            } else view = 'h'
+        }
         const tasks = getLsChild(root.LsTask, item.Id)
         return {
             ViewType: view,
@@ -300,20 +304,6 @@ export const RowSchedule = {
                 lisEdit.splice(ii, 1, entry)
             }
         },
-        setUiProcess() {
-            let setDone = this.$root.ItemDones
-            const tasks = this.Tasks
-            const maxW = this.$el.offsetWidth
-            const len = tasks.length
-            let cWidth = 0
-            if (!len) cWidth = 0
-            else {
-                let taskDone = tasks.filter(t => setDone.has(t.Id))
-                cWidth = (taskDone.length / len) * maxW
-            }
-            let line = this.$el.querySelector('.progess-line')
-            line.style.width = `${cWidth}px`
-        },
         getTimeDig(task) {
             let lang = navigator.language || 'en-US'
             let tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
@@ -337,13 +327,7 @@ export const RowSchedule = {
                 }
             } else this.ViewType = 'h'
         },
-        '$root.LsTask'(ls) {
-            this.Tasks = getLsChild(ls, this.item.Id)
-            this.$nextTick(this.setUiProcess)
-        },
-        '$root.ItemDones'(set) {
-            this.setUiProcess()
-        },
+        '$root.LsTask'(ls) { this.Tasks = getLsChild(ls, this.item.Id) },
         'item.End'(end) {
             let dE = new Date(end)
             let dNow = new Date()
@@ -372,10 +356,25 @@ export const RowSchedule = {
             let taskDone = tasks.filter(t => setDone.has(t.Id))
             return `${taskDone.length}/${len}`
         },
+        TxtUsers() {
+            let users = this.item.Users
+            if (users.length <= 3) return users.join(', ')
+            let arr = users.slice(0, 3)
+            return `${arr.join(', ')} [+${users.length - 3}]`
+        },
+        StyleWidthDone() {
+            const tasks = this.Tasks
+            const len = tasks.length
+            if (!len) return '0'
+            let setDone = this.$root.ItemDones
+            let taskDone = tasks.filter(t => setDone.has(t.Id))
+            let cWidth = (taskDone.length / len) * 100
+            return `${cWidth}%`
+        },
     },
-    beforeMount() { this.$root.setRefs(this, 'Schedules') },
-    mounted() { this.setUiProcess() },
-    beforeDestroy() { this.$root.setRefs(this, 'Schedules') },
+    //  beforeMount() {  },
+    //mounted() {  },
+    // beforeDestroy() {  },
 }
 export const ViewCommands = {
     template: `#tmp-commands`,
@@ -466,15 +465,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                     setSchedules.call(root, obj, lsLog)
                 }
             })
-            if (!Object.is(root.LsSchedule, lsShedule)) {
-                lsShedule.sort((a, b) => {
-                    let ab = new Date(a.Begin)
-                    let bb = new Date(b.Begin)
-                    return ab.getTime() - bb.getTime()
-                })
-                root.LsSchedule = lsShedule
-                root.computeAvailables()
-            }
+            root.setListSchedule(lsShedule)
             allCommandIndex.forEach(index => {
                 if (mapNewUser.has(index)) {
                     let uName = mapNewUser.get(index)
@@ -629,6 +620,100 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 Title: `Guide`, item
             }
             root.LsEdit = [entry]
+        },
+        getImport(event) {
+            const root = this.$root
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    let jData = JSON.parse(e.target.result);
+                    let { Schedules, Tasks, Users, Dones } = jData
+                    Schedules.forEach(item => { item.Id = `${item.Id}` })
+                    Tasks.forEach(item => { item.Id = `${item.Id}` })
+                    Users.forEach(item => { item.Id = `${item.Id}` })
+                    let listU = root.LsUser
+                    let mapUser = convertDic(Users, new Map(), 'Id')
+                    // #region add user
+                    for (let iii = listU.length - 1, id; -1 < iii; iii--) {
+                        id = listU[iii].Id
+                        if (mapUser.has(id)) mapUser.delete(id)
+                    }
+                    if (mapUser.size) {
+                        listU = [...listU]
+                        for (const [id, item] of mapUser) listU.push(item)
+                        root.LsUser = listU
+                    }
+                    // #endregion
+                    let listSch = root.LsSchedule
+                    let mapSch = convertDic(Schedules, new Map(), 'Id')
+                    // #region add schedule
+                    for (let iii = listSch.length - 1, id; -1 < iii; iii--) {
+                        id = listSch[iii].Id
+                        if (mapSch.has(id)) mapSch.delete(id)
+                    }
+                    if (mapSch.size) {
+                        listSch = [...listSch]   // copy => new ref
+                        mapUser = convertSet(listU, new Set(), 'Name')
+                        for (const [id, item] of mapSch) {
+                            for (let uu = item.Users.length - 1; -1 < uu; uu--) {
+                                if (!mapUser.has(item.Users[uu])) item.Users.splice(uu, 1)
+                            }
+                            listSch.push(item)
+                        }
+                    }
+                    root.setListSchedule(listSch)
+                    // #endregion
+                    let listTsk = root.LsTask
+                    // #region add task
+                    mapSch = convertDic(listSch, new Map(), 'Id')
+                    for (let iii = Tasks.length - 1, item; -1 < iii; iii--) {
+                        item = Tasks[iii]
+                        if (!mapSch.has(item.ParentId)) Tasks.splice(iii, 1)
+                    }
+                    if (Tasks.length) {
+                        listTsk = [...listTsk]
+                        for (let iii = 0; iii < Tasks.length; iii++) { listTsk.push(Tasks[iii]) }
+                        root.LsTask = listTsk
+                    }
+                    // #endregion
+                    let sDone = root.ItemDones
+                    // #region set id done
+                    mapSch = convertDic(listTsk, mapSch, 'Id');
+                    for (let iii = Dones.length - 1, id; -1 < iii; iii--) {
+                        id = Dones[iii]
+                        if (!mapSch.has(id)) Dones.splice(iii, 1)
+                    }
+                    if (Dones.length) {
+                        sDone = new Set([...sDone, ...Dones])
+                        root.ItemDones = sDone
+                    }
+                    // #endregion
+                    const oSearch = root.Search
+                    root.buildSearchData(oSearch.Name, oSearch.User, listSch, listTsk, false, false)
+
+                    const lsLog = root.LisLog
+                    lsLog.push(`import file ${file.name}`)
+                }
+                reader.readAsText(file)
+            }
+        },
+        genExport() {
+            const root = this.$root
+            const Schedules = root.LsSchedule
+            const Tasks = root.LsTask
+            const Users = root.LsUser
+            const Dones = Array.from(root.ItemDones)
+            if (0 < Schedules.length + Tasks.length + Users.length + Dones.length) {
+                let jData = { Schedules, Tasks, Users, Dones }
+                const blob = new Blob([JSON.stringify(jData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'appData.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
         },
     },
     beforeUpdate() {
