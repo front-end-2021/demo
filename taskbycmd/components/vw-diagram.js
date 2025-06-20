@@ -32,7 +32,6 @@ const mxDate = {
         }
     },
 }
-
 export const FormSchedule = {
     template: `#tmp-form-schedule`,
     name: "Form_Schedule",
@@ -356,11 +355,35 @@ export const RowSchedule = {
             let taskDone = tasks.filter(t => setDone.has(t.Id))
             return `${taskDone.length}/${len}`
         },
-        TxtUsers() {
+        HtmlUsers() {
             let users = this.item.Users
-            if (users.length <= 3) return users.join(', ')
+            const oSearch = this.$root.Search
+            let txt = users.join(', ')
+            if (users.length <= 3) {
+                if (!hasText(oSearch.User)) return txt
+                let keyword = oSearch.User
+                const regex = new RegExp(keyword, 'gi');
+                return txt.replace(regex, `<span class="bg-amber-300">${keyword}</span>`)
+            }
             let arr = users.slice(0, 3)
-            return `${arr.join(', ')} [+${users.length - 3}]`
+            let txt1 = arr.join(', ')
+            if (hasText(oSearch.User)) {
+                let keyword = oSearch.User
+                let regex = new RegExp(keyword, 'gi');
+                if (oSearch.LowerCase) {
+                    regex = new RegExp(keyword, 'g');
+                    keyword = keyword.toLowerCase()
+                }
+                if (txt1.includes(keyword)) {
+                    txt1 = txt1.replace(regex, `<span class="bg-amber-300">${keyword}</span>`)
+                    return `${txt1} [+${users.length - 3}]`
+                }
+                if (txt.includes(keyword)) {
+                    return `${txt1} <span class="bg-amber-300">[+${users.length - 3}]</span>`
+                }
+            }
+            return `${txt1} [+${users.length - 3}]`
+
         },
         StyleWidthDone() {
             const tasks = this.Tasks
@@ -370,6 +393,18 @@ export const RowSchedule = {
             let taskDone = tasks.filter(t => setDone.has(t.Id))
             let cWidth = (taskDone.length / len) * 100
             return `${cWidth}%`
+        },
+        HtmlName() {
+            let name = this.item.Name
+            const oSearch = this.$root.Search
+            if (!hasText(oSearch.Name)) return name
+            let keyword = oSearch.Name
+            let regex = new RegExp(keyword, 'gi');
+            if (oSearch.LowerCase) {
+                regex = new RegExp(keyword, 'g');
+                keyword = keyword.toLowerCase()
+            }
+            return name.replace(regex, `<span class="bg-amber-300">${keyword}</span>`)
         },
     },
     //  beforeMount() {  },
@@ -591,6 +626,14 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
         clearCompand() {
             let target = this.$el.querySelector('.txt-command[contenteditable]')
             target.innerHTML = ''
+            const root = this.$root
+            const oSearch = root.Search
+            oSearch.Name = null
+            oSearch.User = null
+            let lsShl = root.LsSchedule
+            let lsTsk = root.LsTask
+            let setId = new Set([...lsShl.map(x => x.Id), ...lsTsk.map(x => x.Id)])
+            root.buildSearchData(oSearch.Name, oSearch.User, lsShl, lsTsk, oSearch.LowerCase, oSearch.HasContext, setId)
         },
         fillCompand() {
             let target = this.$el.querySelector('.txt-command[contenteditable]')
@@ -690,7 +733,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                     }
                     // #endregion
                     const oSearch = root.Search
-                    root.buildSearchData(oSearch.Name, oSearch.User, listSch, listTsk, false, false)
+                    root.buildSearchData(oSearch.Name, oSearch.User, listSch, listTsk, oSearch.LowerCase, oSearch.HasContext)
 
                     const lsLog = root.LisLog
                     lsLog.push(`import file ${file.name}`)

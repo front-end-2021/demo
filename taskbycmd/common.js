@@ -110,12 +110,12 @@ function countEnter(txt) {
     if (!mTx) return 0
     return mTx.length
 }
-export function clearSpace(str, nm) {
+function clearSpace(str, nm) {
     if (typeof str != 'string') return nm
     str = str.trim()
     return str.replaceAll(' ', '')
 }
-export function addStrFirst(txt, str) {
+function addStrFirst(txt, str) {
     let lines = txt.split('\n')
     for (let ll = lines.length - 1, txLn; -1 < ll; ll--) {
         txLn = lines[ll]
@@ -123,7 +123,7 @@ export function addStrFirst(txt, str) {
     }
     return lines.join('\n')
 }
-export function removeExtraSpaces(str) {
+function removeExtraSpaces(str) {
     if (typeof str != 'string') return str
     // Sử dụng regex để thay thế nhiều khoảng trắng liên tiếp bằng một khoảng trắng duy nhất
     return str.replace(/\s+/g, ' ').trim();
@@ -133,13 +133,48 @@ function removeSpecialChar(str) {
     let regex = /[^a-zA-Z0-9+\-*/\()\s]/g;
     return str.replace(regex, '')
 }
-export function getStringBetween(str, startChar, endChar) {
+function getStringBetween(str, startChar, endChar) {
     // Tạo regex để khớp với chuỗi giữa hai ký tự cụ thể
     const regex = new RegExp(`${startChar}(.*?)${endChar}`);
     const match = str.match(regex);
     return match ? match[1] : '';
 }
-
+function numberToWords(n) {
+    if (n === 0) return "zero";
+    const belowTwenty = ["", "one", "two", "three", "four", "five", "six",
+        "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen",
+        "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+    const tens = ["", "", "twenty", "thirty", "forty", "fifty",
+        "sixty", "seventy", "eighty", "ninety"];
+    const thousands = ["", "thousand", "million", "billion"];
+    function threeDigitToWords(num) {
+        let str = "";
+        if (num >= 100) {
+            str += belowTwenty[Math.floor(num / 100)] + " hundred";
+            num %= 100;
+            if (num) str += " ";
+        }
+        if (num >= 20) {
+            str += tens[Math.floor(num / 10)];
+            if (num % 10) str += "-" + belowTwenty[num % 10];
+        } else if (num > 0) {
+            str += belowTwenty[num];
+        }
+        return str;
+    }
+    let result = "";
+    let i = 0;
+    while (n > 0) {
+        const chunk = n % 1000;
+        if (chunk !== 0) {
+            const words = threeDigitToWords(chunk);
+            result = words + (thousands[i] ? " " + thousands[i] : "") + (result ? " " + result : "");
+        }
+        n = Math.floor(n / 1000);
+        i++;
+    }
+    return result.trim();
+}
 export class Snowflake {
     #lastTimestamp
     #sequence
@@ -185,17 +220,5 @@ export class Snowflake {
         }
     }
 }
-// // Example usage
 // let snowflake = new Snowflake(42n); // Custom epoch and machine ID
-// let snowflakeId = snowflake.generate().toString()
-// console.log(snowflakeId); // Generate a unique ID
-// console.log(snowflake.decode(snowflakeId))
-// snowflakeId = snowflake.generate().toString()
-// console.log(snowflakeId); // Generate a unique ID
-// console.log(snowflake.decode(snowflakeId))
-// snowflakeId = snowflake.generate().toString()
-// console.log(snowflakeId); // Generate a unique ID
-// console.log(snowflake.decode(snowflakeId))
-// snowflakeId = snowflake.generate().toString()
-// console.log(snowflakeId); // Generate a unique ID
-// console.log(snowflake.decode(snowflakeId))
+// console.log(snowflake.generate().toString()); // Generate a unique ID

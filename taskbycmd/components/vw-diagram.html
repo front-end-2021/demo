@@ -55,9 +55,10 @@
                 v-bind:style="{width: StyleWidthDone}"></div>
             <div style="display: flex;flex-direction: column;">
                 <strong @click.stop="toggleForm" style="cursor: default;"
-                    v-bind:class="[$root.isFinish(item.Id) ? 'line-through' : '']">{{item.Name}}</strong>
+                    v-bind:class="[$root.isFinish(item.Id) ? 'line-through' : '']" 
+                    v-html="HtmlName"></strong>
                 <div style="display: grid; grid-template-columns: auto 114px;">
-                    <small>{{TxtUsers}}</small>
+                    <small v-html="HtmlUsers"></small>
                     <small>Tasks:&nbsp;{{TaskStatus}}</small>
                 </div>
             </div>

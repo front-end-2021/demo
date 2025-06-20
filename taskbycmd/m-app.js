@@ -41,8 +41,8 @@ Promise.all([
                 TimeLogEnd: end,
                 LsUser: [],
                 Search: {
-                    Name: null,
-                    User: null,
+                    Name: null, LowerCase: false,
+                    User: null, HasContext: false,
                     Ids: new Set(),
                     HideIds: new Set(),
                 },
@@ -54,12 +54,12 @@ Promise.all([
         computed: {
             IdGenerator() { return new Snowflake(42n) },
         },
-        watch: {
-            'Search.Name'(txt) { console.log('watch search name ', txt) },
-            'Search.User'(txt) { console.log('watch search user ', txt) },
-            //  'Search.Ids'(ids) { console.log('watch set visible Id ', ids) },
-            'Search.HideIds'(ids) { console.log('watch set invisible Id ', ids) },
-        },
+        // watch: {
+        //     'Search.Name'(txt) { console.log('watch search name ', txt) },
+        //     'Search.User'(txt) { console.log('watch search user ', txt) },
+        //       'Search.Ids'(ids) { console.log('watch set visible Id ', ids) },
+        //     'Search.HideIds'(ids) { console.log('watch set invisible Id ', ids) },
+        // },
         methods: {
             computeAvailables(lsShedule) {
                 let listSch = lsShedule.map(x => [new Date(x.Begin), new Date(x.End)])
@@ -118,8 +118,8 @@ Promise.all([
                 let sObject = this.Search
                 const lsShl = this.LsSchedule
                 const lsTsk = this.LsTask
-                let isLowerCase = false
-                let hasContext = false
+                let isLowerCase = sObject.LowerCase
+                let hasContext = sObject.HasContext
                 let setId = new Set([...lsShl.map(x => x.Id), ...lsTsk.map(x => x.Id)])
                 let txtName = null, txtUser = null
                 if (hasText(sObject.Name)) txtName = sObject.Name
