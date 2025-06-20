@@ -9,9 +9,8 @@ import { getListCls } from './repository.js'
 import {
     verifySave, setHeight, isOverlap, initPoint, getStringBetween,
     isAbstract, isClass, isInterface, isStruct, isEnum, cellBlock,
-    genBoards, getRows, getCols, cellSize, cellEmpty, build_xy, 
-    aStar2D, Node, verifyExportTxt, doInRange, setCell, getArea,
-    getiixysd,
+    genBoards, getRows, getCols, cellSize, cellEmpty, build_xy,
+    verifyExportTxt, doInRange, setCell, getArea,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -332,65 +331,8 @@ Promise.all([
                 }
 
             },
-            drawPaths() {
-                const c = document.getElementById('dnb-mcanvas');
-                const ctx = c.getContext("2d");
-                const mPoints = this.MpPoints
-                if (mPoints.size < 1) return;
-
-                const grid = this.Board
-
-                let srcArea, desArea
-                let path = [], startNode, endNode
-                for (const [id, point] of mPoints) {
-                    srcArea = getArea(point.item)
-                    let [ix0, iy0, iw0, ih0] = srcArea
-
-                    for (let ii = point.Extends.length - 1, dItem; -1 < ii; ii--) {
-                        dItem = point.Extends[ii]
-
-                        desArea = getArea(dItem)
-
-                        let [ix1, iy1, iw1, ih1] = desArea
-                        let [iix0, iiy0, iix1, iiy1] = getiixysd(srcArea, desArea)
-
-                        startNode = new Node(iix0, iiy0, 0, 0);
-                        endNode = new Node(iix1, iiy1, 0, 0);
-                        path = aStar2D(startNode, endNode, grid);
-
-                        console.group('extends', point.item.Name, dItem.Name)
-                        
-                        console.log('ix0, iy0, iw0, ih0 ', ix0, iy0, iw0, ih0)
-                        console.log('ix1, iy1, iw1, ih1 ', ix1, iy1, iw1, ih1)
-                        console.log('iix0, iiy0, iix1, iiy1 ', iix0, iiy0, iix1, iiy1)
-                        console.log('path ', path)
-                        console.groupEnd()
-                        drawPath(path, 'red')
-                    }
-                    
-                }
-                function drawPath(path, color) {
-                    if (!path.length) return
-                    ctx.strokeStyle = color
-                    ctx.beginPath();
-                    let i = 0
-                    let x = path[i].x
-                    let y = path[i].y
-                    x = x * cellSize + cellSize / 2
-                    y = y * cellSize + cellSize / 2
-                    ctx.moveTo(x, y);
-                    fillCirle(ctx, x, y, 3, color)
-                    for (i = 1; i < path.length; i++) {
-                        x = path[i].x
-                        y = path[i].y
-                        x = x * cellSize + cellSize / 2
-                        y = y * cellSize + cellSize / 2
-                        ctx.lineTo(x, y);
-                    }
-                    ctx.stroke();
-                }
-            },
             drawBlocks() {
+                return;
                 let color = '#00000057';
                 const c = document.getElementById('dnb-mcanvas');
                 const ctx = c.getContext("2d");
@@ -686,9 +628,7 @@ Promise.all([
 
             this.updateSizeCanvas()         // mount-ed
             this.$nextTick(this.drawInCnvs) // mount-ed
-            this.$nextTick(this.drawBlocks) // mount-ed
-            this.$nextTick(this.drawPaths) // mount-ed
-
+            this.$nextTick(this.drawBlocks) // mount-ed            
         },
         beforeUpdate() {
             console.log('before updated')
