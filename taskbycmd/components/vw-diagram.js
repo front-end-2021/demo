@@ -330,18 +330,19 @@ export const RowSchedule = {
         'item.End'(end) {
             let dE = new Date(end)
             let dNow = new Date()
-            let setDone = this.$root.ItemDones
+            const root = this.$root
+            let setDone = root.IdDones
             if (dE < dNow) {
-                if (!setDone.has(this.item.Id)) {
+                if (!setDone.includes(this.item.Id)) {
                     setDone = new Set(setDone)
                     setDone.add(this.item.Id)
-                    this.$root.ItemDones = setDone
+                    root.setFinish(setDone)
                 }
             } else {
-                if (setDone.has(this.item.Id)) {
+                if (setDone.includes(this.item.Id)) {
                     setDone = new Set(setDone)
                     setDone.delete(this.item.Id)
-                    this.$root.ItemDones = setDone
+                    root.setFinish(setDone)
                 }
             }
         },
@@ -649,7 +650,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             }
             root.LsEdit = [entry]
         },
-        showGuide() {
+        showGuide() {debugger
             const root = this.$root
             const item = {
                 NewShedule: `${ptrnNewShedules.join(', ')}. ${patternNewPlans.join(', ')}`,
@@ -720,7 +721,6 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                         root.LsTask = listTsk
                     }
                     // #endregion
-                    let sDone = root.ItemDones
                     // #region set id done
                     mapSch = convertDic(listTsk, mapSch, 'Id');
                     for (let iii = Dones.length - 1, id; -1 < iii; iii--) {
@@ -728,8 +728,8 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                         if (!mapSch.has(id)) Dones.splice(iii, 1)
                     }
                     if (Dones.length) {
-                        sDone = new Set([...sDone, ...Dones])
-                        root.ItemDones = sDone
+                        let sDone = new Set([...root.IdDones, ...Dones])
+                        root.setFinish(sDone)
                     }
                     // #endregion
                     const oSearch = root.Search
@@ -746,7 +746,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             const Schedules = root.LsSchedule
             const Tasks = root.LsTask
             const Users = root.LsUser
-            const Dones = Array.from(root.ItemDones)
+            const Dones = root.IdDones
             if (0 < Schedules.length + Tasks.length + Users.length + Dones.length) {
                 let jData = { Schedules, Tasks, Users, Dones }
                 const blob = new Blob([JSON.stringify(jData, null, 2)], { type: 'application/json' });

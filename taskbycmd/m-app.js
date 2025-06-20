@@ -35,7 +35,7 @@ Promise.all([
             return {
                 LsSchedule: [],
                 LsTask: [],
-                ItemDones: new Set(),
+                IdDones: [],
                 LsAvailable: [],
                 TimeLogStart: start,
                 TimeLogEnd: end,
@@ -53,6 +53,7 @@ Promise.all([
         },
         computed: {
             IdGenerator() { return new Snowflake(42n) },
+            ItemDones() { return new Set(this.IdDones) },
         },
         // watch: {
         //     'Search.Name'(txt) { console.log('watch search name ', txt) },
@@ -106,12 +107,13 @@ Promise.all([
                 let target = document.body.querySelector('.txt-command[contenteditable]')
                 target.innerHTML = txt
             },
-            toggFinish(id) {
-                let setDone = new Set(this.ItemDones)
+            toggFinish(id, e) {
+                let setDone = new Set(this.IdDones)
                 if (setDone.has(id)) setDone.delete(id)
                 else setDone.add(id)
-                this.ItemDones = setDone
+                this.setFinish(setDone)
             },
+            setFinish(setDone) { this.IdDones = Array.from(setDone) },
             isFinish(id) { return this.ItemDones.has(id) },
             setSearch(txt, type) {
                 if (!hasText(txt)) txt = null   // verify

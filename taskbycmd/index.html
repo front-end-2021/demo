@@ -71,6 +71,115 @@
   <span class="dnb-imp-html" dnbpath="./components/vw-diagram.html"></span>
 
   <script type="module" src="m-app.js"></script>
+
+  <template id="tmp-schedule">
+    <div v-if="'s' == ViewType">
+        <div style="display: grid;grid-template-columns: auto 182px;margin-bottom: 6px;padding: 6px;
+            background-color: #cfcfcf3d;border-radius: 12px;gap:6px;position: relative;">
+            <div style="position: absolute; top:0; left: 0; height: 3px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgb(231, 9, 248), rgba(0, 0, 0, 0));"
+                v-bind:style="{width: StyleWidthDone}"></div>
+            <div style="display: flex;flex-direction: column;">
+                <strong @click.stop="toggleForm" style="cursor: default;"
+                    v-bind:class="[$root.isFinish(item.Id) ? 'line-through' : '']" 
+                    v-html="HtmlName"></strong>
+                <div style="display: grid; grid-template-columns: auto 114px;">
+                    <small v-html="HtmlUsers"></small>
+                    <small>Tasks:&nbsp;{{TaskStatus}}</small>
+                </div>
+            </div>
+            <div style="display: flex;gap: 8px; align-items: center;">
+                <div style="display: flex; flex-direction: column;">
+                    <small v-for="txt in TxtTimes">{{txt}}</small>
+                </div>
+                <div style="display: flex; align-items: center;border-left: 2px solid #b0b0b0;padding-left: 6px;"
+                    v-bind:style="{
+                        flexDirection: 1 < TxtDays.length ? 'column' : ''
+                    }">
+                    <span v-for="(txt, ii) in TxtDays" :key="txt" contenteditable="plaintext-only" v-bind:iiday="ii"
+                        @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
+                        @keyup.enter.prevent="e => changeDay(ii, e)">{{txt}}</span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div v-for="task in Tasks" class="grid items-center rounded-xl gap-[6px]"
+                style="grid-template-columns: 14px auto 90px;padding: 6px; margin-bottom: 6px;
+                background-color: rgba(207, 207, 207, 0.24);min-height: 30px;margin-left: 6px;">
+                <div class="grid items-center justify-center" @click.stop="e => $root.toggFinish(task.Id)">
+                    <input class="peer col-start-1 row-start-1 h-4 w-4 appearance-none rounded border border-gray-300 ring-transparent 
+                            checked:border-violet-600 checked:bg-violet-600 dark:border-gray-600 dark:checked:border-violet-600" 
+                        v-model="$root.IdDones" type="checkbox" :value="task.Id" v-bind:name="task.Id">
+                    <svg viewBox="0 0 14 14" fill="none" class="invisible col-start-1 row-start-1 stroke-white peer-checked:visible dark:text-violet-300">
+                        <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </div>
+                <div>{{task.Name}}</div>
+                <small v-html="getTimeDig(task)"></small>
+            </div>
+        </div>
+    </div>
+  </template>
+  <template id="tmp-commands">
+    <div class="grid gap-[8px]" style="grid-template-columns: calc(610px + 789px - 610px + 120px) auto;">
+        <div class="grid grid-cols-[auto 42px] gap-[6px]">
+            <div class="txt-command" contenteditable="plaintext-only"
+                @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
+                @keyup.enter.prevent="processCompand">{{TxtCommand}}</div>
+            <div class="flex gap-[6px]">
+                <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
+                    @click.stop="generateCommands">Generate</div>
+                <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
+                    @click.stop="clearCompand">Clear</div>
+                <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
+                    @click.stop="fillCompand">Fill commands</div>
+                <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
+                    @click.stop="showGuide">Guides</div>
+                <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
+                    @click.stop="showDemoCommands">Demos</div>
+                <input type="file" accept=".json" @change="getImport" style="max-width: 300px;"
+                    class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 
+                        hover:file:bg-blue-100 dark:file:bg-blue-600 dark:file:text-blue-100 dark:hover:file:bg-blue-500">
+                <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
+                    @click.stop="genExport">Export</div>
+            </div>
+        </div>
+        <div class="flex flex-col max-h-[92px]">
+            <div class="cursor-pointer h-1/1" style="font-weight: bold;">Logs: </div>
+            <div id="vw-command-log" style="overflow: auto;">
+                <code v-for="log in $root.LisLog" style="display: block;cursor: default;"
+                    @click.stop="e => $root.fillLogCommand(log)">{{log}}</code>
+            </div>
+        </div>
+    </div>
+  </template>
+  <template id="tmp-demo-commands">
+    <section class="form-edit" 
+        style="background-color: rgba(207, 207, 207, 0.24); min-height: calc(-270px + 100vh); margin-top: 34px;padding: 12px; border-radius: 12px;">
+        <h3 style="margin-top: 0;">{{entry.Title}}</h3>
+        <p style="white-space: break-spaces;font-size: 13px;">{{entry.item.NewShedule}}</p>
+        <div style="white-space: break-spaces;font-size: 13px;">{{entry.item.NewUser}}</div>
+        <p style="white-space: break-spaces;font-size: 13px;">{{entry.item.AssignUser}}</p>
+        <div style="white-space: break-spaces;font-size: 13px;">{{entry.item.EditUser}}</div>
+        <div style="white-space: break-spaces;font-size: 13px;">{{entry.item.Search}}</div>
+    </section>
+  </template>
+  <template id="tmp-guide-commands">
+    <section class="form-edit rounded-xl flex flex-col p-3" 
+        style="gap: 6px;background-color: rgba(207, 207, 207, 0.24); min-height: calc(-270px + 100vh); margin-top: 34px;padding: 12px; border-radius: 12px;">
+        <h3 style="margin-top: 0;">{{entry.Title}}</h3>
+        <div style="cursor: default;">
+            <span>New/edit:</span> <small>{{entry.item.NewShedule}}</small>
+        </div>
+        <div style="cursor: default;">
+            <span>New user:</span> <small>{{entry.item.NewUser}}</small>
+        </div>
+        <div style="cursor: default;">
+            <span>Edit user:</span> <small>{{entry.item.EditUser}}</small>
+        </div>
+        <div style="cursor: default;"><span>Search:</span> <small>{{entry.item.TxtSearch}}</small></div>
+    </section>
+  </template>
 </body>
 
 </html>
