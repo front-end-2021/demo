@@ -44,9 +44,10 @@ Promise.all([
             document.body.appendChild(renderer.domElement);
 
             // Góc nhìn isometric
-            camera.position.set(100, 100, 100);
+            let camAsix = 100
+            camera.position.set(camAsix, camAsix, camAsix);
             camera.lookAt(0, 0, 0);
-            
+
             const gridW = 20
             let groundColor = 0x99ccff
             // Tạo nền bằng các ô lưới
@@ -69,20 +70,20 @@ Promise.all([
             player.position.set(0, 10, 0);
             scene.add(player);
 
-            const step = 5
+            const step = 6
             document.addEventListener("keydown", (event) => {
                 switch (event.key) {
-                    case "ArrowUp":
-                        player.position.z -= step;
+                    case "ArrowUp": goInSometric(player, 'up', step)
+                        //player.position.z -= step;
                         break;
-                    case "ArrowDown":
-                        player.position.z += step;
+                    case "ArrowDown": goInSometric(player, 'down', step)
+                        //player.position.z += step;
                         break;
-                    case "ArrowLeft":
-                        player.position.x -= step;
+                    case "ArrowLeft": goInSometric(player, 'left', step)
+                        //player.position.x -= step;
                         break;
-                    case "ArrowRight":
-                        player.position.x += step;
+                    case "ArrowRight": goInSometric(player, 'right', step)
+                        //player.position.x += step;
                         break;
                 }
             });
@@ -91,6 +92,35 @@ Promise.all([
                 renderer.render(scene, camera);
             }
             animate();
+            function goInSometric(player, direct, step) {
+                switch (direct) {
+                    case 'up':
+                        player.position.x -= step
+                        player.position.z -= step
+                        return;
+                    case 'right':
+                        player.position.z -= step / 3
+                        player.position.x += step / 3
+                        return
+                    case 'down':
+                        player.position.z += step
+                        player.position.x += step
+                        return
+                    case 'left':
+                        player.position.x -= step / 3
+                        player.position.z += step / 3
+                        return;
+                    case 'up-right': player.position.z -= step;
+                        return;
+                    case 'up-left': player.position.x -= step;
+                        return;
+                    case 'down-right': player.position.x += step;
+                        return;
+                    case 'down-left': player.position.z += step;
+                        return;
+                    default: break;
+                }
+            }
         },
         //beforeMount() { },
         mounted() {
