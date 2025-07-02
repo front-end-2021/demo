@@ -87,8 +87,10 @@ Promise.all([
                         break;
                 }
             });
+            const clock = new THREE.Clock();
             function animate() {
                 requestAnimationFrame(animate);
+                updateHUD(); // cập nhật HUD
                 renderer.render(scene, camera);
             }
             animate();
@@ -120,6 +122,10 @@ Promise.all([
                         return;
                     default: break;
                 }
+            }
+            function updateHUD() {
+                const elapsed = Math.floor(clock.getElapsedTime());
+                console.log(`Thời gian: ${elapsed}s`)
             }
         },
         //beforeMount() { },
