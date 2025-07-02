@@ -46,28 +46,30 @@ Promise.all([
             // Góc nhìn isometric
             camera.position.set(100, 100, 100);
             camera.lookAt(0, 0, 0);
-
+            
+            const gridW = 20
+            let groundColor = 0x99ccff
             // Tạo nền bằng các ô lưới
             for (let x = -5; x <= 5; x++) {
                 for (let z = -5; z <= 5; z++) {
                     const tile = new THREE.Mesh(
-                        new THREE.BoxGeometry(20, 1, 20),
-                        new THREE.MeshBasicMaterial({ color: 0x99ccff })
+                        new THREE.BoxGeometry(gridW, 1, gridW),
+                        new THREE.MeshBasicMaterial({ color: groundColor })
                     );
-                    tile.position.set(x * 20, 0, z * 20);
+                    tile.position.set(x * gridW, 0, z * gridW);
                     scene.add(tile);
                 }
             }
-
+            let playerColor = 'green'
             // Tạo nhân vật đơn giản
             const player = new THREE.Mesh(
-                new THREE.BoxGeometry(10, 20, 10),
-                new THREE.MeshBasicMaterial({ color: 0xff0000 })
+                new THREE.BoxGeometry(gridW / 2, gridW, gridW / 2),
+                new THREE.MeshBasicMaterial({ color: playerColor })
             );
             player.position.set(0, 10, 0);
             scene.add(player);
 
-            const step = 20
+            const step = 5
             document.addEventListener("keydown", (event) => {
                 switch (event.key) {
                     case "ArrowUp":
@@ -99,8 +101,8 @@ Promise.all([
             // console.log(hash.toString(CryptoJS.enc.Base64));// speed > Hex
 
         },
-      //  beforeUpdate() { },
-      //  updated() { },
+        //  beforeUpdate() { },
+        //  updated() { },
     }).mount('#vue-app')
 
 }).catch(errStatus => { console.log('Woop!', errStatus) })
