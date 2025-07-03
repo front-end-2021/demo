@@ -148,29 +148,25 @@ Promise.all([
                         const targetPosition = point.clone();
                         targetPosition.y = player.position.y
                         if (!wayPoints.length) {
-                            wayPoints = [targetPosition]
-
-                            let des = { x: getTitleInGrid(player.position.x), y: getTitleInGrid(player.position.z) }
-                            let src = { x: getTitleInGrid(targetPosition.x), y: getTitleInGrid(targetPosition.z) }
-                            let paths = aStar(tileGrid, src, des)
-                            wayPoints = paths.map(ps => new THREE.Vector3(getPosFromGrid(ps.x), player.position.y, getPosFromGrid(ps.y)))
-                            console.log(paths, tileGrid, src, des, wayPoints)
+                            wayPoints = buildWayPoints(player.position, targetPosition)
+                            console.log(tileGrid, wayPoints)
                         }
                         else if (!isEqualPos(wayPoints[0], point) && hit.object.name != 'Player') {
                             if (!isEqualPos(wayPoints[0], targetPosition)) {
-                                wayPoints = [targetPosition]
-
-                                let des = { x: getTitleInGrid(player.position.x), y: getTitleInGrid(player.position.z) }
-                                let src = { x: getTitleInGrid(targetPosition.x), y: getTitleInGrid(targetPosition.z) }
-                                let paths = aStar(tileGrid, src, des)
-                                wayPoints = paths.map(ps => new THREE.Vector3(getPosFromGrid(ps.x), player.position.y, getPosFromGrid(ps.y)))
-                                console.log(paths, tileGrid, src, des, wayPoints)
+                                wayPoints = buildWayPoints(player.position, targetPosition)
+                                console.log(tileGrid, wayPoints)
                             }
                         }
                     }
                 }
             });
-
+            function buildWayPoints(srcPos, desPos) {
+                let des = { x: getTitleInGrid(srcPos.x), y: getTitleInGrid(srcPos.z) }
+                let src = { x: getTitleInGrid(desPos.x), y: getTitleInGrid(desPos.z) }
+                let paths = aStar(tileGrid, src, des)
+                console.log(paths, src, des)
+                return paths.map(ps => new THREE.Vector3(getPosFromGrid(ps.x), srcPos.y, getPosFromGrid(ps.y)))
+            }
             const moveSpeed = 0.69
             document.addEventListener("keydown", (event) => {
                 switch (event.key) {
