@@ -135,7 +135,7 @@ Promise.all([
                     if (2 === event.button) { // 2 là chuột phải
                         const targetPosition = point.clone();
                         targetPosition.y = player.position.y
-                        if(!wayPoints.length) { wayPoints = [targetPosition] }
+                        if (!wayPoints.length) { wayPoints = [targetPosition] }
                         else if (!isEqualPos(wayPoints[0], point) && hit.object.name != 'Player') {
                             if (!isEqualPos(wayPoints[0], targetPosition)) {
                                 wayPoints = [targetPosition]
@@ -286,4 +286,71 @@ function includeHTML(path) {
             xhr.send();
         })
     }
+}
+function aStar(grid, start, goal) {
+    const openSet = [start];
+    const cameFrom = new Map();
+
+    const gScore = new Map();
+    const fScore = new Map();
+
+    const key = (p) => `${p.x},${p.y}`;
+    const heuristic = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y); // Manhattan
+
+    gScore.set(key(start), 0);
+    fScore.set(key(start), heuristic(start, goal));
+
+    while (openSet.length > 0) {
+        const current = openSet.reduce((a, b) =>
+            fScore.get(key(a)) < fScore.get(key(b)) ? a : b
+        );
+
+        if (current.x === goal.x && current.y === goal.y) {
+            return reconstructPath(cameFrom, current);
+        }
+
+        openSet = openSet.filter(p => key(p) !== key(current));
+
+        const neighbors = getNeighbors(current, grid);
+        for (const neighbor of neighbors) {
+            const tentativeG = gScore.get(key(current)) + 1;
+            const neighborKey = key(neighbor);
+
+            if (!gScore.has(neighborKey) || tentativeG < gScore.get(neighborKey)) {
+                cameFrom.set(neighborKey, current);
+                gScore.set(neighborKey, tentativeG);
+                fScore.set(neighborKey, tentativeG + heuristic(neighbor, goal));
+
+                if (!openSet.some(p => key(p) === neighborKey)) {
+                    openSet.push(neighbor);
+                }
+            }
+        }
+    }
+    return []; // không tìm thấy đường
+    function getNeighbors(pos, grid) {
+        const directions = [
+            { x: 0, y: -1 }, { x: 0, y: 1 },
+            { x: -1, y: 0 }, { x: 1, y: 0 }
+        ];
+        const neighbors = [];
+
+        for (const d of directions) {
+            const x = pos.x + d.x;
+            const y = pos.y + d.y;
+            if (grid[y] && grid[y][x] === 0) {
+                neighbors.push({ x, y });
+            }
+        }
+        return neighbors;
+    }
+    function reconstructPath(cameFrom, current) {
+        const path = [current];
+        while (cameFrom.has(`${current.x},${current.y}`)) {
+            current = cameFrom.get(`${current.x},${current.y}`);
+            path.unshift(current);
+        }
+        return path;
+    }
+
 }
