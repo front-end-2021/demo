@@ -150,22 +150,20 @@ Promise.all([
                         if (!wayPoints.length) {
                             wayPoints = [targetPosition]
 
-                            let src = { x: getTitleInGrid(player.position.x), y: getTitleInGrid(player.position.z) }
-                            let des = { x: getTitleInGrid(targetPosition.x), y: getTitleInGrid(targetPosition.z) }
+                            let des = { x: getTitleInGrid(player.position.x), y: getTitleInGrid(player.position.z) }
+                            let src = { x: getTitleInGrid(targetPosition.x), y: getTitleInGrid(targetPosition.z) }
                             let paths = aStar(tileGrid, src, des)
                             wayPoints = paths.map(ps => new THREE.Vector3(getPosFromGrid(ps.x), player.position.y, getPosFromGrid(ps.y)))
-                            wayPoints.reverse()
                             console.log(paths, tileGrid, src, des, wayPoints)
                         }
                         else if (!isEqualPos(wayPoints[0], point) && hit.object.name != 'Player') {
                             if (!isEqualPos(wayPoints[0], targetPosition)) {
                                 wayPoints = [targetPosition]
 
-                                let src = { x: getTitleInGrid(player.position.x), y: getTitleInGrid(player.position.z) }
-                                let des = { x: getTitleInGrid(targetPosition.x), y: getTitleInGrid(targetPosition.z) }
+                                let des = { x: getTitleInGrid(player.position.x), y: getTitleInGrid(player.position.z) }
+                                let src = { x: getTitleInGrid(targetPosition.x), y: getTitleInGrid(targetPosition.z) }
                                 let paths = aStar(tileGrid, src, des)
                                 wayPoints = paths.map(ps => new THREE.Vector3(getPosFromGrid(ps.x), player.position.y, getPosFromGrid(ps.y)))
-                                wayPoints.reverse()
                                 console.log(paths, tileGrid, src, des, wayPoints)
                             }
                         }
