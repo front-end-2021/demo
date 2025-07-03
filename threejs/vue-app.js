@@ -79,26 +79,39 @@ Promise.all([
             const tileSize = 20
 
             const forbiddenTiles = new Set(['1_1', '2_0'])
-            function isForbidden(pos) {
-                const tileX = Math.round(pos.x / tileSize);
-                const tileZ = Math.round(pos.z / tileSize);
-                return forbiddenTiles.has(`${tileX}_${tileZ}`)
-            }
+            function getTitle(posX) { return Math.round(posX / tileSize) }
+            function getTitleInGrid(posX) { return Math.round(posX / tileSize) + 5 }
+            function getPosFromGrid(tileX) { return (tileX - 5) * tileSize }
             let playerColor = 0x99ccff
             let blockColor = 'black'
             // Tạo nền bằng các ô lưới
+            let tileGrid = []
             for (let x = -5; x <= 5; x++) {
+                let row = []
                 for (let z = -5; z <= 5; z++) {
-                    let color = getRandomColor()
-                    if (forbiddenTiles.has(`${x}_${z}`)) color = blockColor
+                    let color, name
+                    if (forbiddenTiles.has(`${x}_${z}`)) {
+                        color = blockColor
+
+                        name = 'Ground_Block'
+                    } else {
+                        color = getRandomColor()
+                        name = 'Ground'
+                    }
+                    if (forbiddenTiles.has(`${z}_${x}`)) {
+                        row.push(1)
+                    } else {
+                        row.push(0)
+                    }
                     const tile = new THREE.Mesh(
                         new THREE.BoxGeometry(tileSize, 1, tileSize),
                         new THREE.MeshBasicMaterial({ color })
-                    );
-                    tile.name = 'Ground'
+                    )
+                    tile.name = name
                     tile.position.set(x * tileSize, 0, z * tileSize);
                     scene.add(tile);
                 }
+                tileGrid.push(row)
             }
             let playerW = tileSize / 2
             let wayPoints = [new THREE.Vector3(0, playerW, 0)]
@@ -135,10 +148,26 @@ Promise.all([
                     if (2 === event.button) { // 2 là chuột phải
                         const targetPosition = point.clone();
                         targetPosition.y = player.position.y
-                        if (!wayPoints.length) { wayPoints = [targetPosition] }
+                        if (!wayPoints.length) {
+                            wayPoints = [targetPosition]
+
+                            let src = { x: getTitleInGrid(player.position.x), y: getTitleInGrid(player.position.z) }
+                            let des = { x: getTitleInGrid(targetPosition.x), y: getTitleInGrid(targetPosition.z) }
+                            let paths = aStar(tileGrid, src, des)
+                            wayPoints = paths.map(ps => new THREE.Vector3(getPosFromGrid(ps.x), player.position.y, getPosFromGrid(ps.y)))
+                            wayPoints.reverse()
+                            console.log(paths, tileGrid, src, des, wayPoints)
+                        }
                         else if (!isEqualPos(wayPoints[0], point) && hit.object.name != 'Player') {
                             if (!isEqualPos(wayPoints[0], targetPosition)) {
                                 wayPoints = [targetPosition]
+
+                                let src = { x: getTitleInGrid(player.position.x), y: getTitleInGrid(player.position.z) }
+                                let des = { x: getTitleInGrid(targetPosition.x), y: getTitleInGrid(targetPosition.z) }
+                                let paths = aStar(tileGrid, src, des)
+                                wayPoints = paths.map(ps => new THREE.Vector3(getPosFromGrid(ps.x), player.position.y, getPosFromGrid(ps.y)))
+                                wayPoints.reverse()
+                                console.log(paths, tileGrid, src, des, wayPoints)
                             }
                         }
                     }
@@ -224,7 +253,6 @@ Promise.all([
                         break
                     }
                 }
-
             }
             function isEqualPos(vec3a, vec3b) {
                 if (vec3a.x == vec3b.x && vec3a.y == vec3b.y && vec3a.z == vec3b.z) return true
@@ -288,69 +316,57 @@ function includeHTML(path) {
     }
 }
 function aStar(grid, start, goal) {
-    const openSet = [start];
+    let openSet = [start];
     const cameFrom = new Map();
 
     const gScore = new Map();
     const fScore = new Map();
 
-    const key = (p) => `${p.x},${p.y}`;
     const heuristic = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y); // Manhattan
 
-    gScore.set(key(start), 0);
-    fScore.set(key(start), heuristic(start, goal));
+    gScore.set(getKey(start.x, start.y), 0);
+    fScore.set(getKey(start.x, start.y), heuristic(start, goal));
 
     while (openSet.length > 0) {
-        const current = openSet.reduce((a, b) =>
-            fScore.get(key(a)) < fScore.get(key(b)) ? a : b
-        );
+        let current = openSet.reduce((a, b) => fScore.get(getKey(a.x, a.y)) < fScore.get(getKey(b.x, b.y)) ? a : b)
 
-        if (current.x === goal.x && current.y === goal.y) {
-            return reconstructPath(cameFrom, current);
-        }
+        if (current.x === goal.x && current.y === goal.y) return reconstructPath(cameFrom, current)
 
-        openSet = openSet.filter(p => key(p) !== key(current));
-
-        const neighbors = getNeighbors(current, grid);
+        openSet = openSet.filter(p => getKey(p.x, p.y) !== getKey(current.x, current.y))
+        const neighbors = getNeighbors([current.x, current.y], grid);
         for (const neighbor of neighbors) {
-            const tentativeG = gScore.get(key(current)) + 1;
-            const neighborKey = key(neighbor);
+            const tentativeG = gScore.get(getKey(current.x, current.y)) + 1;
+            const neighborKey = getKey(neighbor.x, neighbor.y);
 
             if (!gScore.has(neighborKey) || tentativeG < gScore.get(neighborKey)) {
                 cameFrom.set(neighborKey, current);
                 gScore.set(neighborKey, tentativeG);
                 fScore.set(neighborKey, tentativeG + heuristic(neighbor, goal));
 
-                if (!openSet.some(p => key(p) === neighborKey)) {
+                if (!openSet.some(p => getKey(p.x, p.y) === neighborKey)) {
                     openSet.push(neighbor);
                 }
             }
         }
     }
     return []; // không tìm thấy đường
+    function getKey(x, y) { return `${x},${y}` }
     function getNeighbors(pos, grid) {
-        const directions = [
-            { x: 0, y: -1 }, { x: 0, y: 1 },
-            { x: -1, y: 0 }, { x: 1, y: 0 }
-        ];
-        const neighbors = [];
-
+        const directions = [[0, -1], [0, 1], [-1, 0], [1, 0]]
+        const neighbors = []
         for (const d of directions) {
-            const x = pos.x + d.x;
-            const y = pos.y + d.y;
-            if (grid[y] && grid[y][x] === 0) {
-                neighbors.push({ x, y });
-            }
+            const x = pos[0] + d[0];
+            const y = pos[1] + d[1];
+            if (grid[y] && grid[y][x] === 0) neighbors.push({ x, y })
         }
         return neighbors;
     }
     function reconstructPath(cameFrom, current) {
         const path = [current];
-        while (cameFrom.has(`${current.x},${current.y}`)) {
-            current = cameFrom.get(`${current.x},${current.y}`);
-            path.unshift(current);
+        while (cameFrom.has(getKey(current.x, current.y))) {
+            current = cameFrom.get(getKey(current.x, current.y))
+            path.unshift(current)
         }
-        return path;
+        return path
     }
-
 }
