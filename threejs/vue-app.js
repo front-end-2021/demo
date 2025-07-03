@@ -76,28 +76,39 @@ Promise.all([
             scene.add(light);
             // #endregion
 
-            const gridW = 20
+            const tileSize = 20
+
+            const forbiddenTiles = new Set(['1_1', '2_0'])
+            function isForbidden(pos) {
+                const tileX = Math.round(pos.x / tileSize);
+                const tileZ = Math.round(pos.z / tileSize);
+                return forbiddenTiles.has(`${tileX}_${tileZ}`)
+            }
             let playerColor = 0x99ccff
+            let blockColor = 'black'
             // Tạo nền bằng các ô lưới
             for (let x = -5; x <= 5; x++) {
                 for (let z = -5; z <= 5; z++) {
+                    let color = getRandomColor()
+                    if (forbiddenTiles.has(`${x}_${z}`)) color = blockColor
                     const tile = new THREE.Mesh(
-                        new THREE.BoxGeometry(gridW, 1, gridW),
-                        new THREE.MeshBasicMaterial({ color: getRandomColor() })
+                        new THREE.BoxGeometry(tileSize, 1, tileSize),
+                        new THREE.MeshBasicMaterial({ color })
                     );
                     tile.name = 'Ground'
-                    tile.position.set(x * gridW, 0, z * gridW);
+                    tile.position.set(x * tileSize, 0, z * tileSize);
                     scene.add(tile);
                 }
             }
-            let targetPos3 = new THREE.Vector3(0, 10, 0)
+            let playerW = tileSize / 2
+            let wayPoints = [new THREE.Vector3(0, playerW, 0)]
             // Tạo nhân vật đơn giản
             const player = new THREE.Mesh(
-                new THREE.BoxGeometry(gridW / 2, gridW, gridW / 2),
+                new THREE.BoxGeometry(playerW, playerW * 2, playerW),
                 new THREE.MeshBasicMaterial({ color: playerColor })
             );
             player.name = 'Player'
-            player.position.set(targetPos3.x, targetPos3.y, targetPos3.z);
+            player.position.set(wayPoints[0].x, wayPoints[0].y, wayPoints[0].z);
             scene.add(player);
 
             const raycaster = new THREE.Raycaster();
@@ -122,11 +133,12 @@ Promise.all([
                     console.log("Tọa độ va chạm:", point); // Vector3(x, y, z)
 
                     if (2 === event.button) { // 2 là chuột phải
-                        if (!isEqualPos(targetPos3, point) && hit.object.name != 'Player') {
-                            const targetPosition = point.clone();
-                            targetPosition.y = player.position.y
-                            if (!isEqualPos(targetPos3, targetPosition)) {
-                                targetPos3 = targetPosition
+                        const targetPosition = point.clone();
+                        targetPosition.y = player.position.y
+                        if(!wayPoints.length) { wayPoints = [targetPosition] }
+                        else if (!isEqualPos(wayPoints[0], point) && hit.object.name != 'Player') {
+                            if (!isEqualPos(wayPoints[0], targetPosition)) {
+                                wayPoints = [targetPosition]
                             }
                         }
                     }
@@ -194,18 +206,24 @@ Promise.all([
                 console.log(`Thời gian: ${elapsed}s`)
             }
             function goTo(player, speed) {
-                if (0 < targetPos3.distanceToSquared(player.position)) {
-                    // Tính hướng đi từ vị trí hiện tại đến đích
-                    const direction = targetPos3.clone().sub(player.position).normalize();
+                if (wayPoints.length < 1) return;
+                for (let ii = wayPoints.length - 1; -1 < ii; ii--) {
+                    let targetPos3 = wayPoints[ii]
+                    if (0 < targetPos3.distanceToSquared(player.position)) {
+                        // Tính hướng đi từ vị trí hiện tại đến đích
+                        const direction = targetPos3.clone().sub(player.position).normalize();
 
-                    // Di chuyển theo hướng đó với tốc độ nhất định
-                    player.position.add(direction.multiplyScalar(speed));
+                        // Di chuyển theo hướng đó với tốc độ nhất định
+                        player.position.add(direction.multiplyScalar(speed));
 
-                    // Dừng lại nếu đã đến gần đích
-                    if (player.position.distanceToSquared(targetPos3) < speed * speed) {
-                        player.position.copy(targetPos3);
+                        // Dừng lại nếu đã đến gần đích
+                        if (player.position.distanceToSquared(targetPos3) < speed * speed) {
+                            player.position.copy(targetPos3);
+                            wayPoints.splice(ii, 1)
+                        }
                     }
                 }
+
             }
             function isEqualPos(vec3a, vec3b) {
                 if (vec3a.x == vec3b.x && vec3a.y == vec3b.y && vec3a.z == vec3b.z) return true
