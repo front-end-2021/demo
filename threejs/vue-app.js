@@ -221,6 +221,7 @@ Promise.all([
                             player.position.copy(targetPos3);
                             wayPoints.splice(ii, 1)
                         }
+                        break
                     }
                 }
 
