@@ -79,7 +79,6 @@ Promise.all([
             const tileSize = 20
 
             const forbiddenTiles = new Set(['1_1', '2_0'])
-            function getTitle(posX) { return Math.round(posX / tileSize) }
             function getTitleInGrid(posX) { return Math.round(posX / tileSize) + 5 }
             function getPosFromGrid(tileX) { return (tileX - 5) * tileSize }
             let playerColor = 0x99ccff
