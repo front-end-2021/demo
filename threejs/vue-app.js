@@ -1,6 +1,7 @@
 // #region import
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import Stats from 'three/addons/libs/stats.module.js';  // debug 
 import { Snowflake, convertDic, insertHTMLAtCursor } from './common.js'
 import { createApp } from 'vue'
 //import {  } from './components/forms.js'
@@ -38,60 +39,125 @@ Promise.all([
         created() {
             // Khởi tạo renderer, scene và camera isometric
             const scene = new THREE.Scene();
-            const camera = new THREE.OrthographicCamera(-100, 100, 100, -100, 0.1, 1000);
+            scene.background = new THREE.Color(0xa0d8ef);
+
+            // #region Camera (Isometric - Orthographic)
+            const aspect = window.innerWidth / window.innerHeight;
+            const d = 90;
+            const camera = new THREE.OrthographicCamera(
+                -d * aspect, d * aspect,
+                d, -d,
+                0.1, 1000
+            );
+            // Góc nhìn isometric
+            let camAsix = d
+            const offset = new THREE.Vector3(camAsix, camAsix, camAsix);
+            camera.position.set(offset.x, offset.y, offset.z);
+            camera.lookAt(0, 0, 0);
+            // #endregion
+            const stats = new Stats();
             const renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
+            document.body.appendChild(stats.dom);
 
-            // Góc nhìn isometric
-            let camAsix = 100
-            camera.position.set(camAsix, camAsix, camAsix);
-            camera.lookAt(0, 0, 0);
+            // Controls
+            const controls = new OrbitControls(camera, renderer.domElement);
+            // controls.enableRotate = false;
+            controls.enableDamping = true;
+            //controls.enablePan = true;
+            controls.zoomSpeed = 1.2;
+
+            // #region Thêm ánh sáng
+            let light = new THREE.DirectionalLight(0xffffff, 0.8);
+            light.position.set(10, 20, 10);
+            scene.add(light);
+            light = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(light);
+            // #endregion
 
             const gridW = 20
-            let groundColor = 0x99ccff
+            let playerColor = 0x99ccff
             // Tạo nền bằng các ô lưới
             for (let x = -5; x <= 5; x++) {
                 for (let z = -5; z <= 5; z++) {
                     const tile = new THREE.Mesh(
                         new THREE.BoxGeometry(gridW, 1, gridW),
-                        new THREE.MeshBasicMaterial({ color: groundColor })
+                        new THREE.MeshBasicMaterial({ color: getRandomColor() })
                     );
+                    tile.name = 'Ground'
                     tile.position.set(x * gridW, 0, z * gridW);
                     scene.add(tile);
                 }
             }
-            let playerColor = 'green'
+            let targetPos3 = new THREE.Vector3(0, 10, 0)
             // Tạo nhân vật đơn giản
             const player = new THREE.Mesh(
                 new THREE.BoxGeometry(gridW / 2, gridW, gridW / 2),
                 new THREE.MeshBasicMaterial({ color: playerColor })
             );
-            player.position.set(0, 10, 0);
+            player.name = 'Player'
+            player.position.set(targetPos3.x, targetPos3.y, targetPos3.z);
             scene.add(player);
 
-            const step = 6
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+
+            window.addEventListener('mouseup', (event) => {
+                // Chuyển đổi tọa độ chuột sang không gian Normalized Device Coordinates (-1 đến 1)
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                // Gán ray từ camera và tọa độ chuột
+                raycaster.setFromCamera(mouse, camera);
+
+                // Kiểm tra va chạm với danh sách mesh (ví dụ: scene.children)
+                const intersects = raycaster.intersectObjects(scene.children, true);
+
+                if (intersects.length > 0) {
+                    const hit = intersects[0]; // đối tượng bị va chạm đầu tiên
+
+                    const point = hit.point; // tọa độ điểm va chạm trong không gian 3D
+                    console.log("Click vào mesh:", hit.object);
+                    console.log("Tọa độ va chạm:", point); // Vector3(x, y, z)
+
+                    if (2 === event.button) { // 2 là chuột phải
+                        if (!isEqualPos(targetPos3, point) && hit.object.name != 'Player') {
+                            const targetPosition = point.clone();
+                            targetPosition.y = player.position.y
+                            if (!isEqualPos(targetPos3, targetPosition)) {
+                                targetPos3 = targetPosition
+                            }
+                        }
+                    }
+                }
+            });
+
+            const moveSpeed = 0.69
             document.addEventListener("keydown", (event) => {
                 switch (event.key) {
-                    case "ArrowUp": goInSometric(player, 'up', step)
-                        //player.position.z -= step;
+                    case "ArrowUp": goInSometric(player, 'up', moveSpeed)
+                        //player.position.z -= moveSpeed;
                         break;
-                    case "ArrowDown": goInSometric(player, 'down', step)
-                        //player.position.z += step;
+                    case "ArrowDown": goInSometric(player, 'down', moveSpeed)
+                        //player.position.z += moveSpeed;
                         break;
-                    case "ArrowLeft": goInSometric(player, 'left', step)
-                        //player.position.x -= step;
+                    case "ArrowLeft": goInSometric(player, 'left', moveSpeed)
+                        //player.position.x -= moveSpeed;
                         break;
-                    case "ArrowRight": goInSometric(player, 'right', step)
-                        //player.position.x += step;
+                    case "ArrowRight": goInSometric(player, 'right', moveSpeed)
+                        //player.position.x += moveSpeed;
                         break;
                 }
             });
             const clock = new THREE.Clock();
             function animate() {
                 requestAnimationFrame(animate);
-                updateHUD(); // cập nhật HUD
+                //  updateHUD(); // cập nhật HUD
+                goTo(player, moveSpeed)
+                updateIsometricCamera(camera, player); // camera bám theo nhân vật
                 renderer.render(scene, camera);
+                stats.update(); // cập nhật FPS
             }
             animate();
             function goInSometric(player, direct, step) {
@@ -126,6 +192,37 @@ Promise.all([
             function updateHUD() {
                 const elapsed = Math.floor(clock.getElapsedTime());
                 console.log(`Thời gian: ${elapsed}s`)
+            }
+            function goTo(player, speed) {
+                if (0 < targetPos3.distanceToSquared(player.position)) {
+                    // Tính hướng đi từ vị trí hiện tại đến đích
+                    const direction = targetPos3.clone().sub(player.position).normalize();
+
+                    // Di chuyển theo hướng đó với tốc độ nhất định
+                    player.position.add(direction.multiplyScalar(speed));
+
+                    // Dừng lại nếu đã đến gần đích
+                    if (player.position.distanceToSquared(targetPos3) < speed * speed) {
+                        player.position.copy(targetPos3);
+                    }
+                }
+            }
+            function isEqualPos(vec3a, vec3b) {
+                if (vec3a.x == vec3b.x && vec3a.y == vec3b.y && vec3a.z == vec3b.z) return true
+                return false
+            }
+            function updateIsometricCamera(camera, player) {
+                const targetPosition = player.position.clone();
+                const cameraPosition = targetPosition.clone().add(offset);
+
+                camera.position.lerp(cameraPosition, 0.1); // di chuyển mượt
+                camera.lookAt(targetPosition);
+            }
+            function getRandomColor() {
+                const r = Math.random();
+                const g = Math.random();
+                const b = Math.random();
+                return new THREE.Color(r, g, b);
             }
         },
         //beforeMount() { },
