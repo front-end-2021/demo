@@ -1,6 +1,7 @@
 // #region import
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import Stats from 'three/addons/libs/stats.module.js';  // debug 
 import { Snowflake, convertDic, insertHTMLAtCursor } from './common.js'
 import { createApp } from 'vue'
@@ -15,10 +16,8 @@ Promise.all([
             // 'view-commands': ViewCommands,
         },
         data() {
-
             return {
                 TClock: { totalSec: 0, pauseSec: 0 },
-
             }
         },
         computed: {
@@ -32,12 +31,8 @@ Promise.all([
                 return [min, sec]
             },
         },
-        // watch: {
-        //     'Search.Name'(txt) { console.log('watch search name ', txt) },
-        // },
-        methods: {
-
-        },
+        // watch: { },
+        methods: {},
         beforeCreate() {
             values.forEach((path, ii) => {
                 let pDom = document.body.querySelector(`.dnb-imp-html[dnbpath="${path}"]`)
@@ -45,14 +40,22 @@ Promise.all([
             })
         },
         created() {
-            //const root = this
+
+            const stats = new Stats();
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            //renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            document.body.appendChild(renderer.domElement);
+            document.body.appendChild(stats.dom);
+
             // Khởi tạo renderer, scene và camera isometric
             const scene = new THREE.Scene();
             scene.background = new THREE.Color(0xa0d8ef);
 
-            // #region Camera (Isometric - Orthographic)
             const aspect = window.innerWidth / window.innerHeight;
             const d = 90;
+            // #region Camera (Isometric - Orthographic)
             const camera = new THREE.OrthographicCamera(
                 -d * aspect, d * aspect,
                 d, -d,
@@ -65,11 +68,14 @@ Promise.all([
             camera.position.set(offset.x, offset.y, offset.z);
             camera.lookAt(0, 0, 0);
             // #endregion
-            const stats = new Stats();
-            const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
-            document.body.appendChild(stats.dom);
+
+            // new RGBELoader()
+            //     .load('textures/sky1k.hdr', function (texture, textureData) {
+            //         texture.mapping = THREE.EquirectangularReflectionMapping;
+            //         scene.background = texture
+            //         scene.environment = texture
+            //     })
+
 
             const clock = new THREE.Clock(false);
             const t_Clok = this.TClock
@@ -149,7 +155,7 @@ Promise.all([
             const mouse = new THREE.Vector2();
 
             window.addEventListener('mouseup', (event) => {
-                if(!clock.running) return;
+                if (!clock.running) return;
                 // Chuyển đổi tọa độ chuột sang không gian Normalized Device Coordinates (-1 đến 1)
                 mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -227,8 +233,8 @@ Promise.all([
                     updateHUD(); // cập nhật HUD
                     goTo(player, moveSpeed)
                     updateIsometricCamera(camera, player); // camera bám theo nhân vật
-                    renderer.render(scene, camera);
                 }
+                renderer.render(scene, camera);
                 stats.update(); // cập nhật FPS
             }
             animFrame();
