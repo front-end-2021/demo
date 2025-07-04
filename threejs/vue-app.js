@@ -1,7 +1,7 @@
 // #region import
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import Stats from 'three/addons/libs/stats.module.js';  // debug 
 import { Snowflake, convertDic, insertHTMLAtCursor } from './common.js'
 import { createApp } from 'vue'
@@ -32,7 +32,18 @@ Promise.all([
             },
         },
         // watch: { },
-        methods: {},
+        methods: {
+            pauseGame(type) {
+                const t_Clok = this.TClock
+                switch (type) {
+                    case 'pause': t_Clok.pauseSec = t_Clok.totalSec
+                        t_Clok.clock.stop()
+                        break;
+                    case 'resume': t_Clok.clock.start()
+                        break;
+                }
+            },
+        },
         beforeCreate() {
             values.forEach((path, ii) => {
                 let pDom = document.body.querySelector(`.dnb-imp-html[dnbpath="${path}"]`)
@@ -40,18 +51,39 @@ Promise.all([
             })
         },
         created() {
-
+            let player, mixer
             const stats = new Stats();
-            const renderer = new THREE.WebGLRenderer();
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            //renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            document.body.appendChild(renderer.domElement);
-            document.body.appendChild(stats.dom);
-
+            const tileSize = 20
+            let gridSize = 5
+            let playerW = tileSize / 2
+            let wayPoints = [new THREE.Vector3(0, playerW, 0)]
             // Khởi tạo renderer, scene và camera isometric
             const scene = new THREE.Scene();
             scene.background = new THREE.Color(0xa0d8ef);
+
+            let loader = new GLTFLoader();
+            mixer = new THREE.AnimationMixer(scene);
+            loader.load('models/Horse.glb', (gltf) => {
+                console.log(gltf)
+                player = gltf.scene.children[0];
+                let scale = 0.069
+                player.scale.set(scale * 1.2, scale, scale);
+
+                player.name = 'Player'
+                player.position.set(wayPoints[0].x, 0, wayPoints[0].z);
+                wayPoints = []
+
+                mixer.clipAction(gltf.animations[0]).setDuration(1).play();
+
+                scene.add(gltf.scene)
+            })
+
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setAnimationLoop(animFrame);
+            document.body.appendChild(renderer.domElement);
+            document.body.appendChild(stats.dom);
 
             const aspect = window.innerWidth / window.innerHeight;
             const d = 90;
@@ -68,14 +100,6 @@ Promise.all([
             camera.position.set(offset.x, offset.y, offset.z);
             camera.lookAt(0, 0, 0);
             // #endregion
-
-            // new RGBELoader()
-            //     .load('textures/sky1k.hdr', function (texture, textureData) {
-            //         texture.mapping = THREE.EquirectangularReflectionMapping;
-            //         scene.background = texture
-            //         scene.environment = texture
-            //     })
-
 
             const clock = new THREE.Clock(false);
             const t_Clok = this.TClock
@@ -97,8 +121,6 @@ Promise.all([
             scene.add(light);
             // #endregion
 
-            const tileSize = 20
-            let gridSize = 5
             const blockedTiles = new Set(['x_z', '1_1', '2_0'])
             function getTitleInGrid(posX) { return Math.round(posX / tileSize) + gridSize }
             function getPosFromGrid(tileX) { return (tileX - gridSize) * tileSize }
@@ -138,17 +160,11 @@ Promise.all([
                 tileGrid.push(row)
             }
             scene.add(group);
-            let playerW = tileSize / 2
-            let wayPoints = [new THREE.Vector3(0, playerW, 0)]
             // Tạo nhân vật đơn giản
-            const player = new THREE.Mesh(
-                new THREE.BoxGeometry(playerW, playerW * 2, playerW),
-                new THREE.MeshBasicMaterial({ color: playerColor })
-            );
-            player.name = 'Player'
-            player.position.set(wayPoints[0].x, wayPoints[0].y, wayPoints[0].z);
-            wayPoints = []
-            scene.add(player);
+            // player = new THREE.Mesh(
+            //     new THREE.BoxGeometry(playerW, playerW * 2, playerW),
+            //     new THREE.MeshBasicMaterial({ color: playerColor })
+            // )
 
             const raycaster = new THREE.Raycaster();
             raycaster.layers.enable(0); // chỉ raycast với layer 0
@@ -200,11 +216,9 @@ Promise.all([
             }
             document.addEventListener("keyup", (event) => {
                 switch (event.key) {
-                    case "p":
-                        t_Clok.pauseSec = t_Clok.totalSec
-                        clock.stop()
+                    case "p": this.pauseGame('pause')
                         break;
-                    case "r": clock.start()
+                    case "r": this.pauseGame('resume')
                         break;
                 }
             });
@@ -228,17 +242,19 @@ Promise.all([
                 }
             }
             function animFrame() {
-                requestAnimationFrame(animFrame);
                 if (clock.running) {
                     updateHUD(); // cập nhật HUD
                     goTo(player, moveSpeed)
                     updateIsometricCamera(camera, player); // camera bám theo nhân vật
                 }
+                if (mixer) {
+                    mixer.update(clock.getDelta())
+                }
                 renderer.render(scene, camera);
                 stats.update(); // cập nhật FPS
             }
-            animFrame();
             clock.start()
+
             function goInSometric(player, direct, step) {
                 switch (direct) {
                     case 'up': player.position.z -= moveSpeed;
@@ -265,14 +281,20 @@ Promise.all([
                 }
             }
             function goTo(player, speed) {
+                if (!player) return
                 if (wayPoints.length < 1) return;
+
+                let targetPos3 = wayPoints[0]
+                player.lookAt(targetPos3)
+
                 for (let ii = wayPoints.length - 1; -1 < ii; ii--) {
-                    let targetPos3 = wayPoints[ii]
+                    targetPos3 = wayPoints[ii]
                     if (0 < targetPos3.distanceToSquared(player.position)) {
                         const direction = targetPos3.clone().sub(player.position).normalize(); // Tính hướng đi từ vị trí hiện tại đến đích
                         player.position.add(direction.multiplyScalar(speed)); // Di chuyển theo hướng đó với tốc độ nhất định
                         if (player.position.distanceToSquared(targetPos3) < speed * speed) {
-                            player.position.copy(targetPos3);   // Dừng lại nếu đã đến gần đích
+                            player.position.lerp(targetPos3, 0.003)
+                            //player.position.copy(targetPos3);   // Dừng lại nếu đã đến gần đích
                             wayPoints.splice(ii, 1)
                         }
                         break
@@ -284,10 +306,11 @@ Promise.all([
                 return false
             }
             function updateIsometricCamera(camera, player) {
+                if (!player) return;
                 const targetPosition = player.position.clone();
                 const cameraPosition = targetPosition.clone().add(offset);
 
-                camera.position.lerp(cameraPosition, 0.1); // di chuyển mượt
+                camera.position.lerp(cameraPosition, 0.03); // di chuyển mượt
                 camera.lookAt(targetPosition);
             }
             function getRandomColor() {
@@ -296,7 +319,6 @@ Promise.all([
                 const b = Math.random();
                 return new THREE.Color(r, g, b);
             }
-
         },
         //beforeMount() { },
         mounted() {
