@@ -17,12 +17,20 @@ Promise.all([
         data() {
 
             return {
-
+                TClock: { totalSec: 0, pauseSec: 0 },
 
             }
         },
         computed: {
             IdGenerator() { return new Snowflake(42n) },
+            ViewTime() {
+                const t_Clok = this.TClock
+                let min = Math.floor(t_Clok.totalSec / 60)
+                if (min < 10) min = `0${min}`
+                let sec = t_Clok.totalSec % 60
+                if (sec < 10) sec = `0${sec}`
+                return [min, sec]
+            },
         },
         // watch: {
         //     'Search.Name'(txt) { console.log('watch search name ', txt) },
@@ -37,6 +45,7 @@ Promise.all([
             })
         },
         created() {
+            //const root = this
             // Khởi tạo renderer, scene và camera isometric
             const scene = new THREE.Scene();
             scene.background = new THREE.Color(0xa0d8ef);
@@ -49,6 +58,7 @@ Promise.all([
                 d, -d,
                 0.1, 1000
             );
+            camera.layers.enable(1); // bật layer 1 để camera nhìn thấy mesh
             // Góc nhìn isometric
             let camAsix = d
             const offset = new THREE.Vector3(camAsix, camAsix, camAsix);
@@ -61,6 +71,11 @@ Promise.all([
             document.body.appendChild(renderer.domElement);
             document.body.appendChild(stats.dom);
 
+            const clock = new THREE.Clock(false);
+            const t_Clok = this.TClock
+            t_Clok.pauseSec = 0
+            t_Clok.totalSec = 0
+            t_Clok.clock = clock
             // Controls
             const controls = new OrbitControls(camera, renderer.domElement);
             // controls.enableRotate = false;
@@ -77,27 +92,28 @@ Promise.all([
             // #endregion
 
             const tileSize = 20
-
-            const forbiddenTiles = new Set(['1_1', '2_0'])
-            function getTitleInGrid(posX) { return Math.round(posX / tileSize) + 5 }
-            function getPosFromGrid(tileX) { return (tileX - 5) * tileSize }
+            let gridSize = 5
+            const blockedTiles = new Set(['x_z', '1_1', '2_0'])
+            function getTitleInGrid(posX) { return Math.round(posX / tileSize) + gridSize }
+            function getPosFromGrid(tileX) { return (tileX - gridSize) * tileSize }
             let playerColor = 0x99ccff
             let blockColor = 'black'
+            let group = new THREE.Group();
             // Tạo nền bằng các ô lưới
             let tileGrid = []
-            for (let x = -5; x <= 5; x++) {
+            group.name = 'Group_Ground'
+            for (let x = -gridSize; x <= gridSize; x++) {
                 let row = []
-                for (let z = -5; z <= 5; z++) {
+                for (let z = -gridSize; z <= gridSize; z++) {
                     let color, name
-                    if (forbiddenTiles.has(`${x}_${z}`)) {
+                    if (blockedTiles.has(`${x}_${z}`)) {
                         color = blockColor
-
                         name = 'Ground_Block'
                     } else {
                         color = getRandomColor()
                         name = 'Ground'
                     }
-                    if (forbiddenTiles.has(`${z}_${x}`)) {
+                    if (blockedTiles.has(`${z}_${x}`)) {
                         row.push(1)
                     } else {
                         row.push(0)
@@ -106,12 +122,16 @@ Promise.all([
                         new THREE.BoxGeometry(tileSize, 1, tileSize),
                         new THREE.MeshBasicMaterial({ color })
                     )
+                    if (blockedTiles.has(`${x}_${z}`)) {
+                        tile.layers.set(1); // gán mesh vào layer 1 (blocked)
+                    }
                     tile.name = name
                     tile.position.set(x * tileSize, 0, z * tileSize);
-                    scene.add(tile);
+                    group.add(tile);
                 }
                 tileGrid.push(row)
             }
+            scene.add(group);
             let playerW = tileSize / 2
             let wayPoints = [new THREE.Vector3(0, playerW, 0)]
             // Tạo nhân vật đơn giản
@@ -121,12 +141,15 @@ Promise.all([
             );
             player.name = 'Player'
             player.position.set(wayPoints[0].x, wayPoints[0].y, wayPoints[0].z);
+            wayPoints = []
             scene.add(player);
 
             const raycaster = new THREE.Raycaster();
+            raycaster.layers.enable(0); // chỉ raycast với layer 0
             const mouse = new THREE.Vector2();
 
             window.addEventListener('mouseup', (event) => {
+                if(!clock.running) return;
                 // Chuyển đổi tọa độ chuột sang không gian Normalized Device Coordinates (-1 đến 1)
                 mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -141,22 +164,23 @@ Promise.all([
                     const hit = intersects[0]; // đối tượng bị va chạm đầu tiên
 
                     const point = hit.point; // tọa độ điểm va chạm trong không gian 3D
-                    console.log("Click vào mesh:", hit.object);
+                    const hitMesh = hit.object
+                    console.log("Click vào mesh:", hitMesh);
                     console.log("Tọa độ va chạm:", point); // Vector3(x, y, z)
 
                     if (2 === event.button) { // 2 là chuột phải
                         const targetPosition = point.clone();
                         targetPosition.y = player.position.y
-                        if (!wayPoints.length) {
-                            wayPoints = buildWayPoints(player.position, targetPosition)
-                            console.log(tileGrid, wayPoints)
-                        }
-                        else if (!isEqualPos(wayPoints[0], point) && hit.object.name != 'Player') {
-                            if (!isEqualPos(wayPoints[0], targetPosition)) {
+                        if (hitMesh.name != 'Player') {
+                            if (!wayPoints.length) {
                                 wayPoints = buildWayPoints(player.position, targetPosition)
-                                console.log(tileGrid, wayPoints)
+                            } else if (!isEqualPos(wayPoints[0], point)) {
+                                if (!isEqualPos(wayPoints[0], targetPosition)) {
+                                    wayPoints = buildWayPoints(player.position, targetPosition)
+                                }
                             }
                         }
+
                     }
                 }
             });
@@ -164,53 +188,64 @@ Promise.all([
                 let des = { x: getTitleInGrid(srcPos.x), y: getTitleInGrid(srcPos.z) }
                 let src = { x: getTitleInGrid(desPos.x), y: getTitleInGrid(desPos.z) }
                 let paths = aStar(tileGrid, src, des)
-                console.log(paths, src, des)
+                if (1 < paths.length) paths.pop()
+                //  console.log(paths, src, des)
                 return paths.map(ps => new THREE.Vector3(getPosFromGrid(ps.x), srcPos.y, getPosFromGrid(ps.y)))
             }
+            document.addEventListener("keyup", (event) => {
+                switch (event.key) {
+                    case "p":
+                        t_Clok.pauseSec = t_Clok.totalSec
+                        clock.stop()
+                        break;
+                    case "r": clock.start()
+                        break;
+                }
+            });
             const moveSpeed = 0.69
             document.addEventListener("keydown", (event) => {
                 switch (event.key) {
                     case "ArrowUp": goInSometric(player, 'up', moveSpeed)
-                        //player.position.z -= moveSpeed;
                         break;
                     case "ArrowDown": goInSometric(player, 'down', moveSpeed)
-                        //player.position.z += moveSpeed;
                         break;
                     case "ArrowLeft": goInSometric(player, 'left', moveSpeed)
-                        //player.position.x -= moveSpeed;
                         break;
                     case "ArrowRight": goInSometric(player, 'right', moveSpeed)
-                        //player.position.x += moveSpeed;
                         break;
                 }
             });
-            const clock = new THREE.Clock();
-            function animate() {
-                requestAnimationFrame(animate);
-                //  updateHUD(); // cập nhật HUD
-                goTo(player, moveSpeed)
-                updateIsometricCamera(camera, player); // camera bám theo nhân vật
-                renderer.render(scene, camera);
+            const updateHUD = () => {
+                const elapsed = Math.floor(clock.getElapsedTime());
+                if (t_Clok.totalSec != t_Clok.pauseSec + elapsed) {
+                    t_Clok.totalSec = t_Clok.pauseSec + elapsed
+                }
+            }
+            function animFrame() {
+                requestAnimationFrame(animFrame);
+                if (clock.running) {
+                    updateHUD(); // cập nhật HUD
+                    goTo(player, moveSpeed)
+                    updateIsometricCamera(camera, player); // camera bám theo nhân vật
+                    renderer.render(scene, camera);
+                }
                 stats.update(); // cập nhật FPS
             }
-            animate();
+            animFrame();
+            clock.start()
             function goInSometric(player, direct, step) {
                 switch (direct) {
-                    case 'up':
-                        player.position.x -= step
-                        player.position.z -= step
+                    case 'up': player.position.z -= moveSpeed;
+                        // player.position.x -= step; player.position.z -= step
                         return;
-                    case 'right':
-                        player.position.z -= step / 3
-                        player.position.x += step / 3
+                    case 'right': player.position.x += moveSpeed;
+                        // player.position.z -= step / 3; player.position.x += step / 3
                         return
-                    case 'down':
-                        player.position.z += step
-                        player.position.x += step
+                    case 'down': player.position.z += moveSpeed;
+                        // player.position.z += step; player.position.x += step
                         return
-                    case 'left':
-                        player.position.x -= step / 3
-                        player.position.z += step / 3
+                    case 'left': player.position.x -= moveSpeed;
+                        // player.position.x -= step / 3; player.position.z += step / 3
                         return;
                     case 'up-right': player.position.z -= step;
                         return;
@@ -223,24 +258,15 @@ Promise.all([
                     default: break;
                 }
             }
-            function updateHUD() {
-                const elapsed = Math.floor(clock.getElapsedTime());
-                console.log(`Thời gian: ${elapsed}s`)
-            }
             function goTo(player, speed) {
                 if (wayPoints.length < 1) return;
                 for (let ii = wayPoints.length - 1; -1 < ii; ii--) {
                     let targetPos3 = wayPoints[ii]
                     if (0 < targetPos3.distanceToSquared(player.position)) {
-                        // Tính hướng đi từ vị trí hiện tại đến đích
-                        const direction = targetPos3.clone().sub(player.position).normalize();
-
-                        // Di chuyển theo hướng đó với tốc độ nhất định
-                        player.position.add(direction.multiplyScalar(speed));
-
-                        // Dừng lại nếu đã đến gần đích
+                        const direction = targetPos3.clone().sub(player.position).normalize(); // Tính hướng đi từ vị trí hiện tại đến đích
+                        player.position.add(direction.multiplyScalar(speed)); // Di chuyển theo hướng đó với tốc độ nhất định
                         if (player.position.distanceToSquared(targetPos3) < speed * speed) {
-                            player.position.copy(targetPos3);
+                            player.position.copy(targetPos3);   // Dừng lại nếu đã đến gần đích
                             wayPoints.splice(ii, 1)
                         }
                         break
@@ -264,6 +290,7 @@ Promise.all([
                 const b = Math.random();
                 return new THREE.Color(r, g, b);
             }
+
         },
         //beforeMount() { },
         mounted() {
@@ -309,43 +336,63 @@ function includeHTML(path) {
     }
 }
 function aStar(grid, start, goal) {
-    let openSet = [start];
-    const cameFrom = new Map();
-
-    const gScore = new Map();
-    const fScore = new Map();
-
     const heuristic = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y); // Manhattan
 
-    gScore.set(getKey(start.x, start.y), 0);
-    fScore.set(getKey(start.x, start.y), heuristic(start, goal));
+    let paths = getPaths([start], 't', new Map())
+    let pathsB = getPaths([start], 'b', new Map())
+    if (pathsB.length) {
+        if (!paths.length) paths = pathsB
+        else if (pathsB.length < paths.length) paths = pathsB
+    }
+    pathsB = getPaths([start], 'r', new Map())
+    if (pathsB.length) {
+        if (!paths.length) paths = pathsB
+        else if (pathsB.length < paths.length) paths = pathsB
+    }
+    pathsB = getPaths([start], 'l', new Map())
+    if (pathsB.length) {
+        if (!paths.length) paths = pathsB
+        else if (pathsB.length < paths.length) paths = pathsB
+    }
+    return paths
+    function getPaths(openPoints, tblr, cameFrom) {
+        const gScore = new Map([[getKey(start.x, start.y), 0]]);
+        const fScore = new Map([[getKey(start.x, start.y), heuristic(start, goal)]]);
+        let current
+        while (0 < openPoints.length) {
+            current = openPoints.reduce((a, b) => fScore.get(getKey(a.x, a.y)) < fScore.get(getKey(b.x, b.y)) ? a : b)
+            if (current.x === goal.x && current.y === goal.y) return reconstructPath(cameFrom, current)
 
-    while (openSet.length > 0) {
-        let current = openSet.reduce((a, b) => fScore.get(getKey(a.x, a.y)) < fScore.get(getKey(b.x, b.y)) ? a : b)
-
-        if (current.x === goal.x && current.y === goal.y) return reconstructPath(cameFrom, current)
-
-        openSet = openSet.filter(p => getKey(p.x, p.y) !== getKey(current.x, current.y))
-        const neighbors = getNeighbors([current.x, current.y], grid);
-        for (const neighbor of neighbors) {
-            const tentativeG = gScore.get(getKey(current.x, current.y)) + 1;
-            const neighborKey = getKey(neighbor.x, neighbor.y);
-
-            if (!gScore.has(neighborKey) || tentativeG < gScore.get(neighborKey)) {
-                cameFrom.set(neighborKey, current);
-                gScore.set(neighborKey, tentativeG);
-                fScore.set(neighborKey, tentativeG + heuristic(neighbor, goal));
-
-                if (!openSet.some(p => getKey(p.x, p.y) === neighborKey)) {
-                    openSet.push(neighbor);
+            openPoints = openPoints.filter(p => getKey(p.x, p.y) !== getKey(current.x, current.y))
+            let openKey = new Set(openPoints.map(p => getKey(p.x, p.y)))
+            const neighbors = getNeighbors([current.x, current.y], grid, tblr);
+            let tentativeG, neighborKey
+            for (const neighbor of neighbors) {
+                tentativeG = gScore.get(getKey(current.x, current.y)) + 1;
+                neighborKey = getKey(neighbor.x, neighbor.y);
+                if (!gScore.has(neighborKey) || tentativeG < gScore.get(neighborKey)) {
+                    cameFrom.set(neighborKey, current);
+                    gScore.set(neighborKey, tentativeG);
+                    fScore.set(neighborKey, tentativeG + heuristic(neighbor, goal));
+                    if (!openKey.has(neighborKey)) openPoints.push(neighbor)
                 }
             }
         }
+        return [] // không tìm thấy đường
     }
-    return []; // không tìm thấy đường
     function getKey(x, y) { return `${x},${y}` }
-    function getNeighbors(pos, grid) {
-        const directions = [[0, -1], [0, 1], [-1, 0], [1, 0]]
+    function getNeighbors(pos, grid, tblr) {
+        let directions = [[0, -1], [0, 1], [-1, 0], [1, 0]]
+        switch (tblr) {
+            case 't': directions = [[0, -1], [1, 0], [0, 1], [-1, 0]] // top-right-bot-left
+                break;
+            case 'b': directions = [[0, 1], [-1, 0], [0, -1], [1, 0]] // bot-left-top-right
+                break;
+            case 'l': directions = [[-1, 0], [0, -1], [1, 0], [0, 1]] // left-top-right-bot
+                break;
+            case 'r': directions = [[1, 0], [0, 1], [-1, 0], [0, -1]] // right-bot-left-top
+                break;
+        }
         const neighbors = []
         for (const d of directions) {
             const x = pos[0] + d[0];
