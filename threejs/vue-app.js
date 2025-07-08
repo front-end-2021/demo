@@ -53,7 +53,7 @@ Promise.all([
         },
         created() {
             let camera, scene, stats, clock, container, controls, renderer,
-                mixer, actions, activeAction, previousAction,
+                mixer, actions, activeAction,
                 wayPoints, offset, playerColor, model, gui, face, player
             let tileGrid = []
             let moveSpeed = 0.69
@@ -250,7 +250,7 @@ Promise.all([
                 let des = { x: getTitleInGrid(srcPos.x), y: getTitleInGrid(srcPos.z) }
                 let src = { x: getTitleInGrid(desPos.x), y: getTitleInGrid(desPos.z) }
                 let paths = aStar(tileGrid, src, des)
-                if (1 < paths.length) paths.pop()
+                if (1 < paths.length) paths.pop()   // Bỏ đi vị trí player đang đứng.
                 //  console.log(paths, src, des)
                 return paths.map(ps => new THREE.Vector3(getPosFromGrid(ps.x), srcPos.y, getPosFromGrid(ps.y)))
             }
@@ -274,22 +274,18 @@ Promise.all([
                 stats.update(); // cập nhật FPS
             }
             function fadeToAction(name, duration) {
+                if (activeAction._clip.name !== name) {
+                    let prvA = activeAction
+                    prvA.fadeOut(duration);
 
-                previousAction = activeAction;
-                activeAction = actions[name];
-
-                if (previousAction !== activeAction) {
-
-                    previousAction.fadeOut(duration);
+                    activeAction = actions[name];
+                    activeAction
+                        .reset()
+                        .setEffectiveTimeScale(1)
+                        .setEffectiveWeight(1)
+                        .fadeIn(duration)
+                        .play();
                 }
-
-                activeAction
-                    .reset()
-                    .setEffectiveTimeScale(1)
-                    .setEffectiveWeight(1)
-                    .fadeIn(duration)
-                    .play();
-
             }
             function createGUI(model, animations) {
 
