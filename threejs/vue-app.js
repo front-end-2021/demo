@@ -60,8 +60,9 @@ Promise.all([
             const pathModel = `models/RobotExpressive.glb`
             const api = { state: 'Walking' };
 
-            let gridSize = 5, tileSize = 20, blockedTiles = new Set(['x_z', '1_1', '2_0'])
-            let playerW = tileSize / 2
+            let gridSize = 5,
+                tileSize = 20,
+                blockedTiles = new Set(['x_z', '1_1', '2_0'])
             wayPoints = [new THREE.Vector3(0, 0, 0)]
             const t_Clok = this.TClock
             {
@@ -150,7 +151,7 @@ Promise.all([
                     player = new THREE.Group();
                     player.name = 'Player'
                     player.add(model)
-                    
+
                     player.position.set(wayPoints[0].x, wayPoints[0].y, wayPoints[0].z);
                     scene.add(player);
                     console.log(player, model)
