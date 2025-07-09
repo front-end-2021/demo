@@ -54,16 +54,19 @@ Promise.all([
         created() {
             let camera, scene, stats, clock, container, controls, renderer,
                 mixer, actions, activeAction,
-                wayPoints, offset, playerColor, model, gui, face, player
+                offset, playerColor, model, gui, face, player
             let tileGrid = []
             let moveSpeed = 0.69
             const pathModel = `models/RobotExpressive.glb`
             const api = { state: 'Walking' };
-
+            let lsReactive = []
             let gridSize = 5,
                 tileSize = 20,
                 blockedTiles = new Set(['x_z', '1_1', '2_0'])
-            wayPoints = [new THREE.Vector3(0, 0, 0)]
+            let wayPoints = [new THREE.Vector3(0, 0, 0)]
+            let gridPoints = []     // `x_y_z`
+            let setCharacter = new Set()
+            let setName = new Set(['Player', 'Group_Ground', 'Character'])
             const t_Clok = this.TClock
             {
                 // #region Camera (Isometric - Orthographic)
@@ -102,7 +105,6 @@ Promise.all([
                 scene.add(light);
                 // #endregion
                 // #region Thêm ground
-                blockedTiles = new Set(['x_z', '1_1', '2_0'])
                 playerColor = 0x99ccff
                 let blockColor = 'black'
                 let group = new THREE.Group();
@@ -125,9 +127,14 @@ Promise.all([
                             new THREE.BoxGeometry(tileSize, 1, tileSize),
                             new THREE.MeshBasicMaterial({ color })
                         )
-                        if (blockedTiles.has(`${x}_${z}`)) tile.layers.set(1); // gán mesh vào layer 1 (blocked)
                         tile.name = name
-                        tile.position.set(x * tileSize, 0, z * tileSize);
+                        let posX = x * tileSize
+                        let posY = 0
+                        let posZ = z * tileSize
+                        tile.position.set(posX, posY, posZ);
+                        gridPoints.push(buildGridPoint(posX, posY, posZ))
+                        if (blockedTiles.has(`${x}_${z}`)) tile.layers.set(1); // gán mesh vào layer 1 (blocked)
+                        else lsReactive.push(tile)
                         group.add(tile);
                     }
                     tileGrid.push(row)
@@ -151,10 +158,26 @@ Promise.all([
                     player = new THREE.Group();
                     player.name = 'Player'
                     player.add(model)
-
                     player.position.set(wayPoints[0].x, wayPoints[0].y, wayPoints[0].z);
                     scene.add(player);
-                    console.log(player, model)
+                    lsReactive.push(player)
+                    group = new THREE.Group();
+                    group.name = 'Group_Character'
+                    for (let ii = 0; ii < 6; ii++) {
+                        let clone = model.clone(true);
+                        let charater = new THREE.Group();
+                        charater.name = 'Character'
+                        charater.add(clone)
+
+                        let [posX, posY, posZ] = getGridPoint(gridPoints[getRandomInt(0, gridPoints.length)])
+                        charater.position.set(posX, posY, posZ);
+                        buildAnim(clone, gltf.animations, charater)
+                        lsReactive.push(charater)
+                        setCharacter.add(charater)
+                        group.add(charater);
+                    }
+                    scene.add(group);
+                    console.log(player, group)
                     createGUI(model, gltf.animations);
 
                 }, undefined, function (e) { console.error(e) })
@@ -194,30 +217,34 @@ Promise.all([
 
                     raycaster.setFromCamera(mouse, camera); // Gán ray từ camera và tọa độ chuột
 
-                    const intersects = raycaster.intersectObjects(scene.children, true); // Kiểm tra va chạm với danh sách mesh (ví dụ: scene.children)
-
+                    const intersects = raycaster.intersectObjects(lsReactive, true); // Kiểm tra va chạm với danh sách mesh (ví dụ: scene.children)
                     if (intersects.length > 0) {
                         const hit = intersects[0]; // đối tượng bị va chạm đầu tiên
 
                         const point = hit.point; // tọa độ điểm va chạm trong không gian 3D
                         const hitMesh = hit.object
-                        console.log("Click vào mesh:", hitMesh);
-                        console.log("Tọa độ va chạm:", point); // Vector3(x, y, z)
-
+                        const rotGrp = getRootGroupByName(hitMesh, setName)
                         if (2 === event.button) { // 2 là chuột phải
                             const targetPosition = point.clone();
                             targetPosition.y = player.position.y
-                            if (hitMesh.name != 'Player') {
-                                if (!wayPoints.length) {
-                                    wayPoints = buildWayPoints(player.position, targetPosition)
-                                } else if (!isEqualPos(wayPoints[0], point)) {
-                                    if (!isEqualPos(wayPoints[0], targetPosition)) {
+                            switch (rotGrp.name) {
+                                case 'Player': break;
+                                case 'Group_Ground':
+                                    if (!wayPoints.length) {
+                                        wayPoints = buildWayPoints(player.position, targetPosition)
+                                    } else if (!isEqualPos(wayPoints[0], point) && !isEqualPos(wayPoints[0], targetPosition)) {
                                         wayPoints = buildWayPoints(player.position, targetPosition)
                                     }
-                                }
+                                    break;
+                                case 'Character': break;
                             }
-
                         }
+                        console.group("Click vào mesh:")
+                        console.log("Hit object:", hitMesh);
+                        console.log('root group object: ', rotGrp)
+                        console.log("Tọa độ va chạm:", point); // Vector3(x, y, z)
+                        console.log('list way points: ', wayPoints.map(v3 => [v3.x, v3.y, v3.z]), player.position)
+                        console.groupEnd()
                     }
                 }
                 window.addEventListener('mouseup', rayToControl);
@@ -244,15 +271,33 @@ Promise.all([
                 });
                 clock.start();
             }
+            function getGridPoint(txtPos) { return txtPos.split('_').map(txt => parseFloat(txt)) }  // [x, y, z]
+            function buildGridPoint(posX, posY, posZ) { return `${posX}_${posY}_${posZ}` }
+            function getRootGroupByName(mesh, names = new Set()) {
+                if (null == mesh) return mesh
+                if (names.has(mesh.name)) return mesh
+                let paLvl = mesh.parent
+                if (null == paLvl) return mesh
+                if ("Scene" == paLvl.type) return mesh
+                if (names.has(paLvl.name)) return paLvl
+                while (paLvl) {
+                    if ("Scene" == paLvl.parent.type) return paLvl
+                    paLvl = paLvl.parent
+                    if (names.has(paLvl.name)) return paLvl
+                }
+                return mesh
+            }
             function getTitleInGrid(posX) { return Math.round(posX / tileSize) + gridSize }
             function getPosFromGrid(tileX) { return (tileX - gridSize) * tileSize }
             function buildWayPoints(srcPos, desPos) {
                 let des = { x: getTitleInGrid(srcPos.x), y: getTitleInGrid(srcPos.z) }
                 let src = { x: getTitleInGrid(desPos.x), y: getTitleInGrid(desPos.z) }
                 let paths = aStar(tileGrid, src, des)
-                if (1 < paths.length) paths.pop()   // Bỏ đi vị trí player đang đứng.
                 //  console.log(paths, src, des)
-                return paths.map(ps => new THREE.Vector3(getPosFromGrid(ps.x), srcPos.y, getPosFromGrid(ps.y)))
+                if (1 < paths.length) paths.pop()   // Bỏ đi vị trí player đang đứng.
+                paths = paths.map(ps => new THREE.Vector3(getPosFromGrid(ps.x), srcPos.y, getPosFromGrid(ps.y)))
+                if (1 == paths.length && isEqualPos(paths[0], srcPos)) return []
+                return paths
             }
             const updateHUD = () => {
                 const elapsed = Math.floor(clock.getElapsedTime());
@@ -261,9 +306,11 @@ Promise.all([
                 }
             }
             function renderFrame() {
-                if (mixer) {
-                    const dt = clock.getDelta();
-                    mixer.update(dt);
+                const dt = clock.getDelta();
+                if (mixer) { mixer.update(dt) }
+                for (const cha of setCharacter) {
+                    const uData = cha.userData
+                    uData.AnimMixer.update(dt)
                 }
                 if (clock.running) {
                     updateHUD(); // cập nhật HUD
@@ -286,6 +333,29 @@ Promise.all([
                         .fadeIn(duration)
                         .play();
                 }
+            }
+            function buildAnim(model, animations, character) {
+                const states = ['Idle', 'Walking', 'Running', 'Dance', 'Death', 'Sitting', 'Standing'];
+                const emotes = ['Jump', 'Yes', 'No', 'Wave', 'Punch', 'ThumbsUp'];
+                let mixer = new THREE.AnimationMixer(model);
+                let actions = {};
+                for (const clip of animations) {
+                    const action = mixer.clipAction(clip);
+                    actions[clip.name] = action;
+                    if (0 <= emotes.indexOf(clip.name) || 4 <= states.indexOf(clip.name)) {
+                        action.clampWhenFinished = true;
+                        action.loop = THREE.LoopOnce;
+                    }
+                }
+                const uData = character.userData
+                uData.AnimMixer = mixer
+                uData.AnimActions = actions
+
+                let action = actions['Walking'];
+                action.setLoop(THREE.LoopRepeat, Infinity); // Lặp vô hạn
+                action.play();
+
+                uData.AnimAction = action
             }
             function createGUI(model, animations) {
 
@@ -397,7 +467,6 @@ Promise.all([
             function goTo(player, speed) {
                 if (!player) return
                 if (wayPoints.length < 1) return;
-
                 let targetPos3
                 for (let ii = wayPoints.length - 1; -1 < ii; ii--) {
                     targetPos3 = wayPoints[ii]
@@ -407,7 +476,6 @@ Promise.all([
                         player.position.add(direction.multiplyScalar(speed)); // Di chuyển theo hướng đó với tốc độ nhất định
                         if (player.position.distanceToSquared(targetPos3) < speed * speed) {
                             player.position.lerp(targetPos3, 0.003)
-                            //player.position.copy(targetPos3);   // Dừng lại nếu đã đến gần đích
                             wayPoints.splice(ii, 1)
                         }
                         break
@@ -433,6 +501,11 @@ Promise.all([
                 const g = Math.random();
                 const b = Math.random();
                 return new THREE.Color(r, g, b);
+            }
+            function getRandomInt(min, max) {   // include min, exclude max
+                const minCeiled = Math.ceil(min);
+                const maxFloored = Math.floor(max);
+                return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
             }
         },
         //beforeMount() { },
