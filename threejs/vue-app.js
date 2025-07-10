@@ -474,12 +474,14 @@ Promise.all([
                         player.lookAt(targetPos3)
                         const direction = targetPos3.clone().sub(player.position).normalize(); // Tính hướng đi từ vị trí hiện tại đến đích
                         player.position.add(direction.multiplyScalar(speed)); // Di chuyển theo hướng đó với tốc độ nhất định
+                        //console.log('wait poin: ', wayPoints.map(v3 => [v3.x, v3.y, v3.z]))
                         if (player.position.distanceToSquared(targetPos3) < speed * speed) {
                             player.position.lerp(targetPos3, 0.003)
                             wayPoints.splice(ii, 1)
                         }
                         break
-                    }
+                    } else wayPoints.splice(ii, 1)
+                    //console.log('wait poin: ', wayPoints.map(v3 => [v3.x, v3.y, v3.z]))
                 }
             }
             function isEqualPos(vec3a, vec3b) {
