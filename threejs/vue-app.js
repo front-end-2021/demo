@@ -70,16 +70,11 @@ Promise.all([
             const t_Clok = this.TClock
             {
                 // #region Camera (Isometric - Orthographic)
-                const aspect = window.innerWidth / window.innerHeight;
-                const d = 90;
-                camera = new THREE.OrthographicCamera(
-                    -d * aspect, d * aspect,
-                    d, -d,
-                    0.1, 1000
-                );
+                let camAsix = 90
+                let [left, right, top, bottom] = buildCamParams(window.innerWidth, window.innerHeight, camAsix)
+                camera = new THREE.OrthographicCamera(left, right, top, bottom, 0.1, 1000);
                 camera.layers.enable(1); // bật layer 1 để camera nhìn thấy mesh
                 // Góc nhìn isometric
-                let camAsix = d
                 offset = new THREE.Vector3(camAsix, camAsix, camAsix);
                 camera.position.set(offset.x, offset.y, offset.z);
                 camera.lookAt(0, 0, 0);
@@ -200,10 +195,16 @@ Promise.all([
                 controls.zoomSpeed = 1.2;
                 // #endregion
                 window.addEventListener('resize', () => {
-                    camera.aspect = window.innerWidth / window.innerHeight;
+                    const width = window.innerWidth;
+                    const height = window.innerHeight;
+                    let [left, right, top, bottom] = buildCamParams(width, height, 90)
+                    camera.aspect = width / height
+                    camera.left = left
+                    camera.right = right
+                    camera.top = top
+                    camera.bottom = bottom
                     camera.updateProjectionMatrix();
-
-                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    renderer.setSize(width, height);
                 });
                 // #region Tạo raycast để chạm điều khiền nhân vật
                 const raycaster = new THREE.Raycaster();
@@ -247,20 +248,8 @@ Promise.all([
                         console.groupEnd()
                     }
                 }
-                window.addEventListener('mouseup', rayToControl);
+                window.addEventListener('pointerup', rayToControl); // thay cho mouseup và touchend
                 // #endregion
-                document.addEventListener("keydown", (event) => {
-                    switch (event.key) {
-                        case "ArrowUp": goInSometric(player, 'up', moveSpeed)
-                            break;
-                        case "ArrowDown": goInSometric(player, 'down', moveSpeed)
-                            break;
-                        case "ArrowLeft": goInSometric(player, 'left', moveSpeed)
-                            break;
-                        case "ArrowRight": goInSometric(player, 'right', moveSpeed)
-                            break;
-                    }
-                });
                 document.addEventListener("keyup", (event) => {
                     switch (event.key) {
                         case "p": this.pauseGame('pause')
@@ -439,31 +428,6 @@ Promise.all([
 
                 expressionFolder.open();
             }
-            function goInSometric(player, direct, step) {
-                switch (direct) {
-                    case 'up': player.position.z -= moveSpeed;
-                        // player.position.x -= step; player.position.z -= step
-                        return;
-                    case 'right': player.position.x += moveSpeed;
-                        // player.position.z -= step / 3; player.position.x += step / 3
-                        return
-                    case 'down': player.position.z += moveSpeed;
-                        // player.position.z += step; player.position.x += step
-                        return
-                    case 'left': player.position.x -= moveSpeed;
-                        // player.position.x -= step / 3; player.position.z += step / 3
-                        return;
-                    case 'up-right': player.position.z -= step;
-                        return;
-                    case 'up-left': player.position.x -= step;
-                        return;
-                    case 'down-right': player.position.x += step;
-                        return;
-                    case 'down-left': player.position.z += step;
-                        return;
-                    default: break;
-                }
-            }
             function goTo(player, speed) {
                 if (!player) return
                 if (wayPoints.length < 1) return;
@@ -508,6 +472,14 @@ Promise.all([
                 const minCeiled = Math.ceil(min);
                 const maxFloored = Math.floor(max);
                 return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
+            }
+            function buildCamParams(width, height, d) {
+                const aspect = width / height
+                let left = -d * aspect
+                let right = d * aspect
+                let top = d
+                let bottom = -d
+                return [left, right, top, bottom]
             }
         },
         //beforeMount() { },
