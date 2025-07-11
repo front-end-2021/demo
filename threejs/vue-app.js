@@ -59,15 +59,16 @@ Promise.all([
             let moveSpeed = 0.69
             const pathModel = `models/RobotExpressive.glb`
             const api = { state: 'Walking' };
-            let setReactive = new Set()
             let gridSize = 5,
                 tileSize = 20,
                 blockedTiles = new Set(['x_z', '1_1', '2_0'])
             let wayPoints = [new THREE.Vector3(0, 0, 0)]
             let gridPoints = []     // `x_y_z`
             let setCharacter = new Set()
+            let setTile = new Set()
             let controlChar = new Map()
             let setName = new Set(['Player', 'Group_Ground', 'Character'])
+
             const t_Clok = this.TClock
             {
                 // #region Camera (Isometric - Orthographic)
@@ -130,7 +131,7 @@ Promise.all([
                         tile.position.set(posX, posY, posZ);
                         gridPoints.push(buildGridPoint(posX, posY, posZ))
                         if (blockedTiles.has(`${x}_${z}`)) tile.layers.set(1); // gán mesh vào layer 1 (blocked)
-                        else setReactive.add(tile)
+                        else setTile.add(tile)
                         group.add(tile);
                     }
                     tileGrid.push(row)
@@ -156,7 +157,7 @@ Promise.all([
                     player.add(model)
                     player.position.set(wayPoints[0].x, wayPoints[0].y, wayPoints[0].z);
                     scene.add(player);
-                    setReactive.add(player)
+
                     group = new THREE.Group();
                     group.name = 'Group_Character'
                     for (let ii = 0; ii < 6; ii++) {
@@ -169,7 +170,6 @@ Promise.all([
                         charater.position.set(posX, posY, posZ);
                         buildAnim(clone, gltf.animations, charater)
 
-                        setReactive.add(charater)
                         setCharacter.add(charater)
                         group.add(charater);
                     }
@@ -220,7 +220,7 @@ Promise.all([
 
                     raycaster.setFromCamera(mouse, camera); // Gán ray từ camera và tọa độ chuột
 
-                    const intersects = raycaster.intersectObjects(Array.from(setReactive), true); // Kiểm tra va chạm với danh sách mesh (ví dụ: scene.children)
+                    const intersects = raycaster.intersectObjects([...setTile, ...setCharacter], true); // Kiểm tra va chạm với danh sách mesh (ví dụ: scene.children)
                     if (intersects.length > 0) {
                         const hit = intersects[0]; // đối tượng bị va chạm đầu tiên
 
@@ -248,16 +248,18 @@ Promise.all([
                                     switch (rotGrp.name) {
                                         case 'Player': break;
                                         case 'Group_Ground':
-                                            if (!wayPoints.length) {
-                                                wayPoints = buildWayPoints(player.position, targetPosition)
-                                            } else if (!isEqualPos(wayPoints[0], point) && !isEqualPos(wayPoints[0], targetPosition)) {
-                                                wayPoints = buildWayPoints(player.position, targetPosition)
-                                            }
-
-                                            for (const char of controlChar.keys()) {
-                                                targetPosition.y = char.position.y
-                                                let points = buildWayPoints(char.position, targetPosition)
-                                                controlChar.set(char, points)  // update
+                                            if (controlChar.size) {
+                                                for (const char of controlChar.keys()) {
+                                                    targetPosition.y = char.position.y
+                                                    let points = buildWayPoints(char.position, targetPosition)
+                                                    controlChar.set(char, points)  // update
+                                                }
+                                            } else {
+                                                if (!wayPoints.length) {
+                                                    wayPoints = buildWayPoints(player.position, targetPosition)
+                                                } else if (!isEqualPos(wayPoints[0], point) && !isEqualPos(wayPoints[0], targetPosition)) {
+                                                    wayPoints = buildWayPoints(player.position, targetPosition)
+                                                }
                                             }
                                             break;
                                         case 'Character': break;
@@ -328,30 +330,31 @@ Promise.all([
                 }
                 if (clock.running) {
                     updateHUD(); // cập nhật HUD
-                    //  goTo(player, moveSpeed)
-                    updateIsometricCamera(camera, player); // camera bám theo nhân vật
-
-                    let speed = moveSpeed
-                    for (const [char, points] of controlChar) {
-                        if (points.length) {
-                            for (let ii = points.length - 1, targetPos3; -1 < ii; ii--) {
-                                targetPos3 = points[ii]
-                                if (!targetPos3) break;
-                                if (0 < targetPos3.distanceToSquared(char.position)) {
-                                    char.lookAt(targetPos3)
-                                    const direction = targetPos3.clone().sub(char.position).normalize(); // Tính hướng đi từ vị trí hiện tại đến đích
-                                    char.position.add(direction.multiplyScalar(speed)); // Di chuyển theo hướng đó với tốc độ nhất định
+                    if (controlChar.size) {
+                        let speed = moveSpeed
+                        for (const [char, points] of controlChar) {
+                            if (points.length) {
+                                for (let ii = points.length - 1, targetPos3; -1 < ii; ii--) {
+                                    targetPos3 = points[ii]
+                                    if (!targetPos3) break;
+                                    if (0 < targetPos3.distanceToSquared(char.position)) {
+                                        char.lookAt(targetPos3)
+                                        const direction = targetPos3.clone().sub(char.position).normalize(); // Tính hướng đi từ vị trí hiện tại đến đích
+                                        char.position.add(direction.multiplyScalar(speed)); // Di chuyển theo hướng đó với tốc độ nhất định
+                                        //console.log('wait poin: ', points.map(v3 => [v3.x, v3.y, v3.z]))
+                                        if (char.position.distanceToSquared(targetPos3) < speed * speed) {
+                                            char.position.lerp(targetPos3, 0.003)
+                                            points.splice(ii, 1)
+                                        }
+                                        break
+                                    } else points.splice(ii, 1)
                                     //console.log('wait poin: ', points.map(v3 => [v3.x, v3.y, v3.z]))
-                                    if (char.position.distanceToSquared(targetPos3) < speed * speed) {
-                                        char.position.lerp(targetPos3, 0.003)
-                                        points.splice(ii, 1)
-                                    }
-                                    break
-                                } else points.splice(ii, 1)
-                                //console.log('wait poin: ', points.map(v3 => [v3.x, v3.y, v3.z]))
-                            }
-                        } else controlChar.delete(char)
+                                }
+                            } else controlChar.delete(char)
+                        }
                     }
+                    goTo(player, moveSpeed)
+                    updateIsometricCamera(camera, player); // camera bám theo nhân vật
                 }
                 renderer.render(scene, camera);
                 stats.update(); // cập nhật FPS
