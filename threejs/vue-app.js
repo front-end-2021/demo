@@ -55,7 +55,7 @@ Promise.all([
         created() {
             let camera, scene, stats, clock, container, controls, renderer,
                 mixer, actions, activeAction,
-                offset, playerColor, model, gui, face, player
+                offset, gui, face, player
             let tileGrid = []
             let moveSpeed = 0.69
             const pathModel = `models/RobotExpressive.glb`
@@ -103,7 +103,6 @@ Promise.all([
                 scene.add(light);
                 // #endregion
                 // #region Thêm ground
-                playerColor = 0x99ccff
                 let blockColor = 'black'
                 let group = new THREE.Group();
                 group.name = 'Group_Ground'
@@ -127,10 +126,10 @@ Promise.all([
                         )
                         tile.name = name
                         let posX = x * tileSize
-                        let posY = 0
+                        let posY = -0.5
                         let posZ = z * tileSize
                         tile.position.set(posX, posY, posZ);
-                        gridPoints.push(buildGridPoint(posX, posY, posZ))
+                        gridPoints.push(buildGridPoint(posX, 0, posZ))
                         if (blockedTiles.has(`${x}_${z}`)) tile.layers.set(1); // gán mesh vào layer 1 (blocked)
                         else setTile.add(tile)
                         group.add(tile);
@@ -149,7 +148,7 @@ Promise.all([
                 // #region Load model
                 const loader = new GLTFLoader();
                 loader.load(pathModel, function (gltf) {
-                    model = gltf.scene;
+                    let model = gltf.scene;
                     let scale = 3
                     model.scale.set(scale, scale, scale);
 
@@ -469,7 +468,7 @@ Promise.all([
 
                 // expressions
 
-                face = model.getObjectByName('Head_4');
+                face = player.children[0].getObjectByName('Head_4');
 
                 const expressions = Object.keys(face.morphTargetDictionary);
                 const expressionFolder = gui.addFolder('Expressions');
