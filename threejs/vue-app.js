@@ -2,6 +2,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import Stats from 'three/addons/libs/stats.module.js';  // debug 
 import { Snowflake, convertDic, insertHTMLAtCursor } from './common.js'
@@ -161,7 +162,7 @@ Promise.all([
                     group = new THREE.Group();
                     group.name = 'Group_Character'
                     for (let ii = 0; ii < 6; ii++) {
-                        let clone = model.clone(true);
+                        const clone = SkeletonUtils.clone(model);
                         let charater = new THREE.Group();
                         charater.name = 'Character'
                         charater.add(clone)
