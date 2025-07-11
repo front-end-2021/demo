@@ -228,6 +228,7 @@ Promise.all([
                         const point = hit.point; // tọa độ điểm va chạm trong không gian 3D
                         const hitMesh = hit.object
                         const rotGrp = getRootGroupByName(hitMesh, setName)
+                        console.group("Click vào mesh:", event.button)
                         switch (event.button) {
                             case 0: // chuột trái
                                 {
@@ -254,6 +255,13 @@ Promise.all([
                                                     targetPosition.y = char.position.y
                                                     let points = buildWayPoints(char.position, targetPosition)
                                                     controlChar.set(char, points)  // update
+                                                    if (points.length) {
+                                                        const dt = clock.getDelta();
+                                                        const uData = char.userData
+                                                        fadeToAction(uData.AnimActions['Walking'], dt, uData.Action)
+                                                        uData.Action = uData.AnimActions['Walking']
+                                                    }
+                                                    console.log('points: ', points.map(v3 => [v3.x, v3.y, v3.z]), char.position)
                                                 }
                                             } else {
                                                 if (!wayPoints.length) {
@@ -261,6 +269,7 @@ Promise.all([
                                                 } else if (!isEqualPos(wayPoints[0], point) && !isEqualPos(wayPoints[0], targetPosition)) {
                                                     wayPoints = buildWayPoints(player.position, targetPosition)
                                                 }
+                                                console.log('list way points: ', wayPoints.map(v3 => [v3.x, v3.y, v3.z]), player.position)
                                             }
                                             break;
                                         case 'Character': break;
@@ -268,11 +277,9 @@ Promise.all([
                                 }
                                 break;
                         }
-                        console.group("Click vào mesh:", event.button)
                         console.log("Hit object:", hitMesh);
                         console.log('root group object: ', rotGrp)
                         console.log("Tọa độ va chạm:", point); // Vector3(x, y, z)
-                        console.log('list way points: ', wayPoints.map(v3 => [v3.x, v3.y, v3.z]), player.position)
                         console.groupEnd()
                     }
                 }
@@ -338,20 +345,25 @@ Promise.all([
                                 for (let ii = points.length - 1, targetPos3; -1 < ii; ii--) {
                                     targetPos3 = points[ii]
                                     if (!targetPos3) break;
-                                    if (0 < targetPos3.distanceToSquared(char.position)) {
+                                    if (!allInTile(tileSize / 12, targetPos3, char.position)) {
                                         char.lookAt(targetPos3)
                                         const direction = targetPos3.clone().sub(char.position).normalize(); // Tính hướng đi từ vị trí hiện tại đến đích
                                         char.position.add(direction.multiplyScalar(speed)); // Di chuyển theo hướng đó với tốc độ nhất định
-                                        //console.log('wait poin: ', points.map(v3 => [v3.x, v3.y, v3.z]))
-                                        if (char.position.distanceToSquared(targetPos3) < speed * speed) {
-                                            char.position.lerp(targetPos3, 0.003)
-                                            points.splice(ii, 1)
-                                        }
+                                        //console.log('wait point 1: ', points.map(v3 => [v3.x, v3.y, v3.z]), [char.position.x, char.position.y, char.position.z])
                                         break
-                                    } else points.splice(ii, 1)
-                                    //console.log('wait poin: ', points.map(v3 => [v3.x, v3.y, v3.z]))
+                                    } else {        // Đến đích
+                                        char.position.lerp(targetPos3, 0.003)
+                                        points.splice(ii, 1)
+                                    }
+                                    //console.log('wait point 2 : ', points.map(v3 => [v3.x, v3.y, v3.z]), [char.position.x, char.position.y, char.position.z])
                                 }
-                            } else controlChar.delete(char)
+                            } else {
+                                const uData = char.userData
+                                console.log('get finish', char)
+                                fadeToAction(uData.AnimActions['Idle'], dt, uData.Action)
+                                uData.Action = uData.AnimActions['Idle']
+                                controlChar.delete(char)
+                            }
                         }
                     }
                     goTo(player, moveSpeed)
@@ -360,13 +372,10 @@ Promise.all([
                 renderer.render(scene, camera);
                 stats.update(); // cập nhật FPS
             }
-            function fadeToAction(name, duration) {
-                if (activeAction._clip.name !== name) {
-                    let prvA = activeAction
-                    prvA.fadeOut(duration);
-
-                    activeAction = actions[name];
-                    activeAction
+            function fadeToAction(nAction, duration, action) {
+                if (!Object.is(nAction, action)) {
+                    action.fadeOut(duration);
+                    nAction
                         .reset()
                         .setEffectiveTimeScale(1)
                         .setEffectiveWeight(1)
@@ -390,11 +399,10 @@ Promise.all([
                 const uData = character.userData
                 uData.AnimMixer = mixer
                 uData.AnimActions = actions
-                let action = actions['Walking'];
-                action.setLoop(THREE.LoopRepeat, Infinity); // Lặp vô hạn
+                let action = actions['Idle'];
+                //  action.setLoop(THREE.LoopRepeat, Infinity); // Lặp vô hạn
                 action.play();
-
-                uData.AnimAction = action
+                uData.Action = action
             }
             function createGUI(model, animations) {
 
@@ -426,8 +434,8 @@ Promise.all([
                 const clipCtrl = statesFolder.add(api, 'state').options(states);
 
                 clipCtrl.onChange(function () {
-
-                    fadeToAction(api.state, 0.5);
+                    fadeToAction(actions[api.state], 0.5, activeAction);
+                    activeAction = actions[api.state]
                 });
 
                 statesFolder.open();
@@ -438,9 +446,8 @@ Promise.all([
                 function createEmoteCallback(name) {
 
                     api[name] = function () {
-
-                        fadeToAction(name, 0.2);
-
+                        fadeToAction(actions[name], 0.2, activeAction);
+                        activeAction = actions[name]
                         mixer.addEventListener('finished', restoreState);
                     };
 
@@ -448,10 +455,9 @@ Promise.all([
                 }
 
                 function restoreState() {
-
                     mixer.removeEventListener('finished', restoreState);
-
-                    fadeToAction(api.state, 0.2);
+                    fadeToAction(actions[api.state], 0.2, activeAction);
+                    activeAction = actions[api.state]
                 }
 
                 for (let i = 0; i < emotes.length; i++) {
@@ -497,6 +503,10 @@ Promise.all([
                     } else wayPoints.splice(ii, 1)
                     //console.log('wait poin: ', wayPoints.map(v3 => [v3.x, v3.y, v3.z]))
                 }
+            }
+            function allInTile(size, vec3a, vec3b) {
+                if (Math.abs(vec3a.x - vec3b.x) <= size && Math.abs(vec3a.z - vec3b.z) <= size) return true
+                return false
             }
             function isEqualPos(vec3a, vec3b) {
                 if (vec3a.x == vec3b.x && vec3a.y == vec3b.y && vec3a.z == vec3b.z) return true
