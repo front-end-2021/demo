@@ -2,6 +2,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { GroundedSkybox } from 'three/addons/objects/GroundedSkybox.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import Stats from 'three/addons/libs/stats.module.js';  // debug 
@@ -86,6 +88,16 @@ Promise.all([
                 scene = new THREE.Scene();
                 scene.background = new THREE.Color(0xe0e0e0);
                 //  scene.fog = new THREE.Fog(0xe0e0e0, 20, 100);
+                // const hdrLoader = new RGBELoader();
+                // hdrLoader.loadAsync('textures/blouberg_sunrise_2_1k.hdr').then(envMap => {
+                //     envMap.mapping = THREE.EquirectangularReflectionMapping;
+                //     let height = 20
+                //     let radius = 270
+                //     let skybox = new GroundedSkybox(envMap, height, radius);
+                //     skybox.position.y = height - 0.01;
+                //     scene.add(skybox);
+                //     scene.environment = envMap;
+                // })
                 // #endregion
                 // #region Tạo Clock
                 clock = new THREE.Clock(false);
@@ -192,7 +204,7 @@ Promise.all([
                 // #region Tạo Control camera
                 controls = new OrbitControls(camera, renderer.domElement);
                 //controls.enableRotate = false;
-                controls.maxPolarAngle = THREE.MathUtils.degToRad( 90 );
+                controls.maxPolarAngle = THREE.MathUtils.degToRad(90);
                 controls.enableDamping = true;
                 //controls.enablePan = true;
                 controls.zoomSpeed = 1.2;
