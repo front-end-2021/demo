@@ -62,7 +62,7 @@ Promise.all([
             let moveSpeed = 0.69
             const pathModel = `models/RobotExpressive.glb`
             const api = { state: 'Walking' };
-            let gridSize = 5,
+            let gridSize = 10,
                 tileSize = 20,
                 blockedTiles = new Set(['x_z', '1_1', '2_0'])
             let wayPoints = [new THREE.Vector3(0, 0, 0)]
@@ -75,7 +75,7 @@ Promise.all([
             const t_Clok = this.TClock
             {
                 // #region Camera (Isometric - Orthographic)
-                let camAsix = 90
+                let camAsix = 150//90
                 let [left, right, top, bottom] = buildCamParams(window.innerWidth, window.innerHeight, camAsix)
                 camera = new THREE.OrthographicCamera(left, right, top, bottom, 0.1, 1000);
                 camera.layers.enable(1); // bật layer 1 để camera nhìn thấy mesh
@@ -115,7 +115,7 @@ Promise.all([
                 scene.add(light);
                 // #endregion
                 // #region Thêm ground
-                let blockColor = 'black'
+                let blockColor = new THREE.Color(0, 0, 0)
                 let group = new THREE.Group();
                 group.name = 'Group_Ground'
                 // Tạo nền bằng các ô lưới
