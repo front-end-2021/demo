@@ -89,7 +89,7 @@ Promise.all([
                 scene.background = new THREE.Color(0xe0e0e0);
                 //  scene.fog = new THREE.Fog(0xe0e0e0, 20, 100);
                 // const hdrLoader = new RGBELoader();
-                // hdrLoader.loadAsync('textures/blouberg_sunrise_2_1k.hdr').then(envMap => {
+                // hdrLoader.loadAsync('textures/sky1k.hdr').then(envMap => {
                 //     envMap.mapping = THREE.EquirectangularReflectionMapping;
                 //     let height = 20
                 //     let radius = 270
