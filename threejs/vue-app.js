@@ -191,7 +191,8 @@ Promise.all([
                 // #endregion
                 // #region Tạo Control camera
                 controls = new OrbitControls(camera, renderer.domElement);
-                controls.enableRotate = false;
+                //controls.enableRotate = false;
+                controls.maxPolarAngle = THREE.MathUtils.degToRad( 90 );
                 controls.enableDamping = true;
                 //controls.enablePan = true;
                 controls.zoomSpeed = 1.2;
