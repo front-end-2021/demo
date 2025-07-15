@@ -133,15 +133,16 @@ Promise.all([
                         if (blockedTiles.has(`${z}_${x}`)) { row.push(1) }
                         else { row.push(0) }
                         const tile = new THREE.Mesh(
-                            new THREE.BoxGeometry(tileSize, 1, tileSize),
-                            new THREE.MeshBasicMaterial({ color })
+                            new THREE.PlaneGeometry(tileSize, tileSize),
+                            new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide })
                         )
+                        tile.rotation.x = THREE.MathUtils.degToRad(-90)
                         tile.name = name
                         let posX = x * tileSize
-                        let posY = -0.5
+                        let posY = 0
                         let posZ = z * tileSize
                         tile.position.set(posX, posY, posZ);
-                        gridPoints.push(buildGridPoint(posX, 0, posZ))
+                        gridPoints.push(buildGridPoint(posX, posY, posZ))
                         if (blockedTiles.has(`${x}_${z}`)) tile.layers.set(1); // gán mesh vào layer 1 (blocked)
                         else setTile.add(tile)
                         group.add(tile);
@@ -295,7 +296,8 @@ Promise.all([
                         console.groupEnd()
                     }
                 }
-                window.addEventListener('pointerup', rayToControl); // thay cho mouseup và touchend
+                window.addEventListener('mouseup', rayToControl); // pointerup không hoạt động trên iphone
+                //window.addEventListener('touchend', rayToControl); // pointerup không hoạt động trên iphone
                 // #endregion
                 document.addEventListener("keyup", (event) => {
                     switch (event.key) {
@@ -351,27 +353,12 @@ Promise.all([
                 if (clock.running) {
                     updateHUD(); // cập nhật HUD
                     if (controlChar.size) {
-                        let speed = moveSpeed
                         for (const [char, points] of controlChar) {
                             if (points.length) {
-                                for (let ii = points.length - 1, targetPos3; -1 < ii; ii--) {
-                                    targetPos3 = points[ii]
-                                    if (!targetPos3) break;
-                                    if (!allInTile(tileSize / 12, targetPos3, char.position)) {
-                                        char.lookAt(targetPos3)
-                                        const direction = targetPos3.clone().sub(char.position).normalize(); // Tính hướng đi từ vị trí hiện tại đến đích
-                                        char.position.add(direction.multiplyScalar(speed)); // Di chuyển theo hướng đó với tốc độ nhất định
-                                        //console.log('wait point 1: ', points.map(v3 => [v3.x, v3.y, v3.z]), [char.position.x, char.position.y, char.position.z])
-                                        break
-                                    } else {        // Đến đích
-                                        char.position.lerp(targetPos3, 0.003)
-                                        points.splice(ii, 1)
-                                    }
-                                    //console.log('wait point 2 : ', points.map(v3 => [v3.x, v3.y, v3.z]), [char.position.x, char.position.y, char.position.z])
-                                }
+                                modeDynamic(points, char, moveSpeed, tileSize / 12)
                             } else {
                                 const uData = char.userData
-                                console.log('get finish', char)
+                                //  console.log('get finish', char)
                                 fadeToAction(uData.AnimActions['Idle'], dt, uData.Action)
                                 uData.Action = uData.AnimActions['Idle']
                                 controlChar.delete(char)
@@ -498,27 +485,48 @@ Promise.all([
             }
             function goTo(player, speed) {
                 if (!player) return
-                if (wayPoints.length < 1) return;
-                let targetPos3
-                for (let ii = wayPoints.length - 1; -1 < ii; ii--) {
-                    targetPos3 = wayPoints[ii]
-                    if (0 < targetPos3.distanceToSquared(player.position)) {
-                        player.lookAt(targetPos3)
-                        const direction = targetPos3.clone().sub(player.position).normalize(); // Tính hướng đi từ vị trí hiện tại đến đích
-                        player.position.add(direction.multiplyScalar(speed)); // Di chuyển theo hướng đó với tốc độ nhất định
-                        //console.log('wait poin: ', wayPoints.map(v3 => [v3.x, v3.y, v3.z]))
-                        if (player.position.distanceToSquared(targetPos3) < speed * speed) {
-                            player.position.lerp(targetPos3, 0.003)
-                            wayPoints.splice(ii, 1)
-                        }
+                modeDynamic(wayPoints, player, speed, tileSize / 12)
+            }
+            function modeDynamic(points, item, speed, stopDistance, itemSize) {
+                if (points.length < 1) return
+                let targetPos3 = points[points.length - 1]
+                if (!targetPos3) return
+                //console.log('wait point 0: ', points.map(v3 => [v3.x, v3.y, v3.z]), [item.position.x, item.position.y, item.position.z])
+                if (typeof itemSize != 'number') itemSize = 0.3
+                let disSquare = distSquareXZ(targetPos3, item.position)
+                if (points.length < 2) {
+                    if (disSquare <= itemSize * itemSize || disSquare <= stopDistance * stopDistance) {
+                        // đã đến đích
+                        item.position.lerp(targetPos3, 0.003)
+                        points.splice(0)
+                        return
+                    }
+                    item.lookAt(targetPos3)
+                    const direction = targetPos3.clone().sub(item.position).normalize(); // Tính hướng đi từ vị trí hiện tại đến đích
+                    item.position.add(direction.multiplyScalar(speed)); // Di chuyển theo hướng đó với tốc độ nhất định
+                    return
+                }
+                for (let ii = points.length - 1; -1 < ii; ii--) {
+                    targetPos3 = points[ii]
+                    if (!targetPos3) break;
+                    disSquare = distSquareXZ(targetPos3, item.position)
+                    if (itemSize * itemSize < disSquare) {
+                        item.lookAt(targetPos3)
+                        const direction = targetPos3.clone().sub(item.position).normalize(); // Tính hướng đi từ vị trí hiện tại đến đích
+                        item.position.add(direction.multiplyScalar(speed)); // Di chuyển theo hướng đó với tốc độ nhất định
+                        //console.log('wait point 1: ', points.map(v3 => [v3.x, v3.y, v3.z]), [item.position.x, item.position.y, item.position.z])
                         break
-                    } else wayPoints.splice(ii, 1)
-                    //console.log('wait poin: ', wayPoints.map(v3 => [v3.x, v3.y, v3.z]))
+                    } else {
+                        item.position.lerp(targetPos3, 0.003)
+                        points.splice(ii, 1)
+                    }
+                    //console.log('wait point 2 : ', points.map(v3 => [v3.x, v3.y, v3.z]), [item.position.x, item.position.y, item.position.z])
                 }
             }
-            function allInTile(size, vec3a, vec3b) {
-                if (Math.abs(vec3a.x - vec3b.x) <= size && Math.abs(vec3a.z - vec3b.z) <= size) return true
-                return false
+            function distSquareXZ(vec3a, vec3b) {
+                let dX = vec3a.x - vec3b.x
+                let dZ = vec3a.z - vec3b.z
+                return dX * dX + dZ * dZ
             }
             function isEqualPos(vec3a, vec3b) {
                 if (vec3a.x == vec3b.x && vec3a.y == vec3b.y && vec3a.z == vec3b.z) return true
