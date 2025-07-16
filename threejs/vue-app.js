@@ -56,7 +56,6 @@ Promise.all([
         },
         created() {
             let camera, scene, stats, clock, container, controls, renderer,
-                mixer, actions, activeAction,
                 offset, gui, face, player
             let tileGrid = []
             let moveSpeed = 0.69
@@ -66,10 +65,10 @@ Promise.all([
                 blockedTiles = new Set(['x_z', '1_1', '2_0'])
             let wayPoints = [new THREE.Vector3(0, 0, 0)]
             let gridPoints = []     // `x_y_z`
-            let setCharacter = new Set()
             let setTile = new Set()
             let controlChar = new Map()
             let setName = new Set(['Player', 'Group_Ground', 'Character'])
+            let mapAnimations = new Map()
             const t_Clok = this.TClock
             {
                 // #region Camera (Isometric - Orthographic)
@@ -180,9 +179,8 @@ Promise.all([
 
                         let [posX, posY, posZ] = getGridPoint(gridPoints[getRandomInt(0, gridPoints.length)])
                         charater.position.set(posX, posY, posZ);
-                        buildAnim(clone, gltf.animations, charater)
-
-                        setCharacter.add(charater)
+                        setMapAnimations(charater, clone, gltf.animations)
+                        
                         group.add(charater);
                     }
                     scene.add(group);
@@ -233,7 +231,7 @@ Promise.all([
 
                     raycaster.setFromCamera(mouse, camera); // Gán ray từ camera và tọa độ chuột
 
-                    const intersects = raycaster.intersectObjects([...setTile, ...setCharacter], true); // Kiểm tra va chạm với danh sách mesh (ví dụ: scene.children)
+                    const intersects = raycaster.intersectObjects([...setTile, ...mapAnimations.keys()], true); // Kiểm tra va chạm với danh sách mesh (ví dụ: scene.children)
                     if (intersects.length > 0) {
                         const hit = intersects[0]; // đối tượng bị va chạm đầu tiên
 
@@ -269,9 +267,10 @@ Promise.all([
                                                     controlChar.set(char, points)  // update
                                                     if (points.length) {
                                                         const dt = clock.getDelta();
-                                                        const uData = char.userData
-                                                        fadeToAction(uData.AnimActions['Walking'], dt, uData.Action)
-                                                        uData.Action = uData.AnimActions['Walking']
+                                                        const [mixer, actions, clipName] = mapAnimations.get(char)
+                                                        let animName = 'Walking'
+                                                        fadeToAction(actions[animName], dt, actions[clipName])
+                                                        mapAnimations.set(char, [mixer, actions, animName])
                                                     }
                                                     console.log('points: ', points.map(v3 => [v3.x, v3.y, v3.z]), char.position)
                                                 }
@@ -344,10 +343,8 @@ Promise.all([
             }
             function renderFrame() {
                 const dt = clock.getDelta();
-                if (mixer) { mixer.update(dt) }
-                for (const cha of setCharacter) {
-                    const uData = cha.userData
-                    uData.AnimMixer.update(dt)
+                for (const [mixer] of mapAnimations.values()) {
+                    mixer.update(dt)
                 }
                 if (clock.running) {
                     updateHUD(); // cập nhật HUD
@@ -356,10 +353,11 @@ Promise.all([
                             if (points.length) {
                                 modeDynamic(points, char, moveSpeed, tileSize / 12)
                             } else {
-                                const uData = char.userData
+                                const [mixer, actions, clipName] = mapAnimations.get(char)
+                                let animName = 'Idle'
                                 //  console.log('get finish', char)
-                                fadeToAction(uData.AnimActions['Idle'], dt, uData.Action)
-                                uData.Action = uData.AnimActions['Idle']
+                                fadeToAction(actions[animName], dt, actions[clipName])
+                                mapAnimations.set(char, [mixer, actions, animName])
                                 controlChar.delete(char)
                             }
                         }
@@ -382,59 +380,39 @@ Promise.all([
                         .play();
                 }
             }
-            function buildAnim(model, animations, character) {
-                const states = ['Idle', 'Walking', 'Running', 'Dance', 'Death', 'Sitting', 'Standing'];
-                const emotes = ['Jump', 'Yes', 'No', 'Wave', 'Punch', 'ThumbsUp'];
+            function setMapAnimations(charater, model, animations) {
+                let states = ['Idle', 'Walking', 'Running', 'Dance', 'Death', 'Sitting', 'Standing'];
+                let emotes = ['Jump', 'Yes', 'No', 'Wave', 'Punch', 'ThumbsUp'];
+                let actions = {}, action;
                 let mixer = new THREE.AnimationMixer(model);
-                let actions = {};
                 for (const clip of animations) {
-                    const action = mixer.clipAction(clip);
+                    action = mixer.clipAction(clip);
                     actions[clip.name] = action;
                     if (0 <= emotes.indexOf(clip.name) || 4 <= states.indexOf(clip.name)) {
                         action.clampWhenFinished = true;
                         action.loop = THREE.LoopOnce;
                     }
                 }
-                const uData = character.userData
-                uData.AnimMixer = mixer
-                uData.AnimActions = actions
-                let action = actions['Idle'];
+                let clipName = 'Idle'
+                mapAnimations.set(charater, [mixer, actions, clipName])
+                action = actions[clipName];
                 //  action.setLoop(THREE.LoopRepeat, Infinity); // Lặp vô hạn
                 action.play();
-                uData.Action = action
+                return [states, emotes]
             }
             function createGUI(model, animations) {
-
-                const states = ['Idle', 'Walking', 'Running', 'Dance', 'Death', 'Sitting', 'Standing'];
-                const emotes = ['Jump', 'Yes', 'No', 'Wave', 'Punch', 'ThumbsUp'];
-
+                const [states, emotes] = setMapAnimations(player, model, animations)
                 gui = new GUI();
-
-                mixer = new THREE.AnimationMixer(model);
-
-                actions = {};
-
-                for (let i = 0; i < animations.length; i++) {
-
-                    const clip = animations[i];
-                    const action = mixer.clipAction(clip);
-                    actions[clip.name] = action;
-
-                    if (emotes.indexOf(clip.name) >= 0 || states.indexOf(clip.name) >= 4) {
-
-                        action.clampWhenFinished = true;
-                        action.loop = THREE.LoopOnce;
-                    }
-                }
-
+                
                 // states
                 const statesFolder = gui.addFolder('States');
 
                 const clipCtrl = statesFolder.add(api, 'state').options(states);
 
                 clipCtrl.onChange(function () {
-                    fadeToAction(actions[api.state], 0.5, activeAction);
-                    activeAction = actions[api.state]
+                    const [mixer, actions, clipName] = mapAnimations.get(player)
+                    fadeToAction(actions[api.state], 0.5, actions[clipName]);
+                    mapAnimations.set(player, [mixer, actions, api.state])
                 });
 
                 statesFolder.open();
@@ -443,45 +421,39 @@ Promise.all([
                 const emoteFolder = gui.addFolder('Emotes');
 
                 function createEmoteCallback(name) {
-
+                    const [mixer, actions, clipName] = mapAnimations.get(player)
                     api[name] = function () {
-                        fadeToAction(actions[name], 0.2, activeAction);
-                        activeAction = actions[name]
+                        fadeToAction(actions[name], 0.2, actions[clipName]);
+                        mapAnimations.set(player, [mixer, actions, name])
                         mixer.addEventListener('finished', restoreState);
                     };
-
                     emoteFolder.add(api, name);
                 }
 
                 function restoreState() {
+                    const [mixer, actions, clipName] = mapAnimations.get(player)
                     mixer.removeEventListener('finished', restoreState);
-                    fadeToAction(actions[api.state], 0.2, activeAction);
-                    activeAction = actions[api.state]
+                    fadeToAction(actions[api.state], 0.2, actions[clipName]);
+                    mapAnimations.set(player, [mixer, actions, api.state])
                 }
 
-                for (let i = 0; i < emotes.length; i++) {
-
-                    createEmoteCallback(emotes[i]);
-                }
+                for (let i = 0; i < emotes.length; i++) { createEmoteCallback(emotes[i]) }
 
                 emoteFolder.open();
 
                 // expressions
-
                 face = player.children[0].getObjectByName('Head_4');
 
                 const expressions = Object.keys(face.morphTargetDictionary);
                 const expressionFolder = gui.addFolder('Expressions');
 
                 for (let i = 0; i < expressions.length; i++) {
-
                     expressionFolder.add(face.morphTargetInfluences, i, 0, 1, 0.01).name(expressions[i]);
                 }
-
-                activeAction = actions['Walking'];
-                activeAction.play();
-
                 expressionFolder.open();
+
+                const [mixer, actions, clipName] = mapAnimations.get(player)
+                actions['Walking'].play();
             }
             function modeDynamic(points, item, speed, stopDistance, itemSize = 0.3) {
                 if (points.length < 1) return
