@@ -60,7 +60,6 @@ Promise.all([
                 offset, gui, face, player
             let tileGrid = []
             let moveSpeed = 0.69
-            const pathModel = `models/RobotExpressive.glb`
             const api = { state: 'Walking' };
             let gridSize = 10,
                 tileSize = 20,
@@ -71,7 +70,6 @@ Promise.all([
             let setTile = new Set()
             let controlChar = new Map()
             let setName = new Set(['Player', 'Group_Ground', 'Character'])
-
             const t_Clok = this.TClock
             {
                 // #region Camera (Isometric - Orthographic)
@@ -160,6 +158,7 @@ Promise.all([
                 // #endregion
                 // #region Load model
                 const loader = new GLTFLoader();
+                let pathModel = `models/RobotExpressive.glb`
                 loader.load(pathModel, function (gltf) {
                     let model = gltf.scene;
                     let scale = 3
@@ -204,7 +203,7 @@ Promise.all([
                 // #endregion
                 // #region Tạo Control camera
                 controls = new OrbitControls(camera, renderer.domElement);
-                //controls.enableRotate = false;
+                controls.enableRotate = false;
                 controls.maxPolarAngle = THREE.MathUtils.degToRad(90);
                 controls.enableDamping = true;
                 //controls.enablePan = true;
@@ -297,7 +296,7 @@ Promise.all([
                     }
                 }
                 window.addEventListener('mouseup', rayToControl); // pointerup không hoạt động trên iphone
-                //window.addEventListener('touchend', rayToControl); // pointerup không hoạt động trên iphone
+                window.addEventListener('touchend', rayToControl); // pointerup không hoạt động trên iphone
                 // #endregion
                 document.addEventListener("keyup", (event) => {
                     switch (event.key) {
@@ -307,7 +306,7 @@ Promise.all([
                             break;
                     }
                 });
-                clock.start();
+                clock.start()
             }
             function getGridPoint(txtPos) { return txtPos.split('_').map(txt => parseFloat(txt)) }  // [x, y, z]
             function buildGridPoint(posX, posY, posZ) { return `${posX}_${posY}_${posZ}` }
@@ -330,7 +329,7 @@ Promise.all([
             function buildWayPoints(srcPos, desPos) {
                 let des = { x: getTitleInGrid(srcPos.x), y: getTitleInGrid(srcPos.z) }
                 let src = { x: getTitleInGrid(desPos.x), y: getTitleInGrid(desPos.z) }
-                let paths = aStar(tileGrid, src, des)
+                let paths = aStar(tileGrid, src, des) // paths order {x,y} theo thứ tự từ xa tới gần vị trí cuối là posXZ của src
                 //  console.log(paths, src, des)
                 if (1 < paths.length) paths.pop()   // Bỏ đi vị trí player đang đứng.
                 paths = paths.map(ps => new THREE.Vector3(getPosFromGrid(ps.x), srcPos.y, getPosFromGrid(ps.y)))
@@ -487,17 +486,16 @@ Promise.all([
                 if (!player) return
                 modeDynamic(wayPoints, player, speed, tileSize / 12)
             }
-            function modeDynamic(points, item, speed, stopDistance, itemSize) {
+            function modeDynamic(points, item, speed, stopDistance, itemSize = 0.3) {
                 if (points.length < 1) return
                 let targetPos3 = points[points.length - 1]
                 if (!targetPos3) return
                 //console.log('wait point 0: ', points.map(v3 => [v3.x, v3.y, v3.z]), [item.position.x, item.position.y, item.position.z])
-                if (typeof itemSize != 'number') itemSize = 0.3
                 let disSquare = distSquareXZ(targetPos3, item.position)
                 if (points.length < 2) {
                     if (disSquare <= itemSize * itemSize || disSquare <= stopDistance * stopDistance) {
                         // đã đến đích
-                        item.position.lerp(targetPos3, 0.003)
+                        item.position.lerp(targetPos3, 0.3)
                         points.splice(0)
                         return
                     }
@@ -510,17 +508,15 @@ Promise.all([
                     targetPos3 = points[ii]
                     if (!targetPos3) break;
                     disSquare = distSquareXZ(targetPos3, item.position)
+                    //console.log('wait point : ', points.map(v3 => [v3.x, v3.y, v3.z]), [item.position.x, item.position.y, item.position.z])
                     if (itemSize * itemSize < disSquare) {
                         item.lookAt(targetPos3)
                         const direction = targetPos3.clone().sub(item.position).normalize(); // Tính hướng đi từ vị trí hiện tại đến đích
                         item.position.add(direction.multiplyScalar(speed)); // Di chuyển theo hướng đó với tốc độ nhất định
-                        //console.log('wait point 1: ', points.map(v3 => [v3.x, v3.y, v3.z]), [item.position.x, item.position.y, item.position.z])
                         break
-                    } else {
-                        item.position.lerp(targetPos3, 0.003)
-                        points.splice(ii, 1)
                     }
-                    //console.log('wait point 2 : ', points.map(v3 => [v3.x, v3.y, v3.z]), [item.position.x, item.position.y, item.position.z])
+                    item.position.lerp(targetPos3, 0.3)
+                    points.splice(ii, 1)
                 }
             }
             function distSquareXZ(vec3a, vec3b) {
