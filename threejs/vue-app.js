@@ -364,7 +364,8 @@ Promise.all([
                             }
                         }
                     }
-                    goTo(player, moveSpeed)
+                    if (player) modeDynamic(wayPoints, player, moveSpeed, tileSize / 12)
+
                     updateIsometricCamera(camera, player); // camera bám theo nhân vật
                 }
                 renderer.render(scene, camera);
@@ -481,10 +482,6 @@ Promise.all([
                 activeAction.play();
 
                 expressionFolder.open();
-            }
-            function goTo(player, speed) {
-                if (!player) return
-                modeDynamic(wayPoints, player, speed, tileSize / 12)
             }
             function modeDynamic(points, item, speed, stopDistance, itemSize = 0.3) {
                 if (points.length < 1) return
