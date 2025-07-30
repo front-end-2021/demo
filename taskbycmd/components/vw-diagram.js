@@ -4,9 +4,9 @@ import {
     hasText,
 } from "../common.js";
 import {
-    getCommands, ptrnNewShedules, patternNewPlans,
-    patternNewUser, patternEditUser, patternSearch,
-    rmLastPunctuation, ptrnNewTask, getCmdTask,
+    getCommands, ptrnNewShedules, patternNewPlans, setUsers,
+    patternNewUser, patternEditUser, patternSearch, getCmdAssignUser,
+    rmLastPunctuation, ptrnNewTask, getCmdTask, ptrnAssignUser,
 } from "../commands.js";
 const mxDate = {
     computed: {
@@ -44,9 +44,9 @@ export const FormSchedule = {
         let tasks = getLsChild(this.$root.LsTask, item.Id)
         return {
             item: copy,
-            TxtCmdTask: `${ptrnNewTask[randomInt(0, ptrnNewTask.length)]} Document log due 15:00`,
             TaskEdit: null,
             Tasks: tasks,
+            LisUserName: [],
         }
     },
     watch: {
@@ -59,10 +59,8 @@ export const FormSchedule = {
         },
     },
     methods: {
-        processCmdTask(e) {
+        processCmdTask(txt) {
             const root = this.$root
-            let target = e.target
-            const txt = target.innerText
             let [allCommandIndex, mapTasks] = getCmdTask(txt, root.IdGenerator)
             const item = this.item
             let tasks = root.LsTask
@@ -144,6 +142,85 @@ export const FormSchedule = {
             }
             return null
         },
+        buildCmdTask() {
+            const _el = this.$el
+            let name = _el.querySelector('.txttaskname')
+            name = name.innerText.trim()
+            if (!name.length) return;
+            let due = _el.querySelector('.txttaskdue')
+            due = due.innerText.trim()
+            if (!due.length) return;
+            let txt = `${this.CmdNewTask} ${name} due ${due}`
+            this.processCmdTask(txt)
+        },
+        assignUserName() {
+            const _el = this.$el
+            let name = _el.querySelector('.txtusername')
+            name = name.innerText.trim()
+            if (!name.length) return;
+            this.buildAssignUser(name)
+        },
+        focusAssignUsrName(e) {
+            let text = e.target.innerText
+            this.buildLsUserName(text)
+        },
+        inputAssignUsrName(e) {
+            let text = e.target.innerText
+            this.buildLsUserName(text)
+        },
+        blurAssignUsrName(e) { setTimeout(() => { this.LisUserName = [] }, 555) },
+        buildLsUserName(txt) {
+            const root = this.$root
+            let fullLs = root.LsUser.map(x => x.Name)
+            if (typeof txt != 'string' || !txt.trim().length) {
+                this.LisUserName = fullLs
+                return
+            }
+            let name = txt.trim()
+            let _ls = fullLs.filter(n => n.includes(name))
+            if (!_ls.length) this.LisUserName = fullLs
+            else this.LisUserName = _ls
+        },
+        buildAssignUser(name) {
+            let task = this.entry.item
+            let taskCopy = this.item
+            const root = this.$root
+            const lsLog = root.LisLog
+            let listUser = root.LsUser
+            let txt = `${this.CmdAssignUsr} ${name} to ${this.item.Name}`
+            let lsIndexAssignUser = [0]
+            let allCommandIndex = [0]
+            let prcs = getCmdAssignUser(txt, lsIndexAssignUser, allCommandIndex)
+            let mapAssignUser = prcs[0]
+            lsIndexAssignUser = prcs[1]
+            allCommandIndex.forEach(index => {
+                if (mapAssignUser.has(index)) {
+                    let [uName, taskName] = mapAssignUser.get(index)
+                    let nwLst = setUsers.call(listUser, uName, null, root.IdGenerator)
+                    if (!Object.is(nwLst, listUser)) {
+                        let cmd_ = patternNewUser[randomInt(0, patternNewUser.length)]
+                        lsLog.push(`${cmd_} ${uName}`)
+                    }
+                    listUser = nwLst
+                    let assign = new Set(task.Users)
+                    assign.add(uName)
+                    task.Users = Array.from(assign)
+                    taskCopy.Users = Array.from(assign)
+                    lsLog.push(`Assign user ${uName} to ${taskName}`)
+                }
+            })
+            root.LsUser = listUser
+        },
+        assignNameUser(name, e) {
+            this.buildAssignUser(name)
+            this.LisUserName = []
+            let uNm = this.$el.querySelector('.txtusername')
+            uNm.innerText = name
+        },
+    },
+    computed: {
+        CmdNewTask() { return ptrnNewTask[randomInt(0, ptrnNewTask.length)] },
+        CmdAssignUsr() { return ptrnAssignUser[randomInt(0, ptrnAssignUser.length)] },
     },
 }
 export const RowSchedule = {
@@ -312,22 +389,7 @@ export const RowSchedule = {
             let date = due.toLocaleDateString(lang, tConfix)
             return `${time}<br>${date}`
         },
-    },
-    watch: {
-        '$root.Search.Ids'(viewIds) {
-            const itemId = this.item.Id
-            //console.log('watch set visible Id ', itemId, viewIds)
-            if (viewIds.has(itemId)) {
-                const hideIds = this.$root.Search.HideIds
-                if (hideIds.has(itemId)) {
-                    this.ViewType = 'i'
-                } else {
-                    this.ViewType = 's'
-                }
-            } else this.ViewType = 'h'
-        },
-        '$root.LsTask'(ls) { this.Tasks = getLsChild(ls, this.item.Id) },
-        'item.End'(end) {
+        checkDone(end) {
             let dE = new Date(end)
             let dNow = new Date()
             const root = this.$root
@@ -346,6 +408,22 @@ export const RowSchedule = {
                 }
             }
         },
+    },
+    watch: {
+        '$root.Search.Ids'(viewIds) {
+            const itemId = this.item.Id
+            //console.log('watch set visible Id ', itemId, viewIds)
+            if (viewIds.has(itemId)) {
+                const hideIds = this.$root.Search.HideIds
+                if (hideIds.has(itemId)) {
+                    this.ViewType = 'i'
+                } else {
+                    this.ViewType = 's'
+                }
+            } else this.ViewType = 'h'
+        },
+        '$root.LsTask'(ls) { this.Tasks = getLsChild(ls, this.item.Id) },
+        'item.End'(end) { this.checkDone(end) },
     },
     computed: {
         TaskStatus() {
@@ -407,6 +485,10 @@ export const RowSchedule = {
             }
             return name.replace(regex, `<span class="bg-amber-300">${keyword}</span>`)
         },
+    },
+    created() {
+        let item = this.item
+        this.checkDone(item.End)
     },
     //  beforeMount() {  },
     //mounted() {  },
@@ -505,14 +587,17 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             allCommandIndex.forEach(index => {
                 if (mapNewUser.has(index)) {
                     let uName = mapNewUser.get(index)
-                    if (setUsers(uName)) {
+                    let nwLst = setUsers.call(listUser, uName, null, root.IdGenerator)
+                    if (!Object.is(nwLst, listUser)) {
                         let cmd_ = patternNewUser[randomInt(0, patternNewUser.length)]
                         lsLog.push(`${cmd_} ${uName}`)
                     }
+                    listUser = nwLst
                 }
                 if (mapEditUser.has(index)) {
                     let [oName, newName] = mapEditUser.get(index)
-                    if (setUsers(oName, newName)) {
+                    let nwLst = setUsers.call(listUser, oName, newName, root.IdGenerator)
+                    if (!Object.is(nwLst, listUser)) {
                         lsLog.push(`Change user ${oName} to ${newName}`)
                         for (let ss = 0, task; ss < lsShedule.length; ss++) {
                             task = lsShedule[ss]
@@ -524,15 +609,18 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                             }
                         }
                     }
+                    listUser = nwLst
                 }
                 if (mapAssignUser.has(index)) {
                     let [uName, taskName] = mapAssignUser.get(index)
                     let task = lsShedule.find(x => x.Name == taskName)
                     if (task) {
-                        if (setUsers(uName)) {
+                        let nwLst = setUsers.call(listUser, uName, null, root.IdGenerator)
+                        if (!Object.is(nwLst, listUser)) {
                             let cmd_ = patternNewUser[randomInt(0, patternNewUser.length)]
                             lsLog.push(`${cmd_} ${uName}`)
                         }
+                        listUser = nwLst
                         let assign = new Set(task.Users)
                         assign.add(uName)
                         task.Users = Array.from(assign)
@@ -605,19 +693,6 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 obj.End = oEnd.toISOString()
                 obj.Id = old.Id
             }
-            function setUsers(name, nName) {
-                let ii = listUser.findIndex(u => u.Name == name)
-                if (ii < 0) {
-                    listUser = [...listUser]    // copy change ref
-                    listUser.push({ Name: name, Id: root.IdGenerator.generate().toString() })
-                    return true
-                }
-                if (typeof nName == 'string') {
-                    listUser = [...listUser]    // copy change ref
-                    listUser[ii].Name = nName
-                    return true
-                }
-            }
         },
         generateCommands() {
             let target = this.$el.querySelector('.txt-command[contenteditable]')
@@ -650,7 +725,8 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             }
             root.LsEdit = [entry]
         },
-        showGuide() {debugger
+        showGuide() {
+            debugger
             const root = this.$root
             const item = {
                 NewShedule: `${ptrnNewShedules.join(', ')}. ${patternNewPlans.join(', ')}`,

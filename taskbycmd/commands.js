@@ -5,6 +5,7 @@ export const patternEditUser = ['edit user from', 'edit user', 'edit person from
     'change user from', 'change user', 'change person from', 'change person', 'change member from', 'change member']
 export const patternSearch = ['go search', 'go filter', 'go query']
 export const ptrnNewTask = ['make Task']
+export const ptrnAssignUser = ['add user', 'assign user', 'add person', 'assign person', 'add member', 'assign member']
 export function getCmdTask(text, IdGenerator) {
     let lsIndexTask = KMPLsIndex(text, ptrnNewTask.map(x => `${x} `))
     let allCommandIndex = new Set(lsIndexTask)
@@ -52,10 +53,23 @@ export function getCmdTask(text, IdGenerator) {
         return arrStr
     }
 }
+export function getCmdAssignUser(text, lsIndexAssignUser, allCommandIndex) {
+    let lsIndex = mapLs(lsIndexAssignUser, allCommandIndex, text)
+    let mapAssign = new Map()
+    for (let ii = 0, arr, txt; ii < lsIndex.length; ii++) {
+        arr = lsIndex[ii]
+        txt = arr[1]
+        let lsStr = splitByKeywords(txt, [...ptrnAssignUser, ' to '])
+        if (2 == lsStr.length) {
+            lsStr = lsStr.map(str => rmLastPunctuation(str))
+            mapAssign.set(arr[0], lsStr)
+        }
+    }
+    return [mapAssign, lsIndex]
+}
 export function getCommands(text, IdGenerator) {
     //const patternTimes = ['Start time', 'End time', 'Valid from', 'Valid until', 'Cut-off time']
     const patternSpecTimes = [' from ', ' begin ', ' start ', ' at ', ' end ', ' to ']
-    const ptrnAssignUser = ['add user', 'assign user', 'add person', 'assign person', 'add member', 'assign member']
 
     const lsPttnSearchN = [...patternSearch.map(x => `${x} name `)]
     const lsPttnSearchU = [...patternSearch.map(x => `${x} person `), ...patternSearch.map(x => `${x} user `), ...patternSearch.map(x => `${x} member `)]
@@ -133,18 +147,20 @@ export function getCommands(text, IdGenerator) {
             mapEditUser.set(arr[0], lsStr)
         }
     }
-
-    lsIndexAssignUser = mapLs(lsIndexAssignUser, allCommandIndex, text)
-    let mapAssignUser = new Map()
-    for (let ii = 0, arr, txt; ii < lsIndexAssignUser.length; ii++) {
-        arr = lsIndexAssignUser[ii]
-        txt = arr[1]
-        let lsStr = splitByKeywords(txt, [...ptrnAssignUser, ' to '])
-        if (2 == lsStr.length) {
-            lsStr = lsStr.map(str => rmLastPunctuation(str))
-            mapAssignUser.set(arr[0], lsStr)
-        }
-    }
+    //lsIndexAssignUser = mapLs(lsIndexAssignUser, allCommandIndex, text)
+    //let mapAssignUser = new Map()
+    let prcs = getCmdAssignUser(text, lsIndexAssignUser, allCommandIndex)
+    let mapAssignUser = prcs[0]
+    lsIndexAssignUser = prcs[1]
+    // for (let ii = 0, arr, txt; ii < lsIndexAssignUser.length; ii++) {
+    //     arr = lsIndexAssignUser[ii]
+    //     txt = arr[1]
+    //     let lsStr = splitByKeywords(txt, [...ptrnAssignUser, ' to '])
+    //     if (2 == lsStr.length) {
+    //         lsStr = lsStr.map(str => rmLastPunctuation(str))
+    //         mapAssignUser.set(arr[0], lsStr)
+    //     }
+    // }
     return [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
         mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU]
     function addMapSearch(mapSearch, lsIndex, lsPttn) {
@@ -293,3 +309,18 @@ function splitByKeywords(text, keywords) {
     return text.split(rex).map(str => str.trim()).filter(str => str);
 }
 export function rmLastPunctuation(str) { return str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]$/, "") /* Xóa dấu câu nếu xuất hiện cuối chuỗi*/ }
+export function setUsers(name, nName, IdGenerator) {
+    let listUser = this
+    let ii = listUser.findIndex(u => u.Name == name)
+    if (ii < 0) {
+        listUser = [...listUser]    // copy change ref
+        listUser.push({ Name: name, Id: IdGenerator.generate().toString() })
+        return listUser
+    }
+    if (typeof nName == 'string') {
+        listUser = [...listUser]    // copy change ref
+        listUser[ii].Name = nName
+        return listUser
+    }
+    return this
+}

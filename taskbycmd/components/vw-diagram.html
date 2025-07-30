@@ -2,7 +2,31 @@
     <section class="form-edit" style="background-color: rgba(207, 207, 207, 0.24); border-radius: 12px; 
             padding: 12px;min-height: calc(100vh - 270px); margin-top: 34px;">
         <h3 style="margin: 0;">{{item.Name}}</h3>
-        <div style="min-height: 20px;">{{item.Users.join(', ')}}</div>
+        <div style="margin-top: 8px;">
+            <div style="min-height: 20px;">{{item.Users.join(', ')}}</div>
+            <div
+                style="margin-bottom: 8px; border: 1px solid #c2e7ff;border-radius: 8px;padding: 0px 10px;display: inline-flex;align-items: center;min-height: 34px;">
+                <span>{{CmdAssignUsr}}</span>
+                <div v-bind:style="{
+                    position: 0 < LisUserName.length ? 'relative' : ''
+                }">
+                    <span class="txtusername" contenteditable="plaintext-only"
+                        style="border-color: #f4f4f4; margin: 0; min-width: 69px; display: inline-block;"
+                        @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}" 
+                        @focus="focusAssignUsrName"
+                        @input="inputAssignUsrName" @blur="blurAssignUsrName"
+                        @keyup.enter.prevent="e => assignUserName()">Nguyen Ba Dai</span>
+                    <div v-if="0 < LisUserName.length"
+                        style="position: absolute;left: 0px;top: 30px;display: inline-flex;flex-direction: column;background-color: white;padding: 6px 10px;border-radius: 12px;gap: 2px;">
+                        <span v-for="uName in LisUserName" style="padding: 2px 6px; border-radius: 6px; margin: 0 -6px; white-space: nowrap;"
+                            class="rwusrname" @click.stop="e => assignNameUser(uName, e)">{{uName}}</span>
+                    </div>
+                </div>
+                <span class="rounded-md inline-flex items-center pt-0 pb-0 text-center cursor-pointer bg-cyan-200"
+                    style="padding-left: 6px; padding-right: 6px; margin-left: 6px; margin-right: -6px;"
+                    @click.stop="e => assignUserName()">Assign</span>
+            </div>
+        </div>
         <div v-if="1 == TxtDays.length" style="display: flex;gap: 8px; align-items: center;">
             <div style="display: flex; flex-direction: row;align-items: center;">
                 <small>{{TxtTimes[0]}}</small>&nbsp;-&nbsp;<small>{{TxtTimes[1]}}</small>
@@ -24,23 +48,37 @@
             </div>
         </div>
         <div style="display: grid; grid-template-columns: 50% 50%; gap: 8px;">
-            <div>
-                <div class="cmd-task" contenteditable="plaintext-only" style="margin-left: -6px;"
-                    @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
-                    @keyup.enter.prevent="processCmdTask">{{TxtCmdTask}}</div>
+            <div style="margin-top: 8px;">
                 <div v-for="task in Tasks"
                     style="display: grid;grid-template-columns: 16px auto 72px;align-items: center;gap: 8px;"
                     @click.stop="e => openFormTask(task)">
                     <div class="grid items-center justify-center" @click.stop="e => $root.toggFinish(task.Id)">
-                        <input class="peer col-start-1 row-start-1 h-4 w-4 appearance-none rounded border border-gray-300 ring-transparent 
-                            checked:border-violet-600 checked:bg-violet-600 dark:border-gray-600 dark:checked:border-violet-600" 
-                        v-model="$root.IdDones" type="checkbox" :value="task.Id" name="idTaskDone">
-                        <svg viewBox="0 0 14 14" fill="none" class="invisible col-start-1 row-start-1 stroke-white peer-checked:visible dark:text-violet-300">
-                            <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <input
+                            class="peer col-start-1 row-start-1 h-4 w-4 appearance-none rounded border border-gray-300 ring-transparent 
+                            checked:border-violet-600 checked:bg-violet-600 dark:border-gray-600 dark:checked:border-violet-600"
+                            v-model="$root.IdDones" type="checkbox" :value="task.Id" name="idTaskDone">
+                        <svg viewBox="0 0 14 14" fill="none"
+                            class="invisible col-start-1 row-start-1 stroke-white peer-checked:visible dark:text-violet-300">
+                            <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            </path>
                         </svg>
                     </div>
                     <span>{{task.Name}}</span>
                     <small>{{getTimeDig(task)}}</small>
+                </div>
+                <div
+                    style="margin-top: 8px; border: 1px solid #c2e7ff;border-radius: 8px;padding: 0px 10px;display: inline-flex;align-items: center;">
+                    <span>{{CmdNewTask}}</span>
+                    <span class="txttaskname" contenteditable="plaintext-only" style="border-color: #f4f4f4; margin: 0;"
+                        @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
+                        @keyup.enter.prevent="e => buildCmdTask()">Document log</span>
+                    <span style="margin-left: 3px; margin-right: 3px;">due</span>
+                    <span class="txttaskdue" contenteditable="plaintext-only" style="border-color: #f4f4f4; margin: 0;"
+                        @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
+                        @keyup.enter.prevent="e => buildCmdTask()">15:00</span>
+                    <span class="rounded-md inline-flex items-center pt-0 pb-0 text-center cursor-pointer bg-cyan-200"
+                        style="padding-left: 6px; padding-right: 6px; margin-left: 6px; margin-right: -6px;"
+                        @click.stop="e => buildCmdTask()">New</span>
                 </div>
             </div>
             <div>

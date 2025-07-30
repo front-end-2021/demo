@@ -18,7 +18,7 @@ const VwGuideCommands = {
 Promise.all([
     includeHTML(`./components/vw-diagram.html`),
 ]).then((values) => {
-    createApp({
+    const app = createApp({
         name: `app-main`,
         components: {
             'view-commands': ViewCommands,
@@ -234,8 +234,8 @@ Promise.all([
         updated() {
 
         },
-    }).mount('#m-app')
-
+    })
+    app.mount('#m-app')
 }).catch(errStatus => { console.log('Woop!', errStatus) })
 
 function includeHTML(path) {

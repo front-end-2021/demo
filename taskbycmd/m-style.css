@@ -40,3 +40,5 @@ body, .dr_lst-wrap, .mformedit, #dnb-viewcode {scrollbar-width: thin;}
 .txt-command:focus-visible {
     border-color: #c92a57;outline-color: #c92a57;
 }
+.rwusrname { cursor: pointer; }
+.rwusrname:hover { background-color: #f1f1f1; }
