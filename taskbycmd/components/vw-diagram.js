@@ -491,8 +491,6 @@ export const RowSchedule = {
         this.checkDone(item.End)
     },
     //  beforeMount() {  },
-    //mounted() {  },
-    // beforeDestroy() {  },
 }
 export const ViewCommands = {
     template: `#tmp-commands`,
@@ -500,6 +498,7 @@ export const ViewCommands = {
     display: "View.Command",
     //inject: [''],
     data() {
+        const root = this.$root
         const txtSchedule = `Make schedule Daily meeting from 9:30am to 9:45am, make Agenda Planning start 2:00pm end 5:00pm
     Make Agenda Retro meeting begin 10:00am end 12:00pm,
 make Roadmap Morning Briefing - Overview of the day’s agenda and key announcements from 08:00 to 08:30,
@@ -525,7 +524,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
         const txtAssignU = `Assign user DaiNB to Daily meeting. Assign member Bill Gate to Daily meeting, assign member Elon Musk to Planning.`
         const txtEditU = `change user DaiNB to Dai Nguyen. `
         return {
-            TxtCommand: `${txtSchedule}.\n${txtNewUser}\n${txtAssignU}\n${txtEditU}`,
+            TxtCommand: !root.LsSchedule.length ? `${txtSchedule}.\n${txtNewUser}\n${txtAssignU}\n${txtEditU}` : '',
             TxtDemo: {
                 NewShedule: txtSchedule,
                 NewUser: txtNewUser,
@@ -726,7 +725,6 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             root.LsEdit = [entry]
         },
         showGuide() {
-            debugger
             const root = this.$root
             const item = {
                 NewShedule: `${ptrnNewShedules.join(', ')}. ${patternNewPlans.join(', ')}`,
@@ -835,10 +833,68 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             }
         },
     },
-    beforeUpdate() {
-
+    //beforeUpdate() { },
+    //updated() { },
+}
+export const FloatBtn = {
+    template: `#tmp-btn-float-cmd`,
+    name: "Button_Float_Cmd",
+    display: "Button.Float.Cmd",
+    data() {
+        return {
+            currentX: undefined,
+            currentY: undefined,
+            initialX: undefined,
+            initialY: undefined,
+        }
     },
-    updated() {
+    methods: {
+        startDrag(e) {
+            this.initialX = e.clientX || e.touches[0].clientX;
+            this.initialY = e.clientY || e.touches[0].clientY;
+        },
+        onDragging(e) {
+            if (typeof this.initialX == 'number' && typeof this.initialY == 'number') {
+                e.preventDefault();
+                this.currentX = e.clientX || e.touches[0].clientX;
+                this.currentY = e.clientY || e.touches[0].clientY;
+                const dx = this.currentX - this.initialX;
+                const dy = this.currentY - this.initialY;
+                const button = this.$el
+                let newLeft = button.offsetLeft + dx;
+                let newTop = button.offsetTop + dy;
 
+                // Giới hạn trong viewport
+                newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - button.offsetWidth));
+                newTop = Math.max(0, Math.min(newTop, window.innerHeight - button.offsetHeight));
+
+                button.style.left = `${newLeft}px`
+                button.style.top = `${newTop}px`
+
+                this.initialX = this.currentX;
+                this.initialY = this.currentY;
+            }
+        },
+        stopDrag() {
+            this.initialX = undefined
+            this.initialY = undefined
+            this.currentX = undefined
+            this.currentY = undefined
+        },
+        toggleExpandCmd(e) {
+            const root = this.$root
+            root.IsExpandCmd = !root.IsExpandCmd
+        },
+    },
+    mounted() {
+        document.addEventListener('mouseleave', this.stopDrag)
+        document.addEventListener('touchcancel', this.stopDrag)
+        const button = this.$el
+        button.style.left = '0'
+        button.style.top = `${window.innerHeight - button.offsetHeight}px`
+    },
+    beforeDestroy() {
+        document.removeEventListener('mouseleave', this.stopDrag)
+        document.removeEventListener('touchcancel', this.stopDrag)
     },
 }

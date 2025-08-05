@@ -89,3 +89,13 @@
         </div>
     </section>
 </template>
+<template id="tmp-btn-float-cmd">
+    <div class="btndraggable"
+        @mousedown="startDrag"
+        @mousemove="onDragging"
+        @mouseup="stopDrag"
+        @touchstart="startDrag"
+        @touchmove="onDragging"
+        @touchend="stopDrag"
+        @click.stop="toggleExpandCmd"><i class="bi bi-command"></i></div>
+</template>

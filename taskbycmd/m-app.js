@@ -1,7 +1,7 @@
 // #region import
 import { Snowflake, convertDic, insertHTMLAtCursor } from './common.js'
 import { createApp } from 'vue'
-import { ViewCommands, RowSchedule, FormSchedule } from './components/vw-diagram.js'
+import { ViewCommands, RowSchedule, FormSchedule, FloatBtn } from './components/vw-diagram.js'
 // #endregion
 const VwDemoCommands = {
     template: `#tmp-demo-commands`,
@@ -26,6 +26,7 @@ Promise.all([
             'form-schedule': FormSchedule,
             'view-demo-commands': VwDemoCommands,
             'view-guide-commands': VwGuideCommands,
+            'button-float-cmd': FloatBtn,
         },
         data() {
             let start = new Date();
@@ -48,7 +49,7 @@ Promise.all([
                 },
                 LsEdit: [],
                 LisLog: [],
-
+                IsExpandCmd: true,
             }
         },
         computed: {

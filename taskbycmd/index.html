@@ -34,9 +34,9 @@
 </head>
 
 <body style="margin: 8px; font-family: Consolas;">
-  <main id="m-app" v-cloak>
+  <main id="m-app" v-cloak >
     <header>
-      <view-commands></view-commands>
+      <view-commands v-if="IsExpandCmd"></view-commands>
     </header>
 
     <section style="display: grid; grid-template-columns: 610px calc(789px - 610px) auto; gap: 60px;">
@@ -66,10 +66,9 @@
         <div>To {{item.End.toLocaleString()}}</div>
       </div>
     </section>
+    <button-float-cmd></button-float-cmd>
   </main>
-
   <span class="dnb-imp-html" dnbpath="./components/vw-diagram.html"></span>
-
   <script type="module" src="m-app.js"></script>
 
   <template id="tmp-schedule">
