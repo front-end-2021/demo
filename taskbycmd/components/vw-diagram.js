@@ -663,11 +663,13 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             target.innerHTML = ''
             this.CmdType = 0
             root.$nextTick(() => {
-                let element = document.body.querySelector(`#vw-command-log`)
-                element.scrollTo({
-                    top: element.scrollHeight,
-                    behavior: "smooth"
-                });
+                let element = this.$el.querySelector('.vw-command-log')
+                if (element) {
+                    element.scrollTo({
+                        top: element.scrollHeight,
+                        behavior: "smooth"
+                    })
+                }
             })
             function compare(item, obj) {
                 const eqTimeB = isEqualTime(obj.Begin, item.Begin)
