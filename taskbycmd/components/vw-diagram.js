@@ -870,18 +870,22 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
         toggleExpand() {
             let typExpnd = '1' == this.TypeExpand ? '0' : '1'
             this.TypeExpand = typExpnd
-            this.styleTxtCommand(typExpnd)
+            this.styleViewExpand(typExpnd)
         },
-        styleTxtCommand(typExpnd) {
+        styleViewExpand(typExpnd) {
             if ('0' == typExpnd) {
                 this.$nextTick(() => {
                     let target = this.$el.querySelector('.txt-command[contenteditable]')
                     target.style.paddingTop = '0'
                     target.style.height = '26px'
+                    target = this.$el.querySelector('.vw-command-log')
+                    target.style.height = '26px'
                 })
             } else {
                 let target = this.$el.querySelector('.txt-command[contenteditable]')
                 target.style.paddingTop = ''
+                target.style.height = ''
+                target = this.$el.querySelector('.vw-command-log')
                 target.style.height = ''
             }
         },
@@ -893,7 +897,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
         window.addEventListener('beforeunload', this.handleBeforeUnload)
     },
     mounted() {
-        this.styleTxtCommand(this.TypeExpand)
+        this.styleViewExpand(this.TypeExpand)
     },
     beforeUnmount() {
         window.removeEventListener('beforeunload', this.handleBeforeUnload)

@@ -106,7 +106,7 @@
             </div>
         </div>
         <div>
-            <div v-for="task in Tasks" class="grid items-center rounded-xl gap-[6px]"
+            <div v-for="task in Tasks" class="grid items-center rounded-lg gap-[6px]"
                 style="grid-template-columns: 14px auto 90px;padding: 6px; margin-bottom: 6px;
                 background-color: rgba(207, 207, 207, 0.24);min-height: 30px;margin-left: 6px;">
                 <div class="grid items-center justify-center" @click.stop="e => $root.toggFinish(task.Id)">
@@ -126,31 +126,31 @@
   <template id="tmp-commands">
     <div class="grid gap-[8px] relative" style="grid-template-columns: calc(610px + 789px - 610px + 120px) auto;">
         <div class="grid grid-cols-[auto 42px] gap-[6px]">
-            <div class="txt-command" contenteditable="plaintext-only"
+            <div class="txt-command rounded-lg" contenteditable="plaintext-only"
                 @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
                 @input="typingCommand"
                 @keyup.enter.prevent="processCompand">{{TxtCommand}}</div>
             <div v-if="'1' == TypeExpand" class="flex gap-[6px]">
-                <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
+                <div class="rounded-lg inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
                     v-if="1 == CmdType" @click.stop="generateCommands">Generate</div>
-                <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
+                <div class="rounded-lg inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
                     v-if="1 == CmdType" @click.stop="clearCompand">Clear</div>
-                <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
+                <div class="rounded-lg inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
                     v-if="0 == CmdType" @click.stop="fillCompand">Fill commands</div>
-                <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
+                <div class="rounded-lg inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
                     @click.stop="showGuide">Guides</div>
-                <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
+                <div class="rounded-lg inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
                     @click.stop="showDemoCommands">Demos</div>
                 <input type="file" accept=".json" @change="getImport" style="max-width: 300px;"
                     class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 
                         hover:file:bg-blue-100 dark:file:bg-blue-600 dark:file:text-blue-100 dark:hover:file:bg-blue-500">
-                <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
+                <div class="rounded-lg inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
                     v-if="0 < $root.LsSchedule.length" @click.stop="genExport">Export</div>
             </div>
         </div>
-        <div class="flex flex-col max-h-[92px]">
+        <div class="flex flex-col max-h-[92px] flex-row gap-3">
             <div class="cursor-pointer h-1/1" style="font-weight: bold;">Logs: </div>
-            <div id="vw-command-log" style="overflow: auto;">
+            <div class="vw-command-log" style="overflow: auto;">
                 <code v-for="log in $root.LisLog" style="display: block;cursor: default;"
                     @click.stop="e => $root.fillLogCommand(log)">{{log}}</code>
             </div>
@@ -174,7 +174,7 @@
     </section>
   </template>
   <template id="tmp-guide-commands">
-    <section class="form-edit rounded-xl flex flex-col p-3" 
+    <section class="form-edit rounded-lg flex flex-col p-3" 
         style="gap: 6px;background-color: rgba(207, 207, 207, 0.24); min-height: calc(-270px + 100vh); margin-top: 34px;padding: 12px; border-radius: 12px;">
         <h3 style="margin-top: 0;">{{entry.Title}}</h3>
         <div style="cursor: default;">
