@@ -1,6 +1,6 @@
 <template id="tmp-form-schedule">
     <section class="form-edit" style="background-color: rgba(207, 207, 207, 0.24); border-radius: 12px; 
-            padding: 12px;min-height: calc(100vh - 270px); margin-top: 34px;">
+            padding: 6px 12px;min-height: calc(100vh - 270px);">
         <h3 style="margin: 0;">{{item.Name}}</h3>
         <div style="margin-top: 8px;">
             <div style="min-height: 20px;">{{item.Users.join(', ')}}</div>
@@ -93,9 +93,8 @@
     <div class="btndraggable"
         @mousedown="startDrag"
         @mousemove="onDragging"
-        @mouseup="stopDrag"
+        @mouseup.stop="clickMouseUp"
         @touchstart="startDrag"
         @touchmove="onDragging"
-        @touchend="stopDrag"
-        @click.stop="toggleExpandCmd"><i class="bi bi-command"></i></div>
+        @touchend.stop="clickMouseUp"><i class="bi bi-command"></i></div>
 </template>

@@ -39,14 +39,17 @@
       <view-commands v-if="IsExpandCmd"></view-commands>
     </header>
 
-    <section style="display: grid; grid-template-columns: 610px calc(789px - 610px) auto; gap: 60px;">
+    <section style="display: grid; grid-template-columns: 610px 180px auto; gap: 12px;">
       <div>
-        <h3 style="margin-bottom: 3px;">List schedule</h3>
+        <h3 style="margin-bottom: 3px;">Schedule List</h3>
         <view-schedule v-for="task in LsSchedule" :key="task.KeyMD5" :item="task"></view-schedule>
       </div>
       <div>
-        <h3 style="margin-bottom: 3px;">List user</h3>
-        <div v-for="user in LsUser" style="font-size: 14px;">{{user.Name}}</div>
+        <h3 style="margin-bottom: 3px;">User List</h3>
+        <div v-if="0 < LsUser.length"
+          style="background-color: rgba(207, 207, 207, 0.24); border-radius: 12px; padding: 6px;">
+          <div v-for="user in LsUser" style="font-size: 14px;">{{user.Name}}</div>
+        </div>
       </div>
       <div v-if="0 == LsEdit.length">
         <h3 style="margin-top: 34px;">Logs</h3>
@@ -56,6 +59,7 @@
         </div>
       </div>
       <div v-else>
+        <div style="margin-bottom: 3px;">Task View</div>
         <component v-for="edit in LsEdit" :key="edit.item.Id" v-bind:is="edit.ComponentName" :entry="edit"></component>
       </div>
     </section>
@@ -127,11 +131,11 @@
                 @keyup.enter.prevent="processCompand">{{TxtCommand}}</div>
             <div class="flex gap-[6px]">
                 <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
-                    @click.stop="generateCommands">Generate</div>
+                    v-if="1 == CmdType" @click.stop="generateCommands">Generate</div>
                 <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
-                    @click.stop="clearCompand">Clear</div>
+                    v-if="1 == CmdType" @click.stop="clearCompand">Clear</div>
                 <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
-                    @click.stop="fillCompand">Fill commands</div>
+                    v-if="0 == CmdType" @click.stop="fillCompand">Fill commands</div>
                 <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
                     @click.stop="showGuide">Guides</div>
                 <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
@@ -140,7 +144,7 @@
                     class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 
                         hover:file:bg-blue-100 dark:file:bg-blue-600 dark:file:text-blue-100 dark:hover:file:bg-blue-500">
                 <div class="rounded-xl inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
-                    @click.stop="genExport">Export</div>
+                    v-if="0 < $root.LsSchedule.length" @click.stop="genExport">Export</div>
             </div>
         </div>
         <div class="flex flex-col max-h-[92px]">

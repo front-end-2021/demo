@@ -43,7 +43,7 @@ body, .dr_lst-wrap, .mformedit, #dnb-viewcode {scrollbar-width: thin;}
 .rwusrname { cursor: pointer; }
 .rwusrname:hover { background-color: #f1f1f1; }
 .btndraggable {
-    position: absolute;
+    position: fixed;
     width: 50px;
     height: 50px;
     background-color: #007bff;

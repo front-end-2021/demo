@@ -65,7 +65,7 @@ export const FormSchedule = {
             const item = this.item
             let tasks = root.LsTask
             if (0 < allCommandIndex.length + mapTasks.size) {
-                tasks = [...tasks]  // copy => new ref
+                tasks = root.checkNewArray(2, tasks)
                 allCommandIndex.forEach(index => {
                     if (mapTasks.has(index)) {
                         let obj = mapTasks.get(index)
@@ -532,6 +532,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 EditUser: txtEditU,
                 Search: `Go search name Bre`
             },
+            CmdType: 1, // empty = 0, has command = 1
         }
     },
     methods: {
@@ -541,9 +542,11 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             const root = this.$root
             const lsLog = root.LisLog
             let [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
-                mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU] = getCommands(txt, root.IdGenerator)
+                mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU, mapDelItem] = getCommands(txt, root.IdGenerator)
             let listUser = root.LsUser
             let lsShedule = root.LsSchedule
+            let lsTsk = root.LsTask
+            console.log(mapDelItem)
             allCommandIndex.forEach(index => {
                 if (mapGoSearchN.has(index)) {
                     let sTxt = mapGoSearchN.get(index)
@@ -556,7 +559,6 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 } else {
                     root.setSearch(null, 'name')
                 }
-
                 if (mapGoSearchU.has(index)) {
                     const arrN = ['person', 'user', 'member']
                     const lsPttnSearchU = [...patternSearch.map(x => `${x.toLowerCase()} ${arrN[0]}`),
@@ -572,7 +574,6 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 } else {
                     root.setSearch('', 'user')
                 }
-
                 if (mapNewSchedule.has(index)) {
                     let obj = mapNewSchedule.get(index)
                     setSchedules.call(root, obj, lsLog)
@@ -580,6 +581,27 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 if (mapNewPlan.has(index)) {
                     let obj = mapNewPlan.get(index)
                     setSchedules.call(root, obj, lsLog)
+                }
+                if (mapDelItem.has(index)) {
+                    let itemName = mapDelItem.get(index)
+                    let ii = lsShedule.findIndex(item => itemName == item.Name)
+                    if (-1 < ii) {
+                        lsShedule = root.checkNewArray(1, lsShedule)
+                        for (let tt = lsShedule.length - 1, itm; -1 < tt; tt--) {
+                            itm = lsShedule[tt]
+                            if (itemName == itm.Name) lsShedule.splice(tt, 1) // delete
+                        }
+                        lsShedule.splice(ii, 1) // delete
+                    } else {
+                        ii = lsTsk.findIndex(item => itemName == item.Name)
+                        if (-1 < ii) {
+                            lsTsk = root.checkNewArray(2, lsTsk)
+                            for (let tt = lsTsk.length - 1, itm; -1 < tt; tt--) {
+                                itm = lsTsk[tt]
+                                if (itemName == itm.Name) lsTsk.splice(tt, 1) // delete
+                            }
+                        }
+                    }
                 }
             })
             root.setListSchedule(lsShedule)
@@ -628,6 +650,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 }
             })
             root.LsUser = listUser
+            root.LsTask = lsTsk
             if (!mapGoSearchN.size) {
                 root.setSearch(null, 'name')
             }
@@ -658,7 +681,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                     lsShedule = [...lsShedule]  // copy => new ref
                     let old = lsShedule[ii]
                     keepProps(obj, old)
-                    lsShedule.splice(ii, 1, obj)
+                    lsShedule.splice(ii, 1, obj)    // replace
                     const lisEdit = this.LsEdit
                     if (lisEdit.length) {
                         let eEntry = lisEdit.find(x => x.item.Id == old.Id)
@@ -667,7 +690,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 } else {
                     ii = lsShedule.findIndex(item => 0 == compare(item, obj))
                     if (ii < 0) {
-                        lsShedule = [...lsShedule]  // copy => new ref
+                        lsShedule = root.checkNewArray(1, lsShedule)
                         lsShedule.push(obj)
                     }
                 }
@@ -697,10 +720,12 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             let target = this.$el.querySelector('.txt-command[contenteditable]')
             this.processCompand({ target })
             target.innerHTML = ''
+            this.CmdType = 0
         },
         clearCompand() {
             let target = this.$el.querySelector('.txt-command[contenteditable]')
             target.innerHTML = ''
+            this.CmdType = 0
             const root = this.$root
             const oSearch = root.Search
             oSearch.Name = null
@@ -713,6 +738,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
         fillCompand() {
             let target = this.$el.querySelector('.txt-command[contenteditable]')
             target.innerHTML = this.TxtCommand
+            this.CmdType = 1
         },
         showDemoCommands() {
             const root = this.$root
@@ -846,12 +872,20 @@ export const FloatBtn = {
             currentY: undefined,
             initialX: undefined,
             initialY: undefined,
+            longPressTimerId: -1,
         }
     },
     methods: {
         startDrag(e) {
-            this.initialX = e.clientX || e.touches[0].clientX;
-            this.initialY = e.clientY || e.touches[0].clientY;
+            if (0 < this.longPressTimerId) return
+            e.preventDefault(); // Ngăn hành vi mặc định (cuộn, chọn văn bản)
+            const offsetX = e.clientX || e.touches[0].clientX;
+            const offsetY = e.clientY || e.touches[0].clientY;
+            this.longPressTimerId = setTimeout(() => {
+                this.initialX = offsetX
+                this.initialY = offsetY
+                this.longPressTimerId = -1
+            }, 555); // Thời gian ấn giữ (ms)
         },
         onDragging(e) {
             if (typeof this.initialX == 'number' && typeof this.initialY == 'number') {
@@ -875,15 +909,31 @@ export const FloatBtn = {
                 this.initialY = this.currentY;
             }
         },
-        stopDrag() {
+        stopDrag(e) {
             this.initialX = undefined
             this.initialY = undefined
             this.currentX = undefined
             this.currentY = undefined
         },
-        toggleExpandCmd(e) {
-            const root = this.$root
-            root.IsExpandCmd = !root.IsExpandCmd
+        clickMouseUp(e) {
+            e.preventDefault(); // Ngăn hành vi mặc định (cuộn, chọn văn bản)
+            if (typeof this.initialX == 'number' && typeof this.initialY == 'number') {
+                this.stopDrag()
+            } else {
+                const root = this.$root
+                root.IsExpandCmd = !root.IsExpandCmd
+                clearTimeout(this.longPressTimerId)
+                this.longPressTimerId = -1
+            }
+        },
+        onWindowResize(e) {
+            const button = this.$el
+            let left = button.offsetLeft; //parseFloat(button.style.left)
+            let top = button.offsetTop; //parseFloat(button.style.top)
+            let newLeft = Math.max(0, Math.min(left, window.innerWidth - button.offsetWidth));
+            let newTop = Math.max(0, Math.min(top, window.innerHeight - button.offsetHeight));
+            button.style.left = `${newLeft}px`
+            button.style.top = `${newTop}px`
         },
     },
     mounted() {
@@ -892,9 +942,11 @@ export const FloatBtn = {
         const button = this.$el
         button.style.left = '0'
         button.style.top = `${window.innerHeight - button.offsetHeight}px`
+        window.addEventListener("resize", this.onWindowResize);
     },
     beforeDestroy() {
         document.removeEventListener('mouseleave', this.stopDrag)
         document.removeEventListener('touchcancel', this.stopDrag)
+        window.removeEventListener("resize", this.onWindowResize);
     },
 }

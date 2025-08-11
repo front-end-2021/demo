@@ -210,6 +210,17 @@ Promise.all([
                     this.computeAvailables(listSch)
                 }
             },
+            checkNewArray(type, lst) {
+                const root = this
+                switch (type) {
+                    case 1: if (Object.is(lst, root.LsSchedule)) return [...lst]  // copy => new ref
+                        break;
+                    case 2: if (Object.is(lst, root.LsTask)) return [...lst]  // copy => new ref
+                        break;
+                    default: break;
+                }
+                return lst
+            }
             // equalHas(txt1, txt2) {
             //     let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)
             //     return hash1.toString(CryptoJS.enc.Hex) == hash2.toString(CryptoJS.enc.Hex)
