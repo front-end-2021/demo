@@ -546,7 +546,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             let listUser = root.LsUser
             let lsShedule = root.LsSchedule
             let lsTsk = root.LsTask
-            console.log(mapDelItem)
+
             allCommandIndex.forEach(index => {
                 if (mapGoSearchN.has(index)) {
                     let sTxt = mapGoSearchN.get(index)
@@ -657,6 +657,8 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             if (!mapGoSearchU.size) {
                 root.setSearch('', 'user')
             }
+            target.innerHTML = ''
+            this.CmdType = 0
             root.$nextTick(() => {
                 let element = document.body.querySelector(`#vw-command-log`)
                 element.scrollTo({
@@ -719,8 +721,6 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
         generateCommands() {
             let target = this.$el.querySelector('.txt-command[contenteditable]')
             this.processCompand({ target })
-            target.innerHTML = ''
-            this.CmdType = 0
         },
         clearCompand() {
             let target = this.$el.querySelector('.txt-command[contenteditable]')
@@ -857,6 +857,12 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 a.click();
                 URL.revokeObjectURL(url);
             }
+        },
+        typingCommand(e) {
+            let target = e.target
+            const txt = target.innerText
+            if (txt.trim().length) this.CmdType = 1
+            else this.CmdType = 0
         },
     },
     //beforeUpdate() { },
