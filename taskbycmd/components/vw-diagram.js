@@ -523,6 +523,8 @@ new user Joseph, new user David, new user Andrew, new user Patrick, new user Bra
 new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Olivia, new user Sophia.`
         const txtAssignU = `Assign user DaiNB to Daily meeting. Assign member Bill Gate to Daily meeting, assign member Elon Musk to Planning.`
         const txtEditU = `change user DaiNB to Dai Nguyen. `
+        let typExpnd = localStorage.getItem('CmdTypeExpand');
+        if (typeof typExpnd != 'string') typExpnd = '1'
         return {
             TxtCommand: !root.LsSchedule.length ? `${txtSchedule}.\n${txtNewUser}\n${txtAssignU}\n${txtEditU}` : '',
             TxtDemo: {
@@ -533,6 +535,7 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
                 Search: `Go search name Bre`
             },
             CmdType: 1, // empty = 0, has command = 1
+            TypeExpand: typExpnd,
         }
     },
     methods: {
@@ -864,9 +867,37 @@ new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Ol
             if (txt.trim().length) this.CmdType = 1
             else this.CmdType = 0
         },
+        toggleExpand() {
+            let typExpnd = '1' == this.TypeExpand ? '0' : '1'
+            this.TypeExpand = typExpnd
+            this.styleTxtCommand(typExpnd)
+        },
+        styleTxtCommand(typExpnd) {
+            if ('0' == typExpnd) {
+                this.$nextTick(() => {
+                    let target = this.$el.querySelector('.txt-command[contenteditable]')
+                    target.style.paddingTop = '0'
+                    target.style.height = '26px'
+                })
+            } else {
+                let target = this.$el.querySelector('.txt-command[contenteditable]')
+                target.style.paddingTop = ''
+                target.style.height = ''
+            }
+        },
+        handleBeforeUnload(event) {
+            localStorage.setItem('CmdTypeExpand', this.TypeExpand);
+        }
     },
-    //beforeUpdate() { },
-    //updated() { },
+    created() {
+        window.addEventListener('beforeunload', this.handleBeforeUnload)
+    },
+    mounted() {
+        this.styleTxtCommand(this.TypeExpand)
+    },
+    beforeUnmount() {
+        window.removeEventListener('beforeunload', this.handleBeforeUnload)
+    },
 }
 export const FloatBtn = {
     template: `#tmp-btn-float-cmd`,
@@ -950,7 +981,7 @@ export const FloatBtn = {
         button.style.top = `${window.innerHeight - button.offsetHeight}px`
         window.addEventListener("resize", this.onWindowResize);
     },
-    beforeDestroy() {
+    beforeUnmount() {
         document.removeEventListener('mouseleave', this.stopDrag)
         document.removeEventListener('touchcancel', this.stopDrag)
         window.removeEventListener("resize", this.onWindowResize);

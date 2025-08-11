@@ -32,10 +32,9 @@ body, .dr_lst-wrap, .mformedit, #dnb-viewcode {scrollbar-width: thin;}
 .form-edit [contenteditable="true"]:focus-visible { border-color: #1882c6; outline-color: #1882c6; }
 
 .txt-command {
-    border: 1px solid #c2e7ff;border-radius: 12px;
+    border: 1px solid #c2e7ff;border-radius: 8px;
     min-height: 26px;padding: 6px; white-space: break-spaces;
-    max-height: 210px;
-    overflow-y: auto;
+    max-height: 142px; overflow-y: auto;
 }
 .txt-command:focus-visible {
     border-color: #c92a57;outline-color: #c92a57;
