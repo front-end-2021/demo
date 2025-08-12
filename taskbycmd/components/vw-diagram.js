@@ -163,6 +163,16 @@ export const FormSchedule = {
         focusAssignUsrName(e) {
             let text = e.target.innerText
             this.buildLsUserName(text)
+            this.$nextTick(() => {
+                let wrap = this.$el.querySelector('.lswrapuser')
+                let cOffset = wrap.getBoundingClientRect()
+                let height = window.innerHeight - cOffset.top
+                console.log('xxx', cOffset, height)
+                if (60 < height) {
+                    wrap.style.maxHeight = `${height - 10}px`
+                    wrap.style.overflowY = 'auto'
+                }
+            })
         },
         inputAssignUsrName(e) {
             let text = e.target.innerText

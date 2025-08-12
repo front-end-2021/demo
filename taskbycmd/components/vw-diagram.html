@@ -16,8 +16,8 @@
                         @focus="focusAssignUsrName"
                         @input="inputAssignUsrName" @blur="blurAssignUsrName"
                         @keyup.enter.prevent="e => assignUserName()">Nguyen Ba Dai</span>
-                    <div v-if="0 < LisUserName.length"
-                        style="position: absolute;left: 0px;top: 30px;display: inline-flex;flex-direction: column;background-color: white;padding: 6px 10px;border-radius: 12px;gap: 2px;">
+                    <div v-if="0 < LisUserName.length" class="lswrapuser"
+                        style="position: absolute;left: 0px;top: 30px;display: inline-flex;flex-direction: column;background-color: white;padding: 6px 18px 6px 10px;border-radius: 12px;gap: 2px;">
                         <span v-for="uName in LisUserName" style="padding: 2px 6px; border-radius: 6px; margin: 0 -6px; white-space: nowrap;"
                             class="rwusrname" @click.stop="e => assignNameUser(uName, e)">{{uName}}</span>
                     </div>
