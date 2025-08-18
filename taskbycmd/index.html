@@ -52,7 +52,7 @@
         </div>
       </div>
       <div v-if="0 == LsEdit.length">
-        <h3 style="margin-top: 34px;">Logs</h3>
+        <h3 style="margin-top: 0;">Logs</h3>
         <div class="vw-command-log" style="overflow: auto;">
           <code v-for="log in LisLog" style="display: block;cursor: default;"
             @click.stop="e => fillLogCommand(log)">{{log}}</code>
