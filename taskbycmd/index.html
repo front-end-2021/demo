@@ -126,10 +126,10 @@
   <template id="tmp-commands">
     <div class="grid gap-[8px] relative" style="grid-template-columns: calc(610px + 789px - 610px + 120px) auto;">
         <div class="grid grid-cols-[auto 42px] gap-[6px]">
-            <div class="txt-command rounded-lg" contenteditable="plaintext-only"
+            <div class="txt-command rounded-lg" contenteditable="true"
                 @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
-                @input="typingCommand"
-                @keyup.enter.prevent="processCompand">{{TxtCommand}}</div>
+                @input="typingCommand" v-html="TxtCommand"
+                @keyup.enter.prevent="processCompand"></div>
             <div v-if="'1' == TypeExpand" class="flex gap-[6px]">
                 <div class="rounded-lg inline-flex items-center pl-[14px] pr-[14px] pt-0 pb-0 text-center cursor-pointer bg-cyan-200 h-1/1"
                     v-if="1 == CmdType" @click.stop="generateCommands">Generate</div>
@@ -166,10 +166,10 @@
     <section class="form-edit" 
         style="background-color: rgba(207, 207, 207, 0.24); min-height: calc(-270px + 100vh); margin-top: 34px;padding: 12px; border-radius: 12px;">
         <h3 style="margin-top: 0;">{{entry.Title}}</h3>
-        <p style="white-space: break-spaces;font-size: 13px;">{{entry.item.NewShedule}}</p>
-        <div style="white-space: break-spaces;font-size: 13px;">{{entry.item.NewUser}}</div>
-        <p style="white-space: break-spaces;font-size: 13px;">{{entry.item.AssignUser}}</p>
-        <div style="white-space: break-spaces;font-size: 13px;">{{entry.item.EditUser}}</div>
+        <p style="white-space: break-spaces;font-size: 13px;" v-html="entry.item.NewShedule"></p>
+        <div style="white-space: break-spaces;font-size: 13px;" v-html="entry.item.NewUser"></div>
+        <p style="white-space: break-spaces;font-size: 13px;" v-html="entry.item.AssignUser"></p>
+        <div style="white-space: break-spaces;font-size: 13px;" v-html="entry.item.EditUser"></div>
         <div style="white-space: break-spaces;font-size: 13px;">{{entry.item.Search}}</div>
     </section>
   </template>
@@ -178,13 +178,13 @@
         style="gap: 6px;background-color: rgba(207, 207, 207, 0.24); min-height: calc(-270px + 100vh); margin-top: 34px;padding: 12px; border-radius: 12px;">
         <h3 style="margin-top: 0;">{{entry.Title}}</h3>
         <div style="cursor: default;">
-            <span>New/edit:</span> <small>{{entry.item.NewShedule}}</small>
+            <span>New/edit:</span> <small v-html="entry.item.NewShedule"></small>
         </div>
         <div style="cursor: default;">
-            <span>New user:</span> <small>{{entry.item.NewUser}}</small>
+            <span>New user:</span> <small v-html="entry.item.NewUser"></small>
         </div>
         <div style="cursor: default;">
-            <span>Edit user:</span> <small>{{entry.item.EditUser}}</small>
+            <span>Edit user:</span> <small v-html="entry.item.EditUser"></small>
         </div>
         <div style="cursor: default;"><span>Search:</span> <small>{{entry.item.TxtSearch}}</small></div>
     </section>

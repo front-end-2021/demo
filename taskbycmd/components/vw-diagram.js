@@ -163,16 +163,6 @@ export const FormSchedule = {
         focusAssignUsrName(e) {
             let text = e.target.innerText
             this.buildLsUserName(text)
-            this.$nextTick(() => {
-                let wrap = this.$el.querySelector('.lswrapuser')
-                let cOffset = wrap.getBoundingClientRect()
-                let height = window.innerHeight - cOffset.top
-                console.log('xxx', cOffset, height)
-                if (60 < height) {
-                    wrap.style.maxHeight = `${height - 10}px`
-                    wrap.style.overflowY = 'auto'
-                }
-            })
         },
         inputAssignUsrName(e) {
             let text = e.target.innerText
@@ -509,34 +499,39 @@ export const ViewCommands = {
     //inject: [''],
     data() {
         const root = this.$root
-        const txtSchedule = `Make schedule Daily meeting from 9:30am to 9:45am, make Agenda Planning start 2:00pm end 5:00pm
-    Make Agenda Retro meeting begin 10:00am end 12:00pm,
-make Roadmap Morning Briefing - Overview of the day’s agenda and key announcements from 08:00 to 08:30,
-make schedule Icebreaker & Warm-up [Fun activities to energize the team] from 08:30 to 09:30,
-make schedule Workshop Session 1 (Focused training or skill development session) from 09:30 to 10:45,
-make schedule Coffee Break - Time to relax and chat from 11:00 to 11:15,
-make schedule Group Collaboration (Brainstorming and teamwork exercises) from 11:15 to 12:30,
-make schedule Lunch Break - Social interaction and relaxation from 12:40 to 13:30,
-make schedule Workshop Session 2 [Hands-on exercises or case studies] from 13:45 to 15:00,
-make schedule Quick Break	Short refreshment before next session from 15:00 to 15:15,
-make schedule Presentation Time	Teams present their ideas or progress from 15:15 to 16:30,
-make schedule Networking & Discussion	Exchange contacts and share insights from 16:30 to 17:30,
-make schedule Problem-Solving Challenge	Teams work on a real-world scenario from 17:30 to 18:00,
-make schedule Creative Session	Art, music, or innovation-based activity from 18:00 to 19:00,
-make schedule Closing Remarks	Summary of the day and reflections  from 19:00 to 19:30,
-make schedule Evening Social Event	Dinner or entertainment to unwind  from 19:30 to 21:00`
-        const txtNewUser = `New user DaiNB, new person Bill Gate. New person Elon Musk, new user James, new user Michael.
-New user William, new user Benjamin, new user Alexander.
-new user Christopher, new user Matthew, new user Nathaniel, new user Jonathan, new user Daniel.
-new user Samuel, new user Henry, new user Nicholas, new user Thomas, new user Ryan, new user Charles.
-new user Joseph, new user David, new user Andrew, new user Patrick, new user Brandon, new user Ethan.
-new user Adam, new user Zachary, new user Lucas, new user Elizabeth, new user Olivia, new user Sophia.`
-        const txtAssignU = `Assign user DaiNB to Daily meeting. Assign member Bill Gate to Daily meeting, assign member Elon Musk to Planning.`
-        const txtEditU = `change user DaiNB to Dai Nguyen. `
+        const txtSchedule = `<b>Make schedule</b> Daily meeting <b>from</b> 9:30am <b>to</b> 9:45am, <b>make schedule</b> Planning <b>start</b> 2:00pm <b>end</b> 5:00pm. 
+<b>Make Roadmap</b> Retro meeting <b>begin</b> 10:00am <b>end</b> 12:00pm,
+<b>make Agenda</b> Morning Briefing - Overview of the day’s agenda and key announcements <b>from</b> 08:00 <b>to</b> 08:30`
+        const txtSh2 = `<b>make Schedule</b> Icebreaker & Warm-up [Fun activities to energize the team] <b>from</b> 08:30 <b>to</b> 09:30,
+<b>make schedule</b> Workshop Session 1 (Focused training or skill development session) <b>from</b> 09:30 <b>to</b> 10:45,
+<b>make schedule</b> Coffee Break - Time to relax and chat <b>from</b> 11:00 <b>to</b> 11:15,
+<b>make schedule</b> Group Collaboration (Brainstorming and teamwork exercises) <b>from</b> 11:15 <b>to</b> 12:30,
+<b>make schedule</b> Lunch Break - Social interaction and relaxation <b>from</b> 12:40 <b>to</b> 13:30,
+<b>make schedule</b> Workshop Session 2 [Hands-on exercises or case studies] <b>from</b> 13:45 <b>to</b> 15:00,
+<b>make schedule</b> Quick Break	Short refreshment before next session <b>from</b> 15:00 <b>to</b> 15:15,
+<b>make schedule</b> Presentation Time	Teams present their ideas or progress <b>from</b> 15:15 <b>to</b> 16:30,
+<b>make schedule</b> Networking & Discussion	Exchange contacts and share insights <b>from</b> 16:30 <b>to</b> 17:30,
+<b>make schedule</b> Problem-Solving Challenge	Teams work on a real-world scenario <b>from</b> 17:30 <b>to</b> 18:00,
+<b>make schedule</b> Creative Session	Art, music, or innovation-based activity <b>from</b> 18:00 <b>to</b> 19:00,
+<b>make schedule</b> Closing Remarks	Summary of the day and reflections  <b>from</b> 19:00 <b>to</b> 19:30,
+<b>make schedule</b> Evening Social Event	Dinner or entertainment to unwind  <b>from</b> 19:30 <b>to</b> 21:00`
+        const txtNewUser = `<b>New user</b> DaiNB, 
+<b>New person</b> Bill Gate, 
+<b>new person</b> Elon Musk. 
+<b>New User</b> James, 
+<b>new User</b> Michael.`
+        const txtUs2 = `<b>New user</b> William, <b>new user</b> Benjamin. <b>New user</b> Alexander.
+<b>new user</b> Christopher, <b>new user</b> Matthew, <b>new user</b> Nathaniel, <b>new user</b> Jonathan, <b>new user</b> Daniel.
+<b>new user</b> Samuel, <b>new user</b> Henry, <b>new user</b> Nicholas, <b>new user</b> Thomas, <b>new user</b> Ryan, <b>new user</b> Charles.
+<b>new user</b> Joseph, <b>new user</b> David, <b>new user</b> Andrew, <b>new user</b> Patrick, <b>new user</b> Brandon, <b>new user</b> Ethan.
+<b>new user</b> Adam, <b>new user</b> Zachary, <b>new user</b> Lucas, <b>new user</b> Elizabeth, <b>new user</b> Olivia, <b>new user</b> Sophia.`
+        const txtAssignU = `<b>Assign user</b> DaiNB <b>to</b> Daily meeting, <b>assign Member</b> Bill Gate <b>to</b> Daily meeting`
+        const txtAsnU = `<b>assign member</b> Elon Musk <b>to</b> Planning.`
+        const txtEditU = `<b>change user</b> DaiNB <b>to</b> Dai Nguyen. `
         let typExpnd = localStorage.getItem('CmdTypeExpand');
         if (typeof typExpnd != 'string') typExpnd = '1'
         return {
-            TxtCommand: !root.LsSchedule.length ? `${txtSchedule}.\n${txtNewUser}\n${txtAssignU}\n${txtEditU}` : '',
+            TxtCommand: !root.LsSchedule.length ? `${txtSchedule}.\n${txtSh2}.\n${txtNewUser} ${txtUs2}\n${txtAssignU}, ${txtAsnU}\n${txtEditU}` : '',
             TxtDemo: {
                 NewShedule: txtSchedule,
                 NewUser: txtNewUser,
