@@ -36,6 +36,14 @@
 <body style="margin: 8px; font-family: Consolas;">
   <main id="m-app" v-cloak >
     <header>
+      <nav style="display: flex; height: 30px; justify-content: space-between;">
+        <b>CmdByTask</b>
+        <div v-if="null == Account">
+          <b v-if="0 < LsUser.length" @click.stop="clickLogin">Login</b>
+          <b v-else @click.stop="clickLogin">Sign up</b>
+        </div>
+        <b v-else>{{Account.Name}}</b>
+      </nav>
       <view-commands v-if="IsExpandCmd"></view-commands>
     </header>
 

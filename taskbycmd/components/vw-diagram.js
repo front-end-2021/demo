@@ -998,3 +998,56 @@ export const FloatBtn = {
         window.removeEventListener("resize", this.onWindowResize);
     },
 }
+export const FormUser = {
+    template: `#tmp-form-user`,
+    name: "Form_User",
+    display: "Form.User",
+    props: ['entry'],
+    data() {
+        const item = this.entry.item
+        return {
+            Name: item.Name,
+            Pass: item.Pwd
+        }
+    },
+    methods: {
+        modelName(e) {
+            let target = e.target
+            this.Name = target.innerText
+        },
+        nextToPass(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault()
+                const _el = this.$el
+                let span = _el.querySelector('.upass[contenteditable="plaintext-only"]')
+                span.focus()
+            }
+        },
+        modelPass(e) {
+            let target = e.target
+            this.Pass = target.innerText
+        },
+        completeFormUser(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault()
+                const root = this.$root
+                const users = root.LsUser
+                let item = this.entry.item
+                let hash1 = CryptoJS.SHA256(this.Pass)
+                if (-1 < item.Id) {
+                    item = users.find(x => x.Name == this.Name)
+                    if (item && item.Pwd == hash1.toString(CryptoJS.enc.Hex)) {
+                        root.Account = item
+                    }
+                } else {
+                    item.Name = this.Name
+                    item.Pwd = hash1.toString(CryptoJS.enc.Hex)
+                    item.Id = root.IdGenerator.generate().toString()
+                    root.LsUser = [...users, item]
+                    root.Account = item
+                }
+                root.LsEdit = []
+            }
+        },
+    },
+}

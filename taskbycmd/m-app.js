@@ -1,7 +1,7 @@
 // #region import
 import { Snowflake, convertDic, insertHTMLAtCursor } from './common.js'
 import { createApp } from 'vue'
-import { ViewCommands, RowSchedule, FormSchedule, FloatBtn } from './components/vw-diagram.js'
+import { ViewCommands, RowSchedule, FormSchedule, FloatBtn, FormUser } from './components/vw-diagram.js'
 // #endregion
 const VwDemoCommands = {
     template: `#tmp-demo-commands`,
@@ -27,6 +27,7 @@ Promise.all([
             'view-demo-commands': VwDemoCommands,
             'view-guide-commands': VwGuideCommands,
             'button-float-cmd': FloatBtn,
+            'form-user': FormUser,
         },
         data() {
             let start = new Date();
@@ -34,13 +35,13 @@ Promise.all([
             let end = new Date();
             end.setHours(17, 0, 0, 0);
             return {
-                LsSchedule: [],
-                LsTask: [],
+                LsSchedule: [], // Id, Name, Begin, End, Users, KeyMD5
+                LsTask: [],     // Id, Name, End, Note, ParentId
                 IdDones: [],
                 LsAvailable: [],
                 TimeLogStart: start,
                 TimeLogEnd: end,
-                LsUser: [],
+                LsUser: [],     // Id, Name, Pwd
                 Search: {
                     Name: null, LowerCase: false,
                     User: null, HasContext: false,
@@ -50,6 +51,8 @@ Promise.all([
                 LsEdit: [],
                 LisLog: [],
                 IsExpandCmd: true,
+                Account: null,
+
             }
         },
         computed: {
@@ -220,32 +223,75 @@ Promise.all([
                     default: break;
                 }
                 return lst
-            }
+            },
+            handleBeforeUnload(e) {
+                // const root = this
+                // const Schedules = root.LsSchedule
+                // if (Schedules.length) localStorage.setItem('Schedules', JSON.stringify(Schedules))
+                // const Tasks = root.LsTask
+                // if (Tasks.length) localStorage.setItem('Tasks', JSON.stringify(Tasks))
+                // const Users = root.LsUser
+                // if (Users.length) localStorage.setItem('Users', JSON.stringify(Users))
+                // const Dones = root.IdDones
+                // if (Dones.length) localStorage.setItem('Dones', JSON.stringify(Dones))
+            },
+            clickLogin() {
+                const root = this
+                const entry = {
+                    ComponentName: 'form-user',
+                }
+                const users = root.LsUser
+                if (users.length) {
+                    entry.item = { Name: '', Id: 0, Pwd: '' }   // login
+                } else {
+                    entry.item = { Name: '', Id: -1, Pwd: '' }  // sign up
+                }
+                root.LsEdit = [entry]
+            },
             // equalHas(txt1, txt2) {
             //     let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)
             //     return hash1.toString(CryptoJS.enc.Hex) == hash2.toString(CryptoJS.enc.Hex)
             // },
         },
         //beforeCreate() { },
-        //created() { },
+        created() {
+            const root = this
+            let lst = localStorage.getItem('Schedules')
+            if (lst) {
+                lst = JSON.parse(lst)
+                root.LsSchedule = lst
+            }
+            lst = localStorage.getItem('Tasks')
+            if (lst) {
+                lst = JSON.parse(lst)
+                root.LsTask = lst
+            }
+            lst = localStorage.getItem('Users')
+            if (lst) {
+                lst = JSON.parse(lst)
+                root.LsUser = lst
+            }
+            lst = localStorage.getItem('Dones')
+            if (lst) {
+                lst = JSON.parse(lst)
+                root.IdDones = lst
+            }
+        },
         //beforeMount() { },
         mounted() {
             values.forEach((path, ii) => {
                 let pDom = document.body.querySelector(`.dnb-imp-html[dnbpath="${path}"]`)
                 if (pDom) pDom.remove();
             })
-
+            window.addEventListener('beforeunload', this.handleBeforeUnload)
             // const message = "123456";
             // const hash = CryptoJS.SHA256(message);//CryptoJS.MD5(message);
             // console.log(hash.toString(CryptoJS.enc.Hex));
             // console.log(hash.toString(CryptoJS.enc.Base64));// speed > Hex
 
-
         },
         beforeUpdate() { },
-        updated() {
-
-        },
+        updated() { },
     })
     app.mount('#m-app')
 }).catch(errStatus => { console.log('Woop!', errStatus) })

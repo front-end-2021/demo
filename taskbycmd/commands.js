@@ -303,9 +303,16 @@ export function rmLastPunctuation(str) { return str.replace(/[.,\/#!$%\^&\*;:{}=
 export function setUsers(name, nName, IdGenerator) {
     let listUser = this
     let ii = listUser.findIndex(u => u.Name == name)
+    let pswd = 'abc'
+    let hash1 = CryptoJS.SHA256(pswd)
+    hash1.toString(CryptoJS.enc.Hex)
     if (ii < 0) {
         listUser = [...listUser]    // copy change ref
-        listUser.push({ Name: name, Id: IdGenerator.generate().toString() })
+        listUser.push({
+            Name: name,
+            Id: IdGenerator.generate().toString(),
+            Pwd: hash1.toString(CryptoJS.enc.Hex)
+        })
         return listUser
     }
     if (typeof nName == 'string') {

@@ -98,3 +98,19 @@
         @touchmove="onDragging"
         @touchend.stop="clickMouseUp"><i class="bi bi-command"></i></div>
 </template>
+<template id="tmp-form-user">
+    <section class="form-edit" >
+        <div style="display: grid; grid-template-columns: 90px auto;">
+            <b>Name</b>
+            <span class="uname" contenteditable="plaintext-only" 
+                @input="modelName"
+                @keydown="nextToPass">{{entry.item.Name}}</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 90px auto;">
+            <b>Password</b>
+            <span class="upass" contenteditable="plaintext-only" 
+                @input="modelPass"
+                @keydown="completeFormUser">{{entry.item.Pwd}}</span>
+        </div>
+    </section>
+</template>
