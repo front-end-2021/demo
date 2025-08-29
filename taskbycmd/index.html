@@ -47,17 +47,14 @@
       <view-commands v-if="IsExpandCmd"></view-commands>
     </header>
 
-    <section style="display: grid; grid-template-columns: 610px 180px auto; gap: 12px;">
+    <section style="display: grid; grid-template-columns: 610px 610px auto; gap: 12px;">
       <div>
-        <h3 style="margin-bottom: 3px;">Schedule List</h3>
+        <h3 style="margin-bottom: 3px;">List group by schedule</h3>
         <view-schedule v-for="task in LsSchedule" :key="task.KeyMD5" :item="task"></view-schedule>
       </div>
       <div>
-        <h3 style="margin-bottom: 3px;">User List</h3>
-        <div v-if="0 < LsUser.length"
-          style="background-color: rgba(207, 207, 207, 0.24); border-radius: 12px; padding: 6px;">
-          <div v-for="user in LsUser" style="font-size: 14px;">{{user.Name}}</div>
-        </div>
+        <h3 style="margin-bottom: 3px;">List flat item</h3>
+        <view-item v-for="sctk in LsItem" :key="sctk.KeyMD5 || sctk.Id" :item="sctk"></view-item>
       </div>
       <div v-if="0 == LsEdit.length">
         <h3 style="margin-top: 0;">Logs</h3>
@@ -83,6 +80,51 @@
   <span class="dnb-imp-html" dnbpath="./components/vw-diagram.html"></span>
   <script type="module" src="m-app.js"></script>
 
+  <template id="tmp-rowitem">
+    <div v-if="1 == ItemType"
+        style="display: grid;grid-template-columns: auto 182px;margin-bottom: 6px;padding: 6px;
+            background-color: #cfcfcf3d;border-radius: 12px;gap:6px;position: relative;">
+        <div style="position: absolute; top:0; left: 0; height: 3px;
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgb(231, 9, 248), rgba(0, 0, 0, 0));"
+            v-bind:style="{width: StyleWidthDone}"></div>
+        <div style="display: flex;flex-direction: column;">
+            <strong @click.stop="toggleForm" style="cursor: default;"
+                v-bind:class="[$root.isFinish(item.Id) ? 'line-through' : '']" 
+                v-html="HtmlName"></strong>
+            <div style="display: grid; grid-template-columns: auto 114px;">
+                <small v-html="HtmlUsers"></small>
+                <small>Tasks:&nbsp;{{TaskStatus}}</small>
+            </div>
+        </div>
+        <div style="display: flex;gap: 8px; align-items: center;">
+            <div style="display: flex; flex-direction: column;">
+                <small v-for="txt in TxtTimes">{{txt}}</small>
+            </div>
+            <div style="display: flex; align-items: center;border-left: 2px solid #b0b0b0;padding-left: 6px;"
+                v-bind:style="{
+                    flexDirection: 1 < TxtDays.length ? 'column' : ''
+                }">
+                <span v-for="(txt, ii) in TxtDays" :key="txt" contenteditable="plaintext-only" v-bind:iiday="ii"
+                    @keypress="(evt) => { (evt.which === 13) && evt.preventDefault()}"
+                    @keyup.enter.prevent="e => changeDay(ii, e)">{{txt}}</span>
+            </div>
+        </div>
+    </div>
+    <div v-if="2 == ItemType" class="grid items-center rounded-lg gap-[6px]"
+        style="grid-template-columns: 14px auto 90px;padding: 6px; margin-bottom: 6px;
+          background-color: rgba(207, 207, 207, 0.24);min-height: 30px;">
+        <div class="grid items-center justify-center" @click.stop="e => $root.toggFinish(item.Id)">
+            <input class="peer col-start-1 row-start-1 h-4 w-4 appearance-none rounded border border-gray-300 ring-transparent 
+                    checked:border-violet-600 checked:bg-violet-600 dark:border-gray-600 dark:checked:border-violet-600" 
+                v-model="$root.IdDones" type="checkbox" :value="item.Id" v-bind:name="item.Id">
+            <svg viewBox="0 0 14 14" fill="none" class="invisible col-start-1 row-start-1 stroke-white peer-checked:visible dark:text-violet-300">
+                <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </div>
+        <div>{{item.Name}}</div>
+        <small v-if="TimeDue" v-html="TimeDue"></small>
+    </div>
+  </template>
   <template id="tmp-schedule">
     <div v-if="'s' == ViewType">
         <div style="display: grid;grid-template-columns: auto 182px;margin-bottom: 6px;padding: 6px;

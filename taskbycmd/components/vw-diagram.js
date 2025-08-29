@@ -1,7 +1,7 @@
 import {
     genKeyHex, MonthsShort, getValidDays, getArrTime, randomInt,
     getTimeDigit, isEqualTime, getLsChild, convertDic, convertSet,
-    hasText,
+    hasText, filterToLsTruncate,
 } from "../common.js";
 import {
     getCommands, ptrnNewShedules, patternNewPlans, setUsers,
@@ -30,6 +30,241 @@ const mxDate = {
             if (beginDate == endDate) return [beginDate]
             return [beginDate, endDate]
         }
+    },
+}
+const mxRow = {
+    methods: {
+        changeDay(ii, e) {
+            let target = e.target
+            let txt = target.innerText
+            txt = txt.trim().replace(/\s+/g, ' '); // Thay thế nhiều dấu cách bằng một dấu cách
+            let arr = txt.split(' ')
+            const lsTxtDay = this.TxtDays
+            if (arr.length != 3) {
+                target.innerHTML = lsTxtDay[ii]
+                return
+            }
+            if (target.innerText == lsTxtDay[ii]) return
+            // #region verify month
+            let tMonth = arr[0]
+            let iMonth = iMonthShort(tMonth)
+            if (iMonth < 0) {
+                let numMM = Number(tMonth)
+                if (isNaN(numMM)) {
+                    target.innerHTML = this.TxtDays[ii]
+                    return
+                }
+                iMonth = parseInt(numMM)
+                if (iMonth < 0 || 11 < iMonth) {
+                    target.innerHTML = this.TxtDays[ii]
+                    return
+                }
+            }
+            // #endregion
+            const item = this.item
+            let oBeginT = item.Begin
+            let oEndT = item.End
+            let oBegin = new Date(oBeginT)
+            let oEnd = new Date(oEndT)
+
+            if (0 == ii) oBegin.setMonth(iMonth)
+            else oEnd.setMonth(iMonth)
+            // #region verify day
+            let tDay = rmLastPunctuation(arr[1])
+            let numDD = Number(tDay)
+            if (isNaN(numDD)) {
+                target.innerHTML = lsTxtDay[ii]
+                return
+            }
+            numDD = parseInt(numDD)
+            let lsValidD = getValidDays(iMonth, oBegin.getFullYear())
+            if (0 < ii) lsValidD = getValidDays(iMonth, oEnd.getFullYear())
+            if (!lsValidD.includes(numDD)) {
+                target.innerHTML = lsTxtDay[ii]
+                return
+            }
+            // #endregion
+            if (0 == ii) oBegin.setDate(numDD)
+            else oEnd.setDate(numDD)
+            // #region vefiry year
+            let tYear = arr[2].trim()
+            if (tYear.length < 4 || tYear.includes('.')) {
+                target.innerHTML = lsTxtDay[ii]
+                return
+            }
+            let numYear = Number(tYear)
+            if (isNaN(numYear)) {
+                target.innerHTML = lsTxtDay[ii]
+                return
+            }
+            // #endregion
+            if (0 == ii) oBegin.setFullYear(numYear)
+            else oEnd.setFullYear(numYear)
+
+            let strBegin = getTimeDigit(new Date(oBeginT))
+            let strEnd = getTimeDigit(new Date(oEndT))
+            oBeginT = oBegin.getTime()
+            oEndT = oEnd.getTime()
+            if (diffDay(oBegin, oEnd) < 0) {
+                if (1 < lsTxtDay.length) {
+                    target.innerHTML = lsTxtDay[ii]
+                    return
+                }
+                oBegin = new Date(oEndT)
+                oEnd = new Date(oBeginT)
+            }
+            oBegin = getTimeDigit(oBegin)
+            if (oBegin != strBegin) item.Begin = oBegin
+            oEnd = getTimeDigit(oEnd)
+            if (oEnd != strEnd) item.End = oEnd
+            const newArr = this.getTxtDays(oBegin, oEnd)
+            if (target.innerText != newArr[ii]) target.innerHTML = newArr[ii]
+            if (newArr.length != lsTxtDay.length) {
+                this.$nextTick(() => {
+                    for (let nii = 0, newT; nii < newArr.length; nii++) {
+                        newT = newArr[nii]
+                        let span = this.$el.querySelector(`[iiday="${nii}"]`)
+                        if (span.innerText != newT) span.innerHTML = newT
+                    }
+                })
+            }
+            target.blur()
+            function iMonthShort(txt) {
+                txt = txt.trim()
+                if (txt.length < 3) return -1
+                txt = txt.toLowerCase()
+                let lsMonth = MonthsShort.map(t => t.toLowerCase())
+                return lsMonth.indexOf(txt)
+            }
+            function diffDay(begin, end) {
+                if (end.getFullYear() < begin.getFullYear()) return -1
+                if (end.getFullYear() > begin.getFullYear()) return 1
+                // == year
+                if (end.getMonth() < begin.getMonth()) return -1
+                if (end.getMonth() > begin.getMonth()) return 1
+                // == month
+                if (end.getDate() < begin.getDate()) return -1
+                if (end.getDate() > begin.getDate()) return 1
+                return 0
+            }
+        },
+    },
+    computed: {
+        HtmlName() {
+            let name = this.item.Name
+            const oSearch = this.$root.Search
+            if (!hasText(oSearch.Name)) return name
+            let keyword = oSearch.Name
+            let regex = new RegExp(keyword, 'gi');
+            if (oSearch.LowerCase) {
+                regex = new RegExp(keyword, 'g');
+                keyword = keyword.toLowerCase()
+            }
+            return name.replace(regex, `<span class="bg-amber-300">${keyword}</span>`)
+        },
+    },
+}
+export const RowItem = {
+    template: `#tmp-rowitem`,
+    name: "Row_Item",
+    display: "Row.Item",
+    props: ['item'],
+    mixins: [mxDate, mxRow],
+    methods: {
+        toggleForm(e) {
+            const root = this.$root
+            const lisEdit = root.LsEdit
+            const item = this.item
+            const entry = {
+                item, ComponentName: root.ScheduleIds.has(item.Id) ? 'form-schedule' : '',
+            }
+            if (!lisEdit.length) {
+                lisEdit.push(entry)
+            } else {
+                let ii = lisEdit.findIndex(x => x.item.Name === item.Name)
+                if (-1 < ii) {
+                    lisEdit.splice(ii, 1)   // click it-self
+                    return
+                }
+                lisEdit.splice(ii, 1, entry)
+            }
+        },
+    },
+    computed: {
+        ItemType() {
+            const itemId = this.item.Id
+            const root = this.$root
+            if (root.ScheduleIds.has(itemId)) return 1;
+            if (root.TaskIds.has(itemId)) return 2;
+            return -1
+        },
+        Tasks() {
+            if (this.ItemType != 1) return []
+            const root = this.$root
+            let lsTsk = [...root.LsTask]
+            const itemId = this.item.Id
+            return filterToLsTruncate(lsTsk, (task) => task.ParentId == itemId)
+        },
+        StyleWidthDone() {
+            if (this.ItemType != 1) return ''
+            const tasks = this.Tasks
+            const len = tasks.length
+            if (!len) return '0'
+            let setDone = this.$root.ItemDones
+            let taskDone = tasks.filter(t => setDone.has(t.Id))
+            let cWidth = (taskDone.length / len) * 100
+            return `${cWidth}%`
+        },
+        TaskStatus() {
+            if (this.ItemType != 1) return ''
+            let setDone = this.$root.ItemDones
+            const tasks = this.Tasks
+            const len = tasks.length
+            if (!len) return '0/0'
+            let taskDone = tasks.filter(t => setDone.has(t.Id))
+            return `${taskDone.length}/${len}`
+        },
+        HtmlUsers() {
+            if (this.ItemType != 1) return ''
+            let users = this.item.Users
+            const oSearch = this.$root.Search
+            let txt = users.join(', ')
+            if (users.length <= 3) {
+                if (!hasText(oSearch.User)) return txt
+                let keyword = oSearch.User
+                const regex = new RegExp(keyword, 'gi');
+                return txt.replace(regex, `<span class="bg-amber-300">${keyword}</span>`)
+            }
+            let arr = users.slice(0, 3)
+            let txt1 = arr.join(', ')
+            if (hasText(oSearch.User)) {
+                let keyword = oSearch.User
+                let regex = new RegExp(keyword, 'gi');
+                if (oSearch.LowerCase) {
+                    regex = new RegExp(keyword, 'g');
+                    keyword = keyword.toLowerCase()
+                }
+                if (txt1.includes(keyword)) {
+                    txt1 = txt1.replace(regex, `<span class="bg-amber-300">${keyword}</span>`)
+                    return `${txt1} [+${users.length - 3}]`
+                }
+                if (txt.includes(keyword)) {
+                    return `${txt1} <span class="bg-amber-300">[+${users.length - 3}]</span>`
+                }
+            }
+            return `${txt1} [+${users.length - 3}]`
+        },
+        TimeDue() {
+            if (this.ItemType != 2) return ''
+            let task = this.item
+            let lang = navigator.language || 'en-US'
+            let tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
+            let due = new Date(task.End)
+            let time = due.toLocaleTimeString(lang, tConfix)
+            tConfix = { day: '2-digit', month: 'short', year: 'numeric' }
+            let date = due.toLocaleDateString(lang, tConfix)
+            return `${time}<br>${date}`
+        },
     },
 }
 export const FormSchedule = {
@@ -75,6 +310,7 @@ export const FormSchedule = {
                     }
                 })
                 root.LsTask = tasks
+                root.buildLsItem()
             }
             function compare(item, obj) {
                 if (item.ParentId != obj.ParentId) return 3
@@ -228,7 +464,7 @@ export const RowSchedule = {
     name: "Row_Schedule",
     display: "Row.Schedule",
     props: ['item'],
-    mixins: [mxDate],
+    mixins: [mxDate, mxRow],
     data() {
         const root = this.$root
         const item = this.item
@@ -248,120 +484,6 @@ export const RowSchedule = {
         }
     },
     methods: {
-        changeDay(ii, e) {
-            let target = e.target
-            let txt = target.innerText
-            txt = txt.trim().replace(/\s+/g, ' '); // Thay thế nhiều dấu cách bằng một dấu cách
-            let arr = txt.split(' ')
-            const lsTxtDay = this.TxtDays
-            if (arr.length != 3) {
-                target.innerHTML = lsTxtDay[ii]
-                return
-            }
-            if (target.innerText == lsTxtDay[ii]) return
-            // #region verify month
-            let tMonth = arr[0]
-            let iMonth = iMonthShort(tMonth)
-            if (iMonth < 0) {
-                let numMM = Number(tMonth)
-                if (isNaN(numMM)) {
-                    target.innerHTML = this.TxtDays[ii]
-                    return
-                }
-                iMonth = parseInt(numMM)
-                if (iMonth < 0 || 11 < iMonth) {
-                    target.innerHTML = this.TxtDays[ii]
-                    return
-                }
-            }
-            // #endregion
-            const item = this.item
-            let oBeginT = item.Begin
-            let oEndT = item.End
-            let oBegin = new Date(oBeginT)
-            let oEnd = new Date(oEndT)
-
-            if (0 == ii) oBegin.setMonth(iMonth)
-            else oEnd.setMonth(iMonth)
-            // #region verify day
-            let tDay = rmLastPunctuation(arr[1])
-            let numDD = Number(tDay)
-            if (isNaN(numDD)) {
-                target.innerHTML = lsTxtDay[ii]
-                return
-            }
-            numDD = parseInt(numDD)
-            let lsValidD = getValidDays(iMonth, oBegin.getFullYear())
-            if (0 < ii) lsValidD = getValidDays(iMonth, oEnd.getFullYear())
-            if (!lsValidD.includes(numDD)) {
-                target.innerHTML = lsTxtDay[ii]
-                return
-            }
-            // #endregion
-            if (0 == ii) oBegin.setDate(numDD)
-            else oEnd.setDate(numDD)
-            // #region vefiry year
-            let tYear = arr[2].trim()
-            if (tYear.length < 4 || tYear.includes('.')) {
-                target.innerHTML = lsTxtDay[ii]
-                return
-            }
-            let numYear = Number(tYear)
-            if (isNaN(numYear)) {
-                target.innerHTML = lsTxtDay[ii]
-                return
-            }
-            // #endregion
-            if (0 == ii) oBegin.setFullYear(numYear)
-            else oEnd.setFullYear(numYear)
-
-            let strBegin = getTimeDigit(new Date(oBeginT))
-            let strEnd = getTimeDigit(new Date(oEndT))
-            oBeginT = oBegin.getTime()
-            oEndT = oEnd.getTime()
-            if (diffDay(oBegin, oEnd) < 0) {
-                if (1 < lsTxtDay.length) {
-                    target.innerHTML = lsTxtDay[ii]
-                    return
-                }
-                oBegin = new Date(oEndT)
-                oEnd = new Date(oBeginT)
-            }
-            oBegin = getTimeDigit(oBegin)
-            if (oBegin != strBegin) item.Begin = oBegin
-            oEnd = getTimeDigit(oEnd)
-            if (oEnd != strEnd) item.End = oEnd
-            const newArr = this.getTxtDays(oBegin, oEnd)
-            if (target.innerText != newArr[ii]) target.innerHTML = newArr[ii]
-            if (newArr.length != lsTxtDay.length) {
-                this.$nextTick(() => {
-                    for (let nii = 0, newT; nii < newArr.length; nii++) {
-                        newT = newArr[nii]
-                        let span = this.$el.querySelector(`[iiday="${nii}"]`)
-                        if (span.innerText != newT) span.innerHTML = newT
-                    }
-                })
-            }
-            target.blur()
-            function iMonthShort(txt) {
-                txt = txt.trim()
-                if (txt.length < 3) return -1
-                txt = txt.toLowerCase()
-                let lsMonth = MonthsShort.map(t => t.toLowerCase())
-                return lsMonth.indexOf(txt)
-            }
-            function diffDay(begin, end) {
-                if (end.getFullYear() < begin.getFullYear()) return -1
-                if (end.getFullYear() > begin.getFullYear()) return 1
-                // == year
-                if (end.getMonth() < begin.getMonth()) return -1
-                if (end.getMonth() > begin.getMonth()) return 1
-                // == month
-                if (end.getDate() < begin.getDate()) return -1
-                if (end.getDate() > begin.getDate()) return 1
-                return 0
-            }
-        },
         toggleForm(e) {
             const root = this.$root
             const lisEdit = root.LsEdit
@@ -409,31 +531,7 @@ export const RowSchedule = {
             }
         },
     },
-    watch: {
-        '$root.Search.Ids'(viewIds) {
-            const itemId = this.item.Id
-            //console.log('watch set visible Id ', itemId, viewIds)
-            if (viewIds.has(itemId)) {
-                const hideIds = this.$root.Search.HideIds
-                if (hideIds.has(itemId)) {
-                    this.ViewType = 'i'
-                } else {
-                    this.ViewType = 's'
-                }
-            } else this.ViewType = 'h'
-        },
-        '$root.LsTask'(ls) { this.Tasks = getLsChild(ls, this.item.Id) },
-        'item.End'(end) { this.checkDone(end) },
-    },
     computed: {
-        TaskStatus() {
-            let setDone = this.$root.ItemDones
-            const tasks = this.Tasks
-            const len = tasks.length
-            if (!len) return '0/0'
-            let taskDone = tasks.filter(t => setDone.has(t.Id))
-            return `${taskDone.length}/${len}`
-        },
         HtmlUsers() {
             let users = this.item.Users
             const oSearch = this.$root.Search
@@ -464,6 +562,14 @@ export const RowSchedule = {
             return `${txt1} [+${users.length - 3}]`
 
         },
+        TaskStatus() {
+            let setDone = this.$root.ItemDones
+            const tasks = this.Tasks
+            const len = tasks.length
+            if (!len) return '0/0'
+            let taskDone = tasks.filter(t => setDone.has(t.Id))
+            return `${taskDone.length}/${len}`
+        },
         StyleWidthDone() {
             const tasks = this.Tasks
             const len = tasks.length
@@ -473,18 +579,22 @@ export const RowSchedule = {
             let cWidth = (taskDone.length / len) * 100
             return `${cWidth}%`
         },
-        HtmlName() {
-            let name = this.item.Name
-            const oSearch = this.$root.Search
-            if (!hasText(oSearch.Name)) return name
-            let keyword = oSearch.Name
-            let regex = new RegExp(keyword, 'gi');
-            if (oSearch.LowerCase) {
-                regex = new RegExp(keyword, 'g');
-                keyword = keyword.toLowerCase()
-            }
-            return name.replace(regex, `<span class="bg-amber-300">${keyword}</span>`)
+    },
+    watch: {
+        '$root.Search.Ids'(viewIds) {
+            const itemId = this.item.Id
+            //console.log('watch set visible Id ', itemId, viewIds)
+            if (viewIds.has(itemId)) {
+                const hideIds = this.$root.Search.HideIds
+                if (hideIds.has(itemId)) {
+                    this.ViewType = 'i'
+                } else {
+                    this.ViewType = 's'
+                }
+            } else this.ViewType = 'h'
         },
+        '$root.LsTask'(ls) { this.Tasks = getLsChild(ls, this.item.Id) },
+        'item.End'(end) { this.checkDone(end) },
     },
     created() {
         let item = this.item
@@ -659,6 +769,7 @@ export const ViewCommands = {
             })
             root.LsUser = listUser
             root.LsTask = lsTsk
+            root.buildLsItem()
             if (!mapGoSearchN.size) {
                 root.setSearch(null, 'name')
             }
@@ -740,8 +851,8 @@ export const ViewCommands = {
             const oSearch = root.Search
             oSearch.Name = null
             oSearch.User = null
-            let lsShl = root.LsSchedule
-            let lsTsk = root.LsTask
+            let lsShl = root.LsSchedule     // clear command
+            let lsTsk = root.LsTask         // clear command
             let setId = new Set([...lsShl.map(x => x.Id), ...lsTsk.map(x => x.Id)])
             root.buildSearchData(oSearch.Name, oSearch.User, lsShl, lsTsk, oSearch.LowerCase, oSearch.HasContext, setId)
         },
@@ -799,7 +910,7 @@ export const ViewCommands = {
                         root.LsUser = listU
                     }
                     // #endregion
-                    let listSch = root.LsSchedule
+                    let listSch = root.LsSchedule   // btn import
                     let mapSch = convertDic(Schedules, new Map(), 'Id')
                     // #region add schedule
                     for (let iii = listSch.length - 1, id; -1 < iii; iii--) {
@@ -818,7 +929,7 @@ export const ViewCommands = {
                     }
                     root.setListSchedule(listSch)
                     // #endregion
-                    let listTsk = root.LsTask
+                    let listTsk = root.LsTask   // btn import
                     // #region add task
                     mapSch = convertDic(listSch, new Map(), 'Id')
                     for (let iii = Tasks.length - 1, item; -1 < iii; iii--) {
@@ -828,7 +939,7 @@ export const ViewCommands = {
                     if (Tasks.length) {
                         listTsk = [...listTsk]
                         for (let iii = 0; iii < Tasks.length; iii++) { listTsk.push(Tasks[iii]) }
-                        root.LsTask = listTsk
+                        root.LsTask = listTsk   // btn import
                     }
                     // #endregion
                     // #region set id done
@@ -853,8 +964,8 @@ export const ViewCommands = {
         },
         genExport() {
             const root = this.$root
-            const Schedules = root.LsSchedule
-            const Tasks = root.LsTask
+            const Schedules = root.LsSchedule       // export
+            const Tasks = root.LsTask               // export
             const Users = root.LsUser
             const Dones = root.IdDones
             if (0 < Schedules.length + Tasks.length + Users.length + Dones.length) {

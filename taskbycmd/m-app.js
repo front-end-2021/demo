@@ -1,7 +1,8 @@
 // #region import
-import { Snowflake, convertDic, insertHTMLAtCursor } from './common.js'
+import { Snowflake, filterToLsTruncate, insertHTMLAtCursor } from './common.js'
 import { createApp } from 'vue'
-import { ViewCommands, RowSchedule, FormSchedule, FloatBtn, FormUser } from './components/vw-diagram.js'
+import { ViewCommands, RowSchedule, FormSchedule, FloatBtn, 
+    FormUser, RowItem } from './components/vw-diagram.js'
 // #endregion
 const VwDemoCommands = {
     template: `#tmp-demo-commands`,
@@ -23,6 +24,7 @@ Promise.all([
         components: {
             'view-commands': ViewCommands,
             'view-schedule': RowSchedule,
+            'view-item': RowItem,
             'form-schedule': FormSchedule,
             'view-demo-commands': VwDemoCommands,
             'view-guide-commands': VwGuideCommands,
@@ -52,12 +54,14 @@ Promise.all([
                 LisLog: [],
                 IsExpandCmd: true,
                 Account: null,
-
+                LsItem: [],
             }
         },
         computed: {
             IdGenerator() { return new Snowflake(42n) },
             ItemDones() { return new Set(this.IdDones) },
+            ScheduleIds() { return new Set(this.LsSchedule.map(x => x.Id)) },
+            TaskIds() { return new Set(this.LsTask.map(x => x.Id)) },
         },
         // watch: {
         //     'Search.Name'(txt) { console.log('watch search name ', txt) },
@@ -248,6 +252,17 @@ Promise.all([
                 }
                 root.LsEdit = [entry]
             },
+            buildLsItem() {
+                const schedules = this.LsSchedule   // build all items
+                let items = []
+                let lsTsk = [...this.LsTask]        // build all items
+                for (const shedule of schedules) {
+                    items.push(shedule)
+                    let children = filterToLsTruncate(lsTsk, (task) => task.ParentId == shedule.Id)
+                    for (const task of children) { items.push(task) }
+                }
+                this.LsItem = items
+            },
             // equalHas(txt1, txt2) {
             //     let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)
             //     return hash1.toString(CryptoJS.enc.Hex) == hash2.toString(CryptoJS.enc.Hex)
@@ -259,12 +274,12 @@ Promise.all([
             let lst = localStorage.getItem('Schedules')
             if (lst) {
                 lst = JSON.parse(lst)
-                root.LsSchedule = lst
+                root.LsSchedule = lst   // on create-d
             }
             lst = localStorage.getItem('Tasks')
             if (lst) {
                 lst = JSON.parse(lst)
-                root.LsTask = lst
+                root.LsTask = lst       // on create-d
             }
             lst = localStorage.getItem('Users')
             if (lst) {
