@@ -80,10 +80,12 @@
   <span class="dnb-imp-html" dnbpath="./components/vw-diagram.html"></span>
   <script type="module" src="m-app.js"></script>
 
+</body>
   <template id="tmp-rowitem">
     <div v-if="1 == ItemType"
         style="display: grid;grid-template-columns: auto 182px;margin-bottom: 6px;padding: 6px;
-            background-color: #cfcfcf3d;border-radius: 12px;gap:6px;position: relative;">
+            background-color: #cfcfcf3d;border-radius: 12px;gap:6px;position: relative;"
+        v-bind:id="item.Id">
         <div style="position: absolute; top:0; left: 0; height: 3px;
         background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgb(231, 9, 248), rgba(0, 0, 0, 0));"
             v-bind:style="{width: StyleWidthDone}"></div>
@@ -112,7 +114,8 @@
     </div>
     <div v-if="2 == ItemType" class="grid items-center rounded-lg gap-[6px]"
         style="grid-template-columns: 14px auto 90px;padding: 6px; margin-bottom: 6px;
-          background-color: rgba(207, 207, 207, 0.24);min-height: 30px;">
+          background-color: rgba(207, 207, 207, 0.24);min-height: 30px;"
+        v-bind:id="item.Id">
         <div class="grid items-center justify-center" @click.stop="e => $root.toggFinish(item.Id)">
             <input class="peer col-start-1 row-start-1 h-4 w-4 appearance-none rounded border border-gray-300 ring-transparent 
                     checked:border-violet-600 checked:bg-violet-600 dark:border-gray-600 dark:checked:border-violet-600" 
@@ -239,6 +242,4 @@
         <div style="cursor: default;"><span>Search:</span> <small>{{entry.item.TxtSearch}}</small></div>
     </section>
   </template>
-</body>
-
 </html>

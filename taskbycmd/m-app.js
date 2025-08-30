@@ -1,8 +1,10 @@
 // #region import
 import { Snowflake, filterToLsTruncate, insertHTMLAtCursor } from './common.js'
 import { createApp } from 'vue'
-import { ViewCommands, RowSchedule, FormSchedule, FloatBtn, 
-    FormUser, RowItem } from './components/vw-diagram.js'
+import {
+    ViewCommands, RowSchedule, FormSchedule, FloatBtn,
+    FormUser, RowItem
+} from './components/vw-diagram.js'
 // #endregion
 const VwDemoCommands = {
     template: `#tmp-demo-commands`,
@@ -252,16 +254,48 @@ Promise.all([
                 }
                 root.LsEdit = [entry]
             },
-            buildLsItem() {
-                const schedules = this.LsSchedule   // build all items
+            buildLsItem(schedules) {
+                if (!schedules) schedules = this.LsSchedule   // build all items
                 let items = []
                 let lsTsk = [...this.LsTask]        // build all items
-                for (const shedule of schedules) {
-                    items.push(shedule)
-                    let children = filterToLsTruncate(lsTsk, (task) => task.ParentId == shedule.Id)
-                    for (const task of children) { items.push(task) }
+                let grpParent = groupByParentId(schedules);
+                let visited = new Set()
+                for (let item of schedules) {
+                    if (visited.has(item.Id)) continue;
+                    items.push(item)
+                    visited.add(item.Id)
+                    addChildren(item.Id)
+                }
+                for (let ii = 0, item; ii < items.length; ii++) {
+                    item = items[ii]
+                    let children = filterToLsTruncate(lsTsk, (child) => child.ParentId == item.Id)
+                    let tt = 0
+                    for (; tt < children.length; tt++) {
+                        items.splice(tt + ii + 1, 0, children[tt])
+                    }
+                    ii += tt
                 }
                 this.LsItem = items
+                function groupByParentId(lst) {
+                    let map = new Map()
+                    let parentIds = new Set(lst.filter(x => !!x.ParentId).map(x => x.ParentId))
+                    let truncLst = [...lst]
+                    for (let id of parentIds) {
+                        let children = filterToLsTruncate(truncLst, (x) => x.ParentId == id)
+                        map.set(id, children)
+                    }
+                    return map
+                }
+                function addChildren(pId) {
+                    if (grpParent.has(pId)) {
+                        let children = grpParent.get(pId)
+                        for (const task of children) {
+                            items.push(task)
+                            addChildren(task.Id)
+                            visited.add(task.Id)
+                        }
+                    }
+                }
             },
             // equalHas(txt1, txt2) {
             //     let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)

@@ -68,41 +68,13 @@ export function getCmdAssignUser(text, lsIndexAssignUser, allCommandIndex) {
     }
     return [mapAssign, lsIndex]
 }
-export function getCommands(text, IdGenerator) {
-    //const patternTimes = ['Start time', 'End time', 'Valid from', 'Valid until', 'Cut-off time']
+export function getCmdSchedule(text, lsIndexNewShedule, allCommandIndex, lsPattern, IdGenerator) {
     const patternSpecTimes = [' from ', ' begin ', ' start ', ' at ', ' end ', ' to ']
-
-    const lsPttnSearchN = [...patternSearch.map(x => `${x} name `)]
-    const lsPttnSearchU = [...patternSearch.map(x => `${x} person `), ...patternSearch.map(x => `${x} user `), ...patternSearch.map(x => `${x} member `)]
-    let lsIISearchName = KMPLsIndex(text, lsPttnSearchN)
-    let lsIISearchUser = KMPLsIndex(text, lsPttnSearchU)
-    let lsIndexNewShedule = KMPLsIndex(text, ptrnNewShedules.map(x => `${x} `))
-    let lsIndexDelItem = KMPLsIndex(text, ptrnDeletes.map(x => `${x} `))
-    let lsIndexNewPlan = KMPLsIndex(text, patternNewPlans.map(x => `${x} `))
-    let lsIndexNewUser = KMPLsIndex(text, patternNewUser)
-    let lsIndexEditUser = KMPLsIndex(text, patternEditUser)
-    let lsIndexAssignUser = KMPLsIndex(text, ptrnAssignUser)
-
-    let allCommandIndex = new Set([...lsIISearchName, ...lsIISearchUser, ...lsIndexNewShedule,
-    ...lsIndexNewPlan, ...lsIndexNewUser, ...lsIndexEditUser, ...lsIndexAssignUser, ...lsIndexDelItem])
-    allCommandIndex = Array.from(allCommandIndex)
-    allCommandIndex.sort((a, b) => a - b)
-
-    if (1 < lsIISearchName.length) lsIISearchName.length = 1
-    lsIISearchName = mapLs(lsIISearchName, allCommandIndex, text)
-    let mapGoSearchN = new Map()
-    addMapSearch(mapGoSearchN, lsIISearchName, lsPttnSearchN)
-
-    if (1 < lsIISearchUser.length) lsIISearchUser.length = 1
-    lsIISearchUser = mapLs(lsIISearchUser, allCommandIndex, text)
-    let mapGoSearchU = new Map()
-    addMapSearch(mapGoSearchU, lsIISearchUser, lsPttnSearchU)
-
-    lsIndexNewShedule = mapLs(lsIndexNewShedule, allCommandIndex, text)
+    let lsIndex = mapLs(lsIndexNewShedule, allCommandIndex, text)
     let mapNewSchedule = new Map()
-    for (const arr of lsIndexNewShedule) {
+    for (const arr of lsIndex) {
         let txt = arr[1]
-        let arrTxt = getScheduleName(txt, ptrnNewShedules.map(x => `${x} `), patternSpecTimes)
+        let arrTxt = getScheduleName(txt, lsPattern.map(x => `${x} `), patternSpecTimes)
         if (Array.isArray(arrTxt) && 2 < arrTxt.length) {
             let [name, strStart, strEnd] = arrTxt
             let start = parseTimeToDate(strStart)
@@ -111,70 +83,7 @@ export function getCommands(text, IdGenerator) {
             if (obj) mapNewSchedule.set(arr[0], obj)
         }
     }
-    lsIndexNewPlan = mapLs(lsIndexNewPlan, allCommandIndex, text)
-    let mapNewPlan = new Map()
-    for (const arr of lsIndexNewPlan) {
-        let txt = arr[1]
-        let arrTxt = getScheduleName(txt, patternNewPlans.map(x => `${x} `), patternSpecTimes)
-        if (Array.isArray(arrTxt) && 2 < arrTxt.length) {
-            let [name, strStart, strEnd] = arrTxt
-            let start = parseTimeToDate(strStart)
-            let end = parseTimeToDate(strEnd)
-            let obj = getScheduleObject(name, start, end)
-            if (obj) mapNewPlan.set(arr[0], obj)
-        }
-    }
-    lsIndexNewUser = mapLs(lsIndexNewUser, allCommandIndex, text)
-    let mapNewUser = new Map()
-    for (const arr of lsIndexNewUser) {
-        let txt = arr[1]
-        let uName = getUserNames(txt, patternNewUser)
-        if (uName.length) mapNewUser.set(arr[0], uName)
-    }
-    lsIndexEditUser = mapLs(lsIndexEditUser, allCommandIndex, text)
-    let mapEditUser = new Map()
-    for (const arr of lsIndexEditUser) {
-        let txt = arr[1]
-        let lsStr = splitByKeywords(txt, [...patternEditUser, ' to '])
-        if (2 == lsStr.length) {
-            lsStr = lsStr.map(str => rmLastPunctuation(str))
-            mapEditUser.set(arr[0], lsStr)
-        }
-    }
-    let prcs = getCmdAssignUser(text, lsIndexAssignUser, allCommandIndex)
-    let mapAssignUser = prcs[0]
-    lsIndexAssignUser = prcs[1]
-    lsIndexDelItem = mapLs(lsIndexDelItem, allCommandIndex, text)
-    let mapDelItem = new Map()
-    for (const arr of lsIndexDelItem) {
-        let txt = arr[1]
-        let lsStr = splitByKeywords(txt, ptrnDeletes)
-        txt = rmLastPunctuation(lsStr[0])
-        if (0 < lsStr.length) mapDelItem.set(arr[0], txt)
-    }
-    return [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
-        mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU, mapDelItem]
-    function addMapSearch(mapSearch, lsIndex, lsPttn) {
-        if (0 < lsIndex.length) {
-            const lsTrim = lsPttn.map(x => x.trim())
-            for (let ii = 0, arr, txt; ii < lsIndex.length; ii++) {
-                arr = lsIndex[ii]
-                txt = arr[1]
-                let lsStr = splitByKeywords(txt, lsPttn)
-                if (lsStr.length) {
-                    lsStr = lsStr.map(str => rmLastPunctuation(str))
-                    for (let ll = lsStr.length - 1, str; -1 < ll; ll--) {
-                        str = lsStr[ll]
-                        if (lsTrim.includes(str)) lsStr.splice(ll, 1)
-                    }
-                    if (lsStr.length) {
-                        let str = lsStr[0]
-                        if (typeof str == 'string') mapSearch.set(arr[0], str)
-                    }
-                }
-            }
-        }
-    }
+    return [mapNewSchedule, lsIndex]
     function getScheduleName(text, sPatterns, ePatterns) {
         let uName = text, regex
         sPatterns.forEach(t => {
@@ -210,6 +119,97 @@ export function getCommands(text, IdGenerator) {
         }
         return null
     }
+}
+export function getCommands(text, IdGenerator) {
+    //const patternTimes = ['Start time', 'End time', 'Valid from', 'Valid until', 'Cut-off time']
+    //const patternSpecTimes = [' from ', ' begin ', ' start ', ' at ', ' end ', ' to ']
+
+    const lsPttnSearchN = [...patternSearch.map(x => `${x} name `)]
+    const lsPttnSearchU = [...patternSearch.map(x => `${x} person `), ...patternSearch.map(x => `${x} user `), ...patternSearch.map(x => `${x} member `)]
+    let lsIISearchName = KMPLsIndex(text, lsPttnSearchN)
+    let lsIISearchUser = KMPLsIndex(text, lsPttnSearchU)
+    let lsIndexNewShedule = KMPLsIndex(text, ptrnNewShedules.map(x => `${x} `))
+    let lsIndexDelItem = KMPLsIndex(text, ptrnDeletes.map(x => `${x} `))
+    let lsIndexNewPlan = KMPLsIndex(text, patternNewPlans.map(x => `${x} `))
+    let lsIndexNewUser = KMPLsIndex(text, patternNewUser)
+    let lsIndexEditUser = KMPLsIndex(text, patternEditUser)
+    let lsIndexAssignUser = KMPLsIndex(text, ptrnAssignUser)
+
+    let allCommandIndex = new Set([...lsIISearchName, ...lsIISearchUser, ...lsIndexNewShedule,
+    ...lsIndexNewPlan, ...lsIndexNewUser, ...lsIndexEditUser, ...lsIndexAssignUser, ...lsIndexDelItem])
+    allCommandIndex = Array.from(allCommandIndex)
+    allCommandIndex.sort((a, b) => a - b)
+
+    if (1 < lsIISearchName.length) lsIISearchName.length = 1
+    lsIISearchName = mapLs(lsIISearchName, allCommandIndex, text)
+    let mapGoSearchN = new Map()
+    addMapSearch(mapGoSearchN, lsIISearchName, lsPttnSearchN)
+
+    if (1 < lsIISearchUser.length) lsIISearchUser.length = 1
+    lsIISearchUser = mapLs(lsIISearchUser, allCommandIndex, text)
+    let mapGoSearchU = new Map()
+    addMapSearch(mapGoSearchU, lsIISearchUser, lsPttnSearchU)
+
+    let prcs = getCmdSchedule(text, lsIndexNewShedule, allCommandIndex, ptrnNewShedules, IdGenerator)
+    let mapNewSchedule = prcs[0]
+    lsIndexNewShedule = prcs[1]
+
+    prcs = getCmdSchedule(text, lsIndexNewPlan, allCommandIndex, patternNewPlans, IdGenerator)
+    let mapNewPlan = prcs[0]
+    lsIndexNewPlan = prcs[1]
+
+    lsIndexNewUser = mapLs(lsIndexNewUser, allCommandIndex, text)
+    let mapNewUser = new Map()
+    for (const arr of lsIndexNewUser) {
+        let txt = arr[1]
+        let uName = getUserNames(txt, patternNewUser)
+        if (uName.length) mapNewUser.set(arr[0], uName)
+    }
+    lsIndexEditUser = mapLs(lsIndexEditUser, allCommandIndex, text)
+    let mapEditUser = new Map()
+    for (const arr of lsIndexEditUser) {
+        let txt = arr[1]
+        let lsStr = splitByKeywords(txt, [...patternEditUser, ' to '])
+        if (2 == lsStr.length) {
+            lsStr = lsStr.map(str => rmLastPunctuation(str))
+            mapEditUser.set(arr[0], lsStr)
+        }
+    }
+    prcs = getCmdAssignUser(text, lsIndexAssignUser, allCommandIndex)
+    let mapAssignUser = prcs[0]
+    lsIndexAssignUser = prcs[1]
+    lsIndexDelItem = mapLs(lsIndexDelItem, allCommandIndex, text)
+    let mapDelItem = new Map()
+    for (const arr of lsIndexDelItem) {
+        let txt = arr[1]
+        let lsStr = splitByKeywords(txt, ptrnDeletes)
+        txt = rmLastPunctuation(lsStr[0])
+        if (0 < lsStr.length) mapDelItem.set(arr[0], txt)
+    }
+    return [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
+        mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU, mapDelItem]
+    function addMapSearch(mapSearch, lsIndex, lsPttn) {
+        if (0 < lsIndex.length) {
+            const lsTrim = lsPttn.map(x => x.trim())
+            for (let ii = 0, arr, txt; ii < lsIndex.length; ii++) {
+                arr = lsIndex[ii]
+                txt = arr[1]
+                let lsStr = splitByKeywords(txt, lsPttn)
+                if (lsStr.length) {
+                    lsStr = lsStr.map(str => rmLastPunctuation(str))
+                    for (let ll = lsStr.length - 1, str; -1 < ll; ll--) {
+                        str = lsStr[ll]
+                        if (lsTrim.includes(str)) lsStr.splice(ll, 1)
+                    }
+                    if (lsStr.length) {
+                        let str = lsStr[0]
+                        if (typeof str == 'string') mapSearch.set(arr[0], str)
+                    }
+                }
+            }
+        }
+    }
+
 }
 function mapLs(listI, allCommandIndex, text) {
     return listI.map(i0 => {

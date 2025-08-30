@@ -6,7 +6,7 @@ import {
 import {
     getCommands, ptrnNewShedules, patternNewPlans, setUsers,
     patternNewUser, patternEditUser, patternSearch, getCmdAssignUser,
-    rmLastPunctuation, ptrnNewTask, getCmdTask, ptrnAssignUser,
+    rmLastPunctuation, ptrnNewTask, getCmdTask, ptrnAssignUser, getCmdSchedule,
 } from "../commands.js";
 const mxDate = {
     computed: {
@@ -282,6 +282,7 @@ export const FormSchedule = {
             TaskEdit: null,
             Tasks: tasks,
             LisUserName: [],
+            Children: [],
         }
     },
     watch: {
@@ -452,6 +453,34 @@ export const FormSchedule = {
             this.LisUserName = []
             let uNm = this.$el.querySelector('.txtusername')
             uNm.innerText = name
+        },
+        processCmdPlan(txt) {
+            const item = this.entry.item
+            const root = this.$root
+            const lsLog = root.LisLog
+            let lsShedule = root.LsSchedule
+            let lsIndexNewPlan = [0]
+            let allCommandIndex = [0]
+            let prcs = getCmdSchedule(txt, lsIndexNewPlan, allCommandIndex, patternNewPlans, root.IdGenerator)
+            let mapNewPlan = prcs[0]
+            lsIndexNewPlan = prcs[1]
+            allCommandIndex.forEach(index => {
+                if (mapNewPlan.has(index)) {
+                    let obj = mapNewPlan.get(index)
+                    obj.ParentId = item.Id
+                    setSchedules.call(root, obj, lsLog)
+                }
+            })
+            if (!Object.is(root.LsSchedule, lsShedule)) { root.buildLsItem(lsShedule) }
+            root.LsSchedule = lsShedule
+            function setSchedules(obj, lisLog) {
+                genKeyHex(obj)
+                lsShedule = root.checkNewArray(1, lsShedule)
+                lsShedule.push(obj)
+                let arrTime = getArrTime(obj)
+                let cmd_ = ptrnNewShedules[randomInt(0, ptrnNewShedules.length)]
+                lisLog.push(`${cmd_} ${obj.Name} from ${arrTime[0]} to ${arrTime[1]}`)
+            }
         },
     },
     computed: {
