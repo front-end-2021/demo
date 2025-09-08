@@ -841,8 +841,10 @@ export const ViewCommands = {
                     }
                 } else {
                     ii = lsShedule.findIndex(item => 0 == compare(item, obj))
+                    const logUser = root.Account
                     if (ii < 0) {
                         lsShedule = root.checkNewArray(1, lsShedule)
+                        if (logUser) obj.Users = [logUser.Name]
                         lsShedule.push(obj)
                     }
                 }
@@ -1174,10 +1176,16 @@ export const FormUser = {
                 const users = root.LsUser
                 let item = this.entry.item
                 let hash1 = CryptoJS.SHA256(this.Pass)
+                const schedules = root.LsSchedule
                 if (-1 < item.Id) {
                     item = users.find(x => x.Name == this.Name)
                     if (item && item.Pwd == hash1.toString(CryptoJS.enc.Hex)) {
                         root.Account = item
+
+                        for (const schl of schedules) {
+                            if (!schl.Users.length) schl.Users = [item.Name]
+                        }
+                        root.LsSchedule = schedules.filter(x => x.Users.includes(item.Name))
                     }
                 } else {
                     item.Name = this.Name
@@ -1185,6 +1193,7 @@ export const FormUser = {
                     item.Id = root.IdGenerator.generate().toString()
                     root.LsUser = [...users, item]
                     root.Account = item
+                    root.LsSchedule = schedules.filter(x => x.Users.includes(item.Name))
                 }
                 root.LsEdit = []
             }
