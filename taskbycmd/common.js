@@ -163,6 +163,39 @@ export class Snowflake {
 }
 // let snowflake = new Snowflake(42n); // Custom epoch and machine ID
 // console.log(snowflake.generate().toString()); // Generate a unique ID
+export function groupByYear(objects, oMap = new Map()) {
+    return objects.reduce((map, obj) => {
+        const year = new Date(obj.Begin).getFullYear(); // Lấy năm từ chuỗi ngày
+        const lst = map.get(year) || []; // Lấy danh sách hiện tại cho năm này, hoặc tạo mới nếu chưa có
+        lst.push(obj); // Thêm object vào danh sách
+        map.set(year, lst); // Cập nhật Map với danh sách mới
+        return map;
+    }, oMap);
+}
+export function groupByMonth(objects, oMap = new Map()) {
+    return objects.reduce((map, obj) => {
+        let month = new Date(obj.Begin).getMonth();
+        month += 1
+        const lst = map.get(month) || [];
+        lst.push(obj);
+        map.set(month, lst);
+        return map;
+    }, oMap);
+}
+export function groupByDate(objects, oMap = new Map()) {
+    return objects.reduce((map, obj) => {
+        const date = new Date(obj.Begin).getDate();
+        const lst = map.get(date) || [];
+        lst.push(obj);
+        map.set(date, lst);
+        return map;
+    }, oMap);
+}
+export function sortMapByKey(map) {
+    // Sắp xếp các cặp [key, value] theo key tăng dần
+    const sortedEntries = [...map.entries()].sort((a, b) => a[0] - b[0]);
+    return new Map(sortedEntries); // Tạo Map mới từ các cặp đã sắp xếp
+}
 function insertPlainText(text) {
     const sel = window.getSelection();
     if (!sel.rangeCount) return;

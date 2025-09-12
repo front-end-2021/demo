@@ -113,17 +113,22 @@ const mxRow = {
                 oBegin = new Date(oEndT)
                 oEnd = new Date(oBeginT)
             }
+            const root = this.$root
             oBegin = getTimeDigit(oBegin)
-            if (oBegin != strBegin) item.Begin = oBegin
+            if (oBegin != strBegin) {
+                item.Begin = oBegin
+                root.RefView.buildData()
+            }
             oEnd = getTimeDigit(oEnd)
             if (oEnd != strEnd) item.End = oEnd
             const newArr = this.getTxtDays(oBegin, oEnd)
             if (target.innerText != newArr[ii]) target.innerHTML = newArr[ii]
             if (newArr.length != lsTxtDay.length) {
                 this.$nextTick(() => {
+                    const _el = this.$el
                     for (let nii = 0, newT; nii < newArr.length; nii++) {
                         newT = newArr[nii]
-                        let span = this.$el.querySelector(`[iiday="${nii}"]`)
+                        let span = _el.querySelector(`[iiday="${nii}"]`)
                         if (span.innerText != newT) span.innerHTML = newT
                     }
                 })
@@ -161,109 +166,6 @@ const mxRow = {
                 keyword = keyword.toLowerCase()
             }
             return name.replace(regex, `<span class="bg-amber-300">${keyword}</span>`)
-        },
-    },
-}
-export const RowItem = {
-    template: `#tmp-rowitem`,
-    name: "Row_Item",
-    display: "Row.Item",
-    props: ['item'],
-    mixins: [mxDate, mxRow],
-    methods: {
-        toggleForm(e) {
-            const root = this.$root
-            const lisEdit = root.LsEdit
-            const item = this.item
-            const entry = {
-                item, ComponentName: root.ScheduleIds.has(item.Id) ? 'form-schedule' : '',
-            }
-            if (!lisEdit.length) {
-                lisEdit.push(entry)
-            } else {
-                let ii = lisEdit.findIndex(x => x.item.Name === item.Name)
-                if (-1 < ii) {
-                    lisEdit.splice(ii, 1)   // click it-self
-                    return
-                }
-                lisEdit.splice(ii, 1, entry)
-            }
-        },
-    },
-    computed: {
-        ItemType() {
-            const itemId = this.item.Id
-            const root = this.$root
-            if (root.ScheduleIds.has(itemId)) return 1;
-            if (root.TaskIds.has(itemId)) return 2;
-            return -1
-        },
-        Tasks() {
-            if (this.ItemType != 1) return []
-            const root = this.$root
-            let lsTsk = [...root.LsTask]
-            const itemId = this.item.Id
-            return filterToLsTruncate(lsTsk, (task) => task.ParentId == itemId)
-        },
-        StyleWidthDone() {
-            if (this.ItemType != 1) return ''
-            const tasks = this.Tasks
-            const len = tasks.length
-            if (!len) return '0'
-            let setDone = this.$root.ItemDones
-            let taskDone = tasks.filter(t => setDone.has(t.Id))
-            let cWidth = (taskDone.length / len) * 100
-            return `${cWidth}%`
-        },
-        TaskStatus() {
-            if (this.ItemType != 1) return ''
-            let setDone = this.$root.ItemDones
-            const tasks = this.Tasks
-            const len = tasks.length
-            if (!len) return '0/0'
-            let taskDone = tasks.filter(t => setDone.has(t.Id))
-            return `${taskDone.length}/${len}`
-        },
-        HtmlUsers() {
-            if (this.ItemType != 1) return ''
-            let users = this.item.Users
-            const oSearch = this.$root.Search
-            let txt = users.join(', ')
-            if (users.length <= 3) {
-                if (!hasText(oSearch.User)) return txt
-                let keyword = oSearch.User
-                const regex = new RegExp(keyword, 'gi');
-                return txt.replace(regex, `<span class="bg-amber-300">${keyword}</span>`)
-            }
-            let arr = users.slice(0, 3)
-            let txt1 = arr.join(', ')
-            if (hasText(oSearch.User)) {
-                let keyword = oSearch.User
-                let regex = new RegExp(keyword, 'gi');
-                if (oSearch.LowerCase) {
-                    regex = new RegExp(keyword, 'g');
-                    keyword = keyword.toLowerCase()
-                }
-                if (txt1.includes(keyword)) {
-                    txt1 = txt1.replace(regex, `<span class="bg-amber-300">${keyword}</span>`)
-                    return `${txt1} [+${users.length - 3}]`
-                }
-                if (txt.includes(keyword)) {
-                    return `${txt1} <span class="bg-amber-300">[+${users.length - 3}]</span>`
-                }
-            }
-            return `${txt1} [+${users.length - 3}]`
-        },
-        TimeDue() {
-            if (this.ItemType != 2) return ''
-            let task = this.item
-            let lang = navigator.language || 'en-US'
-            let tConfix = { hour: '2-digit', minute: '2-digit', hour12: true }
-            let due = new Date(task.End)
-            let time = due.toLocaleTimeString(lang, tConfix)
-            tConfix = { day: '2-digit', month: 'short', year: 'numeric' }
-            let date = due.toLocaleDateString(lang, tConfix)
-            return `${time}<br>${date}`
         },
     },
 }
@@ -311,7 +213,7 @@ export const FormSchedule = {
                     }
                 })
                 root.LsTask = tasks
-                root.buildLsItem()
+                
             }
             function compare(item, obj) {
                 if (item.ParentId != obj.ParentId) return 3
@@ -471,7 +373,7 @@ export const FormSchedule = {
                     setSchedules.call(root, obj, lsLog)
                 }
             })
-            if (!Object.is(root.LsSchedule, lsShedule)) { root.buildLsItem(lsShedule) }
+            
             root.LsSchedule = lsShedule
             function setSchedules(obj, lisLog) {
                 genKeyHex(obj)
@@ -563,6 +465,7 @@ export const RowSchedule = {
     computed: {
         HtmlUsers() {
             let users = this.item.Users
+            if (!Array.isArray(users)) users = []
             const oSearch = this.$root.Search
             let txt = users.join(', ')
             if (users.length <= 3) {
@@ -798,13 +701,12 @@ export const ViewCommands = {
             })
             root.LsUser = listUser
             root.LsTask = lsTsk
-            root.buildLsItem()
-            if (!mapGoSearchN.size) {
-                root.setSearch(null, 'name')
-            }
-            if (!mapGoSearchU.size) {
-                root.setSearch('', 'user')
-            }
+
+            root.RefView.buildData()
+            
+            if (!mapGoSearchN.size) { root.setSearch(null, 'name') }
+            if (!mapGoSearchU.size) { root.setSearch('', 'user') }
+
             target.innerHTML = ''
             this.CmdType = 0
             root.$nextTick(() => {
@@ -984,6 +886,7 @@ export const ViewCommands = {
                         root.setFinish(sDone)
                     }
                     // #endregion
+                    root.RefView.buildData()
                     const oSearch = root.Search
                     root.buildSearchData(oSearch.Name, oSearch.User, listSch, listTsk, oSearch.LowerCase, oSearch.HasContext)
 

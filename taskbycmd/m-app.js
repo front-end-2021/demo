@@ -2,8 +2,7 @@
 import { Snowflake, filterToLsTruncate, insertHTMLAtCursor } from './common.js'
 import { createApp } from 'vue'
 import {
-    ViewCommands, RowSchedule, FormSchedule, FloatBtn,
-    FormUser, RowItem
+    ViewCommands, RowSchedule, FormSchedule, FloatBtn, FormUser,
 } from './components/vw-diagram.js'
 import { ViewOne } from './components/view-one.js'
 // #endregion
@@ -29,7 +28,6 @@ Promise.all([
             'view-commands': ViewCommands,
             'view-schedule': RowSchedule,
             'view-one': ViewOne,
-            'view-item': RowItem,
             'form-schedule': FormSchedule,
             'view-demo-commands': VwDemoCommands,
             'view-guide-commands': VwGuideCommands,
@@ -59,8 +57,8 @@ Promise.all([
                 LisLog: [],
                 IsExpandCmd: true,
                 Account: null,
-                LsItem: [],
                 OverviewType: 1, // 1 = view1, 
+                RefView: null,
             }
         },
         computed: {
@@ -257,49 +255,6 @@ Promise.all([
                     entry.item = { Name: '', Id: -1, Pwd: '' }  // sign up
                 }
                 root.LsEdit = [entry]
-            },
-            buildLsItem(schedules) {
-                if (!schedules) schedules = this.LsSchedule   // build all items
-                let items = []
-                let lsTsk = [...this.LsTask]        // build all items
-                let grpParent = groupByParentId(schedules);
-                let visited = new Set()
-                for (let item of schedules) {
-                    if (visited.has(item.Id)) continue;
-                    items.push(item)
-                    visited.add(item.Id)
-                    addChildren(item.Id)
-                }
-                for (let ii = 0, item; ii < items.length; ii++) {
-                    item = items[ii]
-                    let children = filterToLsTruncate(lsTsk, (child) => child.ParentId == item.Id)
-                    let tt = 0
-                    for (; tt < children.length; tt++) {
-                        items.splice(tt + ii + 1, 0, children[tt])
-                    }
-                    ii += tt
-                }
-                this.LsItem = items
-                function groupByParentId(lst) {
-                    let map = new Map()
-                    let parentIds = new Set(lst.filter(x => !!x.ParentId).map(x => x.ParentId))
-                    let truncLst = [...lst]
-                    for (let id of parentIds) {
-                        let children = filterToLsTruncate(truncLst, (x) => x.ParentId == id)
-                        map.set(id, children)
-                    }
-                    return map
-                }
-                function addChildren(pId) {
-                    if (grpParent.has(pId)) {
-                        let children = grpParent.get(pId)
-                        for (const task of children) {
-                            items.push(task)
-                            addChildren(task.Id)
-                            visited.add(task.Id)
-                        }
-                    }
-                }
             },
             // equalHas(txt1, txt2) {
             //     let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)
