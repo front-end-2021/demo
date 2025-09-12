@@ -14,7 +14,12 @@ export const ViewOne = {
         }
     },
     methods: {
-        buildData() {
+        buildData(type) {
+            if (typeof type != 'number') type = this.ViewType
+            if (2 == type) {
+                if (this.ListGroup.length) this.ListGroup = []
+                return;
+            }
             const root = this.$root
             let items = root.LsSchedule
             let lsGroup = []
@@ -52,19 +57,13 @@ export const ViewOne = {
             this.ListGroup = lsGroup
         },
         setViewType(type) {
-            switch(type) {
-                case 1: this.buildData()
-                break;
-                case 2: this.ListGroup = []
-
-                break;
-            }
+            this.buildData(type)
             this.ViewType = type
         },
     },
     created() {
         const root = this.$root
         root.RefView = this
-        this.buildData()
+        this.buildData(this.ViewType)
     },
 }
