@@ -1,5 +1,5 @@
 // #region import
-import { Snowflake, filterToLsTruncate, insertHTMLAtCursor } from './common.js'
+import { Snowflake, insertHTMLAtCursor } from './common.js'
 import { createApp } from 'vue'
 import {
     ViewCommands, RowSchedule, FormSchedule, FloatBtn, FormUser,

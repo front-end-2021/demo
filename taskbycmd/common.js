@@ -90,32 +90,6 @@ export function hasText(str) {
     if (!str.trim().length) return false
     return true
 }
-export function filterToLsTruncate(items, fnc) {
-    let ls = []
-    if (items instanceof Map) {
-        for (const [key, item] of items) {
-            if (fnc(item, key)) {
-                ls.push(item)
-                items.delete(key)
-            }
-        }
-    } else if (items instanceof Set) {
-        for (const item of items) {
-            if (fnc(item)) ls.push(item)
-            items.delete(item)
-        }
-    } else if (items instanceof Array) {
-        for (let ii = 0, item; ii < items.length; ii++) {
-            item = items[ii]
-            if (fnc(item)) {
-                ls.push(item)
-                items.splice(ii, 1)
-                ii--
-            }
-        }
-    }
-    return ls
-}
 export class Snowflake {
     #lastTimestamp
     #sequence

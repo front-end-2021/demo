@@ -1,7 +1,7 @@
 import {
     genKeyHex, MonthsShort, getValidDays, getArrTime, randomInt,
     getTimeDigit, isEqualTime, getLsChild, convertDic, convertSet,
-    hasText, filterToLsTruncate,
+    hasText, 
 } from "../common.js";
 import {
     getCommands, ptrnNewShedules, patternNewPlans, setUsers,
