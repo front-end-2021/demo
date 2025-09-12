@@ -1,16 +1,21 @@
 <template id="tmp-view-one">
     <section>
-        <div>
+        <div style="display: flex; gap: 14px; cursor: default;">
             <span>All time</span>
             <span>All items</span>
-            <span>Group view</span>
-            <span>List view</span>
+            <span @click.stop="e => setViewType(1)">Group view</span>
+            <span @click.stop="e => setViewType(2)">List view</span>
         </div>
-        <div>
+        <div v-if="1 == ViewType">
             <div v-for="ydm in ListGroup">
                 <div>{{ydm.Year_Month_Date}}</div>
-                <view-schedule v-for="item in ydm.Items" :key="item.KeyMD5" :item="item"></view-schedule>
+                <view-schedule v-for="item in ydm.Items" 
+                    :key="item.KeyMD5" :item="item"></view-schedule>
             </div>
+        </div>
+        <div v-if="2 == ViewType">
+            <view-schedule v-for="item in $root.LsSchedule" 
+                :key="item.KeyMD5" :item="item"></view-schedule>
         </div>
     </section>
 </template>

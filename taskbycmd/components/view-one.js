@@ -18,13 +18,14 @@ export const ViewOne = {
             const root = this.$root
             let items = root.LsSchedule
             let lsGroup = []
-
+            let years = new Set()
             let map = groupByYear(items)
             map = sortMapByKey(map)
             for (const [year, objects] of map) {
                 let mapMonth = groupByMonth(objects)
                 mapMonth = sortMapByKey(mapMonth)
                 map.set(year, mapMonth)
+                years.add(year)
             }
             for (const [year, mapMonth] of map) {
                 for (const [month, objects] of mapMonth) {
@@ -34,21 +35,31 @@ export const ViewOne = {
                 }
                 map.set(year, mapMonth)
             }
-            console.log(map)
-
             for (const [year, mapMonth] of map) {
                 for (const [month, mapDate] of mapMonth) {
                     for (const [date, objects] of mapDate) {
                         let txtMonth = MonthsShort[month - 1]
                         let txtDate = date < 10 ? `0${date}` : `${date}`
+                        let name = `${txtMonth.toUpperCase()} ${txtDate}`
+                        if (1 < years.size) name = `${year} ${name}`
                         lsGroup.push({
-                            Year_Month_Date: `${year} ${txtMonth.toUpperCase()} ${txtDate}`,
+                            Year_Month_Date: name,
                             Items: objects
                         })
                     }
                 }
             }
             this.ListGroup = lsGroup
+        },
+        setViewType(type) {
+            switch(type) {
+                case 1: this.buildData()
+                break;
+                case 2: this.ListGroup = []
+
+                break;
+            }
+            this.ViewType = type
         },
     },
     created() {
