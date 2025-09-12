@@ -5,6 +5,7 @@ import {
     ViewCommands, RowSchedule, FormSchedule, FloatBtn,
     FormUser, RowItem
 } from './components/vw-diagram.js'
+import { ViewOne } from './components/view-one.js'
 // #endregion
 const VwDemoCommands = {
     template: `#tmp-demo-commands`,
@@ -19,6 +20,7 @@ const VwGuideCommands = {
     props: ['entry'],
 }
 Promise.all([
+    includeHTML(`./components/view-one.html`),
     includeHTML(`./components/vw-diagram.html`),
 ]).then((values) => {
     const app = createApp({
@@ -26,6 +28,7 @@ Promise.all([
         components: {
             'view-commands': ViewCommands,
             'view-schedule': RowSchedule,
+            'view-one': ViewOne,
             'view-item': RowItem,
             'form-schedule': FormSchedule,
             'view-demo-commands': VwDemoCommands,
@@ -57,6 +60,7 @@ Promise.all([
                 IsExpandCmd: true,
                 Account: null,
                 LsItem: [],
+                OverviewType: 1, // 1 = view1, 
             }
         },
         computed: {
