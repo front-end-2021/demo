@@ -1,5 +1,5 @@
 // #region import
-import { Snowflake, insertHTMLAtCursor } from './common.js'
+import { Snowflake, insertHTMLAtCursor, getBrowserLang } from './common.js'
 import { createApp } from 'vue'
 import {
     ViewCommands, RowSchedule, FormSchedule, FloatBtn, FormUser,
@@ -265,8 +265,12 @@ Promise.all([
         //beforeCreate() { },
         created() {
             const root = this
-            const setKeys = new Set(['CmdNewShedules', 'CmdNewPlans', 'CmdNewUser', 'CmdEditUser', 'CmdSearch', 'CmdNewTask', 'CmdAssignUser', 'CmdDeletes'])
-            const fileUrl = 'templatePlan.txt'
+            let fileUrl = 'templatePlan.txt'
+            let language = getBrowserLang()
+            if ('vietnamese' == language) { fileUrl = 'templatePlan-vi.txt' }
+            const setKeys = new Set(['CmdNewShedules', 'CmdNewPlans', 'CmdNewUser', 'CmdEditUser',
+                'CmdSearch', 'CmdNewTask', 'CmdAssignUser', 'CmdDeletes', 'CmdSpecTimes'])
+
             fetch(fileUrl).then(response => {
                 if (!response.ok) { throw new Error('Không thể tải file: ' + response.statusText) }
                 return response.text()

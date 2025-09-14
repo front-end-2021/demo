@@ -59,8 +59,8 @@ export function getCmdAssignUser(text, lsIndexAssignUser, allCommandIndex, cmdAs
     }
     return [mapAssign, lsIndex]
 }
-export function getCmdSchedule(text, lsIndexNewShedule, allCommandIndex, lsPattern, IdGenerator) {
-    const patternSpecTimes = [' from ', ' begin ', ' start ', ' at ', ' end ', ' to ']
+export function getCmdSchedule(text, lsIndexNewShedule, allCommandIndex, lsPattern, IdGenerator, cmdSpecTimes) {
+    const patternSpecTimes = cmdSpecTimes.map(x => ` ${x} `)
     let lsIndex = mapLs(lsIndexNewShedule, allCommandIndex, text)
     let mapNewSchedule = new Map()
     for (const arr of lsIndex) {
@@ -119,6 +119,7 @@ export function getCommands(text, IdGenerator, objCmd = {}) {
     const cmdSearch = objCmd.CmdSearch || ['go search']
     const cmdAssignUser = objCmd.CmdAssignUser || ['add user']
     const cmdDeletes = objCmd.CmdDeletes || ['delete item']
+    const cmdSpecTimes = objCmd.CmdSpecTimes || ['from', 'to']
 
     const lsPttnSearchN = [...cmdSearch.map(x => `${x} name `)]
     const lsPttnSearchU = [...cmdSearch.map(x => `${x} person `), ...cmdSearch.map(x => `${x} user `), ...cmdSearch.map(x => `${x} member `)]
@@ -146,11 +147,11 @@ export function getCommands(text, IdGenerator, objCmd = {}) {
     let mapGoSearchU = new Map()
     addMapSearch(mapGoSearchU, lsIISearchUser, lsPttnSearchU)
 
-    let prcs = getCmdSchedule(text, lsIndexNewShedule, allCommandIndex, cmdNewShedules, IdGenerator)
+    let prcs = getCmdSchedule(text, lsIndexNewShedule, allCommandIndex, cmdNewShedules, IdGenerator, cmdSpecTimes)
     let mapNewSchedule = prcs[0]
     lsIndexNewShedule = prcs[1]
 
-    prcs = getCmdSchedule(text, lsIndexNewPlan, allCommandIndex, cmdNewPlans, IdGenerator)
+    prcs = getCmdSchedule(text, lsIndexNewPlan, allCommandIndex, cmdNewPlans, IdGenerator, cmdSpecTimes)
     let mapNewPlan = prcs[0]
     lsIndexNewPlan = prcs[1]
 

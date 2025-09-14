@@ -48,3 +48,11 @@ assign member
 
 CmdDeletes
 delete item
+
+CmdSpecTimes
+from
+begin
+start
+at
+end
+to

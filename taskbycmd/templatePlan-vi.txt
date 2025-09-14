@@ -1,0 +1,34 @@
+CmdNewShedules
+Tạo lịch trình
+tạo Lộ trình
+
+CmdNewPlans
+Tạo Cuộc hẹn
+tạo sự kiện
+
+CmdNewUser
+tạo mới người dùng
+thêm mới thành viên
+
+CmdEditUser
+sửa người dùng từ
+sửa thành viên
+thay tên
+
+CmdSearch
+tìm kiếm
+
+CmdNewTask
+tạo nhiệm vụ
+
+CmdAssignUser
+thêm người dùng
+chỉ định người dùng
+gán thêm thành viên
+
+CmdDeletes
+xóa mục
+
+CmdSpecTimes
+bắt đầu
+kết thúc

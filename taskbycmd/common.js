@@ -170,6 +170,16 @@ export function sortMapByKey(map) {
     const sortedEntries = [...map.entries()].sort((a, b) => a[0] - b[0]);
     return new Map(sortedEntries); // Tạo Map mới từ các cặp đã sắp xếp
 }
+export function getBrowserLang() {
+    let lang = navigator.language || navigator.userLanguage; // Hỗ trợ trình duyệt cũ
+    if (lang.startsWith('vi')) {
+        return 'vietnamese'
+    } else if (lang.startsWith('en')) {
+        return 'en'
+    } else {
+        return lang
+    }
+}
 function insertPlainText(text) {
     const sel = window.getSelection();
     if (!sel.rangeCount) return;
