@@ -1,0 +1,50 @@
+CmdNewShedules
+make Schedule
+make Agenda
+make Roadmap
+
+CmdNewPlans
+make Appointment
+make Event
+make Reservation
+
+CmdNewUser
+new user
+create user
+new person
+create person
+new member
+create member
+
+CmdEditUser
+edit user from
+edit user
+edit person from
+edit person
+edit member from
+edit member
+change user from
+change user
+change person from
+change person
+change member from
+change member
+
+CmdSearch
+go search
+go filter
+go query
+
+CmdNewTask
+make Task
+
+CmdAssignUser
+add user
+assign user
+add person
+assign person
+add member
+assign member
+
+CmdDeletes
+delete item

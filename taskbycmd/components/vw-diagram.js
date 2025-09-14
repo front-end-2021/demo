@@ -1,12 +1,10 @@
 import {
     genKeyHex, MonthsShort, getValidDays, getArrTime, randomInt,
     getTimeDigit, isEqualTime, getLsChild, convertDic, convertSet,
-    hasText, 
+    hasText,
 } from "../common.js";
 import {
-    getCommands, ptrnNewShedules, patternNewPlans, setUsers,
-    patternNewUser, patternEditUser, patternSearch, getCmdAssignUser,
-    rmLastPunctuation, ptrnNewTask, getCmdTask, ptrnAssignUser, getCmdSchedule,
+    getCommands, setUsers, getCmdAssignUser, rmLastPunctuation, getCmdTask, getCmdSchedule,
 } from "../commands.js";
 const mxDate = {
     computed: {
@@ -199,7 +197,8 @@ export const FormSchedule = {
     methods: {
         processCmdTask(txt) {
             const root = this.$root
-            let [allCommandIndex, mapTasks] = getCmdTask(txt, root.IdGenerator)
+            const cmdNewTask = root.ObjCMD.CmdNewTask
+            let [allCommandIndex, mapTasks] = getCmdTask(txt, root.IdGenerator, cmdNewTask)
             const item = this.item
             let tasks = root.LsTask
             if (0 < allCommandIndex.length + mapTasks.size) {
@@ -213,7 +212,7 @@ export const FormSchedule = {
                     }
                 })
                 root.LsTask = tasks
-                
+
             }
             function compare(item, obj) {
                 if (item.ParentId != obj.ParentId) return 3
@@ -324,12 +323,15 @@ export const FormSchedule = {
             let task = this.entry.item
             let taskCopy = this.item
             const root = this.$root
+            const obCmd = root.ObjCMD
+            const cmdNewUser = obCmd.CmdNewUser
+            const cmdAssignUser = obCmd.CmdAssignUser
             const lsLog = root.LisLog
             let listUser = root.LsUser
             let txt = `${this.CmdAssignUsr} ${name} to ${this.item.Name}`
             let lsIndexAssignUser = [0]
             let allCommandIndex = [0]
-            let prcs = getCmdAssignUser(txt, lsIndexAssignUser, allCommandIndex)
+            let prcs = getCmdAssignUser(txt, lsIndexAssignUser, allCommandIndex, cmdAssignUser)
             let mapAssignUser = prcs[0]
             lsIndexAssignUser = prcs[1]
             allCommandIndex.forEach(index => {
@@ -337,7 +339,7 @@ export const FormSchedule = {
                     let [uName, taskName] = mapAssignUser.get(index)
                     let nwLst = setUsers.call(listUser, uName, null, root.IdGenerator)
                     if (!Object.is(nwLst, listUser)) {
-                        let cmd_ = patternNewUser[randomInt(0, patternNewUser.length)]
+                        let cmd_ = cmdNewUser[randomInt(0, cmdNewUser.length)]
                         lsLog.push(`${cmd_} ${uName}`)
                     }
                     listUser = nwLst
@@ -363,7 +365,10 @@ export const FormSchedule = {
             let lsShedule = root.LsSchedule
             let lsIndexNewPlan = [0]
             let allCommandIndex = [0]
-            let prcs = getCmdSchedule(txt, lsIndexNewPlan, allCommandIndex, patternNewPlans, root.IdGenerator)
+            const obCmd = root.ObjCMD
+            const cmdNewShedules = obCmd.CmdNewShedules
+            const cmdNewPlans = obCmd.CmdNewPlans
+            let prcs = getCmdSchedule(txt, lsIndexNewPlan, allCommandIndex, cmdNewPlans, root.IdGenerator)
             let mapNewPlan = prcs[0]
             lsIndexNewPlan = prcs[1]
             allCommandIndex.forEach(index => {
@@ -373,21 +378,27 @@ export const FormSchedule = {
                     setSchedules.call(root, obj, lsLog)
                 }
             })
-            
+
             root.LsSchedule = lsShedule
             function setSchedules(obj, lisLog) {
                 genKeyHex(obj)
                 lsShedule = root.checkNewArray(1, lsShedule)
                 lsShedule.push(obj)
                 let arrTime = getArrTime(obj)
-                let cmd_ = ptrnNewShedules[randomInt(0, ptrnNewShedules.length)]
+                let cmd_ = cmdNewShedules[randomInt(0, cmdNewShedules.length)]
                 lisLog.push(`${cmd_} ${obj.Name} from ${arrTime[0]} to ${arrTime[1]}`)
             }
         },
     },
     computed: {
-        CmdNewTask() { return ptrnNewTask[randomInt(0, ptrnNewTask.length)] },
-        CmdAssignUsr() { return ptrnAssignUser[randomInt(0, ptrnAssignUser.length)] },
+        CmdNewTask() {
+            const cmdNewTask = this.$root.ObjCMD.CmdNewTask
+            return cmdNewTask[randomInt(0, cmdNewTask.length)]
+        },
+        CmdAssignUsr() {
+            const cmdAssignUser = this.$root.ObjCMD.CmdAssignUser
+            return cmdAssignUser[randomInt(0, cmdAssignUser.length)]
+        },
     },
 }
 export const RowSchedule = {
@@ -590,20 +601,23 @@ export const ViewCommands = {
             let target = e.target
             const txt = target.innerText
             const root = this.$root
+            const obCmd = root.ObjCMD
             const lsLog = root.LisLog
             let [allCommandIndex, mapNewSchedule, mapNewPlan, mapNewUser,
-                mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU, mapDelItem] = getCommands(txt, root.IdGenerator)
+                mapEditUser, mapAssignUser, mapGoSearchN, mapGoSearchU, mapDelItem] = getCommands(txt, root.IdGenerator, obCmd)
             let listUser = root.LsUser
             let lsShedule = root.LsSchedule
             let lsTsk = root.LsTask
-
+            const cmdNewShedules = obCmd.CmdNewShedules
+            const cmdNewUser = obCmd.CmdNewUser
+            const cmdSearch = obCmd.CmdSearch
             allCommandIndex.forEach(index => {
                 if (mapGoSearchN.has(index)) {
                     let sTxt = mapGoSearchN.get(index)
-                    if (patternSearch.map(x => `${x.toLowerCase()} name`).includes(sTxt.trim().toLowerCase())) sTxt = ''
+                    if (cmdSearch.map(x => `${x.toLowerCase()} name`).includes(sTxt.trim().toLowerCase())) sTxt = ''
                     root.setSearch(sTxt, 'name')
                     if (sTxt.length) {
-                        let cmd_ = patternSearch[randomInt(0, patternSearch.length)]
+                        let cmd_ = cmdSearch[randomInt(0, cmdSearch.length)]
                         lsLog.push(`${cmd_} name ${sTxt}`)
                     }
                 } else {
@@ -611,14 +625,14 @@ export const ViewCommands = {
                 }
                 if (mapGoSearchU.has(index)) {
                     const arrN = ['person', 'user', 'member']
-                    const lsPttnSearchU = [...patternSearch.map(x => `${x.toLowerCase()} ${arrN[0]}`),
-                    ...patternSearch.map(x => `${x.toLowerCase()} ${arrN[1]}`),
-                    ...patternSearch.map(x => `${x.toLowerCase()} ${arrN[2]}`)]
+                    const lsPttnSearchU = [...cmdSearch.map(x => `${x.toLowerCase()} ${arrN[0]}`),
+                    ...cmdSearch.map(x => `${x.toLowerCase()} ${arrN[1]}`),
+                    ...cmdSearch.map(x => `${x.toLowerCase()} ${arrN[2]}`)]
                     let sTxt = mapGoSearchU.get(index)
                     if (lsPttnSearchU.includes(sTxt.trim().toLowerCase())) sTxt = ''
                     root.setSearch(sTxt, 'user')
                     if (sTxt.length) {
-                        let cmd_ = patternSearch[randomInt(0, patternSearch.length)]
+                        let cmd_ = cmdSearch[randomInt(0, cmdSearch.length)]
                         lsLog.push(`${cmd_} ${arrN[randomInt(0, arrN.length)]} ${sTxt}`)
                     }
                 } else {
@@ -660,7 +674,7 @@ export const ViewCommands = {
                     let uName = mapNewUser.get(index)
                     let nwLst = setUsers.call(listUser, uName, null, root.IdGenerator)
                     if (!Object.is(nwLst, listUser)) {
-                        let cmd_ = patternNewUser[randomInt(0, patternNewUser.length)]
+                        let cmd_ = cmdNewUser[randomInt(0, cmdNewUser.length)]
                         lsLog.push(`${cmd_} ${uName}`)
                     }
                     listUser = nwLst
@@ -688,7 +702,7 @@ export const ViewCommands = {
                     if (task) {
                         let nwLst = setUsers.call(listUser, uName, null, root.IdGenerator)
                         if (!Object.is(nwLst, listUser)) {
-                            let cmd_ = patternNewUser[randomInt(0, patternNewUser.length)]
+                            let cmd_ = cmdNewUser[randomInt(0, cmdNewUser.length)]
                             lsLog.push(`${cmd_} ${uName}`)
                         }
                         listUser = nwLst
@@ -703,7 +717,7 @@ export const ViewCommands = {
             root.LsTask = lsTsk
 
             root.RefView.buildData()
-            
+
             if (!mapGoSearchN.size) { root.setSearch(null, 'name') }
             if (!mapGoSearchU.size) { root.setSearch('', 'user') }
 
@@ -751,7 +765,7 @@ export const ViewCommands = {
                     }
                 }
                 let arrTime = getArrTime(obj)
-                let cmd_ = ptrnNewShedules[randomInt(0, ptrnNewShedules.length)]
+                let cmd_ = cmdNewShedules[randomInt(0, cmdNewShedules.length)]
                 lisLog.push(`${cmd_} ${obj.Name} from ${arrTime[0]} to ${arrTime[1]}`)
             }
             function keepProps(obj, old) {
@@ -806,11 +820,17 @@ export const ViewCommands = {
         },
         showGuide() {
             const root = this.$root
+            const obCmd = root.ObjCMD
+            const cmdNewShedules = obCmd.CmdNewShedules
+            const cmdNewPlans = obCmd.CmdNewPlans
+            const cmdNewUser = obCmd.CmdNewUser
+            const cmdEditUser = obCmd.CmdEditUser
+            const cmdSearch = obCmd.CmdSearch
             const item = {
-                NewShedule: `${ptrnNewShedules.join(', ')}. ${patternNewPlans.join(', ')}`,
-                NewUser: `${patternNewUser.join(', ')}`,
-                EditUser: `${patternEditUser.join(', ')}`,
-                TxtSearch: `${patternSearch.join(', ')}`,
+                NewShedule: `${cmdNewShedules.join(', ')}. ${cmdNewPlans.join(', ')}`,
+                NewUser: `${cmdNewUser.join(', ')}`,
+                EditUser: `${cmdEditUser.join(', ')}`,
+                TxtSearch: `${cmdSearch.join(', ')}`,
             }
             const nameComp = 'view-guide-commands'
             let entry = {

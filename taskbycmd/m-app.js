@@ -59,6 +59,7 @@ Promise.all([
                 Account: null,
                 OverviewType: 1, // 1 = view1, 
                 RefView: null,
+                ObjCMD: null,
             }
         },
         computed: {
@@ -264,6 +265,15 @@ Promise.all([
         //beforeCreate() { },
         created() {
             const root = this
+            const setKeys = new Set(['CmdNewShedules', 'CmdNewPlans', 'CmdNewUser', 'CmdEditUser', 'CmdSearch', 'CmdNewTask', 'CmdAssignUser', 'CmdDeletes'])
+            const fileUrl = 'templatePlan.txt'
+            fetch(fileUrl).then(response => {
+                if (!response.ok) { throw new Error('Không thể tải file: ' + response.statusText) }
+                return response.text()
+            }).then(data => {
+                root.ObjCMD = parseTextToObject(data, setKeys) // Chuyển nội dung file thành object
+            }).catch(error => { console.error('Lỗi:', error) })
+
             let lst = localStorage.getItem('Schedules')
             if (lst) {
                 lst = JSON.parse(lst)
@@ -331,4 +341,22 @@ function includeHTML(path) {
             xhr.send();
         })
     }
+}
+function parseTextToObject(text, setKeys) {
+    const lines = text.trim().split('\n'); // Tách thành mảng các dòng
+    const result = {};
+    let currentKey = null;
+    for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) continue; // Bỏ qua dòng trống
+
+        // Kiểm tra nếu dòng là key
+        if (setKeys.has(trimmedLine)) {
+            currentKey = trimmedLine;
+            result[currentKey] = []; // Khởi tạo mảng cho key
+        } else if (currentKey) {
+            result[currentKey].push(trimmedLine) // Thêm dòng vào mảng của key hiện tại
+        }
+    }
+    return result;
 }
