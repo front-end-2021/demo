@@ -60,9 +60,9 @@ const mxRow = {
             }
             // #endregion
             const item = this.item
-            let oBeginT = item.Begin
+            let oBginT = item.Begin
             let oEndT = item.End
-            let oBegin = new Date(oBeginT)
+            let oBegin = new Date(oBginT)
             let oEnd = new Date(oEndT)
 
             if (0 == ii) oBegin.setMonth(iMonth)
@@ -99,9 +99,9 @@ const mxRow = {
             if (0 == ii) oBegin.setFullYear(numYear)
             else oEnd.setFullYear(numYear)
 
-            let strBegin = getTimeDigit(new Date(oBeginT))
+            let strBegin = getTimeDigit(new Date(oBginT))
             let strEnd = getTimeDigit(new Date(oEndT))
-            oBeginT = oBegin.getTime()
+            oBginT = oBegin.getTime()
             oEndT = oEnd.getTime()
             if (diffDay(oBegin, oEnd) < 0) {
                 if (1 < lsTxtDay.length) {
@@ -109,16 +109,18 @@ const mxRow = {
                     return
                 }
                 oBegin = new Date(oEndT)
-                oEnd = new Date(oBeginT)
+                oEnd = new Date(oBginT)
             }
             const root = this.$root
             oBegin = getTimeDigit(oBegin)
             if (oBegin != strBegin) {
-                item.Begin = oBegin
+                item.Begin = new Date(oBegin).toISOString()
                 root.RefView.buildData()
             }
             oEnd = getTimeDigit(oEnd)
-            if (oEnd != strEnd) item.End = oEnd
+            if (oEnd != strEnd) {
+                item.End = new Date(oEnd).toISOString()
+            }
             const newArr = this.getTxtDays(oBegin, oEnd)
             if (target.innerText != newArr[ii]) target.innerHTML = newArr[ii]
             if (newArr.length != lsTxtDay.length) {
@@ -139,15 +141,15 @@ const mxRow = {
                 let lsMonth = MonthsShort.map(t => t.toLowerCase())
                 return lsMonth.indexOf(txt)
             }
-            function diffDay(begin, end) {
-                if (end.getFullYear() < begin.getFullYear()) return -1
-                if (end.getFullYear() > begin.getFullYear()) return 1
+            function diffDay(bgin, end) {
+                if (end.getFullYear() < bgin.getFullYear()) return -1
+                if (end.getFullYear() > bgin.getFullYear()) return 1
                 // == year
-                if (end.getMonth() < begin.getMonth()) return -1
-                if (end.getMonth() > begin.getMonth()) return 1
+                if (end.getMonth() < bgin.getMonth()) return -1
+                if (end.getMonth() > bgin.getMonth()) return 1
                 // == month
-                if (end.getDate() < begin.getDate()) return -1
-                if (end.getDate() > begin.getDate()) return 1
+                if (end.getDate() < bgin.getDate()) return -1
+                if (end.getDate() > bgin.getDate()) return 1
                 return 0
             }
         },
@@ -773,16 +775,16 @@ export const ViewCommands = {
                 let users = new Set([...old.Users, ...obj.Users])
                 obj.Users = Array.from(users)
 
-                let oBegin = new Date(old.Begin)
+                let oBgin = new Date(old.Begin)
                 let oEnd = new Date(old.End)
                 let nBegin = new Date(obj.Begin)
                 let nEnd = new Date(obj.End)
-                oBegin.setHours(nBegin.getHours())
-                oBegin.setMinutes(nBegin.getMinutes())
+                oBgin.setHours(nBegin.getHours())
+                oBgin.setMinutes(nBegin.getMinutes())
                 oEnd.setHours(nEnd.getHours())
                 oEnd.setMinutes(nEnd.getMinutes())
 
-                obj.Begin = oBegin.toISOString()
+                obj.Begin = oBgin.toISOString()
                 obj.End = oEnd.toISOString()
                 obj.Id = old.Id
             }
