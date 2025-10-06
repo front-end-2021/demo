@@ -1,6 +1,6 @@
 import { getRandomInt } from "./common.js";
 import {
-    ListPrj, Langs,
+    ListPrj, Langs, NewLandIds,
     DemoLands, DemoRegions,
     DemoMarkets, DemoSubmarkets,
     DemoPrdGroups, DemoProducts,
@@ -11,29 +11,29 @@ export const getData = (type) => {
     return new Promise((resolve) => {
         setTimeout(() => {
             switch (type) {
-                case 1:         // Project
-                    resolve(ListPrj)
+                case 'List project': resolve(ListPrj)
                     break;
-                case 2:         // Languages
-                    resolve(Langs)
+                case 'List language': resolve(Langs)
                     break;
-                case 3: resolve(DemoLands)
+                case 'List land': resolve(DemoLands)
                     break;
-                case 4: resolve(DemoRegions)
+                case 'List region': resolve(DemoRegions)
                     break;
-                case 5: resolve(DemoMarkets)
+                case 'List market': resolve(DemoMarkets)
                     break;
-                case 6: resolve(DemoSubmarkets)
+                case 'List submarket': resolve(DemoSubmarkets)
                     break;
-                case 7: resolve(DemoPrdGroups)
+                case 'List product group': resolve(DemoPrdGroups)
                     break;
-                case 8: resolve(DemoProducts)
+                case 'List product': resolve(DemoProducts)
                     break;
-                case 9: resolve(DemoGoals)
+                case 'List goal': resolve(DemoGoals)
                     break;
-                case 10: resolve(DemoSubs)
+                case 'List sub': resolve(DemoSubs)
                     break;
-                case 11: resolve(DemoTasks)
+                case 'List task': resolve(DemoTasks)
+                    break;
+                case 'List new land id': resolve(NewLandIds)
                     break;
             }
         }, getRandomInt(100, 999))

@@ -1,7 +1,8 @@
 <section id="app-modal">
     
     <component v-for="entry in $store.getters.ListModal"
-        :is="entry.item.type" :mo-item="entry.item"></component>
+        :is="entry.item.type" :mo-item="entry.item" 
+        :isnew="entry.item.isnew"></component>
     
 </section>
 <template id="tmp-comp-modal">

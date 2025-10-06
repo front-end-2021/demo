@@ -270,7 +270,7 @@ export default {
         '$root.IndexProject'(iPrj) {
             let lstC = this.$root.MarketCriterias
             const [landIds, marketIds] = getLandMarketIds(lstC)
-            
+
             this.setFilter([landIds, marketIds])
         },
         Lands(lst, oldLst) {
@@ -325,22 +325,27 @@ export default {
             })
         },
         openFormLand(land) {
-            const iProject = this.$root.IndexProject
+            const root = this.$root
+            const iProject = root.IndexProject
+            const apStore = root.$store
             if (!land) {        // add new
                 land = {
-                    Id: this.$store.getters.newNumId(1),
-                    Name: '', Description: '', IsNew: false,
-                    ASort: this.$store.getters.newASort(1)
+                    Id: apStore.getters.newNumId(1),
+                    Name: '', Description: '',
+                    ASort: apStore.getters.newASort(1)
                 }
                 const saveClose = (mLand) => {
-                    this.$store.commit('setDes', [land, mLand.Description])
+                    apStore.commit('markLandNew', { id: mLand.Id, isNew: mLand.IsLandNew })
+                    delete mLand.IsLandNew
+
+                    apStore.commit('setDes', [land, mLand.Description])
                     deleteDes.call(mLand)
                     deleteDes.call(land)
 
                     overrideItem.call(land, mLand)
-                    this.$store.commit('addUpdateLocal', [1, land, iProject])
+                    apStore.commit('addUpdateLocal', [1, land, iProject])
 
-                    let lstC = this.$root.MarketCriterias
+                    let lstC = root.MarketCriterias
                     const landIds = getLandMarketIds(lstC, 'land')
                     if (landIds.includes(0)) this.setLandRegionMarket()
                     else {
@@ -359,21 +364,21 @@ export default {
                                 if (!lstC.length) {
                                     lstC.push([FTypeId.Land_Region, [0]])
                                 }
-                                this.$root.MarketCriterias = lstC
+                                root.MarketCriterias = lstC
                             }
 
                         }
                         const filterContainNewLand = () => {
                             lstC = JSON.parse(JSON.stringify(lstC));
                             lstC.push([FTypeId.Land_Region, [land.Id]])
-                            this.$root.MarketCriterias = lstC
+                            root.MarketCriterias = lstC
                         }
                         let item = {
                             type: 'comp-mess-newland',
                             title: mess,
                             data: null
                         }
-                        this.$store.commit('setModal', [item, filterContainNewLand, resetLands])
+                        apStore.commit('setModal', [item, filterContainNewLand, resetLands])
                     }
                 }
                 const xClose = (mLand) => {
@@ -386,13 +391,14 @@ export default {
                 const item = {
                     title: `New Land`,
                     data: land,
+                    isnew: root.isLandNew(land.Id),
                     type: `comp-form-land`
                 }
-                this.$store.commit('setModal', [item, saveClose, xClose])
+                apStore.commit('setModal', [item, saveClose, xClose])
                 return
             }
             // edit
-            this.$root.openFormEditLand(land)
+            root.openFormEditLand(land)
             setLastState(1, land.Id)
         },
         onClickTab(e) {
@@ -548,22 +554,24 @@ export default {
             this.$store.commit('setModal', [item, saveClose, xClose])
         },
         openFormEval(market, region) {
+            const root = this.$root
+            const apStore = this.$store
             const landId = region.LandId
-            let land = this.$store.getters.ItemBy([1, landId])
+            let land = apStore.getters.ItemBy([1, landId])
             if (land) {
-                land = land.Name + (land.IsNew ? ' *' : '')
+                land = land.Name + (root.isLandNew(landId) ? ' *' : '')
             } else land = 'LAND'
 
-            this.$root.clearPopupUI(1)
+            root.clearPopupUI(1)
 
-            this.$store.dispatch('openFormValue',
+            apStore.dispatch('openFormValue',
                 [market.Id, region.Id]).then(([ii, item]) => {
                     if (ii < 0) return;
                     const saveClose = (mItem) => {
                         const itemCopy = Object.assign(item, mItem)
-                        this.$store.state.MarketRegions.splice(ii, 1, itemCopy)
+                        apStore.state.MarketRegions.splice(ii, 1, itemCopy)
                     }
-                    this.$store.commit('setModal', [{
+                    apStore.commit('setModal', [{
                         data: item,
                         path: `${market.Name} / ${land} / ${region.Name}`,
                         type: `comp-form-valuation`
@@ -706,38 +714,44 @@ export default {
             this.$root.Popup_UI = null
         },
         toggleIsNew(item, type) {
+            const root = this.$root
+            const apStore = root.$store
             switch (type) {
                 case 1: // Land
-                    item.IsNew = !item.IsNew
+                    let ids = apStore.state.NewLandIds
+                    if (ids.has(item.Id)) ids.delete(item.Id)
+                    else ids.add(item.Id)
+                    apStore.state.NewLandIds = new Set(ids)
                     break;
                 default: break;
             }
-            this.$root.Popup_UI = null
+            root.Popup_UI = null
         },
         getNameMenu(name) {
             if (name.length <= 12) return name;
             return name.slice(0, 12) + ' ...'
         },
         clkGotoTabBy(type) {
-            const popMenu = this.$root.Popup_UI;
+            const root = this.$root
+            const popMenu = root.Popup_UI;
             switch (type) {
                 case 23: // Cell market region
                     let market = popMenu.Market
                     let region = popMenu.Region
-                    this.$root.SubMarketCrites = [
+                    root.SubMarketCrites = [
                         [FTypeId.PleaseSelect, [region.LandId, region.Id]],
                         [FTypeId.MarketSegments_Submarket, [market.Id, FTypeId.SelectAll]]
                     ]
                     break;
                 case 1:    // Land
                     let land = popMenu.Entry
-                    this.$root.SubMarketCrites = [
+                    root.SubMarketCrites = [
                         [FTypeId.PleaseSelect, [land.Id, FTypeId.SelectRegion]]
                     ]
-                    this.$root.onGotoTab(1, land)
+                    root.onGotoTab(1, land)
                     return;
             }
-            this.$root.onGotoTab(1)
+            root.onGotoTab(1)
         },
         scrollViewSegRegion(e) {
             // console.log('scroll view seg region ')
@@ -771,31 +785,33 @@ export default {
     },
     //beforeCreate() { },
     created() {
-        switch (this.$root.TabStatus[0]) {
+        const root = this.$root
+        const apStore = root.$store
+        switch (root.TabStatus[0]) {
             case 1:
-                this.$root.ProcessState = 0     // loading
+                root.ProcessState = 0     // loading
 
                 this.$nextTick(() => {
                     getLastState().then(oData => {
                         let sItem;
                         switch (oData.type) {
                             case 1:     // Edit Land
-                                sItem = this.$store.getters.ItemBy([1, oData.id])
-                                if (sItem) this.$root.openFormEditLand(sItem);
+                                sItem = apStore.getters.ItemBy([1, oData.id])
+                                if (sItem) root.openFormEditLand(sItem);
                                 break;
                             case 2:     // Edit Region
-                                sItem = this.$store.getters.ItemBy([3, oData.id])
+                                sItem = apStore.getters.ItemBy([3, oData.id])
                                 if (sItem) this.openFormEdit(2, sItem);
                                 break;
                             case 3:     // Edit Market
-                                sItem = this.$store.getters.ItemBy([2, oData.id])
+                                sItem = apStore.getters.ItemBy([2, oData.id])
                                 if (sItem) this.openFormEdit(3, sItem);
                                 break;
                             case 4:     // Edit Submarket
                                 console.log('edit sub market')
                                 break;
                         }
-                        this.$root.TabStatus[0] = 0
+                        root.TabStatus[0] = 0
                     })
                 })
                 this.setLandRegionMarket()

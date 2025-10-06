@@ -13,7 +13,7 @@ import {
 import dnbStore from './main-store.js'
 import {
     CompModal, CompFormLand, CompFormRegion, CompFormMarket,
-    CompFormValuation, CompMessNewLand, 
+    CompFormValuation, CompMessNewLand,
     CompFormGol, CompFormTask,
 } from './forms/comp-modal.js'
 import { getData } from './repo-services.js'
@@ -154,28 +154,33 @@ Promise.all([
                 }
             },
             openFormEditLand(land) {
+                const apStore = this.$store
                 const iProject = this.IndexProject
                 const saveClose = (mLand) => {
                     setLastState(1, 0)
 
-                    this.$store.commit('setDes', [land, mLand.Description])
+                    apStore.commit('markLandNew', { id: mLand.Id, isNew: mLand.IsLandNew })
+                    delete mLand.IsLandNew
+
+                    apStore.commit('setDes', [land, mLand.Description])
                     deleteDes.call(mLand)
 
                     overrideItem.call(land, mLand)
-                    this.$store.commit('addUpdateLocal', [1, null, iProject])
+                    apStore.commit('addUpdateLocal', [1, null, iProject])
                 }
                 const xClose = (mLand) => {
                     setLastState(1, 0)
                     let mess = getMessCompare(land, mLand)
-                    mess = this.$store.getters.checkChangeExt([land, mLand, mess])
+                    mess = apStore.getters.checkChangeExt([land, mLand, mess])
                     if (mess && confirm(mess)) saveClose(mLand)
                 }
                 const item = {
                     title: `Edit Land`,
                     data: getCopyItem.call(this, land),
+                    isnew: this.isLandNew(land.Id),
                     type: `comp-form-land`
                 }
-                this.$store.commit('setModal', [item, saveClose, xClose])
+                apStore.commit('setModal', [item, saveClose, xClose])
             },
             clearPopupUI(type) {
                 const popMenu = this.Popup_UI
@@ -297,36 +302,43 @@ Promise.all([
                     console.log('The performance.memory API is not supported in this environment.');
                 }
             },
+            isLandNew(landId) {
+                const apStore = this.$store
+                return apStore.state.NewLandIds.has(landId)
+            },
         },
         //  beforeCreate() { },
         created() {
             this.ProcessState = 0     // loading
             Promise.all([
-                getData(1),
-                getData(2),
-                getData(3),        // Lands
-                getData(4),       // Regions
-                getData(5),       // Markets
-                getData(6),       // Submarkets
-                getData(9),        // Goals
-                getData(7),       // Product group
-                getData(8),       // Products
-                getData(10),       // Subs
-                getData(11),       // Tasks
+                getData('List project'), // 0
+                getData('List language'),
+                getData('List land'),
+                getData('List region'), // 3
+                getData('List market'),
+                getData('List submarket'),
+                getData('List goal'), // 6
+                getData('List product group'),
+                getData('List product'),
+                getData('List sub'), // 9
+                getData('List task'),
+                getData('List new land id'),
             ]).then((values) => {
-                const [projects, langs, lands, regions, markets, subMarkets] = values
+                const apStore = this.$store
 
-                this.$store.state.Projects = projects
-                this.$store.state.Languages = langs
-                this.$store.state.Lands = lands
-                this.$store.state.Regions = regions
-                this.$store.state.Markets = markets
-                this.$store.state.Submarkets = subMarkets;
-                this.$store.state.ListGoal = values[6]
-                this.$store.state.ProductGroups = values[7]
-                this.$store.state.Products = values[8]
-                this.$store.state.ListSub = values[9]
-                this.$store.state.ListTask = values[10]
+                apStore.state.Projects = values[0]
+                apStore.state.Languages = values[1]
+                const lands = values[2]
+                apStore.state.Lands = lands
+                apStore.state.Regions = values[3]
+                apStore.state.Markets = values[4]
+                apStore.state.Submarkets = values[5];
+                apStore.state.ListGoal = values[6]
+                apStore.state.ProductGroups = values[7]
+                apStore.state.Products = values[8]
+                apStore.state.ListSub = values[9]
+                apStore.state.ListTask = values[10]
+                apStore.state.NewLandIds = new Set(values[11])
 
                 this.ActiveLandIds = lands.map(x => x.Id)
 

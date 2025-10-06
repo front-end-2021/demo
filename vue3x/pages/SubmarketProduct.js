@@ -313,7 +313,7 @@ export default {
                 let regionId = rootCrs[0][1][1]
                 if (regionId < 0) regionId = 0
                 let lstPrG = this.$store.getters.sortedItemsBy([3, [regionId], prdGrpIds])
-                
+
                 this.$root.ActviePrGrpIds = lstPrG.map(x => x.Id)
 
                 this.buildData(rootCrs)
@@ -329,20 +329,24 @@ export default {
     },
     methods: {
         openFormSmp(type, eItem) {
-            const iProject = this.$root.IndexProject
+            const root = this.$root
+            const apStore = this.$store
+            const iProject = root.IndexProject
             if (!eItem) {     // add new
                 let item, saveClose, xClose
                 switch (type) {
                     case 5: // Product group
                         eItem = {
-                            Id: this.$store.getters.newNumId(1),
-                            Name: '', IsNew: false, Description: '',
-                            ASort: this.$store.getters.newASort(1)
+                            Id: apStore.getters.newNumId(1),
+                            Name: '', Description: '',
+                            ASort: apStore.getters.newASort(1)
                         }
                         saveClose = (mItem) => {
+                            apStore.commit('markLandNew', { id: mItem.Id, isNew: mItem.IsLandNew })
+                            delete mItem.IsLandNew
+                            
                             overrideItem.call(eItem, mItem)
-                            this.$store.commit('addUpdateLocal', [5, eItem, iProject])
-
+                            apStore.commit('addUpdateLocal', [5, eItem, iProject])
                         }
                         xClose = (mItem) => {
                             if (typeof mItem.Name != 'string') return
@@ -351,13 +355,14 @@ export default {
                             if (confirm(mess)) saveClose(mItem)
                         }
                         item = {
-                            title: `New ${this.$store.state.ContextLang.ProductGroups}`,
+                            title: `New ${apStore.state.ContextLang.ProductGroups}`,
                             data: eItem,
+                            isnew: root.isLandNew(eItem.Id),
                             type: `comp-form-land`
                         }
                         break;
                 }
-                this.$store.commit('setModal', [item, saveClose, xClose])
+                apStore.commit('setModal', [item, saveClose, xClose])
             } else {        // edit
 
             }

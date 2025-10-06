@@ -2,7 +2,11 @@ import { deepCopy } from '../common.js'
 import { MxDropSelect } from '../components/comp-global.js'
 const MxModal = {
     props: {
-        moItem: Object
+        moItem: Object,
+        isnew: {
+            type: Boolean,
+            default: false
+        },
     },
     mounted() {
         const $modal = $(this.$el)
@@ -88,7 +92,10 @@ const MxFormLandRegion = {
 }
 export const CompFormLand = {
     template: `#tmp-comp-form-land`,
-    mixins: [MxModal, MxFormLandRegion]
+    mixins: [MxModal, MxFormLandRegion],
+    created() {
+        this.item.IsLandNew = this.isnew
+    },
 }
 export const CompFormValuation = {
     template: `#tmp-comp-form-valuation`,
@@ -173,7 +180,7 @@ const MxMarketRegion = {
             this.moItem.data.LandId = land.Id
         },
     },
-    
+
 }
 export const CompFormMarket = {
     template: `#tmp-comp-form-region`,

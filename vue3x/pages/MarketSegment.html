@@ -30,7 +30,7 @@
               <div class="d-inline-block" style="padding: .78571429em 1.5em;"
                 @mouseover="e => $root.onMouseOver(1, land, e)" 
                 @mouseout="e => $root.hideTooltip(1, land, e)"
-                @click="e => countClick(1, land, e)">{{$root.viewName(land.Name, 1)}}</div>
+                @click="e => countClick(1, land, e)">{{$root.viewName(land.Name, 1)}}{{$root.isLandNew(land.Id) ? ' *' : ''}}</div>
               <i class="bi bi-gear btn-menu-inbtn" @click="e => onShowMenu(1, land, e)"></i>
             </div>
           </transition-group>
@@ -169,7 +169,7 @@
         @click.stop="e => clickMenuEdit($root.Popup_UI.Entry, 1)"><i
           class="bi bi-pencil-square"></i>&nbsp;&nbsp;Edit ({{getNameMenu($root.Popup_UI.Entry.Name)}})</div>
       <div class="p6px cpointer menu_golsub-i mb1px border-4px" 
-        :class="[$root.classSqr($root.Popup_UI.Entry.IsNew)]"
+        :class="[$root.classSqr($root.isLandNew($root.Popup_UI.Entry.Id))]"
         @click.stop="e => toggleIsNew($root.Popup_UI.Entry, 1)"><i class="bi"></i>&nbsp;&nbsp;Is New</div>
       <div class="p6px cpointer menu_golsub-i border-4px" 
         @click.stop="e => clkGotoTabBy(11)"><i

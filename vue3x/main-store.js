@@ -24,7 +24,7 @@ function getListBy(ids) {
 }
 function buildListBy(ids, fnc) {
     const lst = []
-    if(!Array.isArray(this)) return lst
+    if (!Array.isArray(this)) return lst
     for (let ii = 0, item; ii < this.length; ii++) {
         item = this[ii]
         if (ids.includes(0)) lst.push(item)
@@ -48,7 +48,7 @@ export default createStore({
         ListGoal: [],
         ListSub: [],
         ListTask: [],
-
+        NewLandIds: new Set(),
         Currencies: ['CHF', 'USD', 'VND'],
         WkMapDes: new WeakMap(),
 
@@ -594,6 +594,17 @@ export default createStore({
                     }
                     break;
             }
+        },
+        markLandNew(state, { id, isNew }) {
+            let ids = state.NewLandIds
+            let hasChange = false
+            if (!isNew) {
+                hasChange = ids.delete(id)
+            } else if (!ids.has(id)) {
+                ids.add(id)
+                hasChange = true
+            }
+            if (hasChange) state.NewLandIds = new Set(ids)
         },
     }
 })

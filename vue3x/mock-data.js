@@ -38,16 +38,17 @@ const Langs = [
     { Key: 'pm', Name: 'PM' }
 ]
 const DemoLands = [
-    { Id: 1, Name: 'Ha luu song Hong', IsNew: false, ASort: 5 },
-    { Id: 3, Name: 'Hanoi', IsNew: false, ASort: 1 },
-    { Id: 4, Name: 'Mien trung', IsNew: false, ASort: 6 },
-    { Id: 5, Name: 'Mien nam', IsNew: false, ASort: 7 },
-    { Id: 6, Name: 'TP.HoChiMinh', IsNew: false, ASort: 8 },
-    { Id: 9, Name: 'Dong Bac Bo', IsNew: false, ASort: 2 },
-    { Id: 8, Name: 'Tay Bac', IsNew: false, ASort: 3 },
-    { Id: 7, Name: 'Trung du mien nui phia Bac', IsNew: false, ASort: 4 },
-    { Id: 10, Name: 'Dong bang song Hong', IsNew: false, ASort: 9 },
+    { Id: 1, Name: 'Ha luu song Hong', ASort: 5 },
+    { Id: 3, Name: 'Hanoi', ASort: 1 },
+    { Id: 4, Name: 'Mien trung', ASort: 6 },
+    { Id: 5, Name: 'Mien nam', ASort: 7 },
+    { Id: 6, Name: 'TP.HoChiMinh', ASort: 8 },
+    { Id: 9, Name: 'Dong Bac Bo', ASort: 2 },
+    { Id: 8, Name: 'Tay Bac', ASort: 3 },
+    { Id: 7, Name: 'Trung du mien nui phia Bac', ASort: 4 },
+    { Id: 10, Name: 'Dong bang song Hong', ASort: 9 },
 ]
+const NewLandIds = [1]
 const DemoRegions = [
     { Id: 1, Name: 'TP.Hanoi', LandId: 3, Currency: 'VND', ASort: 1 },
     { Id: 3, Name: 'TP.Haiphong', LandId: 10, Currency: 'USD', ASort: 3 },
@@ -306,7 +307,7 @@ function getCopyItem(item) {
 function deleteDes() { delete this.Description }
 export {
     Mains, ListPrj, Langs,
-    DemoLands, DemoRegions,
+    DemoLands, DemoRegions, NewLandIds,
     DemoPrdGroups, DemoProducts,
     DemoMarkets, DemoSubmarkets,
     DemoGoals, DemoSubs, DemoTasks,
