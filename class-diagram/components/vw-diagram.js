@@ -61,27 +61,28 @@ const MxRect = {
     props: ['item'],
     methods: {
         onMouseDown(event) {
-            const dmVar = this.$root.DynamicVar
+            const root = this.$root
+            const dmVar = root.DynamicVar
             if (dmVar.has('DragElm')) return;
             if (dmVar.has('FrameCode')) return;
             dmVar.delete('FViewCode')
             const off = this.$el.getBoundingClientRect()
-            let x = this.$root.MinX
-            let y = this.$root.MinY
+            let x = root.MinX
+            let y = root.MinY
             let wrp = document.body.querySelector(`#dnb-vw-main`)
             if (!wrp) return
             x -= wrp.scrollLeft
             y -= wrp.scrollTop
 
-            document.addEventListener('keydown', this.$root.disableSrollDown)
-            this.$root.DynamicVar.set('DragElm', {
+            document.addEventListener('keydown', root.disableSrollDown)
+            root.DynamicVar.set('DragElm', {
                 Item: this.item,
                 offX: off.left - event.clientX - x,
                 offY: off.top - event.clientY - y,
                 Top: this.item.top,
                 Left: this.item.left
             })
-            this.$root.openBlock(this.item)       // start dnd
+            root.openBlock(this.item)       // start dnd
             const itemEl = wrp.querySelector(`#cls_${this.item.id}`)
             itemEl.style.zIndex = '1'
             itemEl.style.backgroundColor = 'white'
@@ -108,20 +109,21 @@ const MxRect = {
                 console.group('change size ', this.item.Name)
                 console.log(getArea(this.item))
                 console.groupEnd()
-                
+
                 this.$root.closeBlock(this.item)        // changed size
-               
+
             }
         },
         deleteCls(item) {
-            const dmVar = this.$root.DynamicVar
+            const root = this.$root
+            const dmVar = root.DynamicVar
             if (dmVar.has('FrameCode')) {
                 return
             }
-            const lstCls = this.$root.ListClass
+            const lstCls = root.ListClass
             let ii = lstCls.findIndex(x => x.id == item.id)
             if (-1 < ii) {
-                this.$root.MpPoints.clear()
+                root.MpPoints.clear()
                 lstCls.splice(ii, 1)
                 for (let jc = 0, cls; jc < lstCls.length; jc++) {
                     cls = lstCls[jc]
@@ -132,11 +134,11 @@ const MxRect = {
                 }
 
                 for (ii = lstCls.length - 1; -1 < ii; ii--) {
-                    this.$root.buildMapPoints(lstCls[ii])   // delete item
+                    root.buildMapPoints(lstCls[ii])   // delete item
                 }
-                this.$root.buildAssociation()               // delete item
-                this.$root.updateSizeCanvas()               // delete item
-                this.$root.$nextTick(this.$root.drawInCnvs) // delete item
+                root.buildAssociation()               // delete item
+                root.updateSizeCanvas()               // delete item
+                root.$nextTick(root.drawInCnvs) // delete item
 
             }
         },
@@ -157,7 +159,6 @@ const MxRect = {
     },
     updated() {
         this.setWidthHeight()
-
     },
 }
 const RectEnum = {
@@ -220,6 +221,7 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
             }
         },
         onDoneEdit(e, type, ii) {
+            const root = this.$root
             const target = e.target
             const item = this.item
             let name = target.textContent
@@ -234,7 +236,7 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
                             name = name.replace('abstract', '');
                         name = name.replaceAll(' ', '')
                         item.Name = name
-                        this.$root.$nextTick(this.$root.drawInCnvs)
+                        root.$nextTick(root.drawInCnvs)
                     }
                     break;
                 case 'methd name':
@@ -244,7 +246,7 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
                         target.innerHTML = prp[1]
                     } else {
                         prp[1] = name
-                        this.$root.$nextTick(this.$root.drawInCnvs)
+                        root.$nextTick(root.drawInCnvs)
                     }
                     break;
                 default: break;
@@ -588,9 +590,10 @@ export const ViewDiagram = {
             }
         },
         exportDiagram() {
-            let lstCls = truncateIds(this.$root.ListClass)  // copy
+            const root = this.$root
+            let lstCls = truncateIds(root.ListClass)  // copy
             this.verifyLst(lstCls, true)
-            let Name = this.$root.DiagName
+            let Name = root.DiagName
             let entry = {
                 Name,
                 Classes: lstCls,
@@ -658,23 +661,22 @@ export const ViewDiagram = {
             function showMessage(txt) { alert(txt) }
         },
         onMouseDown(event) {
-            const dmVar = this.$root.DynamicVar
+            const root = this.$root
+            const dmVar = root.DynamicVar
             if (dmVar.has('DragElm')) return;
             if (dmVar.has('FrameCode')) return;
             dmVar.delete('FViewCode')
             let wrp = document.body.querySelector(`#dnb-vw-main`)
             if (!wrp) return
-            document.addEventListener('keydown', this.$root.disableSrollDown)
+            document.addEventListener('keydown', root.disableSrollDown)
             const off = this.$el.querySelector('#cls-sample').getBoundingClientRect()
-            let x = this.$root.MinX
-            let y = this.$root.MinY
-            let left = off.left - x
-            let top = off.top - y
+            let left = off.left
+            let top = off.top
             const id = 'cls-classname'
             const tpNwItem = objNewCls(null, id, top, left)
-            this.$root.NewClassName = tpNwItem
+            root.NewClassName = tpNwItem
 
-            this.$root.DynamicVar.set('DragElm', {
+            root.DynamicVar.set('DragElm', {
                 Item: tpNwItem,
                 offX: left - event.clientX,
                 offY: top - event.clientY
@@ -686,37 +688,34 @@ export const ViewDiagram = {
             })
         },
         changeLanguage(val) {
-            this.$root.closePopupForm()
-            const langs = this.$root.Langs
+            const root = this.$root
+            root.closePopupForm()
+            const langs = root.Langs
             for (let ii = 0; ii < langs.length; ii++) {
                 if (langs[ii] == val) {
-                    this.$root.PLang = ii
-                    this.$root.updateSizeCanvas()               // change lang
-                    this.$root.$nextTick(this.$root.drawInCnvs) // change lang
-
+                    root.PLang = ii
+                    root.updateSizeCanvas()         // change lang
+                    root.$nextTick(root.drawInCnvs) // change lang
                     break;
                 }
             }
         },
         newDiagram() {
-            this.$root.ListClass.splice(0)
-            this.$root.MpPoints.clear()
-            this.$root.DiagName = 'New Diagram'
-
-            this.$root.clearDyVar()
-            this.$root.drawInCnvs()
-
+            const root = this.$root
+            root.ListClass.splice(0)
+            root.MpPoints.clear()
+            root.DiagName = 'New Diagram'
+            root.clearDyVar()
+            root.drawInCnvs()
         },
     },
     computed: {
         VwHeight() { return `calc(100vh - 18px - ${this.$root.MinY}px)` },
     },
-    beforeUpdate() {
-        console.log('before updated View Diagram')
-    },
-    updated() { 
-        this.$root.drawInCnvs()
-        this.$root.drawBlocks()
-        console.log('updated View Diagram') 
+    //beforeUpdate() { },
+    updated() {
+        const root = this.$root
+        root.drawInCnvs()
+        root.drawBlocks()
     },
 }
