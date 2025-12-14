@@ -2,14 +2,15 @@
     <div style="display: flex;" :minx="$root.MinX" :maxx="$root.MaxX" :miny="$root.MinY" :maxy="$root.MaxY">
         <aside id="dnb-vwtab-left" style="display: inline-flex;flex-direction: column;row-gap:8px;"
             :style="[{ width: $root.MinX + 'px'}]">
-            
+
             <div>
                 <menu-list :value="$root.Langs[$root.PLang]" :isfix="true" :sources="$root.Langs"
                     @change:value="$e => changeLanguage($e)">
                 </menu-list>
             </div>
             <div style="display: inline-block;border: 1px solid rgb(0, 0, 0);
-                width: calc(100% - 10px);cursor: default;border-radius: 4px;" @mousedown="msDwnClssName" id="cls-sample">
+                width: calc(100% - 10px);cursor: default;border-radius: 4px;" @mousedown="msDwnClssName"
+                id="cls-sample">
                 <div style="font-size: 16px;font-weight: bold;text-align: center;
                     border-bottom: 1px solid black;">ClassName</div>
                 <div style="font-size: 14px; font-weight: 300;border-bottom: 1px solid black;">
@@ -21,8 +22,7 @@
             </div>
             <div style="display: inline-flex; width: 108px; height: 28px;
                 background-color: rgb(77, 107, 254); align-items: center; justify-content: center;
-                color: white; border-radius: 6px;cursor: pointer;" 
-                @click.stop="newDiagram">New Diagram
+                color: white; border-radius: 6px;cursor: pointer;" @click.stop="newDiagram">New Diagram
             </div>
             <div style="display: inline-flex; width: 108px; height: 28px;
                 background-color: rgb(77, 107, 254); align-items: center; justify-content: center;
@@ -36,9 +36,8 @@
             </div>
         </aside>
         <article id="dnb-vw-main" style="position: relative; border:1px solid #dedede; overflow: auto;
-                width:calc(100vw - 32px);scrollbar-width: thin;"
-                :style="{ height: VwHeight}">
-            <canvas id="dnb-mcanvas" width="780" height="870" >
+                width:calc(100vw - 32px);scrollbar-width: thin;" :style="{ height: VwHeight}">
+            <canvas id="dnb-mcanvas" width="780" height="870">
                 Your browser does not support the HTML canvas tag.
             </canvas>
             <div id="dnb-vwdiagrams" style="position: absolute;top: 0;left: 0; height: 870px;"
@@ -48,17 +47,14 @@
                 <rect-wrap v-if="$root.NewClassName != null" :item="$root.NewClassName"
                     :key="'id=' + $root.NewClassName.id"></rect-wrap>
             </div>
-            <div v-if="$root.ViewCode" id="dnb-viewcode"
-                    style="min-width: 360px; min-height: 250px; box-sizing: border-box;
+            <div v-if="$root.ViewCode" id="dnb-viewcode" style="min-width: 360px; min-height: 250px; box-sizing: border-box;
                         position: fixed; left: calc(249px + 220px); top: calc(39px - 12px);
                         max-height: calc(100vh - 69px); overflow: auto; 
-                        border-radius: 10px; background-color: #cde5f9; padding: 10px;" 
-                    :style="[{
+                        border-radius: 10px; background-color: #cde5f9; padding: 10px;" :style="[{
                         top: $root.ViewCode.top + 'px', left: $root.ViewCode.left + 'px',
                         }]">
                 <pre style="margin-top: 10px;"><code class="language-csharp" v-html="$root.ViewCode.html"></code></pre>
-                <i class="bi bi-x-lg cpoint"
-                    style="width: 24px;height: 20px;display: inline-block;text-align: center;
+                <i class="bi bi-x-lg cpoint" style="width: 24px;height: 20px;display: inline-block;text-align: center;
                         background-color: white; border-radius: 6px;padding-top: 4px;
                         position: absolute;right: 3px;top: 2px;"
                     @click.stop="e => { $root.DynamicVar.delete('FViewCode')}"></i>
@@ -67,8 +63,7 @@
     </div>
 </template>
 <template id="tmp-wrap-rect">
-    <div :id="'cls_' + item.id" :w="item.width" :h="item.height" :x="item.left" :y="item.top"
-        style="display: inline-block;border: 1px solid rgb(0, 0, 0);
+    <div :id="'cls_' + item.id" :w="item.width" :h="item.height" :x="item.left" :y="item.top" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
             position: inherit;cursor: default;border-radius: 4px;"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <component v-bind:is="CompRect" :item="item">
@@ -79,7 +74,7 @@
             </template>
         </component>
     </div>
-    
+
 </template>
 <template id="tmp-rect-enum">
     <section class="wrp-enum">
@@ -105,8 +100,7 @@
         </div>
         <div v-if="0 < ExtendFields.length + item.Fields.length"
             style="font-size: 14px; border-bottom: 1px solid black;">
-            <i @click.stop="$root.clearDyVar" style="display: block;"
-                v-for="field in ExtendFields">
+            <i @click.stop="$root.clearDyVar" style="display: block;" v-for="field in ExtendFields">
                 <span>&nbsp;{{vwVisible(field.Visible)}}&nbsp;{{field.Name}}:&nbsp;</span>
                 <small style="font-weight: bold;">{{field.Type}}</small>
             </i>
@@ -116,22 +110,17 @@
             </div>
         </div>
         <div style="font-size: 14px;padding-right: 6px;padding-left: 6px;word-spacing: -6px;">
-            <div v-for="(prp, ii) in item.Methods" 
-                @click="e => showCodeBody(ii, 0)">
+            <div v-for="(prp, ii) in item.Methods" @click="e => showCodeBody(ii, 0)">
                 <span style="padding-right: 6px;font-size: 12px;">{{vwVisible(prp[0])}}</span>
-                <span style="font-size: 10px;padding-right: 6px;"
-                    v-if="0 < prp[3].length">{{prp[3]}}</span>
-                <span 
-                    @dblclick="e => onEditable(e, 'methd name')"    
-                    @keypress="e => $root.preventKeyPress(e, [13, 32])"
+                <span style="font-size: 10px;padding-right: 6px;" v-if="0 < prp[3].length">{{prp[3]}}</span>
+                <span @dblclick="e => onEditable(e, 'methd name')" @keypress="e => $root.preventKeyPress(e, [13, 32])"
                     @blur="e => onDoneEdit(e, 'methd name', ii)">{{prp[1]}}</span>
                 <span style="font-size: 10px;word-spacing: 0;">({{prp[2]}})</span>
             </div>
             <small v-for="(prp, ii) in ExtProperties" style="display: block;"
                 @click.stop="e => showCodeBody(ii, item.Methods.length)">
                 <i style="padding-right: 6px;font-size: 12px;">{{vwVisible(prp[0])}}</i>
-                <i style="padding-right: 6px;font-size: 10px;"
-                    v-if="0 < prp[3].length">{{prp[3]}}</i>
+                <i style="padding-right: 6px;font-size: 10px;" v-if="0 < prp[3].length">{{prp[3]}}</i>
                 <i style="padding-right: 0;">{{prp[1]}}</i>
                 <i style="font-size: 10px;word-spacing: 0;">({{prp[2]}})</i>
             </small>
@@ -143,19 +132,18 @@
         :style="[ListSrc.length ? { minWidth: '82px' } : null]">
         <span v-if="!ListSrc.length" @click="openLstSrc">{{value}}</span>
         <div v-else class="dnb-mnlst" style="display: inline-flex; flex-direction: column;
-            position: absolute; z-index: 1;
-            background-color: white; top: -12px;width: max-content;
-            box-shadow: 0 .125rem .25rem #00000030;">
-            <span v-for="acs in ListSrc" @click.stop="e => changeValue(acs)" 
-                style="border-bottom: solid 1px #e3e3e3; box-sizing: border-box;width: 100%;min-width: 105px;" 
-                :style="[acs == this.value ? {
+            position: absolute; z-index: 1; background-color: white; top: -6px;width: max-content;
+            box-shadow: 0 .125rem .25rem #00000030;border-radius: 6px;">
+            <span v-for="acs in ListSrc" @click.stop="e => changeValue(acs)"
+                style="border-bottom: solid 1px #e3e3e3; box-sizing: border-box;width: 100%;min-width: 105px;" :style="[acs == this.value ? {
                     backgroundColor: '#dbdbdb'
                 } : null]" class="p36">{{acs}}</span>
-        </span>
-    </span>
+            </span>
+            </span>
 </template>
 <template id="tmp-drp-search">
-    <h6 class="wrp-drpsearch" style="display: inline-block;width: 12px;height: 24px;font-size: 12px;font-weight: normal;position: relative;">
+    <h6 class="wrp-drpsearch"
+        style="display: inline-block;width: 12px;height: 24px;font-size: 12px;font-weight: normal;position: relative;">
         <div style="position: absolute;top: 24px;right: -12px;display: flex;
                 flex-direction: column;min-width: 66px;min-height: 66px;
                 background-color: white;padding: 4px;border-radius: 5px;width: 174px;">

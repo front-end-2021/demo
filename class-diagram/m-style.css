@@ -24,7 +24,7 @@ body, .dr_lst-wrap, .mformedit, #dnb-viewcode {scrollbar-width: thin;}
     border-radius: 10px; position: fixed; overflow-y: hidden;
     background-color: #e5e5e5; top: 50%; left: 50%;
 }
-.fbody {overflow: auto;
+.fbody {overflow: auto; scrollbar-width: thin; padding-right: 4px;
     max-height: calc(100vh - 30px - 38px - 36px);}
 .dnb-mnlst > *:hover {background-color: #efefef;}
 .dr_lst-wrap > *:hover {background-color: #efefef;}

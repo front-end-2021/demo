@@ -46,25 +46,15 @@ export const PopDropdownSearch = {
             }
             return lst
         },
-        selectItem(item) {
-            this.$emit('select:id', item.id)
-        },
-        removeItem(item) {
-            this.$emit('remove:id', item.id)
-        },
-        pressEscKey(event) {
-            if ('Escape' == event.key) {
-                this.$emit('on:exit')
-            }
-        },
+        selectItem(item) { this.$emit('select:id', item.id) },
+        removeItem(item) { this.$emit('remove:id', item.id) },
+        pressEscKey(event) { if ('Escape' == event.key) { this.$emit('on:exit') } },
     },
     beforeUnmount() {
         document.removeEventListener('keyup', this.pressEscKey)
     },
     watch: {
-        sources(vals) {
-            this.ListSrc = this.getLstSrc(this.TxtSearch, vals)
-        },
+        sources(vals) { this.ListSrc = this.getLstSrc(this.TxtSearch, vals) },
     },
 }
 
@@ -482,8 +472,11 @@ export const FormEdit = {
             this.IsDrpExtend = false
             this.$root.DynamicVar.delete('Drop-Search')
         },
+        pressEscKey(e) { if ('Escape' == e.key) this.onCloseEdit(e) },
     },
+    mounted() { window.addEventListener('keyup', this.pressEscKey) },
     beforeUnmount() {
+        window.removeEventListener('keyup', this.pressEscKey)
         this.$root.DynamicVar.delete('Drop-Search')
     },
 }
