@@ -660,7 +660,7 @@ export const ViewDiagram = {
             reader.readAsText(file);
             function showMessage(txt) { alert(txt) }
         },
-        onMouseDown(event) {
+        msDwnClssName(event) {
             const root = this.$root
             const dmVar = root.DynamicVar
             if (dmVar.has('DragElm')) return;

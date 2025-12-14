@@ -116,7 +116,7 @@ export const FormEdit = {
             let lst = StructTypes
             const mItem = this.entry
             if (typeof mItem.id != 'number') return lst.map(x => x[root.PLang])
-            lst = lst.filter(x => isClass(x[0]))
+            lst = lst.filter(x => isClass(x[0]) || isInterface(x[0]))
             return lst.map(x => x[root.PLang])
         },
         ViewExtends() {

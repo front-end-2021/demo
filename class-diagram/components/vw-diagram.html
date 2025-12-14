@@ -9,7 +9,7 @@
                 </menu-list>
             </div>
             <div style="display: inline-block;border: 1px solid rgb(0, 0, 0);
-                width: calc(100% - 10px);cursor: default;border-radius: 4px;" @mousedown="onMouseDown" id="cls-sample">
+                width: calc(100% - 10px);cursor: default;border-radius: 4px;" @mousedown="msDwnClssName" id="cls-sample">
                 <div style="font-size: 16px;font-weight: bold;text-align: center;
                     border-bottom: 1px solid black;">ClassName</div>
                 <div style="font-size: 14px; font-weight: 300;border-bottom: 1px solid black;">
@@ -155,9 +155,8 @@
     </span>
 </template>
 <template id="tmp-drp-search">
-    <h6 class="wrp-drpsearch"
-        style="position: relative;display: inline-block;width: 12px;height: 24px;font-size: 12px;font-weight: normal;">
-        <div style="position: absolute;top: 0px;left: 0px;display: flex;
+    <h6 class="wrp-drpsearch" style="display: inline-block;width: 12px;height: 24px;font-size: 12px;font-weight: normal;position: relative;">
+        <div style="position: absolute;top: 24px;right: -12px;display: flex;
                 flex-direction: column;min-width: 66px;min-height: 66px;
                 background-color: white;padding: 4px;border-radius: 5px;width: 174px;">
             <input type="text" placeholder="typing to search by name..."

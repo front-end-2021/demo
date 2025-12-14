@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="./m-style.css">
   </link>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -35,14 +35,12 @@
 
 <body style="margin: 8px; font-family: Consolas;">
   <main id="m-app" v-cloak>
-    <header class="" 
-      style="display: flex;"
-      :style="{height: MinY + 'px'}">
-      <nav class="ap-nav" style="flex-grow: 1;display: grid;grid-template-columns: calc(124px - 10px) auto;align-items: center;">
-          <h4 style="margin: 0;font-size: 14px;"><span style="color: #4d6bfe;">Class</span>-diagram</h4>
-          <h3 style="margin: 0;" contenteditable="true" 
-            @keypress="e => preventKeyPress(e, [13])"
-            @blur="e => onBlurEdit(e, 'diagram name')">{{DiagName}}</h3>
+    <header class="" style="display: flex;" :style="{height: MinY + 'px'}">
+      <nav class="ap-nav"
+        style="flex-grow: 1;display: grid;grid-template-columns: calc(124px - 10px) auto;align-items: center;">
+        <h4 style="margin: 0;font-size: 14px;"><span style="color: #4d6bfe;">Class</span>-diagram</h4>
+        <h3 style="margin: 0;" contenteditable="true" @keypress="e => preventKeyPress(e, [13])"
+          @blur="e => onBlurEdit(e, 'diagram name')">{{DiagName}}</h3>
       </nav>
       <small style="width: 120px;display: inline-block;">
         Mouse: <small id="dnb-app-log"></small>
@@ -50,83 +48,80 @@
     </header>
 
     <component :is="CompPage"></component>
-    <div v-if="EditObject" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #00000063;"></div>
+    <div v-if="EditObject"
+      style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #00000063;"></div>
     <form-edit v-if="EditObject" :entry="EditObject.cItem"></form-edit>
   </main>
   <template id="tmp-form-edit">
-    <div class="mformedit" style="z-index: 3;">
-      <div style="margin-bottom: 12px; display: flex;align-items: center;">
+    <div class="mformedit" style="z-index: 3;display: grid; grid-template-rows: 38px auto;">
+      <div class="fhead" style="margin-bottom: 12px; display: flex;align-items: center;position: relative;">
         <menu-list v-if="IsSelectTyp" :value="TxtType" :isfix="true" :sources="StrucTypes"
           @change:value="$e => changeTypeObject($e)">
         </menu-list>
         <span v-else>{{TxtType}}</span>
         <span contenteditable="true" @blur="e => onBlurEditable(e, 'class name')"
-          @keypress="e => $root.preventKeyPress(e, [13, 32])" 
-          data-placeholder="NameOfClass" class="p36 ceditable"
+          @keypress="e => $root.preventKeyPress(e, [13, 32])" data-placeholder="NameOfClass" class="p36 ceditable"
           v-html="entry.Name"></span>
         <i v-for="exv in ViewExtends">{{exv[0]}}&nbsp;{{exv[1]}}&nbsp;</i>
-        <drplst-search v-if="IsDrpExtend" 
-          :sources="ListExtend" :ids="entry.toIds" :type="entry.type"
+        <drplst-search v-if="IsDrpExtend" :sources="ListExtend" :ids="entry.toIds" :type="entry.type"
           @select:id="$e => addExtend($e)" @remove:id="$e => removeExtend($e)"
           @on:exit="$e => hideDrpSearch()"></drplst-search>
         <i v-else-if="Extendable" @click.stop="showDrpSearch" class="bi bi-code-square" style="margin-left: 6px;"></i>
-      </div>
-      <div v-if="Extendable != 2">
-        <div v-for="(field, ii) in entry.Fields" :key="'oldfield_' + field.Visible"
-          style="margin-bottom: 2px; display: flex;align-items: center;">
-          <span v-if="HasPropers" @keypress="e => $root.preventKeyPress(e, [13])"
-            @blur="e => onBlurEditable(e, 'field acmodify', ii)" data-placeholder="AccessoriOfField"
-            contenteditable="true" class="p36 ceditable">{{field.Visible}}</span>
-          <span @keypress="e => $root.preventKeyPress(e, [13, 32])" @blur="e => onBlurEditable(e, 'field name', ii)"
-            data-placeholder="NameOfField" class="p36 ceditable" contenteditable="true">{{field.Name}}</span>
-          <span v-if="HasPropers" @keypress="e => $root.preventKeyPress(e, [13])"
-            @blur="e => onBlurEditable(e, 'field type', ii)" data-placeholder="TypeOfField" class="p36 ceditable"
-            contenteditable="true">{{field.Type}}</span>
-          <span style="margin-left: 12px;cursor: pointer;" @click.stop="e => removeField(ii)"><i
-              class="bi bi-trash3"></i></span>
-        </div>
-        <span v-if="2 != Extendable" style="cursor: pointer;display: inline-block;" 
-          @click.stop="addField">[new Field]</span>
-      </div>
-      <div v-for="(prp, ii) in entry.Methods" :key="ii" style="margin-bottom: 2px;"
-        :style="[0 == ii ? {marginTop: '10px'} : null]">
-        <div v-if="HasPropers" style="display: flex;align-items: center;">
-          <span class="p36 ceditable" @keypress="e => $root.preventKeyPress(e, [13])"
-            @blur="e => onBlurEditable(e, 'methd access type', ii)" 
-            data-placeholder="MethodAccessType" contenteditable="true">{{prp[0]}}</span>
-          <menu-list :value="prp[4]" :isfix="true" :sources="AccessInit.map(x => x[$root.PLang])"
-            @change:value="$event => changeAccessor(ii, $event)">
-          </menu-list>
-          <span @keypress="e => $root.preventKeyPress(e, [13, 32])" 
-            @blur="e => onBlurEditable(e, 'methd name', ii)"
-            class="p36 ceditable" contenteditable="true" data-placeholder="NameOfMethod" v-html="prp[1]"></span>
-          (<span @keypress="e => $root.preventKeyPress(e, [13])" 
-            @blur="e => onBlurEditable(e, 'methd params', ii)"
-            class="p3-0 ceditable" contenteditable="true" data-placeholder="params">{{prp[2]}}</span>)
-          <span v-if="isReturnType(prp[4])"><i>return</i>
-            <span @blur="e => onBlurEditable(e, 'methd return type', ii)"
-              @keypress="e => $root.preventKeyPress(e, [13, 32])" 
-              data-placeholder="ReturnTypeOfMethod"
-              contenteditable="true" class="p36 ceditable">{{prp[3]}}</span>
-          </span>
-          <span style="margin-left: 12px;cursor: pointer;" @click.stop="e => removeProperty(ii)"><i
-              class="bi bi-trash3"></i></span>
-        </div>
-        <textarea v-if="HasCode" class="objedit-vwcode"
-          style="width: 100%; min-height: 90px;border-radius: 6px;border: none;" placeholder="ContentCodeOfMethod"
-          @paste="e => pasteTxtArea(e, ii)" @keyup.enter="keyUpTxtArea" @keyup.delete="keyUpTxtArea"
-          @blur="e => onBlurEditable(e, 'methd body code', ii)"
-          @change="e => onInput(e, 'methd body code', ii)">{{prp[5]}}</textarea>
-      </div>
-      <div>
-        <span v-if="HasPropers" style="cursor: pointer;" @click.stop="addProperty">[new Property]</span>
-      </div>
-      <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
-          background-color: white;position: absolute;right: 35px;top: 5px;
+        <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
+          background-color: white;position: absolute;right: 30px;top: -4px;
           border-radius: 6px;padding-top: 4px;" class="bi bi-floppy cpoint" @click.stop="onSaveChange"></i>
-      <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
-        background-color: white;position: absolute;right: 5px;top: 5px;border-radius: 6px;padding-top: 4px;"
-        class="bi bi-x-lg cpoint" @click.stop="onCloseEdit"></i>
+        <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
+        background-color: white;position: absolute;right: -4px;top: -4px;border-radius: 6px;padding-top: 4px;"
+          class="bi bi-x-lg cpoint" @click.stop="onCloseEdit"></i>
+      </div>
+      <div class="fbody">
+        <div v-if="Extendable != 2">
+          <div v-for="(field, ii) in entry.Fields" :key="'oldfield_' + field.Visible"
+            style="margin-bottom: 2px; display: flex;align-items: center;">
+            <span v-if="HasPropers" @keypress="e => $root.preventKeyPress(e, [13])"
+              @blur="e => onBlurEditable(e, 'field acmodify', ii)" data-placeholder="AccessoriOfField"
+              contenteditable="true" class="p36 ceditable">{{field.Visible}}</span>
+            <span @keypress="e => $root.preventKeyPress(e, [13, 32])" @blur="e => onBlurEditable(e, 'field name', ii)"
+              data-placeholder="NameOfField" class="p36 ceditable" contenteditable="true">{{field.Name}}</span>
+            <span v-if="HasPropers" @keypress="e => $root.preventKeyPress(e, [13])"
+              @blur="e => onBlurEditable(e, 'field type', ii)" data-placeholder="TypeOfField" class="p36 ceditable"
+              contenteditable="true">{{field.Type}}</span>
+            <span style="margin-left: 12px;cursor: pointer;" @click.stop="e => removeField(ii)"><i
+                class="bi bi-trash3"></i></span>
+          </div>
+          <span v-if="2 != Extendable" style="cursor: pointer;display: inline-block;" @click.stop="addField">[new
+            Field]</span>
+        </div>
+        <div v-for="(prp, ii) in entry.Methods" :key="ii" style="margin-bottom: 2px;"
+          :style="[0 == ii ? {marginTop: '10px'} : null]">
+          <div v-if="HasPropers" style="display: flex;align-items: center;">
+            <span class="p36 ceditable" @keypress="e => $root.preventKeyPress(e, [13])"
+              @blur="e => onBlurEditable(e, 'methd access type', ii)" data-placeholder="MethodAccessType"
+              contenteditable="true">{{prp[0]}}</span>
+            <menu-list :value="prp[4]" :isfix="true" :sources="AccessInit.map(x => x[$root.PLang])"
+              @change:value="$event => changeAccessor(ii, $event)">
+            </menu-list>
+            <span @keypress="e => $root.preventKeyPress(e, [13, 32])" @blur="e => onBlurEditable(e, 'methd name', ii)"
+              class="p36 ceditable" contenteditable="true" data-placeholder="NameOfMethod" v-html="prp[1]"></span>
+            (<span @keypress="e => $root.preventKeyPress(e, [13])" @blur="e => onBlurEditable(e, 'methd params', ii)"
+              class="p3-0 ceditable" contenteditable="true" data-placeholder="params">{{prp[2]}}</span>)
+            <span v-if="isReturnType(prp[4])"><i>return</i>
+              <span @blur="e => onBlurEditable(e, 'methd return type', ii)"
+                @keypress="e => $root.preventKeyPress(e, [13, 32])" data-placeholder="ReturnTypeOfMethod"
+                contenteditable="true" class="p36 ceditable">{{prp[3]}}</span>
+            </span>
+            <span style="margin-left: 12px;cursor: pointer;" @click.stop="e => removeProperty(ii)"><i
+                class="bi bi-trash3"></i></span>
+          </div>
+          <textarea v-if="HasCode" class="objedit-vwcode"
+            style="width: 100%; min-height: 90px;border-radius: 6px;border: none;" placeholder="ContentCodeOfMethod"
+            @paste="e => pasteTxtArea(e, ii)" @keyup.enter="keyUpTxtArea" @keyup.delete="keyUpTxtArea"
+            @blur="e => onBlurEditable(e, 'methd body code', ii)"
+            @change="e => onInput(e, 'methd body code', ii)">{{prp[5]}}</textarea>
+        </div>
+        <div v-if="HasPropers" style="cursor: pointer;display: inline-block;" @click.stop="addProperty">[new Property]
+        </div>
+      </div>
     </div>
   </template>
 
