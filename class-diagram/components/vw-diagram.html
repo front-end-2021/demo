@@ -1,8 +1,6 @@
 <template id="tmp-vw-diagram">
     <div style="display: flex;" :minx="$root.MinX" :maxx="$root.MaxX" :miny="$root.MinY" :maxy="$root.MaxY">
-        <aside id="dnb-vwtab-left" style="display: inline-flex;flex-direction: column;row-gap:8px;"
-            :style="[{ width: $root.MinX + 'px'}]">
-
+        <aside id="dnb-vwtab-left" :style="[{ width: $root.MinX + 'px'}]">
             <div>
                 <menu-list :value="$root.Langs[$root.PLang]" :isfix="true" :sources="$root.Langs"
                     @change:value="$e => changeLanguage($e)">
@@ -63,8 +61,7 @@
     </div>
 </template>
 <template id="tmp-wrap-rect">
-    <div :id="'cls_' + item.id" :w="item.width" :h="item.height" :x="item.left" :y="item.top" style="display: inline-block;border: 1px solid rgb(0, 0, 0);
-            position: inherit;cursor: default;border-radius: 4px;"
+    <div :id="'cls_' + item.id" :w="item.width" :h="item.height" :x="item.left" :y="item.top" class="wrprect"
         :style="{top: item.top + 'px', left: item.left + 'px'}">
         <component v-bind:is="CompRect" :item="item">
             <template #menu="sPrp">
@@ -74,12 +71,10 @@
             </template>
         </component>
     </div>
-
 </template>
 <template id="tmp-rect-enum">
     <section class="wrp-enum">
-        <div class="vwheader" style="font-size: 16px;text-align: center;border-bottom: 1px solid black;
-            padding-left: 24px; padding-right: 45px; position: relative;">
+        <div class="vwheader">
             <slot name="menu" :mddnd="onMouseDown" :ckedt="editCls" :ckdel="deleteCls"></slot>
             <span style="font-weight: bold;">enum {{item.Name}}</span>
         </div>
@@ -88,8 +83,7 @@
 </template>
 <template id="tmp-rect-class">
     <section class="wrp-cls">
-        <div class="vwheader" style="font-size: 16px;text-align: center;border-bottom: 1px solid black;
-            padding-left: 24px; padding-right: 45px; position: relative;min-height: 18px;">
+        <div class="vwheader" style="min-height: 18px;">
             <slot name="menu" :mddnd="onMouseDown" :ckedt="editCls" :ckdel="deleteCls"></slot>
             <span style="font-weight: bold;" @dblclick="e => onEditable(e, 'class name')"
                 @keypress="e => $root.preventKeyPress(e, [13, 32])" @blur="e => onDoneEdit(e, 'class name')"
@@ -101,65 +95,55 @@
         <div v-if="0 < ExtendFields.length + item.Fields.length"
             style="font-size: 14px; border-bottom: 1px solid black;">
             <i @click.stop="$root.clearDyVar" style="display: block;" v-for="field in ExtendFields">
-                <span>&nbsp;{{vwVisible(field.Visible)}}&nbsp;{{field.Name}}:&nbsp;</span>
-                <small style="font-weight: bold;">{{field.Type}}</small>
+                <span>&nbsp;{{vwVisible(field.AccessModify)}}&nbsp;{{field.Name}}:&nbsp;</span>
+                <small style="font-weight: bold;">{{field.DataType}}</small>
             </i>
             <div v-for="field in item.Fields" @click.stop="e => clkField(field)">
-                <span>&nbsp;{{vwVisible(field.Visible)}}&nbsp;{{field.Name}}:&nbsp;</span>
-                <small style="font-weight: bold;">{{field.Type}}</small>
+                <span>&nbsp;{{vwVisible(field.AccessModify)}}&nbsp;{{field.Name}}:&nbsp;</span>
+                <small style="font-weight: bold;">{{field.DataType}}</small>
             </div>
         </div>
         <div style="font-size: 14px;padding-right: 6px;padding-left: 6px;word-spacing: -6px;">
-            <div v-for="(prp, ii) in item.Methods" @click="e => showCodeBody(ii, 0)">
-                <span style="padding-right: 6px;font-size: 12px;">{{vwVisible(prp[0])}}</span>
-                <span style="font-size: 10px;padding-right: 6px;" v-if="0 < prp[3].length">{{prp[3]}}</span>
+            <div v-for="(prp, ii) in item.Properties" @click="e => showCodeBody(ii, 0)">
+                <span style="padding-right: 6px;font-size: 12px;">{{vwVisible(prp.AccessModify)}}</span>
+                <span style="font-size: 10px;padding-right: 6px;">{{prp.DataType}}</span>
                 <span @dblclick="e => onEditable(e, 'methd name')" @keypress="e => $root.preventKeyPress(e, [13, 32])"
-                    @blur="e => onDoneEdit(e, 'methd name', ii)">{{prp[1]}}</span>
-                <span style="font-size: 10px;word-spacing: 0;">({{prp[2]}})</span>
+                    @blur="e => onDoneEdit(e, 'methd name', ii)">{{prp.Name}}</span>
+                <span style="font-size: 10px;word-spacing: 0;">{{propTostring(prp)}}</span>
             </div>
             <small v-for="(prp, ii) in ExtProperties" style="display: block;"
-                @click.stop="e => showCodeBody(ii, item.Methods.length)">
-                <i style="padding-right: 6px;font-size: 12px;">{{vwVisible(prp[0])}}</i>
-                <i style="padding-right: 6px;font-size: 10px;" v-if="0 < prp[3].length">{{prp[3]}}</i>
-                <i style="padding-right: 0;">{{prp[1]}}</i>
-                <i style="font-size: 10px;word-spacing: 0;">({{prp[2]}})</i>
+                @click.stop="e => showCodeBody(ii, item.Properties.length)">
+                <i style="padding-right: 6px;font-size: 12px;">{{vwVisible(prp.AccessModify)}}</i>
+                <i style="padding-right: 6px;font-size: 10px;">{{prp.DataType}}</i>
+                <i style="padding-right: 0;">{{prp.Name}}</i>
+                <i style="font-size: 10px;word-spacing: 0;">{{propTostring(prp)}}</i>
             </small>
         </div>
     </section>
 </template>
 <template id="tmp-menu-list">
-    <div class="wrap-mnlist" style="position: relative;cursor:default;height: 20px;"
-        :style="[ListSrc.length ? { minWidth: '82px' } : null]">
+    <div class="wrap-mnlist" :style="[ListSrc.length ? { minWidth: '82px' } : null]">
         <span v-if="!ListSrc.length" @click="openLstSrc">{{value}}</span>
-        <div v-else class="dnb-mnlst" style="display: inline-flex; flex-direction: column;
-            position: absolute; z-index: 1; background-color: white; top: -6px;width: max-content;
-            box-shadow: 0 .125rem .25rem #00000030;border-radius: 6px;">
-            <span v-for="acs in ListSrc" @click.stop="e => changeValue(acs)"
-                style="border-bottom: solid 1px #e3e3e3; box-sizing: border-box;width: 100%;min-width: 105px;" :style="[acs == this.value ? {
+        <div v-else class="dnb-mnlst">
+            <span v-for="acs in ListSrc" class="p36 itmmnls" @click.stop="e => changeValue(acs)" :style="[acs == this.value ? {
                     backgroundColor: '#dbdbdb'
-                } : null]" class="p36">{{acs}}</span>
+                } : null]">{{acs}}</span>
             </span>
             </span>
 </template>
 <template id="tmp-drp-search">
-    <h6 class="wrp-drpsearch"
-        style="display: inline-block;width: 12px;height: 24px;font-size: 12px;font-weight: normal;position: relative;">
-        <div style="position: absolute;top: 24px;right: -12px;display: flex;
-                flex-direction: column;min-width: 66px;min-height: 66px;
-                background-color: white;padding: 4px;border-radius: 5px;width: 174px;">
+    <h6 class="wrp-drpsearch">
+        <div class="drps-wrap">
             <input type="text" placeholder="typing to search by name..."
                 style="width: calc(100% - 10px);border-color: transparent;height: 20px;" v-model="TxtSearch"
                 @input="inSearch" />
             <div class="dr_lst-wrap" style="max-height: 120px; overflow: auto;">
-                <div v-for="item in ListSrc" :key="item.id" style="padding: 3px;cursor: pointer; margin-top: 1px;
-                    display: grid;grid-template-columns: auto 16px;border-radius: 4px;" :style="[bgSelect(item)]">
+                <div v-for="item in ListSrc" class="itmdrp" :key="item.id" :style="[bgSelect(item)]">
                     <span @click.stop="e => selectItem(item)">{{item.Name}}</span>
                     <i class="bi bi-x" @click.stop="e => removeItem(item)"></i>
                 </div>
             </div>
-            <i class="bi bi-x-lg cpoint" style="position: absolute;top: -9px;right: -9px;display: inline-flex;
-                width: 24px;height: 24px;align-items: center;justify-content: center;
-                background-color: #fcfcfc;border-radius: 6px;" @click.stop="e => $emit('on:exit')"></i>
+            <i class="bi bi-x-lg cpoint extdrp" @click.stop="e => $emit('on:exit')"></i>
         </div>
     </h6>
 </template>

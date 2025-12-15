@@ -1,10 +1,13 @@
 import {
-    isInterface, processLines, StructTypes, objNewCls,
-    isAbstract, convertSymb, truncateIds, getLstExt, verifyName,
-    addStrFirst,
-    cellSize,
-    getArea,
+    processLines, StructTypes, objNewCls,
+    convertSymb, truncateIds, getLstExt, verifyName,
+    addStrFirst, cellSize, getArea, getPropKey
 } from "../common.js";
+export function isAbstract(t) { return t.includes('abstrac') }
+export function isClass(t) { return 'class' == t }
+export function isInterface(t) { return t.includes('interf') }
+export function isStruct(t) { return 'struct' == t }
+export function isEnum(t) { return 'enum' == t }
 export const MenuList = {
     template: `#tmp-menu-list`,
     name: "Menu_List",
@@ -45,9 +48,7 @@ export const MenuList = {
                 }, 696)
             })
         },
-        emptySrc() {
-            this.ListSrc = []
-        },
+        emptySrc() { this.ListSrc = [] },
         changeValue(val) {
             if (this.value != val) this.$emit('change:value', val)
             document.removeEventListener('click', this.$root.closePMenu)
@@ -132,45 +133,34 @@ const MxRect = {
                     ii = cls.toIds.indexOf(item.id)
                     if (-1 < ii) cls.toIds.splice(ii, 1)
                 }
-
                 for (ii = lstCls.length - 1; -1 < ii; ii--) {
                     root.buildMapPoints(lstCls[ii])   // delete item
                 }
                 root.buildAssociation()               // delete item
                 root.updateSizeCanvas()               // delete item
                 root.$nextTick(root.drawInCnvs) // delete item
-
             }
         },
         editCls(item) {
             const dmVar = this.$root.DynamicVar
-            if (dmVar.has('FrameCode')) {
-                return
-            }
+            if (dmVar.has('FrameCode')) { return }
             this.$root.editObject(item)
         },
     },
-    mounted() {
-        this.setWidthHeight()
-    },
+    mounted() { this.setWidthHeight() },
     beforeUpdate() {
         this.$el.style.width = ''
         this.$el.style.height = ''
     },
-    updated() {
-        this.setWidthHeight()
-    },
+    updated() { this.setWidthHeight() },
 }
 const RectEnum = {
     template: `#tmp-rect-enum`,
     name: "Rect_Enum",
     display: "Rect.Enum",
     mixins: [MxRect],
-
     computed: {
-        TxtField() {
-            return this.item.Fields.map(x => x.Name).join(', ')
-        },
+        TxtField() { return this.item.Fields.map(x => x.Name).join(', ') },
     },
 }
 
@@ -206,9 +196,7 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
         },
         onEditable(e, type, ii) {
             const dmVar = this.$root.DynamicVar
-            if (dmVar.has('FrameCode')) {
-                return
-            }
+            if (dmVar.has('FrameCode')) { return }
             this.$root.closePopupForm()
             const target = e.target
             switch (type) {
@@ -232,7 +220,7 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
                     if (!name.length) {
                         target.innerHTML = item.Name
                     } else {
-                        if (StructTypes[1][0] == item.type)
+                        if (StructTypes[1][0] == item.TypeDeclaration)
                             name = name.replace('abstract', '');
                         name = name.replaceAll(' ', '')
                         item.Name = name
@@ -241,65 +229,51 @@ const MxClsItf = {      // mixin: Class, Abstract, Interface
                     break;
                 case 'methd name':
                     target.removeAttribute('contenteditable')
-                    const prp = this.item.Methods[ii]
+                    const prp = this.item.Properties[ii]
                     if (!name.length) {
-                        target.innerHTML = prp[1]
+                        target.innerHTML = prp.Name
                     } else {
-                        prp[1] = name
+                        prp.Name = name
                         root.$nextTick(root.drawInCnvs)
                     }
                     break;
                 default: break;
             }
         },
-        getAcModf(prp) {
-            let acModify = prp[0]
-            let name = prp[1]
-            let params = prp[2]
-            let type = prp[3]
-            return `${acModify} ${type} ${name}(${params})`
-        },
+        getAcModf(prp) { return `${prp.AccessModify} ${prp.DataType} ${getPropKey(prp, prp.Name)}` },
         getTxtFields(item, extnFields) {
             let txtF = ''
             let lstF = [...item.Fields, ...extnFields]
             for (let jj = 0, field; jj < lstF.length; jj++) {
                 field = lstF[jj]
-                switch (field.Visible) {
-                    case '#': txtF += `  protected ${field.Type} ${field.Name};\n`
-                        break;
-                    case '+': txtF += `  public ${field.Type} ${field.Name};\n`
-                        break;
-                    case '-': txtF += `  private ${field.Type} ${field.Name};\n`
-                        break;
-                    default: break;
-                }
+                txtF += `  ${field.AccessModify} ${field.DataType} ${field.Name};\n`
             }
             return txtF
         },
         vwVisible(str) {
-            let txt = str.replaceAll('static', '')
-            txt = txt.replaceAll('override', '')
-            txt = txt.replaceAll('virtual', '')
-            txt = txt.replaceAll('abstract', '')
-            return txt.trim()
+            let txt = str.trim()
+            if (txt.includes('public')) return '+'
+            if (txt.includes('private')) return '-'
+            if (txt.includes('protected')) return '#'
+            return ''
         },
         clkField(field) {
             const dmVar = this.$root.DynamicVar
-            if (dmVar.has('FrameCode')) {
-                return
-            }
+            if (dmVar.has('FrameCode')) { return }
             this.$root.clearDyVar()
         },
+        propTostring(prp) { return getPropKey(prp) },
     },
     computed: {
         ViewExtends() {
             const tIds = this.item.toIds
             if (!tIds || !tIds.length) return ''
-            const mPoints = this.$root.MpPoints
+            const root = this.$root
+            const mPoints = root.MpPoints
             const itemId = this.item.id
             if (!mPoints.has(itemId)) return ''
             let point = mPoints.get(itemId)
-            return this.$root.getLsExtends(point.Extends, point.Implements, this.$root.PLang)
+            return root.getLsExtends(point.Extends, point.Implements, root.PLang)
         },
     },
 }
@@ -315,14 +289,12 @@ const RectInterface = {
         },
         showCodeBody(ii, offI) {
             const dmVar = this.$root.DynamicVar
-            if (dmVar.has('FrameCode')) {
-                return
-            }
+            if (dmVar.has('FrameCode')) { return }
             const item = this.item
             let clsName = this.FormatCode[0]
             let txtF = this.FormatCode[1]
             let txtFnc = `${txtF}\n`
-            let lstPrp = [...item.Methods, ...this.ExtProperties]
+            let lstPrp = [...item.Properties, ...this.ExtProperties]
             for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
                 prp = lstPrp[jj]
                 txtP = this.getCsFormat(prp)
@@ -348,11 +320,9 @@ const RectInterface = {
             let exnd = ''
             if (extds.length) {
                 switch (ii) {
-                    case 1:
-                        exnd = extds.join(' ')
+                    case 1: exnd = extds.join(' ')
                         break;
-                    case 2:
-                        exnd = extds[0].join(' ')
+                    case 2: exnd = extds[0].join(' ')
                         if (1 < extds.length) exnd += extds[1].join(' ')
                         break;
                     default: break;
@@ -370,40 +340,36 @@ const RectInterface = {
             if (!mPoints.has(item.id)) return []
             const point = mPoints.get(item.id)
             if (!point.Implements.length) return []
-            return getLstExt(item.Methods, point.Implements)
+            return getLstExt(item.Properties, point.Implements)
         },
     },
 }
 const MxOjClass = {
     methods: {
         getCsFormat(prp) {
-            let acModify = prp[0]
-            let name = prp[1]
+            let acModify = prp.AccessModify
+          //  let name = prp.Name
             let txt = this.getAcModf(prp)
-            if (isAbstract(acModify) && !prp[4]) return `${txt};\n`
-            let returnType = prp[3]
-            returnType = returnType.toLowerCase()
-            if (returnType.includes('init')) {
-                txt = `${acModify} ${name}`
-            }
+            if (isAbstract(acModify) && !prp.specialMe) return `${txt};\n`
+          //  let returnType = prp.DataType
+          //  returnType = returnType.toLowerCase()
+           // if (returnType.includes('init')) { txt = `${acModify} ${name}` }
             return `${txt} {...}`
         },
         showCodeBody(ii, offI) {
             const dmVar = this.$root.DynamicVar
-            if (dmVar.has('FrameCode')) {
-                return
-            }
+            if (dmVar.has('FrameCode')) { return }
             const item = this.item
             let clsName = this.FormatCode[0]
             let txtF = this.FormatCode[1]
             let txtFnc = `${txtF}\n`
-            let lstPrp = [...item.Methods, ...this.ExtProperties]
+            let lstPrp = [...item.Properties, ...this.ExtProperties]
             for (let jj = 0, txtP, prp; jj < lstPrp.length; jj++) {
                 prp = lstPrp[jj]
                 txtP = this.getCsFormat(prp);
                 txtP = `  ${convertSymb(txtP)}`
                 if (-1989 == offI && ii === offI) {
-                    let pCode = prp[5]
+                    let pCode = prp.FuncBody
                     if (typeof pCode != 'string') {
                         pCode = '/* empty */'
                         txtP = txtP.replace(`{...}`, `{ ${pCode} }`)
@@ -416,7 +382,7 @@ const MxOjClass = {
                         }
                     }
                 } else if (jj - offI === ii) {
-                    let pCode = prp[5]
+                    let pCode = prp.FuncBody
                     let hasEnter = false
                     if (!pCode) pCode = '/* empty */'
                     else if (isAbstract(pCode)) pCode = ''
@@ -469,12 +435,10 @@ const MxOjClass = {
             let exnd = ''
             if (extds.length) {
                 switch (ii) {
-                    case 1:
-                        exnd += extds[0][0]
+                    case 1: exnd += extds[0][0]
                         exnd += ` ${extds[0][1]}`
                         break;
-                    case 2:
-                        exnd += extds[0].join(' ')
+                    case 2: exnd += extds[0].join(' ')
                         if (1 < extds.length) exnd += extds[1].join(' ')
                         break;
                     default: break;
@@ -492,11 +456,9 @@ const MxOjClass = {
             if (!mPoints.has(item.id)) return []
             const point = mPoints.get(item.id)
             if (point.Extends.length + point.Implements.length < 1) return []
-            let lst = getLstExt(item.Methods, point.Extends)
-            let lst2 = getLstExt(item.Methods, point.Implements)
-            for (let ii = 0; ii < lst2.length; ii++) {
-                lst.push(lst2[ii])
-            }
+            let lst = getLstExt(item.Properties, point.Extends)
+            let lst2 = getLstExt(item.Properties, point.Implements)
+            for (let ii = 0; ii < lst2.length; ii++) { lst.push(lst2[ii]) }
             return lst
         },
     },
@@ -526,7 +488,6 @@ const RectClass = {
             return clsName
         },
     },
-
 }
 const WrapRect = {
     template: `#tmp-wrap-rect`,
@@ -542,19 +503,13 @@ const WrapRect = {
     },
     computed: {
         CompRect() {
-            switch (this.item.type) {
-                case StructTypes[0][0]:
-                    return 'rect-interface'
-                case StructTypes[1][0]:
-                    return 'rect-abstract'
-                case StructTypes[2][0]:
-                    return 'rect-class'
-                case StructTypes[3][0]:
-                    return 'rect-enum'
-                case StructTypes[4][0]:
-                    return 'rect-struct'
-                default: return null;
-            }
+            const item = this.item
+            if (isInterface(item.TypeDeclaration)) return 'rect-interface'
+            if (isAbstract(item.TypeDeclaration)) return 'rect-abstract'
+            if (isClass(item.TypeDeclaration)) return 'rect-class'
+            if (isEnum(item.TypeDeclaration)) return 'rect-enum'
+            if (isStruct(item.TypeDeclaration)) return 'rect-struct'
+            return null;
         },
     },
 }
@@ -567,7 +522,6 @@ export const ViewDiagram = {
         'menu-list': MenuList,
     },
     //inject: [''],
-
     // props: ['item'],
     data() {
         return {}
@@ -577,15 +531,15 @@ export const ViewDiagram = {
             if (isDel) {
                 for (let ii = list.length - 1, item; - 1 < ii; ii--) {
                     item = list[ii]
-                    if (isInterface(item.type)) delete item.Fields
-                    else if (item.Methods && !item.Methods.length) delete item.Methods
+                    if (isInterface(item.TypeDeclaration)) delete item.Fields
+                    else if (!item.Properties.length) delete item.Properties
                     else if (!item.Fields.length) delete item.Fields
                 }
                 return
             }
             for (let ii = list.length - 1, item; - 1 < ii; ii--) {
                 item = list[ii]
-                if (!item.Methods) item.Methods = []
+                if (!item.Properties) item.Properties = []
                 if (!item.Fields) item.Fields = []
             }
         },
@@ -613,8 +567,8 @@ export const ViewDiagram = {
         },
         importDiagram(event) {
             const file = event.target.files[0];
-            const $root = this.$root
-            $root.clearDyVar()
+            const root = this.$root
+            root.clearDyVar()
             // Validate file existence and type
             if (!file) {
                 showMessage("No file selected. Please choose a file.", "error");
@@ -629,7 +583,7 @@ export const ViewDiagram = {
             reader.onload = () => {
                 const txt = reader.result;
                 let entry = JSON.parse(txt)
-                $root.DiagName = entry.Name
+                root.DiagName = entry.Name
                 const lst = truncateIds(entry.Classes)    // copy
                 this.verifyLst(lst)
                 // #region verify name
@@ -644,14 +598,14 @@ export const ViewDiagram = {
                 }
                 // #endregion
 
-                $root.ListClass = lst
-                $root.MpPoints.clear()
+                root.ListClass = lst
+                root.MpPoints.clear()
                 for (let ii = lst.length - 1; -1 < ii; ii--) {
-                    $root.buildMapPoints(lst[ii])   // import
+                    root.buildMapPoints(lst[ii])   // import
                 }
-                $root.buildAssociation()        // import
-                $root.updateSizeCanvas()          // import
-                $root.$nextTick($root.drawInCnvs) // import
+                root.buildAssociation()        // import
+                root.updateSizeCanvas()          // import
+                root.$nextTick(root.drawInCnvs) // import
                 event.target.value = ''
             };
             reader.onerror = () => {

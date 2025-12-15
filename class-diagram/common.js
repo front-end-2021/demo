@@ -44,31 +44,6 @@ export function processLines(txt) {
     }
     return arrLn.join('\n')
 }
-export function isAbstract(type) {
-    if (typeof type != 'string' || !type.length) return false
-    if (type.includes('abstract')) return true
-    return false
-}
-export function isClass(type) {
-    if (typeof type != 'string' || !type.length) return false
-    if (type.includes('class')) return true
-    return false
-}
-export function isInterface(type) {
-    if (typeof type != 'string' || !type.length) return false
-    if (type.includes('interface')) return true
-    return false
-}
-export function isEnum(type) {
-    if (typeof type != 'string' || !type.length) return false
-    if (type.includes('enum')) return true;
-    return false
-}
-export function isStruct(type) {
-    if (typeof type != 'string' || !type.length) return false
-    if (type.includes('struct')) return true;
-    return false
-}
 export function convertSymb(symb, isStr) {
     if (typeof symb != 'string') return symb
     symb = symb.trim()
@@ -94,7 +69,7 @@ export const StructTypes = [
 export const AccessInit = [
     ['get', 'get', 'get'],
     ['set', 'set', 'set'],
-    ['init', 'Constructor', 'Constructor']
+    ['init', 'constructor', 'constructor']
 ]
 export function convertAccessors(acs, il) {
     let txt = acs
@@ -170,15 +145,15 @@ export function objNewCls(nCls, id, top, left) {
     if (cNm == nCls.Name) return null
     let lst = nCls.Fields
     nCls.Fields = lst.filter(x => x.Name != fNm)
-    lst = nCls.Methods
-    nCls.Methods = lst.filter(x => x[1] != cNm && x[1] != PropName)
+    lst = nCls.Properties
+    nCls.Properties = lst.filter(x => x[1] != cNm && x[1] != PropName)
     if (nCls.type.includes('struct')) {
         delete nCls.toIds
         return nCls
     }
     if (isEnum(nCls.type)) {
         nCls.Fields = nCls.Fields.map(x => { return { Name: x.Name } })
-        nCls.Methods = []
+        nCls.Properties = []
         delete nCls.toIds
         return nCls
     }
@@ -188,21 +163,7 @@ export function objNewCls(nCls, id, top, left) {
     return nCls
 }
 export function verifySave(cItem, il, isView) {
-    for (let ii = 0, field, txt; ii < cItem.Fields.length; ii++) {
-        field = cItem.Fields[ii]
-        txt = field.Visible
-        if (typeof txt != 'string') continue;
-        txt = convertSymb(txt, isView)
-        field.Visible = txt.trim()
-    }
-    for (let ii = 0, prp, txt; ii < cItem.Methods.length; ii++) {
-        prp = cItem.Methods[ii]
-        txt = prp[0]
-        if (typeof txt != 'string') continue;
-        txt = convertSymb(txt, isView)
-        prp[0] = txt.trim()
-        prp[4] = convertAccessors(prp[4], il)
-    }
+
 }
 export function isOverlap(item, items) {
     const lstArea = areaBlocks(item.id)
@@ -266,7 +227,7 @@ export function truncateIds(oList) {
     }
 }
 export function hasnMethod(item) {
-    if (!item.Methods || !item.Methods.length) return true
+    if (!item.Properties || !item.Properties.length) return true
     return false
 }
 export function verifyName(name, lstNo) {
@@ -308,14 +269,15 @@ export function getLstExt(lsMthd, items) {
     const lst = []
     for (let ii = 0, item; ii < items.length; ii++) {
         item = items[ii]
-        for (let jj = 0, prp, oPrp; jj < item.Methods.length; jj++) {
-            prp = item.Methods[jj]
-            oPrp = lsMthd.find(xx => prp[1] == xx[1] && prp[2] == xx[2])
+        for (let jj = 0, prp, oPrp; jj < item.Properties.length; jj++) {
+            prp = item.Properties[jj]
+            oPrp = lsMthd.find(xx => getPropKey(prp, prp.Name) == getPropKey(xx, xx.Name))
             if (!oPrp) lst.push(prp)
         }
     }
     return lst
 }
+export function getPropKey(prp, name = '') { return `${name}(${prp.params.map(x => x[1] + ' ' + x[0]).join(', ')})` }
 export function initPoint(rItem, lsImpl, lsExtn, lsComp, lsAsso, lsAggr) {
     return {
         item: rItem,
@@ -332,114 +294,3 @@ export function getStringBetween(str, startChar, endChar) {
     const match = str.match(regex);
     return match ? match[1] : '';
 }
-
-function indexesBoyerMoore(text, pattern) {
-    const m = pattern.length;
-    const n = text.length;
-    const badChar = Array(256).fill(-1);
-
-    // Tạo bảng bad character
-    for (let i = 0; i < m; i++) {
-        badChar[pattern.charCodeAt(i)] = i;
-    }
-    const lsI = []
-    let s = 0; // s là vị trí dịch chuyển của mẫu so với văn bản
-    let j = -1
-    while (s <= (n - m)) {
-        j = m - 1;
-
-        // Giảm j khi các ký tự của mẫu và văn bản khớp nhau
-        while (0 <= j && pattern[j] === text[s + j]) {
-            j--;
-        }
-
-        // Nếu mẫu khớp hoàn toàn với văn bản
-        if (j < 0) {
-            //console.log("Pattern found at index " + s);
-            lsI.push(s)
-            s += (s + m < n) ? m - badChar[text.charCodeAt(s + m)] : 1;
-        } else {
-            s += Math.max(1, j - badChar[text.charCodeAt(s + j)]);
-        }
-    }
-    return lsI
-}
-class AhoCorasick {
-    constructor(patterns) {
-        this.setPatterns(patterns)
-    }
-    buildTrie(patterns) {
-        for (const pattern of patterns) {
-            let n0d = this.trie;
-            for (const char of pattern) {
-                if (!n0d[char]) {
-                    n0d[char] = {};
-                }
-                n0d = n0d[char];
-            }
-            n0d.isEnd = true;
-        }
-    }
-    buildFailureLinks() {
-        const queue = [];
-        for (const char in this.trie) {
-            this.trie[char].fail = this.trie;
-            queue.push(this.trie[char]);
-        }
-
-        while (queue.length > 0) {
-            const n0d = queue.shift();
-            for (const char in n0d) {
-                if (char === 'fail' || char === 'isEnd') continue;
-                let fail = n0d.fail;
-                while (fail && !fail[char]) {
-                    fail = fail.fail;
-                }
-                n0d[char].fail = fail ? fail[char] : this.trie;
-                queue.push(n0d[char]);
-            }
-        }
-    }
-    setPatterns(patterns) {
-        this.trie = {};
-        this.buildTrie(patterns);
-        this.buildFailureLinks();
-    }
-    indexes(text) {
-        let n0d = this.trie;
-        const results = [];
-        for (let i = 0; i < text.length; i++) {
-            const char = text[i];
-            while (n0d && !n0d[char]) {
-                n0d = n0d.fail;
-            }
-            n0d = n0d ? n0d[char] : this.trie;
-            if (n0d.isEnd) {
-                results.push(i);
-            }
-        }
-        return results;
-    }
-    indexOf(text) {
-        let n0d = this.trie;
-        for (let i = 0; i < text.length; i++) {
-            const char = text[i];
-            while (n0d && !n0d[char]) {
-                n0d = n0d.fail;
-            }
-            n0d = n0d ? n0d[char] : this.trie;
-            if (n0d.isEnd) {
-                return i
-            }
-        }
-        return -1
-    }
-}
-//// Ví dụ sử dụng
-// let patterns = ["apple", "banana", "cherry"];
-// const ac = new AhoCorasick(patterns);
-// let text = `This function simply follows edges of Trie of all words in arr[]. It is cherry
-//           represented as 2D array g[][] wherebanana
-//           we store next state for current state I have an apple and a banana. and character`;
-// let result = ac.indexes(text);
-// console.log(result); // In ra các vị trí tìm thấy các mẫu

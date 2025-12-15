@@ -1,255 +1,233 @@
 import { StructTypes, AccessInit } from "./common.js"
 export function getListCls() {
     let lstCls = []
-    let name = 'Account'
-    let id = 1;
-    let type = StructTypes[2][0]    //'instant class'
-    let tIds = [id]
+    let id = 1
     let top = 10
     let left = 10
-    let dItm = {
-        id: id++, Name: name, type, toIds: [],
-        top, left, width: 220, height: 100,
-    }
-    setFilds(dItm, [
-        { Visible: '#', Name: 'name', Type: 'String' },
-        { Visible: '#', Name: 'emailAddress', Type: 'String' },
-    ])
-    setFunctions(dItm, [
-        ['+', 'GetName', '', 'string', AccessInit[0][0], `return this.Name`],
-        ['+', 'SetName', 'String n', 'void', AccessInit[1][0], `this.Name = n`],
-        ['+', 'GetEmailAddress', '', 'string', AccessInit[0][0], `return emailAddress`],
-        ['+', 'SetEmailAddress', 'string e', 'void', AccessInit[1][0], `emailAddress = e`],
-    ])
-    lstCls.push(dItm)
-    name = 'Contact'
-    id++
+    let toIds = []
+    lstCls.push(
+        {
+            id: id, Name: 'Account', TypeDeclaration: 'class', AccessModify: 'public',
+            Fields: [
+                { Name: 'name', DataType: 'string', AccessModify: 'protected' },
+                { Name: 'emailAddress', DataType: 'string', AccessModify: 'protected' }
+            ],
+            Properties: [
+                { Name: 'GetName', params: [], DataType: 'string', FuncBody: 'return name', specialMe: 'get', AccessModify: 'public' },
+                { Name: 'SetName', params: [['n', 'string'], ['t', 'int']], DataType: 'void', FuncBody: 'name = n', specialMe: 'set', AccessModify: 'public' },
+                { Name: 'GetEmailAddress', params: [], DataType: 'string', FuncBody: 'return emailAddress', specialMe: 'get', AccessModify: 'public' },
+                { Name: 'SetEmailAddress', params: [['e', 'string']], DataType: 'void', FuncBody: 'emailAddress = e', specialMe: 'get', AccessModify: 'public' },
+            ],
+            top, left, width: 220, height: 100, toIds
+        }
+    )
+    toIds = [id]
     left = 380
-    dItm = {
-        id: id, Name: name, toIds: tIds, type,
-        top, left, width: 210, height: 100,
-    }
-    setFilds(dItm, [
-        { Visible: '-', Name: 'faxNumber', Type: 'string' },
-    ])
-    setFunctions(dItm, [
-        ['+', 'GetFaxNumber', '', 'int', AccessInit[0][0]],
-        ['+', 'SetFaxNumber', 'int f', 'void', AccessInit[1][0], `faxNumber = f`],
-    ])
-    lstCls.push(dItm)
-    name = 'Animal'
-    id++
-    tIds = [id]
-    type = StructTypes[1][0]    //'abstract class'
+    lstCls.push(
+        {
+            id: ++id, Name: 'Contact', TypeDeclaration: 'class', AccessModify: 'public',
+            Fields: [
+                { Name: 'faxNumber', DataType: 'string', AccessModify: 'private' }
+            ],
+            Properties: [
+                { Name: 'GetFaxNumber', params: [], DataType: 'int', FuncBody: 'return faxNumber', specialMe: 'get', AccessModify: 'public' },
+                { Name: 'SetFaxNumber', params: [['f', 'int']], DataType: 'void', FuncBody: 'faxNumber = f', specialMe: 'set', AccessModify: 'public' },
+            ],
+            top, left, width: 210, height: 100, toIds
+        }
+    )
     top = 460
     left = 1460
-    dItm = {
-        id: id, type, Name: name, toIds: [],
-        top, left, width: 150, height: 100,
-    }
-    setFilds(dItm, [
-        { Visible: '+', Name: 'age', Type: 'int' },
-        { Visible: '+', Name: 'gender', Type: 'string' },
-    ])
-    setFunctions(dItm, [
-        ['+', 'IsMammal', '', 'bool', AccessInit[0][0]],
-        ['+', 'Mate', '', 'int', AccessInit[0][0]],
-    ])
-    lstCls.push(dItm)
-    name = 'Zebra'
-    id++
-    type = StructTypes[2][0]    //'instant class'
+    toIds = []
+    lstCls.push(
+        {
+            id: ++id, Name: 'Animal', TypeDeclaration: 'class', AccessModify: 'public',
+            Fields: [
+                { Name: 'age', DataType: 'int', AccessModify: 'public' },
+                { Name: 'gender', DataType: 'string', AccessModify: 'public' },
+            ],
+            Properties: [
+                { Name: 'IsMammal', params: [], DataType: 'bool', FuncBody: '', specialMe: 'get', AccessModify: 'public' },
+                { Name: 'Mate', params: [], DataType: 'int', FuncBody: '', specialMe: 'get', AccessModify: 'public' },
+            ],
+            top, left, width: 150, height: 100, toIds
+        }
+    )
+    toIds = [id]
     top = 30
     left = 1390
-    dItm = {
-        id: id, type, Name: name, toIds: tIds,
-        top, left, width: 150, height: 100,
-    }
-    setFilds(dItm, [
-        { Visible: '+', Name: 'isWild', Type: 'string' },
-    ])
-    setFunctions(dItm, [
-        ['+', 'Run', '', 'void', AccessInit[1][0]],
-    ])
-    lstCls.push(dItm)
-    tIds = [...tIds]
-    name = 'iFly'
-    id++
-    tIds.push(id)
-    type = StructTypes[0][0]    //'interface'
+    lstCls.push(
+        {
+            id: ++id, Name: 'Zebra', TypeDeclaration: 'class', AccessModify: 'public',
+            Fields: [
+                { Name: 'isWild', DataType: 'string', AccessModify: 'public' },
+            ],
+            Properties: [
+                { Name: 'Run', params: [], DataType: 'void', FuncBody: '', specialMe: 'set', AccessModify: 'public' },
+            ],
+            top, left, width: 150, height: 100, toIds
+        }
+    )
+    toIds = [...toIds]
     top = 290
     left = 1460
-    dItm = {
-        id: id, type, Name: name, toIds: [],
-        top, left, width: 150, height: 100,
-    }
-    setFilds(dItm, [])
-    setFunctions(dItm, [
-        ['+', 'Fly', '', 'void', AccessInit[1][0]],
-    ])
-    lstCls.push(dItm)
-    name = 'iQuack'
-    id++
-    tIds.push(id)
+    lstCls.push(
+        {
+            id: ++id, Name: 'iFly', TypeDeclaration: 'interface', AccessModify: 'public',
+            Fields: [],
+            Properties: [
+                { Name: 'Fly', params: [], DataType: 'void', FuncBody: '', specialMe: 'set', AccessModify: 'public' },
+            ],
+            top, left, width: 150, height: 100, toIds: []
+        }
+    )
     top = 210
     left = 1460
-    dItm = {
-        id: id, type, Name: name, toIds: [],
-        top, left, width: 150, height: 100,
-    }
-    setFilds(dItm, [])
-    setFunctions(dItm, [
-        ['+', 'Quack', '', 'void', AccessInit[1][0]],
-    ])
-    lstCls.push(dItm)
-    name = 'Duck'
-    id++
-    type = StructTypes[2][0]    //'instant class'
+    toIds.push(id)
+    lstCls.push(
+        {
+            id: ++id, Name: 'iQuack', TypeDeclaration: 'interface', AccessModify: 'public',
+            Fields: [],
+            Properties: [
+                { Name: 'Quack', params: [], DataType: 'void', FuncBody: '', specialMe: 'set', AccessModify: 'public' },
+            ],
+            top, left, width: 150, height: 100, toIds: []
+        }
+    )
     top = 240
     left = 1062
-    dItm = {
-        id: id, type, Name: name, toIds: tIds,
-        top, left, width: 150, height: 100,
-    }
-    setFilds(dItm, [
-        { Visible: '+', Name: 'beakColor', Type: 'string' },
-    ])
-    setFunctions(dItm, [
-        ['+', 'Swim', '', 'void', AccessInit[1][0]],
-    ])
-    lstCls.push(dItm)
-    name = 'Size'
-    id++
-    type = StructTypes[3][0]    //'enum'
+    toIds.push(id)
+    lstCls.push(
+        {
+            id: ++id, Name: 'Duck', TypeDeclaration: 'class', AccessModify: 'public',
+            Fields: [
+                { Name: 'beakColor', DataType: 'string', AccessModify: 'public' },
+            ],
+            Properties: [
+                { Name: 'Swim', params: [], DataType: 'void', FuncBody: '', specialMe: 'set', AccessModify: 'public' },
+            ],
+            top, left, width: 150, height: 100, toIds
+        }
+    )
     top = 370
     left = 1460
-    dItm = {
-        id: id, type, Name: name,
-        top, left, width: 220, height: 250,
-    }
-    setFilds(dItm, [
-        { Name: 'VENTI' },
-        { Name: 'GRANDE' },
-        { Name: 'TALL' },
-    ])
-    setFunctions(dItm, [])
-    lstCls.push(dItm)
-    name = 'Beverage'
-    id++
-    type = StructTypes[1][0]    //'abstract class'
+    toIds = []
+    lstCls.push(
+        {
+            id: ++id, Name: 'Size', TypeDeclaration: 'enum', AccessModify: 'public',
+            Fields: [
+                { Name: 'VENTI', DataType: 'int', AccessModify: 'public' },
+                { Name: 'GRANDE', DataType: 'int', AccessModify: 'public' },
+                { Name: 'TALL', DataType: 'int', AccessModify: 'public' },
+            ],
+            Properties: [],
+            top, left, width: 220, height: 250, toIds
+        }
+    )
     top = 290
     left = 480
-    dItm = {
-        id: id, type, Name: name, toIds: [],
-        top, left, width: 220, height: 120,
-    }
-    setFilds(dItm, [
-        { Visible: '#', Name: 'description', Type: 'string' },
-        { Visible: '#', Name: 'size', Type: 'Size' },
-    ])
-    setFunctions(dItm, [
-        ['+ virtual', 'getDescription', '', 'bool', AccessInit[0][0], `return new List<string>() { description }`],
-        ['+ abstract', 'cost', '', 'double', AccessInit[0][0],],
-        ['+', 'getSize', '', 'Size', AccessInit[0][0], 'return size'],
-        ['+', 'SetSize', 'Size s', 'void', AccessInit[1][0], 'size = s'],
-    ])
-    lstCls.push(dItm)
-    tIds = [id]
-    name = 'Decaf'
-    id++
-    type = StructTypes[2][0]    //'instant class'
+    toIds = []
+    lstCls.push(
+        {
+            id: ++id, Name: 'Beverage', TypeDeclaration: 'abstract class', AccessModify: 'public',
+            Fields: [
+                { Name: 'description', DataType: 'string', AccessModify: 'protected' },
+                { Name: 'size', DataType: 'Size', AccessModify: 'protected' },
+            ],
+            Properties: [
+                { Name: 'GetDescription', params: [], DataType: 'List<string>', FuncBody: 'return new List<string>() { description }', specialMe: 'get', AccessModify: 'public virtual' },
+                { Name: 'Cost', params: [], DataType: 'double', FuncBody: '', specialMe: 'get', AccessModify: 'public abstract' },
+                { Name: 'GetSize', params: [], DataType: 'Size', FuncBody: 'return size', specialMe: 'get', AccessModify: 'public' },
+                { Name: 'SetSize', params: [['s', 'Size']], DataType: 'void', FuncBody: 'size = s', specialMe: 'set', AccessModify: 'public' },
+            ],
+            top, left, width: 220, height: 120, toIds
+        }
+    )
     top = 480
     left = 90
-    dItm = {
-        id: id, type, Name: name, toIds: tIds,
-        top, left, width: 220, height: 120,
-    }
-    setFilds(dItm, [])
-    setFunctions(dItm, [
-        ['+', 'Decaf', '', '', AccessInit[2][0], `description = "Decaf"`],
-        ['+ override', 'cost', '', 'double', AccessInit[0][0], 'return 1.05'],
-    ])
-    lstCls.push(dItm)
-    name = 'Espresso'
-    id++
+    toIds = [id]
+    lstCls.push(
+        {
+            id: ++id, Name: 'Decaf', TypeDeclaration: 'class', AccessModify: 'public',
+            Fields: [],
+            Properties: [
+                { Name: 'Decaf', params: [], DataType: '', FuncBody: 'description = "Decaf"', specialMe: 'constructor', AccessModify: 'public' },
+                { Name: 'Cost', params: [], DataType: 'double', FuncBody: 'return 1.05', specialMe: 'get', AccessModify: 'public override' },
+            ],
+            top, left, width: 220, height: 120, toIds
+        }
+    )
     top = 480
     left = 452
-    dItm = {
-        id: id, type, Name: name, toIds: tIds,
-        top, left, width: 220, height: 120,
-    }
-    setFilds(dItm, [])
-    setFunctions(dItm, [
-        ['+', 'Espresso', '', '', AccessInit[2][0], `description = "Espresso"`],
-        ['+ override', 'cost', '', 'double', AccessInit[0][0], 'return 1.99'],
-    ])
-    lstCls.push(dItm)
-    name = 'DarkRoast'
-    id++
+    toIds = [...toIds]
+    lstCls.push(
+        {
+            id: ++id, Name: 'Espresso', TypeDeclaration: 'class', AccessModify: 'public',
+            Fields: [],
+            Properties: [
+                { Name: 'Espresso', params: [], DataType: '', FuncBody: 'description = "Espresso"', specialMe: 'constructor', AccessModify: 'public' },
+                { Name: 'Cost', params: [], DataType: 'double', FuncBody: 'return 1.99', specialMe: 'get', AccessModify: 'public override' },
+            ],
+            top, left, width: 220, height: 120, toIds
+        }
+    )
     top = 480
     left = 800
-    dItm = {
-        id: id, type, Name: name, toIds: tIds,
-        top, left, width: 220, height: 120,
-    }
-    setFilds(dItm, [])
-    setFunctions(dItm, [
-        ['+', 'DarkRoast', '', '', AccessInit[2][0], `description = "DarkRoast"`],
-        ['+ override', 'cost', '', 'double', AccessInit[0][0], 'return 0.99'],
-    ])
-    lstCls.push(dItm)
-    name = 'HouseBlend'
-    id++
+    toIds = [...toIds]
+    lstCls.push(
+        {
+            id: ++id, Name: 'DarkRoast', TypeDeclaration: 'class', AccessModify: 'public',
+            Fields: [],
+            Properties: [
+                { Name: 'DarkRoast', params: [], DataType: '', FuncBody: 'description = "Dark Roast"', specialMe: 'constructor', AccessModify: 'public' },
+                { Name: 'Cost', params: [], DataType: 'double', FuncBody: 'return 0.99', specialMe: 'get', AccessModify: 'public override' },
+            ],
+            top, left, width: 220, height: 120, toIds
+        }
+    )
     top = 30
     left = 680
-    dItm = {
-        id: id, type, Name: name, toIds: tIds,
-        top, left, width: 220, height: 120,
-    }
-    setFilds(dItm, [])
-    setFunctions(dItm, [
-        ['+', 'HouseBlend', '', '', AccessInit[2][0], `description = "House Blend Coffee"`],
-        ['+ override', 'cost', '', 'double', AccessInit[0][0], 'return 0.89'],
-    ])
-    lstCls.push(dItm)
-    name = 'CondimentDecorator'
-    id++
-    type = StructTypes[1][0]    //'abstract class'
+    toIds = [...toIds]
+    lstCls.push(
+        {
+            id: ++id, Name: 'HouseBlend', TypeDeclaration: 'class', AccessModify: 'public',
+            Fields: [],
+            Properties: [
+                { Name: 'HouseBlend', params: [], DataType: 'void', FuncBody: 'description = "House Blend Coffee"', specialMe: 'constructor', AccessModify: 'public' },
+                { Name: 'Cost', params: [], DataType: 'double', FuncBody: 'return 0.89', specialMe: 'get', AccessModify: 'public override' },
+            ],
+            top, left, width: 220, height: 120, toIds
+        }
+    )
     top = 260
     left = 10
-    dItm = {
-        id: id, type, Name: name, toIds: tIds,
-        top, left, width: 220, height: 120,
-    }
-    setFilds(dItm, [
-        { Visible: '+', Name: 'beverage', Type: 'Beverage' },
-    ])
-    setFunctions(dItm, [
-        ['#', 'CountDes', 'string des', 'List<string>', AccessInit[1][0]],
-    ])
-    lstCls.push(dItm)
-    tIds = [id]
-    name = 'Soy'
-    id++
-    type = StructTypes[2][0]    //'instant class'
+    toIds = [...toIds]
+    lstCls.push(
+        {
+            id: ++id, Name: 'CondimentDecorator', TypeDeclaration: 'class', AccessModify: 'public',
+            Fields: [
+                { Name: 'beverage', DataType: 'Beverage', AccessModify: 'public' },
+            ],
+            Properties: [
+                { Name: 'CountDes', params: [['des', 'string']], DataType: 'List<string>', FuncBody: '', specialMe: 'set', AccessModify: 'public' },
+            ],
+            top, left, width: 220, height: 120, toIds
+        }
+    )
     top = 660
     left = 710
-    dItm = {
-        id: id, type, Name: name, toIds: tIds,
-        top, left, width: 220, height: 120,
-    }
-    setFilds(dItm, [])
-    setFunctions(dItm, [
-        ['+', 'Soy', 'Beverage b', '', AccessInit[2][0], `beverage = b`],
-        ['+ override', 'getDescription', '', 'List<string>', AccessInit[0][0]],
-        ['+ override', 'cost', '', 'double', AccessInit[0][0]],
-    ])
-    lstCls.push(dItm)
+    toIds = [id]
+    lstCls.push(
+        {
+            id: ++id, Name: 'Soy', TypeDeclaration: 'class', AccessModify: 'public',
+            Fields: [],
+            Properties: [
+                { Name: 'Soy', params: [['b', 'Beverage']], DataType: '', FuncBody: 'beverage = b', specialMe: 'constructor', AccessModify: 'public' },
+                { Name: 'getDescription', params: [], DataType: 'List<string>', FuncBody: '', specialMe: 'get', AccessModify: 'public override' },
+                { Name: 'Cost', params: [], DataType: 'double', FuncBody: 'return 0.89', specialMe: 'get', AccessModify: 'public override' },
+            ],
+            top, left, width: 220, height: 120, toIds
+        }
+    )
     return lstCls
-    function setFunctions(item, lst) {
-        item.Methods = lst
-    }
-    function setFilds(item, lst) {
-        item.Fields = lst
-    }
 }

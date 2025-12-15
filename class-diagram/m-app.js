@@ -4,13 +4,12 @@ import {
     drawExtension, drawImplement, drawGrid, fillCirle,
     drawComposition, drawAssociation, drawAggregation,
 } from './mcanvas.js'
-import { ViewDiagram } from './components/vw-diagram.js'
+import { ViewDiagram, isAbstract, isClass, isInterface, isStruct, isEnum, } from './components/vw-diagram.js'
 import { getListCls } from './repository.js'
 import {
     verifySave, setHeight, isOverlap, initPoint, getStringBetween,
-    isAbstract, isClass, isInterface, isStruct, isEnum, cellBlock,
+    cellBlock, verifyExportTxt, doInRange, setCell, getArea,
     genBoards, getRows, getCols, cellSize, cellEmpty, build_xy,
-    verifyExportTxt, doInRange, setCell, getArea,
 } from './common.js'
 import { FormEdit } from './components/minicontrols.js'
 // #endregion
@@ -55,14 +54,11 @@ Promise.all([
             }
         },
         computed: {
-            CompPage() {
-                return 'view-diagram';
-            },
+            CompPage() { return 'view-diagram' },
             ViewCode() {
                 const dmVar = this.DynamicVar
                 if (dmVar.has('FViewCode')) {
                     return dmVar.get('FViewCode')
-
                 }
                 return null
             },
@@ -70,14 +66,11 @@ Promise.all([
                 const dmVar = this.DynamicVar
                 if (dmVar.has('FrameCode')) {
                     return dmVar.get('FrameCode')
-
                 }
                 return null
             },
         },
-        watch: {
-            //ListClass(val) { },
-        },
+        //watch: { },
         methods: {
             closeBlock(cls) {
                 const grid = this.Board
@@ -98,47 +91,23 @@ Promise.all([
                 mapBlk.delete(item.id)
             },
             buildMapPoints(rItem) {
-                if (isEnum(rItem.type)) return     // verify
-                if (isStruct(rItem.type)) return     // verify
+                const typeDec = rItem.TypeDeclaration
+                if (isEnum(typeDec)) return     // verify
+                if (isStruct(typeDec)) return     // verify
 
                 const mPoints = this.MpPoints
                 const lstCls = this.ListClass
 
-                const mClass = new Map()        // [Name, item]
-                const mAbstrac = new Map()
-                const mInterface = new Map()
-                const mEnum = new Map()
-                const mStruct = new Map()
-                // #region build map data
-                for (let ii = lstCls.length - 1, item; -1 < ii; ii--) {
-                    item = lstCls[ii]
-                    if (isInterface(item.type)) {
-                        mInterface.set(item.Name, item)
-                        continue
-                    }
-                    if (isAbstract(item.type)) {
-                        mAbstrac.set(item.Name, item)
-                        continue
-                    }
-                    if (isClass(item.type)) {
-                        mClass.set(item.Name, item)
-                        continue
-                    }
-                    if (isEnum(item.type)) {
-                        mEnum.set(item.Name, item)
-                        continue
-                    }
-                    if (isStruct(item.type)) {
-                        mStruct.set(item.Name, item)
-                        continue
-                    }
-                }
-                // #endregion
+                const mClass = new Map(lstCls.filter(x => isClass(x.TypeDeclaration)).map(x => [x.Name, x]))
+                const mAbstrac = new Map(lstCls.filter(x => isAbstract(x.TypeDeclaration)).map(x => [x.Name, x]))
+                const mInterface = new Map(lstCls.filter(x => isInterface(x.TypeDeclaration)).map(x => [x.Name, x]))
+                const mEnum = new Map(lstCls.filter(x => isEnum(x.TypeDeclaration)).map(x => [x.Name, x]))
+                const mStruct = new Map(lstCls.filter(x => isStruct(x.TypeDeclaration)).map(x => [x.Name, x]))
                 let lsImpl = []     // List<item>
                 let lsExtn = []     // List<item>
                 let lsComp = []     // List<[item, lsTxt]>
                 let lsAggr = []     // List<[item, lsTxt]>
-                if (isInterface(rItem.type)) {
+                if (isInterface(typeDec)) {
                     buildLsImplment()
                     setPoints()
                     return
@@ -147,7 +116,7 @@ Promise.all([
                 let mStatic = new Map()        // [Name, item]
                 for (let ff = rItem.Fields.length - 1, fld, type; -1 < ff; ff--) {
                     fld = rItem.Fields[ff]
-                    type = getFieldType(fld.Type)
+                    type = getFieldType(fld.DataType)
                     if (mClass.has(type)) {
                         setMpFld(mClass.get(type), fld)
                         continue
@@ -161,7 +130,7 @@ Promise.all([
                         continue
                     }
                 }
-                if (isAbstract(rItem.type)) {
+                if (isAbstract(typeDec)) {
                     buildLsExtend(mAbstrac)
                     buildLsImplment()
                     pruneMap(mStatic)
@@ -173,7 +142,7 @@ Promise.all([
                     setPoints()
                     return
                 }
-                if (isClass(rItem.type)) {
+                if (isClass(typeDec)) {
                     buildLsExtend(mAbstrac)
                     buildLsExtend(mClass)
                     buildLsImplment()
@@ -187,13 +156,11 @@ Promise.all([
                     return
                 }
                 function getFieldType(fType) {
-                    if (fType.includes('<')) {
-                        return getStringBetween(fType, '<', '>')
-                    }
+                    if (fType.includes('<')) { return getStringBetween(fType, '<', '>') }
                     return fType
                 }
                 function setMpFld(item, fld) {
-                    if (isGlobal(fld.Visible)) {
+                    if (isGlobal(fld.AccessModify)) {
                         if (mStatic.has(item)) mStatic.get(item).push(fld.Name)
                         else mStatic.set(item, [fld.Name])
                         return
@@ -216,9 +183,7 @@ Promise.all([
                 }
                 function truncMpFld() {
                     for (const [item, fName] of mapField) {
-                        if (mStatic.has(item)) {
-                            mapField.delete(item)
-                        }
+                        if (mStatic.has(item)) { mapField.delete(item) }
                     }
                 }
                 function isGlobal(vsble) {
@@ -228,7 +193,6 @@ Promise.all([
                 function setPoints() {
                     if (0 < lsImpl.length + lsExtn.length + lsComp.length + lsAggr.length) {
                         const point = initPoint(rItem, lsImpl, lsExtn, lsComp, [], lsAggr)
-
                         mPoints.set(rItem.id, point)
                     } else if (mPoints.has(rItem.id)) {
                         mPoints.delete(rItem.id)
@@ -385,9 +349,7 @@ Promise.all([
                                     continue
                                 }
                             }
-                            for (let jj = 0; jj < lsAsso.length; jj++) {
-                                aPoint.Associations.push(lsAsso[jj])
-                            }
+                            for (let jj = 0; jj < lsAsso.length; jj++) { aPoint.Associations.push(lsAsso[jj]) }
                         } else {
                             let aPoint = initPoint(item, [], [], [], lsAsso, [])
                             mPoints.set(item.id, aPoint)
@@ -419,9 +381,7 @@ Promise.all([
 
                     if (dItem.left != left || dItem.top != top) {
                         this.setTopLeft(dItem, left, top)
-
                         this.drawInCnvs()       // dragging item
-
                     }
                 }
                 document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
@@ -630,13 +590,10 @@ Promise.all([
             this.$nextTick(this.drawInCnvs) // mount-ed
             this.$nextTick(this.drawBlocks) // mount-ed            
         },
-        beforeUpdate() {
-            console.log('before updated')
-        },
-        updated() { console.log('updated') },
+        //beforeUpdate() { },
+        //updated() { },
     })
-    app.mount('#m-app')
-
+    app.mount('#m-app');
 }).catch(errStatus => { console.log('Woop!', errStatus) })
 
 function includeHTML(path) {
