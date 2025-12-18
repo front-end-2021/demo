@@ -1,4 +1,3 @@
-import { StructTypes, AccessInit } from "./common.js"
 export function getListCls() {
     let lstCls = []
     let id = 1
@@ -102,9 +101,10 @@ export function getListCls() {
             id: ++id, Name: 'Duck', TypeDeclaration: 'class', AccessModify: 'public',
             Fields: [
                 { Name: 'beakColor', DataType: 'string', AccessModify: 'public' },
+                { Name: 'z', DataType: 'Zebra', AccessModify: 'public' },
             ],
             Properties: [
-                { Name: 'Swim', params: [], DataType: 'void', FuncBody: '', specialMe: 'set', AccessModify: 'public' },
+                { Name: 'Swim', params: [['z', 'Zebra']], DataType: 'void', FuncBody: '', specialMe: 'set', AccessModify: 'public' },
             ],
             top, left, width: 150, height: 100, toIds
         }

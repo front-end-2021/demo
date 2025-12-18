@@ -1,3 +1,4 @@
+import { isInterface, isEnum, isStruct } from './Appmixin.js';
 function countEnter(txt) {
     if (typeof txt != 'string') return 0
     //https://charactercounter.com/count-characters-in-javascript
@@ -43,21 +44,6 @@ export function processLines(txt) {
         }
     }
     return arrLn.join('\n')
-}
-export function convertSymb(symb, isStr) {
-    if (typeof symb != 'string') return symb
-    symb = symb.trim()
-    if (isStr) {
-        symb = symb.toLowerCase()
-        if (symb.includes('public')) symb = symb.replace('public', '+')
-        if (symb.includes('private')) symb = symb.replace('private', '-')
-        if (symb.includes('protected')) symb = symb.replace('protected', '#')
-        return symb
-    }
-    if (symb.includes('+')) symb = symb.replace('+', 'public')
-    if (symb.includes('-')) symb = symb.replace('-', 'private')
-    if (symb.includes('#')) symb = symb.replace('#', 'protected')
-    return symb
 }
 export const StructTypes = [
     ['interface', 'interface', 'interface'],
@@ -113,11 +99,6 @@ function build_iXiY(x, y) {
     let iy = Math.floor(y / cellSize)
     return [ix, iy]
 }
-export function build_xy(ix, iy) {
-    let x = ix * cellSize
-    let y = iy * cellSize
-    return [x, y]
-}
 export function getArea(cls) {
     let [ix0, iy0] = build_iXiY(cls.left, cls.top)
     let [ix1, iy1] = build_iXiY(cls.left + cls.width, cls.top + cls.height)
@@ -128,15 +109,14 @@ export function objNewCls(nCls, id, top, left) {
     const fNm = 'fieldName'
     const cNm = 'ClassName'
     if (!nCls) {
-        let type = StructTypes[2][0]    //'instant class'
         return {
-            id, type, Name: cNm, toIds: [],
-            top, left, width: 220, height: 100,
+            id, Name: cNm, TypeDeclaration: 'class', AccessModify: 'public',
+            top, left, width: 220, height: 100, toIds: [],
             Fields: [
-                { Visible: '#', Name: fNm, Type: 'String' },
+                { AccessModify: 'protected', Name: fNm, DataType: 'String' },
             ],
-            Methods: [
-                ['+', PropName, '', 'void', AccessInit[1][0]],
+            Properties: [
+                { Name: '', params: [], DataType: 'void', FuncBody: '', specialMe: 'set', AccessModify: 'public' },
             ]
         }
     }
@@ -146,53 +126,21 @@ export function objNewCls(nCls, id, top, left) {
     let lst = nCls.Fields
     nCls.Fields = lst.filter(x => x.Name != fNm)
     lst = nCls.Properties
-    nCls.Properties = lst.filter(x => x[1] != cNm && x[1] != PropName)
-    if (nCls.type.includes('struct')) {
-        delete nCls.toIds
+    nCls.Properties = lst.filter(x => x.Name != cNm && x.Name != PropName)
+    if (isStruct(nCls.TypeDeclaration)) {
+        nCls.toIds = []
         return nCls
     }
-    if (isEnum(nCls.type)) {
+    if (isEnum(nCls.TypeDeclaration)) {
         nCls.Fields = nCls.Fields.map(x => { return { Name: x.Name } })
         nCls.Properties = []
-        delete nCls.toIds
+        nCls.toIds = []
         return nCls
     }
-    if (isInterface(nCls.type)) {
+    if (isInterface(nCls.TypeDeclaration)) {
         nCls.Fields = []
     }
     return nCls
-}
-export function verifySave(cItem, il, isView) {
-
-}
-export function isOverlap(item, items) {
-    const lstArea = areaBlocks(item.id)
-    let x = item.left,
-        y = item.top,
-        w = item.width,
-        h = item.height
-
-    for (let ii = 0; ii < lstArea.length; ii++) {
-        const [x0, y0, w0, h0] = lstArea[ii]
-        if (x + w < x0 - 30 || x0 + w0 < x - 30) continue
-        if (y + h < y0 - 30 || y0 + h0 < y - 30) continue
-        return true
-    }
-    return false
-
-    function areaBlocks(id) {
-        const lst = []
-        for (let ii = 0, item; ii < items.length; ii++) {
-            item = items[ii]
-            if (item.id === id) continue
-            let x = item.left
-            let y = item.top
-            let w = item.width
-            let h = item.height
-            lst.push([x, y, w, h])
-        }
-        return lst
-    }
 }
 export function truncateIds(oList) {
     const nList = JSON.parse(JSON.stringify(oList))     // copy
@@ -229,19 +177,6 @@ export function truncateIds(oList) {
 export function hasnMethod(item) {
     if (!item.Properties || !item.Properties.length) return true
     return false
-}
-export function verifyName(name, lstNo) {
-    let vName = name
-    let nms = lstNo.filter(x => vName === x)
-    if (nms.length < 2) return vName
-    let index = 1
-    vName = `${name}${index}`
-    while (lstNo.includes(vName)) {
-        index += 1
-        vName = `${name}${index}`
-    }
-    return vName
-
 }
 export function addStrFirst(txt, str) {
     let lines = txt.split('\n')
