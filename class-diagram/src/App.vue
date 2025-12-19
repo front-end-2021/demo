@@ -26,6 +26,8 @@ import {
 import { isAbstract, isInterface, isClass, isEnum, isStruct, filterItems, mapItems } from './Appmixin.js';
 import ViewDiagram from './Diagram.vue'
 import FormEdit from './Formedit.vue'
+function getCenter(shp) { return { x: shp.left + shp.width / 2, y: shp.top + shp.height / 2 } }
+function isVertical(sd) { return 'top' == sd || 'bottom' == sd }
 export default {
   name: 'DaiNb.vApp',
   components: {
@@ -259,16 +261,33 @@ export default {
           }
         }
       }
-      for (let [id, map] of mapSides) { for (let [side, set] of map) { if (set.size < 2) map.delete(side) } }
+      function addMapSide(id, side, map, idB) {
+        if (!map.has(id)) map.set(id, new Map())
+        let dicSide = map.get(id)
+        if (dicSide.has(side)) dicSide.get(side).push(idB)
+        else dicSide.set(side, [idB])
+      }
+      for (let [id, map] of mapSides) { for (let [side, arrId] of map) { if (arrId.length < 2) map.delete(side) } }
       for (let [id, map] of mapSides) { if (map.size < 1) mapSides.delete(id) }
-      let mapPoints = new Map()
+      let mapOrder = new Map()
       for (let [id, map] of mapSides) {
-        let dicP = new Map()
-        for (let [side, set] of map) {
+        let mSide = new Map()
+        for (let [side, arrId] of map) {
+          let lsRec = []
+          for (let idB of arrId) lsRec.push(mapCls.get(idB))
+          lsRec = lsRec.map(x => [x.id, getCenter(x)])
+          if (isVertical(side)) lsRec.sort((a, b) => a[1].x - b[1].x)
+          else lsRec.sort((a, b) => a[1].y - b[1].y)
+          mSide.set(side, lsRec)
+        }
+        mapOrder.set(id, mSide)
+      }
+      for (let [id, map] of mapSides) {
+        for (let [side, arrId] of map) {
           let dSep, shapeA = mapCls.get(id)
-          if ('top' == side || 'bottom' == side) dSep = Math.round(shapeA.width / (set.size + 1))
-          if ('left' == side || 'right' == side) dSep = Math.round(shapeA.height / (set.size + 1))
-          let lsPoint = [], pX, pY
+          if (isVertical(side)) dSep = Math.round(shapeA.width / (arrId.length + 1))
+          else dSep = Math.round(shapeA.height / (arrId.length + 1))
+          let pX, pY, lsPoint = []
           switch (side) {
             case 'top': pY = shapeA.top
               break;
@@ -279,25 +298,30 @@ export default {
             case 'right': pX = shapeA.left + shapeA.width
               break;
           }
-          if ('top' == side || 'bottom' == side) {
+          if (isVertical(side)) {
             pX = shapeA.left
-            for (let idB of set) {
+            for (let idB of arrId) {
               pX += dSep
               lsPoint.push([pX, pY])
             }
-          }
-          if ('left' == side || 'right' == side) {
+          } else {
             pY = shapeA.top
-            for (let idB of set) {
+            for (let idB of arrId) {
               pY += dSep
               lsPoint.push([pX, pY])
             }
           }
-          dicP.set(side, lsPoint)
+          let mSideO = mapOrder.get(id)
+          let arrO = mSideO.get(side) // [[id, {x, y}]]
+          for (let ii = 0; ii < lsPoint.length; ii++) {
+            arrO[ii][1].pX = lsPoint[ii][0]
+            arrO[ii][1].pY = lsPoint[ii][1]
+          }
+          mSideO.set(side, arrO.map(x => { return { id: x[0], pX: x[1].pX, pY: x[1].pY } }))
+          //console.log(id, side, arrId, mSideO.get(side), lsPoint)
         }
-        mapPoints.set(id, dicP)
       }
-      console.log('dic sides', mapSides, mapPoints)
+      //console.log('dic sides', mapSides, mapOrder)
       for (let [id, cls] of mapCls) {
         for (let pId of cls.toIds) {
           bindOrthoConnect.call(this, cls, mapCls.get(pId), ctx, [c.width, c.height], 0)
@@ -324,12 +348,6 @@ export default {
         ctx.strokeStyle = color;
         ctx.stroke();
       }
-      function addMapSide(id, side, map, idB) {
-        if (!map.has(id)) map.set(id, new Map())
-        let dicSide = map.get(id)
-        if (dicSide.has(side)) dicSide.get(side).add(idB)
-        else dicSide.set(side, new Set([idB]))
-      }
       function bindOrthoConnect(shapeA, shapeB, context, [width, height], type = 0) {
         //https://gist.github.com/jose-mdz/4a8894c152383b9d7a870c24a04447e4
         const { sideA, sideB } = this.buildSide(shapeA, shapeB)
@@ -353,19 +371,19 @@ export default {
         }
         let { x, y } = path.shift()
         if (1 < path.length) {
-          if (mapPoints.has(shapeA.id)) {
-            let setSides = mapPoints.get(shapeA.id)
-            let [x0, y0, x1, y1] = verifyXy.call(this, x, y, setSides, sideA)
+          if (mapOrder.has(shapeA.id)) {
+            let setSides = mapOrder.get(shapeA.id)
+            let [x0, y0, x1, y1] = verifyXy.call(this, x, y, setSides, sideA, shapeB.id)
             x = x0
             y = y0
             path[0].x -= x1
             path[0].y -= y1
           }
-          if (mapPoints.has(shapeB.id)) {
+          if (mapOrder.has(shapeB.id)) {
             let p3 = path[path.length - 1]
             if (p3) {
-              let setSides = mapPoints.get(shapeB.id)
-              let [x0, y0, x1, y1] = verifyXy.call(this, p3.x, p3.y, setSides, sideB)
+              let setSides = mapOrder.get(shapeB.id)
+              let [x0, y0, x1, y1] = verifyXy.call(this, p3.x, p3.y, setSides, sideB, shapeA.id)
               p3.x = x0
               p3.y = y0
               p3 = path[path.length - 2]
@@ -378,24 +396,23 @@ export default {
         }
         this.drawPath(context, path, x, y, sideB, type)
 
-        function verifyXy(x, y, setSides, sideA) {
+        function verifyXy(x, y, setSides, sideA, idB) {
           let x1 = 0, y1 = 0
           if (setSides.has(sideA)) {
-            let poins = setSides.get(sideA)
-            if (poins.length) {
-              const cenA = { x: shapeA.left + shapeA.width / 2, y: shapeA.top + shapeA.height / 2 }
-              const cenB = { x: shapeB.left + shapeB.width / 2, y: shapeB.top + shapeB.height / 2 }
-              let x0, y0
-              if ('top' == sideA || 'bottom' == sideA) {
-                if (cenA.x <= cenB.x) [x0, y0] = poins.pop()
-                else { [x0, y0] = poins.shift() }
-                x1 = x - x0
-              } else {
-                if (cenA.y <= cenB.y) [x0, y0] = poins.pop()
-                else { [x0, y0] = poins.shift() }
-                y1 = y - y0
+            let arrPt = setSides.get(sideA) // [{id, pX, pY}]
+            if (0 < arrPt.length) {
+              let iiB = arrPt.findIndex(x => idB == x.id)
+              if (-1 < iiB) {
+                let ptXy = arrPt.splice(iiB, 1)[0]
+                let x0 = ptXy.pX
+                let y0 = ptXy.pY
+                if (isVertical(sideA)) {
+                  x1 = x - x0
+                } else {
+                  y1 = y - y0
+                }
+                return [x0, y0, x1, y1]
               }
-              return [x0, y0, x1, y1]
             }
           }
           return [x, y, x1, y1]
@@ -457,11 +474,10 @@ export default {
           case 'left': xy = pointD.x - size * offs; break;
           case 'right': xy = pointD.x + size * offs; break;
         }
-        const isVertical = 'top' == direct || 'bottom' == direct
         switch (type) {
           case 4: // 4 points
             const dtXy = 'top' == direct || 'left' == direct ? -size * offs : size * offs
-            if (isVertical) {
+            if (isVertical(direct)) {
               points = [
                 [pointD.x, xy + dtXy], [pointD.x - size / 2, xy], [pointD.x, pointD.y], [pointD.x + size / 2, xy]
               ]
@@ -472,14 +488,14 @@ export default {
             }
             break;
           case 2: // 3 points
-            if (isVertical) {
+            if (isVertical(direct)) {
               points = [[pointD.x - size / 2, xy], [pointD.x, pointD.y], [pointD.x + size / 2, xy]]
             } else {
               points = [[xy, pointD.y - size / 2], [pointD.x, pointD.y], [xy, pointD.y + size / 2]]
             }
             break;
           default: // 4 points
-            if (isVertical) {
+            if (isVertical(direct)) {
               points = [
                 [pointD.x, xy], [pointD.x - size / 2, xy], [pointD.x, pointD.y], [pointD.x + size / 2, xy]
               ]
