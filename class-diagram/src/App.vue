@@ -203,7 +203,7 @@ export default {
         }
       }
       function buildLsImplment() {
-        if (!rItem.toIds || !rItem.toIds.length) return     // verify
+        if (!rItem.toIds.length) return     // verify
         for (const [name, item] of mInterface) {
           if (item.id == rItem.id) continue // it-self
           if (!rItem.toIds.includes(item.id)) continue
@@ -211,7 +211,7 @@ export default {
         }
       }
       function buildLsExtend(mapCls) {
-        if (!rItem.toIds || !rItem.toIds.length) return     // verify
+        if (!rItem.toIds.length) return     // verify
         for (const [name, item] of mapCls) {
           if (item.id == rItem.id) continue // it-self
           if (!rItem.toIds.includes(item.id)) continue

@@ -274,7 +274,7 @@ export default {
                     prpF.Name = txtC
                     break;
                 case 'methd params':
-                    prpF = mItem.Properties[ii]; 
+                    prpF = mItem.Properties[ii];
                     let params = txtC.split(',').filter(x => !!x)
                     params = params.map(x => removeExtraSpaces(x))
                     params = params.map(x => x.split(' ').filter(t => !!t))
@@ -395,7 +395,7 @@ export default {
                 if (nItem) {
                     root.buildMapPoints(nItem)                // new item
                     root.buildAssociation()               // new item
-                    if (nItem.toIds && nItem.toIds.length) {
+                    if (nItem.toIds.length) {
                         root.updateSizeCanvas()               // new item
                         root.$nextTick(root.drawInCnvs) // new item
                     }
@@ -413,8 +413,8 @@ export default {
             }
             root.MpPoints.clear()
             item.Name = name
-            item.toIds = mItem.toIds
-            
+            item.toIds = mItem.toIds.filter(id => !isNaN(id))
+
             item.Fields = mItem.Fields
             item.Properties = mItem.Properties
             for (let [id, cls] of mapCls) root.buildMapPoints(cls)      // save change
@@ -460,6 +460,7 @@ export default {
             }
         },
         addExtend(id) {
+            if (!id) return
             const idsTo = this.entry.toIds
             idsTo.push(id)
         },

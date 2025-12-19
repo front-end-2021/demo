@@ -91,7 +91,7 @@ export default {
         ExtendFields() { return [] },
         ExtProperties() {
             const item = this.item
-            if (!item.toIds || !item.toIds.length) return []
+            if (!item.toIds.length) return []
             const mPoints = this.$root.MpPoints
             if (!mPoints.has(item.id)) return []
             const point = mPoints.get(item.id)

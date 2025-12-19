@@ -70,7 +70,7 @@ export const MxRect = {
                 this.$el.style.height = `${cH - 2}px`
             }
             if (isChange) {
-                
+
                 this.$root.closeBlock(this.item)        // changed size
 
             }
@@ -86,7 +86,6 @@ export const MxRect = {
                 root.MpPoints.clear()
                 mapCls.delete(item.id)
                 for (let [id, cls] of mapCls) {
-                    if (!cls.toIds) continue
                     if (!cls.toIds.length) continue
                     ii = cls.toIds.indexOf(item.id)
                     if (-1 < ii) cls.toIds.splice(ii, 1)
@@ -179,7 +178,7 @@ export const MxOjClass = {
     computed: {
         ExtendFields() {
             let tIds = this.item.toIds
-            if (!tIds || !tIds.length) return []
+            if (!tIds.length) return []
             const root = this.$root
             let fields = []
             let mapCls = root.MpClass
@@ -224,7 +223,7 @@ export const MxOjClass = {
         },
         ExtProperties() {
             const item = this.item
-            if (!item.toIds || !item.toIds.length) return []
+            if (!item.toIds.length) return []
             const mPoints = this.$root.MpPoints
             if (!mPoints.has(item.id)) return []
             const point = mPoints.get(item.id)

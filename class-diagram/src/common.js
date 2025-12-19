@@ -166,7 +166,7 @@ export function truncateIds(oList) {
     function updateToIds(oId, nId) {
         for (let ii = 0, item; ii < nList.length; ii++) {
             item = nList[ii]
-            if (!item.toIds || !item.toIds.length) continue;
+            if (!item.toIds.length) continue;
             if (item.id === oId) continue;           // itself
             let ij = item.toIds.indexOf(oId)
             if (ij < 0) continue
