@@ -619,7 +619,7 @@ export default {
         </article>
     </div>
 </template>
-<style scoped>
+<style>
 #dnb-viewcode {
     scrollbar-width: thin;
     min-width: 360px;

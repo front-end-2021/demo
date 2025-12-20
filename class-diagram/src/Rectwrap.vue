@@ -28,18 +28,18 @@ export default {
     },
     computed: {
         CompRect() {
-            const item = this.item
-            if (isInterface(item.TypeDeclaration)) return 'rect-interface'
-            if (isAbstract(item.TypeDeclaration)) return 'rect-abstract'
-            if (isEnum(item.TypeDeclaration)) return 'rect-enum'
-            if (isClass(item.TypeDeclaration)) return 'rect-class'
-            if (isStruct(item.TypeDeclaration)) return 'rect-class'
+            const type = this.item.TypeDeclaration
+            if (isInterface(type)) return 'rect-interface'
+            if (isAbstract(type)) return 'rect-abstract'
+            if (isEnum(type)) return 'rect-enum'
+            if (isClass(type)) return 'rect-class'
+            if (isStruct(type)) return 'rect-class'
             return null;
         },
     },
 }
 </script>
-<style scoped>
+<style>
 .wrprect {
     display: inline-block;
     border: 1px solid rgb(0, 0, 0);

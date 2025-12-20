@@ -159,9 +159,10 @@ export default {
             if (!idsTo) return []
             let lst = []
             const itemId = mItem.id
+            const mType = mItem.TypeDeclaration
             let lstSrc = this.$root.MpClass
             lstSrc = filterItems(lstSrc, (src) => src.id != itemId && !isEnum(src.TypeDeclaration) && !isStruct(src.TypeDeclaration), 'set')
-            if('cls-classname' != itemId) lstSrc = filterItems(lstSrc, (src) => !src.toIds || !src.toIds.includes(itemId), 'set')
+            if ('cls-classname' != itemId) lstSrc = filterItems(lstSrc, (src) => !src.toIds || !src.toIds.includes(itemId), 'set')
 
             let lsEx = new Set()
             for (let src of lstSrc) {
@@ -169,7 +170,7 @@ export default {
                     lsEx.add(src.id)
                 lst.push(src)
             }
-            if (isAbstract(mItem.TypeDeclaration)) {
+            if (isAbstract(mType)) {
                 if (lsEx.size) {
                     for (let ii = lst.length - 1, src; -1 < ii; ii--) {
                         src = lst[ii]
@@ -188,7 +189,7 @@ export default {
                 }
                 return lst
             }
-            if (isClass(mItem.TypeDeclaration)) {
+            if (isClass(mType)) {
                 if (lsEx.size) {
                     for (let ii = lst.length - 1, src; -1 < ii; ii--) {
                         src = lst[ii]
@@ -198,7 +199,7 @@ export default {
                 }
                 return lst
             }
-            if (isInterface(mItem.TypeDeclaration)) {
+            if (isInterface(mType)) {
                 for (let ii = lst.length - 1, src; -1 < ii; ii--) {
                     src = lst[ii]
                     if (isInterface(src.TypeDeclaration)) continue
@@ -214,16 +215,17 @@ export default {
             const mItem = frmCode.cItem
             const ii = this.$root.PLang
             switch (val) {
-                case StructTypes[0][ii]: mItem.TypeDeclaration = StructTypes[0][0]
+                case StructTypes[0][ii]: setType(StructTypes[0][0])
                     break;
-                case StructTypes[1][ii]: mItem.TypeDeclaration = StructTypes[1][0]
+                case StructTypes[1][ii]: setType(StructTypes[1][0])
                     break;
-                case StructTypes[2][ii]: mItem.TypeDeclaration = StructTypes[2][0]
+                case StructTypes[2][ii]: setType(StructTypes[2][0])
                     break;
-                case StructTypes[3][ii]: mItem.TypeDeclaration = StructTypes[3][0]
+                case StructTypes[3][ii]: setType(StructTypes[3][0])
                     break;
                 default: return;
             }
+            function setType(type) { mItem.TypeDeclaration = type }
         },
         onBlurEditable(e, type, ii) {
             const frmCode = this.$root.DynamicVar.get('FrameCode')
@@ -479,7 +481,7 @@ export default {
     },
 }
 </script>
-<style scoped>
+<style>
 .mformedit {
     scrollbar-width: thin;
 }

@@ -1,7 +1,4 @@
-import {
-    processLines, StructTypes, getLstExt,
-    addStrFirst, cellSize, getPropKey
-} from "./common.js"
+import { processLines, StructTypes, getLstExt, addStrFirst, cellSize, getPropKey } from "./common.js"
 export function isAbstract(t) { if (typeof t != 'string') return false; return t.includes('abstrac') }
 export function isClass(t) { if (typeof t != 'string' || isAbstract(t)) return false; return t.includes('class') }
 export function isInterface(t) { if (typeof t != 'string') return false; return t.includes('interf') }
@@ -21,7 +18,7 @@ export function mapItems(map, fn) {
     else for (let item of map) ls.push(item)
     return ls.map(x => fn(x))
 }
-export const MxRect = {
+export const MxRect = { // class, abstract, interface, enum, 
     props: ['item'],
     methods: {
         onMouseDown(event) {
@@ -54,27 +51,28 @@ export const MxRect = {
         setWidthHeight() {
             const item = this.item
             let w = item.width
-            let cW = this.$el.offsetWidth
+            const _el = this.$el
+            let cW = _el.offsetWidth
             cW = Math.ceil(cW / cellSize) * cellSize
-            let isChange = false
+            //  let isChange = false
             if (w != cW) {
                 item.width = cW
-                isChange = true
-                this.$el.style.width = `${cW - 2}px`  // border
+             //   isChange = true
+                _el.style.width = `${cW - 2}px`  // border
             }
             let h = item.height
-            let cH = this.$el.offsetHeight
+            let cH = _el.offsetHeight
             cH = Math.ceil(cH / cellSize) * cellSize
             if (h != cH) {
                 item.height = cH
-                isChange = true
-                this.$el.style.height = `${cH - 2}px`
+             //   isChange = true
+                _el.style.height = `${cH - 2}px`
             }
-           // if (isChange) {
-              //  console.log('chagne', item.id, item.Name)
-              //  const root = this.$root
-               // root.bindKeyDraw(root.MpClass)
-           // }
+            // if (isChange) {
+            //  console.log('chagne', item.id, item.Name)
+            //  const root = this.$root
+            // root.bindKeyDraw(root.MpClass)
+            // }
         },
         deleteCls(item) {
             const root = this.$root
@@ -108,19 +106,14 @@ export const MxRect = {
     },
     mounted() { this.setWidthHeight() },
     beforeUpdate() {
-        this.$el.style.width = ''
-        this.$el.style.height = ''
+        const _el = this.$el
+        _el.style.width = ''
+        _el.style.height = ''
     },
     updated() { this.setWidthHeight() },
 }
-export const MxOjClass = {
+export const MxOjClass = { // class, abstract
     methods: {
-        getCsFormat(prp) {
-            let acModify = prp.AccessModify
-            let txt = this.getAcModf(prp)
-            if (isAbstract(acModify) && !prp.specialMe) return `${txt};\n`
-            return `${txt} {...}`
-        },
         showCodeBody(ii, offI) {
             const dmVar = this.$root.DynamicVar
             if (dmVar.has('FrameCode')) { return }
@@ -194,15 +187,10 @@ export const MxOjClass = {
             const item = this.item
             let clsName = item.Name
             const ii = this.$root.PLang
-            switch (item.TypeDeclaration) {
-                case StructTypes[1][0]: // 'abstract class'
-                    clsName = `public ${StructTypes[1][ii]} ${clsName}`
-                    break;
-                case StructTypes[2][0]: // 'class'
-                    clsName = `public ${StructTypes[2][ii]} ${clsName}`
-                    break;
-                default: break;
-            }
+
+            if(isAbstract(item.TypeDeclaration)) clsName = `public ${StructTypes[1][ii]} ${clsName}`
+            else clsName = `public ${StructTypes[2][ii]} ${clsName}`
+            
             let extds = this.ViewExtends
             let exnd = ''
             if (extds.length) {
@@ -232,117 +220,6 @@ export const MxOjClass = {
             let lst2 = getLstExt(item.Properties, point.Implements)
             for (let ii = 0; ii < lst2.length; ii++) { lst.push(lst2[ii]) }
             return lst
-        },
-    },
-}
-export const MxClsItf = {      // mixin: Class, Abstract, Interface
-    methods: {
-        setFragViewCode(txt) {
-            let off = this.$el.getBoundingClientRect()
-            let top = off.top - 12
-            let left = off.left + off.width
-            left = Math.ceil(left)
-            if (window.innerWidth < left + 360) {
-                left -= 360
-                left -= off.width
-            }
-            let html = hljs.highlight(txt, { language: 'cs' }).value
-            const dmVar = this.$root.DynamicVar
-            dmVar.delete('FrameCode')
-            dmVar.set('FViewCode', {
-                top, left, html, type: 1
-            })
-            this.$root.$nextTick(() => {
-                let vwFcode = document.body.querySelector(`#dnb-viewcode`)
-                if (vwFcode) {
-                    let frmCode = dmVar.get('FViewCode')
-                    let offF = vwFcode.getBoundingClientRect()
-                    let maxY = offF.top + offF.height
-                    if (window.innerHeight - 39 < maxY) {
-                        frmCode.top -= (maxY - window.innerHeight + 6 + 18)
-                        vwFcode.style.top = `${frmCode.top}px`
-                    }
-                }
-            })
-        },
-        onEditable(e, type, ii) {
-            const dmVar = this.$root.DynamicVar
-            if (dmVar.has('FrameCode')) { return }
-            this.$root.closePopupForm()
-            const target = e.target
-            switch (type) {
-                case 'class name':
-                case 'methd name':
-                    target.setAttribute('contenteditable', 'true')
-                    target.focus()
-                    break;
-                default: break;
-            }
-        },
-        onDoneEdit(e, type, ii) {
-            const root = this.$root
-            const target = e.target
-            const item = this.item
-            let name = target.textContent
-            name = name.trim()
-            switch (type) {
-                case 'class name':
-                    target.removeAttribute('contenteditable')
-                    if (!name.length) {
-                        target.innerHTML = item.Name
-                    } else {
-                        if (StructTypes[1][0] == item.TypeDeclaration)
-                            name = name.replace('abstract', '');
-                        name = name.replaceAll(' ', '')
-                        item.Name = name
-                    }
-                    break;
-                case 'methd name':
-                    target.removeAttribute('contenteditable')
-                    const prp = this.item.Properties[ii]
-                    if (!name.length) {
-                        target.innerHTML = prp.Name
-                    } else {
-                        prp.Name = name
-                    }
-                    break;
-                default: break;
-            }
-        },
-        getAcModf(prp) { return `${prp.AccessModify} ${prp.DataType} ${getPropKey(prp, prp.Name)}` },
-        getTxtFields(item, extnFields) {
-            let txtF = ''
-            let lstF = [...item.Fields, ...extnFields]
-            for (let jj = 0, field; jj < lstF.length; jj++) {
-                field = lstF[jj]
-                txtF += `  ${field.AccessModify} ${field.DataType} ${field.Name};\n`
-            }
-            return txtF
-        },
-        vwVisible(str) {
-            let txt = str.trim()
-            if (txt.includes('public')) return '+'
-            if (txt.includes('private')) return '-'
-            if (txt.includes('protected')) return '#'
-            return ''
-        },
-        clkField(field) {
-            const dmVar = this.$root.DynamicVar
-            if (dmVar.has('FrameCode')) { return }
-            this.$root.clearDyVar()
-        },
-        propTostring(prp) { return getPropKey(prp) },
-    },
-    computed: {
-        ViewExtends() {
-            const tIds = this.item.toIds
-            if (!tIds || !tIds.length) return ''
-            const root = this.$root
-            const mPoints = root.MpPoints
-            const itemId = this.item.id
-            if (!mPoints.has(itemId)) return ''
-            let point = mPoints.get(itemId)
-            return root.getLsExtends(point.Extends, point.Implements, root.PLang)
         },
     },
 }

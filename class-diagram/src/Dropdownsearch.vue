@@ -60,7 +60,7 @@ export default {
     },
 }
 </script>
-<style scoped>
+<style>
 .dr_lst-wrap {
     scrollbar-width: thin;
 }
