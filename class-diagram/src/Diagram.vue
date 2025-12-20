@@ -255,10 +255,49 @@ export default {
                     globalBounds: { left: 0, top: 0, width, height },
                 });
                 if (!Array.isArray(paths) || paths.length < 2) return;
-                arrPaths.push([shapeA, shapeB, paths, type, sideA, sideB])
+                let path0 = paths[0]
+                if (mapOrder.has(shapeA.id)) {
+                    let setSides = mapOrder.get(shapeA.id)
+                    let [x0, y0, x1, y1] = verifyXy.call(this, path0.x, path0.y, setSides, sideA, shapeB.id)
+                    path0.x = x0
+                    path0.y = y0
+                    paths[1].x -= x1
+                    paths[1].y -= y1
+                }
+                if (mapOrder.has(shapeB.id)) {
+                    let p3 = paths[paths.length - 1]
+                    let setSides = mapOrder.get(shapeB.id)
+                    let [x0, y0, x1, y1] = verifyXy.call(this, p3.x, p3.y, setSides, sideB, shapeA.id)
+                    p3.x = x0
+                    p3.y = y0
+                    p3 = paths[paths.length - 2]
+                    if (p3) {
+                        p3.x -= x1
+                        p3.y -= y1
+                    }
+                }
+                arrPaths.push([shapeA, shapeB, paths, type, sideB])
+                function verifyXy(x, y, setSides, sideA, idB) {
+                    let x1 = 0, y1 = 0
+                    if (setSides.has(sideA)) {
+                        let arrPt = setSides.get(sideA) // [{id, pX, pY}]
+                        if (0 < arrPt.length) {
+                            let iiB = arrPt.findIndex(x => idB == x.id)
+                            if (-1 < iiB) {
+                                let ptXy = arrPt.splice(iiB, 1)[0]
+                                let x0 = ptXy.pX
+                                let y0 = ptXy.pY
+                                if (isVertical(sideA)) { x1 = x - x0 }
+                                else { y1 = y - y0 }
+                                return [x0, y0, x1, y1]
+                            }
+                        }
+                    }
+                    return [x, y, x1, y1]
+                }
             }
-            for (let [shapeA, shapeB, paths, type, sideA, sideB] of arrPaths) {
-                bindConnect.call(this, shapeA, shapeB, ctx, paths, sideA, sideB, type)
+            for (let [shapeA, shapeB, paths, type, sideB] of arrPaths) {
+                bindConnect.call(this, shapeA, shapeB, ctx, paths, sideB, type)
             }
             return
             function drawGrid(bw, bh, size, color) {
@@ -276,7 +315,7 @@ export default {
                 ctx.strokeStyle = color;
                 ctx.stroke();
             }
-            function bindConnect(shapeA, shapeB, context, path, sideA, sideB, type = 0) {
+            function bindConnect(shapeA, shapeB, context, path, sideB, type = 0) {
                 const round = 8
                 // #region draw shapes (debug)
                 // context.beginPath();
@@ -294,135 +333,90 @@ export default {
                     if (isInterface(shapeB.TypeDeclaration)) type = 2
                 }
                 let { x, y } = path.shift()
-                if (1 < path.length) {
-                    if (mapOrder.has(shapeA.id)) {
-                        let setSides = mapOrder.get(shapeA.id)
-                        let [x0, y0, x1, y1] = verifyXy.call(this, x, y, setSides, sideA, shapeB.id)
-                        x = x0
-                        y = y0
-                        path[0].x -= x1
-                        path[0].y -= y1
-                    }
-                    if (mapOrder.has(shapeB.id)) {
-                        let p3 = path[path.length - 1]
-                        if (p3) {
-                            let setSides = mapOrder.get(shapeB.id)
-                            let [x0, y0, x1, y1] = verifyXy.call(this, p3.x, p3.y, setSides, sideB, shapeA.id)
-                            p3.x = x0
-                            p3.y = y0
-                            p3 = path[path.length - 2]
-                            if (p3) {
-                                p3.x -= x1
-                                p3.y -= y1
-                            }
-                        }
-                    }
-                    if (2 < path.length) {
-                        let p3 = path[path.length - 1]
-                        let minx = Math.min(x, p3.x)
-                        let maxx = Math.max(x, p3.x)
-                        let miny = Math.min(y, p3.y)
-                        let maxy = Math.max(y, p3.y)
-                        const obstacles = getObstacles({ x, y }, p3)
-                        if (0 < obstacles.length) {
-                            for (let ii = 1, pth1, pth2, ob1; ii < path.length - 1; ii++) {
-                                pth1 = path[ii - 1]
-                                pth2 = path[ii]
-                                if (isVcx(pth1, pth2)) {  // vertical
-                                    ob1 = obsV(pth1, obstacles)
-                                    if (ob1) {
-                                        let xx = ob1.x0 - cellSize
-                                        if (isInMinMax(xx, minx, maxx)) { pth1.x = xx; pth2.x = xx }
-                                    }
-                                } else {    // horizontal
-                                    ob1 = obsH(pth1, obstacles)
-                                    if (ob1) {
-                                        let yy = ob1.y0 - cellSize
-                                        if (isInMinMax(yy, miny, maxy)) { pth1.y = yy; pth2.y = yy }
-                                    }
+                if (2 < path.length) {
+                    let p3 = path[path.length - 1]
+                    let minx = Math.min(x, p3.x)
+                    let maxx = Math.max(x, p3.x)
+                    let miny = Math.min(y, p3.y)
+                    let maxy = Math.max(y, p3.y)
+                    const obstacles = getObstacles({ x, y }, p3)
+                    if (0 < obstacles.length) {
+                        for (let ii = 1, pth1, pth2, ob1; ii < path.length - 1; ii++) {
+                            pth1 = path[ii - 1]
+                            pth2 = path[ii]
+                            if (isVcx(pth1, pth2)) {  // vertical
+                                ob1 = obsV(pth1, obstacles)
+                                if (ob1) {
+                                    let xx = ob1.x0 - cellSize
+                                    if (isInMinMax(xx, minx, maxx)) { pth1.x = xx; pth2.x = xx }
                                 }
-                            }
-                            function obsH(_p, ls) { return ls.find(o => o.y0 <= _p.y && _p.y <= o.y1) }
-                            function obsV(_p, ls) { return ls.find(o => o.x0 <= _p.x && _p.x <= o.x1) }
-                        } else if (0 < drewPaths.length) {
-                            for (let ii = 1, pth1, pth2; ii < path.length - 1; ii++) {
-                                pth1 = path[ii - 1]
-                                pth2 = path[ii]
-                                if (isVcx(pth1, pth2)) {  // vertical
-                                    let mxx = pth1.x
-                                    let pV = findV(mxx, drewPaths)
-                                    while (pV) {
-                                        mxx -= cellSize
-                                        if (!isInMinMax(mxx, minx, maxx)) break;
-                                        pV = findV(mxx, drewPaths)
-                                    }
-                                    if (mxx != pth1.x) {
-                                        pth1.x = mxx
-                                        pth2.x = mxx
-                                    }
-                                } else {    // horizontal
-                                    let mmy = pth1.y
-                                    let pH = findH(mmy, drewPaths)
-                                    while (pH) {
-                                        mmy -= cellSize
-                                        if (!isInMinMax(mmy, miny, maxy)) break;
-                                        pH = findH(mmy, drewPaths)
-                                    }
-                                    if (mmy != pth1.y) {
-                                        pth1.y = mmy
-                                        pth2.y = mmy
-                                    }
-                                }
-                            }
-                            function findV(x, ls) {
-                                for (let arr of ls) {
-                                    for (let iiv = 1, p1, p2; iiv < arr.length; iiv++) {
-                                        p1 = arr[iiv - 1]
-                                        p2 = arr[iiv]
-                                        if (isVcx(p1, p2) && p1.x == x) return [p1, p2]
-                                    }
-                                }
-                            }
-                            function findH(y, ls) {
-                                for (let arr of ls) {
-                                    for (let iiv = 1, p1, p2; iiv < arr.length; iiv++) {
-                                        p1 = arr[iiv - 1]
-                                        p2 = arr[iiv]
-                                        if (!isVcx(p1, p2) && p1.y == y) return [p1, p2]
-                                    }
+                            } else {    // horizontal
+                                ob1 = obsH(pth1, obstacles)
+                                if (ob1) {
+                                    let yy = ob1.y0 - cellSize
+                                    if (isInMinMax(yy, miny, maxy)) { pth1.y = yy; pth2.y = yy }
                                 }
                             }
                         }
-                        function isVcx(p1, p2) { return p1.x == p2.x }
-                        function isInMinMax(p, min, max) { if (min <= p && p <= max) return true }
+                        function obsH(_p, ls) { return ls.find(o => o.y0 <= _p.y && _p.y <= o.y1) }
+                        function obsV(_p, ls) { return ls.find(o => o.x0 <= _p.x && _p.x <= o.x1) }
+                    } else if (0 < drewPaths.length) {
+                        for (let ii = 1, pth1, pth2; ii < path.length - 1; ii++) {
+                            pth1 = path[ii - 1]
+                            pth2 = path[ii]
+                            if (isVcx(pth1, pth2)) {  // vertical
+                                let mxx = pth1.x
+                                let pV = findV(mxx, drewPaths)
+                                while (pV) {
+                                    mxx -= cellSize
+                                    if (!isInMinMax(mxx, minx, maxx)) { mxx += cellSize; break }
+                                    pV = findV(mxx, drewPaths)
+                                }
+                                if (mxx != pth1.x) {
+                                    pth1.x = mxx
+                                    pth2.x = mxx
+                                }
+                            } else {    // horizontal
+                                let mmy = pth1.y
+                                let pH = findH(mmy, drewPaths)
+                                while (pH) {
+                                    mmy -= cellSize
+                                    if (!isInMinMax(mmy, miny, maxy)) { mmy += cellSize; break }
+                                    pH = findH(mmy, drewPaths)
+                                }
+                                if (mmy != pth1.y) {
+                                    pth1.y = mmy
+                                    pth2.y = mmy
+                                }
+                            }
+                        }
+                        function findV(x, ls) {
+                            for (let arr of ls) {
+                                for (let iiv = 1, p1, p2; iiv < arr.length; iiv++) {
+                                    p1 = arr[iiv - 1]
+                                    p2 = arr[iiv]
+                                    if (isVcx(p1, p2) && Math.abs(p1.x - x) < 6) return [p1, p2]
+                                }
+                            }
+                        }
+                        function findH(y, ls) {
+                            for (let arr of ls) {
+                                for (let iiv = 1, p1, p2; iiv < arr.length; iiv++) {
+                                    p1 = arr[iiv - 1]
+                                    p2 = arr[iiv]
+                                    if (!isVcx(p1, p2) && Math.abs(p1.y - y) < 6) return [p1, p2]
+                                }
+                            }
+                        }
                     }
-                    let midP = path.filter((p, ii) => ii < path.length - 1)
-                    if (1 < midP.length) drewPaths.push(midP)
+                    function isVcx(p1, p2) { return p1.x == p2.x }
+                    function isInMinMax(p, min, max) { if (min <= p && p <= max) return true }
                 }
+                if (1 < path.length) { drewPaths.push(path) }
 
                 drawPath.call(this, context, path, x, y, sideB, type)
 
-                function verifyXy(x, y, setSides, sideA, idB) {
-                    let x1 = 0, y1 = 0
-                    if (setSides.has(sideA)) {
-                        let arrPt = setSides.get(sideA) // [{id, pX, pY}]
-                        if (0 < arrPt.length) {
-                            let iiB = arrPt.findIndex(x => idB == x.id)
-                            if (-1 < iiB) {
-                                let ptXy = arrPt.splice(iiB, 1)[0]
-                                let x0 = ptXy.pX
-                                let y0 = ptXy.pY
-                                if (isVertical(sideA)) {
-                                    x1 = x - x0
-                                } else {
-                                    y1 = y - y0
-                                }
-                                return [x0, y0, x1, y1]
-                            }
-                        }
-                    }
-                    return [x, y, x1, y1]
-                }
+
                 function drawPath(ctx, path, bX, bY, sideB, type = 1) {
                     let color = 'black'
                     ctx.strokeStyle = color;
