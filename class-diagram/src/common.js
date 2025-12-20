@@ -75,35 +75,6 @@ export function clearSpace(str, nm) {
     return str.replaceAll(' ', '')
 }
 export const cellSize = 10
-export const cellEmpty = 'E'
-export const cellBlock = 'B'
-export function getRows(height) { return height / cellSize }
-export function getCols(width) { return width / cellSize }
-export function genBoards(rows, cols) {
-    let brd = [], i, j, row
-    for (i = 0; i < rows; i++) {
-        row = [];
-        for (j = 0; j < cols; j++) row.push(cellEmpty);
-        brd.push(row);
-    }
-    return brd
-}
-export function setCell(board, ix, iy, value) { board[ix][iy] = value }
-export function doInRange([ix0, iy0, ix1, iy1], fnc) {
-    for (let ix = ix0; ix < ix1; ix++) {
-        for (let iy = iy0; iy < iy1; iy++) fnc(ix, iy)
-    }
-}
-function build_iXiY(x, y) {
-    let ix = Math.floor(x / cellSize)
-    let iy = Math.floor(y / cellSize)
-    return [ix, iy]
-}
-export function getArea(cls) {
-    let [ix0, iy0] = build_iXiY(cls.left, cls.top)
-    let [ix1, iy1] = build_iXiY(cls.left + cls.width, cls.top + cls.height)
-    return [ix0, iy0, ix1, iy1]
-}
 export const PropName = 'ProperName'
 export function objNewCls(nCls, id, top, left) {
     const fNm = 'fieldName'

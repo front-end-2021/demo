@@ -3,14 +3,14 @@ import {
     addStrFirst, cellSize, getPropKey
 } from "./common.js"
 export function isAbstract(t) { if (typeof t != 'string') return false; return t.includes('abstrac') }
-export function isClass(t) { if (typeof t != 'string') return false; return 'class' == t }
+export function isClass(t) { if (typeof t != 'string' || isAbstract(t)) return false; return t.includes('class') }
 export function isInterface(t) { if (typeof t != 'string') return false; return t.includes('interf') }
 export function isStruct(t) { if (typeof t != 'string') return false; return 'struct' == t }
 export function isEnum(t) { if (typeof t != 'string') return false; return 'enum' == t }
 export function filterItems(map, fnc, returnType = 'set', returnKey = 'id') {
     let ls = new Set()
-    if (map instanceof Map) for (let [id, item] of map) if (fnc(item)) ls.add(item)
-    else for (let item of map) if (fnc(item)) ls.add(item)
+    if (map instanceof Map) for (let [id, item] of map) { if (fnc(item)) ls.add(item) }
+    else for (let item of map) { if (fnc(item)) ls.add(item) }
     if ('map' == returnType) return new Map([...ls].map(x => [x[returnKey], x]))
     if ('array' == returnType) return [...ls]
     return ls
@@ -38,42 +38,43 @@ export const MxRect = {
             x -= wrp.scrollLeft
             y -= wrp.scrollTop
 
+            const item = this.item
             document.addEventListener('keydown', root.disableSrollDown)
             root.DynamicVar.set('DragElm', {
-                Item: this.item,
+                Item: item,
                 offX: off.left - event.clientX - x,
                 offY: off.top - event.clientY - y,
-                Top: this.item.top,
-                Left: this.item.left
+                Top: item.top,
+                Left: item.left
             })
-            root.openBlock(this.item)       // start dnd
-            const itemEl = wrp.querySelector(`#cls_${this.item.id}`)
+            const itemEl = wrp.querySelector(`#cls_${item.id}`)
             itemEl.style.zIndex = '1'
             itemEl.style.backgroundColor = 'white'
         },
         setWidthHeight() {
-            let w = this.item.width
+            const item = this.item
+            let w = item.width
             let cW = this.$el.offsetWidth
             cW = Math.ceil(cW / cellSize) * cellSize
             let isChange = false
             if (w != cW) {
-                this.item.width = cW
+                item.width = cW
                 isChange = true
                 this.$el.style.width = `${cW - 2}px`  // border
             }
-            let h = this.item.height
+            let h = item.height
             let cH = this.$el.offsetHeight
             cH = Math.ceil(cH / cellSize) * cellSize
             if (h != cH) {
-                this.item.height = cH
+                item.height = cH
                 isChange = true
                 this.$el.style.height = `${cH - 2}px`
             }
-            if (isChange) {
-
-                this.$root.closeBlock(this.item)        // changed size
-
-            }
+           // if (isChange) {
+              //  console.log('chagne', item.id, item.Name)
+              //  const root = this.$root
+               // root.bindKeyDraw(root.MpClass)
+           // }
         },
         deleteCls(item) {
             const root = this.$root
@@ -94,8 +95,7 @@ export const MxRect = {
                     root.buildMapPoints(cls)   // delete item
                 }
                 root.buildAssociation()               // delete item
-                root.updateSizeCanvas()               // delete item
-                root.$nextTick(root.drawInCnvs) // delete item
+                root.updateMnmxXy()               // delete item
                 mapCls = new Map(mapCls)
             }
             root.MpClass = mapCls
@@ -295,7 +295,6 @@ export const MxClsItf = {      // mixin: Class, Abstract, Interface
                             name = name.replace('abstract', '');
                         name = name.replaceAll(' ', '')
                         item.Name = name
-                        root.$nextTick(root.drawInCnvs)
                     }
                     break;
                 case 'methd name':
@@ -305,7 +304,6 @@ export const MxClsItf = {      // mixin: Class, Abstract, Interface
                         target.innerHTML = prp.Name
                     } else {
                         prp.Name = name
-                        root.$nextTick(root.drawInCnvs)
                     }
                     break;
                 default: break;

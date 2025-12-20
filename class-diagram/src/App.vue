@@ -18,16 +18,11 @@
 
 <script>
 import { getListCls } from './repository.js'
-import {
-  setHeight, initPoint, getStringBetween,
-  cellBlock, verifyExportTxt, doInRange, setCell, getArea,
-  genBoards, getRows, getCols, cellSize, cellEmpty,
-} from './common.js'
+import { setHeight, initPoint, getStringBetween, verifyExportTxt } from './common.js'
+import CryptoJS from 'crypto-js'
 import { isAbstract, isInterface, isClass, isEnum, isStruct, filterItems, mapItems } from './Appmixin.js';
 import ViewDiagram from './Diagram.vue'
 import FormEdit from './Formedit.vue'
-function getCenter(shp) { return { x: shp.left + shp.width / 2, y: shp.top + shp.height / 2 } }
-function isVertical(sd) { return 'top' == sd || 'bottom' == sd }
 export default {
   name: 'DaiNb.vApp',
   components: {
@@ -39,16 +34,10 @@ export default {
     let MaxX = MinX + 1754
     let MinY = 30
     let MaxY = 880
-    const border = 2    // 1px * 2
-    let rows = getRows(MaxX - MinX - border)
-    let cols = getCols(MaxY - MinY - border)
-    let Board = genBoards(rows, cols)
     let lsCls = getListCls()
     return {
       MinX, MaxX,
       MinY, MaxY,
-      Board,
-      BlokedMap: new Map(),
       DiagName: 'Demo',
       MpClass: new Map(lsCls.map(x => [x.id, x])),
       MpPoints: new Map(),
@@ -60,6 +49,7 @@ export default {
       NewClassName: null,
       PLang: 1,
       Langs: ['Uml', 'CSharp', 'Java'],
+      KeyDraw: '',
     }
   },
   computed: {
@@ -77,24 +67,6 @@ export default {
     },
   },
   methods: {
-    closeBlock(cls) {
-      const grid = this.Board
-      let area = getArea(cls)
-      const mapBlk = this.BlokedMap
-      doInRange(area, (ix, iy) => {
-        setCell(grid, ix, iy, cellBlock)
-      })
-      mapBlk.set(cls.id, area)
-    },
-    openBlock(item) {
-      const grid = this.Board
-      let area = getArea(item)
-      const mapBlk = this.BlokedMap
-      doInRange(area, (ix, iy) => {
-        setCell(grid, ix, iy, cellEmpty)
-      })
-      mapBlk.delete(item.id)
-    },
     buildMapPoints(rItem) {
       const typeDec = rItem.TypeDeclaration
       if (isEnum(typeDec)) return     // verify
@@ -231,312 +203,6 @@ export default {
         }
       }
     },
-    drawInCnvs() {
-      const c = document.getElementById('dnb-mcanvas');
-      const ctx = c.getContext("2d");
-      ctx.clearRect(0, 0, c.width, c.height);
-
-      const grid = this.Board
-      let rows = grid.length      // x
-      let cols = grid[0].length   // y
-      drawGrid(rows * cellSize, cols * cellSize, cellSize, '#f5f5f5')
-      const mapSides = new Map()
-      const dicName = new Map(), mapCls = this.MpClass
-      for (let [id, cls] of mapCls) { dicName.set(cls.Name, cls) }
-      for (let [id, cls] of mapCls) {
-        if (!mapSides.has(id)) mapSides.set(id, new Map())
-        let clsB
-        for (let pId of cls.toIds) {
-          clsB = mapCls.get(pId)
-          const { sideA, sideB } = this.buildSide(cls, clsB)
-          addMapSide(id, sideA, mapSides, clsB.id)
-          addMapSide(clsB.id, sideB, mapSides, id)
-        }
-        for (let f of cls.Fields) {
-          if (dicName.has(f.DataType)) {
-            clsB = dicName.get(f.DataType)
-            const { sideA, sideB } = this.buildSide(cls, clsB)
-            addMapSide(id, sideA, mapSides, clsB.id)
-            addMapSide(clsB.id, sideB, mapSides, id)
-          }
-        }
-      }
-      function addMapSide(id, side, map, idB) {
-        if (!map.has(id)) map.set(id, new Map())
-        let dicSide = map.get(id)
-        if (dicSide.has(side)) dicSide.get(side).push(idB)
-        else dicSide.set(side, [idB])
-      }
-      for (let [id, map] of mapSides) { for (let [side, arrId] of map) { if (arrId.length < 2) map.delete(side) } }
-      for (let [id, map] of mapSides) { if (map.size < 1) mapSides.delete(id) }
-      let mapOrder = new Map()
-      for (let [id, map] of mapSides) {
-        let mSide = new Map()
-        for (let [side, arrId] of map) {
-          let lsRec = []
-          for (let idB of arrId) lsRec.push(mapCls.get(idB))
-          lsRec = lsRec.map(x => [x.id, getCenter(x)])
-          if (isVertical(side)) lsRec.sort((a, b) => a[1].x - b[1].x)
-          else lsRec.sort((a, b) => a[1].y - b[1].y)
-          mSide.set(side, lsRec)
-        }
-        mapOrder.set(id, mSide)
-      }
-      for (let [id, map] of mapSides) {
-        for (let [side, arrId] of map) {
-          let dSep, shapeA = mapCls.get(id)
-          if (isVertical(side)) dSep = Math.round(shapeA.width / (arrId.length + 1))
-          else dSep = Math.round(shapeA.height / (arrId.length + 1))
-          let pX, pY, lsPoint = []
-          switch (side) {
-            case 'top': pY = shapeA.top
-              break;
-            case 'bottom': pY = shapeA.top + shapeA.height
-              break;
-            case 'left': pX = shapeA.left
-              break;
-            case 'right': pX = shapeA.left + shapeA.width
-              break;
-          }
-          if (isVertical(side)) {
-            pX = shapeA.left
-            for (let idB of arrId) {
-              pX += dSep
-              lsPoint.push([pX, pY])
-            }
-          } else {
-            pY = shapeA.top
-            for (let idB of arrId) {
-              pY += dSep
-              lsPoint.push([pX, pY])
-            }
-          }
-          let mSideO = mapOrder.get(id)
-          let arrO = mSideO.get(side) // [[id, {x, y}]]
-          for (let ii = 0; ii < lsPoint.length; ii++) {
-            arrO[ii][1].pX = lsPoint[ii][0]
-            arrO[ii][1].pY = lsPoint[ii][1]
-          }
-          mSideO.set(side, arrO.map(x => { return { id: x[0], pX: x[1].pX, pY: x[1].pY } }))
-          //console.log(id, side, arrId, mSideO.get(side), lsPoint)
-        }
-      }
-      //console.log('dic sides', mapSides, mapOrder)
-      for (let [id, cls] of mapCls) {
-        for (let pId of cls.toIds) {
-          bindOrthoConnect.call(this, cls, mapCls.get(pId), ctx, [c.width, c.height], 0)
-        }
-        for (let f of cls.Fields) {
-          if (dicName.has(f.DataType)) {
-            bindOrthoConnect.call(this, cls, dicName.get(f.DataType), ctx, [c.width, c.height], 4)
-          }
-        }
-      }
-      return
-      function drawGrid(bw, bh, size, color) {
-        ctx.beginPath();
-        ctx.setLineDash([]);
-        const p = 0
-        for (let x = 0; x <= bw; x += size) {
-          ctx.moveTo(0.5 + x + p, p);
-          ctx.lineTo(0.5 + x + p, bh + p);
-        }
-        for (let x = 0; x <= bh; x += size) {
-          ctx.moveTo(p, 0.5 + x + p);
-          ctx.lineTo(bw + p, 0.5 + x + p);
-        }
-        ctx.strokeStyle = color;
-        ctx.stroke();
-      }
-      function bindOrthoConnect(shapeA, shapeB, context, [width, height], type = 0) {
-        //https://gist.github.com/jose-mdz/4a8894c152383b9d7a870c24a04447e4
-        const { sideA, sideB } = this.buildSide(shapeA, shapeB)
-        const path = this.buildPath({ shapeA, sideA }, { shapeB, sideB }, { width, height })
-        if (!Array.isArray(path) || !path.length) return;
-
-        // #region draw shapes (debug)
-        // context.beginPath();
-        // context.setLineDash([])
-        // context.strokeStyle = "black";
-        // for (let shA of [shapeA, shapeB]) { context.strokeRect(shA.left, shA.top, shA.width, shA.height) }
-        // let shA = shapeA
-        // context.fillStyle = "#DEDEDE";
-        // context.fillRect(shA.left, shA.top, shA.width, shA.height);
-        // #endregion
-
-        // 1=Association >, 2=Impliments, 3=Extention, 4=Aggregation ◇
-        if (!type) {
-          type = 3
-          if (isInterface(shapeB.TypeDeclaration)) type = 2
-        }
-        let { x, y } = path.shift()
-        if (1 < path.length) {
-          if (mapOrder.has(shapeA.id)) {
-            let setSides = mapOrder.get(shapeA.id)
-            let [x0, y0, x1, y1] = verifyXy.call(this, x, y, setSides, sideA, shapeB.id)
-            x = x0
-            y = y0
-            path[0].x -= x1
-            path[0].y -= y1
-          }
-          if (mapOrder.has(shapeB.id)) {
-            let p3 = path[path.length - 1]
-            if (p3) {
-              let setSides = mapOrder.get(shapeB.id)
-              let [x0, y0, x1, y1] = verifyXy.call(this, p3.x, p3.y, setSides, sideB, shapeA.id)
-              p3.x = x0
-              p3.y = y0
-              p3 = path[path.length - 2]
-              if (p3) {
-                p3.x -= x1
-                p3.y -= y1
-              }
-            }
-          }
-        }
-        this.drawPath(context, path, x, y, sideB, type)
-
-        function verifyXy(x, y, setSides, sideA, idB) {
-          let x1 = 0, y1 = 0
-          if (setSides.has(sideA)) {
-            let arrPt = setSides.get(sideA) // [{id, pX, pY}]
-            if (0 < arrPt.length) {
-              let iiB = arrPt.findIndex(x => idB == x.id)
-              if (-1 < iiB) {
-                let ptXy = arrPt.splice(iiB, 1)[0]
-                let x0 = ptXy.pX
-                let y0 = ptXy.pY
-                if (isVertical(sideA)) {
-                  x1 = x - x0
-                } else {
-                  y1 = y - y0
-                }
-                return [x0, y0, x1, y1]
-              }
-            }
-          }
-          return [x, y, x1, y1]
-        }
-      }
-    },
-    drawPath(ctx, path, bX, bY, sideB, type = 1) {
-      let color = 'black'
-      ctx.strokeStyle = color;
-      ctx.beginPath();
-      const arrSize = 8
-      if (2 != type) ctx.setLineDash([])
-      else ctx.setLineDash([arrSize, arrSize / 2])
-      ctx.moveTo(bX, bY);
-      if (path.length < 3) {
-        path.forEach(({ x, y }) => ctx.lineTo(x, y));
-        ctx.stroke();
-        drawArrow(path[path.length - 1], sideB, arrSize)
-      } else {
-        const round = 8
-        let p1 = { x: bX, y: bY }
-        let p2, p3
-        for (let ii = 0; ii < path.length - 1; ii++) {
-          if (0 < ii) p1 = path[ii - 1]
-          p2 = path[ii]
-          p3 = path[ii + 1]
-          let cond1 = 2 * round <= Math.abs(p1.y - p2.y) && 2 * round <= Math.abs(p2.x - p3.x)
-          let cond2 = 2 * round <= Math.abs(p1.x - p2.x) && 2 * round <= Math.abs(p2.y - p3.y)
-          if (cond1 || cond2) {
-            cond1 = false
-            if (p1.x == p2.x) {
-              if (p2.y < p1.y) ctx.lineTo(p2.x, p2.y + round)
-              else ctx.lineTo(p2.x, p2.y - round)
-
-              if (p1.x < p3.x) ctx.quadraticCurveTo(p2.x, p2.y, p2.x + round, p3.y)
-              else ctx.quadraticCurveTo(p2.x, p2.y, p2.x - round, p3.y)
-              cond1 = true
-            } else if (p1.y == p2.y) {
-              if (p2.x < p1.x) ctx.lineTo(p2.x + round, p2.y)
-              else ctx.lineTo(p2.x - round, p2.y)
-              if (p1.y < p3.y) ctx.quadraticCurveTo(p2.x, p2.y, p3.x, p2.y + round);
-              else ctx.quadraticCurveTo(p2.x, p2.y, p3.x, p2.y - round);
-              cond1 = true
-            }
-          } else cond1 = false
-          if (!cond1) {
-            ctx.lineTo(p2.x, p2.y)
-          }
-        }
-        drawArrow(p3, sideB, arrSize)
-      }
-      function drawArrow(pointD, direct = "top", size = 10) {
-        const offs = 4 != type ? 1.5 : 0.8
-        let points = []
-        let xy
-        switch (direct) {
-          case 'top': xy = pointD.y - size * offs; break;
-          case 'bottom': xy = pointD.y + size * offs; break;
-          case 'left': xy = pointD.x - size * offs; break;
-          case 'right': xy = pointD.x + size * offs; break;
-        }
-        switch (type) {
-          case 4: // 4 points
-            const dtXy = 'top' == direct || 'left' == direct ? -size * offs : size * offs
-            if (isVertical(direct)) {
-              points = [
-                [pointD.x, xy + dtXy], [pointD.x - size / 2, xy], [pointD.x, pointD.y], [pointD.x + size / 2, xy]
-              ]
-            } else {
-              points = [
-                [xy + dtXy, pointD.y], [xy, pointD.y - size / 2], [pointD.x, pointD.y], [xy, pointD.y + size / 2]
-              ]
-            }
-            break;
-          case 2: // 3 points
-            if (isVertical(direct)) {
-              points = [[pointD.x - size / 2, xy], [pointD.x, pointD.y], [pointD.x + size / 2, xy]]
-            } else {
-              points = [[xy, pointD.y - size / 2], [pointD.x, pointD.y], [xy, pointD.y + size / 2]]
-            }
-            break;
-          default: // 4 points
-            if (isVertical(direct)) {
-              points = [
-                [pointD.x, xy], [pointD.x - size / 2, xy], [pointD.x, pointD.y], [pointD.x + size / 2, xy]
-              ]
-            } else {
-              points = [
-                [xy, pointD.y], [xy, pointD.y - size / 2], [pointD.x, pointD.y], [xy, pointD.y + size / 2]
-              ]
-            }
-            break;
-        }
-        let point0 = 2 != type ? points[0] : points[1]
-        ctx.lineTo(point0[0], point0[1]);
-
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.setLineDash([]);
-        switch (type) {
-          case 3: point0 = points[1]
-            let region = new Path2D();
-            region.moveTo(point0[0], point0[1])
-            linesTo([[points[2][0], points[2][1]], [points[3][0], points[3][1]]], region)
-            region.closePath();
-            ctx.fillStyle = color;
-            ctx.fill(region, "evenodd");
-            break;
-          case 2: point0 = points[0]
-            ctx.moveTo(point0[0], point0[1])
-            linesTo([[points[1][0], points[1][1]], [points[2][0], points[2][1]]])
-            break;
-          default: point0 = points[0]
-            ctx.moveTo(point0[0], point0[1])
-            let ls = []
-            for (let ii = 1; ii < points.length; ii++) { ls.push(points[ii]) }
-            ls.push(point0)
-            linesTo(ls, ctx)
-            break;
-        }
-        ctx.stroke();
-        function linesTo(lines, pxt = ctx) { for (let [x, y] of lines) pxt.lineTo(x, y) }
-      }
-    },
     buildAssociation() {
       const mPoints = this.MpPoints
       let item, agg
@@ -585,104 +251,10 @@ export default {
         }
       }
     },
-    trackMouse(event) {
-      let x = event.clientX;
-      let y = event.clientY;
-      const dmVar = this.DynamicVar
-      if (dmVar.has('DragElm')) {
-        const dgElm = dmVar.get('DragElm')
-        const dItem = dgElm.Item
-        let left = x + dgElm.offX
-        let top = y + dgElm.offY
-        left = Math.round(left / cellSize)
-        left = left * cellSize
-        top = Math.round(top / cellSize)
-        top = top * cellSize
-
-        if ('cls-classname' == dItem.id) {
-          this.setTopLeft(dItem, left, top)
-          return
-        }
-
-        if (x - 20 < this.MinX) return;
-        if (y < this.MinY + 20) return;
-
-        if (dItem.left != left || dItem.top != top) {
-          this.setTopLeft(dItem, left, top)
-          this.drawInCnvs()       // dragging item
-        }
-      }
-      document.getElementById('dnb-app-log').innerText = `X: ${x}, Y: ${y}`
-    },
-    setTopLeft(dItem, left, top) {
-      dItem.left = left
-      dItem.top = top
-    },
     disableSrollDown(event) {
       if (event.keyCode === 32) {  // back-space
         event.preventDefault();
         return
-      }
-    },
-    onKeyUp(evt) {
-      let wrp = document.body.querySelector(`#dnb-vw-main`)
-      if (!wrp) return
-      const dmVar = this.DynamicVar
-      if (dmVar.has('DragElm')) {
-        const dgElm = dmVar.get('DragElm')
-        let itemEl = `#cls_${dgElm.Item.id}`
-        itemEl = wrp.querySelector(itemEl)
-        itemEl.style.zIndex = ''
-        itemEl.style.backgroundColor = ''
-        const dItem = dgElm.Item
-
-        if ('cls-classname' == dgElm.Item.id) {
-          this.editObject(dgElm.Item)
-        }
-        else if (isOverlap(dItem, this.MpClass)) {
-          // revert
-          this.setTopLeft(dItem, dgElm.Left, dgElm.Top)
-          this.updateSizeCanvas()         // key up => end dnd item => revert
-          this.$nextTick(this.drawInCnvs) // key up => end dnd item => revert
-
-        } else {
-
-          this.closeBlock(dItem)      // end dnd -> new pos
-
-          this.updateSizeCanvas()             // key up => end dnd item
-          this.drawInCnvs()    // key up => end dnd item
-
-        }
-        document.removeEventListener('keydown', this.disableSrollDown)
-
-      }
-      dmVar.delete('DragElm')
-      function isOverlap(item, items = new Map()) {
-        const lstArea = areaBlocks(item.id)
-        let x = item.left,
-          y = item.top,
-          w = item.width,
-          h = item.height
-
-        for (let ii = 0; ii < lstArea.length; ii++) {
-          const [x0, y0, w0, h0] = lstArea[ii]
-          if (x + w < x0 - 30 || x0 + w0 < x - 30) continue
-          if (y + h < y0 - 30 || y0 + h0 < y - 30) continue
-          return true
-        }
-        return false
-        function areaBlocks(id) {
-          const lst = []
-          for (let [_id, xx] of items) {
-            if (xx.id === id) continue
-            let x = xx.left
-            let y = xx.top
-            let w = xx.width
-            let h = xx.height
-            lst.push([x, y, w, h])
-          }
-          return lst
-        }
       }
     },
     preventKeyPress(e, codes) {
@@ -756,29 +328,22 @@ export default {
         default: return arrExt;
       }
     },
-    updateSizeCanvas() {
+    updateMnmxXy() {
       const cvns = document.body.querySelector(`#dnb-mcanvas`)
       if (!cvns) return
-      let wrp = document.body.querySelector(`#dnb-vw-main`)
-      let minW = 1080, minH = 300
-      if (wrp) {
-        minW = wrp.offsetWidth
-        minH = wrp.offsetHeight
-      }
-      let offXy = 180
+      let minX = this.MinX
+      let minY = this.MinY
+      let minW = window.innerWidth - minX
+      let minH = window.innerHeight - minY
+      let ofSz = 12
       let mapCls = this.MpClass
-      let mxX = Math.max(...mapItems(mapCls, x => x.left + x.width))
-      mxX += offXy
-      if (mxX < minW) mxX = minW - 21
-      let mxY = Math.max(...mapItems(mapCls, x => x.top + x.height))
-      mxY += offXy
-      if (mxY < minH) mxY = minH
+      let mxX = Math.max(minW, ...mapItems(mapCls, x => x.left + x.width))
 
-      this.MaxX = mxX + this.MinX
-      this.MaxY = mxY + this.MinY
+      let mxY = Math.max(minH, ...mapItems(mapCls, x => x.top + x.height))
+      
+      this.MaxX = mxX + minX - ofSz
+      this.MaxY = mxY + minY - ofSz * 2
 
-      cvns.setAttribute('width', mxX)
-      cvns.setAttribute('height', mxY)
     },
     onBlurEdit(e, type) {
       const target = e.target
@@ -795,48 +360,35 @@ export default {
         default: break;
       }
     },
-    buildSide(shapeA, shapeB) {
-      const centerA = { x: shapeA.left + shapeA.width / 2, y: shapeA.top + shapeA.height / 2 }
-      const centerB = { x: shapeB.left + shapeB.width / 2, y: shapeB.top + shapeB.height / 2 }
-      const dx = centerB.x - centerA.x
-      const dy = centerB.y - centerA.y
-      if (Math.abs(dx) > Math.abs(dy)) {  // horizontal
-        if (dx > 0) return { sideA: 'right', sideB: 'left' }
-        else return { sideA: 'left', sideB: 'right' }
-      } else {    // vertical
-        if (dy > 0) return { sideA: 'bottom', sideB: 'top' }
-        else return { sideA: 'top', sideB: 'bottom' }
+    bindKeyDraw(mapCls) {
+      let key = ''
+      for (let [id, c] of mapCls) {
+        key += `${c.Name};${c.top};${c.left};${c.width};${c.height};`
+        for (let f of c.Fields) {
+          key += `${f.Name};${f.DataType};${f.AccessModify};`
+        }
+        for (let f of c.Properties) {
+          key += `${f.Name};${f.DataType};`
+          for (let p of f.params) key += `${p[0]};${p[1]};`
+        }
       }
+      this.KeyDraw = CryptoJS.MD5(key).toString()
     },
-    buildPath({ shapeA, sideA }, { shapeB, sideB }, { width, height }) {
-      const pointA = { shape: shapeA, side: sideA, distance: 0.5 }
-      const pointB = { shape: shapeB, side: sideB, distance: 0.5 }
-      return this.OrthogonalConnector.route({
-        pointA,
-        pointB,
-        shapeMargin: 10,
-        globalBoundsMargin: 10,
-        globalBounds: { left: 0, top: 0, width, height },
-      });
-    },
-    // equalHas(txt1, txt2) {
-    //     let hash1 = CryptoJS.SHA256(txt1), hash2 = CryptoJS.SHA256(txt2)
-    //     return hash1.toString(CryptoJS.enc.Hex) == hash2.toString(CryptoJS.enc.Hex)
-    // },
   },
   //  beforeCreate() { },
+  watch: {
+    MpClass(mapCls) { this.bindKeyDraw(mapCls) },
+  },
   created() {
-    for (let [id, cls] of this.MpClass) {
-      this.closeBlock(cls)         // create-d
+    const mapCls = this.MpClass
+    for (let [id, cls] of mapCls) {
       this.buildMapPoints(cls)      // create-d
     }
     this.buildAssociation()         // create-d
+    this.bindKeyDraw(mapCls)
   },
   //beforeMount() { },
   mounted() {
-
-    document.addEventListener('mousemove', this.trackMouse)
-    document.addEventListener("keyup", this.onKeyUp);
     document.addEventListener('click', (e) => {
       const dmVar = this.DynamicVar
       if (dmVar.has('Drop-Search')) {
@@ -847,11 +399,7 @@ export default {
         }
       }
       //console.log('click ', e, e.target, dmVar)
-    });
-
-    this.updateSizeCanvas()         // mount-ed
-    this.$nextTick(this.drawInCnvs) // mount-ed
-    this.$nextTick(this.drawBlocks) // mount-ed            
+    })
   },
   //beforeUpdate() { },
   //updated() { },
@@ -859,8 +407,7 @@ export default {
 </script>
 
 <style>
-body,
-#dnb-viewcode {
+body {
   scrollbar-width: thin;
 }
 
@@ -878,14 +425,6 @@ body,
   top: 1px;
   background-color: white;
   display: none;
-}
-
-.wrprect {
-  display: inline-block;
-  border: 1px solid rgb(0, 0, 0);
-  position: inherit;
-  cursor: default;
-  border-radius: 4px;
 }
 
 .vwheader {

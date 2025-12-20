@@ -1,5 +1,6 @@
 <template>
-    <div class="wrap-mnlist" :style="[ListSrc.length ? { minWidth: '82px' } : null]">
+    <!-- <div class="wrap-mnlist" :style="[ListSrc.length ? { minWidth: '82px' } : null]"> -->
+    <div class="wrap-mnlist" :style="{ minWidth: ListSrc.length ? '82px' : '69px' }">
         <span v-if="!ListSrc.length" @click="openLstSrc">{{ value }}</span>
         <div v-else class="dnb-mnlst">
             <span v-for="acs in ListSrc" class="p36 itmmnls" @click.stop="e => changeValue(acs)" :style="[acs == this.value ? {

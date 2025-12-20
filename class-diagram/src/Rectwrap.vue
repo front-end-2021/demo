@@ -1,6 +1,6 @@
 <template>
     <div :id="'cls_' + item.id" :w="item.width" :h="item.height" :x="item.left" :y="item.top" class="wrprect"
-        :style="{ top: item.top + 'px', left: item.left + 'px' }">
+        :style="{ top: item.top + 'px', left: item.left + 'px', minWidth: item.width + 'px', height: item.height + 'px' }">
         <component v-bind:is="CompRect" :item="item">
             <template #menu="sPrp">
                 <i class="bi bi-arrows-move cpoint ctlmove" style="left: 0;" @mousedown="sPrp.mddnd"></i>
@@ -39,3 +39,12 @@ export default {
     },
 }
 </script>
+<style scoped>
+.wrprect {
+    display: inline-block;
+    border: 1px solid rgb(0, 0, 0);
+    position: inherit;
+    cursor: default;
+    border-radius: 4px;
+}
+</style>

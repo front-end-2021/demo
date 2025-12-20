@@ -5,21 +5,17 @@
                 @change:value="$e => changeTypeObject($e)">
             </menu-list>
             <span v-else>{{ TxtType }}</span>
-            <span contenteditable="true" @blur="e => onBlurEditable(e, 'class name')"
-                @keypress="e => $root.preventKeyPress(e, [13, 32])" data-placeholder="NameOfClass" class="p36 ceditable"
-                v-html="entry.Name"></span>
+            <span class="p36 ceditable" contenteditable="true" data-placeholder="NameOfClass"
+                @blur="e => onBlurEditable(e, 'class name')" style="min-width: 75px;"
+                @keypress="e => $root.preventKeyPress(e, [13, 32])" v-html="entry.Name"></span>
             <i v-for="exv in ViewExtends">{{ exv[0] }}&nbsp;{{ exv[1] }}&nbsp;</i>
             <drplst-search v-if="IsDrpExtend" :sources="ListExtend" :ids="entry.toIds" :type="entry.TypeDeclaration"
                 @select:id="$e => addExtend($e)" @remove:id="$e => removeExtend($e)"
                 @on:exit="$e => hideDrpSearch()"></drplst-search>
-            <i v-else-if="Extendable" @click.stop="showDrpSearch" class="bi bi-code-square"
+            <i v-else-if="Extendable && ListExtend.length" @click.stop="showDrpSearch" class="bi bi-code-square"
                 style="margin-left: 6px;"></i>
-            <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
-          background-color: white;position: absolute;right: 30px;top: -4px;
-          border-radius: 6px;padding-top: 4px;" class="bi bi-floppy cpoint" @click.stop="onSaveChange"></i>
-            <i style="width: 24px;height: 20px;display: inline-block;text-align: center;
-        background-color: white;position: absolute;right: -4px;top: -4px;border-radius: 6px;padding-top: 4px;"
-                class="bi bi-x-lg cpoint" @click.stop="onCloseEdit"></i>
+            <i class="btnsave bi bi-floppy cpoint" @click.stop="onSaveChange" style="right: 30px; top: -4px;"></i>
+            <i class="btnexit bi bi-x-lg cpoint" @click.stop="onCloseEdit" style="right: -4px; top: -4px;"></i>
         </div>
         <div class="fbody">
             <div v-if="Extendable != 2">
@@ -164,8 +160,8 @@ export default {
             let lst = []
             const itemId = mItem.id
             let lstSrc = this.$root.MpClass
-            lstSrc = filterItems(lstSrc, (src) => src.id != itemId && !isEnum(src.TypeDeclaration) && !isStruct(src.TypeDeclaration), 'map')
-            lstSrc = filterItems(lstSrc, (src) => !src.toIds || !src.toIds.includes(itemId), 'set')
+            lstSrc = filterItems(lstSrc, (src) => src.id != itemId && !isEnum(src.TypeDeclaration) && !isStruct(src.TypeDeclaration), 'set')
+            if('cls-classname' != itemId) lstSrc = filterItems(lstSrc, (src) => !src.toIds || !src.toIds.includes(itemId), 'set')
 
             let lsEx = new Set()
             for (let src of lstSrc) {
@@ -396,8 +392,7 @@ export default {
                     root.buildMapPoints(nItem)                // new item
                     root.buildAssociation()               // new item
                     if (nItem.toIds.length) {
-                        root.updateSizeCanvas()               // new item
-                        root.$nextTick(root.drawInCnvs) // new item
+                        root.updateMnmxXy()               // new item
                     }
                 }
                 root.MpClass = mapCls
@@ -421,9 +416,7 @@ export default {
 
             root.buildAssociation()             // save change
             this.onCloseEdit()
-            root.$nextTick(root.updateSizeCanvas) // save change
-            root.$nextTick(root.drawInCnvs) // save change
-
+            root.$nextTick(root.updateMnmxXy) // save change
             function onNewItem(newItem) {
                 const maxId = Math.max(...mapItems(mapCls, x => x.id))
                 let nItem = objNewCls(newItem)
@@ -489,6 +482,18 @@ export default {
 <style scoped>
 .mformedit {
     scrollbar-width: thin;
+}
+
+.btnsave,
+.btnexit {
+    width: 24px;
+    height: 20px;
+    display: inline-block;
+    text-align: center;
+    background-color: white;
+    position: absolute;
+    border-radius: 6px;
+    padding-top: 4px;
 }
 
 .mformedit {
