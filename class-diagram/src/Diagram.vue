@@ -352,8 +352,8 @@ export default {
                                     let mxx = pth1.x
                                     let pV = findV(mxx, drewPaths)
                                     while (pV) {
-                                        if (!isInMinMax(mxx, minx, maxx)) break;
                                         mxx -= cellSize
+                                        if (!isInMinMax(mxx, minx, maxx)) break;
                                         pV = findV(mxx, drewPaths)
                                     }
                                     if (mxx != pth1.x) {
@@ -364,8 +364,8 @@ export default {
                                     let mmy = pth1.y
                                     let pH = findH(mmy, drewPaths)
                                     while (pH) {
-                                        if (!isInMinMax(mmy, miny, maxy)) break;
                                         mmy -= cellSize
+                                        if (!isInMinMax(mmy, miny, maxy)) break;
                                         pH = findH(mmy, drewPaths)
                                     }
                                     if (mmy != pth1.y) {
