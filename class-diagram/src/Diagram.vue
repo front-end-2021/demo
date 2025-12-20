@@ -149,7 +149,9 @@ export default {
             const root = this.$root
             drawGrid(c.width, c.height, cellSize, '#f5f5f5')
             const mapSides = new Map()
-            const dicName = new Map(), mapCls = root.MpClass
+            const dicName = new Map()
+            const mapCls = root.MpClass
+            const drewPaths = []  // array of paths
             for (let [id, cls] of mapCls) { dicName.set(cls.Name, cls) }
             for (let [id, cls] of mapCls) {
                 if (!mapSides.has(id)) mapSides.set(id, new Map())
@@ -226,19 +228,37 @@ export default {
                         arrO[ii][1].pY = lsPoint[ii][1]
                     }
                     mSideO.set(side, arrO.map(x => { return { id: x[0], pX: x[1].pX, pY: x[1].pY } }))
-                    //console.log(id, side, arrId, mSideO.get(side), lsPoint)
                 }
             }
             //console.log('dic sides', mapSides, mapOrder)
+            const arrPaths = []
             for (let [id, cls] of mapCls) {
                 for (let pId of cls.toIds) {
-                    bindOrthoConnect.call(this, cls, mapCls.get(pId), ctx, [c.width, c.height], 0)
+                    buildOrthoPaths.call(this, cls, mapCls.get(pId), c.width, c.height, 0)
                 }
                 for (let f of cls.Fields) {
                     if (dicName.has(f.DataType)) {
-                        bindOrthoConnect.call(this, cls, dicName.get(f.DataType), ctx, [c.width, c.height], 4)
+                        buildOrthoPaths.call(this, cls, dicName.get(f.DataType), c.width, c.height, 4)
                     }
                 }
+            }
+            function buildOrthoPaths(shapeA, shapeB, width, height, type = 0) {
+                //https://gist.github.com/jose-mdz/4a8894c152383b9d7a870c24a04447e4
+                const { sideA, sideB } = buildSide.call(this, shapeA, shapeB)
+                const pointA = { shape: shapeA, side: sideA, distance: 0.5 }
+                const pointB = { shape: shapeB, side: sideB, distance: 0.5 }
+                const paths = this.OrthogonalConnector.route({
+                    pointA,
+                    pointB,
+                    shapeMargin: cellSize,
+                    globalBoundsMargin: cellSize,
+                    globalBounds: { left: 0, top: 0, width, height },
+                });
+                if (!Array.isArray(paths) || paths.length < 2) return;
+                arrPaths.push([shapeA, shapeB, paths, type, sideA, sideB])
+            }
+            for (let [shapeA, shapeB, paths, type, sideA, sideB] of arrPaths) {
+                bindConnect.call(this, shapeA, shapeB, ctx, paths, sideA, sideB, type)
             }
             return
             function drawGrid(bw, bh, size, color) {
@@ -256,13 +276,8 @@ export default {
                 ctx.strokeStyle = color;
                 ctx.stroke();
             }
-            function bindOrthoConnect(shapeA, shapeB, context, [width, height], type = 0) {
-                //https://gist.github.com/jose-mdz/4a8894c152383b9d7a870c24a04447e4
-                const { sideA, sideB } = buildSide.call(this, shapeA, shapeB)
-                const path = buildPath.call(this, { shapeA, sideA }, { shapeB, sideB }, { width, height })
-                if (!Array.isArray(path) || !path.length) return;
+            function bindConnect(shapeA, shapeB, context, path, sideA, sideB, type = 0) {
                 const round = 8
-
                 // #region draw shapes (debug)
                 // context.beginPath();
                 // context.setLineDash([])
@@ -302,7 +317,90 @@ export default {
                             }
                         }
                     }
+                    if (2 < path.length) {
+                        let p3 = path[path.length - 1]
+                        const obstacles = getObstacles({ x, y }, p3)
+                        if (0 < obstacles.length) {
+                            for (let ii = 1, pth1, pth2, ob1; ii < path.length - 1; ii++) {
+                                pth1 = path[ii - 1]
+                                pth2 = path[ii]
+                                if (isVcx(pth1, pth2)) {  // vertical
+                                    ob1 = obsV(pth1, obstacles)
+                                    if (ob1) {
+                                        let xx = ob1.x0 - cellSize
+                                        pth1.x = xx
+                                        pth2.x = xx
+                                    }
+                                } else {    // horizontal
+                                    ob1 = obsH(pth1, obstacles)
+                                    if (ob1) {
+                                        let yy = ob1.y0 - cellSize
+                                        pth1.y = yy
+                                        pth2.y = yy
+                                    }
+                                }
+                            }
+                            function obsH(_p, ls) { return ls.find(o => o.y0 <= _p.y && _p.y <= o.y1) }
+                            function obsV(_p, ls) { return ls.find(o => o.x0 <= _p.x && _p.x <= o.x1) }
+                        } else if (0 < drewPaths.length) {
+                            let minx = Math.min(x, p3.x)
+                            let maxx = Math.max(x, p3.x)
+                            let miny = Math.min(y, p3.y)
+                            let maxy = Math.max(y, p3.y)
+                            for (let ii = 1, pth1, pth2; ii < path.length - 1; ii++) {
+                                pth1 = path[ii - 1]
+                                pth2 = path[ii]
+                                if (isVcx(pth1, pth2)) {  // vertical
+                                    let mxx = pth1.x
+                                    let pV = findV(mxx, drewPaths)
+                                    while (pV) {
+                                        if (mxx < minx || maxx < mxx) break;
+                                        mxx -= cellSize
+                                        pV = findV(mxx, drewPaths)
+                                    }
+                                    if (mxx != pth1.x) {
+                                        pth1.x = mxx
+                                        pth2.x = mxx
+                                    }
+                                } else {    // horizontal
+                                    let mmy = pth1.y
+                                    let pH = findH(mmy, drewPaths)
+                                    while (pH) {
+                                        if (mmy < miny || maxy < mmy) break;
+                                        mmy -= cellSize
+                                        pH = findH(mmy, drewPaths)
+                                    }
+                                    if (mmy != pth1.y) {
+                                        pth1.y = mmy
+                                        pth2.y = mmy
+                                    }
+                                }
+                            }
+                            function findV(x, ls) {
+                                for (let arr of ls) {
+                                    for (let iiv = 1, p1, p2; iiv < arr.length; iiv++) {
+                                        p1 = arr[iiv - 1]
+                                        p2 = arr[iiv]
+                                        if (isVcx(p1, p2) && p1.x == x) return [p1, p2]
+                                    }
+                                }
+                            }
+                            function findH(y, ls) {
+                                for (let arr of ls) {
+                                    for (let iiv = 1, p1, p2; iiv < arr.length; iiv++) {
+                                        p1 = arr[iiv - 1]
+                                        p2 = arr[iiv]
+                                        if (!isVcx(p1, p2) && p1.y == y) return [p1, p2]
+                                    }
+                                }
+                            }
+                        }
+                        function isVcx(p1, p2) { return p1.x == p2.x }
+                    }
+                    let midP = path.filter((p, ii) => ii < path.length - 1)
+                    if (1 < midP.length) drewPaths.push(midP)
                 }
+
                 drawPath.call(this, context, path, x, y, sideB, type)
 
                 function verifyXy(x, y, setSides, sideA, idB) {
@@ -443,10 +541,35 @@ export default {
                         function linesTo(lines, pxt = ctx) { for (let [x, y] of lines) pxt.lineTo(x, y) }
                     }
                 }
+                function getObstacles(path0, path1) {
+                    let minx = Math.min(path0.x, path1.x)
+                    let maxx = Math.max(path0.x, path1.x)
+                    let miny = Math.min(path0.y, path1.y)
+                    let maxy = Math.max(path0.y, path1.y)
+                    let lsObs = []
+                    for (let [id, cls] of mapCls) {
+                        if (id == shapeA.id) continue
+                        if (id == shapeB.id) continue
+                        let x0 = cls.left
+                        if (maxx <= x0) continue;
+                        let x1 = x0 + cls.width
+                        if (x1 <= minx) continue
+                        let y0 = cls.top
+                        if (maxy <= y0) continue;
+                        let y1 = y0 + cls.height
+                        if (y1 <= miny) continue;
+                        if (x0 < minx) x0 = minx
+                        if (maxx < x1) x1 = maxx
+                        if (y0 < miny) y0 = miny
+                        if (maxy < y1) y1 = maxy
+                        lsObs.push({ x0, x1, y0, y1 })
+                    }
+                    return lsObs
+                }
             }
             function buildSide(shapeA, shapeB) {
-                const centerA = { x: shapeA.left + shapeA.width / 2, y: shapeA.top + shapeA.height / 2 }
-                const centerB = { x: shapeB.left + shapeB.width / 2, y: shapeB.top + shapeB.height / 2 }
+                const centerA = getCenter(shapeA)
+                const centerB = getCenter(shapeB)
                 const dx = centerB.x - centerA.x
                 const dy = centerB.y - centerA.y
                 if (Math.abs(dx) > Math.abs(dy)) {  // horizontal
@@ -457,17 +580,7 @@ export default {
                     else return { sideA: 'top', sideB: 'bottom' }
                 }
             }
-            function buildPath({ shapeA, sideA }, { shapeB, sideB }, { width, height }) {
-                const pointA = { shape: shapeA, side: sideA, distance: 0.5 }
-                const pointB = { shape: shapeB, side: sideB, distance: 0.5 }
-                return this.OrthogonalConnector.route({
-                    pointA,
-                    pointB,
-                    shapeMargin: cellSize,
-                    globalBoundsMargin: cellSize,
-                    globalBounds: { left: 0, top: 0, width, height },
-                });
-            }
+
         },
         trackMouse(event) {
             const x = event.clientX;
@@ -488,8 +601,8 @@ export default {
                 let top = y + dgElm.offY
 
                 if ('cls-classname' == dItem.id) {
-                    const w2 = dItem.width/2
-                    const h2 = dItem.height/2
+                    const w2 = dItem.width / 2
+                    const h2 = dItem.height / 2
                     left = x - w2
                     top = y - h2
 
