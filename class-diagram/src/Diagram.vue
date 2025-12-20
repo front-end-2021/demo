@@ -319,6 +319,10 @@ export default {
                     }
                     if (2 < path.length) {
                         let p3 = path[path.length - 1]
+                        let minx = Math.min(x, p3.x)
+                        let maxx = Math.max(x, p3.x)
+                        let miny = Math.min(y, p3.y)
+                        let maxy = Math.max(y, p3.y)
                         const obstacles = getObstacles({ x, y }, p3)
                         if (0 < obstacles.length) {
                             for (let ii = 1, pth1, pth2, ob1; ii < path.length - 1; ii++) {
@@ -328,25 +332,19 @@ export default {
                                     ob1 = obsV(pth1, obstacles)
                                     if (ob1) {
                                         let xx = ob1.x0 - cellSize
-                                        pth1.x = xx
-                                        pth2.x = xx
+                                        if (isInMinMax(xx, minx, maxx)) { pth1.x = xx; pth2.x = xx }
                                     }
                                 } else {    // horizontal
                                     ob1 = obsH(pth1, obstacles)
                                     if (ob1) {
                                         let yy = ob1.y0 - cellSize
-                                        pth1.y = yy
-                                        pth2.y = yy
+                                        if (isInMinMax(yy, miny, maxy)) { pth1.y = yy; pth2.y = yy }
                                     }
                                 }
                             }
                             function obsH(_p, ls) { return ls.find(o => o.y0 <= _p.y && _p.y <= o.y1) }
                             function obsV(_p, ls) { return ls.find(o => o.x0 <= _p.x && _p.x <= o.x1) }
                         } else if (0 < drewPaths.length) {
-                            let minx = Math.min(x, p3.x)
-                            let maxx = Math.max(x, p3.x)
-                            let miny = Math.min(y, p3.y)
-                            let maxy = Math.max(y, p3.y)
                             for (let ii = 1, pth1, pth2; ii < path.length - 1; ii++) {
                                 pth1 = path[ii - 1]
                                 pth2 = path[ii]
@@ -354,7 +352,7 @@ export default {
                                     let mxx = pth1.x
                                     let pV = findV(mxx, drewPaths)
                                     while (pV) {
-                                        if (mxx < minx || maxx < mxx) break;
+                                        if (!isInMinMax(mxx, minx, maxx)) break;
                                         mxx -= cellSize
                                         pV = findV(mxx, drewPaths)
                                     }
@@ -366,7 +364,7 @@ export default {
                                     let mmy = pth1.y
                                     let pH = findH(mmy, drewPaths)
                                     while (pH) {
-                                        if (mmy < miny || maxy < mmy) break;
+                                        if (!isInMinMax(mmy, miny, maxy)) break;
                                         mmy -= cellSize
                                         pH = findH(mmy, drewPaths)
                                     }
@@ -396,6 +394,7 @@ export default {
                             }
                         }
                         function isVcx(p1, p2) { return p1.x == p2.x }
+                        function isInMinMax(p, min, max) { if (min <= p && p <= max) return true }
                     }
                     let midP = path.filter((p, ii) => ii < path.length - 1)
                     if (1 < midP.length) drewPaths.push(midP)
