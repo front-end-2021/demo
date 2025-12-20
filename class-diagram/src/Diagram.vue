@@ -372,10 +372,8 @@ export default {
                                     if (!isInMinMax(mxx, minx, maxx)) { mxx += cellSize; break }
                                     pV = findV(mxx, drewPaths)
                                 }
-                                if (mxx != pth1.x) {
-                                    pth1.x = mxx
-                                    pth2.x = mxx
-                                }
+                                pth1.x = mxx
+                                pth2.x = mxx
                             } else {    // horizontal
                                 let mmy = pth1.y
                                 let pH = findH(mmy, drewPaths)
@@ -384,10 +382,8 @@ export default {
                                     if (!isInMinMax(mmy, miny, maxy)) { mmy += cellSize; break }
                                     pH = findH(mmy, drewPaths)
                                 }
-                                if (mmy != pth1.y) {
-                                    pth1.y = mmy
-                                    pth2.y = mmy
-                                }
+                                pth1.y = mmy
+                                pth2.y = mmy
                             }
                         }
                         function findV(x, ls) {
