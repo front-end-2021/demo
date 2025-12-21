@@ -6,6 +6,20 @@ import MenuList from './Menulist.vue';
 function getCenter(shp) { return { x: shp.left + shp.width / 2, y: shp.top + shp.height / 2 } }
 function isVertical(sd) { return 'top' == sd || 'bottom' == sd }
 function setTopLeft(dItem, left, top) { dItem.left = left; dItem.top = top }
+function isEqual(x, y) { return x == y }
+function inRange(y1, y2, range = 1) { return Math.abs(y2 - y1) < range }
+function findBy(x, ls, key = 'x') {
+    for (let arr of ls) {
+        for (let iiv = 1, p1, p2; iiv < arr.length; iiv++) {
+            p1 = arr[iiv - 1]
+            p2 = arr[iiv]
+            if (isEqual(p1[key], p2[key]) && inRange(p1[key], x, 6)) {
+                return [p1, p2]
+            }
+        }
+    }
+}
+function isInMinMax(p, min, max) { if (min <= p && p <= max) return true }
 export default {
     name: "View_Diagram",
     display: "View.Diagram",
@@ -260,10 +274,8 @@ export default {
                 const pointA = { shape: shapeA, side: sideA, distance: 0.5 }
                 const pointB = { shape: shapeB, side: sideB, distance: 0.5 }
                 const paths = this.OrthogonalConnector.route({
-                    pointA,
-                    pointB,
-                    shapeMargin: cellSize,
-                    globalBoundsMargin: cellSize,
+                    pointA, pointB,
+                    shapeMargin: cellSize, globalBoundsMargin: cellSize,
                     globalBounds: { left: 0, top: 0, width, height },
                 });
                 if (!Array.isArray(paths) || paths.length < 2) return;
@@ -356,7 +368,7 @@ export default {
                         for (let ii = 1, pth1, pth2, ob1; ii < path.length - 1; ii++) {
                             pth1 = path[ii - 1]
                             pth2 = path[ii]
-                            if (isVcx(pth1, pth2)) {  // vertical
+                            if (isEqual(pth1.x, pth2.x)) {  // vertical
                                 ob1 = obsV(pth1, obstacles)
                                 if (ob1) {
                                     let xx = ob1.x0 - cellSize
@@ -376,54 +388,33 @@ export default {
                         for (let ii = 1, pth1, pth2; ii < path.length - 1; ii++) {
                             pth1 = path[ii - 1]
                             pth2 = path[ii]
-                            if (isVcx(pth1, pth2)) {  // vertical
+                            if (isEqual(pth1.x, pth2.x)) {  // vertical
                                 let mxx = pth1.x
-                                let pV = findV(mxx, drewPaths)
+                                let pV = findBy(mxx, drewPaths)
                                 while (pV) {
                                     mxx -= cellSize
                                     if (!isInMinMax(mxx, minx, maxx)) { mxx += cellSize; break }
-                                    pV = findV(mxx, drewPaths)
+                                    pV = findBy(mxx, drewPaths)
                                 }
                                 pth1.x = mxx
                                 pth2.x = mxx
                             } else {    // horizontal
                                 let mmy = pth1.y
-                                let pH = findH(mmy, drewPaths)
+                                let pH = findBy(mmy, drewPaths, 'y')
                                 while (pH) {
                                     mmy -= cellSize
                                     if (!isInMinMax(mmy, miny, maxy)) { mmy += cellSize; break }
-                                    pH = findH(mmy, drewPaths)
+                                    pH = findBy(mmy, drewPaths, 'y')
                                 }
                                 pth1.y = mmy
                                 pth2.y = mmy
                             }
                         }
-                        function findV(x, ls) {
-                            for (let arr of ls) {
-                                for (let iiv = 1, p1, p2; iiv < arr.length; iiv++) {
-                                    p1 = arr[iiv - 1]
-                                    p2 = arr[iiv]
-                                    if (isVcx(p1, p2) && Math.abs(p1.x - x) < 6) return [p1, p2]
-                                }
-                            }
-                        }
-                        function findH(y, ls) {
-                            for (let arr of ls) {
-                                for (let iiv = 1, p1, p2; iiv < arr.length; iiv++) {
-                                    p1 = arr[iiv - 1]
-                                    p2 = arr[iiv]
-                                    if (!isVcx(p1, p2) && Math.abs(p1.y - y) < 6) return [p1, p2]
-                                }
-                            }
-                        }
                     }
-                    function isVcx(p1, p2) { return p1.x == p2.x }
-                    function isInMinMax(p, min, max) { if (min <= p && p <= max) return true }
                 }
                 if (1 < path.length) { drewPaths.push(path) }
 
                 drawPath.call(this, context, path, x, y, sideB, type)
-
 
                 function drawPath(ctx, path, bX, bY, sideB, type = 1) {
                     let color = 'black'
