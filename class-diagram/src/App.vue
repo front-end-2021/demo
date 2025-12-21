@@ -6,8 +6,8 @@
       <h3 style="margin: 0;" contenteditable="true" @keypress="e => preventKeyPress(e, [13])"
         @blur="e => onBlurEdit(e, 'diagram name')">{{ DiagName }}</h3>
     </nav>
-    <small style="width: 120px;display: inline-block;">
-      Mouse: <small id="dnb-app-log"></small>
+    <small style="width: 150px;display: inline-block;">
+      Mouse: <small id="dnb-app-log">X: 0, Y: 0</small>
     </small>
   </header>
   <component :is="CompPage"></component>
@@ -41,15 +41,12 @@ export default {
       DiagName: 'Demo',
       MpClass: new Map(lsCls.map(x => [x.id, x])),
       MpPoints: new Map(),
-      DynamicVar: new Map(),
-      /* PopMenu, Drop-Search,
-      *  FViewCode, FrameCode: {top,left,html,type,item}, 
-      *  DragElm (Dùng kéo các khung class),
-      * */
+      DynamicVar: new Map(), // PopMenu, Drop-Search, FViewCode, FrameCode: {top,left,html,type,item}, DragElm (Dùng kéo các khung class),
       NewClassName: null,
       PLang: 1,
       Langs: ['Uml', 'CSharp', 'Java'],
       KeyDraw: '',
+      MpDiagram: new Map(), // [Diagram_Name, list_Class]
     }
   },
   computed: {
@@ -340,7 +337,7 @@ export default {
       let mxX = Math.max(minW, ...mapItems(mapCls, x => x.left + x.width))
 
       let mxY = Math.max(minH, ...mapItems(mapCls, x => x.top + x.height))
-      
+
       this.MaxX = mxX + minX - ofSz
       this.MaxY = mxY + minY - ofSz * 2
 
@@ -349,15 +346,19 @@ export default {
       const target = e.target
       let txtC = target.textContent
       txtC = txtC.trim()
-      switch (type) {
-        case 'diagram name':
-          if (!txtC.length) {
-            target.innerHTML = this.DiagName
-            return
-          }
-          this.DiagName = verifyExportTxt(txtC)
-          break;
-        default: break;
+      if ('diagram name' == type) {
+        if (!txtC.length) {
+          target.innerHTML = this.DiagName
+          return
+        }
+        const oName = this.DiagName
+        const nName = verifyExportTxt(txtC)
+        const mapDiag = this.MpDiagram // Map [Diagram_Name, list_class]
+        if (mapDiag.has(oName)) {
+          mapDiag.set(nName, mapDiag.get(oName))
+          this.MpDiagram = new Map(mapDiag)
+        }
+        this.DiagName = nName
       }
     },
     bindKeyDraw(mapCls) {
@@ -377,14 +378,19 @@ export default {
   },
   //  beforeCreate() { },
   watch: {
-    MpClass(mapCls) { this.bindKeyDraw(mapCls) },
+    MpClass(mapCls) {
+      this.MpPoints.clear()
+      for (let [id, cls] of mapCls) this.buildMapPoints(cls)   // import
+      this.buildAssociation()        // import
+      this.updateMnmxXy()
+      this.bindKeyDraw(mapCls)
+    },
   },
   created() {
     const mapCls = this.MpClass
-    for (let [id, cls] of mapCls) {
-      this.buildMapPoints(cls)      // create-d
-    }
+    for (let [id, cls] of mapCls) this.buildMapPoints(cls)      // create-d
     this.buildAssociation()         // create-d
+    this.updateMnmxXy()
     this.bindKeyDraw(mapCls)
   },
   //beforeMount() { },

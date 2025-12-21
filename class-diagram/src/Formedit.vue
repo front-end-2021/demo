@@ -387,16 +387,9 @@ export default {
             const mItem = frmCode.cItem
             let mapCls = root.MpClass;
             if (typeof mItem.id != 'number') {
-                let nItem = onNewItem.call(this, mItem)
+                onNewItem.call(this, mItem)
                 root.NewClassName = null
                 this.onCloseEdit()
-                if (nItem) {
-                    root.buildMapPoints(nItem)                // new item
-                    root.buildAssociation()               // new item
-                    if (nItem.toIds.length) {
-                        root.updateMnmxXy()               // new item
-                    }
-                }
                 root.MpClass = mapCls
                 return
             }
@@ -408,17 +401,15 @@ export default {
                 this.onCloseEdit()
                 return
             }
-            root.MpPoints.clear()
             item.Name = name
             item.toIds = mItem.toIds.filter(id => !isNaN(id))
 
-            item.Fields = mItem.Fields
-            item.Properties = mItem.Properties
-            for (let [id, cls] of mapCls) root.buildMapPoints(cls)      // save change
+            item.Fields = verifyField(mItem.Fields)
+            item.Properties = verifyProp(mItem.Properties)
 
-            root.buildAssociation()             // save change
             this.onCloseEdit()
-            root.$nextTick(root.updateMnmxXy) // save change
+            root.MpClass = new Map(mapCls)    // new ref
+
             function onNewItem(newItem) {
                 const maxId = Math.max(...mapItems(mapCls, x => x.id))
                 let nItem = objNewCls(newItem)
@@ -432,6 +423,8 @@ export default {
                 }
                 nItem = verifyNewItem.call(this, nItem)
                 if (!mapCls.size) nItem.id = 1
+                nItem.Fields = verifyField(nItem.Fields)
+                nItem.Properties = verifyProp(nItem.Properties)
                 mapCls.set(nItem.id, nItem)
                 mapCls = new Map(mapCls)    // new ref
                 return nItem
@@ -453,6 +446,8 @@ export default {
                     return item
                 }
             }
+            function verifyField(f) { return f.filter(x => !!x.Name && 'fieldName' != x.Name) }
+            function verifyProp(p) { return p.filter(x => !!x.Name) }
         },
         addExtend(id) {
             if (!id) return

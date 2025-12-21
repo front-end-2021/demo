@@ -1,7 +1,6 @@
 <template>
-    <!-- <div class="wrap-mnlist" :style="[ListSrc.length ? { minWidth: '82px' } : null]"> -->
     <div class="wrap-mnlist" :style="{ minWidth: ListSrc.length ? '82px' : '69px' }">
-        <span v-if="!ListSrc.length" @click="openLstSrc">{{ value }}</span>
+        <div v-if="!ListSrc.length" @click="openLstSrc">{{ value }}</div>
         <div v-else class="dnb-mnlst">
             <span v-for="acs in ListSrc" class="p36 itmmnls" @click.stop="e => changeValue(acs)" :style="[acs == this.value ? {
                 backgroundColor: '#dbdbdb'
@@ -25,10 +24,11 @@ export default {
     },
     methods: {
         openLstSrc() {
-            const dmVar = this.$root.DynamicVar
+            const root = this.$root
+            const dmVar = root.DynamicVar
             let popM = dmVar.get('PopMenu')
             if (popM) {
-                document.removeEventListener('click', this.$root.closePMenu)
+                document.removeEventListener('click', root.closePMenu)
                 if (popM !== this) popM.emptySrc()
                 else return
             }
@@ -48,16 +48,17 @@ export default {
             }
             this.$nextTick(() => {
                 setTimeout(() => {
-                    document.addEventListener('click', this.$root.closePMenu)
+                    document.addEventListener('click', root.closePMenu)
                 }, 696)
             })
         },
         emptySrc() { this.ListSrc = [] },
         changeValue(val) {
+            const root = this.$root
             if (this.value != val) this.$emit('change:value', val)
-            document.removeEventListener('click', this.$root.closePMenu)
+            document.removeEventListener('click', root.closePMenu)
             this.emptySrc()
-            const dmVar = this.$root.DynamicVar
+            const dmVar = root.DynamicVar
             dmVar.delete('PopMenu')
         },
     },

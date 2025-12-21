@@ -57,7 +57,7 @@ export const MxRect = { // class, abstract, interface, enum,
             //  let isChange = false
             if (w != cW) {
                 item.width = cW
-             //   isChange = true
+                //   isChange = true
                 _el.style.width = `${cW - 2}px`  // border
             }
             let h = item.height
@@ -65,7 +65,7 @@ export const MxRect = { // class, abstract, interface, enum,
             cH = Math.ceil(cH / cellSize) * cellSize
             if (h != cH) {
                 item.height = cH
-             //   isChange = true
+                //   isChange = true
                 _el.style.height = `${cH - 2}px`
             }
             // if (isChange) {
@@ -82,18 +82,12 @@ export const MxRect = { // class, abstract, interface, enum,
             }
             let mapCls = root.MpClass
             if (mapCls.has(item.id)) {
-                root.MpPoints.clear()
                 mapCls.delete(item.id)
                 for (let [id, cls] of mapCls) {
                     if (!cls.toIds.length) continue
                     ii = cls.toIds.indexOf(item.id)
                     if (-1 < ii) cls.toIds.splice(ii, 1)
                 }
-                for (let [id, cls] of mapCls) {
-                    root.buildMapPoints(cls)   // delete item
-                }
-                root.buildAssociation()               // delete item
-                root.updateMnmxXy()               // delete item
                 mapCls = new Map(mapCls)
             }
             root.MpClass = mapCls
@@ -188,9 +182,9 @@ export const MxOjClass = { // class, abstract
             let clsName = item.Name
             const ii = this.$root.PLang
 
-            if(isAbstract(item.TypeDeclaration)) clsName = `public ${StructTypes[1][ii]} ${clsName}`
+            if (isAbstract(item.TypeDeclaration)) clsName = `public ${StructTypes[1][ii]} ${clsName}`
             else clsName = `public ${StructTypes[2][ii]} ${clsName}`
-            
+
             let extds = this.ViewExtends
             let exnd = ''
             if (extds.length) {
