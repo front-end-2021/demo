@@ -1,0 +1,255 @@
+<template>
+    <div style="display: inline-flex; justify-content: space-between;margin-bottom: 10px;align-items: center;"
+        v-bind:style="{ width: (Size * Cols) + 'px' }">
+        <strong>Game status: {{ GameStats }}</strong>
+        <div style="display: inline-flex;">
+            <div>Level: </div>
+            <input v-model="Level" type="number" min="6" max="1989" name="numLevel" />
+        </div>
+    </div>
+    <section>
+        <div style="display: flex;">
+            <div style="position: relative; border: 1px solid black;" v-bind:style="{
+                width: (Size * Cols) + 'px',
+                height: (Rows * Size + Size) + 'px'
+            }">
+                <cell-node v-if="Grid.length" :id="ZeroId" :x="0" :y="-1"></cell-node>
+                <template v-for="(row, y) in Grid">
+                    <cell-node v-for="(id, x) in row" :key="id" :id="id" :x="x" :y="y"></cell-node>
+                </template>
+                <div class="thumb" :style="StyleThumb">
+                    <img :src="ImgSrc" style="width: inherit; height: inherit;" @load="imageReady">
+                </div>
+            </div>
+        </div>
+    </section>
+    <div style="margin: 12px 0; display: inline-flex; gap: 10px;align-items: center;">
+        <span v-if="Grid.length < 1 || 'Completed' == GameStats" 
+            class="btn_" @click.stop="startGame">Start game</span>
+        <span v-else class="btn_" @click.stop="rejectGame">Reject</span>
+
+        <div class="btn_">
+            <label for="fileInput">Upload image</label>
+            <input type="file" id="fileInput" accept="image/*" @change="splitImage" style="display:none;" />
+        </div>
+        <div v-if="Grid.length">Your time: <span>{{ Time }}</span></div>
+    </div>
+</template>
+<style>
+body {
+    scrollbar-width: thin;
+}
+
+.thumb {
+    position: absolute;
+    top: 2px;
+    transition: left 0.9s;
+}
+
+.btn_ {
+    display: inline-block;
+    padding: 6px 10px;
+    background-color: blueviolet;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+</style>
+<script>
+//import CryptoJS from 'crypto-js'
+import Cell from './Cell.vue';
+import SlidingPuzzle from './ImagePuzzle.js'
+export default {
+    name: 'DaiNb.vApp',
+    components: {
+        'cell-node': Cell
+    },
+    //beforeCreate(){},
+    data() {
+        return {
+            Size: 150,
+            Cols: 3,
+            Rows: 4,
+            ActiveNode: null,
+            Level: 1,
+            Grid: [],
+            ZeroId: 0,
+            GameStats: 'Get Start',
+            mImgIndex: new Map(),
+            ImgSrc: 'https://m.media-amazon.com/images/M/MV5BNmFiM2FkYTYtY2FiOS00ZWJkLTkyOTgtNmFmODI4NjcwNDgzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg',
+            Timmer: null,
+            Time: 0,
+        }
+    },
+    computed: {
+        BoardWidth() { return this.Cols * this.Size },
+        BaordHeight() { return this.Rows * this.Size },
+        BlankPoint() { return -1 },
+        StyleThumb() {
+            const size = this.Size
+            let width = size * this.Cols / this.Rows * 0.96
+            let height = size * 0.96
+            let left = size * this.Cols - 2 - width
+            if ('Completed' != this.GameStats) return {
+                width: `${width}px`,
+                height: `${height}px`,
+                left: `${left}px`
+            }
+            left = (size - width) / 2
+            return {
+                width: `${width}px`,
+                height: `${height}px`,
+                left: `${left}px`
+            }
+        },
+    },
+    methods: {
+        rejectGame() {
+            this.Grid = []
+            this.ZeroId = 0
+            this.GameStats = 'Get Start'
+            this.Time = 0
+            this.todoTimmer('clear')
+        },
+        startGame() {
+            this.ActiveNode = null
+            let puzzle = new SlidingPuzzle(this.Rows, this.Cols, this.BlankPoint);
+            let level = this.Level
+            if (level < 1) level = 1
+            this.Grid = puzzle.scramble(level * 33);
+            this.ZeroId = 0
+            this.GameStats = 0
+            this.Time = 0
+            this.todoTimmer('clear')
+            this.todoTimmer('count')
+        },
+        todoTimmer(type) {
+            if ('clear' == type) {
+                let intervalId = this.Timmer
+                if (typeof intervalId == 'number') {
+                    clearInterval(intervalId);
+                    this.Timmer = null
+                }
+            }
+            if ('count' == type) {
+                this.Timmer = setInterval(() => {
+                    this.Time++
+                }, 1000)
+            }
+        },
+        getLsNearIndex(iix, iiy) {
+            const grid = this.Grid
+            if (iiy < 0) {
+                if (this.BlankPoint == grid[0][0]) return new Set([-1])
+                return new Set([grid[0][0]])
+            }
+            let ls = [
+                [iix - 1, iiy], [iix + 1, iiy], [iix, iiy - 1], [iix, iiy + 1]
+            ]
+            ls = ls.filter(p => 0 <= p[0] && 0 <= p[1])
+            ls = ls.filter(p => p[0] < this.Cols && p[1] < this.Rows)
+            let set = new Set(ls.map(([x, y]) => grid[y][x]))
+            if (0 == iix && 0 == iiy) {
+                if (0 == grid[0][0]) {
+                    set.add(-1)
+                    set.delete(0)
+                } else if (this.BlankPoint == grid[0][0]) {
+                    set.delete(-1)
+                    set.add(0)
+                }
+            }
+            return set
+        },
+        genActvNode(type = 'set', node) {
+            let obj = this.ActiveNode
+            if ('set' == type) {
+                obj = {
+                    id: node.id, x: node.x, y: node.y,
+                    ArrNear: this.getLsNearIndex(node.x, node.y)
+                }
+            }
+            if ('get' == type) return obj
+            this.ActiveNode = obj
+        },
+        checkGameStat(grid, count = 0) {
+            let index = 0
+            for (let row of grid) {
+                for (let id of row) {
+                    if (index != id) return count + 1
+                    index++
+                }
+            }
+            return 'Completed'
+        },
+        async splitImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const root = this
+            const rows = root.Rows // số hàng
+            const cols = root.Cols // số cột
+            let tileSize = root.Size
+            let _width = cols * tileSize
+            let _height = rows * tileSize
+
+            const imgURL = URL.createObjectURL(file);
+            const img = new Image();
+            img.onload = (evt) => {
+                let resizedCanvas = root.resizeImage(img, _width, _height);
+                root.ImgSrc = resizedCanvas.toDataURL('image/jpeg')
+                URL.revokeObjectURL(imgURL);
+            }
+            img.src = imgURL;
+        },
+        resizeImage(image, maxWidth, maxHeight) {
+            const canvas = document.createElement('canvas');
+            canvas.width = maxWidth;
+            canvas.height = maxHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(image, 0, 0, maxWidth, maxHeight); // Draw the resized image onto the canvas
+            return canvas;
+        },
+        async imageReady(e) {
+            const root = this
+            let img = e.target
+            img.crossOrigin = "anonymous";
+            const rows = root.Rows // số hàng
+            const cols = root.Cols // số cột
+            let tileSize = root.Size
+            let _width = cols * tileSize
+            let _height = rows * tileSize
+            let id = 0
+            let resizedCanvas = root.resizeImage(img, _width, _height);
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    let canvas = document.createElement('canvas');
+                    canvas.width = tileSize;
+                    canvas.height = tileSize;
+                    let ctx = canvas.getContext('2d');
+                    // Cắt phần ảnh tương ứng
+                    ctx.drawImage(
+                        resizedCanvas,
+                        c * tileSize, r * tileSize, tileSize, tileSize, // vùng nguồn (src)
+                        0, 0, tileSize, tileSize                        // vùng đích (dest)
+                    );
+                    let src = canvas.toDataURL('image/jpeg')
+                    root.mImgIndex.set(id++, src)
+                }
+            }
+        },
+    },
+    watch: {
+        GameStats(stat) {
+            if ('Completed' == stat) {
+                this.todoTimmer('clear')
+            }
+        },
+    },
+    // created() { },
+    //beforeMount() { },
+    // mounted() { },
+    //beforeUpdate() { },
+    //updated() { },
+    //beforeUnmout(){},
+    //unmouted(){}
+};
+</script>
