@@ -1,7 +1,7 @@
 <template>
     <div class="mformedit" style="z-index: 3;display: grid; grid-template-rows: 38px auto;">
         <div class="fhead" style="margin-bottom: 12px; display: flex;align-items: center;position: relative;">
-            <menu-list v-if="IsSelectTyp" :value="TxtType" :isfix="true" :sources="StrucTypes"
+            <menu-list v-if="IsSelectTyp" :value="TxtType" :sources="StrucTypes"
                 @change:value="$e => changeTypeObject($e)">
             </menu-list>
             <span v-else>{{ TxtType }}</span>
@@ -42,7 +42,7 @@
                     <span class="p36 ceditable" @keypress="e => $root.preventKeyPress(e, [13])"
                         @blur="e => onBlurEditable(e, 'methd access type', ii)" data-placeholder="MethodAccessType"
                         contenteditable="true">{{ prp.AccessModify }}</span>
-                    <menu-list :value="prp.specialMe" :isfix="true" :sources="AccessInit.map(x => x[$root.PLang])"
+                    <menu-list :value="prp.specialMe" :sources="AccessInit.map(x => x[$root.PLang])"
                         @change:value="$event => changeAccessor(ii, $event)">
                     </menu-list>
                     <span @keypress="e => $root.preventKeyPress(e, [13, 32])"
@@ -128,7 +128,7 @@ export default {
             let lst = StructTypes
             const mItem = this.entry
             if (typeof mItem.id != 'number') return lst.map(x => x[root.PLang])
-            lst = lst.filter(x => isClass(x[0]) || isInterface(x[0]))
+            lst = lst.filter(x => isClass(x[0]) || isAbstract(x[0]) || isInterface(x[0]))
             return lst.map(x => x[root.PLang])
         },
         ViewExtends() {

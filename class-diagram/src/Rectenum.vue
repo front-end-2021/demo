@@ -2,9 +2,11 @@
     <section class="wrp-enum">
         <div class="vwheader">
             <slot name="menu" :mddnd="onMouseDown" :ckedt="editCls" :ckdel="deleteCls"></slot>
-            <span style="font-weight: bold;">enum {{ item.Name }}</span>
+            <span class="headname" style="font-weight: bold;">enum {{ item.Name }}</span>
         </div>
-        <div style="font-size: 16px; font-weight: 300;padding: 0 6px;">{{ TxtField }}</div>
+        <div class="vwfields">
+            <div style="font-size: 16px; font-weight: 300;padding: 0 6px;">{{ TxtField }}</div>
+        </div>
     </section>
 </template>
 <script>

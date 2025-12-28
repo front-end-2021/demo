@@ -160,7 +160,6 @@ export default {
             if (isSelect) this.CurrentDiag = nameDiag
         },
         newDiagram() {
-            this.setDiagToMap(false)
             const root = this.$root
             root.MpClass = new Map()
             root.MpPoints.clear()
@@ -653,7 +652,7 @@ export default {
         LisDiagram() { return ['--No select--', ...this.$root.MpDiagram.keys()] },
     },
     watch: {
-        '$root.KeyDraw'() {
+        '$root.KeyDraw'(k, o) { //console.log('key draw', k, o); console.trace()
             this.$root.updateMnmxXy()
             this.drawInCnvs()
         },
@@ -679,11 +678,12 @@ export default {
     <div style="display: flex;" :minx="$root.MinX" :maxx="$root.MaxX" :miny="$root.MinY" :maxy="$root.MaxY">
         <aside id="dnb-vwtab-left" :style="[{ width: $root.MinX + 'px' }]">
             <div>
-                <menu-list :value="CurrentDiag" :isfix="true" :sources="LisDiagram"
+                <menu-list :value="CurrentDiag" :sources="LisDiagram"
                     @change:value="$e => selectDiagram($e)"></menu-list>
             </div>
-            <div style="cursor: default;">{{ $root.Langs[$root.PLang] }}
-                <!--<menu-list :value="$root.Langs[$root.PLang]" :isfix="true" :sources="$root.Langs" @change:value="$e => changeLanguage($e)"></menu-list>-->
+            <div style="cursor: default;">
+                <menu-list :value="$root.Langs[$root.PLang]" 
+                    :sources="$root.Langs" @change:value="$e => changeLanguage($e)"></menu-list>
             </div>
             <div @mousedown="msDwnNewCls" class="cls-sample">
                 <div class="cls-spname">ClassName</div>

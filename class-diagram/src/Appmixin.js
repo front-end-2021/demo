@@ -52,27 +52,43 @@ export const MxRect = { // class, abstract, interface, enum,
             const item = this.item
             let w = item.width
             const _el = this.$el
-            let cW = _el.offsetWidth
-            cW = Math.ceil(cW / cellSize) * cellSize
-            //  let isChange = false
+            let cW = getMinWidth(_el)
+            let isChange = false
             if (w != cW) {
                 item.width = cW
-                //   isChange = true
-                _el.style.width = `${cW - 2}px`  // border
+                isChange = true
+                _el.style.width = `${cW}px`
             }
             let h = item.height
             let cH = _el.offsetHeight
-            cH = Math.ceil(cH / cellSize) * cellSize
             if (h != cH) {
                 item.height = cH
-                //   isChange = true
-                _el.style.height = `${cH - 2}px`
+                isChange = true
+                _el.style.height = `${cH}px`
             }
-            // if (isChange) {
-            //  console.log('chagne', item.id, item.Name)
-            //  const root = this.$root
-            // root.bindKeyDraw(root.MpClass)
-            // }
+            if (isChange) {
+                const root = this.$root
+                root.bindKeyDraw(root.MpClass)
+            }
+            function getMinWidth(el) {
+                let maxWidth = 0, w
+                el.querySelectorAll('.vwheader').forEach(h => {
+                    w = 24 + 45
+                    h.querySelectorAll('.headname, .headextend').forEach(x => {
+                        w += x.offsetWidth
+                    })
+                    if (maxWidth < w) maxWidth = w
+                })
+                el.querySelectorAll('.vwfields>*').forEach(f => {
+                    w = f.offsetWidth + 12 // padding left-right
+                    if (maxWidth < w) maxWidth = w
+                })
+                el.querySelectorAll('.vwprops>*').forEach(f => {
+                    w = f.offsetWidth + 12 // padding left-right
+                    if (maxWidth < w) maxWidth = w
+                })
+                return maxWidth + 4
+            }
         },
         deleteCls(item) {
             const root = this.$root
@@ -85,7 +101,7 @@ export const MxRect = { // class, abstract, interface, enum,
                 mapCls.delete(item.id)
                 for (let [id, cls] of mapCls) {
                     if (!cls.toIds.length) continue
-                    ii = cls.toIds.indexOf(item.id)
+                    let ii = cls.toIds.indexOf(item.id)
                     if (-1 < ii) cls.toIds.splice(ii, 1)
                 }
                 mapCls = new Map(mapCls)
@@ -98,13 +114,13 @@ export const MxRect = { // class, abstract, interface, enum,
             this.$root.editObject(item)
         },
     },
-    mounted() { this.setWidthHeight() },
+    mounted() { this.$nextTick(this.setWidthHeight) },
     beforeUpdate() {
         const _el = this.$el
         _el.style.width = ''
         _el.style.height = ''
     },
-    updated() { this.setWidthHeight() },
+    updated() { this.$nextTick(this.setWidthHeight) },
 }
 export const MxOjClass = { // class, abstract
     methods: {

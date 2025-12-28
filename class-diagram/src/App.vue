@@ -413,9 +413,7 @@ export default {
 </script>
 
 <style>
-body {
-  scrollbar-width: thin;
-}
+body { scrollbar-width: thin; }
 
 #dnb-vwtab-left {
   display: inline-flex;
@@ -488,7 +486,7 @@ body {
   position: absolute;
   z-index: 1;
   background-color: white;
-  top: -6px;
+  top: 0;
   width: max-content;
   box-shadow: 0 .125rem .25rem #00000030;
   border-radius: 6px;

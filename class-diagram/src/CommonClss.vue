@@ -2,15 +2,15 @@
     <section class="wrp-cls">
         <div class="vwheader" style="min-height: 18px;">
             <slot name="menu" :mddnd="onMouseDown" :ckedt="editCls" :ckdel="deleteCls"></slot>
-            <span style="font-weight: bold;" @dblclick="e => onEditable(e, 'class name')"
+            <span class="headname" style="font-weight: bold;" @dblclick="e => onEditable(e, 'class name')"
                 @keypress="e => $root.preventKeyPress(e, [13, 32])" @blur="e => onDoneEdit(e, 'class name')"
                 @click="e => showCodeBody(-1989, -1989)">{{ ClassName }}</span>
-            <span v-for="exv in ViewExtends">
+            <span v-for="exv in ViewExtends" class="headextend">
                 <small>{{ exv[0] }}&nbsp;</small><small>{{ exv[1] }}</small>
             </span>
         </div>
         <div v-if="0 < ExtendFields.length + item.Fields.length" class="vwfields">
-            <i @click.stop="$root.clearDyVar" style="display: block;" v-for="field in ExtendFields">
+            <i @click.stop="$root.clearDyVar" v-for="field in ExtendFields">
                 <span>{{ vwVisible(field.AccessModify) }}&nbsp;{{ field.Name }}:&nbsp;</span>
                 <small style="font-weight: bold;">{{ field.DataType }}</small>
             </i>
@@ -27,7 +27,7 @@
                     @blur="e => onDoneEdit(e, 'methd name', ii)">{{ prp.Name }}</span>
                 <span style="font-size: 10px;word-spacing: 0;">{{ propTostring(prp) }}</span>
             </div>
-            <small v-for="(prp, ii) in ExtProperties" style="display: block;"
+            <small v-for="(prp, ii) in ExtProperties" 
                 @click.stop="e => showCodeBody(ii, item.Properties.length)">
                 <i style="padding-right: 6px;font-size: 12px;">{{ vwVisible(prp.AccessModify) }}</i>
                 <i style="padding-right: 6px;font-size: 10px;">{{ prp.DataType }}</i>
@@ -114,9 +114,7 @@ export default {    // class, abstract, interface
             let html = hljs.highlight(txt, { language: 'cs' }).value
             const dmVar = this.$root.DynamicVar
             dmVar.delete('FrameCode')
-            dmVar.set('FViewCode', {
-                top, left, html, type: 1
-            })
+            dmVar.set('FViewCode', { top, left, html, type: 1 })
             this.$root.$nextTick(() => {
                 let vwFcode = document.body.querySelector(`#dnb-viewcode`)
                 if (vwFcode) {
@@ -159,16 +157,15 @@ export default {    // class, abstract, interface
 }
 </script>
 <style>
-.vwprops {
-    font-size: 14px;
-    padding-right: 6px;
-    padding-left: 6px;
-    word-spacing: -6px;
-}
-
+.vwprops { word-spacing: -6px; }
 .vwfields {
-    font-size: 14px;
-    padding-left: 6px;
     border-bottom: 1px solid black;
+}
+.vwprops, .vwfields {
+    font-size: 14px; padding-left: 6px; padding-right: 6px;
+    display: flex; flex-direction: column;
+}
+.vwfields>*, .vwprops>* {
+    display: inline-block; width: fit-content;
 }
 </style>
