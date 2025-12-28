@@ -156,7 +156,9 @@ export const MxOjClass = { // class, abstract
                     else if (isAbstract(pCode)) pCode = ''
                     else {
                         hasEnter = pCode.includes('\n')
-                        if (!hasEnter) pCode += ';'
+                        if (!hasEnter) {
+                            if(pCode[pCode.length- 1] != ';') pCode += ';'
+                        }
                         else pCode = processLines(pCode)
                     }
                     if (txtP.includes(`{...}`)) {
