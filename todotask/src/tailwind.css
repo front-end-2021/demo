@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/* Nếu cần tùy chỉnh theme (khuyến nghị cách này ở v4, không cần config file) */
+@theme {
+  --color-primary: oklch(0.7 0.2 200); /* Ví dụ thêm color */
+  --font-sans: "Inter", system-ui; /* Extend font, breakpoint, v.v. */
+}
+/* Custom CSS khác nếu cần */
