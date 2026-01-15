@@ -1,9 +1,8 @@
 <template>
-    <div class="rounded-md px-1 shadow bg-white min-w-[120px] min-h-[46px] w-full" :level="Level"
-        :style="{ marginLeft: Level * 24 + 'px' }">
-        <div class="grid grid-cols-4 gap-0 items-center h-[46px]">
-            <div class="inline-grid gap-[6px] items-center grid-cols-[16px_auto] bi">
-                <span :class="[clsType]" :style="[stylType]"></span>
+    <div class="rounded-md px-1 shadow bg-white min-w-[120px] min-h-[46px] w-full" :level="Level">
+        <div class="grid grid-cols-4 gap-0 items-center h-[46px]" :style="{ paddingLeft: Level * 6 + 'px' }">
+            <div class="inline-flex gap-[6px] items-center">
+                <span class="w-[16px]" style="display: inline-flex;" :class="[clsType]" :style="[stylType]"></span>
                 <div class="cursor-default" @click.stop="clickName">{{ item.Name }}</div>
             </div>
 
@@ -30,15 +29,11 @@ const clsType = computed(() => {
 });
 const stylType = computed(() => {
     switch (props.item.TypeId) {
-        case 1: return { fontSize: '14px' }
+        case 1: return { fontSize: '16px' }
         case 2:
-        case 3: return { fontSize: '10px', marginLeft: '3px' }
-        case 6:
-        case 13: return { fontSize: '13px', marginLeft: '2px' }
-        case 10:
-        case 11: return { fontSize: '20px', marginLeft: '-2px' }
-        case 12: return { fontSize: '13px', marginLeft: '2px' }
-        default: return { fontSize: '12px', marginLeft: '2px' }
+        case 3: return { fontSize: '11px' }
+        case 4: return { fontSize: '13px' }
+        default: return { fontSize: '12px' }
     }
 });
 

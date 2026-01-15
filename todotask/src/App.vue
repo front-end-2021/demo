@@ -1,6 +1,65 @@
+<script setup>
+import { getLsTaskType, getLsNode } from './repository.js';
+import { buildTree } from './common.js';
+import { ref, provide, computed } from 'vue';
+import SnowflakeId from 'snowflake-id';
+import Row from './Row.vue';
+import FormRow from './FormRow.vue';
+const SnfId = new SnowflakeId({ mid: 42, offset: (2020 - 1970) * 31536000 * 1000 });
+
+const nodeItem = ref(null)
+provide('$nodeItem', nodeItem);
+
+const TaskTypes = ref([{ Id: 0, Name: '' }]);
+provide('$taskTypes', TaskTypes);
+
+const NodeTree = ref(new Map());
+provide('$nodeTree', NodeTree); // map[Id, {Id, Name, TypeId, ...}]
+
+Promise.all([getLsTaskType(SnfId), getLsNode(SnfId)]).then(([tTypes, nodes]) => {
+    TaskTypes.value = tTypes;
+    NodeTree.value = buildTree(nodes);
+});
+const ViewNodes = computed(() => {
+    let map = new Map()
+    const oMap = NodeTree.value;
+    for (let [id, node] of oMap) {
+        if (!node.parent) {
+            map.set(id, node)
+            addChilds(node)
+            if (map.size == oMap.size) break;
+        }
+    }
+    return map
+    function addChilds(node) {
+        for (let child of node.children) {
+            if (!map.has(child.Id)) {
+                map.set(child.Id, child)
+                addChilds(child)
+                if (map.size == oMap.size) break;
+            }
+        }
+    }
+});
+function addNode(node, parentId = '') {
+    let map = NodeTree.value
+    node.Id = `${SnfId.generate()}`;
+    node.children = new Set()
+    if (map.has(parentId)) {
+        let parent = map.get(parentId);
+        let set = parent.children;
+        set.add(node);
+        parent.children = new Set(set)
+        node.parent = parent;
+    } else node.parent = null;
+    map.set(node.Id, node);
+    NodeTree.value = new Map(map);
+    return node.Id;
+}
+</script>
 <template>
-    <div class="flex flex-col items-center justify-center bg-gray-100 gap-[2px]">
-        <Row v-for="[id, node] in NodeTree" :key="node.Id" :item="node" />
+    <div class="flex flex-col items-center justify-center bg-gray-100 gap-[2px] p-1.5">
+        <Row v-for="[id, node] in ViewNodes" :key="node.Id" :item="node" />
     </div>
     <div class="flex flex-col items-center justify-center bg-gray-100 gap-8">
 
@@ -44,43 +103,3 @@
         </div>
     </div>
 </template>
-
-<script setup>
-import { getLsTaskType, getLsNode } from './repository.js';
-import { buildTree } from './common.js';
-import { ref, provide } from 'vue';
-import SnowflakeId from 'snowflake-id';
-import Row from './Row.vue';
-import FormRow from './FormRow.vue';
-const SnfId = new SnowflakeId({ mid: 42, offset: (2020 - 1970) * 31536000 * 1000 });
-
-const nodeItem = ref(null)
-provide('$nodeItem', nodeItem);
-
-const TaskTypes = ref([{ Id: 0, Name: '' }]);
-provide('$taskTypes', TaskTypes);
-
-const NodeTree = ref(new Map());
-provide('$nodeTree', NodeTree); // map[Id, {Id, Name, TypeId, ...}]
-
-Promise.all([getLsTaskType(SnfId), getLsNode(SnfId)]).then(([tTypes, nodes]) => {
-    TaskTypes.value = tTypes;
-    NodeTree.value = buildTree(nodes);
-});
-
-function addNode(node, parentId = '') {
-    let map = NodeTree.value
-    node.Id = `${SnfId.generate()}`;
-    node.children = new Set()
-    if (map.has(parentId)) {
-        let parent = map.get(parentId);
-        let set = parent.children;
-        set.add(node);
-        parent.children = new Set(set)
-        node.parent = parent;
-    } else node.parent = null;
-    map.set(node.Id, node);
-    NodeTree.value = new Map(map);
-    return node.Id;
-}
-</script>

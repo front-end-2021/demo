@@ -6,3 +6,82 @@
   --font-sans: "Inter", system-ui; /* Extend font, breakpoint, v.v. */
 }
 /* Custom CSS khác nếu cần */
+[class*='msic-']:before {
+    display: inline-block;
+    font-family: 'mkt';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+}
+.msic-Menu-Region:before{content:'\0041';}
+.msic-Menu-Task:before{content:'\0042';}
+.msic-Comment:before{content:'\0043';}
+.msic-Men-Invvolvierte:before{content:'\0044';}
+.msic-Eye-close:before{content:'\0045';}
+.msic-Eye-open:before{content:'\0046';}
+.msic-Initiative:before{content:'\0047';}
+.msic-Menu-Themen:before{content:'\0048';}
+.msic-Add:before{content:'\0049';}
+.msic-Filter:before{content:'\004a';}
+.msic-Add-Template:before{content:'\004b';}
+.msic-None-Check:before{content:'\004c';}
+.msic-Angle-Down:before{content:'\004d';}
+.msic-Angle-Up:before{content:'\004e';}
+.msic-Evaluation:before{content:'\004f';}
+.msic-Folder:before{content:'\0050';}
+.msic-Close:before{content:'\0051';}
+.msic-Outcome:before{content:'\0052';}
+.msic-Link:before{content:'\0053';}
+.msic-Sort:before{content:'\0054';}
+.msic-Ellipse:before{content:'\0055';}
+.msic-Rectangle-1:before{content:'\0056';}
+.msic-Rectangle-2:before{content:'\0057';}
+.msic-OKR-Link:before{content:'\0058';}
+.msic-OKR-Link-Board:before{content:'\0059';}
+.msic-Delete:before{content:'\005a';}
+.msic-Adjust-column-1:before{content:'\0061';}
+.msic-Adjust-column-2:before{content:'\0062';}
+.msic-Rectangle-3:before{content:'\0063';}
+.msic-Rectangle-4:before{content:'\0064';}
+.msic-Epic:before{content:'\0065';}
+.msic-Feature:before{content:'\0066';}
+.msic-User-Story:before{content:'\0067';}
+.msic-Subtopic:before{content:'\0068';}
+.msic-Left:before{content:'\0069';}
+.msic-Right:before{content:'\006a';}
+.msic-Ellipse-2:before{content:'\006b';}
+.msic-Checked:before{content:'\006c';}
+.msic-Cancel-Check:before{content:'\006d';}
+.msic-Thema:before{content:'\006e';}
+.msic-Edit:before{content:'\006f';}
+.msic-Plus:before{content:'\0070';}
+.msic-Close-1:before{content:'\0071';}
+.msic-Today:before{content:'\0072';}
+.msic-This-Week:before{content:'\0073';}
+.msic-Next-Week:before{content:'\0074';}
+.msic-Search:before{content:'\0075';}
+.msic-Organisation:before{content:'\0076';}
+.msic-Person:before{content:'\0077';}
+.msic-Rectangle-Check:before{content:'\0078';}
+.msic-Inter-Themen:before{content:'\0079';}
+.msic-Mei-Themen:before{content:'\007a';}
+.msic-OKR-Unlink:before{content:'\0030';}
+.msic-Image:before{content:'\0031';}
+.msic-List:before{content:'\0032';}
+.msic-Arrow-left:before{content:'\0033';}
+.msic-Arrow-up:before{content:'\0034';}
+.msic-Arrow-down:before{content:'\0035';}
+.msic-Checked2:before{content:'\0036';}
+.msic-OKR-Link-Boardfill:before{content:'\0037';}
+.msic-OKR-Unlink-Board:before{content:'\0038';}
+.msic-Balanced-Scorecard:before{content:'\0039';}
+.msic-Strategy-Map:before{content:'\0021';}
+.msic-Navigation:before{content:'\0022';}
+.msic-File:before{content:'\0023';}
+.msic-Folder-2:before{content:'\0024';}
+.msic-Upload:before{content:'\0025';}
+.msic-Full-Screen:before{content:'\0026';}
+.msic-Collapse:before{content:'\0027';}
+.msic-Budget:before{content:'\0028';}

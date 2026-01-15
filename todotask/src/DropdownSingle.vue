@@ -1,20 +1,3 @@
-<template>
-    <div class="w-full relative" ref="_el">
-        <div
-            class="flex items-center rounded-md bg-white px-3 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
-            <input type="text" name="drpinput" :placeholder="props.placeholder" v-model="name"
-                @click.stop="buildAvailSrc" @blur="blurINput" readonly
-                class="block bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6 w-full" />
-        </div>
-        <div v-if="availSrc.length > 0" style="scrollbar-width: thin;" wrap="ls-src"
-            class="absolute mt-1 max-h-60 w-100 overflow-auto rounded-md bg-white p-1 text-base shadow-lg focus:outline-none sm:text-sm">
-            <div v-for="(item, ii) in availSrc" :key="item.Id" @click.stop="e => selectIndex(ii)"
-                class="cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-indigo-500 hover:text-white rounded-md">
-                {{ item.Name }}
-            </div>
-        </div>
-    </div>
-</template>
 <script setup>
 import { defineProps, ref, watch, nextTick } from 'vue';
 const _el = ref()
@@ -60,9 +43,29 @@ function selectIndex(ii) {
     props.setValue(value)
 }
 function blurINput() {
+    return
     timeoutId = setTimeout(() => {
         availSrc.value = []
         timeoutId = null;
     }, 1024)
 }
 </script>
+<template>
+    <div class="w-full relative" ref="_el">
+        <div
+            class="flex items-center rounded-md bg-white px-3 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
+            <input type="text" name="drpinput" :placeholder="props.placeholder" v-model="name"
+                @click.stop="buildAvailSrc" @blur="blurINput" readonly
+                class="block bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6 w-full" />
+        </div>
+        <div v-if="availSrc.length > 0" style="scrollbar-width: thin;z-index: 1;" wrap="ls-src"
+            class="absolute mt-1 max-h-60 w-100 overflow-auto rounded-md bg-white p-1 text-base shadow-lg focus:outline-none sm:text-sm">
+            <div v-for="(item, ii) in availSrc" :key="item.Id" @click.stop="e => selectIndex(ii)"
+                class="flex items-center cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-indigo-500 hover:text-white rounded-md">
+                <span v-if="item.Icon" :class="[item.Icon]"
+                    style="font-size: 11px;margin-right: 6px;display: inline-flex;"></span>
+                <div>{{ item.Name }}</div>
+            </div>
+        </div>
+    </div>
+</template>
