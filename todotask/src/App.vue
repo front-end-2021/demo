@@ -5,6 +5,7 @@ import { ref, provide, computed } from 'vue';
 import SnowflakeId from 'snowflake-id';
 import Row from './Row.vue';
 import FormRow from './FormRow.vue';
+import NavHead from './NavHead.vue';
 const SnfId = new SnowflakeId({ mid: 42, offset: (2020 - 1970) * 31536000 * 1000 });
 
 const nodeItem = ref(null)
@@ -58,7 +59,8 @@ function addNode(node, parentId = '') {
 }
 </script>
 <template>
-    <div class="flex flex-col items-center justify-center bg-gray-100 gap-[2px] p-1.5">
+    <NavHead />
+    <div class="flex flex-col items-center justify-center bg-gray-100 gap-[2px] p-1.5 mt-12">
         <Row v-for="[id, node] in ViewNodes" :key="node.Id" :item="node" />
     </div>
     <div class="flex flex-col items-center justify-center bg-gray-100 gap-8">
