@@ -1,25 +1,32 @@
 <script setup>
-import { defineProps, ref, inject, computed, watch } from 'vue';
+import { defineProps, ref, inject, computed, watch, onBeforeMount } from 'vue';
 import DropdownSingle from './DropdownSingle.vue';
-const props = defineProps(['addNode'])
+import DropdownMulti from './DropdownMulti.vue';
+import { buildAssignIds } from './common.js';
 
-const $nodeItem = inject('$nodeItem');
+const props = defineProps(['addNode', 'id'])
+
+const $editNodes = inject('$editNodes');
 const $nodeTree = inject('$nodeTree'); // map[id, node]
 const $taskTypes = inject('$taskTypes');
+const $Accout = inject('$Accout');
+const $Regions = inject('$Regions');
+const $Users = inject('$Users');
 
 const availParents = computed(() => {
     const noPa = { Id: '', Name: 'No parent' }
-    if (!$nodeItem.value) return [noPa, ...$nodeTree.value.values()];
+    if (!props.id) return [noPa, ...$nodeTree.value.values()];
     let ls = [noPa];
-    let ignoreIds = new Set([$nodeItem.value.Id]);
-    if ($nodeItem.value.parent) {
-        let p = $nodeItem.value.parent;
+    let ignoreIds = new Set([props.id]);
+    let node = $nodeTree.value.get(props.id);
+    if (node.parent) {
+        let p = node.parent;
         while (p) {
             ignoreIds.add(p.Id);
             p = p.parent;
         }
     }
-    let children = $nodeItem.value.children
+    let children = node.children
     while (0 < children.size) {
         let grandChilds = new Set();
         for (let child of children) {
@@ -33,8 +40,8 @@ const availParents = computed(() => {
     }
     return ls;
 });
-const parent = ref(!$nodeItem.value ? availParents.value[0] : $nodeItem.value.parent);
-const name = ref(!$nodeItem.value ? '' : $nodeItem.value.Name);
+const parent = ref(availParents.value[0]);
+const name = ref('');
 
 const availTypes = computed(() => {
     let lsType = $taskTypes.value;
@@ -60,39 +67,50 @@ const availTypes = computed(() => {
         case 7:
         case 10:
         case 11:
-        case 14: cTypes = cTypes.union(new Set([7, 10, 11, 14, 16]))
+        case 14: cTypes = cTypes.union(new Set([7, 10, 11, 14]))
             return lsType.filter(x => cTypes.has(x.Id))
         default: break;
     }
     return lsType
 });
-const taskType = ref(!$nodeItem.value ? availTypes.value[0] : availTypes.value.find(x => x.Id == $nodeItem.value.TypeId));
+const taskType = ref(availTypes.value[0]);
+
+const srcAssignRegions = computed(() => { return $Regions.value.filter(r => r.Id != $Accout.value.RegionId) });
+const srcAssignUsers = computed(() => { return $Users.value.filter(r => r.Id != $Accout.value.Id) });
+
+const assignedRegions = ref([]);
+const assignedUsers = ref([]);
+
+onBeforeMount(() => {
+    if(props.id) {
+        let node =  $nodeTree.value.get(props.id)
+        taskType.value = availTypes.value.find(x => x.Id == node.TypeId)
+        name.value = node.Name
+        parent.value = node.parent
+        assignedRegions.value = srcAssignRegions.value.filter(r => node.RegionIds.has(r.Id))
+        assignedUsers.value = srcAssignUsers.value.filter(r => node.UserIds.has(r.Id))
+    }
+})
 watch(availTypes, (newVal) => {
     if (!newVal.find(x => x.Id == taskType.value.Id)) {
         taskType.value = newVal[0];
     }
 })
 
-watch(() => $nodeItem.value, (item) => {
-    if (!item) {
-        clearForm()
-    } else {
-        name.value = item.Name;
-        parent.value = item.parent;
-        taskType.value = availTypes.value.find(x => x.Id == item.TypeId);
-    }
-});
-
 function saveForm(e) {
     e.preventDefault();
     let newName = name.value.trim();
     if (!newName) return;
-    let node = $nodeItem.value
-    let valPa = parent.value
-
+    let node, valPa = parent.value
+    let assignRids = new Set(assignedRegions.value.map(r => r.Id))
+    let assignUids = new Set(assignedUsers.value.map(u => u.Id))
+    const account = $Accout.value;
     // Edit mode
-    if (node != null) {
+    if (props.id) {
+        node = $nodeTree.value.get(props.id)
         node.Name = newName;
+        node.RegionIds = new Set([account.RegionId, ...assignRids])
+        node.UserIds = new Set([account.Id, ...assignUids])
         node.TypeId = taskType.value.Id;
         if (valPa && valPa.Id) {
             node.parent = valPa;
@@ -113,58 +131,78 @@ function saveForm(e) {
         cancelForm()
         return;
     }
-
     // New Node
     let parentId = valPa ? valPa.Id : '';
     node = {
         Name: newName,
         TypeId: taskType.value.Id,
+        RegionIds: new Set([account.RegionId, ...assignRids]),
+        UserIds: new Set([account.Id, ...assignUids]),
     };
     let newId = props.addNode(node, parentId);
-    cancelForm()
+    clearForm()
+    const edits = $editNodes.value;
+    let entry = edits.find(x => '' == x.Id);
+    if (entry) entry.Id = newId
 }
 function setParent(pa) { parent.value = pa }
 function setTaskType(value) { taskType.value = value }
 function clearForm() {
     name.value = '';
     parent.value = null;
-    taskType.value = availTypes.value[0];
 }
 function cancelForm() {
     clearForm()
-    $nodeItem.value = null
+    $editNodes.value = []
+}
+function setAssignRegions(region) {
+    assignedRegions.value = buildAssignIds(region.Id, assignedRegions.value, srcAssignRegions.value);
+}
+function setAssignUsers(user) {
+    assignedUsers.value = buildAssignIds(user.Id, assignedUsers.value, srcAssignUsers.value);
 }
 </script>
 <template>
-    <form>
+    <form class="form-row w-[600px] p-3 rounded-xl shadow-md m-3">
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold text-gray-900">Form Row</h2>
+                <h2 class="text-base/7 font-semibold text-gray-900 border-b-1 border-solid border-stone-200">Form Row
+                </h2>
                 <div class="mt-1 flex flex-col gap-y-1.5">
                     <div class="flex gap-x-1 items-center">
-                        <label for="username" class="w-[90px] block text-sm/6 font-medium text-gray-900">Name</label>
+                        <label for="username" class="w-[120px] grow block text-sm/6 font-medium text-gray-900">Name</label>
                         <div class="w-full">
                             <div
-                                class="flex items-center rounded-md bg-white px-3 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
+                                class="flex items-center rounded-md bg-white px-3 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-green-600">
                                 <input id="username" type="text" placeholder="DaiNB" v-model="name"
                                     class="block bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6 w-full" />
                             </div>
                         </div>
                     </div>
                     <div class="flex gap-x-1 items-center">
-                        <div class="w-[90px] block text-sm/6 font-medium text-gray-900">Parent</div>
+                        <div class="w-[120px] grow block text-sm/6 font-medium text-gray-900">Parent</div>
                         <DropdownSingle :src="availParents" :value="parent" placeholder="Select parent"
                             :setValue="setParent" />
                     </div>
                     <div class="flex gap-x-1 items-center">
-                        <div class="w-[90px] block text-sm/6 font-medium text-gray-900">Task type</div>
+                        <div class="w-[120px] grow block text-sm/6 font-medium text-gray-900">Task type</div>
                         <DropdownSingle :src="availTypes" :value="taskType" placeholder="Select type"
                             :setValue="setTaskType" />
                     </div>
+                    <div class="flex gap-x-1 items-center">
+                        <div class="w-[120px] grow block text-sm/6 font-medium text-gray-900">Assign regions</div>
+                        <DropdownMulti :src="srcAssignRegions" :values="assignedRegions" placeholder="Assign regions"
+                            :setValue="setAssignRegions" />
+                    </div>
+                    <div class="flex gap-x-1 items-center">
+                        <div class="w-[120px] grow block text-sm/6 font-medium text-gray-900">Assign users</div>
+                        <DropdownMulti :src="srcAssignUsers" :values="assignedUsers" placeholder="Assign users"
+                            :setValue="setAssignUsers" />
+                    </div>
                     <!-- <div class="flex gap-x-1">
-                        <label for="about" class="w-[90px] block text-sm/6 font-medium text-gray-900 mt-2">About</label>
+                        <label for="about" class="w-[120px] grow block text-sm/6 font-medium text-gray-900 mt-2">About</label>
                         <textarea id="about" name="about" rows="3"
-                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"></textarea>
+                            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"></textarea>
                     </div> -->
                 </div>
             </div>
@@ -182,7 +220,7 @@ function cancelForm() {
                                     <div class="group grid size-4 grid-cols-1">
                                         <input id="candidates" type="checkbox" name="candidates"
                                             aria-describedby="candidates-description"
-                                            class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
+                                            class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-green-600 checked:bg-green-600 indeterminate:border-green-600 indeterminate:bg-green-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto" />
                                         <svg viewBox="0 0 14 14" fill="none"
                                             class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
                                             <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round"
@@ -208,13 +246,13 @@ function cancelForm() {
                         <div class="mt-6 space-y-6">
                             <div class="flex items-center gap-x-3">
                                 <input id="push-everything" type="radio" name="push-notifications" checked
-                                    class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden" />
+                                    class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-green-600 checked:bg-green-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden" />
                                 <label for="push-everything"
                                     class="block text-sm/6 font-medium text-gray-900">Everything</label>
                             </div>
                             <div class="flex items-center gap-x-3">
                                 <input id="push-nothing" type="radio" name="push-notifications"
-                                    class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden" />
+                                    class="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-green-600 checked:bg-green-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden" />
                                 <label for="push-nothing" class="block text-sm/6 font-medium text-gray-900">No push
                                     notifications</label>
                             </div>
@@ -225,9 +263,9 @@ function cancelForm() {
         </div>
 
         <div class="mt-6 flex items-center justify-end gap-x-6">
-            <button type="button" class="text-sm/6 font-semibold text-gray-900" @click.stop="cancelForm">Cancel</button>
+            <button type="button" class="text-sm/6 font-semibold text-gray-900" @click.stop="cancelForm">Close</button>
             <button type="submit" @click.stop="saveForm"
-                class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
+                class="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">Save</button>
         </div>
     </form>
 </template>

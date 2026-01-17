@@ -4,21 +4,17 @@ const _el = ref()
 let timeoutId = null
 const props = defineProps({
     src: Array,
-    value: Object,
+    values: Array,
     placeholder: String,
     setValue: Function
 });
-const name = ref(!!props.value ? props.value.Name : '');
-watch(() => props.value, (newVal) => {
-    name.value = !!newVal ? newVal.Name : '';
+const name = ref(props.values.map(x => x.Name).join(', '));
+watch(() => props.values, (newVals) => {
+    name.value = newVals.map(x => x.Name).join(', ');
 });
 const availSrc = ref([]);
 async function buildAvailSrc(e) {
-    if (!name.value) {
-        availSrc.value = props.src;
-    } else {
-        availSrc.value = props.src.filter(x => x.Name != name.value);
-    }
+    availSrc.value = props.src
     let el = _el.value.querySelector('div[wrap="ls-src"]');
     if (el) {
         el.style.top = ''
@@ -38,14 +34,13 @@ async function buildAvailSrc(e) {
     }
 }
 function selectIndex(ii) {
-    let value = availSrc.value[ii];
-    name.value = value.Name;
-    availSrc.value = []
+    props.setValue(availSrc.value[ii])
     if (typeof timeoutId == 'number') {
         clearTimeout(timeoutId);
         timeoutId = null;
     }
-    props.setValue(value)
+    const el = _el.value.querySelector('input[name="drpinput"]');
+    if (el) el.focus()
 }
 function blurINput() {
     timeoutId = setTimeout(() => {
@@ -63,9 +58,10 @@ function blurINput() {
                 class="block bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6 w-full" />
         </div>
         <div v-if="availSrc.length > 0" style="scrollbar-width: thin;z-index: 1;" wrap="ls-src"
-            class="absolute mt-1 max-h-60 min-w-60 overflow-auto rounded-md bg-white p-1 text-base shadow-lg focus:outline-none sm:text-sm">
+            class="absolute flex flex-col gap-0.5 mt-1 max-h-60 min-w-60 overflow-auto rounded-md bg-white p-1 text-base shadow-lg focus:outline-none sm:text-sm">
             <div v-for="(item, ii) in availSrc" :key="item.Id" @click.stop="e => selectIndex(ii)"
-                class="flex items-center cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-green-500 hover:text-white rounded-md">
+                class="inline-flex items-center cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-green-500 hover:text-white rounded-md"
+                :class="props.values.find(x => item.Id == x.Id) ? 'bg-neutral-200' : ''">
                 <span v-if="item.Icon" :class="[item.Icon]"
                     style="font-size: 11px;margin-right: 6px;display: inline-flex;"></span>
                 <div>{{ item.Name }}</div>

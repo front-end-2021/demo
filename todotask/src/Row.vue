@@ -1,19 +1,10 @@
-<template>
-    <div class="rounded-md px-1 shadow bg-white min-w-[120px] min-h-[46px] w-full" :level="Level">
-        <div class="grid grid-cols-4 gap-0 items-center h-[46px]" :style="{ paddingLeft: Level * 6 + 'px' }">
-            <div class="inline-flex gap-[6px] items-center">
-                <span class="w-[16px]" style="display: inline-flex;" :class="[clsType]" :style="[stylType]"></span>
-                <div class="cursor-default" @click.stop="clickName">{{ item.Name }}</div>
-            </div>
-
-        </div>
-    </div>
-</template>
 <script setup>
 import { defineProps, ref, inject, computed } from 'vue';
 const props = defineProps(['item']);
-const $nodeItem = inject('$nodeItem');
+const $editNodes = inject('$editNodes');
 const $taskTypes = inject('$taskTypes');
+const $Regions = inject('$Regions');
+const $Users = inject('$Users');
 
 const Level = computed(() => {
     let level = 0;
@@ -24,9 +15,7 @@ const Level = computed(() => {
     }
     return level;
 });
-const clsType = computed(() => {
-    return $taskTypes.value.find(x => x.Id == props.item.TypeId)?.Icon || ''
-});
+const clsType = computed(() => { return $taskTypes.value.find(x => x.Id == props.item.TypeId)?.Icon || '' });
 const stylType = computed(() => {
     switch (props.item.TypeId) {
         case 1: return { fontSize: '16px' }
@@ -36,12 +25,31 @@ const stylType = computed(() => {
         default: return { fontSize: '12px' }
     }
 });
+const availRegions = computed(() => { return $Regions.value.filter(r => props.item.RegionIds.has(r.Id)) });
+const availUsers = computed(() => { return $Users.value.filter(u => props.item.UserIds.has(u.Id)) });
 
 function clickName(e) {
-    if (!$nodeItem.value) {
-        $nodeItem.value = props.item
-    } else {
-        $nodeItem.value = null;
+    const edits = $editNodes.value
+    if (edits.find(x => x.Id == props.item.Id)) {
+        $editNodes.value = []
+        return;
     }
+    $editNodes.value = [{ Id: props.item.Id }]
 }
 </script>
+<template>
+    <div class="rounded-md px-1 shadow bg-white min-w-[120px] min-h-[46px] w-full" :level="Level">
+        <div class="grid grid-cols-4 gap-0 items-center h-[46px]">
+            <div class="inline-flex gap-[6px] items-center" :style="{ paddingLeft: Level * 6 + 'px' }">
+                <span class="w-[16px]" style="display: inline-flex;" :class="[clsType]" :style="[stylType]"></span>
+                <div class="cursor-default min-w-12" @click.stop="clickName">{{ item.Name }}</div>
+            </div>
+            <div class="inline-flex gap-1 cursor-default">
+                <div v-for="r in availRegions" class="rounded-md bg-neutral-200 px-1.5">{{ r.Name }}</div>
+            </div>
+            <div class="inline-flex gap-1 cursor-default">
+                <div v-for="r in availUsers" class="rounded-md bg-neutral-200 px-1.5">{{ r.Name }}</div>
+            </div>
+        </div>
+    </div>
+</template>

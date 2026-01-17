@@ -12,3 +12,9 @@ export function buildTree(arrNode) {
     }
     return nTree;
 }
+export function buildAssignIds(id, values, lsSrc) {
+    let ids = new Set(values.map(r => r.Id));
+    if (ids.has(id)) { ids.delete(id) }
+    else { ids.add(id) }
+    return lsSrc.filter(r => ids.has(r.Id));
+}

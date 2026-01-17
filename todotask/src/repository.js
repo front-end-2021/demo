@@ -27,9 +27,34 @@ export function getLsNode(SnfId) {
             ls.push({
                 Id: `${SnfId.generate()}`,
                 TypeId: 1,
-                Name: 'Project Alpha'
+                Name: 'Project Alpha',
+                RegionIds: new Set(),
+                UserIds: new Set(),
             })
             resolve(ls);
         }, 559)
+    })
+}
+export function getRegions(SnfId) {
+    return new Promise((resolve) => {
+        let ls = []
+        ls.push({ Id: `${SnfId.generate()}`, Name: 'Vietnam' })
+        ls.push({ Id: `${SnfId.generate()}`, Name: 'North America' })
+        ls.push({ Id: `${SnfId.generate()}`, Name: 'Europe' })
+        ls.push({ Id: `${SnfId.generate()}`, Name: 'Rusia' })
+        ls.push({ Id: `${SnfId.generate()}`, Name: 'Asia' })
+        resolve(ls);
+    })
+}
+export function getUsers(SnfId) {
+    return new Promise((resolve) => {
+        let ls = []
+        ls.push({ Id: `${SnfId.generate()}`, Name: 'Guest 001' })
+        ls.push({ Id: `${SnfId.generate()}`, Name: 'Elon Musk' })
+        ls.push({ Id: `${SnfId.generate()}`, Name: 'Bill gate' })
+        ls.push({ Id: `${SnfId.generate()}`, Name: 'Larry Page' })
+        ls.push({ Id: `${SnfId.generate()}`, Name: 'Mark Zukerbeg' })
+        ls.push({ Id: `${SnfId.generate()}`, Name: 'Warrent Buffet' })
+        resolve(ls);
     })
 }
