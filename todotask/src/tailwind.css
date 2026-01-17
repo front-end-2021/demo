@@ -6,7 +6,7 @@
   --font-sans: "Inter", system-ui; /* Extend font, breakpoint, v.v. */
 }
 /* Custom CSS khác nếu cần */
-@font-face { font-family: 'mkt'; src: url('./mkt.ttf') format('truetype'); font-weight: normal; font-style: normal; }
+/* @font-face { font-family: 'mkt'; src: url('./mkt.ttf') format('truetype'); font-weight: normal; font-style: normal; } */
 [class*='msic-']:before {
     display: inline-block;
     font-family: 'mkt';

@@ -43,19 +43,28 @@ const availTypes = computed(() => {
     lsType = lsType.filter(x => x.Id != pa.TypeId)
     let cTypes = new Set([15])  // Thema
     switch (pa.TypeId) {
+        case 1: break;
+        case 2:
+        case 3:
+        case 4: cTypes = new Set([1])
+            return lsType.filter(x => !cTypes.has(x.Id))
         case 5: // Main goal
         case 8: // Epic
         case 12: // Initiative
-            cTypes = cTypes.union(new Set([6, 7, 9, 10, 11, 14, 16])) // Sub goal, Action, Task, Thema, Organisation
+            cTypes = cTypes.union(new Set([6, 7, 9, 10, 11, 14, 16])) // Sub goal, Action, Task, Organisation
             return lsType.filter(x => cTypes.has(x.Id)) // Sub goal, Action
         case 6: // Sub goal
         case 9: // Feature  
-        case 13:
-            cTypes = cTypes.union(new Set([7, 10, 11, 14, 16])) // Action, Task, Thema, Organisation
+        case 13: cTypes = cTypes.union(new Set([7, 10, 11, 14, 16])) // Action, Task, Organisation
             return lsType.filter(x => cTypes.has(x.Id)) // Action
+        case 7:
+        case 10:
+        case 11:
+        case 14: cTypes = cTypes.union(new Set([7, 10, 11, 14, 16]))
+            return lsType.filter(x => cTypes.has(x.Id))
         default: break;
     }
-    return lsType.filter(x => x.Id != pa.TypeId)
+    return lsType
 });
 const taskType = ref(!$nodeItem.value ? availTypes.value[0] : availTypes.value.find(x => x.Id == $nodeItem.value.TypeId));
 watch(availTypes, (newVal) => {
