@@ -13,6 +13,8 @@
                 width: (Size * Cols) + 'px',
                 height: (Rows * Size + Size) + 'px'
             }">
+                <cache-cell v-for="cell in SlideTitles" :key="'s' + cell.id" :id="cell.id" :x="cell.x"
+                    :y="cell.y"></cache-cell>
                 <cell-node v-if="Grid.length" :id="ZeroId" :x="0" :y="-1"></cell-node>
                 <template v-for="(row, y) in Grid">
                     <cell-node v-for="(id, x) in row" :key="id" :id="id" :x="x" :y="y"></cell-node>
@@ -24,8 +26,7 @@
         </div>
     </section>
     <div style="margin: 12px 0; display: inline-flex; gap: 10px;align-items: center;">
-        <span v-if="Grid.length < 1 || 'Completed' == GameStats" 
-            class="btn_" @click.stop="startGame">Start game</span>
+        <span v-if="Grid.length < 1 || 'Completed' == GameStats" class="btn_" @click.stop="startGame">Start game</span>
         <span v-else class="btn_" @click.stop="rejectGame">Reject</span>
 
         <div class="btn_">
@@ -58,13 +59,14 @@ body {
 <script>
 //import CryptoJS from 'crypto-js'
 import Cell from './Cell.vue';
+import CacheCell from './CacheCell.vue';
 import SlidingPuzzle from './ImagePuzzle.js'
 export default {
     name: 'DaiNb.vApp',
     components: {
-        'cell-node': Cell
+        'cell-node': Cell,
+        'cache-cell': CacheCell,
     },
-    //beforeCreate(){},
     data() {
         return {
             Size: 150,
@@ -79,6 +81,8 @@ export default {
             ImgSrc: 'https://m.media-amazon.com/images/M/MV5BNmFiM2FkYTYtY2FiOS00ZWJkLTkyOTgtNmFmODI4NjcwNDgzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg',
             Timmer: null,
             Time: 0,
+            SlideTitles: [],
+            CopTitles: new Map()
         }
     },
     computed: {
@@ -137,39 +141,42 @@ export default {
                 }, 1000)
             }
         },
-        getLsNearIndex(iix, iiy) {
-            const grid = this.Grid
-            if (iiy < 0) {
-                if (this.BlankPoint == grid[0][0]) return new Set([-1])
-                return new Set([grid[0][0]])
-            }
-            let ls = [
-                [iix - 1, iiy], [iix + 1, iiy], [iix, iiy - 1], [iix, iiy + 1]
-            ]
-            ls = ls.filter(p => 0 <= p[0] && 0 <= p[1])
-            ls = ls.filter(p => p[0] < this.Cols && p[1] < this.Rows)
-            let set = new Set(ls.map(([x, y]) => grid[y][x]))
-            if (0 == iix && 0 == iiy) {
-                if (0 == grid[0][0]) {
-                    set.add(-1)
-                    set.delete(0)
-                } else if (this.BlankPoint == grid[0][0]) {
-                    set.delete(-1)
-                    set.add(0)
-                }
-            }
-            return set
-        },
         genActvNode(type = 'set', node) {
             let obj = this.ActiveNode
             if ('set' == type) {
+                const neibours = getNeibours.call(this, node.x, node.y)
                 obj = {
                     id: node.id, x: node.x, y: node.y,
-                    ArrNear: this.getLsNearIndex(node.x, node.y)
+                    ArrNear: neibours
                 }
             }
             if ('get' == type) return obj
             this.ActiveNode = obj
+
+            function getNeibours(iix, iiy) {
+                const grid = this.Grid
+                if (iiy < 0) {
+                    if (this.BlankPoint == grid[0][0]) return new Set([-1])
+                    return new Set([grid[0][0]])
+                }
+                let ls = [
+                    [iix - 1, iiy], [iix + 1, iiy], [iix, iiy - 1], [iix, iiy + 1]
+                ]
+                ls = ls.filter(p => 0 <= p[0] && 0 <= p[1])
+                ls = ls.filter(p => p[0] < this.Cols && p[1] < this.Rows)
+
+                let set = new Set(ls.map(([x, y]) => grid[y][x]))
+                if (0 == iix && 0 == iiy) {
+                    if (0 == grid[0][0]) {
+                        set.add(-1)
+                        set.delete(0)
+                    } else if (this.BlankPoint == grid[0][0]) {
+                        set.delete(-1)
+                        set.add(0)
+                    }
+                }
+                return set
+            }
         },
         checkGameStat(grid, count = 0) {
             let index = 0
