@@ -1,10 +1,17 @@
 <script setup>
+import { defineProps, ref, inject, computed, watch, onBeforeMount } from 'vue';
+import ViewPlans from './ViewPlans.vue';
+const Project = inject('$Project');
+const Pagger = inject('$Pagger');
 const LsTab = [
-    { Name: 'Docs', href: '/docs' },
-    { Name: 'Blog', href: '/blog' },
-    { Name: 'Showcase', href: '/showcase' },
-    { Name: 'Sponsor', href: '/sponsor' },
+    { Name: 'Projects', comp: 'ViewProjects' },
+    { Name: 'Markets', comp: 'ViewMarkets' },
+    { Name: 'Plans', comp: ViewPlans },
+    { Name: 'Sponsor', comp: '' },
 ]
+onBeforeMount(() => {
+    Pagger.value = LsTab[2]
+})
 </script>
 <template>
     <div class="fixed inset-x-0 top-0 z-10 border-b border-gray-950/5 dark:border-white/10">
@@ -31,7 +38,8 @@ const LsTab = [
                                 clip-rule="evenodd"></path>
                         </svg></button>
                 </div>
-                <div class="flex items-center gap-3 max-md:hidden"><button type="button"
+                <div class="flex items-center gap-3 max-md:hidden">
+                    <button type="button"
                         class="inline-flex items-center gap-1 rounded-full bg-gray-950/2 px-2 py-1 inset-ring inset-ring-gray-950/8 dark:bg-white/5 dark:inset-ring-white/2"><svg
                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"
                             class="-ml-0.5 size-4 fill-gray-600 dark:fill-gray-500">
@@ -41,8 +49,9 @@ const LsTab = [
                         </svg><kbd
                             class="hidden font-sans text-xs/4 text-gray-500 dark:text-gray-400 [.os-macos_&amp;]:block">⌘K</kbd><kbd
                             class="hidden font-sans text-xs/4 text-gray-500 not-[.os-macos_&amp;]:block dark:text-gray-400">Ctrl&nbsp;K</kbd></button>
-                    <a v-for="ttab in LsTab" class="text-sm/6 text-gray-950 dark:text-white px-3 rounded-md hover:bg-stone-300/30" 
-                        :href="ttab.href">{{ttab.Name }}</a>
+                    <span v-for="ttab in LsTab" :class="[Pagger.Name == ttab.Name ? 'bg-stone-300' : '']"
+                        class="text-sm/6 cursor-default text-gray-950 dark:text-white px-3 rounded-md hover:bg-stone-300/30">{{ ttab.Name
+                        }}</span>
                     <a href="/plus?ref=top" class="group relative px-1.5 text-sm/6 text-sky-800 dark:text-sky-300"><span
                             class="absolute inset-0 border border-dashed border-sky-300/60 bg-sky-400/10 group-hover:bg-sky-400/15 dark:border-sky-300/30"></span>Plus<svg
                             width="5" height="5" viewBox="0 0 5 5"

@@ -1,10 +1,9 @@
 <script setup>
 import { defineProps, ref, inject, computed } from 'vue';
+import { store } from './store.js'
 const props = defineProps(['item']);
 const $editNodes = inject('$editNodes');
 const $taskTypes = inject('$taskTypes');
-const $Regions = inject('$Regions');
-const $Users = inject('$Users');
 
 const Level = computed(() => {
     let level = 0;
@@ -25,8 +24,8 @@ const stylType = computed(() => {
         default: return { fontSize: '12px' }
     }
 });
-const availRegions = computed(() => { return $Regions.value.filter(r => props.item.RegionIds.has(r.Id)) });
-const availUsers = computed(() => { return $Users.value.filter(u => props.item.UserIds.has(u.Id)) });
+const availRegions = computed(() => { return store.Regions.filter(r => props.item.RegionIds.has(r.Id)) });
+const availUsers = computed(() => { return store.Users.filter(u => props.item.UserIds.has(u.Id)) });
 
 function clickName(e) {
     const edits = $editNodes.value
@@ -42,13 +41,13 @@ function clickName(e) {
         <div class="grid grid-cols-4 gap-0 items-center h-[46px]">
             <div class="inline-flex gap-[6px] items-center" :style="{ paddingLeft: Level * 6 + 'px' }">
                 <span class="w-[16px]" style="display: inline-flex;" :class="[clsType]" :style="[stylType]"></span>
-                <div class="cursor-default min-w-12" @click.stop="clickName">{{ item.Name }}</div>
+                <div class="cursor-default min-w-12 text-lg" @click.stop="clickName">{{ item.Name }}</div>
             </div>
-            <div class="inline-flex gap-1 cursor-default">
-                <div v-for="r in availRegions" class="rounded-md bg-neutral-200 px-1.5">{{ r.Name }}</div>
+            <div class="inline-flex gap-1 cursor-default text-sm">
+                <div v-for="r in availRegions" class="rounded-md bg-neutral-200 p-1.5">{{ r.Name }}</div>
             </div>
-            <div class="inline-flex gap-1 cursor-default">
-                <div v-for="r in availUsers" class="rounded-md bg-neutral-200 px-1.5">{{ r.Name }}</div>
+            <div class="inline-flex gap-1 cursor-default text-sm">
+                <div v-for="r in availUsers" class="rounded-md bg-neutral-200 p-1.5">{{ r.Name }}</div>
             </div>
         </div>
     </div>

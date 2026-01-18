@@ -1,24 +1,21 @@
 <script setup>
 import { defineProps, ref, inject, computed, watch, onBeforeMount } from 'vue';
+import { store } from './store.js'
 import DropdownSingle from './DropdownSingle.vue';
 import DropdownMulti from './DropdownMulti.vue';
 import { buildAssignIds } from './common.js';
 
 const props = defineProps(['addNode', 'id'])
 
-const $editNodes = inject('$editNodes');
-const $nodeTree = inject('$nodeTree'); // map[id, node]
-const $taskTypes = inject('$taskTypes');
-const $Accout = inject('$Accout');
-const $Regions = inject('$Regions');
-const $Users = inject('$Users');
+const editNodes = inject('$editNodes');
+const TaskTypes = inject('$taskTypes');
 
 const availParents = computed(() => {
     const noPa = { Id: '', Name: 'No parent' }
-    if (!props.id) return [noPa, ...$nodeTree.value.values()];
+    if (!props.id) return [noPa, ...store.NodeTree.values()];
     let ls = [noPa];
     let ignoreIds = new Set([props.id]);
-    let node = $nodeTree.value.get(props.id);
+    let node = store.NodeTree.get(props.id);
     if (node.parent) {
         let p = node.parent;
         while (p) {
@@ -35,7 +32,7 @@ const availParents = computed(() => {
         }
         children = grandChilds;
     }
-    for (let [id, node] of $nodeTree.value) {
+    for (let [id, node] of store.NodeTree) {
         if (!ignoreIds.has(id)) ls.push(node);
     }
     return ls;
@@ -44,7 +41,7 @@ const parent = ref(availParents.value[0]);
 const name = ref('');
 
 const availTypes = computed(() => {
-    let lsType = $taskTypes.value;
+    let lsType = TaskTypes.value;
     let pa = parent.value;
     if (!pa) return lsType
     lsType = lsType.filter(x => x.Id != pa.TypeId)
@@ -75,15 +72,15 @@ const availTypes = computed(() => {
 });
 const taskType = ref(availTypes.value[0]);
 
-const srcAssignRegions = computed(() => { return $Regions.value.filter(r => r.Id != $Accout.value.RegionId) });
-const srcAssignUsers = computed(() => { return $Users.value.filter(r => r.Id != $Accout.value.Id) });
+const srcAssignRegions = computed(() => { return store.Regions.filter(r => r.Id != store.Accout.RegionId) });
+const srcAssignUsers = computed(() => { return store.Users.filter(r => r.Id != store.Accout.Id) });
 
 const assignedRegions = ref([]);
 const assignedUsers = ref([]);
 
 onBeforeMount(() => {
-    if(props.id) {
-        let node =  $nodeTree.value.get(props.id)
+    if (props.id) {
+        let node = store.NodeTree.get(props.id)
         taskType.value = availTypes.value.find(x => x.Id == node.TypeId)
         name.value = node.Name
         parent.value = node.parent
@@ -104,10 +101,10 @@ function saveForm(e) {
     let node, valPa = parent.value
     let assignRids = new Set(assignedRegions.value.map(r => r.Id))
     let assignUids = new Set(assignedUsers.value.map(u => u.Id))
-    const account = $Accout.value;
+    const account = store.Accout
     // Edit mode
     if (props.id) {
-        node = $nodeTree.value.get(props.id)
+        node = store.NodeTree.get(props.id)
         node.Name = newName;
         node.RegionIds = new Set([account.RegionId, ...assignRids])
         node.UserIds = new Set([account.Id, ...assignUids])
@@ -141,7 +138,7 @@ function saveForm(e) {
     };
     let newId = props.addNode(node, parentId);
     clearForm()
-    const edits = $editNodes.value;
+    const edits = editNodes.value;
     let entry = edits.find(x => '' == x.Id);
     if (entry) entry.Id = newId
 }
@@ -153,7 +150,7 @@ function clearForm() {
 }
 function cancelForm() {
     clearForm()
-    $editNodes.value = []
+    editNodes.value = []
 }
 function setAssignRegions(region) {
     assignedRegions.value = buildAssignIds(region.Id, assignedRegions.value, srcAssignRegions.value);
@@ -170,7 +167,8 @@ function setAssignUsers(user) {
                 </h2>
                 <div class="mt-1 flex flex-col gap-y-1.5">
                     <div class="flex gap-x-1 items-center">
-                        <label for="username" class="w-[120px] grow block text-sm/6 font-medium text-gray-900">Name</label>
+                        <label for="username"
+                            class="w-[120px] grow block text-sm/6 font-medium text-gray-900">Name</label>
                         <div class="w-full">
                             <div
                                 class="flex items-center rounded-md bg-white px-3 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-green-600">
