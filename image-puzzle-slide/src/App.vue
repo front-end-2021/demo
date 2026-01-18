@@ -1,61 +1,3 @@
-<template>
-    <div style="display: inline-flex; justify-content: space-between;margin-bottom: 10px;align-items: center;"
-        v-bind:style="{ width: (Size * Cols) + 'px' }">
-        <strong>Game status: {{ GameStats }}</strong>
-        <div style="display: inline-flex;">
-            <div>Level: </div>
-            <input v-model="Level" type="number" min="6" max="1989" name="numLevel" />
-        </div>
-    </div>
-    <section>
-        <div style="display: flex;">
-            <div style="position: relative; border: 1px solid black;" v-bind:style="{
-                width: (Size * Cols) + 'px',
-                height: (Rows * Size + Size) + 'px'
-            }">
-                <cache-cell v-for="cell in SlideTitles" :key="'s' + cell.id" :id="cell.id" :x="cell.x"
-                    :y="cell.y"></cache-cell>
-                <cell-node v-if="Grid.length" :id="ZeroId" :x="0" :y="-1"></cell-node>
-                <template v-for="(row, y) in Grid">
-                    <cell-node v-for="(id, x) in row" :key="id" :id="id" :x="x" :y="y"></cell-node>
-                </template>
-                <div class="thumb" :style="StyleThumb">
-                    <img :src="ImgSrc" style="width: inherit; height: inherit;" @load="imageReady">
-                </div>
-            </div>
-        </div>
-    </section>
-    <div style="margin: 12px 0; display: inline-flex; gap: 10px;align-items: center;">
-        <span v-if="Grid.length < 1 || 'Completed' == GameStats" class="btn_" @click.stop="startGame">Start game</span>
-        <span v-else class="btn_" @click.stop="rejectGame">Reject</span>
-
-        <div class="btn_">
-            <label for="fileInput">Upload image</label>
-            <input type="file" id="fileInput" accept="image/*" @change="splitImage" style="display:none;" />
-        </div>
-        <div v-if="Grid.length">Your time: <span>{{ Time }}</span></div>
-    </div>
-</template>
-<style>
-body {
-    scrollbar-width: thin;
-}
-
-.thumb {
-    position: absolute;
-    top: 2px;
-    transition: left 0.9s;
-}
-
-.btn_ {
-    display: inline-block;
-    padding: 6px 10px;
-    background-color: blueviolet;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-}
-</style>
 <script>
 //import CryptoJS from 'crypto-js'
 import Cell from './Cell.vue';
@@ -91,9 +33,9 @@ export default {
         BlankPoint() { return -1 },
         StyleThumb() {
             const size = this.Size
-            let width = size * this.Cols / this.Rows * 0.96
+            let width = this.BoardWidth / this.Rows * 0.96
             let height = size * 0.96
-            let left = size * this.Cols - 2 - width
+            let left = this.BoardWidth - 8 - width
             if ('Completed' != this.GameStats) return {
                 width: `${width}px`,
                 height: `${height}px`,
@@ -243,6 +185,23 @@ export default {
                 }
             }
         },
+        onChangeSize() {
+            const viewW = window.innerWidth - 2 - 16
+            const viewH = window.innerHeight - 16 - 30 - 55 - 2
+            let maxW = viewH, maxH = viewW
+            if (viewW < viewH) {
+                maxW = viewW
+                maxH = viewH
+            }
+            let width = 450
+            if (maxW < width) width = maxW
+            let height = 750
+            if (maxH < height) height = maxH
+
+            let size1 = Math.floor(width / this.Cols)
+            let size2 = Math.floor(height / (this.Rows + 1))
+            this.Size = Math.min(size1, size2)
+        },
     },
     watch: {
         GameStats(stat) {
@@ -251,12 +210,76 @@ export default {
             }
         },
     },
-    // created() { },
-    //beforeMount() { },
-    // mounted() { },
+    created() {
+        this.onChangeSize()
+    },
+    //beforeMount() {  },
+    //mounted() { },
     //beforeUpdate() { },
     //updated() { },
     //beforeUnmout(){},
     //unmouted(){}
 };
 </script>
+<template>
+    <div style="display: inline-flex; justify-content: space-between;margin-bottom: 10px;align-items: center;"
+        v-bind:style="{ width: (BoardWidth - 16) + 'px' }">
+        <strong>Game status: {{ GameStats }}</strong>
+        <div v-if="Grid.length">Your time: <span>{{ Time }}</span></div>
+    </div>
+    <section>
+        <div style="display: flex;">
+            <div style="position: relative; border: 1px solid #959595; border-radius: 2px;" v-bind:style="{
+                width: (Cols * Size) + 'px',
+                height: (Rows * Size + Size) + 'px'
+            }">
+                <cache-cell v-for="cell in SlideTitles" :key="'s' + cell.id" :id="cell.id" :x="cell.x"
+                    :y="cell.y"></cache-cell>
+                <cell-node v-if="Grid.length" :id="ZeroId" :x="0" :y="-1"></cell-node>
+                <template v-for="(row, y) in Grid">
+                    <cell-node v-for="(id, x) in row" :key="id" :id="id" :x="x" :y="y"></cell-node>
+                </template>
+                <div class="thumb" :style="StyleThumb">
+                    <img :src="ImgSrc" style="width: inherit; height: inherit;" @load="imageReady">
+                </div>
+            </div>
+        </div>
+    </section>
+    <div style="margin: 12px 0; display: flex; gap: 10px;align-items: center;justify-content: space-between;"
+        v-bind:style="{ width: (BoardWidth - 16) + 'px' }">
+        <div style="display: inline-flex; gap: 10px;align-items: center;">
+            <span v-if="Grid.length < 1 || 'Completed' == GameStats" class="btn_" @click.stop="startGame">Start
+                game</span>
+            <span v-else class="btn_" @click.stop="rejectGame">Reject</span>
+
+            <div class="btn_">
+                <label for="fileInput">Upload image</label>
+                <input type="file" id="fileInput" accept="image/*" @change="splitImage" style="display:none;" />
+            </div>
+        </div>
+        <div v-if="typeof GameStats != 'number'" style="display: inline-flex;">
+            <div>Level: </div>
+            <input v-model="Level" type="number" min="6" max="1989" name="numLevel" />
+        </div>
+    </div>
+</template>
+<style>
+body {
+    scrollbar-width: thin;
+}
+
+.thumb {
+    position: absolute;
+    top: 2px;
+    transition: left 0.9s;
+}
+
+.btn_ {
+    display: inline-block;
+    padding: 6px 10px;
+    background-color: blueviolet;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+</style>
