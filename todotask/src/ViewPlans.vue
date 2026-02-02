@@ -3,7 +3,6 @@ import Row from './Row.vue';
 import FormRow from './FormRow.vue';
 import { store } from './store.js'
 import { defineProps, ref, inject, computed, watch, onBeforeMount } from 'vue';
-//import { getLsTaskType, getLsNode, getRegions, getUsers } from './repository.js';
 const SnfId = inject('$SnfId');
 const editNodes = inject('$editNodes');
 
@@ -28,7 +27,76 @@ const ViewNodes = computed(() => {
         }
     }
 });
+function buildMap(oMap) {
+    let map = new Map()
+    for (let [id, node] of oMap) {
+        if (!node.parent) {
+            map.set(id, node)
+            addChilds(node)
+            if (map.size == oMap.size) break;
+        }
+    }
+    return map
+    function addChilds(node) {
+        for (let child of node.children) {
+            if (!map.has(child.Id)) {
+                map.set(child.Id, child)
+                addChilds(child)
+                if (map.size == oMap.size) break;
+            }
+        }
+    }
+}
+const ViewGroups = computed(() => {
+    let regionIds = new Set()
+    for (let [id, node] of store.NodeTree) { regionIds.add(node.RegionId) }
+    let regions = store.filter((r) => regionIds.has(r.Id))
+    let landIds = new Set(regions.map(r => r.LandId))
+    let lands = store.filter((l) => landIds.has(l.Id), 'land')
 
+    let res = []
+    for (let land of lands) {
+        let objL = { Land: land }
+        let lsR = regions.filter(r => r.LandId == land.Id).map(r => {
+            let objR = { Region: r }
+            let nodes = store.filter((p) => p.RegionId == r.Id, 'node')
+            let prdIds = new Set(nodes.filter(n => n.ProductId).map(n => n.ProductId))
+            let smkIds = new Set(nodes.filter(n => n.SubmarketId).map(n => n.SubmarketId))
+            let spIds = new Set(nodes.filter(n => n.SubmarketProductId).map(n => n.SubmarketProductId))
+            let dItems = nodes.filter(n => !prdIds.has(n.Id) && !smkIds.has(n.Id) && !spIds.has(n.Id))
+            let oMap = new Map(dItems.map(n => [n.Id, n]))
+            oMap = buildMap(oMap)
+            objR.Items = oMap
+
+            let lsSmk = store.filter((s) => smkIds.has(s.Id), 'submarket').map(s => {
+                let objS = { Submarket: s }
+                objS.Products = store.filter((p) => prdIds.has(p.Id), 'product').map(p => {
+                    let objP = { Product: p }
+                    dItems = nodes.filter(n => n.ProductId == p.Id && n.SubmarketId == s.Id)
+                    oMap = new Map(dItems.map(n => [n.Id, n]))
+                    objP.Items = buildMap(oMap)
+                    return objP;
+                })
+                for (let kk = objS.Products.length - 1; -1 < kk; kk--) {
+                    if (objS.Products[kk].Items.length < 1) objS.Products.splice(kk, 1)
+                }
+                dItems = nodes.filter(n => n.SubmarketId == s.Id && !prdIds.has(n.Id) && !spIds.has(n.Id))
+                oMap = new Map(dItems.map(n => [n.Id, n]))
+                objS.Items = buildMap(oMap)
+                return objS;
+            })
+            for (let kk = lsSmk.length - 1, smk; -1 < kk; kk--) {
+                smk = lsSmk[kk];
+                if (smk.Items.length + smk.Products.length < 1) { lsSmk.splice(kk, 1) }
+            }
+            objR.Submarkets = lsSmk;
+            return objR
+        })
+        objL.Regions = lsR
+        res.push(objL)
+    }
+    return res
+})
 function addNode(node, parentId = '') {
     let map = store.NodeTree
     node.Id = `${SnfId.generate()}`;
@@ -49,9 +117,40 @@ function openFormAddRow() {
 }
 </script>
 <template>
-    <div class="flex flex-col items-center justify-center bg-gray-100 gap-[2px] p-1.5 mt-12">
-        <Row v-for="[id, node] in ViewNodes" :key="node.Id" :item="node" />
+    <div class="p-1.5 mt-12">
+        <div v-for="objL in ViewGroups" class="bg-gray-100" :key="objL.Land.Id">
+            <div class="px-1 pt-3" v-for="objR in objL.Regions" :key="objR.Region.Id">
+                <div class="px-1" v-for="objS in objR.Submarkets" :key="objS.Submarket.Id">
+                    <div class="flex items-center h-[32px] pt-2">
+                        <span class="font-semibold">{{ objL.Land.Name }}</span>&nbsp;/&nbsp;
+                        <span class="font-medium">{{ objR.Region.Name }}</span>&nbsp;/&nbsp;
+                        <span>{{ objS.Submarket.Name }}</span>
+                    </div>
+                    <div class="px-1" v-for="objP in objS.Products" :key="objP.Product.Id">
+                        <div class="flex items-center h-[32px]">{{ objP.Product.Name }}</div>
+                        <div class="flex flex-col items-center justify-center gap-[2px] p-1.5">
+                            <Row v-for="[id, node] in objP.Items" :key="node.Id" :item="node" />
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center gap-[2px] p-1.5">
+                        <Row v-for="[id, node] in objS.Items" :key="node.Id" :item="node" />
+                    </div>
+                </div>
+                <div v-if="0 < objR.Items.length">
+                    <div class="flex items-center h-[32px] pt-2">
+                        <span class="font-semibold">{{ objL.Land.Name }}</span>&nbsp;/&nbsp;
+                        <span class="font-medium">{{ objR.Region.Name }}</span>
+                    </div>
+                    <div class="flex flex-col items-center justify-center gap-[2px] p-1.5">
+                        <Row v-for="[id, node] in objR.Items" :key="node.Id" :item="node" />
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <!-- <div class="flex flex-col items-center justify-center bg-gray-100 gap-[2px] p-1.5 mt-12">
+        <Row v-for="[id, node] in ViewNodes" :key="node.Id" :item="node" />
+    </div> -->
     <div class="fixed bottom-0 right-0">
         <div v-if="editNodes.length < 1" class="m-6 cursor-default">
             <div @click.stop="openFormAddRow"
