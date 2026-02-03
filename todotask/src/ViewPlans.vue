@@ -60,34 +60,34 @@ const ViewGroups = computed(() => {
         let lsR = regions.filter(r => r.LandId == land.Id).map(r => {
             let objR = { Region: r }
             let nodes = store.filter((p) => p.RegionId == r.Id, 'node')
-            let prdIds = new Set(nodes.filter(n => n.ProductId).map(n => n.ProductId))
-            let smkIds = new Set(nodes.filter(n => n.SubmarketId).map(n => n.SubmarketId))
-            let spIds = new Set(nodes.filter(n => n.SubmarketProductId).map(n => n.SubmarketProductId))
-            let dItems = nodes.filter(n => !prdIds.has(n.Id) && !smkIds.has(n.Id) && !spIds.has(n.Id))
+            let prdIds = new Set(nodes.filter(n => 0 < n.ProductId).map(n => n.ProductId))
+            let smkIds = new Set(nodes.filter(n => 0 < n.SubmarketId).map(n => n.SubmarketId))
+            //let spIds = new Set(nodes.filter(n => !!n.SubmarketProductId).map(n => n.SubmarketProductId))
+            let dItems = nodes.filter(n => n.ProductId < 1 && n.SubmarketId < 1)
             let oMap = new Map(dItems.map(n => [n.Id, n]))
             oMap = buildMap(oMap)
             objR.Items = oMap
-
+            nodes = nodes.filter(n => 0 < n.ProductId || 0 < n.SubmarketId)
             let lsSmk = store.filter((s) => smkIds.has(s.Id), 'submarket').map(s => {
                 let objS = { Submarket: s }
                 objS.Products = store.filter((p) => prdIds.has(p.Id), 'product').map(p => {
                     let objP = { Product: p }
-                    dItems = nodes.filter(n => n.ProductId == p.Id && n.SubmarketId == s.Id)
+                    dItems = nodes.filter(n => n.ProductId == p.Id && n.SubmarketId < 1)
                     oMap = new Map(dItems.map(n => [n.Id, n]))
-                    objP.Items = buildMap(oMap)
+                    objP.PItems = buildMap(oMap)
+                    dItems = nodes.filter(n => `${s.Id}-${p.Id}` == n.SubmarketProductId)
+                    oMap = new Map(dItems.map(n => [n.Id, n]))
+                    objP.SPItems = buildMap(oMap)
                     return objP;
                 })
-                for (let kk = objS.Products.length - 1; -1 < kk; kk--) {
-                    if (objS.Products[kk].Items.length < 1) objS.Products.splice(kk, 1)
-                }
-                dItems = nodes.filter(n => n.SubmarketId == s.Id && !prdIds.has(n.Id) && !spIds.has(n.Id))
+                dItems = nodes.filter(n => n.SubmarketId == s.Id && n.ProductId < 1)
                 oMap = new Map(dItems.map(n => [n.Id, n]))
                 objS.Items = buildMap(oMap)
                 return objS;
             })
             for (let kk = lsSmk.length - 1, smk; -1 < kk; kk--) {
                 smk = lsSmk[kk];
-                if (smk.Items.length + smk.Products.length < 1) { lsSmk.splice(kk, 1) }
+                if (smk.Items.size + smk.Products.length < 1) { lsSmk.splice(kk, 1) }
             }
             objR.Submarkets = lsSmk;
             return objR
@@ -122,21 +122,28 @@ function openFormAddRow() {
             <div class="px-1 pt-3" v-for="objR in objL.Regions" :key="objR.Region.Id">
                 <div class="px-1" v-for="objS in objR.Submarkets" :key="objS.Submarket.Id">
                     <div class="flex items-center h-[32px] pt-2">
-                        <span class="font-semibold">{{ objL.Land.Name }}</span>&nbsp;/&nbsp;
-                        <span class="font-medium">{{ objR.Region.Name }}</span>&nbsp;/&nbsp;
-                        <span>{{ objS.Submarket.Name }}</span>
+                        <span class="font-semibold">{{ objL.Land.Name }}</span>
                     </div>
                     <div class="px-1" v-for="objP in objS.Products" :key="objP.Product.Id">
-                        <div class="flex items-center h-[32px]">{{ objP.Product.Name }}</div>
-                        <div class="flex flex-col items-center justify-center gap-[2px] p-1.5">
-                            <Row v-for="[id, node] in objP.Items" :key="node.Id" :item="node" />
+                        <div v-if="0 < objP.SPItems.size" class="flex items-center h-[32px]">
+                            <span>{{ objS.Submarket.Name }}</span> - <span>{{ objP.Product.Name }}</span>
+                        </div>
+                        <div v-if="0 < objP.SPItems.size"
+                            class="flex flex-col items-center justify-center gap-[2px] p-1.5">
+                            <Row v-for="[id, node] in objP.SPItems" :key="node.Id" :item="node" />
+                        </div>
+                        <div v-if="0 < objP.PItems.size" class="flex items-center h-[32px]">{{ objP.Product.Name }}</div>
+                        <div v-if="0 < objP.PItems.size"
+                            class="flex flex-col items-center justify-center gap-[2px] p-1.5">
+                            <Row v-for="[id, node] in objP.PItems" :key="node.Id" :item="node" />
                         </div>
                     </div>
-                    <div class="flex flex-col items-center justify-center gap-[2px] p-1.5">
+                    <div v-if="0 < objS.Items.size" class="flex items-center h-[32px]">{{ objS.Submarket.Name }}</div>
+                    <div v-if="0 < objS.Items.size" class="flex flex-col items-center justify-center gap-[2px] p-1.5">
                         <Row v-for="[id, node] in objS.Items" :key="node.Id" :item="node" />
                     </div>
                 </div>
-                <div v-if="0 < objR.Items.length">
+                <div v-if="0 < objR.Items.size">
                     <div class="flex items-center h-[32px] pt-2">
                         <span class="font-semibold">{{ objL.Land.Name }}</span>&nbsp;/&nbsp;
                         <span class="font-medium">{{ objR.Region.Name }}</span>
