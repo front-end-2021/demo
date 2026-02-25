@@ -60,19 +60,19 @@ const ViewGroups = computed(() => {
         let lsR = regions.filter(r => r.LandId == land.Id).map(r => {
             let objR = { Region: r }
             let nodes = store.filter((p) => p.RegionId == r.Id, 'node')
-            let prdIds = new Set(nodes.filter(n => 0 < n.ProductId).map(n => n.ProductId))
-            let smkIds = new Set(nodes.filter(n => 0 < n.SubmarketId).map(n => n.SubmarketId))
+            let prdIds = new Set(nodes.filter(n => !!n.ProductId).map(n => n.ProductId))
+            let smkIds = new Set(nodes.filter(n => !!n.SubmarketId).map(n => n.SubmarketId))
             //let spIds = new Set(nodes.filter(n => !!n.SubmarketProductId).map(n => n.SubmarketProductId))
-            let dItems = nodes.filter(n => n.ProductId < 1 && n.SubmarketId < 1)
+            let dItems = nodes.filter(n => !n.ProductId && !n.SubmarketId)
             let oMap = new Map(dItems.map(n => [n.Id, n]))
             oMap = buildMap(oMap)
             objR.Items = oMap
-            nodes = nodes.filter(n => 0 < n.ProductId || 0 < n.SubmarketId)
+            nodes = nodes.filter(n => !!n.ProductId || !!n.SubmarketId)
             let lsSmk = store.filter((s) => smkIds.has(s.Id), 'submarket').map(s => {
                 let objS = { Submarket: s }
                 objS.Products = store.filter((p) => prdIds.has(p.Id), 'product').map(p => {
                     let objP = { Product: p }
-                    dItems = nodes.filter(n => n.ProductId == p.Id && n.SubmarketId < 1)
+                    dItems = nodes.filter(n => n.ProductId == p.Id && !n.SubmarketId)
                     oMap = new Map(dItems.map(n => [n.Id, n]))
                     objP.PItems = buildMap(oMap)
                     dItems = nodes.filter(n => `${s.Id}-${p.Id}` == n.SubmarketProductId)
@@ -80,7 +80,7 @@ const ViewGroups = computed(() => {
                     objP.SPItems = buildMap(oMap)
                     return objP;
                 })
-                dItems = nodes.filter(n => n.SubmarketId == s.Id && n.ProductId < 1)
+                dItems = nodes.filter(n => n.SubmarketId == s.Id && !n.ProductId)
                 oMap = new Map(dItems.map(n => [n.Id, n]))
                 objS.Items = buildMap(oMap)
                 return objS;

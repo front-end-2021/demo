@@ -73,9 +73,9 @@ export function listLandToNode(SnfId) {
             let regionId = parent ? parent.RegionId : getRandId(regionIds)
             let asignRid = getRandId(regionIds.filter(rid => rid != regionId))
             let mkId = getRandId(markets.filter(m => m.RegionId == regionId).map(m => m.Id))
-            let smkId = mkId ? getRandId(submarkets.filter(s => s.MarketId == mkId).map(s => s.Id)) : 0
+            let smkId = mkId ? getRandId(submarkets.filter(s => s.MarketId == mkId).map(s => s.Id)) : ''
             let pgrId = getRandId(prdGroups.filter(p => p.RegionId == regionId).map(p => p.Id))
-            let prdId = pgrId ? getRandId(products.filter(p => p.ProductGroupId == pgrId).map(p => p.Id)) : 0
+            let prdId = pgrId ? getRandId(products.filter(p => p.ProductGroupId == pgrId).map(p => p.Id)) : ''
             nodes.push({
                 Id: id, ParentId: parent?.Id,
                 TypeId: getRandId(types),

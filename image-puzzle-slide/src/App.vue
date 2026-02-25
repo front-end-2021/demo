@@ -3,11 +3,14 @@
 import Cell from './Cell.vue';
 import CacheCell from './CacheCell.vue';
 import SlidingPuzzle from './ImagePuzzle.js'
+import Settings from './Settings.vue'
+
 export default {
     name: 'DaiNb.vApp',
     components: {
         'cell-node': Cell,
         'cache-cell': CacheCell,
+        'settings-panel': Settings,
     },
     data() {
         return {
@@ -21,10 +24,9 @@ export default {
             GameStats: 'Get Start',
             mImgIndex: new Map(),
             ImgSrc: 'https://m.media-amazon.com/images/M/MV5BNmFiM2FkYTYtY2FiOS00ZWJkLTkyOTgtNmFmODI4NjcwNDgzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg',
-            Timmer: null,
-            Time: 0,
             SlideTitles: [],
-            CopTitles: new Map()
+            CopTitles: new Map(),
+            TempObj: null,
         }
     },
     computed: {
@@ -54,8 +56,6 @@ export default {
             this.Grid = []
             this.ZeroId = 0
             this.GameStats = 'Get Start'
-            this.Time = 0
-            this.todoTimmer('clear')
         },
         startGame() {
             this.ActiveNode = null
@@ -65,23 +65,6 @@ export default {
             this.Grid = puzzle.scramble(level * 33);
             this.ZeroId = 0
             this.GameStats = 0
-            this.Time = 0
-            this.todoTimmer('clear')
-            this.todoTimmer('count')
-        },
-        todoTimmer(type) {
-            if ('clear' == type) {
-                let intervalId = this.Timmer
-                if (typeof intervalId == 'number') {
-                    clearInterval(intervalId);
-                    this.Timmer = null
-                }
-            }
-            if ('count' == type) {
-                this.Timmer = setInterval(() => {
-                    this.Time++
-                }, 1000)
-            }
         },
         genActvNode(type = 'set', node) {
             let obj = this.ActiveNode
@@ -158,9 +141,40 @@ export default {
             return canvas;
         },
         async imageReady(e) {
-            const root = this
             let img = e.target
             img.crossOrigin = "anonymous";
+            this.fillImgTitles(img)
+        },
+        onChangeSize() {
+            const bodyMargin = 2 * 6
+            const viewW = window.innerWidth - 2 - bodyMargin
+            const viewH = window.innerHeight - bodyMargin - 30 - 57
+            let maxW = viewH, maxH = viewW
+            if (viewW < viewH) {
+                maxW = viewW
+                maxH = viewH
+            }
+            let width = 450
+            if (maxW < width) width = maxW
+            let height = 750
+            if (maxH < height) height = maxH
+
+            let size1 = Math.floor(width / this.Cols)
+            let size2 = Math.floor(height / (this.Rows + 1))
+            this.Size = Math.min(size1, size2)
+        },
+        onClkGear(e) {
+            let temp = this.TempObj
+            if (!temp) {
+                temp = {
+                    type: 'settings',
+                }
+
+                this.TempObj = temp
+            }
+        },
+        fillImgTitles(img) {
+            const root = this
             const rows = root.Rows // số hàng
             const cols = root.Cols // số cột
             let tileSize = root.Size
@@ -185,30 +199,9 @@ export default {
                 }
             }
         },
-        onChangeSize() {
-            const viewW = window.innerWidth - 2 - 16
-            const viewH = window.innerHeight - 16 - 30 - 55 - 2
-            let maxW = viewH, maxH = viewW
-            if (viewW < viewH) {
-                maxW = viewW
-                maxH = viewH
-            }
-            let width = 450
-            if (maxW < width) width = maxW
-            let height = 750
-            if (maxH < height) height = maxH
-
-            let size1 = Math.floor(width / this.Cols)
-            let size2 = Math.floor(height / (this.Rows + 1))
-            this.Size = Math.min(size1, size2)
-        },
     },
     watch: {
-        GameStats(stat) {
-            if ('Completed' == stat) {
-                this.todoTimmer('clear')
-            }
-        },
+        //GameStats(stat) { },
     },
     created() {
         this.onChangeSize()
@@ -222,10 +215,15 @@ export default {
 };
 </script>
 <template>
-    <div style="display: inline-flex; justify-content: space-between;margin-bottom: 10px;align-items: center;"
-        v-bind:style="{ width: (BoardWidth - 16) + 'px' }">
-        <strong>Game status: {{ GameStats }}</strong>
-        <div v-if="Grid.length">Your time: <span>{{ Time }}</span></div>
+    <div class="h24 inline-flex vcenter" style="justify-content: space-between;margin-bottom: 6px;"
+        v-bind:style="{ width: (BoardWidth) + 'px' }">
+        <strong v-if="typeof GameStats == 'number'">Your moves: {{ GameStats }}</strong>
+        <strong v-else>Game status: {{ GameStats }}</strong>
+        <span class="w24 h24 inline-flex vcenter hcenter" @click.stop="onClkGear">
+            <i v-if="TempObj != null && TempObj.type == 'settings'" 
+                class="bi bi-gear-fill"></i>
+            <i v-else class="bi bi-gear"></i>
+        </span>
     </div>
     <section>
         <div style="display: flex;">
@@ -240,14 +238,15 @@ export default {
                     <cell-node v-for="(id, x) in row" :key="id" :id="id" :x="x" :y="y"></cell-node>
                 </template>
                 <div class="thumb" :style="StyleThumb">
-                    <img :src="ImgSrc" style="width: inherit; height: inherit;" @load="imageReady">
+                    <img :src="ImgSrc" id="dnbPicQuest" style="width: inherit; height: inherit;" 
+                    @load="imageReady">
                 </div>
             </div>
         </div>
     </section>
-    <div style="margin: 12px 0; display: flex; gap: 10px;align-items: center;justify-content: space-between;"
+    <div class="vcenter" style="margin: 12px 0; display: flex; gap: 10px;justify-content: space-between;"
         v-bind:style="{ width: (BoardWidth - 16) + 'px' }">
-        <div style="display: inline-flex; gap: 10px;align-items: center;">
+        <div class="inline-flex vcenter" style="gap: 10px;">
             <span v-if="Grid.length < 1 || 'Completed' == GameStats" class="btn_" @click.stop="startGame">Start
                 game</span>
             <span v-else class="btn_" @click.stop="rejectGame">Reject</span>
@@ -257,21 +256,42 @@ export default {
                 <input type="file" id="fileInput" accept="image/*" @change="splitImage" style="display:none;" />
             </div>
         </div>
-        <div v-if="typeof GameStats != 'number'" style="display: inline-flex;">
-            <div>Level: </div>
-            <input v-model="Level" type="number" min="6" max="1989" name="numLevel" />
-        </div>
     </div>
+    <settings-panel v-if="TempObj != null && TempObj.type == 'settings'" :entry="TempObj"></settings-panel>
 </template>
 <style>
 body {
     scrollbar-width: thin;
 }
 
+.h24 {
+    height: 24px;
+}
+
+.vcenter {
+    align-items: center;
+}
+
+.hcenter {
+    justify-content: center;
+}
+
+.w24 {
+    width: 24px;
+}
+
 .thumb {
     position: absolute;
     top: 2px;
     transition: left 0.9s;
+}
+
+.inline-flex {
+    display: inline-flex;
+}
+
+.flex {
+    display: flex;
 }
 
 .btn_ {
@@ -282,4 +302,9 @@ body {
     border-radius: 6px;
     cursor: pointer;
 }
+.mini_btn {background-color: blueviolet;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;}
 </style>
