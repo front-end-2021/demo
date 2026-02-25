@@ -1,5 +1,5 @@
 <template>
-    <div class="wrapcell" v-bind:class="'w' + y" v-bind:style="[{
+    <div class="wrapcell posabsolute" v-bind:class="'w' + y" v-bind:style="[{
         width: $root.Size + 'px',
         height: $root.Size + 'px',
         top: (y * $root.Size + $root.Size) + 'px',
@@ -10,16 +10,7 @@
     }, StyleBgImg, StyleBgMode]" @click.stop="onSelect"></div>
 </template>
 <style>
-.wrapcell {
-    border-top: 1px solid #999999;
-    box-sizing: border-box;
-    position: absolute;
-    cursor: default;
-}
-
-.w-1 {
-    border: none;
-}
+.w-1 { border: none; }
 </style>
 <script>
 export default {

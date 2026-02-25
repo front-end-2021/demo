@@ -220,32 +220,50 @@ export default {
         <strong v-if="typeof GameStats == 'number'">Your moves: {{ GameStats }}</strong>
         <strong v-else>Game status: {{ GameStats }}</strong>
         <span class="w24 h24 inline-flex vcenter hcenter" @click.stop="onClkGear">
-            <i v-if="TempObj != null && TempObj.type == 'settings'" 
-                class="bi bi-gear-fill"></i>
+            <i v-if="TempObj != null && TempObj.type == 'settings'" class="bi bi-gear-fill"></i>
             <i v-else class="bi bi-gear"></i>
         </span>
     </div>
     <section>
-        <div style="display: flex;">
-            <div style="position: relative; border: 1px solid #959595; border-radius: 2px;" v-bind:style="{
+        <div class="posrelative flex">
+            <div class="posrelative wrapboard" v-bind:style="{
                 width: (Cols * Size) + 'px',
                 height: (Rows * Size + Size) + 'px'
             }">
+                <div class="posabsolute" style="top: 6px;" v-bind:style="{
+                    left: (Size + 6) + 'px',
+                }">
+                    <div>Grid: {{ Cols }} x {{ Rows }}</div>
+                    <div>Level: {{ Level }}</div>
+                </div>
+
                 <cache-cell v-for="cell in SlideTitles" :key="'s' + cell.id" :id="cell.id" :x="cell.x"
                     :y="cell.y"></cache-cell>
                 <cell-node v-if="Grid.length" :id="ZeroId" :x="0" :y="-1"></cell-node>
                 <template v-for="(row, y) in Grid">
                     <cell-node v-for="(id, x) in row" :key="id" :id="id" :x="x" :y="y"></cell-node>
                 </template>
-                <div class="thumb" :style="StyleThumb">
-                    <img :src="ImgSrc" id="dnbPicQuest" style="width: inherit; height: inherit;" 
-                    @load="imageReady">
+                <div class="thumb posabsolute" :style="StyleThumb">
+                    <img :src="ImgSrc" id="dnbPicQuest" style="width: inherit; height: inherit;" @load="imageReady">
+                </div>
+            </div>
+            <div v-if="!Grid.length" class="posabsolute wrapboardguide" 
+                v-bind:style="{
+                    width: (Cols * Size) + 'px',
+                    height: (Rows * Size) + 'px',
+                    top: (Size + 1) + 'px',
+                }">
+                <div v-for="r in Rows" class="flex wrprow">
+                    <div v-for="c in Cols" class="wrpguide"
+                        v-bind:style="{
+                            width: (Size) + 'px', height: (Size-1) + 'px',
+                        }"></div>
                 </div>
             </div>
         </div>
     </section>
-    <div class="vcenter" style="margin: 12px 0; display: flex; gap: 10px;justify-content: space-between;"
-        v-bind:style="{ width: (BoardWidth - 16) + 'px' }">
+    <div class="vcenter" style="margin-top: 12px; display: flex; gap: 10px;justify-content: space-between;"
+        v-bind:style="{ width: (BoardWidth) + 'px' }">
         <div class="inline-flex vcenter" style="gap: 10px;">
             <span v-if="Grid.length < 1 || 'Completed' == GameStats" class="btn_" @click.stop="startGame">Start
                 game</span>
@@ -263,11 +281,22 @@ export default {
 body {
     scrollbar-width: thin;
 }
-
+.wrapboard {
+    border: 1px solid #959595; border-radius: 2px;
+}
+.wrapboardguide {border-top: 1px solid #959595;left: 1px;}
 .h24 {
     height: 24px;
 }
-
+.wrapcell {
+    border-top: 1px solid #999999;
+    box-sizing: border-box;
+    cursor: default;
+}
+.wrprow{border-bottom: 1px solid #999999;box-sizing: border-box;}
+.wrprow:last-child{border-bottom: none;}
+.wrpguide{border-right: 1px solid #999999;box-sizing: border-box;}
+.wrpguide:last-child{border-right: none;}
 .vcenter {
     align-items: center;
 }
@@ -280,8 +309,11 @@ body {
     width: 24px;
 }
 
-.thumb {
+.posabsolute {
     position: absolute;
+}
+
+.thumb {
     top: 2px;
     transition: left 0.9s;
 }
@@ -294,6 +326,10 @@ body {
     display: flex;
 }
 
+.posrelative {
+    position: relative;
+}
+
 .btn_ {
     display: inline-block;
     padding: 6px 10px;
@@ -302,9 +338,12 @@ body {
     border-radius: 6px;
     cursor: pointer;
 }
-.mini_btn {background-color: blueviolet;
+
+.mini_btn {
+    background-color: blueviolet;
     border-radius: 6px;
     color: white;
     font-weight: bold;
-    cursor: pointer;}
+    cursor: pointer;
+}
 </style>
