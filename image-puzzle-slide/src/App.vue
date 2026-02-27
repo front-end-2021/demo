@@ -230,14 +230,14 @@ export default {
                 width: (Cols * Size) + 'px',
                 height: (Rows * Size + Size) + 'px'
             }">
-                <div class="posabsolute" style="top: 6px;" v-bind:style="{
+                <div v-if="!Grid.length" class="posabsolute" style="top: 6px;" v-bind:style="{
                     left: (Size + 6) + 'px',
                 }">
                     <div>Grid: {{ Cols }} x {{ Rows }}</div>
                     <div>Level: {{ Level }}</div>
                 </div>
 
-                <cache-cell v-for="cell in SlideTitles" :key="'s' + cell.id" :id="cell.id" :x="cell.x"
+                <cache-cell v-for="cell in SlideTitles" class="posabsolute" :key="'s' + cell.id" :id="cell.id" :x="cell.x"
                     :y="cell.y"></cache-cell>
                 <cell-node v-if="Grid.length" :id="ZeroId" :x="0" :y="-1"></cell-node>
                 <template v-for="(row, y) in Grid">
