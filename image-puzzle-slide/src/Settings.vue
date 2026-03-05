@@ -22,7 +22,13 @@
                 <strong>{{ Level }}</strong>
                 <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeLevel(1)">+</div>
             </div>
-
+            <div class="flex h24 vcenter" style="gap: 8px;">
+                <strong>Time replay</strong>
+                <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeTimeReplay(-10)">-</div>
+                <strong>{{ TimeReplay }}</strong>
+                <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeTimeReplay(10)">+</div>
+                <span>milisec</span>
+            </div>
         </div>
     </div>
 </template>
@@ -43,6 +49,7 @@ export default {
             Cols: root.Cols,
             Rows: root.Rows,
             Level: root.Level,
+            TimeReplay: root.TimeReplay,
         }
     },
     methods: {
@@ -50,19 +57,26 @@ export default {
             let newVal = this.Cols + v
             if (newVal < 3) return
             this.Cols = newVal
-
         },
         changeRows(v) {
             let newVal = this.Rows + v
             if (newVal < 4) return
             this.Rows = newVal
-
         },
         changeLevel(v) {
             let newVal = this.Level + v
             if (newVal < 1) return
             this.Level = newVal
-
+        },
+        changeLevel(v) {
+            let newVal = this.Level + v
+            if (newVal < 1) return
+            this.Level = newVal
+        },
+        changeTimeReplay(v) {
+            let newVal = this.TimeReplay + v
+            if (newVal < 20) return
+            this.TimeReplay = newVal
         },
         closePanel() {
             let root = this.$root
@@ -70,6 +84,7 @@ export default {
             let cols = this.Cols
             let rows = this.Rows
             root.Level = this.Level
+            root.TimeReplay = this.TimeReplay
             if (cols != root.Cols || rows != root.Rows) {
                 if (0 < root.Grid.length) root.rejectGame()
                 root.Cols = cols

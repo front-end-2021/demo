@@ -1,5 +1,6 @@
 <template>
-    <div class="wrapcell posabsolute" v-bind:class="'w' + y" v-bind:style="[{
+    <div class="wrapcell posabsolute" v-bind:class="'w' + y" 
+    v-bind:style="[{
         width: $root.Size + 'px',
         height: $root.Size + 'px',
         top: (y * $root.Size + $root.Size) + 'px',
@@ -74,10 +75,10 @@ export default {
                             root.ZeroId = id0
                         } else {
                             let node1 = grid[obj.y][obj.x]
+                            root.logMoves([obj.x, obj.y], [this.x, this.y])
                             grid[obj.y][obj.x] = grid[this.y][this.x]
                             grid[this.y][this.x] = node1
                         }
-
                         root.GameStats = root.checkGameStat(grid, countSolved)
                         root.Grid = [...grid]
                         clearANode()

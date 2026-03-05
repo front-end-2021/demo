@@ -27,6 +27,10 @@ export default {
             SlideTitles: [],
             CopTitles: new Map(),
             TempObj: null,
+            History: [],
+            LogMoves: null,
+            TimeReplay: 100, // msec
+            RepTimer: -1,
         }
     },
     computed: {
@@ -53,6 +57,11 @@ export default {
     },
     methods: {
         rejectGame() {
+            let timmer = this.RepTimer
+            if (0 < timmer) {
+                clearInterval(timmer)
+                this.RepTimer = -1
+            }
             this.Grid = []
             this.ZeroId = 0
             this.GameStats = 'Get Start'
@@ -65,6 +74,13 @@ export default {
             this.Grid = puzzle.scramble(level * 33);
             this.ZeroId = 0
             this.GameStats = 0
+            this.LogMoves = {
+                name: new Date().toISOString(),
+                moves: [],
+                grid: JSON.stringify(this.Grid),
+                rows: this.Rows,
+                cols: this.Cols,
+            }
         },
         genActvNode(type = 'set', node) {
             let obj = this.ActiveNode
@@ -110,6 +126,12 @@ export default {
                     if (index != id) return count + 1
                     index++
                 }
+            }
+            let _log = this.LogMoves
+            if (_log) {
+                _log.moves = JSON.stringify(_log.moves)
+                this.History.unshift(JSON.parse(JSON.stringify(_log)))
+                this.LogMoves = null
             }
             return 'Completed'
         },
@@ -199,6 +221,71 @@ export default {
                 }
             }
         },
+        logMoves(nodeA, nodeB) {
+            let _log = this.LogMoves
+            if (!_log) return
+            const moves = _log.moves
+            let [xa, ya] = nodeA
+            let [xb, yb] = nodeB
+            let grid = this.Grid
+            if (this.BlankPoint == grid[ya][xa]) {
+                moves.push(`${xb}:${yb}:${getSide(nodeA, nodeB)}`)
+            } else {
+                moves.push(`${xa}:${ya}:${getSide(nodeB, nodeA)}`)
+            }
+            function getSide(n0, n1) {
+                let [x0, y0] = n0 // node blank
+                let [x1, y1] = n1
+                if (x0 == x1 && y0 < y1) return '1' // up
+                if (x0 == x1 && y0 > y1) return '2' // down
+                if (x0 < x1 && y0 == y1) return '3' // left
+                if (x0 > x1 && y0 == y1) return '4' // right
+            }
+        },
+        replayGame() {
+            const _histories = this.History
+            if (!_histories.length) return
+            if(0 < this.RepTimer) return;
+            let history = _histories[0]
+            if (this.Rows != history.rows || this.Cols != history.cols) {
+                this.Rows = history.rows
+                this.Cols = history.cols
+                this.onChangeSize()
+                let img = document.querySelector("img#dnbPicQuest")
+                this.fillImgTitles(img)
+            }
+            let _grid = JSON.parse(history.grid)
+            this.Grid = _grid
+            this.GameStats = 0
+            this.ZeroId = 0
+            let moves = JSON.parse(history.moves)
+            this.RepTimer = setInterval(() => {
+                if (moves.length < 1) {
+                    clearInterval(this.RepTimer)
+                    _grid[0][0] = 0
+                    this.Grid = [..._grid]
+                    this.ZeroId = -1
+                    this.GameStats = 'Completed'
+                    this.RepTimer = -1
+                    return
+                }
+                let move = moves.shift()
+                let [x, y, side] = move.split(':')
+                x = parseInt(x)
+                y = parseInt(y)
+                let bx = x, by = y
+                switch (side) {
+                    case '1': by -= 1; break
+                    case '2': by += 1; break
+                    case '3': bx -= 1; break
+                    case '4': bx += 1; break
+                }
+                let node1 = _grid[by][bx]
+                _grid[by][bx] = _grid[y][x]
+                _grid[y][x] = node1
+                this.Grid = [..._grid]
+            }, this.TimeReplay * 10)
+        },
     },
     watch: {
         //GameStats(stat) { },
@@ -237,8 +324,8 @@ export default {
                     <div>Level: {{ Level }}</div>
                 </div>
 
-                <cache-cell v-for="cell in SlideTitles" class="posabsolute" :key="'s' + cell.id" :id="cell.id" :x="cell.x"
-                    :y="cell.y"></cache-cell>
+                <cache-cell v-for="cell in SlideTitles" class="posabsolute" :key="'s' + cell.id" :id="cell.id"
+                    :x="cell.x" :y="cell.y"></cache-cell>
                 <cell-node v-if="Grid.length" :id="ZeroId" :x="0" :y="-1"></cell-node>
                 <template v-for="(row, y) in Grid">
                     <cell-node v-for="(id, x) in row" :key="id" :id="id" :x="x" :y="y"></cell-node>
@@ -247,32 +334,29 @@ export default {
                     <img :src="ImgSrc" id="dnbPicQuest" style="width: inherit; height: inherit;" @load="imageReady">
                 </div>
             </div>
-            <div v-if="!Grid.length" class="posabsolute wrapboardguide" 
-                v-bind:style="{
-                    width: (Cols * Size) + 'px',
-                    height: (Rows * Size) + 'px',
-                    top: (Size + 1) + 'px',
-                }">
+            <div v-if="!Grid.length" class="posabsolute wrapboardguide" v-bind:style="{
+                width: (Cols * Size) + 'px',
+                height: (Rows * Size) + 'px',
+                top: (Size + 1) + 'px',
+            }">
                 <div v-for="r in Rows" class="flex wrprow">
-                    <div v-for="c in Cols" class="wrpguide"
-                        v-bind:style="{
-                            width: (Size) + 'px', height: (Size-1) + 'px',
-                        }"></div>
+                    <div v-for="c in Cols" class="wrpguide" v-bind:style="{
+                        width: (Size) + 'px', height: (Size - 1) + 'px',
+                    }"></div>
                 </div>
             </div>
         </div>
     </section>
-    <div class="vcenter" style="margin-top: 12px; display: flex; gap: 10px;justify-content: space-between;"
-        v-bind:style="{ width: (BoardWidth) + 'px' }">
+    <div class="vcenter wrapbot" v-bind:style="{ width: (BoardWidth) + 'px' }">
         <div class="inline-flex vcenter" style="gap: 10px;">
             <span v-if="Grid.length < 1 || 'Completed' == GameStats" class="btn_" @click.stop="startGame">Start
                 game</span>
             <span v-else class="btn_" @click.stop="rejectGame">Reject</span>
-
-            <div class="btn_">
+            <div class="btn_" v-bind:style="{ pointerEvents: 0 < RepTimer ? 'none' : ''}">
                 <label for="fileInput">Upload image</label>
                 <input type="file" id="fileInput" accept="image/*" @change="splitImage" style="display:none;" />
             </div>
+            <div class="btn_" @click.stop="replayGame">Replay</div>
         </div>
     </div>
     <settings-panel v-if="TempObj != null && TempObj.type == 'settings'" :entry="TempObj"></settings-panel>
@@ -281,22 +365,53 @@ export default {
 body {
     scrollbar-width: thin;
 }
+
 .wrapboard {
-    border: 1px solid #959595; border-radius: 2px;
+    border: 1px solid #959595;
+    border-radius: 2px;
 }
-.wrapboardguide {border-top: 1px solid #959595;left: 1px;}
+
+.wrapbot {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    min-width: 327px;
+}
+
+.wrapboardguide {
+    border-top: 1px solid #959595;
+    left: 1px;
+}
+
 .h24 {
     height: 24px;
 }
+
 .wrapcell {
     border-top: 1px solid #999999;
     box-sizing: border-box;
     cursor: default;
 }
-.wrprow{border-bottom: 1px solid #999999;box-sizing: border-box;}
-.wrprow:last-child{border-bottom: none;}
-.wrpguide{border-right: 1px solid #999999;box-sizing: border-box;}
-.wrpguide:last-child{border-right: none;}
+
+.wrprow {
+    border-bottom: 1px solid #999999;
+    box-sizing: border-box;
+}
+
+.wrprow:last-child {
+    border-bottom: none;
+}
+
+.wrpguide {
+    border-right: 1px solid #999999;
+    box-sizing: border-box;
+}
+
+.wrpguide:last-child {
+    border-right: none;
+}
+
 .vcenter {
     align-items: center;
 }
