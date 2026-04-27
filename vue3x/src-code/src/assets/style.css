@@ -1,0 +1,131 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --border: #e4e7ed;
+  --border-hover: #c8cdd8;
+  --text-primary: #000;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --accent-blue: #3b82f6;
+  --accent-blue-light: #eff6ff;
+  --accent-green: #22c55e;
+  --accent-green-light: #f0fdf4;
+  --accent-red: #ef4444;
+  --accent-red-light: #fef2f2;
+  --accent-orange: #f97316;
+  --accent-orange-light: #fff7ed;
+  --accent-purple: #a855f7;
+  --accent-teal: #14b8a6;
+  --sidebar-w: 220px;
+  --panel-w: 420px;
+  --header-h: 52px;
+  --row-h: 44px;
+  --radius: 6px;
+  --radius-sm: 4px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --transition: 0.15s ease;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--bg);
+  height: 100vh;
+  overflow: hidden;
+}
+
+#app {
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.row-checkbox {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: var(--accent-blue);
+}
+
+.content-area {
+  transition: all 0.36s ease;
+  flex: 1;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: auto 0 0;
+}
+
+.content-area[elen="1"] {
+  grid-template-columns: auto var(--panel-w) 0;
+}
+
+.content-area[elen="2"] {
+  grid-template-columns: auto var(--panel-w) var(--panel-w);
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-container, .palette-container {
+  animation: slideDown 0.36s ease;
+}
+
+.icon-geo {
+  stroke-width: 1.5;
+}
+.item-dot svg { width: inherit; height: inherit;}
+.menu-item svg { width: 14px; height: 14px;}

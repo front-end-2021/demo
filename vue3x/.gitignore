@@ -1,4 +1,4 @@
-3rd/
-.vs/
-obj/
 .vscode/
+src-code/node_modules/
+src-code/dist/
+src-code/package-lock.json
