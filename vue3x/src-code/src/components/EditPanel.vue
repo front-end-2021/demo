@@ -3,8 +3,8 @@
     <!-- Panel toolbar -->
     <div class="panel-toolbar">
       <div class="panel-nav">
-        <button class="tool-btn" title="Vorheriger" @click="store.closePanelAt(panelIndex)"><svg width="14" height="14"
-            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button class="tool-btn" title="Vorheriger" @click="closeX">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M15 18l-6-6 6-6" />
           </svg></button>
         <button class="tool-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -35,12 +35,12 @@
             <path d="M3 9h18M9 21V9" />
           </svg></button>
         <button class="tool-btn save-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2">
+            stroke="currentColor" stroke-width="2" @click.stop="saveClose">
             <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
             <polyline points="17 21 17 13 7 13 7 21" />
             <polyline points="7 3 7 8 15 8" />
           </svg></button>
-        <button class="tool-btn close-btn" @click="store.closePanelAt(panelIndex)">
+        <button class="tool-btn close-btn" @click="closeX">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
@@ -52,8 +52,9 @@
     <div class="panel-body">
       <!-- Title section -->
       <div class="panel-title-section">
-        <span class="item-dot" v-html="appType[item.type][1]" ref="item-icon" @click.stop="togglePalletColors"></span>
-        <textarea class="title-input" v-model="localItem.title" @blur="save" rows="2"></textarea>
+        <span class="item-dot" v-html="appType[item.type][1]" ref="d-icn" @click.stop="togglePalletColors"></span>
+        <textarea class="title-input" v-model="localItem.title" @blur="blurName" rows="2" name="item-name" ref="d-nm"
+          placeholder="Type new name"></textarea>
         <div class="title-tags">
           <span v-for="t in localItem.tags" :key="t" class="tag" :class="t.toLowerCase()">{{ t }}</span>
         </div>
@@ -69,7 +70,8 @@
           </svg>
           Als Meilenstein markieren
         </button>
-        <button class="action-btn done-btn" :class="{ active: localItem.done }" @click="toggleDone">
+        <button v-if="localItem.title.trim()" class="action-btn done-btn" :class="{ active: localItem.done }"
+          @click="toggleDone">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="20 6 9 17 4 12" />
           </svg>
@@ -162,14 +164,15 @@
 </template>
 
 <script setup>
-import { reactive, watch, computed, useTemplateRef, onMounted, onUpdated, ref } from 'vue'
+import { reactive, watch, computed, useTemplateRef, onMounted, onUpdated, ref, nextTick } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
 import MiniGantt from './MiniGantt.vue'
 import PalletColor from './PalletColor.vue'
 import { appType, styleSvgColor } from '../utils/utility.js'
 
-const itemIcon = useTemplateRef('item-icon')
+const dIcon = useTemplateRef('d-icn')
+const dName = useTemplateRef('d-nm')
 const props = defineProps({
   item: { type: Object, required: true },
   panelIndex: { type: Number, default: 0 },
@@ -187,11 +190,12 @@ watch(() => props.item, (v) => {
 }, { deep: true })
 
 onMounted(() => {
-  styleSvgColor(itemIcon, props.item.color)
+  styleSvgColor(dIcon, props.item.color)
+  dName.value.focus()
 })
 
 onUpdated(() => {
-  styleSvgColor(itemIcon, props.item.color)
+  styleSvgColor(dIcon, props.item.color)
 })
 function togglePalletColors() {
   const key = `edit-item-${props.item.id}`
@@ -201,10 +205,42 @@ function togglePalletColors() {
     planStore.bindPopMenu(key, props.item.color, props.item.id)
   }
 }
-function save() {
-  store.updateItem(props.item.id, { ...localItem })
+function blurName() {
+  const newName = localItem.title.trim()
+  const item = props.item
+  if (newName && newName !== item.title) {
+    store.updateItem(item.id, { ...localItem })
+  }
 }
-
+async function save() {
+  const newName = localItem.title.trim()
+  const item = props.item
+  if (!newName) {
+    store.closePanelAt(props.panelIndex)
+    if (!item.title) { store.removeItem(item.id) }
+    return
+  }
+  store.updateItem(item.id, { ...localItem })
+}
+function closeX() {
+  store.closePanelAt(props.panelIndex)
+  const item = props.item
+  if (!item.title) {
+    store.removeItem(item.id)
+  }
+}
+async function saveClose() {
+  const newName = localItem.title.trim()
+  const item = props.item
+  if (newName) {
+    store.updateItem(item.id, { ...localItem })
+    store.closePanelAt(props.panelIndex)
+  } else {
+    localItem.title = item.title
+    await nextTick()
+    dName.value.focus()
+  }
+}
 function toggleDone() {
   localItem.done = !localItem.done
   save()
@@ -293,7 +329,8 @@ function removeRegion(r) {
 }
 
 .panel-title-section {
-  display: flex; position: relative;
+  display: flex;
+  position: relative;
   align-items: flex-start;
   gap: 8px;
   margin-bottom: 12px;

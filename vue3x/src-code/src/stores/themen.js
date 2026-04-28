@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { getItems } from '../mockdata/themen'
+import { getItems, emptyItem } from '../mockdata/themen'
 import { filterMap, someMap } from '../utils/utility'
 
-export const useThemenStore = defineStore('themen', () => {
+export const useThemenStore = defineStore('item', () => {
   // ── Active panels ─────────────────────────────────────────────
-  const openPanels = ref([]) // array of item IDs (max 2 visible side panels)
+  const itemPanels = ref([]) // array of item object (max 2 visible side panels)
 
   // ── Data ──────────────────────────────────────────────────────
   const items = ref(getItems()) // map
@@ -13,15 +13,15 @@ export const useThemenStore = defineStore('themen', () => {
   // ── Computed: visible flat list respecting expanded state ─────
   const visibleItems = computed(() => {
     const result = []
-    const addItems = (parentId, lvl) => {
+    const genItems = (parentId, lvl) => {
       const children = filterMap(items.value, i => i.parentId === parentId, [])
       children.forEach(item => {
         item.level = lvl
         result.push(item)
-        if (item.expanded) addItems(item.id, lvl + 1)
+        if (item.expanded) genItems(item.id, lvl + 1)
       })
     }
-    addItems(null, 0)
+    genItems(null, 0)
     return result
   })
 
@@ -48,49 +48,34 @@ export const useThemenStore = defineStore('themen', () => {
   }
 
   function closePanel(id) {
-    const idx = openPanels.value.indexOf(id)
-    if (idx > -1) openPanels.value.splice(idx, idx === 0 ? openPanels.value.length : 1)
+    let lsEdit = itemPanels.value
+    const ii = lsEdit.findIndex(x => id == x.id)
+    if (-1 < ii) lsEdit.splice(ii, 0 == ii ? lsEdit.length : 1)
   }
 
-  function closePanelAt(index) {
-    openPanels.value.splice(index, 1)
-  }
+  function closePanelAt(index) { itemPanels.value.splice(index, 1) }
 
   function updateItem(id, fields) {
     const item = items.value.get(id)
     if (item) Object.assign(item, fields)
   }
 
-  function addItem(parentId) {
+  function addItem(parentId, type = 1, regions = []) {
     const parent = parentId ? items.value.get(parentId) : null
     const maxId = Math.max(...filterMap(items.value, i => true, [], 'id'), 0)
-    items.value.set(maxId + 1, {
-      id: maxId + 1,
-      parentId,
+    const newItem = Object.assign(emptyItem(), {
+      id: maxId + 1, parentId,
       level: parent ? parent.level + 1 : 0,
-      type: 'aufgabe',
-      title: 'Neues Element',
-      regions: [],
-      responsible: '',
-      progress: '',
-      progressColor: '',
-      dateStart: '', dateDays: '', dateEnd: '',
-      tags: [],
-      expanded: false,
-      done: false,
-      pinned: 0,
-      region: [],
-      team: [],
-      category: [],
-      anspruch: [],
+      type, color: 'green', regions,
+      dateDays: '',
     })
+    items.value.set(newItem.id, newItem)
     if (parent) parent.expanded = true
+    return newItem
   }
-
-  const getPanelItems = computed(() => openPanels.value.map(id => items.value.get(id)))
-
+  function removeItem(id) { items.value.delete(id) }
   return {
-    visibleItems, openPanels, getPanelItems,
+    visibleItems, itemPanels, removeItem,
     toggleExpand, toggleDone, closePanel, closePanelAt,
     updateItem, addItem, getParentChain, anyChild
   }

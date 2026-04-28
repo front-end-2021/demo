@@ -71,7 +71,7 @@ const props = defineProps({ item: { type: Object, required: true } })
 const store = useThemenStore()
 
 const hasChildren = computed(() => store.anyChild(props.item.id))
-const isSelected = computed(() => store.openPanels.includes(props.item.id))
+const isSelected = computed(() => store.itemPanels.map(x => x.id).includes(props.item.id))
 
 onMounted(() => {
   styleSvgColor(itemIcon, props.item.color)
@@ -81,42 +81,44 @@ onUpdated(() => {
   styleSvgColor(itemIcon, props.item.color)
 })
 function handleRowClick() {
+  if (planStore.popMenu.key) { planStore.bindPopMenu('', '') }
+  const lsEdit = store.itemPanels
   const id = props.item.id
-  let ii = store.openPanels.indexOf(id)
+  let ii = lsEdit.findIndex(x => id == x.id)
   if (-1 < ii) {
-    store.openPanels.splice(ii, 1)
+    lsEdit.splice(ii, 1)
     return
   }
-  let openId
-  switch (store.openPanels.length) {
+  let openItem
+  switch (lsEdit.length) {
     case 0:
-      store.openPanels.push(id);
+      lsEdit.push(props.item);
       return;
     case 2:
-      openId = store.openPanels[1]
-      if (props.item.parentId == openId) {
-        store.openPanels.splice(0, 1, openId)
-        store.openPanels.splice(1, 1, id)
+      openItem = lsEdit[1]
+      if (props.item.parentId == openItem.id) {
+        lsEdit.splice(0, 1, openItem)
+        lsEdit.splice(1, 1, id)
         return
       }
-      openId = store.openPanels[0]
-      if (props.item.parentId == openId) {
-        store.openPanels.splice(1, 1, id)
+      openItem = lsEdit[0]
+      if (props.item.parentId == openItem.id) {
+        lsEdit.splice(1, 1, props.item)
         return
       }
-      store.openPanels.splice(0, 1, id)
-      store.openPanels.splice(1, 1)
+      lsEdit.splice(0, 1, props.item)
+      lsEdit.splice(1, 1)
       return
     case 1:
       let area = document.body.querySelector('.content-area')
       let leftVw = area.querySelector('.table-section')
-      openId = store.openPanels[0]
-      if (props.item.parentId == openId) {
-        store.openPanels.push(id)
+      openItem = lsEdit[0]
+      if (props.item.parentId == openItem.id) {
+        lsEdit.push(props.item)
         leftVw.style.width = `${area.offsetWidth - 2 * leftVw.offsetWidth}px`
         return
       }
-      store.openPanels.splice(0, 1, id)
+      lsEdit.splice(0, 1, props.item)
       leftVw.style.width = ''
       return
   }

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 const colors = ['#3f3f41', '#b9c1a5', '#256b3a', '#adcc44', '#80afd7', '#965c6c', '#e99371', '#fde178']
 export const usePlanStore = defineStore('plan', () => {
     // ── Active tab ────────────────────────────────────────────────
+    const leftWidth = ref(52)
     const activeTab = ref('Handlungsplan')
     const popMenu = ref({ key: '' })
     const idChecks = ref(new Set()) // item ids
@@ -27,6 +28,7 @@ export const usePlanStore = defineStore('plan', () => {
         }
     }
     return {
-        idChecks, toggleCheckFilter, activeTab, popMenu, bindPopMenu
+        idChecks, toggleCheckFilter, activeTab, popMenu, bindPopMenu,
+        leftWidth,
     }
 })

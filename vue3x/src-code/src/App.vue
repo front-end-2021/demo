@@ -1,8 +1,8 @@
 <template>
-  <div class="app-layout">
+  <div class="app-layout" @click.stop="clckApp">
     <Sidebar />
 
-    <div class="main-area">
+    <div class="main-area" :style="{ width: `calc(100vw - ${planStore.leftWidth}px)` }">
       <!-- Top header -->
       <header class="top-header">
         <div class="header-left">
@@ -24,7 +24,7 @@
       <!-- Toolbar row -->
       <div class="toolbar">
         <div class="toolbar-left">
-          <button class="add-btn" @click="toggleMenuAddItem">
+          <button class="add-btn" @click.stop="toggleMenuAddItem">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="M12 5v14M5 12h14" />
             </svg>
@@ -67,7 +67,7 @@
         </div>
       </div>
 
-      <div class="content-area" :elen="store.getPanelItems.length">
+      <div class="content-area" :elen="store.itemPanels.length">
         <div class="table-section">
           <!-- Table header -->
           <div class="table-header">
@@ -88,8 +88,8 @@
             <TableRow v-for="item in filteredItems" :key="item.id" :item="item" />
           </div>
         </div>
-        <EditPanel v-for="(pnItem, index) in store.getPanelItems" :key="pnItem.id" :item="pnItem" :panel-index="index"
-          :is-second="index > 0" />
+        <EditPanel v-for="(edit, ii) in store.itemPanels" :key="edit.id" 
+          :item="edit" :panel-index="ii" :is-second="ii > 0" />
       </div>
     </div>
   </div>
@@ -134,7 +134,9 @@ function toggleMenuAddItem() {
   if (key == planStore.popMenu.key) { planStore.bindPopMenu('', '') }
   else { planStore.bindPopMenu(key, '') }
 
-  //store.addItem(null)
+}
+function clckApp() {
+  if (planStore.popMenu.key) { planStore.bindPopMenu('', '') }
 }
 </script>
 
