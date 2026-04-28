@@ -191,6 +191,9 @@ watch(() => props.item, (v) => {
 
 onMounted(() => {
   styleSvgColor(dIcon, props.item.color)
+  dName.value.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault() } // Prevents the default newline behavior
+  });
   dName.value.focus()
 })
 
