@@ -57,7 +57,14 @@ export const useThemenStore = defineStore('item', () => {
 
   function updateItem(id, fields) {
     const item = items.value.get(id)
-    if (item) Object.assign(item, fields)
+    if (item) {
+      let name = fields.title.trim()
+      if (name) {
+        name = name.replaceAll('\n', ' ')
+        name = name.trim()
+      }
+      if (name) { Object.assign(item, fields) }
+    }
   }
 
   function addItem(parentId, type = 1, regions = []) {
