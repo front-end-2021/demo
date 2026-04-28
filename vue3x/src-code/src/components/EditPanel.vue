@@ -208,13 +208,7 @@ function togglePalletColors() {
     planStore.bindPopMenu(key, props.item.color, props.item.id)
   }
 }
-function blurName() {
-  const newName = localItem.title.trim()
-  const item = props.item
-  if (newName && newName !== item.title) {
-    store.updateItem(item.id, { ...localItem })
-  }
-}
+function blurName() { store.updateItem(item.id, { ...localItem }) }
 async function save() {
   const newName = localItem.title.trim()
   const item = props.item
@@ -228,9 +222,7 @@ async function save() {
 function closeX() {
   store.closePanelAt(props.panelIndex)
   const item = props.item
-  if (!item.title) {
-    store.removeItem(item.id)
-  }
+  if (!item.title) { store.removeItem(item.id) }
 }
 async function saveClose() {
   const newName = localItem.title.trim()
