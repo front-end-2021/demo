@@ -3,43 +3,49 @@
     <!-- Panel toolbar -->
     <div class="panel-toolbar">
       <div class="panel-nav">
-        <button class="tool-btn" title="Vorheriger" @click="closeX">
+        <button class="tool-btn" title="Vorheriger" @click="opFormParen">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M15 18l-6-6 6-6" />
           </svg></button>
-        <button class="tool-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2">
+        <button v-if="store.anyChild(item.id)" class="tool-btn" @click="opFormChild">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 18l6-6-6-6" />
-          </svg></button>
-        <button class="tool-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2">
+          </svg>
+        </button>
+        <button class="tool-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="2" />
             <circle cx="6" cy="12" r="2" />
             <circle cx="18" cy="12" r="2" />
-          </svg></button>
+          </svg>
+        </button>
       </div>
       <div class="panel-actions">
-        <button class="tool-btn" title="Löschen"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2">
+        <button class="tool-btn" title="Löschen" @click="delItem">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="3,6 5,6 21,6" />
             <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2" />
-          </svg></button>
-        <button class="tool-btn" title="Duplizieren"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2">
+          </svg>
+        </button>
+        <button class="tool-btn" title="Duplizieren">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="9" y="9" width="13" height="13" rx="2" />
             <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-          </svg></button>
-        <button class="tool-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2">
+          </svg>
+        </button>
+        <button class="tool-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="18" height="18" rx="2" />
             <path d="M3 9h18M9 21V9" />
-          </svg></button>
+          </svg>
+        </button>
         <button class="tool-btn save-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" @click.stop="saveClose">
             <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
             <polyline points="17 21 17 13 7 13 7 21" />
             <polyline points="7 3 7 8 15 8" />
-          </svg></button>
+          </svg>
+        </button>
         <button class="tool-btn close-btn" @click="closeX">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 6L6 18M6 6l12 12" />
@@ -209,8 +215,8 @@ function togglePalletColors() {
     planStore.bindPopMenu(key, props.item.color, props.item.id)
   }
 }
-function blurName() { 
-  store.updateItem(props.item.id, { ...localItem }) 
+function blurName() {
+  store.updateItem(props.item.id, { ...localItem })
   localItem.title = props.item.title
 }
 async function save() {
@@ -255,8 +261,32 @@ function removeRegion(r) {
   localItem.region = localItem.region.filter(x => x !== r)
   save()
 }
+function opFormParen() {
+  const item = props.item
+  let parents = store.getParentChain(item.parentId, 1)
+  if (parents.length) {
+    let pa = parents[0]
+    store.itemPanels = store.itemPanels.filter(x => x.id == item.id)
+    store.itemPanels.unshift(pa)
+  }
+}
+function opFormChild() {
+  const item = props.item
+  let child = store.anyChild(item.id)
+  if (child) {
+    store.itemPanels = store.itemPanels.filter(x => x.id == item.id)
+    store.itemPanels.push(child)
+  }
+}
+function delItem() {
+  const item = props.item
+  let text = "Press a button!\nEither OK or Cancel.";
+  if (confirm(text) == true) {
+    store.itemPanels = store.itemPanels.filter(x => x.id != item.id)
+    store.removeItem(item.id) // pressed OK
+  } else {/* "You canceled!" */}
+}
 </script>
-
 <style scoped>
 .edit-panel {
   width: var(--panel-w);
@@ -264,13 +294,8 @@ function removeRegion(r) {
   border-left: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  /* animation: slideRtL 0.36s ease; */
 }
 
-/* @keyframes slideRtL {
-  from { transform: translateX(var(--panel-w)) }
-  to { transform:translateX(0) }
-} */
 .panel-toolbar {
   display: flex;
   align-items: center;

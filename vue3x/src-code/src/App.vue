@@ -39,6 +39,21 @@
             <input placeholder="Suchen" v-model="searchQuery" />
           </div>
         </div>
+        
+      <div class="filter-chips">
+        <button v-for="chip in chips" :key="chip" class="chip">{{ chip }}</button>
+        <div class="table-icons">
+          <button class="icon-btn-sm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 3v18" />
+            </svg></button>
+          <button class="icon-btn-sm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+            </svg></button>
+        </div>
+      </div>
+
         <div class="toolbar-right">
           <button class="icon-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -49,23 +64,6 @@
         </div>
       </div>
 
-      <!-- Filter chips -->
-      <div class="filter-chips">
-        <button v-for="chip in chips" :key="chip" class="chip">{{ chip }}</button>
-        <div class="table-icons">
-          <button class="icon-btn-sm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="M3 9h18M9 3v18" />
-            </svg></button>
-          <button class="icon-btn-sm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg></button>
-        </div>
-      </div>
 
       <div class="content-area" :elen="store.itemPanels.length">
         <div class="table-section">
@@ -141,7 +139,7 @@ function draggingFormW(e) {
   let dX = e.clientX - planStore.fomInf.x0
   let width = planStore.fomInf.width0 - dX
   width = Math.round(width / store.itemPanels.length)
-  if (420 < width && width < 525) {
+  if (420 < width && width < 601) {
     planStore.fomInf.width = width
     document.documentElement.style.setProperty('--panel-w', `${width}px`);
   }
@@ -160,7 +158,6 @@ function stopArnFormW(e) {
 }
 
 </script>
-
 <style scoped>
 .content-area {
   flex: 1; grid-template-columns: auto 0; display: grid;
@@ -307,7 +304,7 @@ function stopArnFormW(e) {
   background: transparent;
   font-size: 12.5px;
   color: var(--text-primary);
-  width: 160px;
+  width: 270px;
 }
 
 .search-box input::placeholder {
@@ -335,10 +332,8 @@ function stopArnFormW(e) {
 .filter-chips {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 24px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
+  gap: 8px; flex-grow: 1;
+  padding: 0 18px;
 }
 
 .chip {
@@ -361,7 +356,7 @@ function stopArnFormW(e) {
 .table-icons {
   margin-left: auto;
   display: flex;
-  gap: 4px;
+  gap: 8px;
 }
 
 .icon-btn-sm {

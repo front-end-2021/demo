@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getItems, emptyItem } from '../mockdata/themen'
-import { filterMap, someMap } from '../utils/utility'
+import { filterMap, mapFind } from '../utils/utility'
 import DOMPurify from 'dompurify';
 
 export const useThemenStore = defineStore('item', () => {
@@ -26,17 +26,18 @@ export const useThemenStore = defineStore('item', () => {
     return result
   })
 
-  function getParentChain(itemId) {
+  function getParentChain(itemId, level = 0) {
     const chain = []
     let current = items.value.get(itemId)
     while (current) {
       chain.unshift(current)
+      if (0 < level && level == chain.length) { return chain }
       current = current.parentId ? items.value.get(current.parentId) : null
     }
     return chain
   }
 
-  function anyChild(itemId) { return someMap(items.value, i => i.parentId === itemId) }
+  function anyChild(itemId) { return mapFind(items.value, i => i.parentId === itemId) }
 
   function toggleExpand(id) {
     const item = items.value.get(id)

@@ -14,12 +14,8 @@ export function filterMap(map, fnc, result, field) {
     }
     return result
 }
-export function someMap(map, fnc) {
-    for (let [k, value] of map) {
-        if (fnc(value)) {
-            return true
-        }
-    }
+export function mapFind(map, fnc) {
+    for (let [k, value] of map) { if (fnc(value)) { return value } }
 }
 
 export const appType = {

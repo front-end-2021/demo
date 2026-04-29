@@ -99,34 +99,13 @@ async function handleRowClick() {
   if (-1 < ii) {
     lsEdit.splice(ii, 1)
   } else {
-    let openItem
-    switch (lsEdit.length) {
-      case 0:
-        lsEdit.push(item);
-        break;
-      case 2:
-        openItem = lsEdit[1]
-        if (item.parentId == openItem.id) {
-          lsEdit.splice(0, 1, openItem)
-          lsEdit.splice(1, 1, item)
-        } else {
-          openItem = lsEdit[0]
-          if (item.parentId == openItem.id) {
-            lsEdit.splice(1, 1, item)
-          } else {
-            lsEdit.splice(0, 1, item)
-            lsEdit.splice(1)
-          }
-        }
-        break;
-      case 1:
-        openItem = lsEdit[0]
-        if (item.parentId == openItem.id) {
-          lsEdit.push(item)
-        } else {
-          lsEdit.splice(0, 1, item)
-        }
-        break;
+    if (lsEdit.length < 1) { lsEdit.push(item) }
+    else if (item.parentId) {
+      store.itemPanels = lsEdit.filter(x => x.id == item.parentId)
+      store.itemPanels.push(item)
+    } else {
+      lsEdit.splice(0, 1, item)
+      lsEdit.splice(1)
     }
   }
 }
@@ -156,17 +135,9 @@ function togglePalletColors() {
   .table-row[elen="2"] { grid-template-columns: 28px 20px auto 0 0 117px 216px 28px; }
 }
 
-.table-row.selected {
-  background: #eff6ff;
-}
-
-.table-row.type-initiative {
-  background: #fafbff;
-}
-
-.table-row.type-initiative:hover {
-  background: #f3f4ff;
-}
+.table-row.type-initiative { background: #fafbff; }
+.table-row.type-initiative:hover { background: #f3f4ff; }
+.table-row.selected { background: #eff6ff; }
 
 .col-check {
   display: flex;
