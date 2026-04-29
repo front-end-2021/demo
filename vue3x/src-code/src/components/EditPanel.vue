@@ -209,9 +209,12 @@ function togglePalletColors() {
     planStore.bindPopMenu(key, props.item.color, props.item.id)
   }
 }
-function blurName() { store.updateItem(props.item.id, { ...localItem }) }
+function blurName() { 
+  store.updateItem(props.item.id, { ...localItem }) 
+  localItem.title = props.item.title
+}
 async function save() {
-  const newName = localItem.title.trim()
+  let newName = localItem.title.trim()
   const item = props.item
   if (!newName) {
     store.closePanelAt(props.panelIndex)
@@ -226,7 +229,7 @@ function closeX() {
   if (!item.title) { store.removeItem(item.id) }
 }
 async function saveClose() {
-  const newName = localItem.title.trim()
+  let newName = localItem.title.trim()
   const item = props.item
   if (newName) {
     store.updateItem(item.id, { ...localItem })
@@ -263,6 +266,7 @@ function removeRegion(r) {
   flex-direction: column;
   /* animation: slideRtL 0.36s ease; */
 }
+
 /* @keyframes slideRtL {
   from { transform: translateX(var(--panel-w)) }
   to { transform:translateX(0) }

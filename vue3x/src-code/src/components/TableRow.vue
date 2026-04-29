@@ -23,8 +23,7 @@
 
     <!-- Title -->
     <div class="col-title" :style="{
-      paddingLeft: `${item.level * 20}px`,
-      maxWidth: planStore.ovwRow.mxwTitle
+      paddingLeft: `${item.level * 20}px`, maxWidth: colTltWdth
     }">
       <span class="item-dot" v-html="appType[item.type][1]" ref="item-icon" @click.stop="togglePalletColors"></span>
       <span class="title-text" @click.stop="handleRowClick">{{ item.title }}</span>
@@ -76,7 +75,15 @@ const store = useThemenStore()
 
 const hasChildren = computed(() => store.anyChild(props.item.id))
 const isSelected = computed(() => store.itemPanels.map(x => x.id).includes(props.item.id))
-
+const colTltWdth = computed(() => {
+  const len = store.itemPanels.length
+  if (len < 1) return ''
+  const tmpW = planStore.fomInf.width * len
+  let fWdth = tmpW + 3 + len * 30
+  let wTlt = window.innerWidth - planStore.leftWidth - 48 - 8 - 117 - 216 - 28
+  if (1 == len) { wTlt -= (220 + 120) }
+  return `${wTlt - fWdth}px`
+})
 onMounted(() => {
   styleSvgColor(itemIcon, props.item.color)
 })
@@ -89,7 +96,6 @@ async function handleRowClick() {
   const lsEdit = store.itemPanels
   const item = props.item
   let ii = lsEdit.findIndex(x => item.id == x.id)
-  let area = document.body.querySelector('.content-area')
   if (-1 < ii) {
     lsEdit.splice(ii, 1)
   } else {
@@ -114,23 +120,15 @@ async function handleRowClick() {
         }
         break;
       case 1:
-      //  let leftVw = area.querySelector('.table-section')
         openItem = lsEdit[0]
         if (item.parentId == openItem.id) {
           lsEdit.push(item)
-         // leftVw.style.width = `${area.offsetWidth - 2 * leftVw.offsetWidth}px`
         } else {
           lsEdit.splice(0, 1, item)
-         // leftVw.style.width = ''
         }
         break;
     }
   }
-  planStore.genMaxWidthTlt(window.innerWidth, lsEdit)
-  await nextTick()
-  area = document.body.querySelector('.content-area')
-  const tmpW = planStore.fomInf.width * lsEdit.length
-  area.style.gridTemplateColumns = `auto ${tmpW}px`
 }
 function togglePalletColors() {
   const key = `item-${props.item.id}`
@@ -152,13 +150,15 @@ function togglePalletColors() {
   cursor: pointer;
   padding: 0 4px;
 }
+.table-row:hover { background: #f8f9fc; }
 
-.table-row:hover {
-  background: #f8f9fc;
+@media (max-width: 1920px) {
+  .table-row[elen="2"] { grid-template-columns: 28px 20px auto 0 0 117px 216px 28px; }
 }
-.table-row[elen="2"] { grid-template-columns: 28px 20px auto 0 0 117px 216px 28px; }
 
-.table-row.selected { background: #eff6ff; }
+.table-row.selected {
+  background: #eff6ff;
+}
 
 .table-row.type-initiative {
   background: #fafbff;

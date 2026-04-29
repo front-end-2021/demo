@@ -93,11 +93,6 @@ select {
   accent-color: var(--accent-blue);
 }
 
-.content-area {
-  flex: 1;
-  display: grid;
-}
-
 @keyframes slideDown {
   0% {
     opacity: 0;

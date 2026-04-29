@@ -67,9 +67,9 @@
         </div>
       </div>
 
-      <div class="content-area">
+      <div class="content-area" :elen="store.itemPanels.length">
         <div class="table-section">
-          <div class="table-header">
+          <div class="table-header" :elen="store.itemPanels.length">
             <div class="th-check"></div>
             <div class="th-expand"></div>
             <div class="th-title">Ziele / Projekte</div>
@@ -86,10 +86,8 @@
           </div>
           <span v-if="store.itemPanels.length" class="f-arr-w" @mousedown="beginArnFormW"></span>
         </div>
-        <div style="display: flex;">
-          <EditPanel v-for="(edit, ii) in store.itemPanels" :key="edit.id" 
+        <EditPanel v-for="(edit, ii) in store.itemPanels" :key="edit.id" 
           :item="edit" :panel-index="ii" :is-second="ii > 0" />
-        </div>
         
       </div>
     </div>
@@ -153,24 +151,22 @@ function beginArnFormW(e) {
   window.addEventListener('mouseup', stopArnFormW)
   planStore.fomInf.x0 = e.clientX
   planStore.fomInf.width0 = planStore.fomInf.width
-  document.body.querySelectorAll('.content-area').forEach(a => {
-    a.style.transition = 'none'
-  })
 }
 function stopArnFormW(e) {
-  document.body.querySelectorAll('.content-area').forEach(a => {
-    a.style.transition = ''
-  })
   window.removeEventListener('mousemove', draggingFormW)
   window.removeEventListener('mouseup', stopArnFormW)
   delete planStore.fomInf.x0
   delete planStore.fomInf.width0
-  planStore.genMaxWidthTlt(window.innerWidth, store.itemPanels)
 }
 
 </script>
 
 <style scoped>
+.content-area {
+  flex: 1; grid-template-columns: auto 0; display: grid;
+}
+.content-area[elen="1"] { grid-template-columns: auto var(--panel-w); }
+.content-area[elen="2"] { grid-template-columns: auto var(--panel-w) var(--panel-w); }
 .table-section {
   display: flex;position: relative;
   flex-direction: column;
@@ -394,6 +390,10 @@ function stopArnFormW(e) {
   border-bottom: 1px solid var(--border);
   background: #fafbfc;
   flex-shrink: 0;
+}
+@media (max-width: 1920px) {
+  .table-header[elen="2"] { grid-template-columns: 28px 20px auto 0 0 117px 216px 28px; }
+  .table-header[elen="2"]>.th-region, .table-header[elen="2"]>.th-responsible { opacity: 0; }
 }
 
 .table-header>div {

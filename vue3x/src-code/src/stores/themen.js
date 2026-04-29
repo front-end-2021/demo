@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getItems, emptyItem } from '../mockdata/themen'
 import { filterMap, someMap } from '../utils/utility'
+import DOMPurify from 'dompurify';
 
 export const useThemenStore = defineStore('item', () => {
   // ── Active panels ─────────────────────────────────────────────
@@ -58,11 +59,9 @@ export const useThemenStore = defineStore('item', () => {
   function updateItem(id, fields) {
     const item = items.value.get(id)
     if (item) {
-      let name = fields.title
-      if (name) {
-        name = name.replaceAll('\n', ' ')
-        name = name.trim()
-      }
+      let txt = fields.title
+      const cleanTextOnly = DOMPurify.sanitize(txt, { ALLOWED_TAGS: [], KEEP_CONTENT: true });
+      const name = cleanTextOnly.replace(/[\r\n]+/gm, " ").trim();
       if (name && name != item.title) {
         fields.title = name
         Object.assign(item, fields)
