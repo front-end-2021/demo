@@ -1,5 +1,6 @@
 <template>
-  <div class="table-row" :class="[`level-${item.level}`, { selected: isSelected, 'type-initiative': 9 == item.type }]">
+  <div class="table-row" :elen="store.itemPanels.length"
+    :class="[`level-${item.level}`, { selected: isSelected, 'type-initiative': 9 == item.type }]">
     <!-- Checkbox -->
     <div class="col-check">
       <button class="check-btn" :class="{ done: item.done }" @click.stop="store.toggleDone(item.id)">
@@ -21,7 +22,10 @@
     </div>
 
     <!-- Title -->
-    <div class="col-title" :style="{ paddingLeft: `${item.level * 20}px` }">
+    <div class="col-title" :style="{
+      paddingLeft: `${item.level * 20}px`,
+      maxWidth: planStore.ovwRow.mxwTitle
+    }">
       <span class="item-dot" v-html="appType[item.type][1]" ref="item-icon" @click.stop="togglePalletColors"></span>
       <span class="title-text" @click.stop="handleRowClick">{{ item.title }}</span>
       <PalletColor v-if="planStore.popMenu.key == `item-${item.id}`" :item="item" />
@@ -45,7 +49,7 @@
 
     <!-- Zeitraum -->
     <div class="col-date">
-      <DateRange :start="item.dateStart" :days="item.dateDays" :end="item.dateEnd" />
+      <DateRange :start="item.dateStart" :end="item.dateEnd" />
     </div>
 
     <!-- Row checkbox -->
@@ -57,7 +61,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, useTemplateRef, onUpdated } from 'vue'
+import { computed, onMounted, useTemplateRef, onUpdated, nextTick } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
 import ProgressBadge from './ProgressBadge.vue'
@@ -80,48 +84,53 @@ onMounted(() => {
 onUpdated(() => {
   styleSvgColor(itemIcon, props.item.color)
 })
-function handleRowClick() {
+async function handleRowClick() {
   if (planStore.popMenu.key) { planStore.bindPopMenu('', '') }
   const lsEdit = store.itemPanels
-  const id = props.item.id
-  let ii = lsEdit.findIndex(x => id == x.id)
+  const item = props.item
+  let ii = lsEdit.findIndex(x => item.id == x.id)
+  let area = document.body.querySelector('.content-area')
   if (-1 < ii) {
     lsEdit.splice(ii, 1)
-    return
+  } else {
+    let openItem
+    switch (lsEdit.length) {
+      case 0:
+        lsEdit.push(item);
+        break;
+      case 2:
+        openItem = lsEdit[1]
+        if (item.parentId == openItem.id) {
+          lsEdit.splice(0, 1, openItem)
+          lsEdit.splice(1, 1, item)
+        } else {
+          openItem = lsEdit[0]
+          if (item.parentId == openItem.id) {
+            lsEdit.splice(1, 1, item)
+          } else {
+            lsEdit.splice(0, 1, item)
+            lsEdit.splice(1)
+          }
+        }
+        break;
+      case 1:
+      //  let leftVw = area.querySelector('.table-section')
+        openItem = lsEdit[0]
+        if (item.parentId == openItem.id) {
+          lsEdit.push(item)
+         // leftVw.style.width = `${area.offsetWidth - 2 * leftVw.offsetWidth}px`
+        } else {
+          lsEdit.splice(0, 1, item)
+         // leftVw.style.width = ''
+        }
+        break;
+    }
   }
-  let openItem
-  switch (lsEdit.length) {
-    case 0:
-      lsEdit.push(props.item);
-      return;
-    case 2:
-      openItem = lsEdit[1]
-      if (props.item.parentId == openItem.id) {
-        lsEdit.splice(0, 1, openItem)
-        lsEdit.splice(1, 1, id)
-        return
-      }
-      openItem = lsEdit[0]
-      if (props.item.parentId == openItem.id) {
-        lsEdit.splice(1, 1, props.item)
-        return
-      }
-      lsEdit.splice(0, 1, props.item)
-      lsEdit.splice(1, 1)
-      return
-    case 1:
-      let area = document.body.querySelector('.content-area')
-      let leftVw = area.querySelector('.table-section')
-      openItem = lsEdit[0]
-      if (props.item.parentId == openItem.id) {
-        lsEdit.push(props.item)
-        leftVw.style.width = `${area.offsetWidth - 2 * leftVw.offsetWidth}px`
-        return
-      }
-      lsEdit.splice(0, 1, props.item)
-      leftVw.style.width = ''
-      return
-  }
+  planStore.genMaxWidthTlt(window.innerWidth, lsEdit)
+  await nextTick()
+  area = document.body.querySelector('.content-area')
+  const tmpW = planStore.fomInf.width * lsEdit.length
+  area.style.gridTemplateColumns = `auto ${tmpW}px`
 }
 function togglePalletColors() {
   const key = `item-${props.item.id}`
@@ -141,17 +150,15 @@ function togglePalletColors() {
   min-height: var(--row-h);
   border-bottom: 1px solid var(--border);
   cursor: pointer;
-  transition: background 0.1s;
   padding: 0 4px;
 }
 
 .table-row:hover {
   background: #f8f9fc;
 }
+.table-row[elen="2"] { grid-template-columns: 28px 20px auto 0 0 117px 216px 28px; }
 
-.table-row.selected {
-  background: #eff6ff;
-}
+.table-row.selected { background: #eff6ff; }
 
 .table-row.type-initiative {
   background: #fafbff;
@@ -217,7 +224,8 @@ function togglePalletColors() {
 .col-title {
   display: flex;
   align-items: center;
-  gap: 6px; position: relative;
+  gap: 6px;
+  position: relative;
   padding-right: 8px;
 }
 

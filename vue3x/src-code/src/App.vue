@@ -67,9 +67,8 @@
         </div>
       </div>
 
-      <div class="content-area" :elen="store.itemPanels.length">
+      <div class="content-area">
         <div class="table-section">
-          <!-- Table header -->
           <div class="table-header">
             <div class="th-check"></div>
             <div class="th-expand"></div>
@@ -82,14 +81,16 @@
               <input type="checkbox" class="row-checkbox" v-model="isFilterChecked" @click.stop="toggleChip" />
             </div>
           </div>
-
-          <!-- Table rows -->
           <div class="table-body">
             <TableRow v-for="item in filteredItems" :key="item.id" :item="item" />
           </div>
+          <span v-if="store.itemPanels.length" class="f-arr-w" @mousedown="beginArnFormW"></span>
         </div>
-        <EditPanel v-for="(edit, ii) in store.itemPanels" :key="edit.id" 
+        <div style="display: flex;">
+          <EditPanel v-for="(edit, ii) in store.itemPanels" :key="edit.id" 
           :item="edit" :panel-index="ii" :is-second="ii > 0" />
+        </div>
+        
       </div>
     </div>
   </div>
@@ -138,9 +139,42 @@ function toggleMenuAddItem() {
 function clckApp() {
   if (planStore.popMenu.key) { planStore.bindPopMenu('', '') }
 }
+function draggingFormW(e) {
+  let dX = e.clientX - planStore.fomInf.x0
+  let width = planStore.fomInf.width0 - dX
+  width = Math.round(width / store.itemPanels.length)
+  if (420 < width && width < 525) {
+    planStore.fomInf.width = width
+    document.documentElement.style.setProperty('--panel-w', `${width}px`);
+  }
+}
+function beginArnFormW(e) {
+  window.addEventListener('mousemove', draggingFormW)
+  window.addEventListener('mouseup', stopArnFormW)
+  planStore.fomInf.x0 = e.clientX
+  planStore.fomInf.width0 = planStore.fomInf.width
+  document.body.querySelectorAll('.content-area').forEach(a => {
+    a.style.transition = 'none'
+  })
+}
+function stopArnFormW(e) {
+  document.body.querySelectorAll('.content-area').forEach(a => {
+    a.style.transition = ''
+  })
+  window.removeEventListener('mousemove', draggingFormW)
+  window.removeEventListener('mouseup', stopArnFormW)
+  delete planStore.fomInf.x0
+  delete planStore.fomInf.width0
+  planStore.genMaxWidthTlt(window.innerWidth, store.itemPanels)
+}
+
 </script>
 
 <style scoped>
+.table-section {
+  display: flex;position: relative;
+  flex-direction: column;
+}
 .app-layout {
   display: flex;
   height: 100vh;
@@ -201,7 +235,7 @@ function clckApp() {
   padding: 10px 16px;
   color: var(--text-secondary);
   border-bottom: 2px solid transparent;
-  transition: all 0.12s;
+  transition: var(--transisall);
   margin-bottom: -1px;
 }
 
@@ -247,7 +281,7 @@ function clckApp() {
   padding: 5px 10px;
   border-radius: var(--radius);
   border: 1px solid transparent;
-  transition: all 0.12s;
+  transition: var(--transisall);
   font-weight: 500;
 }
 
@@ -293,7 +327,7 @@ function clckApp() {
   padding: 5px 10px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  transition: all 0.12s;
+  transition: var(--transisall);
 }
 
 .icon-btn:hover {
@@ -318,7 +352,7 @@ function clckApp() {
   background: var(--bg);
   border: 1px solid var(--border);
   color: var(--text-secondary);
-  transition: all 0.12s;
+  transition: var(--transisall);
   cursor: pointer;
 }
 
@@ -351,14 +385,6 @@ function clckApp() {
 }
 
 /* Table */
-.table-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-width: 0;
-}
-
 .table-header {
   display: grid;
   grid-template-columns: 28px 20px auto 220px 120px 117px 216px 28px;
@@ -393,22 +419,4 @@ function clckApp() {
   overflow-y: auto;
 }
 
-/* Panel transitions */
-.panel-enter-active {
-  transition: all 0.18s ease;
-}
-
-.panel-leave-active {
-  transition: all 0.15s ease;
-}
-
-.panel-enter-from {
-  transform: translateX(20px);
-  opacity: 0;
-}
-
-.panel-leave-to {
-  transform: translateX(20px);
-  opacity: 0;
-}
 </style>

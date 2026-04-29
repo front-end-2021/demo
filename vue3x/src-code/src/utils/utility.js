@@ -48,3 +48,10 @@ export function styleSvgColor(itemIcon, c) {
         svg.setAttribute('fill', c)
     }
 }
+export function dateFrom(txt, sep = '.', indexes = [0, 1, 2]) {
+    const parts = txt.split(sep);
+    let day = parseInt(parts[indexes[0]])
+    let month = parseInt(parts[indexes[1]])
+    let year = parseInt(parts[indexes[2]])
+    return new Date(year, month - 1, day)
+}

@@ -77,7 +77,6 @@ export const useThemenStore = defineStore('item', () => {
       id: maxId + 1, parentId,
       level: parent ? parent.level + 1 : 0,
       type, color: 'green', regions,
-      dateDays: '',
     })
     items.value.set(newItem.id, newItem)
     if (parent) parent.expanded = true

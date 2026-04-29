@@ -1,5 +1,5 @@
 <template>
-  <div class="edit-panel " :class="{ 'second-panel': isSecond }">
+  <div class="edit-panel" :class="{ 'second-panel': isSecond }">
     <!-- Panel toolbar -->
     <div class="panel-toolbar">
       <div class="panel-nav">
@@ -164,7 +164,7 @@
 </template>
 
 <script setup>
-import { reactive, watch, computed, useTemplateRef, onMounted, onUpdated, ref, nextTick } from 'vue'
+import { reactive, watch, useTemplateRef, onMounted, onUpdated, ref, nextTick } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
 import MiniGantt from './MiniGantt.vue'
@@ -189,7 +189,7 @@ watch(() => props.item, (v) => {
   Object.assign(localItem, { ...v, region: [...(v.regions || [])], tags: [...(v.tags || [])] })
 }, { deep: true })
 
-onMounted(() => {
+onMounted(async () => {
   styleSvgColor(dIcon, props.item.color)
   dName.value.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault() } // Prevents the default newline behavior
@@ -200,6 +200,7 @@ onMounted(() => {
 onUpdated(() => {
   styleSvgColor(dIcon, props.item.color)
 })
+
 function togglePalletColors() {
   const key = `edit-item-${props.item.id}`
   if (key == planStore.popMenu.key) {
@@ -208,7 +209,7 @@ function togglePalletColors() {
     planStore.bindPopMenu(key, props.item.color, props.item.id)
   }
 }
-function blurName() { store.updateItem(item.id, { ...localItem }) }
+function blurName() { store.updateItem(props.item.id, { ...localItem }) }
 async function save() {
   const newName = localItem.title.trim()
   const item = props.item
@@ -240,7 +241,6 @@ function toggleDone() {
   localItem.done = !localItem.done
   save()
 }
-
 function addRegion() {
   if (newRegion.value.trim()) {
     localItem.region = [...localItem.region, newRegion.value.trim()]
@@ -248,7 +248,6 @@ function addRegion() {
     save()
   }
 }
-
 function removeRegion(r) {
   localItem.region = localItem.region.filter(x => x !== r)
   save()
@@ -258,27 +257,16 @@ function removeRegion(r) {
 <style scoped>
 .edit-panel {
   width: var(--panel-w);
-  flex-shrink: 0;
   background: var(--surface);
   border-left: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  animation: slideIn 0.18s ease;
+  /* animation: slideRtL 0.36s ease; */
 }
-
-@keyframes slideIn {
-  from {
-    transform: translateX(20px);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
+/* @keyframes slideRtL {
+  from { transform: translateX(var(--panel-w)) }
+  to { transform:translateX(0) }
+} */
 .panel-toolbar {
   display: flex;
   align-items: center;

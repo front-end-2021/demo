@@ -78,7 +78,7 @@
     </div>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
 import { appType } from '../utils/utility.js'
