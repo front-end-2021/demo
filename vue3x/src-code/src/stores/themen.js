@@ -84,7 +84,7 @@ export const useThemenStore = defineStore('item', () => {
   }
   function removeItem(id) { items.value.delete(id) }
   return {
-    visibleItems, itemPanels, removeItem,
+    visibleItems, itemPanels, removeItem,items,
     toggleExpand, toggleDone, closePanel, closePanelAt,
     updateItem, addItem, getParentChain, anyChild
   }

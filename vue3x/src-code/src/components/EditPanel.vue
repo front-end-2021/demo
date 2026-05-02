@@ -101,7 +101,7 @@
           <label class="field-label">Region</label>
           <div class="field-value">
             <div class="tag-list">
-              <span v-for="r in localItem.region" :key="r" class="region-tag">
+              <span v-for="r in localItem.regions" :key="r" class="region-tag">
                 {{ r }}
                 <button @click="removeRegion(r)" class="tag-remove">×</button>
               </span>
@@ -170,7 +170,7 @@
 </template>
 
 <script setup>
-import { reactive, watch, useTemplateRef, onMounted, onUpdated, ref, nextTick } from 'vue'
+import { reactive, watch, useTemplateRef, onMounted, onUpdated, ref, nextTick,computed } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
 import MiniGantt from './MiniGantt.vue'
@@ -182,17 +182,16 @@ const dName = useTemplateRef('d-nm')
 const props = defineProps({
   item: { type: Object, required: true },
   panelIndex: { type: Number, default: 0 },
-  isSecond: { type: Boolean, default: false },
 })
-
+const isSecond = computed(() => 0 < props.panelIndex)
 const planStore = usePlanStore()
 const store = useThemenStore()
 const newRegion = ref('')
 
-const localItem = reactive({ ...props.item, region: [...(props.item.regions || [])], tags: [...(props.item.tags || [])] })
+const localItem = reactive({ ...props.item, region: [...(props.item.regions)], tags: [...(props.item.tags)] })
 
 watch(() => props.item, (v) => {
-  Object.assign(localItem, { ...v, region: [...(v.regions || [])], tags: [...(v.tags || [])] })
+  Object.assign(localItem, { ...v, region: [...(v.regions)], tags: [...(v.tags)] })
 }, { deep: true })
 
 onMounted(async () => {
@@ -252,13 +251,13 @@ function toggleDone() {
 }
 function addRegion() {
   if (newRegion.value.trim()) {
-    localItem.region = [...localItem.region, newRegion.value.trim()]
+    localItem.regions = [...localItem.regions, newRegion.value.trim()]
     newRegion.value = ''
     save()
   }
 }
 function removeRegion(r) {
-  localItem.region = localItem.region.filter(x => x !== r)
+  localItem.regions = localItem.regions.filter(x => x !== r)
   save()
 }
 function opFormParen() {
@@ -292,8 +291,8 @@ function delItem() {
   width: var(--panel-w);
   background: var(--surface);
   border-left: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
+  display: flex; 
+  flex-direction: column; 
 }
 
 .panel-toolbar {

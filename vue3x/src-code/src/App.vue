@@ -54,19 +54,18 @@
         </div>
       </div>
 
-        <div class="toolbar-right">
-          <button class="icon-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-            </svg>
-            Filter
-          </button>
-        </div>
+      <div class="toolbar-right">
+        <button class="icon-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+          </svg>
+          Filter
+        </button>
+      </div>
       </div>
 
-
-      <div class="content-area" :elen="store.itemPanels.length">
-        <div class="table-section">
+      <div class="content-area">
+        <div class="table-section" :elen="store.itemPanels.length">
           <div class="table-header" :elen="store.itemPanels.length">
             <div class="th-check"></div>
             <div class="th-expand"></div>
@@ -84,9 +83,11 @@
           </div>
           <span v-if="store.itemPanels.length" class="f-arr-w" @mousedown="beginArnFormW"></span>
         </div>
-        <EditPanel v-for="(edit, ii) in store.itemPanels" :key="edit.id" 
-          :item="edit" :panel-index="ii" :is-second="ii > 0" />
         
+        <div class="wrap-edits">
+          <EditPanel v-for="(edit, ii) in store.itemPanels" 
+            :key="edit.id" :item="edit" :panel-index="ii" />
+        </div>
       </div>
     </div>
   </div>
@@ -159,14 +160,15 @@ function stopArnFormW(e) {
 
 </script>
 <style scoped>
-.content-area {
-  flex: 1; grid-template-columns: auto 0; display: grid;
-}
-.content-area[elen="1"] { grid-template-columns: auto var(--panel-w); }
-.content-area[elen="2"] { grid-template-columns: auto var(--panel-w) var(--panel-w); }
+.content-area { flex: 1; position: relative;}
 .table-section {
-  display: flex;position: relative;
-  flex-direction: column;
+  display: flex; flex-direction: column;
+}
+.table-section[elen="1"] { width: calc(100% - var(--panel-w)); }
+.table-section[elen="2"] { width: calc(100% - calc(2 * var(--panel-w))); }
+.wrap-edits {
+  position: absolute; right:0; top: 0;
+  display: flex; height: 100%;
 }
 .app-layout {
   display: flex;
@@ -174,12 +176,7 @@ function stopArnFormW(e) {
   overflow: hidden;
   background: var(--bg);
 }
-
-.th-rowcheck {
-  display: inline-flex;
-  justify-content: center;
-}
-
+.th-rowcheck { display: inline-flex; justify-content: center; }
 .main-area {
   flex: 1;
   width: calc(100vw - 52px);
@@ -188,7 +185,6 @@ function stopArnFormW(e) {
   overflow: hidden;
   background: var(--surface);
 }
-
 /* Header */
 .top-header {
   display: flex;
@@ -199,30 +195,19 @@ function stopArnFormW(e) {
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
-
 .page-title {
   font-size: 17px;
   font-weight: 600;
   color: var(--text-primary);
 }
-
-.header-meta {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
+.header-meta { font-size: 12px; color: var(--text-muted); }
 /* Tabs */
 .tab-bar {
   padding: 0 24px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
-
-.tabs {
-  display: flex;
-  gap: 0;
-}
-
+.tabs { display: flex; gap: 0; }
 .tab-btn {
   font-size: 13px;
   padding: 10px 16px;
@@ -231,17 +216,12 @@ function stopArnFormW(e) {
   transition: var(--transisall);
   margin-bottom: -1px;
 }
-
-.tab-btn:hover {
-  color: var(--text-primary);
-}
-
+.tab-btn:hover { color: var(--text-primary); }
 .tab-btn.active {
   color: var(--accent-blue);
   border-bottom-color: var(--accent-blue);
   font-weight: 500;
 }
-
 /* Toolbar */
 .toolbar {
   display: flex;
@@ -251,20 +231,17 @@ function stopArnFormW(e) {
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
-
 .toolbar-left {
   display: flex;
   position: relative;
   align-items: center;
   gap: 8px;
 }
-
 .toolbar-right {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
 .add-btn {
   display: inline-flex;
   align-items: center;
@@ -277,12 +254,7 @@ function stopArnFormW(e) {
   transition: var(--transisall);
   font-weight: 500;
 }
-
-.add-btn:hover {
-  background: var(--accent-blue-light);
-  border-color: #bfdbfe;
-}
-
+.add-btn:hover { background: var(--accent-blue-light); border-color: #bfdbfe; }
 .search-box {
   display: flex;
   align-items: center;
@@ -292,12 +264,7 @@ function stopArnFormW(e) {
   border-radius: var(--radius);
   padding: 5px 10px;
 }
-
-.search-box svg {
-  color: var(--text-muted);
-  flex-shrink: 0;
-}
-
+.search-box svg { color: var(--text-muted); flex-shrink: 0; }
 .search-box input {
   border: none;
   outline: none;
@@ -306,11 +273,7 @@ function stopArnFormW(e) {
   color: var(--text-primary);
   width: 270px;
 }
-
-.search-box input::placeholder {
-  color: var(--text-muted);
-}
-
+.search-box input::placeholder { color: var(--text-muted); }
 .icon-btn {
   display: inline-flex;
   align-items: center;
@@ -322,12 +285,7 @@ function stopArnFormW(e) {
   border: 1px solid var(--border);
   transition: var(--transisall);
 }
-
-.icon-btn:hover {
-  background: var(--bg);
-  color: var(--text-primary);
-}
-
+.icon-btn:hover { background: var(--bg); color: var(--text-primary); }
 /* Filter chips */
 .filter-chips {
   display: flex;
@@ -335,7 +293,6 @@ function stopArnFormW(e) {
   gap: 8px; flex-grow: 1;
   padding: 0 18px;
 }
-
 .chip {
   font-size: 11.5px;
   padding: 3px 10px;
@@ -346,19 +303,16 @@ function stopArnFormW(e) {
   transition: var(--transisall);
   cursor: pointer;
 }
-
 .chip:hover {
   border-color: var(--accent-blue);
   color: var(--accent-blue);
   background: var(--accent-blue-light);
 }
-
 .table-icons {
   margin-left: auto;
   display: flex;
   gap: 8px;
 }
-
 .icon-btn-sm {
   width: 26px;
   height: 26px;
@@ -369,12 +323,7 @@ function stopArnFormW(e) {
   color: var(--text-muted);
   border: 1px solid var(--border);
 }
-
-.icon-btn-sm:hover {
-  background: var(--bg);
-  color: var(--text-secondary);
-}
-
+.icon-btn-sm:hover { background: var(--bg); color: var(--text-secondary); }
 /* Table */
 .table-header {
   display: grid;
@@ -390,7 +339,6 @@ function stopArnFormW(e) {
   .table-header[elen="2"] { grid-template-columns: 28px 20px auto 0 0 117px 216px 28px; }
   .table-header[elen="2"]>.th-region, .table-header[elen="2"]>.th-responsible { opacity: 0; }
 }
-
 .table-header>div {
   font-size: 11px;
   font-weight: 600;
@@ -399,19 +347,7 @@ function stopArnFormW(e) {
   letter-spacing: 0.03em;
   white-space: nowrap;
 }
-
-.th-title {
-  padding-left: 4px;
-}
-
-.th-date {
-  text-align: right;
-  padding-right: 6px;
-}
-
-.table-body {
-  flex: 1;
-  overflow-y: auto;
-}
-
+.th-title { padding-left: 4px; }
+.th-date { text-align: right; padding-right: 6px; }
+.table-body { flex: 1; overflow-y: auto; }
 </style>
