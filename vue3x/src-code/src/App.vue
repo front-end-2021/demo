@@ -2,7 +2,7 @@
   <div class="app-layout" @click.stop="clckApp">
     <Sidebar />
 
-    <div class="main-area" :style="{ width: `calc(100vw - ${planStore.leftWidth}px)` }">
+    <div class="main-area" :style="{ width: `calc(100vw - ${planStore.gSize.wdthL}px)` }">
       <!-- Top header -->
       <header class="top-header">
         <div class="header-left">
@@ -81,10 +81,9 @@
           <div class="table-body">
             <TableRow v-for="item in filteredItems" :key="item.id" :item="item" />
           </div>
-          <span v-if="store.itemPanels.length" class="f-arr-w" @mousedown="beginArnFormW"></span>
         </div>
         
-        <div class="wrap-edits">
+        <div class="wrap-edits" :elen="store.itemPanels.length">
           <EditPanel v-for="(edit, ii) in store.itemPanels" 
             :key="edit.id" :item="edit" :panel-index="ii" />
         </div>
@@ -94,7 +93,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useThemenStore } from './stores/themen.js'
 import { usePlanStore } from './stores/plan.js'
 import Sidebar from './components/Sidebar.vue'
@@ -120,6 +119,11 @@ const filteredItems = computed(() => {
   }
   return sItems
 })
+onMounted(async () => {
+  let w = planStore.gSize.wdthF
+  document.documentElement.style.setProperty('--panel-w', `${w}px`);
+})
+
 function toggleChip(chip) {
   const isCheck = !isFilterChecked.value
   isFilterChecked.value = isCheck
@@ -136,40 +140,24 @@ function toggleMenuAddItem() {
 function clckApp() {
   if (planStore.popMenu.key) { planStore.bindPopMenu('', '') }
 }
-function draggingFormW(e) {
-  let dX = e.clientX - planStore.fomInf.x0
-  let width = planStore.fomInf.width0 - dX
-  width = Math.round(width / store.itemPanels.length)
-  if (420 < width && width < 601) {
-    planStore.fomInf.width = width
-    document.documentElement.style.setProperty('--panel-w', `${width}px`);
-  }
-}
-function beginArnFormW(e) {
-  window.addEventListener('mousemove', draggingFormW)
-  window.addEventListener('mouseup', stopArnFormW)
-  planStore.fomInf.x0 = e.clientX
-  planStore.fomInf.width0 = planStore.fomInf.width
-}
-function stopArnFormW(e) {
-  window.removeEventListener('mousemove', draggingFormW)
-  window.removeEventListener('mouseup', stopArnFormW)
-  delete planStore.fomInf.x0
-  delete planStore.fomInf.width0
-}
-
 </script>
 <style scoped>
-.content-area { flex: 1; position: relative;}
-.table-section {
-  display: flex; flex-direction: column;
+.content-area { flex: 1; height: calc(100vh - 136px); }
+.table-section { 
+  display: flex; flex-direction: column; height: 100%;
+  width: 100%; transition: width 0.6s ease; overflow-y: auto;
 }
 .table-section[elen="1"] { width: calc(100% - var(--panel-w)); }
 .table-section[elen="2"] { width: calc(100% - calc(2 * var(--panel-w))); }
 .wrap-edits {
-  position: absolute; right:0; top: 0;
-  display: flex; height: 100%;
+  position: fixed; right:0; bottom: 0; height: 100%; 
+  display: grid; grid-template-columns: 0 0;
+  transition: grid-template-columns 0.6s ease; 
 }
+.wrap-edits[elen="1"] { grid-template-columns: var(--panel-w) 0; }
+.wrap-edits[elen="2"] { 
+  grid-template-columns: var(--panel-w) var(--panel-w);
+ }
 .app-layout {
   display: flex;
   height: 100vh;
@@ -326,14 +314,12 @@ function stopArnFormW(e) {
 .icon-btn-sm:hover { background: var(--bg); color: var(--text-secondary); }
 /* Table */
 .table-header {
-  display: grid;
+  display: grid; align-items: center;
   grid-template-columns: 28px 20px auto 220px 120px 117px 216px 28px;
-  align-items: center;
-  height: 34px;
-  padding: 0 4px;
+  height: 34px; padding: 0 4px;
   border-bottom: 1px solid var(--border);
-  background: #fafbfc;
-  flex-shrink: 0;
+  background: #fafbfc; flex-shrink: 0; 
+  position: sticky; top: 0; z-index: 1;
 }
 @media (max-width: 1920px) {
   .table-header[elen="2"] { grid-template-columns: 28px 20px auto 0 0 117px 216px 28px; }
@@ -349,5 +335,5 @@ function stopArnFormW(e) {
 }
 .th-title { padding-left: 4px; }
 .th-date { text-align: right; padding-right: 6px; }
-.table-body { flex: 1; overflow-y: auto; }
+.table-body { flex: 1; }
 </style>

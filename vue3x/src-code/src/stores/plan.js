@@ -2,16 +2,13 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 const colors = ['#3f3f41', '#b9c1a5', '#256b3a', '#adcc44', '#80afd7', '#965c6c', '#e99371', '#fde178']
 export const usePlanStore = defineStore('plan', () => {
-    const leftWidth = ref(52)
-
+    const gSize = ref ({
+        wdthL: 52, wdthF: 450
+    })
     const activeTab = ref('Handlungsplan') // Active tab
 
     const popMenu = ref({ key: '' })
     const idChecks = ref(new Set()) // item ids
-
-    const fomInf = ref({
-        width: 420,
-    })
 
     function toggleCheckFilter(id) {
         if (idChecks.value.has(id)) {
@@ -34,7 +31,6 @@ export const usePlanStore = defineStore('plan', () => {
     }
     
     return {
-        idChecks, toggleCheckFilter, activeTab, popMenu, bindPopMenu,
-        leftWidth, fomInf,
+        idChecks, toggleCheckFilter, activeTab, popMenu, bindPopMenu, gSize, 
     }
 })

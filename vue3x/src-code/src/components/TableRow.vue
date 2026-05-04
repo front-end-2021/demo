@@ -25,7 +25,7 @@
     <div class="col-title" :style="{
       paddingLeft: `${item.level * 20}px`, maxWidth: colTltWdth
     }">
-      <span class="item-dot" v-html="appType[item.type][1]" ref="item-icon" @click.stop="togglePalletColors"></span>
+      <span class="item-dot" v-html="icType[item.type]" ref="item-icon" @click.stop="togglePalletColors"></span>
       <span class="title-text" @click.stop="handleRowClick">{{ item.title }}</span>
       <PalletColor v-if="planStore.popMenu.key == `item-${item.id}`" :item="item" />
     </div>
@@ -65,7 +65,7 @@ import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
 import ProgressBadge from './ProgressBadge.vue'
 import DateRange from './DateRange.vue'
-import { appType, styleSvgColor } from '../utils/utility.js'
+import { icType, styleSvgColor, heightEdits } from '../utils/utility.js'
 import PalletColor from './PalletColor.vue'
 
 const itemIcon = useTemplateRef('item-icon')
@@ -78,9 +78,9 @@ const isSelected = computed(() => store.itemPanels.map(x => x.id).includes(props
 const colTltWdth = computed(() => {
   const len = store.itemPanels.length
   if (len < 1) return ''
-  const tmpW = planStore.fomInf.width * len
+  const tmpW = planStore.gSize.wdthF * len
   let fWdth = tmpW + 3 + len * 30
-  let wTlt = window.innerWidth - planStore.leftWidth - 48 - 8 - 117 - 216 - 28
+  let wTlt = window.innerWidth - planStore.gSize.wdthL - 48 - 8 - 117 - 216 - 28
   if (1 == len) { wTlt -= (220 + 120) }
   return `${wTlt - fWdth}px`
 })
@@ -97,16 +97,16 @@ async function handleRowClick() {
   const item = props.item
   let ii = lsEdit.findIndex(x => item.id == x.id)
   if (-1 < ii) {
-    lsEdit.splice(ii, 1)
+    lsEdit.splice(ii, 1) // click it self again to close
+  } else if (lsEdit.length < 1) {
+    lsEdit.push(item)
+    heightEdits()
+  } else if (item.parentId) {
+    store.itemPanels = lsEdit.filter(x => x.id == item.parentId)
+    store.itemPanels.push(item)
   } else {
-    if (lsEdit.length < 1) { lsEdit.push(item) }
-    else if (item.parentId) {
-      store.itemPanels = lsEdit.filter(x => x.id == item.parentId)
-      store.itemPanels.push(item)
-    } else {
-      lsEdit.splice(0, 1, item)
-      lsEdit.splice(1)
-    }
+    lsEdit.splice(0, 1, item)
+    lsEdit.splice(1)
   }
 }
 function togglePalletColors() {
@@ -217,7 +217,7 @@ function togglePalletColors() {
   font-size: 12.5px;
   color: var(--text-primary);
   white-space: nowrap;
-  overflow: hidden;
+  overflow: hidden; min-width: 90px;
   text-overflow: ellipsis;
 }
 

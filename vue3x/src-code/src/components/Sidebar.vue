@@ -1,5 +1,5 @@
 <template>
-  <aside class="sidebar" :style="{ width: planStore.leftWidth + 'px' }">
+  <aside class="sidebar" :style="{ width: planStore.gSize.wdthL + 'px' }">
     <div class="sidebar-logo">
       <div class="logo-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">

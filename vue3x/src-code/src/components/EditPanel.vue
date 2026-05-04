@@ -14,36 +14,30 @@
         </button>
         <button class="tool-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="2" />
-            <circle cx="6" cy="12" r="2" />
-            <circle cx="18" cy="12" r="2" />
+            <circle cx="12" cy="12" r="2" /><circle cx="6" cy="12" r="2" /><circle cx="18" cy="12" r="2" />
           </svg>
         </button>
       </div>
       <div class="panel-actions">
         <button class="tool-btn" title="Löschen" @click="delItem">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3,6 5,6 21,6" />
-            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+            <polyline points="3,6 5,6 21,6" /><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2" />
           </svg>
         </button>
         <button class="tool-btn" title="Duplizieren">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="9" y="9" width="13" height="13" rx="2" />
-            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+            <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
           </svg>
         </button>
         <button class="tool-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <path d="M3 9h18M9 21V9" />
+            <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
           </svg>
         </button>
         <button class="tool-btn save-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" @click.stop="saveClose">
             <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
-            <polyline points="17 21 17 13 7 13 7 21" />
-            <polyline points="7 3 7 8 15 8" />
+            <polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" />
           </svg>
         </button>
         <button class="tool-btn close-btn" @click="closeX">
@@ -58,11 +52,12 @@
     <div class="panel-body">
       <!-- Title section -->
       <div class="panel-title-section">
-        <span class="item-dot" v-html="appType[item.type][1]" ref="d-icn" @click.stop="togglePalletColors"></span>
-        <textarea class="title-input" v-model="localItem.title" @blur="blurName" rows="2" name="item-name" ref="d-nm"
-          placeholder="Type new name"></textarea>
+        <span class="item-dot" v-html="icType[item.type]" ref="d-icn" @click.stop="togglePalletColors"></span>
+        <textarea class="title-input" v-model="localItem.title" @blur="blurName" name="item-name" 
+          ref="d-nm" placeholder="Type new name"></textarea>
         <div class="title-tags">
-          <span v-for="t in localItem.tags" :key="t" class="tag" :class="t.toLowerCase()">{{ t }}</span>
+          <span v-for="t in localItem.tags" :key="t" class="tag" :class="t.toLowerCase()"
+            @click.stop="clkTag(t.toLowerCase())">{{ t }}</span>
         </div>
         <PalletColor v-if="planStore.popMenu.key == `edit-item-${item.id}`" :item="item" />
       </div>
@@ -175,7 +170,7 @@ import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
 import MiniGantt from './MiniGantt.vue'
 import PalletColor from './PalletColor.vue'
-import { appType, styleSvgColor } from '../utils/utility.js'
+import { icType, styleSvgColor } from '../utils/utility.js'
 
 const dIcon = useTemplateRef('d-icn')
 const dName = useTemplateRef('d-nm')
@@ -285,6 +280,16 @@ function delItem() {
     store.removeItem(item.id) // pressed OK
   } else {/* "You canceled!" */}
 }
+function clkTag(t) {
+  switch (t) {
+    case 'okr':
+
+      break;
+    case 'kc':
+
+      break;
+  }
+}
 </script>
 <style scoped>
 .edit-panel {
@@ -368,7 +373,7 @@ function delItem() {
 }
 
 .title-input {
-  flex: 1;
+  flex: 1; field-sizing: content;
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
@@ -394,10 +399,8 @@ function delItem() {
 }
 
 .tag {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-size: 10px; font-weight: 600; cursor: pointer;
+  padding: 2px 6px; border-radius: 4px;
 }
 
 .tag.kc {

@@ -3,76 +3,76 @@
         <div class="menu-section">
             <h5 class="section-title">Ziele / Projekte</h5>
             <div class="menu-item" @click.stop="newItem(1)">
-                <div class="icon" v-html="appType[1][1]"></div>
-                <span>{{ appType[1][0] }}</span>
+                <div class="icon" v-html="icType[1]"></div>
+                <span>{{ aTyp[1]}}</span>
             </div>
             <div class="menu-item" @click.stop="newItem(2)">
-                <div class="icon" v-html="appType[2][1]"></div>
-                <span>{{ appType[2][0] }}</span>
+                <div class="icon" v-html="icType[2]"></div>
+                <span>{{ aTyp[2] }}</span>
             </div>
             <div class="menu-item" @click.stop="newItem(3)">
-                <div class="icon" v-html="appType[3][1]"></div>
-                <span>{{ appType[3][0] }}</span>
+                <div class="icon" v-html="icType[3]"></div>
+                <span>{{ aTyp[3] }}</span>
             </div>
         </div>
 
         <div class="menu-section">
             <h5 class="section-title">Vorhaben</h5>
             <div class="menu-item" @click.stop="newItem(4)">
-                <div class="icon" v-html="appType[4][1]"></div>
-                <span>{{ appType[4][0] }}</span>
+                <div class="icon" v-html="icType[4]"></div>
+                <span>{{ aTyp[4] }}</span>
             </div>
             <div class="menu-item" @click.stop="newItem(5)">
-                <div class="icon" v-html="appType[5][1]"></div>
-                <span>{{ appType[5][0] }}</span>
+                <div class="icon" v-html="icType[5]"></div>
+                <span>{{ aTyp[5] }}</span>
             </div>
             <div class="menu-item" @click.stop="newItem(6)">
-                <div class="icon" v-html="appType[6][1]"></div>
-                <span>{{ appType[6][0] }}</span>
+                <div class="icon" v-html="icType[6]"></div>
+                <span>{{ aTyp[6] }}</span>
             </div>
             <div class="menu-item" @click.stop="newItem(7)">
-                <div class="icon" v-html="appType[7][1]"></div>
-                <span>{{ appType[7][0] }}</span>
+                <div class="icon" v-html="icType[7]"></div>
+                <span>{{ aTyp[7] }}</span>
             </div>
         </div>
 
         <div class="menu-section">
             <h5 class="section-title">Strategisches Management</h5>
             <div class="menu-item" @click.stop="newItem(8)">
-                <div class="icon" v-html="appType[8][1]"></div>
-                <span>{{ appType[8][0] }}</span>
+                <div class="icon" v-html="icType[8]"></div>
+                <span>{{ aTyp[8] }}</span>
             </div>
             <div class="menu-item" @click.stop="newItem(9)">
-                <div class="icon" v-html="appType[9][1]"></div>
-                <span>{{ appType[9][0] }}</span>
+                <div class="icon" v-html="icType[9]"></div>
+                <span>{{ aTyp[9] }}</span>
             </div>
             <div class="menu-item" @click.stop="newItem(10)">
-                <div class="icon" v-html="appType[10][1]"></div>
-                <span>{{ appType[10][0] }}</span>
+                <div class="icon" v-html="icType[10]"></div>
+                <span>{{ aTyp[10] }}</span>
             </div>
             <div class="menu-item" @click.stop="newItem(11)">
-                <div class="icon" v-html="appType[11][1]"></div>
-                <span>{{ appType[11][0] }}</span>
+                <div class="icon" v-html="icType[11]"></div>
+                <span>{{ aTyp[11] }}</span>
             </div>
         </div>
 
         <div class="menu-section">
             <h5 class="section-title">Themenfelder</h5>
             <div class="menu-item" @click.stop="newItem(12)">
-                <div class="icon" v-html="appType[12][1]"></div>
-                <span>{{ appType[12][0] }}</span>
+                <div class="icon" v-html="icType[12]"></div>
+                <span>{{ aTyp[12] }}</span>
             </div>
             <div class="menu-item" @click.stop="newItem(13)">
-                <div class="icon" v-html="appType[13][1]"></div>
-                <span>{{ appType[13][0] }}</span>
+                <div class="icon" v-html="icType[13]"></div>
+                <span>{{ aTyp[13] }}</span>
             </div>
         </div>
 
         <div class="menu-section">
             <h5 class="section-title">CRM</h5>
             <div class="menu-item" @click.stop="newItem(14)">
-                <div class="icon" v-html="appType[14][1]"></div>
-                <span>{{ appType[14][0] }}</span>
+                <div class="icon" v-html="icType[14]"></div>
+                <span>{{ aTyp[14] }}</span>
             </div>
         </div>
     </div>
@@ -81,7 +81,7 @@
 import { ref } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
-import { appType } from '../utils/utility.js'
+import { icType, aTyp, heightEdits } from '../utils/utility.js'
 
 const store = useThemenStore()
 const planStore = usePlanStore()
@@ -89,6 +89,7 @@ const planStore = usePlanStore()
 function newItem(type) {
     let nItem = store.addItem(null, type)
     store.itemPanels = [nItem]
+    heightEdits()
     planStore.bindPopMenu('', '')
 }
 </script>
@@ -99,7 +100,7 @@ function newItem(type) {
     position: absolute;
     top: 30px;
     left: 0;
-    z-index: 1;
+    z-index: 2;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     border: 1px solid #e0e0e0;
