@@ -88,6 +88,9 @@
             :key="edit.id" :item="edit" :panel-index="ii" />
         </div>
       </div>
+      <div class="kr-form" :kri="krStore.krForm?.id">
+        <KrForm v-if="krStore.krForm" :kr="krStore.krForm" />
+      </div>
     </div>
   </div>
 </template>
@@ -96,13 +99,16 @@
 import { ref, computed, onMounted } from 'vue'
 import { useThemenStore } from './stores/themen.js'
 import { usePlanStore } from './stores/plan.js'
+import { useKRStore } from './stores/okr.js'
 import Sidebar from './components/Sidebar.vue'
 import TableRow from './components/TableRow.vue'
 import EditPanel from './components/EditPanel.vue'
 import MenuNewItem from './components/MenuNewItem.vue'
+import KrForm from './components/KrForm.vue'
 
 const planStore = usePlanStore()
 const store = useThemenStore()
+const krStore = useKRStore()
 const tabs = ['Handlungsplan', 'Board', 'Timeline']
 const chips = ['Meine hervorheben', 'Meine Aufgaben', 'Hit Kontext', 'Fälligkeiten', 'Aktive Inaktive']
 const searchQuery = ref('')
@@ -142,7 +148,7 @@ function clckApp() {
 }
 </script>
 <style scoped>
-.content-area { flex: 1; height: calc(100vh - 136px); }
+.content-area { flex: 1; }
 .table-section { 
   display: flex; flex-direction: column; height: 100%;
   width: 100%; transition: width 0.6s ease; overflow-y: auto;
@@ -150,14 +156,19 @@ function clckApp() {
 .table-section[elen="1"] { width: calc(100% - var(--panel-w)); }
 .table-section[elen="2"] { width: calc(100% - calc(2 * var(--panel-w))); }
 .wrap-edits {
-  position: fixed; right:0; bottom: 0; height: 100%; 
-  display: grid; grid-template-columns: 0 0;
-  transition: grid-template-columns 0.6s ease; 
+  right:0; display: grid; grid-template-columns: 0 0;
+  transition: grid-template-columns 0.6s ease; height: 0;
+}
+.wrap-edits, .kr-form { position: fixed; bottom: 0; }
+.content-area, .wrap-edits[elen="1"], .wrap-edits[elen="2"], .kr-form[kri] { 
+  height: calc(100vh - 136px); 
 }
 .wrap-edits[elen="1"] { grid-template-columns: var(--panel-w) 0; }
 .wrap-edits[elen="2"] { 
   grid-template-columns: var(--panel-w) var(--panel-w);
  }
+.kr-form { right: var(--panel-w); z-index: 1;background: var(--surface);
+  border-left: 1px solid var(--border); }
 .app-layout {
   display: flex;
   height: 100vh;

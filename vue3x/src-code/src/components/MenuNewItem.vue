@@ -81,7 +81,7 @@
 import { ref } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
-import { icType, aTyp, heightEdits } from '../utils/utility.js'
+import { icType, aTyp } from '../utils/utility.js'
 
 const store = useThemenStore()
 const planStore = usePlanStore()
@@ -89,7 +89,6 @@ const planStore = usePlanStore()
 function newItem(type) {
     let nItem = store.addItem(null, type)
     store.itemPanels = [nItem]
-    heightEdits()
     planStore.bindPopMenu('', '')
 }
 </script>

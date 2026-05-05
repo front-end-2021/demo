@@ -14,6 +14,7 @@
   --text-primary: #000;
   --text-secondary: #6b7280;
   --text-muted: #9ca3af;
+  --accent: #3b5bdb;
   --accent-blue: #3b82f6;
   --accent-blue-light: #eff6ff;
   --accent-green: #22c55e;
@@ -24,6 +25,7 @@
   --accent-orange-light: #fff7ed;
   --accent-purple: #a855f7;
   --accent-teal: #14b8a6;
+  --accent-subtle: #c5cfff;
   --sidebar-w: 220px;
   --panel-w: 420px;
   --header-h: 52px;
@@ -35,6 +37,14 @@
   --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
   --farr-w: 3px;
   --transisall: all 0.12s ease;
+  --bg-card: #ffffff;
+  --bg-input: #f8f8f9;
+  --bg-hover: #f2f3f5;
+  --green: #2e7d32;
+  --green-bg: #e8f5e9;
+  --green-border: #c8e6c9;
+  --orange: #e65100;
+  --red: #c62828;
 }
 
 body {
@@ -114,3 +124,50 @@ select {
 }
 .item-dot svg { width: inherit; height: inherit;}
 .menu-item svg { width: 14px; height: 14px;}
+
+.collapse-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: inherit;
+    padding: 10px 16px;
+    transition: color 0.15s;
+    align-self: flex-start;
+}
+
+.collapse-btn:hover {
+    color: var(--accent);
+}
+
+.collapse-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.expand-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+    transition: color 0.15s;
+}
+
+.expand-btn:hover {
+    color: var(--accent);
+}
+
+.expand-btn svg {
+    width: 14px;
+    height: 14px;
+}

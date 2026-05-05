@@ -6,7 +6,7 @@
         <button :class="{ active: view === 'Woche' }" @click="view = 'Woche'">Woche</button>
         <button :class="{ active: view === 'Monat' }" @click="view = 'Monat'">Monat</button>
         <button :class="{ active: view === 'Jahr' }" @click="view = 'Jahr'">Jahr</button>
-        <button class="expand-btn">
+        <button class="expnd-btn">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
         </button>
       </div>
@@ -80,7 +80,7 @@ const days = [
   background: var(--accent-blue-light);
   color: var(--accent-blue);
 }
-.expand-btn { padding: 2px 4px !important; }
+.expnd-btn { padding: 2px 4px !important; }
 .gantt-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);

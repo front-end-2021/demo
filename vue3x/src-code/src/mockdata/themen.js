@@ -64,6 +64,7 @@ export function getItems() {
                 progress: '-10%',
                 progressColor: 'red',
                 dateStart: '23.12.2025', dateEnd: '23.12.2025',
+                tags: ['OKR'],
                 expanded: false,
                 done: true,
                 color: 'red',

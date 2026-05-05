@@ -168,9 +168,10 @@
 import { reactive, watch, useTemplateRef, onMounted, onUpdated, ref, nextTick,computed } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
+import { useKRStore } from '../stores/okr.js'
 import MiniGantt from './MiniGantt.vue'
 import PalletColor from './PalletColor.vue'
-import { icType, styleSvgColor } from '../utils/utility.js'
+import { icType, styleSvgColor, clickTag } from '../utils/utility.js'
 
 const dIcon = useTemplateRef('d-icn')
 const dName = useTemplateRef('d-nm')
@@ -181,6 +182,7 @@ const props = defineProps({
 const isSecond = computed(() => 0 < props.panelIndex)
 const planStore = usePlanStore()
 const store = useThemenStore()
+const krStore = useKRStore()
 const newRegion = ref('')
 
 const localItem = reactive({ ...props.item, region: [...(props.item.regions)], tags: [...(props.item.tags)] })
@@ -217,6 +219,7 @@ async function save() {
   let newName = localItem.title.trim()
   const item = props.item
   if (!newName) {
+    krStore.setKrForm(-1)
     store.closePanelAt(props.panelIndex)
     if (!item.title) { store.removeItem(item.id) }
     return
@@ -224,6 +227,7 @@ async function save() {
   store.updateItem(item.id, { ...localItem })
 }
 function closeX() {
+  krStore.setKrForm(-1)
   store.closePanelAt(props.panelIndex)
   const item = props.item
   if (!item.title) { store.removeItem(item.id) }
@@ -233,6 +237,7 @@ async function saveClose() {
   const item = props.item
   if (newName) {
     store.updateItem(item.id, { ...localItem })
+    krStore.setKrForm(-1)
     store.closePanelAt(props.panelIndex)
   } else {
     localItem.title = item.title
@@ -281,14 +286,10 @@ function delItem() {
   } else {/* "You canceled!" */}
 }
 function clkTag(t) {
-  switch (t) {
-    case 'okr':
-
-      break;
-    case 'kc':
-
-      break;
-  }
+  const item = props.item
+  if (!krStore.krForm || krStore.krForm.id != item.id) {
+    clickTag(t, item, krStore)
+  } else { clickTag(t, {id: -1}, krStore) }
 }
 </script>
 <style scoped>

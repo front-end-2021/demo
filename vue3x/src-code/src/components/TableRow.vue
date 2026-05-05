@@ -13,7 +13,7 @@
 
     <!-- Expand toggle -->
     <div class="col-expand">
-      <button v-if="hasChildren" class="expand-btn" :class="{ expanded: item.expanded }"
+      <button v-if="hasChildren" class="expnd-btn" :class="{ expanded: item.expanded }"
         @click.stop="store.toggleExpand(item.id)">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5">
           <path d="M9 18l6-6-6-6" />
@@ -43,7 +43,8 @@
     <!-- Progress + Tags -->
     <div class="col-progress">
       <ProgressBadge :value="item.progress" :color="item.progressColor" />
-      <span v-for="t in item.tags" :key="t" class="inline-tag" :class="t.toLowerCase()">{{ t }}</span>
+      <span v-for="t in item.tags" :key="t" class="inline-tag" :class="t.toLowerCase()" @click.stop="clkTag(t, item)">{{
+        t }}</span>
     </div>
 
     <!-- Zeitraum -->
@@ -63,15 +64,17 @@
 import { computed, onMounted, useTemplateRef, onUpdated, nextTick } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
+import { useKRStore } from '../stores/okr.js'
 import ProgressBadge from './ProgressBadge.vue'
 import DateRange from './DateRange.vue'
-import { icType, styleSvgColor, heightEdits } from '../utils/utility.js'
+import { icType, styleSvgColor, clickTag } from '../utils/utility.js'
 import PalletColor from './PalletColor.vue'
 
 const itemIcon = useTemplateRef('item-icon')
 const planStore = usePlanStore()
 const props = defineProps({ item: { type: Object, required: true } })
 const store = useThemenStore()
+const krStore = useKRStore()
 
 const hasChildren = computed(() => store.anyChild(props.item.id))
 const isSelected = computed(() => store.itemPanels.map(x => x.id).includes(props.item.id))
@@ -97,10 +100,10 @@ async function handleRowClick() {
   const item = props.item
   let ii = lsEdit.findIndex(x => item.id == x.id)
   if (-1 < ii) {
+    krStore.setKrForm(-1)
     lsEdit.splice(ii, 1) // click it self again to close
   } else if (lsEdit.length < 1) {
     lsEdit.push(item)
-    heightEdits()
   } else if (item.parentId) {
     store.itemPanels = lsEdit.filter(x => x.id == item.parentId)
     store.itemPanels.push(item)
@@ -117,8 +120,13 @@ function togglePalletColors() {
     planStore.bindPopMenu(key, props.item.color, props.item.id)
   }
 }
+function clkTag(t, item) {
+  const lsEdit = store.itemPanels
+  lsEdit.splice(0, 1, item)
+  lsEdit.splice(1)
+  clickTag(t.toLowerCase(), item, krStore)
+}
 </script>
-
 <style scoped>
 .table-row {
   display: grid;
@@ -129,15 +137,28 @@ function togglePalletColors() {
   cursor: pointer;
   padding: 0 4px;
 }
-.table-row:hover { background: #f8f9fc; }
 
-@media (max-width: 1920px) {
-  .table-row[elen="2"] { grid-template-columns: 28px 20px auto 0 0 117px 216px 28px; }
+.table-row:hover {
+  background: #f8f9fc;
 }
 
-.table-row.type-initiative { background: #fafbff; }
-.table-row.type-initiative:hover { background: #f3f4ff; }
-.table-row.selected { background: #eff6ff; }
+@media (max-width: 1920px) {
+  .table-row[elen="2"] {
+    grid-template-columns: 28px 20px auto 0 0 117px 216px 28px;
+  }
+}
+
+.table-row.type-initiative {
+  background: #fafbff;
+}
+
+.table-row.type-initiative:hover {
+  background: #f3f4ff;
+}
+
+.table-row.selected {
+  background: #eff6ff;
+}
 
 .col-check {
   display: flex;
@@ -172,7 +193,7 @@ function togglePalletColors() {
   justify-content: center;
 }
 
-.expand-btn {
+.expnd-btn {
   width: 18px;
   height: 18px;
   border-radius: 3px;
@@ -183,11 +204,11 @@ function togglePalletColors() {
   transition: transform 0.15s, color 0.12s;
 }
 
-.expand-btn.expanded {
+.expnd-btn.expanded {
   transform: rotate(90deg);
 }
 
-.expand-btn:hover {
+.expnd-btn:hover {
   color: var(--text-primary);
   background: var(--border);
 }
@@ -217,7 +238,8 @@ function togglePalletColors() {
   font-size: 12.5px;
   color: var(--text-primary);
   white-space: nowrap;
-  overflow: hidden; min-width: 90px;
+  overflow: hidden;
+  min-width: 90px;
   text-overflow: ellipsis;
 }
 

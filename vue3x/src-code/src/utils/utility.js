@@ -34,7 +34,6 @@ export function filterMap(map, fnc, result, field) {
 export function mapFind(map, fnc) {
     for (let [k, value] of map) { if (fnc(value)) { return value } }
 }
-
 export const icType = {
     1: `<svg class="icon-geo geo-1" fill="black" stroke="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /></svg>`,
     2: `<svg class="icon-geo geo-2" fill="black" viewBox="0 0 24 24"><rect x="4.5" y="4.5" width="15" height="15" transform="rotate(45 12 12)" /></svg>`,
@@ -51,7 +50,6 @@ export const icType = {
     13: `<svg class="geo-13" fill="none" stroke="black" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><ellipse cx="12" cy="16" rx="2" ry="2"></ellipse><path d="M12 18v3"></path></svg>`,
     14: `<svg class="geo-14" fill="none" stroke="black" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><rect x="4" y="3" width="16" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line></svg>`,
 }
-
 export function styleSvgColor(itemIcon, c) {
     let svg = itemIcon.value.querySelector('svg')
     if (svg && svg.hasAttribute('stroke')) {
@@ -68,9 +66,14 @@ export function dateFrom(txt, sep = '.', indexes = [0, 1, 2]) {
     let year = parseInt(parts[indexes[2]])
     return new Date(year, month - 1, day)
 }
-export function heightEdits() {
-    document.body.querySelectorAll('.wrap-edits').forEach(w => {
-        let pa = w.closest('.content-area')
-        w.style.height = `${pa.offsetHeight}px`
-    })
+export function clickTag(t, item, krStore) {
+  switch (t) {
+    case 'okr':
+      krStore.setKrForm(item.id)
+      debugger
+      break;
+    case 'kc':
+
+      break;
+  }
 }
