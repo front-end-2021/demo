@@ -1,17 +1,11 @@
 <template>
-    <div class="page">
-        <!-- ── Header ── -->
-        <div class="page-header">
-            <h1 class="page-title">OKR</h1>
-            <button v-if="510 < width" class="collapse-btn" @click="width = 510"><svg viewBox="0 0 16 16" fill="none">
-                    <path d="M4 10l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>Einklappen</button>
-            <button v-else class="expand-btn" @click.stop="width = 780"><svg viewBox="0 0 16 16" fill="none">
-                    <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>Details anzeigen
-            </button>
+    <div class="container" :style="{ width: width + 'px'}">
+        <div class="header">
+            <div class="left">
+                <h1 class="title">OKR</h1>
+                <button v-if="510 < width" class="collapse-btn" @click="width = 510" v-html="icArr + 'Einklappen'"></button>
+                <button v-else class="expand-btn" @click.stop="width = 780" v-html="icArl + 'Details anzeigen'"></button>
+            </div>
             <div class="total-badge">
                 Total: ↑{{ totalProgress }}%
             </div>
@@ -21,7 +15,7 @@
             <KRCard v-for="(kr, idx) in activeKResults" :key="kr.id" :kr="kr" :width="width" />
         </TransitionGroup>
 
-        <button class="add-kr-btn" @click="store.addKResult()">
+        <button class="adkr" @click="store.addKResult()">
             <svg viewBox="0 0 14 14" fill="none">
                 <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
             </svg>
@@ -31,57 +25,58 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import KRMini from './KRMini.vue'
-import KrRow from './KrRow.vue'
+import { ref, computed, provide } from 'vue'
 import KRCard from './KRCard.vue'
 import { useKRStore } from '../stores/okr.js'
+import { icArl, icArr, icAdd } from '../utils/utility.js'
 
 const props = defineProps({
     kr: { type: Object, required: true },
 })
 
-const collapse = ref(false)
 const store = useKRStore()
 
 const width = ref(510)
+const mKI = computed(() => new Map(props.kr.idKResults.map(id => [id, store.getKI(id)])))
+provide('mpki', mKI)
 const totalProgress = computed(() => {
-    const kr = props.kr
-    const ids = kr.idKResults
-    const pcts = ids.map((id) => parseFloat(store.getKI(kr)) || 0)
+    const ids = props.kr.idKResults
+    const pcts = ids.map(id => parseFloat(mKI.value.get(id)) || 0)
     if (!pcts.length) return 0
     return (pcts.reduce((a, b) => a + b, 0) / pcts.length).toFixed(0)
 })
-const activeKResults = computed(() => props.kr.idKResults.map(id => ({id, ...store.kResults[id]})))
+const activeKResults = computed(() => props.kr.idKResults.map(id => store.kResults[id]))
 
 </script>
-
 <style scoped>
-.page {
-    max-width: 780px;
-    display: flex;
+.container {
+    display: flex;background: var(--surface);
     flex-direction: column;
     gap: 12px;height: 100%;
-    overflow-y: auto;
-    padding-bottom: 20px;
+    overflow-y: auto; animation: slideRl 0.51s ease;
+    padding-bottom: 20px; transform-origin: left;
+    transition: width 0.3s ease;
 }
-
-.page-header {
+@keyframes slideRl {
+    0% { transform: translateX(var(--panel-w)); opacity: 0;}
+    100% { transform: translateX(0); opacity: 1;}
+}
+.header {
     display: flex; padding: 16px;
-    align-items: center;
+    align-items: center;gap: 12px;
     justify-content: space-between;
     margin-bottom: 4px; position: sticky;
     top: 0; z-index: 1;
     background: var(--surface);
 }
-
-.page-title {
+.title {
     font-size: 18px;
     font-weight: 600;
     color: var(--text-primary);
     letter-spacing: -0.01em;
 }
-
+.left {display: inline-flex; align-items: center; gap: 12px;}
+.left .collapse-btn { padding-left: 0;}
 .total-badge {
     font-size: 13px;
     font-weight: 600;
@@ -100,7 +95,7 @@ const activeKResults = computed(() => props.kr.idKResults.map(id => ({id, ...sto
 }
 
 /* Add button */
-.add-kr-btn {
+.adkr {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -117,13 +112,13 @@ const activeKResults = computed(() => props.kr.idKResults.map(id => ({id, ...sto
     margin: 0 16px;
 }
 
-.add-kr-btn:hover {
+.adkr:hover {
     color: var(--accent);
     border-color: var(--accent);
     background: #f0f3ff;
 }
 
-.add-kr-btn svg {
+.adkr svg {
     width: 14px;
     height: 14px;
     flex-shrink: 0;

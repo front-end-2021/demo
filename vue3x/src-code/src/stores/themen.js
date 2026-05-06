@@ -49,12 +49,6 @@ export const useThemenStore = defineStore('item', () => {
     if (item) item.done = !item.done
   }
 
-  function closePanel(id) {
-    let lsEdit = itemPanels.value
-    const ii = lsEdit.findIndex(x => id == x.id)
-    if (-1 < ii) lsEdit.splice(ii, 0 == ii ? lsEdit.length : 1)
-  }
-
   function closePanelAt(index) { itemPanels.value.splice(index, 1) }
 
   function updateItem(id, fields) {
@@ -85,7 +79,7 @@ export const useThemenStore = defineStore('item', () => {
   function removeItem(id) { items.value.delete(id) }
   return {
     visibleItems, itemPanels, removeItem,items,
-    toggleExpand, toggleDone, closePanel, closePanelAt,
+    toggleExpand, toggleDone, closePanelAt,
     updateItem, addItem, getParentChain, anyChild
   }
 })

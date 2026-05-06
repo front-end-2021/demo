@@ -1,6 +1,6 @@
 <template>
-  <div class="table-row" :elen="store.itemPanels.length"
-    :class="[`level-${item.level}`, { selected: isSelected, 'type-initiative': 9 == item.type }]">
+  <div class="table-row" 
+    :class="[`level-${item.level}`, `eln${store.itemPanels.length}`, { selected: isSelected, 'type-initiative': 9 == item.type }]">
     <!-- Checkbox -->
     <div class="col-check">
       <button class="check-btn" :class="{ done: item.done }" @click.stop="store.toggleDone(item.id)">
@@ -143,7 +143,7 @@ function clkTag(t, item) {
 }
 
 @media (max-width: 1920px) {
-  .table-row[elen="2"] {
+  .table-row.eln2 {
     grid-template-columns: 28px 20px auto 0 0 117px 216px 28px;
   }
 }

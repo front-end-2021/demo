@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-
+export function emptyKResult(id, unit) {
+    return { id, unit, target: 0, name: '', des: '', lagging: false, kennzahl: 'percent' }
+}
 // Unit types: 1 = %, 2 = number, 3 = effektiv (boolean-like)
 export const UNITS = {
     1: { label: '%', symbol: '%' },
@@ -33,30 +35,22 @@ export const useKRStore = defineStore('kr', () => {
         },
     })
     const kResults = ref({
-        1: {
+        1: Object.assign(emptyKResult(1, 1),{
             target: 789.0,
-            unit: 1,
             name: 'Erhöhung der Social-Media-Follower um 20 % bis Ende des Quartals',
             des: 'Dies umfasst den Ausbau der Social-Media-Präsenz durch gezielte Kampagnen, die Förderung von…',
             lagging: true,
-            kennzahl: 'percent',
-        },
-        2: {
+        }),
+        2: Object.assign(emptyKResult(2, 3), {
             target: 33.0,
-            unit: 3,
             name: 'b',
-            des: '',
-            lagging: false,
-            kennzahl: 'percent',
-        },
-        3: {
+        }),
+        3: Object.assign(emptyKResult(3, 2), {
             target: 69.0,
-            unit: 2,
             name: 'Erstellung der Marketingstrategie',
             des: 'demo',
-            lagging: false,
             kennzahl: 'absolute',
-        },
+        }),
     })
     const kDates = ref({
         '24.4.2026': { 1: 112.0, 2: 30.0 },
@@ -64,13 +58,9 @@ export const useKRStore = defineStore('kr', () => {
         '8.5.2026': { 1: 77.0, 2: 23.0, 3: 69.0 },
         '11.12.2026': { 3: 77.0 },
     })
-    // ── Getters ────────────────────────────────────────────
-    const activeKResults = computed(() =>
-        krForm.value.idKResults.map((id) => ({ id, ...kResults.value[id] }))
-    )
-
-    const activeDates = computed(() => krForm.value.idDates)
-
+    // ── Getters ────────────────────────────────────────────   
+    const activeDates = computed(() => krForm ? krForm.value.idDates : [])
+    
     function getDateEntriesForKR(krId) {
         return activeDates.value.map((date) => ({
             date,
@@ -80,7 +70,6 @@ export const useKRStore = defineStore('kr', () => {
     }
 
     function computeSoll(krId, date) {
-        // Simple linear interpolation placeholder
         const kr = kResults.value[krId]
         if (!kr) return null
         return kr.target
@@ -106,13 +95,6 @@ export const useKRStore = defineStore('kr', () => {
         return entries.at(-1).ist - entries.at(-2).ist
     }
 
-    const totalProgress = computed(() => {
-        const ids = krForm.value.idKResults
-        const pcts = ids.map((id) => parseFloat(getKI(id)) || 0)
-        if (!pcts.length) return 0
-        return (pcts.reduce((a, b) => a + b, 0) / pcts.length).toFixed(0)
-    })
-
     // ── Actions ────────────────────────────────────────────
     function updateKennzahl(krId, value) {
         if (kResults.value[krId]) kResults.value[krId].kennzahl = value
@@ -128,16 +110,11 @@ export const useKRStore = defineStore('kr', () => {
     }
 
     function addKResult() {
-        const newId = Math.max(...Object.keys(kResults.value).map(Number)) + 1
-        kResults.value[newId] = {
-            target: 0,
-            unit: 1,
-            name: '',
-            des: '',
-            lagging: false,
-            kennzahl: 'percent',
-        }
-        krForm.value.idKResults.push(newId)
+        const id = Math.max(...Object.keys(kResults.value).map(Number)) + 1
+        kResults.value[id] =  Object.assign(emptyKResult(id, 1), {
+            lagging: true,
+        })
+        krForm.value.idKResults.push(id)
     }
 
     function deleteKResult(krId) {
@@ -152,9 +129,7 @@ export const useKRStore = defineStore('kr', () => {
         krForm,
         kResults,
         kDates,
-        activeKResults,
         activeDates,
-        totalProgress,
         getDateEntriesForKR,
         getKI,
         getIst,

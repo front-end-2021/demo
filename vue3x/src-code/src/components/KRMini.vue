@@ -1,5 +1,5 @@
 <template>
-  <div class="kr-mini" @click="$emit('expand')" :style="{ width: props.width + 'px' }">
+  <div class="kr-mini" @click="$emit('expand')">
     <div class="kr-mini-header">
       <div class="kr-mini-name">{{ kr.name || '(Kein Name)' }}</div>
       <div class="kr-mini-meta">
@@ -21,16 +21,15 @@
     </div>
 
     <button class="expand-btn" @click.stop="$emit('expand')">
-      <svg viewBox="0 0 16 16" fill="none">
+      <svg viewBox="0 0 16 16" fill="none" width="12" height="12">
         <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Details anzeigen
+      </svg>Details anzeigen
     </button>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed,inject } from 'vue'
 import { useKRStore, UNITS } from '../stores/okr.js'
 
 const props = defineProps({
@@ -38,9 +37,9 @@ const props = defineProps({
   width: { type: Number, default: 510 }
 })
 defineEmits(['expand'])
-
+const mKI = inject('mpki')
 const store = useKRStore()
-const ki = computed(() => store.getKI(props.kr.id))
+const ki = computed(() => mKI.value.get(props.kr.id))
 const ist = computed(() => store.getIst(props.kr.id))
 const unit = computed(() => UNITS[props.kr.unit] || UNITS[1])
 
@@ -70,11 +69,9 @@ const sollFormatted = computed(() => {
 .kr-mini {
   background: var(--bg-card);
   border-radius: 14px;
-  padding: 14px 16px;
-  cursor: pointer;
+  padding: 14px 16px; cursor: pointer;
   transition: box-shadow 0.18s, border-color 0.18s;
-  display: flex; flex-direction: column;
-  gap: 10px; transition: width 0.3s ease;
+  display: flex; flex-direction: column; gap: 10px; 
 }
 
 .kr-mini:hover {

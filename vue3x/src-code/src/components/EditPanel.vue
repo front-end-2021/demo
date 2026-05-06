@@ -1,29 +1,18 @@
 <template>
-  <div class="edit-panel" :class="{ 'second-panel': isSecond }">
+  <div class="container" :class="{ 'second-panel': isSecond }">
     <!-- Panel toolbar -->
-    <div class="panel-toolbar">
-      <div class="panel-nav">
-        <button class="tool-btn" title="Vorheriger" @click="opFormParen">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6" />
-          </svg></button>
-        <button v-if="store.anyChild(item.id)" class="tool-btn" @click="opFormChild">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 18l6-6-6-6" />
-          </svg>
-        </button>
+    <div class="toolbar">
+      <div class="pane-nav">
+        <button class="tool-btn" title="Vorheriger" @click="opFormParen" v-html="icArl"></button>
+        <button v-if="store.anyChild(item.id)" class="tool-btn" @click="opFormChild" v-html="icArr"></button>
         <button class="tool-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="2" /><circle cx="6" cy="12" r="2" /><circle cx="18" cy="12" r="2" />
           </svg>
         </button>
       </div>
-      <div class="panel-actions">
-        <button class="tool-btn" title="Löschen" @click="delItem">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3,6 5,6 21,6" /><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2" />
-          </svg>
-        </button>
+      <div class="pane-acts">
+        <button class="tool-btn" title="Löschen" @click="delItem" v-html="icDel"></button>
         <button class="tool-btn" title="Duplizieren">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
@@ -49,9 +38,9 @@
     </div>
 
     <!-- Panel content -->
-    <div class="panel-body">
+    <div class="body">
       <!-- Title section -->
-      <div class="panel-title-section">
+      <div class="tlt-section">
         <span class="item-dot" v-html="icType[item.type]" ref="d-icn" @click.stop="togglePalletColors"></span>
         <textarea class="title-input" v-model="localItem.title" @blur="blurName" name="item-name" 
           ref="d-nm" placeholder="Type new name"></textarea>
@@ -63,7 +52,7 @@
       </div>
 
       <!-- Action buttons -->
-      <div class="panel-actions-row">
+      <div class="pane-acts-row">
         <button class="action-btn milestone-btn">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon
@@ -90,7 +79,7 @@
       <MiniGantt :item="item" />
 
       <!-- Fields -->
-      <div class="panel-fields">
+      <div class="p-fields">
         <!-- Region -->
         <div class="field-row">
           <label class="field-label">Region</label>
@@ -171,7 +160,7 @@ import { usePlanStore } from '../stores/plan.js'
 import { useKRStore } from '../stores/okr.js'
 import MiniGantt from './MiniGantt.vue'
 import PalletColor from './PalletColor.vue'
-import { icType, styleSvgColor, clickTag } from '../utils/utility.js'
+import { icType, styleSvgColor, clickTag, icArl, icArr, icDel } from '../utils/utility.js'
 
 const dIcon = useTemplateRef('d-icn')
 const dName = useTemplateRef('d-nm')
@@ -293,7 +282,7 @@ function clkTag(t) {
 }
 </script>
 <style scoped>
-.edit-panel {
+.container {
   width: var(--panel-w);
   background: var(--surface);
   border-left: 1px solid var(--border);
@@ -301,7 +290,7 @@ function clkTag(t) {
   flex-direction: column; 
 }
 
-.panel-toolbar {
+.toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -311,8 +300,8 @@ function clkTag(t) {
   flex-shrink: 0;
 }
 
-.panel-nav,
-.panel-actions {
+.pane-nav,
+.pane-acts {
   display: flex;
   align-items: center;
   gap: 2px;
@@ -333,19 +322,18 @@ function clkTag(t) {
   background: var(--bg);
   color: var(--text-primary);
 }
-
 .close-btn:hover {
   background: #fee2e2;
   color: var(--accent-red);
 }
 
-.panel-body {
+.body {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
 }
 
-.panel-title-section {
+.tlt-section {
   display: flex;
   position: relative;
   align-items: flex-start;
@@ -414,7 +402,7 @@ function clkTag(t) {
   color: #5b21b6;
 }
 
-.panel-actions-row {
+.pane-acts-row {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -454,7 +442,7 @@ function clkTag(t) {
   gap: 3px;
 }
 
-.panel-fields {
+.p-fields {
   display: flex;
   flex-direction: column;
   gap: 0;

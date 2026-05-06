@@ -65,8 +65,8 @@
       </div>
 
       <div class="content-area">
-        <div class="table-section" :elen="store.itemPanels.length">
-          <div class="table-header" :elen="store.itemPanels.length">
+        <div class="table-section" :class="[`eln${store.itemPanels.length}`]">
+          <div class="table-header" :class="[`eln${store.itemPanels.length}`]">
             <div class="th-check"></div>
             <div class="th-expand"></div>
             <div class="th-title">Ziele / Projekte</div>
@@ -83,7 +83,7 @@
           </div>
         </div>
         
-        <div class="wrap-edits" :elen="store.itemPanels.length">
+        <div class="wrap-edits" :class="[`eln${store.itemPanels.length}`]">
           <EditPanel v-for="(edit, ii) in store.itemPanels" 
             :key="edit.id" :item="edit" :panel-index="ii" />
         </div>
@@ -153,18 +153,18 @@ function clckApp() {
   display: flex; flex-direction: column; height: 100%;
   width: 100%; transition: width 0.6s ease; overflow-y: auto;
 }
-.table-section[elen="1"] { width: calc(100% - var(--panel-w)); }
-.table-section[elen="2"] { width: calc(100% - calc(2 * var(--panel-w))); }
+.table-section.eln1 { width: calc(100% - var(--panel-w)); }
+.table-section.eln2 { width: calc(100% - calc(2 * var(--panel-w))); }
 .wrap-edits {
   right:0; display: grid; grid-template-columns: 0 0;
   transition: grid-template-columns 0.6s ease; height: 0;
 }
 .wrap-edits, .kr-form { position: fixed; bottom: 0; }
-.content-area, .wrap-edits[elen="1"], .wrap-edits[elen="2"], .kr-form[kri] { 
+.content-area, .wrap-edits.eln1, .wrap-edits.eln2, .kr-form[kri] { 
   height: calc(100vh - 136px); 
 }
-.wrap-edits[elen="1"] { grid-template-columns: var(--panel-w) 0; }
-.wrap-edits[elen="2"] { 
+.wrap-edits.eln1 { grid-template-columns: var(--panel-w) 0; }
+.wrap-edits.eln2 { 
   grid-template-columns: var(--panel-w) var(--panel-w);
  }
 .kr-form { right: var(--panel-w); z-index: 1;background: var(--surface);
@@ -333,8 +333,8 @@ function clckApp() {
   position: sticky; top: 0; z-index: 1;
 }
 @media (max-width: 1920px) {
-  .table-header[elen="2"] { grid-template-columns: 28px 20px auto 0 0 117px 216px 28px; }
-  .table-header[elen="2"]>.th-region, .table-header[elen="2"]>.th-responsible { opacity: 0; }
+  .table-header.eln1 { grid-template-columns: 28px 20px auto 0 0 117px 216px 28px; }
+  .table-header.eln1>.th-region, .table-header.eln1>.th-responsible { opacity: 0; }
 }
 .table-header>div {
   font-size: 11px;

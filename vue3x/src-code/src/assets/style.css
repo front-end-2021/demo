@@ -144,11 +144,6 @@ select {
     color: var(--accent);
 }
 
-.collapse-btn svg {
-    width: 14px;
-    height: 14px;
-}
-
 .expand-btn {
     display: flex;
     align-items: center;
@@ -165,9 +160,4 @@ select {
 
 .expand-btn:hover {
     color: var(--accent);
-}
-
-.expand-btn svg {
-    width: 14px;
-    height: 14px;
 }

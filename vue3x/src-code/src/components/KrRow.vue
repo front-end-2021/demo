@@ -1,22 +1,17 @@
 <template>
-  <div class="kr-rowwrap" :style="{ width: props.width + 'px' }">
+  <div class="kr-rowwrap">
     <!-- Header row -->
     <div class="kr-header">
       <div class="header-left">
         <div class="section-label">Key Result</div>
-        <div class="kr-name">{{ kr.name || '(Kein Name)' }}</div>
+         <Editable :txt="kr.name || '(Kein Name)'" type="text" @mchange="kr.name = $event" class="kr-name"></Editable>
       </div>
       <div class="divider-v" />
       <div class="header-right">
         <div class="section-label">Beschreibung</div>
-        <div class="kr-des">{{ kr.des || '—' }}</div>
+         <Editable :txt="kr.des || '—'" type="text" @mchange="kr.des = $event" class="kr-des"></Editable>
       </div>
-      <button class="delete-btn" @click="$emit('delete', kr.id)" title="Löschen">
-        <svg viewBox="0 0 16 16" fill="none">
-          <path d="M3 4h10M6 4V3h4v1M5 4l.5 9h5L11 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
-            stroke-linejoin="round" />
-        </svg>
-      </button>
+      <button class="delete-btn" @click="$emit('delete', kr.id)" title="Löschen" v-html="icDel"></button>
     </div>
 
     <div class="kr-meta-data" :style="{ flexDirection: 510 < props.width ? '' : 'column' }">
@@ -89,48 +84,35 @@
     </div>
 
     <!-- Dates row -->
-    <div class="kr-dates-section">
-      <div class="dates-scroll-wrapper">
-        <button class="scroll-btn" @click="scrollLeft">
-          <svg viewBox="0 0 8 12" fill="none">
-            <path d="M6 1L1 6l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-              stroke-linejoin="round" />
-          </svg>
-        </button>
+    <div class="kr-dates-sect">
+      <div class="dates-srl-wrap">
+        <button class="scroll-btn" @click="scrollLeft" v-html="icArl"></button>
 
         <div class="dates-track" ref="datesTrack">
-          <div v-for="entry in dateEntries" :key="entry.date" class="date-col">
+          <div v-for="entry in dateEntries" class="date-col"
+            :key="entry.date + entry.ist + entry.soll">
             <div class="date-label">{{ entry.date }}</div>
             <div class="date-values">
               <div class="dv">
                 <span class="dv-sub">Ist</span>
-                <span class="dv-num">{{ entry.ist !== null ? entry.ist : '—' }}</span>
+                 <Editable :txt="getTxt(entry.ist)" type="num" @mchange="changeIst(entry, $event)" class="dv-num"></Editable>
               </div>
               <div class="dv">
                 <span class="dv-sub">Soll</span>
-                <span class="dv-num">{{ entry.soll !== null ? entry.soll : '—' }}</span>
+                 <Editable :txt="getTxt(entry.soll)" type="num" @mchange="changeSoll(entry, $event)" class="dv-num"></Editable>
               </div>
             </div>
           </div>
         </div>
 
-        <button class="scroll-btn" @click="scrollRight">
-          <svg viewBox="0 0 8 12" fill="none">
-            <path d="M2 1l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-              stroke-linejoin="round" />
-          </svg>
-        </button>
+        <button class="scroll-btn" @click="scrollRight" v-html="icArr"></button>
       </div>
-      <button class="add-date-btn" @click="$emit('addDate', kr.id)">
-        <svg viewBox="0 0 14 14" fill="none">
-          <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-        </svg>
-      </button>
+      <button class="add-date-btn" @click="$emit('addDate', kr.id)" v-html="icAdd"></button>
     </div>
 
     <!-- Collapse -->
     <button class="collapse-btn" @click="$emit('collapse')">
-      <svg viewBox="0 0 16 16" fill="none">
+      <svg viewBox="0 0 16 16" fill="none" width="12" height="12">
         <path d="M4 10l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
           stroke-linejoin="round" />
       </svg>
@@ -140,16 +122,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { useKRStore, UNITS, KENNZAHL_OPTIONS } from '../stores/okr.js'
 import OneDropdown from './OneDropdown.vue'
+import {icArl, icArr, icAdd, icDel } from '../utils/utility.js'
+import Editable from './Editable.vue'
 
 const props = defineProps({
   kr: { type: Object, required: true },
   width: { type: Number, default: 510 }
 })
 defineEmits(['collapse', 'delete', 'addDate'])
-
+const mKI = inject('mpki')
 const store = useKRStore()
 const datesTrack = ref(null)
 
@@ -161,7 +145,7 @@ const localKennzahl = ref(props.kr.kennzahl || 'percent')
 const unit = computed(() => UNITS[localUnit.value] || UNITS[1])
 const unitSymbol = computed(() => unit.value.symbol)
 
-const ki = computed(() => store.getKI(props.kr.id))
+const ki = computed(() => mKI.value.get(props.kr.id))
 const ist = computed(() => store.getIst(props.kr.id))
 const delta = computed(() => store.getDelta(props.kr.id))
 const dateEntries = computed(() => store.getDateEntriesForKR(props.kr.id))
@@ -170,50 +154,53 @@ const istFormatted = computed(() => {
   if (ist.value === null) return '000'
   return ist.value + unitSymbol.value
 })
-function getDelta(krId) {
-  const entries = dateEntries.filter((e) => e.ist !== null)
-  if (entries.length < 2) return null
-  return entries.at(-1).ist - entries.at(-2).ist
-}
 const deltaFormatted = computed(() => {
   if (delta.value === null) return '—'
-  const sign = delta.value >= 0 ? '+' : ''
+  const sign = 0 <= delta.value ? '+' : ''
   return sign + delta.value + unitSymbol.value
 })
 
 function onKennzahlSelect(item) {
-  store.updateKennzahl(props.kr.value.id, item.value)
+  store.updateKennzahl(props.kr.id, item.value)
 }
 
 function onUnitChange() {
-  store.kResults[props.kr.value.id].unit = localUnit.value
+  store.kResults[props.kr.id].unit = localUnit.value
 }
-
+function getTxt(val) {
+  if(typeof val === 'number') { return val.toString() }
+  return val || ''
+}
 function scrollLeft() {
   datesTrack.value?.scrollBy({ left: -160, behavior: 'smooth' })
 }
 function scrollRight() {
   datesTrack.value?.scrollBy({ left: 160, behavior: 'smooth' })
 }
+function changeIst(item, val) {
+  item.ist = val
+  store.kDates[item.date][props.kr.id] = val
+}
+function changeSoll(item, val) {
+  item.soll = val
+  store.kResults[props.kr.id].target = val
+}
 </script>
 
 <style scoped>
 .kr-rowwrap {
   background: var(--bg-card);
-  border-radius: 14px;
-  padding: 0;
-  overflow: hidden;
-  display: flex;
+  border-radius: 6px;
+  padding: 0; border-bottom: 1px solid var(--border);
+  overflow: hidden; display: flex;
   flex-direction: column;
-  transition: width 0.3s ease;
 }
 
 /* ── Header ── */
 .kr-header {
-  display: flex;
+  display: flex; gap: 0;
   align-items: flex-start;
-  gap: 0;
-  padding: 16px;
+  padding: 16px 0; margin: 0 16px;
   border-bottom: 1px solid var(--border);
   position: relative;
 }
@@ -228,7 +215,7 @@ function scrollRight() {
   flex: 1;
   min-width: 0;
   padding-left: 16px;
-  padding-right: 32px;
+  padding-right: 20px;
 }
 
 .divider-v {
@@ -247,14 +234,12 @@ function scrollRight() {
 }
 
 .kr-name {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 14px; min-width: 200px;
+  font-weight: 500; line-height: 1.45;
   color: var(--text-primary);
-  line-height: 1.45;
 }
-
 .kr-des {
-  font-size: 13px;
+  font-size: 13px; min-width: 200px;
   color: var(--text-secondary);
   line-height: 1.5;
 }
@@ -262,7 +247,7 @@ function scrollRight() {
 .delete-btn {
   position: absolute;
   top: 14px;
-  right: 14px;
+  right: 0;
   background: none;
   border: none;
   cursor: pointer;
@@ -427,12 +412,11 @@ function scrollRight() {
 }
 
 /* ── Dates Section ── */
-.kr-dates-section {
+.kr-dates-sect {
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 10px 16px;
-  border-bottom: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -456,12 +440,7 @@ function scrollRight() {
   border-color: var(--accent);
 }
 
-.add-date-btn svg {
-  width: 12px;
-  height: 12px;
-}
-
-.dates-scroll-wrapper {
+.dates-srl-wrap {
   display: flex;
   align-items: center;
   gap: 4px;
