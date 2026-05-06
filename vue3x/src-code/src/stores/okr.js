@@ -1,21 +1,19 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-export function emptyKResult(id, unit) {
-    return { id, unit, target: 0, name: '', des: '', lagging: false, kennzahl: 'percent' }
-}
-// Unit types: 1 = %, 2 = number, 3 = effektiv (boolean-like)
-export const UNITS = {
-    1: { label: '%', symbol: '%' },
-    2: { label: 'Zahl', symbol: '' },
-    3: { label: 'effektiv', symbol: '' },
-}
+import { KENNZAHL_OPTIONS, UNITS, ITEM_TYPES } from '../constants.js'
 
-// Kennzahl (metric) dropdown options
-export const KENNZAHL_OPTIONS = [
-    { value: 'percent', label: '%' },
-    { value: 'absolute', label: 'Absolut' },
-    { value: 'index', label: 'Index' },
-]
+/**
+ * Creates an empty KR (Key Result) object
+ * @param {number} id - The KR identifier
+ * @param {number} unit - The unit type (1=%, 2=number, 3=effective)
+ * @returns {Object} Empty KR object
+ */
+export function emptyKResult(id, unit) {
+    return {
+        id, unit, target: 0, name: '', des: '', lagging: false,
+        kennzahl: KENNZAHL_OPTIONS.percent.value
+    }
+}
 
 export const useKRStore = defineStore('kr', () => {
     // ── State ──────────────────────────────────────────────
@@ -23,33 +21,34 @@ export const useKRStore = defineStore('kr', () => {
     const krObjects = ref({
         2: {
             id: 2,
-            type: 15,
+            type: ITEM_TYPES.OKR,
             idKResults: [1, 2],
             idDates: ['24.4.2026', '6.5.2026', '8.5.2026'],
         },
         5: {
             id: 5,
-            type: 15,
+            type: ITEM_TYPES.OKR,
             idKResults: [3],
             idDates: ['11.12.2026', '8.5.2026'],
         },
     })
     const kResults = ref({
-        1: Object.assign(emptyKResult(1, 1),{
+        1: Object.assign(emptyKResult(1, UNITS.PERCENT), {
             target: 789.0,
             name: 'Erhöhung der Social-Media-Follower um 20 % bis Ende des Quartals',
             des: 'Dies umfasst den Ausbau der Social-Media-Präsenz durch gezielte Kampagnen, die Förderung von…',
             lagging: true,
         }),
-        2: Object.assign(emptyKResult(2, 3), {
+        2: Object.assign(emptyKResult(2, UNITS.EFFECTIVE), {
             target: 33.0,
-            name: 'b',
+            name: 'b', 
+            kennzahl: KENNZAHL_OPTIONS.index.value,
         }),
-        3: Object.assign(emptyKResult(3, 2), {
+        3: Object.assign(emptyKResult(3, UNITS.NUMBER), {
             target: 69.0,
             name: 'Erstellung der Marketingstrategie',
             des: 'demo',
-            kennzahl: 'absolute',
+            kennzahl: KENNZAHL_OPTIONS.absolute.value,
         }),
     })
     const kDates = ref({
@@ -60,7 +59,7 @@ export const useKRStore = defineStore('kr', () => {
     })
     // ── Getters ────────────────────────────────────────────   
     const activeDates = computed(() => krForm ? krForm.value.idDates : [])
-    
+
     function getDateEntriesForKR(krId) {
         return activeDates.value.map((date) => ({
             date,
@@ -104,14 +103,12 @@ export const useKRStore = defineStore('kr', () => {
         if (!kDates.value[date]) kDates.value[date] = {}
         kDates.value[date][krId] = ist
         const krO = krForm.value
-        if (!krO.idDates.includes(date)) {
-            krO.idDates.push(date)
-        }
+        if (!krO.idDates.includes(date)) { krO.idDates.push(date) }
     }
 
     function addKResult() {
         const id = Math.max(...Object.keys(kResults.value).map(Number)) + 1
-        kResults.value[id] =  Object.assign(emptyKResult(id, 1), {
+        kResults.value[id] = Object.assign(emptyKResult(id, 1), {
             lagging: true,
         })
         krForm.value.idKResults.push(id)
@@ -131,13 +128,9 @@ export const useKRStore = defineStore('kr', () => {
         kDates,
         activeDates,
         getDateEntriesForKR,
-        getKI,
-        getIst,
-        getDelta,
+        getKI, getIst, getDelta,
         updateKennzahl,
-        addDate,
-        addKResult,
+        addDate, addKResult,
         deleteKResult, setKrForm,
-        UNITS,
     }
 })

@@ -1,6 +1,6 @@
 <template>
   <div class="table-row" 
-    :class="[`level-${item.level}`, `eln${store.itemPanels.length}`, { selected: isSelected, 'type-initiative': 9 == item.type }]">
+    :class="[`level-${item.level}`, `eln${store.itemPanels.length}`, { selected: isSelected, 'type-initiative': ITEM_TYPES.INITIATIVE == item.type }]">
     <!-- Checkbox -->
     <div class="col-check">
       <button class="check-btn" :class="{ done: item.done }" @click.stop="store.toggleDone(item.id)">
@@ -25,9 +25,9 @@
     <div class="col-title" :style="{
       paddingLeft: `${item.level * 20}px`, maxWidth: colTltWdth
     }">
-      <span class="item-dot" v-html="icType[item.type]" ref="item-icon" @click.stop="togglePalletColors"></span>
+      <span class="item-dot" v-html="icType[item.type]" :ref="el => itemIcon = el" @click.stop="togglePalletColors"></span>
       <span class="title-text" @click.stop="handleRowClick">{{ item.title }}</span>
-      <PalletColor v-if="planStore.popMenu.key == `item-${item.id}`" :item="item" />
+      <PalletColor v-if="planStore.popMenu.key == MENU_ITEM_COLOR_KEY" :item="item" />
     </div>
 
     <!-- Region / Level -->
@@ -61,20 +61,22 @@
 </template>
 
 <script setup>
-import { computed, onMounted, useTemplateRef, onUpdated, nextTick } from 'vue'
+import { computed, onMounted, ref, onUpdated } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
 import { useKRStore } from '../stores/okr.js'
+import { MENU_KEYS, ITEM_TYPES } from '../constants.js'
 import ProgressBadge from './ProgressBadge.vue'
 import DateRange from './DateRange.vue'
 import { icType, styleSvgColor, clickTag } from '../utils/utility.js'
 import PalletColor from './PalletColor.vue'
 
-const itemIcon = useTemplateRef('item-icon')
+let itemIcon = ref(null)
 const planStore = usePlanStore()
 const props = defineProps({ item: { type: Object, required: true } })
 const store = useThemenStore()
 const krStore = useKRStore()
+const MENU_ITEM_COLOR_KEY = computed(() => MENU_KEYS.ITEM_COLOR(props.item.id))
 
 const hasChildren = computed(() => store.anyChild(props.item.id))
 const isSelected = computed(() => store.itemPanels.map(x => x.id).includes(props.item.id))
@@ -113,7 +115,7 @@ async function handleRowClick() {
   }
 }
 function togglePalletColors() {
-  const key = `item-${props.item.id}`
+  const key = MENU_KEYS.ITEM_COLOR(props.item.id)
   if (key == planStore.popMenu.key) {
     planStore.bindPopMenu('', '')
   } else {

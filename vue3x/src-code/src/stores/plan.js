@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-const colors = ['#3f3f41', '#b9c1a5', '#256b3a', '#adcc44', '#80afd7', '#965c6c', '#e99371', '#fde178']
+import { COLORS, MENU_KEYS } from '../constants.js'
+
 export const usePlanStore = defineStore('plan', () => {
     const gSize = ref ({
         wdthL: 52, wdthF: 450
@@ -21,8 +22,8 @@ export const usePlanStore = defineStore('plan', () => {
         if (!key) {
             popMenu.value = { key: '' }
         } else {
-            let setC = new Set(colors)
-            let lsC = [...colors]
+            let setC = new Set(COLORS)
+            let lsC = [...COLORS]
             if (!setC.has(color)) { lsC.push(color) }
             let obj = { key, color, colors: lsC }
             if (id) { obj.id = id }

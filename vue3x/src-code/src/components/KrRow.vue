@@ -95,11 +95,11 @@
             <div class="date-values">
               <div class="dv">
                 <span class="dv-sub">Ist</span>
-                 <Editable :txt="getTxt(entry.ist)" type="num" @mchange="changeIst(entry, $event)" class="dv-num"></Editable>
+                 <Editable :txt="entry.ist" type="num" @mchange="changeIst(entry, $event)" class="dv-num"></Editable>
               </div>
               <div class="dv">
                 <span class="dv-sub">Soll</span>
-                 <Editable :txt="getTxt(entry.soll)" type="num" @mchange="changeSoll(entry, $event)" class="dv-num"></Editable>
+                 <Editable :txt="entry.soll" type="num" @mchange="changeSoll(entry, $event)" class="dv-num"></Editable>
               </div>
             </div>
           </div>
@@ -123,10 +123,11 @@
 
 <script setup>
 import { ref, computed, inject } from 'vue'
-import { useKRStore, UNITS, KENNZAHL_OPTIONS } from '../stores/okr.js'
+import { useKRStore } from '../stores/okr.js'
 import OneDropdown from './OneDropdown.vue'
 import {icArl, icArr, icAdd, icDel } from '../utils/utility.js'
 import Editable from './Editable.vue'
+import { KENNZAHL_OPTIONS, UNIT_LABELS } from '../constants.js'
 
 const props = defineProps({
   kr: { type: Object, required: true },
@@ -137,12 +138,12 @@ const mKI = inject('mpki')
 const store = useKRStore()
 const datesTrack = ref(null)
 
-const kennzahlOptions = KENNZAHL_OPTIONS
+const kennzahlOptions = Object.values(KENNZAHL_OPTIONS)
 
 const localUnit = ref(props.kr.unit)
 const localKennzahl = ref(props.kr.kennzahl || 'percent')
 
-const unit = computed(() => UNITS[localUnit.value] || UNITS[1])
+const unit = computed(() => UNIT_LABELS[localUnit.value] || UNIT_LABELS[1])
 const unitSymbol = computed(() => unit.value.symbol)
 
 const ki = computed(() => mKI.value.get(props.kr.id))
@@ -160,17 +161,10 @@ const deltaFormatted = computed(() => {
   return sign + delta.value + unitSymbol.value
 })
 
-function onKennzahlSelect(item) {
-  store.updateKennzahl(props.kr.id, item.value)
-}
+function onKennzahlSelect(item) { store.updateKennzahl(props.kr.id, item.value) }
 
-function onUnitChange() {
-  store.kResults[props.kr.id].unit = localUnit.value
-}
-function getTxt(val) {
-  if(typeof val === 'number') { return val.toString() }
-  return val || ''
-}
+function onUnitChange() { store.kResults[props.kr.id].unit = localUnit.value }
+
 function scrollLeft() {
   datesTrack.value?.scrollBy({ left: -160, behavior: 'smooth' })
 }
@@ -186,7 +180,6 @@ function changeSoll(item, val) {
   store.kResults[props.kr.id].target = val
 }
 </script>
-
 <style scoped>
 .kr-rowwrap {
   background: var(--bg-card);

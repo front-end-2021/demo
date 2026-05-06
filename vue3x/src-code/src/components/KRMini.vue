@@ -30,7 +30,8 @@
 
 <script setup>
 import { computed,inject } from 'vue'
-import { useKRStore, UNITS } from '../stores/okr.js'
+import { useKRStore } from '../stores/okr.js'
+import { UNIT_LABELS } from '../constants.js'
 
 const props = defineProps({
   kr: { type: Object, required: true },
@@ -41,7 +42,7 @@ const mKI = inject('mpki')
 const store = useKRStore()
 const ki = computed(() => mKI.value.get(props.kr.id))
 const ist = computed(() => store.getIst(props.kr.id))
-const unit = computed(() => UNITS[props.kr.unit] || UNITS[1])
+const unit = computed(() => UNIT_LABELS[props.kr.unit] || UNIT_LABELS[1])
 
 const progressWidth = computed(() => {
   if (ki.value === null) return 0

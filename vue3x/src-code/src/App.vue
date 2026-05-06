@@ -100,6 +100,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useThemenStore } from './stores/themen.js'
 import { usePlanStore } from './stores/plan.js'
 import { useKRStore } from './stores/okr.js'
+import { MENU_KEYS } from './constants.js'
 import Sidebar from './components/Sidebar.vue'
 import TableRow from './components/TableRow.vue'
 import EditPanel from './components/EditPanel.vue'
@@ -126,8 +127,12 @@ const filteredItems = computed(() => {
   return sItems
 })
 onMounted(async () => {
-  let w = planStore.gSize.wdthF
-  document.documentElement.style.setProperty('--panel-w', `${w}px`);
+  try {
+    let w = planStore.gSize.wdthF
+    document.documentElement.style.setProperty('--panel-w', `${w}px`);
+  } catch (error) {
+    console.error('Failed to initialize CSS variables:', error)
+  }
 })
 
 function toggleChip(chip) {
@@ -138,7 +143,7 @@ function toggleChip(chip) {
   }
 }
 function toggleMenuAddItem() {
-  const key = `menu-add`
+  const key = MENU_KEYS.ADD_ITEM
   if (key == planStore.popMenu.key) { planStore.bindPopMenu('', '') }
   else { planStore.bindPopMenu(key, '') }
 

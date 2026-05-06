@@ -9,7 +9,7 @@ import { ref, onMounted } from "vue";
 const emit = defineEmits(["mchange"]);
 const el = ref(null);
 const props = defineProps({
-  txt: { type: String, required: true },
+  txt: { type: [String, Number], default: null },
   type: { type: String, required: true, default: 'num' }
 })
 
@@ -96,7 +96,7 @@ function onKeydown(e) {
     }
   }
 }
-onMounted(() => { el.value.textContent = props.txt });
+onMounted(() => { el.value.textContent = props.txt || '' });
 </script>
 
 <style scoped>

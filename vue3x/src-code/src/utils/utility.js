@@ -1,20 +1,35 @@
+import { ITEM_TYPES, TAG_TYPES } from '../constants.js'
+
+/**
+ * Maps item type IDs to their German labels
+ * @type {Object<number, string>}
+ */
 export const aTyp = {
-    1: 'Hauptziel',
-    2: 'Etappenziel',
-    3: 'Massnahme',
-    4: 'Epic',
-    5: 'Feature',
-    6: 'User Story',
-    7: 'Task',
-    8: 'Szenario',
-    9: 'Initiative',
-    10: 'Strategisches Ziel',
-    11: 'Aktion',
-    12: 'Ordner',
-    13: 'Signal',
-    14: 'Organisation',
-    15: 'OKR'
+    [ITEM_TYPES.HAUPTZIEL]: 'Hauptziel',
+    [ITEM_TYPES.ETAPPENZIEL]: 'Etappenziel',
+    [ITEM_TYPES.MASSNAHME]: 'Massnahme',
+    [ITEM_TYPES.EPIC]: 'Epic',
+    [ITEM_TYPES.FEATURE]: 'Feature',
+    [ITEM_TYPES.USER_STORY]: 'User Story',
+    [ITEM_TYPES.TASK]: 'Task',
+    [ITEM_TYPES.SZENARIO]: 'Szenario',
+    [ITEM_TYPES.INITIATIVE]: 'Initiative',
+    [ITEM_TYPES.STRATEGISCHES_ZIEL]: 'Strategisches Ziel',
+    [ITEM_TYPES.AKTION]: 'Aktion',
+    [ITEM_TYPES.ORDNER]: 'Ordner',
+    [ITEM_TYPES.SIGNAL]: 'Signal',
+    [ITEM_TYPES.ORGANISATION]: 'Organisation',
+    [ITEM_TYPES.OKR]: 'OKR'
 }
+
+/**
+ * Filters a Map and collects results into an Array or Set
+ * @param {Map} map - The map to filter
+ * @param {Function} fnc - Filter function that receives map values
+ * @param {Array|Set} result - Collection to accumulate results
+ * @param {string} [field] - Optional field name to extract from values
+ * @returns {Array|Set} The populated result collection
+ */
 export function filterMap(map, fnc, result, field) {
     if (result instanceof Array) {
         for (let [k, value] of map) {
@@ -31,6 +46,13 @@ export function filterMap(map, fnc, result, field) {
     }
     return result
 }
+
+/**
+ * Finds the first value in a Map matching the predicate
+ * @param {Map} map - The map to search
+ * @param {Function} fnc - Predicate function that receives map values
+ * @returns {*} The first matching value or undefined
+ */
 export function mapFind(map, fnc) {
     for (let [k, value] of map) { if (fnc(value)) { return value } }
 }
@@ -51,14 +73,29 @@ export const icType = {
     14: `<svg class="geo-14" fill="none" stroke="black" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><rect x="4" y="3" width="16" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line></svg>`,
 }
 export function styleSvgColor(itemIcon, c) {
-    let svg = itemIcon.value.querySelector('svg')
-    if (svg && svg.hasAttribute('stroke')) {
-        svg.setAttribute('stroke', c)
-    }
-    if (svg && svg.hasAttribute('fill') && 'none' != svg.getAttribute('fill')) {
-        svg.setAttribute('fill', c)
+    try {
+        if (!itemIcon) {
+            console.warn('itemIcon is null or undefined')
+            return
+        }
+        let svg = itemIcon.querySelector ? itemIcon.querySelector('svg') : itemIcon.value?.querySelector('svg')
+        if (svg && svg.hasAttribute('stroke')) {
+            svg.setAttribute('stroke', c)
+        }
+        if (svg && svg.hasAttribute('fill') && 'none' != svg.getAttribute('fill')) {
+            svg.setAttribute('fill', c)
+        }
+    } catch (error) {
+        console.error('Failed to style SVG color:', error)
     }
 }
+/**
+ * Parses a date string into a JavaScript Date object
+ * @param {string} txt - Date string in format "DD.MM.YYYY" or custom separator
+ * @param {string} [sep='.'] - Date component separator
+ * @param {number[]} [indexes=[0,1,2]] - Indexes for [day, month, year] components
+ * @returns {Date} Parsed date object
+ */
 export function dateFrom(txt, sep = '.', indexes = [0, 1, 2]) {
     const parts = txt.split(sep);
     let day = parseInt(parts[indexes[0]])
@@ -66,13 +103,20 @@ export function dateFrom(txt, sep = '.', indexes = [0, 1, 2]) {
     let year = parseInt(parts[indexes[2]])
     return new Date(year, month - 1, day)
 }
+
+/**
+ * Handles tag click events by delegating to appropriate store actions
+ * @param {string} t - Tag type ('okr' or 'kc')
+ * @param {Object} item - The item object containing tag metadata
+ * @param {Object} krStore - KR store reference for handling OKR tags
+ */
 export function clickTag(t, item, krStore) {
   switch (t) {
-    case 'okr':
+    case TAG_TYPES.OKR.toLowerCase():
       krStore.setKrForm(item.id)
       break;
-    case 'kc':
-
+    case TAG_TYPES.KEY_CHANGE.toLowerCase():
+      // Handle key change tag
       break;
   }
 }
