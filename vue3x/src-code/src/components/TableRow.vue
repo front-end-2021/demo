@@ -1,5 +1,5 @@
 <template>
-  <div class="table-row" 
+  <div class="container" 
     :class="[`level-${item.level}`, `eln${store.itemPanels.length}`, { selected: isSelected, 'type-initiative': ITEM_TYPES.INITIATIVE == item.type }]">
     <!-- Checkbox -->
     <div class="col-check">
@@ -41,16 +41,18 @@
     </div>
 
     <!-- Progress + Tags -->
-    <div class="col-progress">
+    <div class="col-progress" v-if="props.item.type < ITEM_TYPES.ORDNER">
       <ProgressBadge :value="item.progress" :color="item.progressColor" />
-      <span v-for="t in item.tags" :key="t" class="inline-tag" :class="t.toLowerCase()" @click.stop="clkTag(t, item)">{{
-        t }}</span>
+      <span v-for="t in item.tags" :key="t" class="inline-tag" :class="t.toLowerCase()" 
+        @click.stop="clkTag(t, item)">{{t}}</span>
     </div>
+    <div v-else></div>
 
     <!-- Zeitraum -->
-    <div class="col-date">
+    <div class="col-date" v-if="props.item.type < ITEM_TYPES.ORDNER">
       <DateRange :start="item.dateStart" :end="item.dateEnd" />
     </div>
+    <div v-else></div>
 
     <!-- Row checkbox -->
     <div class="col-rowcheck">
@@ -101,8 +103,8 @@ async function handleRowClick() {
   const lsEdit = store.itemPanels
   const item = props.item
   let ii = lsEdit.findIndex(x => item.id == x.id)
+  krStore.setKrForm(-1)
   if (-1 < ii) {
-    krStore.setKrForm(-1)
     lsEdit.splice(ii, 1) // click it self again to close
   } else if (lsEdit.length < 1) {
     lsEdit.push(item)
@@ -123,14 +125,12 @@ function togglePalletColors() {
   }
 }
 function clkTag(t, item) {
-  const lsEdit = store.itemPanels
-  lsEdit.splice(0, 1, item)
-  lsEdit.splice(1)
+  store.itemPanels = store.itemPanels.filter(x => x.id == item.id)
   clickTag(t.toLowerCase(), item, krStore)
 }
 </script>
 <style scoped>
-.table-row {
+.container {
   display: grid;
   grid-template-columns: 28px 20px auto 220px 120px 117px 216px 28px;
   align-items: center;
@@ -140,25 +140,25 @@ function clkTag(t, item) {
   padding: 0 4px;
 }
 
-.table-row:hover {
+.container:hover {
   background: #f8f9fc;
 }
 
 @media (max-width: 1920px) {
-  .table-row.eln2 {
+  .container.eln2 {
     grid-template-columns: 28px 20px auto 0 0 117px 216px 28px;
   }
 }
 
-.table-row.type-initiative {
+.container.type-initiative {
   background: #fafbff;
 }
 
-.table-row.type-initiative:hover {
+.container.type-initiative:hover {
   background: #f3f4ff;
 }
 
-.table-row.selected {
+.container.selected {
   background: #eff6ff;
 }
 

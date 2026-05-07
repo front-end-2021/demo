@@ -262,6 +262,7 @@ function opFormChild() {
   const item = props.item
   let child = store.anyChild(item.id)
   if (child) {
+    krStore.setKrForm(-1)
     store.itemPanels = store.itemPanels.filter(x => x.id == item.id)
     store.itemPanels.push(child)
   }
@@ -276,6 +277,7 @@ function delItem() {
 }
 function clkTag(t) {
   const item = props.item
+  store.itemPanels = store.itemPanels.filter(x => x.id == item.id)
   if (!krStore.krForm || krStore.krForm.id != item.id) {
     clickTag(t, item, krStore)
   } else { clickTag(t, {id: -1}, krStore) }

@@ -66,3 +66,6 @@ export const KENNZAHL_OPTIONS = {
     absolute: { value: 'absolute', label: 'Absolut' },
     index: { value: 'index', label: 'Index' },
 }
+export const ETYPE = {
+    NUMBER: 'n', TEXT: 't'
+}

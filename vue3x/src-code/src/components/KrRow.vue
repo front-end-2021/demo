@@ -4,12 +4,14 @@
     <div class="kr-header">
       <div class="header-left">
         <div class="section-label">Key Result</div>
-         <Editable :txt="kr.name || '(Kein Name)'" type="text" @mchange="kr.name = $event" class="kr-name"></Editable>
+         <Editable :txt="kr.name || '(Kein Name)'" :type="ETYPE.TEXT" 
+            @mchange="kr.name = $event" class="kr-name"></Editable>
       </div>
       <div class="divider-v" />
       <div class="header-right">
         <div class="section-label">Beschreibung</div>
-         <Editable :txt="kr.des || '—'" type="text" @mchange="kr.des = $event" class="kr-des"></Editable>
+         <Editable :txt="kr.des || '—'" :type="ETYPE.TEXT" 
+            @mchange="kr.des = $event" class="kr-des"></Editable>
       </div>
       <button class="delete-btn" @click="$emit('delete', kr.id)" title="Löschen" v-html="icDel"></button>
     </div>
@@ -95,11 +97,13 @@
             <div class="date-values">
               <div class="dv">
                 <span class="dv-sub">Ist</span>
-                 <Editable :txt="entry.ist" type="num" @mchange="changeIst(entry, $event)" class="dv-num"></Editable>
+                 <Editable :txt="entry.ist" :type="ETYPE.NUMBER" 
+                    @mchange="changeIst(entry, $event)" class="dv-num"></Editable>
               </div>
               <div class="dv">
                 <span class="dv-sub">Soll</span>
-                 <Editable :txt="entry.soll" type="num" @mchange="changeSoll(entry, $event)" class="dv-num"></Editable>
+                 <Editable :txt="entry.soll" :type="ETYPE.NUMBER" 
+                    @mchange="changeSoll(entry, $event)" class="dv-num"></Editable>
               </div>
             </div>
           </div>
@@ -127,7 +131,7 @@ import { useKRStore } from '../stores/okr.js'
 import OneDropdown from './OneDropdown.vue'
 import {icArl, icArr, icAdd, icDel } from '../utils/utility.js'
 import Editable from './Editable.vue'
-import { KENNZAHL_OPTIONS, UNIT_LABELS } from '../constants.js'
+import { KENNZAHL_OPTIONS, UNIT_LABELS, ETYPE } from '../constants.js'
 
 const props = defineProps({
   kr: { type: Object, required: true },

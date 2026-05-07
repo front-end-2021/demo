@@ -115,9 +115,7 @@ select {
   }
 }
 
-.menu-container, .palette-container {
-  animation: slideDown 0.36s ease;
-}
+.a-down { animation: slideDown 0.36s ease; }
 
 .icon-geo {
   stroke-width: 1.5;

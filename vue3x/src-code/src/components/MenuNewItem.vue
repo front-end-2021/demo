@@ -1,7 +1,7 @@
 <template>
-    <div class="menu-container">
-        <div class="menu-section">
-            <h5 class="section-title">Ziele / Projekte</h5>
+    <div class="container a-down">
+        <div class="m-section">
+            <h5 class="sec-tlt">Ziele / Projekte</h5>
             <div class="menu-item" @click.stop="newItem(1)">
                 <div class="icon" v-html="icType[1]"></div>
                 <span>{{ aTyp[1]}}</span>
@@ -16,8 +16,8 @@
             </div>
         </div>
 
-        <div class="menu-section">
-            <h5 class="section-title">Vorhaben</h5>
+        <div class="m-section">
+            <h5 class="sec-tlt">Vorhaben</h5>
             <div class="menu-item" @click.stop="newItem(4)">
                 <div class="icon" v-html="icType[4]"></div>
                 <span>{{ aTyp[4] }}</span>
@@ -36,8 +36,8 @@
             </div>
         </div>
 
-        <div class="menu-section">
-            <h5 class="section-title">Strategisches Management</h5>
+        <div class="m-section">
+            <h5 class="sec-tlt">Strategisches Management</h5>
             <div class="menu-item" @click.stop="newItem(8)">
                 <div class="icon" v-html="icType[8]"></div>
                 <span>{{ aTyp[8] }}</span>
@@ -56,8 +56,8 @@
             </div>
         </div>
 
-        <div class="menu-section">
-            <h5 class="section-title">Themenfelder</h5>
+        <div class="m-section">
+            <h5 class="sec-tlt">Themenfelder</h5>
             <div class="menu-item" @click.stop="newItem(12)">
                 <div class="icon" v-html="icType[12]"></div>
                 <span>{{ aTyp[12] }}</span>
@@ -68,8 +68,8 @@
             </div>
         </div>
 
-        <div class="menu-section">
-            <h5 class="section-title">CRM</h5>
+        <div class="m-section">
+            <h5 class="sec-tlt">CRM</h5>
             <div class="menu-item" @click.stop="newItem(14)">
                 <div class="icon" v-html="icType[14]"></div>
                 <span>{{ aTyp[14] }}</span>
@@ -93,7 +93,7 @@ function newItem(type) {
 }
 </script>
 <style scoped>
-.menu-container {
+.container {
     background-color: #fff;
     width: 280px;
     position: absolute;
@@ -106,16 +106,16 @@ function newItem(type) {
     overflow: hidden;
 }
 
-.menu-section {
+.m-section {
     padding: 8px 0;
     border-bottom: 1px solid #f0f0f0;
 }
 
-.menu-section:last-child {
+.m-section:last-child {
     border-bottom: none;
 }
 
-.section-title {
+.sec-tlt {
     font-size: 14px;
     font-weight: 600;
     color: #000;
@@ -132,7 +132,7 @@ function newItem(type) {
     text-decoration: none;
 }
 
-.section-title,
+.sec-tlt,
 .menu-item {
     padding: 8px 8px 8px 26px;
 

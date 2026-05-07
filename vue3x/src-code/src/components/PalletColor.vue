@@ -1,5 +1,5 @@
 <template>
-    <div class="palette-container">
+    <div class="wrap a-down">
         <div v-for="color in planStore.popMenu.colors" 
             class="color-box" :style="{
                 backgroundColor: color,
@@ -21,7 +21,7 @@ function selectColor(color) {
 }   
 </script>
 <style scoped>
-.palette-container {
+.wrap {
     background-color: #ffffff;
     padding: 4px;
     border-radius: 12px;

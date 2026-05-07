@@ -1,17 +1,17 @@
 <template>
-  <div class="dropdown-wrapper" ref="wrapperRef">
-    <button class="dropdown-trigger" @click="toggle" :class="{ open: isOpen }">
-      <span class="dropdown-label">{{ selectedLabel }}</span>
+  <div class="container" ref="wrapperRef">
+    <button class="d-trigger" @click="toggle" :class="{ open: isOpen }">
+      <span class="dp-lbl">{{ selectedLabel }}</span>
       <svg class="chevron" viewBox="0 0 10 6" fill="none">
         <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
     <Transition name="dropdown">
-      <div v-if="isOpen" class="dropdown-menu">
+      <div v-if="isOpen" class="d-mn">
         <button
           v-for="item in src"
           :key="item.value"
-          class="dropdown-item"
+          class="d-tm"
           :class="{ active: item.value === modelValue }"
           @click="select(item)"
         >
@@ -67,13 +67,13 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onClickOutside))
 </script>
 
 <style scoped>
-.dropdown-wrapper {
+.container {
   position: relative;
   display: inline-block;
   min-width: 90px;
 }
 
-.dropdown-trigger {
+.d-trigger {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -90,13 +90,13 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onClickOutside))
   white-space: nowrap;
 }
 
-.dropdown-trigger:hover,
-.dropdown-trigger.open {
+.d-trigger:hover,
+.d-trigger.open {
   border-color: var(--accent);
   background: var(--bg-hover);
 }
 
-.dropdown-label {
+.dp-lbl {
   flex: 1;
   text-align: left;
 }
@@ -109,11 +109,11 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onClickOutside))
   transition: transform 0.2s;
 }
 
-.dropdown-trigger.open .chevron {
+.d-trigger.open .chevron {
   transform: rotate(180deg);
 }
 
-.dropdown-menu {
+.d-mn {
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
@@ -126,7 +126,7 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onClickOutside))
   overflow: hidden;
 }
 
-.dropdown-item {
+.d-tm {
   display: block;
   width: 100%;
   padding: 8px 12px;
@@ -140,11 +140,11 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onClickOutside))
   transition: background 0.12s;
 }
 
-.dropdown-item:hover {
+.d-tm:hover {
   background: var(--bg-hover);
 }
 
-.dropdown-item.active {
+.d-tm.active {
   color: var(--accent);
   font-weight: 500;
 }

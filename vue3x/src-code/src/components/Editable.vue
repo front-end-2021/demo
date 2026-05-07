@@ -1,16 +1,17 @@
 <template>
-  <div class="edt" ref="el" contenteditable="true" 
+  <div class="e" ref="el" contenteditable="true" 
 	@beforeinput="onBeforeInput" @paste="onPaste" 
-    @input="onInput" @blur="onBlur" @keydown="onKeydown"></div>
+    @input="onInput" @blur="onBlur" @keyup="onKeyup"></div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { ETYPE } from "../constants";
 const emit = defineEmits(["mchange"]);
 const el = ref(null);
 const props = defineProps({
   txt: { type: [String, Number], default: null },
-  type: { type: String, required: true, default: 'num' }
+  type: { type: String, required: true, default: ETYPE.NUMBER }
 })
 
 // Helper: đặt caret về cuối
@@ -48,7 +49,7 @@ function insertTextAtCursor(text) {
 function onBeforeInput(e) {
   const text = e.data;
   if (!text) return; // allow delete, backspace, etc.
-  if ('num' == props.type && !/^\d+$/.test(text)) {
+  if (ETYPE.NUMBER == props.type && !/^\d+$/.test(text)) {
     e.preventDefault();
   }
 }
@@ -57,19 +58,19 @@ function onPaste(e) {
   e.preventDefault();
   const paste = (e.clipboardData || window.clipboardData).getData("text");
   let clean = paste
-  if('num' == props.type) { clean = paste.replace(/\D/g, "") }
+  if(ETYPE.NUMBER == props.type) { clean = paste.replace(/\D/g, "") }
 
   insertTextAtCursor(clean);
 }
 
 // 3. Fallback sanitize 
 function onInput() {
-    if ('num' == props.type) {
+    if (ETYPE.NUMBER == props.type) {
 
     }
     const element = el.value;
     let cleaned = element.textContent
-    if ('num' == props.type) { cleaned = element.textContent.replace(/\D/g, "") }
+    if (ETYPE.NUMBER == props.type) { cleaned = element.textContent.replace(/\D/g, "") }
 
     if (element.textContent !== cleaned) {
         element.textContent = cleaned;
@@ -79,13 +80,13 @@ function onInput() {
 function onBlur() {
     const element = el.value;
     let cleaned = element.textContent
-    if ('num' == props.type) {
+    if (ETYPE.NUMBER == props.type) {
         cleaned = cleaned ? parseFloat(cleaned) : 0
     }
     emit("mchange", cleaned);
 }
-function onKeydown(e) {
-  if ('num' == props.type) {
+function onKeyup(e) {
+  if (ETYPE.NUMBER == props.type) {
     if("Tab" == e.key) {
         e.preventDefault();
         return;
@@ -100,7 +101,5 @@ onMounted(() => { el.value.textContent = props.txt || '' });
 </script>
 
 <style scoped>
-.edt {
-  display: inline-block;
-}
+.e { display: inline-block; }
 </style>
