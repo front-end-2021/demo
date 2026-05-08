@@ -1,16 +1,16 @@
 <template>
     <div class="container" :style="{ width: width + 'px'}">
-        <div class="header">
+        <div class="etoolbar">
             <div class="left">
-                <h1 class="title">OKR</h1>
                 <button v-if="510 < width" class="collapse-btn" @click="width = 510" v-html="icArr + 'Einklappen'"></button>
-                <button v-else class="expand-btn" @click.stop="width = 780" v-html="icArl + 'Details anzeigen'"></button>
+                <button v-else class="expand-btn" @click.stop="width = 780" v-html="icArl + 'Details anzeigen'"></button>                
+                <h1 class="title">OKR</h1>
             </div>
-            <div class="total-badge">
-                Total: ↑{{ totalProgress }}%
+            <div class="right">
+                <div class="total-badge">Total: ↑{{ totalProgress }}%</div>
+                <button class="tool-btn close-btn" @click="closeX" v-html="icClse"></button>
             </div>
         </div>
-
         <TransitionGroup name="list" tag="div" class="kr-list">
             <KRCard v-for="(kr, idx) in activeKResults" :key="kr.id" :kr="kr" :width="width" />
         </TransitionGroup>
@@ -28,7 +28,7 @@
 import { ref, computed, provide } from 'vue'
 import KRCard from './KRCard.vue'
 import { useKRStore } from '../stores/okr.js'
-import { icArl, icArr, icAdd } from '../utils/utility.js'
+import { icArl, icArr, icAdd, icClse } from '../utils/utility.js'
 
 const props = defineProps({
     kr: { type: Object, required: true },
@@ -47,6 +47,7 @@ const totalProgress = computed(() => {
 })
 const activeKResults = computed(() => props.kr.idKResults.map(id => store.kResults[id]))
 
+function closeX() { store.setKrForm(-1) }
 </script>
 <style scoped>
 .container {
@@ -61,21 +62,13 @@ const activeKResults = computed(() => props.kr.idKResults.map(id => store.kResul
     0% { transform: translateX(var(--panel-w)); opacity: 0;}
     100% { transform: translateX(0); opacity: 1;}
 }
-.header {
-    display: flex; padding: 16px;
-    align-items: center;gap: 12px;
-    justify-content: space-between;
-    margin-bottom: 4px; position: sticky;
-    top: 0; z-index: 1;
-    background: var(--surface);
-}
 .title {
     font-size: 18px;
     font-weight: 600;
     color: var(--text-primary);
     letter-spacing: -0.01em;
 }
-.left {display: inline-flex; align-items: center; gap: 12px;}
+.left, .right {display: inline-flex; align-items: center; gap: 12px;}
 .left .collapse-btn { padding-left: 0;}
 .total-badge {
     font-size: 13px;

@@ -21,7 +21,6 @@
         </div>
       </div>
 
-      <!-- Toolbar row -->
       <div class="toolbar">
         <div class="toolbar-left">
           <button class="add-btn" @click.stop="toggleMenuAddItem">
@@ -71,7 +70,7 @@
             <div class="th-expand"></div>
             <div class="th-title">Ziele / Projekte</div>
             <div class="th-region">Region / Level</div>
-            <div class="th-responsible">Verantwortlich</div>
+            <div class="th-respons">Verantwortlich</div>
             <div class="th-progress"> </div>
             <div class="th-date">Zeitraum</div>
             <div class="th-rowcheck">
@@ -226,7 +225,7 @@ function clckApp() {
   border-bottom-color: var(--accent-blue);
   font-weight: 500;
 }
-/* Toolbar */
+
 .toolbar {
   display: flex;
   align-items: center;
@@ -339,7 +338,7 @@ function clckApp() {
 }
 @media (max-width: 1920px) {
   .table-header.eln1 { grid-template-columns: 28px 20px auto 0 0 117px 216px 28px; }
-  .table-header.eln1>.th-region, .table-header.eln1>.th-responsible { opacity: 0; }
+  .table-header.eln1>.th-region, .table-header.eln1>.th-respons { opacity: 0; }
 }
 .table-header>div {
   font-size: 11px;

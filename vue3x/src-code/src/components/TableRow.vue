@@ -36,8 +36,8 @@
     </div>
 
     <!-- Verantwortlich -->
-    <div class="col-responsible">
-      <span v-if="item.responsible" class="responsible-text">{{ item.responsible }}</span>
+    <div class="col-resp">
+      <span v-if="item.lsresp" class="resp-text">{{ item.lsresp }}</span>
     </div>
 
     <!-- Progress + Tags -->
@@ -125,7 +125,9 @@ function togglePalletColors() {
   }
 }
 function clkTag(t, item) {
-  store.itemPanels = store.itemPanels.filter(x => x.id == item.id)
+  const lsEdit = store.itemPanels
+  lsEdit.splice(0)
+  lsEdit.push(item)
   clickTag(t.toLowerCase(), item, krStore)
 }
 </script>
@@ -265,7 +267,7 @@ function clkTag(t, item) {
   text-overflow: ellipsis;
 }
 
-.col-responsible {
+.col-resp {
   font-size: 12px;
   color: var(--text-secondary);
   white-space: nowrap;

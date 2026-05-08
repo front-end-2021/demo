@@ -1,8 +1,8 @@
 <template>
   <div class="container" :class="{ 'second-panel': isSecond }">
     <!-- Panel toolbar -->
-    <div class="toolbar">
-      <div class="pane-nav">
+    <div class="etoolbar">
+      <div class="pane-acts">
         <button class="tool-btn" title="Vorheriger" @click="opFormParen" v-html="icArl"></button>
         <button v-if="store.anyChild(item.id)" class="tool-btn" @click="opFormChild" v-html="icArr"></button>
         <button class="tool-btn">
@@ -29,11 +29,7 @@
             <polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" />
           </svg>
         </button>
-        <button class="tool-btn close-btn" @click="closeX">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
-        </button>
+        <button class="tool-btn close-btn" @click="closeX" v-html="icClse"></button>
       </div>
     </div>
 
@@ -108,7 +104,7 @@
         <div class="field-row">
           <label class="field-label">Verantwortlich</label>
           <div class="field-value">
-            <input class="plain-input" placeholder="Neues Element hinzufügen" v-model="localItem.responsible"
+            <input class="plain-input" placeholder="Neues Element hinzufügen" v-model="localItem.lsresp"
               @blur="save" />
           </div>
         </div>
@@ -160,7 +156,7 @@ import { usePlanStore } from '../stores/plan.js'
 import { useKRStore } from '../stores/okr.js'
 import MiniGantt from './MiniGantt.vue'
 import PalletColor from './PalletColor.vue'
-import { icType, styleSvgColor, clickTag, icArl, icArr, icDel } from '../utils/utility.js'
+import { icType, styleSvgColor, clickTag, icArl, icArr, icDel, icClse } from '../utils/utility.js'
 
 const dIcon = useTemplateRef('d-icn')
 const dName = useTemplateRef('d-nm')
@@ -290,43 +286,6 @@ function clkTag(t) {
   border-left: 1px solid var(--border);
   display: flex; 
   flex-direction: column; 
-}
-
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 10px;
-  height: 44px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.pane-nav,
-.pane-acts {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.tool-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  transition: all 0.12s;
-}
-
-.tool-btn:hover {
-  background: var(--bg);
-  color: var(--text-primary);
-}
-.close-btn:hover {
-  background: #fee2e2;
-  color: var(--accent-red);
 }
 
 .body {

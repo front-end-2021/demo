@@ -159,3 +159,37 @@ select {
 .expand-btn:hover {
     color: var(--accent);
 }
+.etoolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  height: 44px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.tool-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.12s;
+}
+
+.tool-btn:hover {
+  background: var(--bg);
+  color: var(--text-primary);
+}
+.close-btn:hover {
+  background: #fee2e2;
+  color: var(--accent-red);
+}
+.pane-acts {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}

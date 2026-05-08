@@ -197,7 +197,7 @@ function changeSoll(item, val) {
 .kr-header {
   display: flex; gap: 0;
   align-items: flex-start;
-  padding: 16px 0; margin: 0 16px;
+  padding: 16px 0; margin: 0 12px;
   border-bottom: 1px solid var(--border);
   position: relative;
 }
