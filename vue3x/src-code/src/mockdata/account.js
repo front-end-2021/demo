@@ -1,6 +1,7 @@
+import { LOCAL_STORE_KEY } from '../constants'
 export function emptyAcc() { return { id: 0, name: '', pass: '' } }
 export function getUsers() {
-    let ls_ = localStorage.getItem('users')
+    let ls_ = localStorage.getItem(LOCAL_STORE_KEY.Users)
     if (ls_) {
         ls_ = JSON.parse(ls_)
     } else {

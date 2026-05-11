@@ -7,7 +7,9 @@
         <button v-if="store.anyChild(item.id)" class="tool-btn" @click="opFormChild" v-html="icArr"></button>
         <button class="tool-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="2" /><circle cx="6" cy="12" r="2" /><circle cx="18" cy="12" r="2" />
+            <circle cx="12" cy="12" r="2" />
+            <circle cx="6" cy="12" r="2" />
+            <circle cx="18" cy="12" r="2" />
           </svg>
         </button>
       </div>
@@ -15,18 +17,21 @@
         <button class="tool-btn" title="Löschen" @click="delItem" v-html="icDel"></button>
         <button class="tool-btn" title="Duplizieren">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+            <rect x="9" y="9" width="13" height="13" rx="2" />
+            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
           </svg>
         </button>
         <button class="tool-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <path d="M3 9h18M9 21V9" />
           </svg>
         </button>
         <button class="tool-btn save-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" @click.stop="saveClose">
             <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
-            <polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
           </svg>
         </button>
         <button class="tool-btn close-btn" @click="closeX" v-html="icClse"></button>
@@ -38,8 +43,8 @@
       <!-- Title section -->
       <div class="tlt-section">
         <span class="item-dot" v-html="icType[item.type]" ref="d-icn" @click.stop="togglePalletColors"></span>
-        <textarea class="title-input" v-model="localItem.title" @blur="blurName" name="item-name" 
-          ref="d-nm" placeholder="Type new name"></textarea>
+        <textarea class="title-input" v-model="localItem.title" @blur="blurName" name="item-name" ref="d-nm"
+          placeholder="Type new name"></textarea>
         <div class="title-tags">
           <span v-for="t in localItem.tags" :key="t" class="tag" :class="t.toLowerCase()"
             @click.stop="clkTag(t.toLowerCase())">{{ t }}</span>
@@ -72,7 +77,7 @@
       </div>
 
       <!-- Mini Gantt -->
-      <MiniGantt :item="item" />
+      <MiniGantt v-if="props.item.type < ITEM_TYPES.ORDNER" :item="item" />
 
       <!-- Fields -->
       <div class="p-fields">
@@ -104,8 +109,7 @@
         <div class="field-row">
           <label class="field-label">Verantwortlich</label>
           <div class="field-value">
-            <input class="plain-input" placeholder="Neues Element hinzufügen" v-model="localItem.lsresp"
-              @blur="save" />
+            <input class="plain-input" placeholder="Neues Element hinzufügen" v-model="localItem.lsresp" @blur="save" />
           </div>
         </div>
 
@@ -128,12 +132,12 @@
         </div>
 
         <!-- Zeitraum -->
-        <div class="field-row">
+        <div class="field-row" v-if="props.item.type < ITEM_TYPES.ORDNER">
           <label class="field-label">Zeitraum</label>
           <div class="field-value date-fields">
-            <input class="date-input" placeholder="Von" v-model="localItem.dateStart" @blur="save" />
+            <input class="date-input" placeholder="Von" v-model="localItem.dateStart" @blur="svDate" type="text" />
             <span class="date-sep">→</span>
-            <input class="date-input" placeholder="Bis" v-model="localItem.dateEnd" @blur="save" />
+            <input class="date-input" placeholder="Bis" v-model="localItem.dateEnd" @blur="svDate" type="text" />
           </div>
         </div>
 
@@ -150,13 +154,14 @@
 </template>
 
 <script setup>
-import { reactive, watch, useTemplateRef, onMounted, onUpdated, ref, nextTick,computed } from 'vue'
+import { reactive, watch, useTemplateRef, onMounted, onUpdated, ref, nextTick, computed } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
 import { usePlanStore } from '../stores/plan.js'
 import { useKRStore } from '../stores/okr.js'
 import MiniGantt from './MiniGantt.vue'
 import PalletColor from './PalletColor.vue'
 import { icType, styleSvgColor, clickTag, icArl, icArr, icDel, icClse } from '../utils/utility.js'
+import { ITEM_TYPES } from '../constants.js'
 
 const dIcon = useTemplateRef('d-icn')
 const dName = useTemplateRef('d-nm')
@@ -196,10 +201,7 @@ function togglePalletColors() {
     planStore.bindPopMenu(key, props.item.color, props.item.id)
   }
 }
-function blurName() {
-  store.updateItem(props.item.id, { ...localItem })
-  localItem.title = props.item.title
-}
+function blurName() { store.updateItem(props.item.id, localItem, 'name') }
 async function save() {
   let newName = localItem.title.trim()
   const item = props.item
@@ -209,8 +211,9 @@ async function save() {
     if (!item.title) { store.removeItem(item.id) }
     return
   }
-  store.updateItem(item.id, { ...localItem })
+  store.updateItem(item.id, localItem)
 }
+async function svDate() { store.updateItem(props.item.id, localItem, 'date') }
 function closeX() {
   krStore.setKrForm(-1)
   store.closePanelAt(props.panelIndex)
@@ -269,14 +272,14 @@ function delItem() {
   if (confirm(text) == true) {
     store.itemPanels = store.itemPanels.filter(x => x.id != item.id)
     store.removeItem(item.id) // pressed OK
-  } else {/* "You canceled!" */}
+  } else {/* "You canceled!" */ }
 }
 function clkTag(t) {
   const item = props.item
   store.itemPanels = store.itemPanels.filter(x => x.id == item.id)
   if (!krStore.krForm || krStore.krForm.id != item.id) {
     clickTag(t, item, krStore)
-  } else { clickTag(t, {id: -1}, krStore) }
+  } else { clickTag(t, { id: -1 }, krStore) }
 }
 </script>
 <style scoped>
@@ -284,8 +287,8 @@ function clkTag(t) {
   width: var(--panel-w);
   background: var(--surface);
   border-left: 1px solid var(--border);
-  display: flex; 
-  flex-direction: column; 
+  display: flex;
+  flex-direction: column;
 }
 
 .body {
@@ -323,7 +326,8 @@ function clkTag(t) {
 }
 
 .title-input {
-  flex: 1; field-sizing: content;
+  flex: 1;
+  field-sizing: content;
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
@@ -349,8 +353,11 @@ function clkTag(t) {
 }
 
 .tag {
-  font-size: 10px; font-weight: 600; cursor: pointer;
-  padding: 2px 6px; border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .tag.kc {

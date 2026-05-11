@@ -1,4 +1,5 @@
-import { ITEM_TYPES, TAG_TYPES } from '../constants.js'
+import { ITEM_TYPES, TAG_TYPES, LOCAL_STORE_KEY } from '../constants.js'
+import { localX } from '../mockdata/themen.js'
 
 /**
  * Maps item type IDs to their German labels
@@ -89,6 +90,7 @@ export function styleSvgColor(itemIcon, c) {
         console.error('Failed to style SVG color:', error)
     }
 }
+
 /**
  * Parses a date string into a JavaScript Date object
  * @param {string} txt - Date string in format "DD.MM.YYYY" or custom separator
@@ -111,17 +113,31 @@ export function dateFrom(txt, sep = '.', indexes = [0, 1, 2]) {
  * @param {Object} krStore - KR store reference for handling OKR tags
  */
 export function clickTag(t, item, krStore) {
-  switch (t) {
-    case TAG_TYPES.OKR.toLowerCase():
-      krStore.setKrForm(item.id)
-      break;
-    case TAG_TYPES.KEY_CHANGE.toLowerCase():
-      // Handle key change tag
-      break;
-  }
+    switch (t) {
+        case TAG_TYPES.OKR.toLowerCase():
+            krStore.setKrForm(item.id)
+            break;
+        case TAG_TYPES.KEY_CHANGE.toLowerCase():
+            // Handle key change tag
+            break;
+    }
 }
 export const icArl = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>`
 export const icArr = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>`
 export const icAdd = `<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`
 export const icDel = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6" /><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>`
 export const icClse = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>`
+
+export function setLocal(items, key = LOCAL_STORE_KEY.Items) {
+    try {
+        let arr = items
+        if (items instanceof Map || items instanceof Set) {
+            arr = Array.from(items.values())
+        }
+        arr = arr.filter(x => hasProp(x, 'title') && x.title.length).map(x => localX(x, 1))
+        localStorage.setItem(key, JSON.stringify(arr))
+    } catch (error) {
+        console.error('Failed to save items:', error)
+    }
+}
+function hasProp(x, prop) { return x.hasOwnProperty(prop) }

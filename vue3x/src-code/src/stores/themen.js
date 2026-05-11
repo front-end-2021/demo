@@ -1,20 +1,20 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getItems, emptyItem } from '../mockdata/themen'
-import { filterMap, mapFind } from '../utils/utility'
+import { filterMap, mapFind, setLocal } from '../utils/utility'
 import DOMPurify from 'dompurify';
+import { LOCAL_STORE_KEY } from '../constants'
 
 export const useThemenStore = defineStore('item', () => {
   // ── Active panels ─────────────────────────────────────────────
   const itemPanels = ref([]) // array of item object (max 2 visible side panels)
 
   // ── Data ──────────────────────────────────────────────────────
-  let items = ref({})
+  let items = ref(new Map())
   try {
     items.value = getItems() // map
   } catch (error) {
     console.error('Failed to load items from mockdata:', error)
-    items.value = new Map()
   }
 
   // ── Computed: visible flat list respecting expanded state ─────
@@ -65,12 +65,10 @@ export const useThemenStore = defineStore('item', () => {
 
   /**
    * Checks if an item has any children
-   * @param {number} itemId - Item ID to check
+   * @param {number} id - Item ID to check
    * @returns {Object|undefined} First child found or undefined
    */
-  function anyChild(itemId) { 
-    return mapFind(items.value, i => i.parentId === itemId) 
-  }
+  function anyChild(id) { return mapFind(items.value, i => i.parentId === id) }
 
   /**
    * Toggles the expanded state of an item
@@ -79,7 +77,10 @@ export const useThemenStore = defineStore('item', () => {
   function toggleExpand(id) {
     try {
       const item = items.value.get(id)
-      if (item) item.expanded = !item.expanded
+      if (item) {
+        item.expanded = !item.expanded
+        setLocal(items.value, LOCAL_STORE_KEY.Items)
+      }
     } catch (error) {
       console.error('Failed to toggle expand:', error)
     }
@@ -92,7 +93,10 @@ export const useThemenStore = defineStore('item', () => {
   function toggleDone(id) {
     try {
       const item = items.value.get(id)
-      if (item) item.done = !item.done
+      if (item) {
+        item.done = !item.done
+        setLocal(items.value, LOCAL_STORE_KEY.Items)
+      }
     } catch (error) {
       console.error('Failed to toggle done:', error)
     }
@@ -102,29 +106,48 @@ export const useThemenStore = defineStore('item', () => {
    * Removes an edit panel at the specified index
    * @param {number} index - Panel index to close
    */
-  function closePanelAt(index) { 
-    try {
-      itemPanels.value.splice(index, 1)
-    } catch (error) {
-      console.error('Failed to close panel:', error)
-    }
-  }
+  function closePanelAt(index) { if (-1 < index) { itemPanels.value.splice(index, 1) } }
 
   /**
    * Updates an item with new fields, sanitizing title input
    * @param {number} id - Item ID
    * @param {Object} fields - Fields to update
    */
-  function updateItem(id, fields) {
+  function updateItem(id, fields, type = '') {
     try {
       const item = items.value.get(id)
       if (item) {
-        let txt = fields.title
-        const cleanTextOnly = DOMPurify.sanitize(txt, { ALLOWED_TAGS: [], KEEP_CONTENT: true });
-        const name = cleanTextOnly.replace(/[\r\n]+/gm, " ").trim();
-        if (name && name != item.title) {
-          fields.title = name
-          Object.assign(item, fields)
+        switch (type) {
+          case 'name':
+            let txt = fields.title
+            const cleanTextOnly = DOMPurify.sanitize(txt, { ALLOWED_TAGS: [], KEEP_CONTENT: true });
+            const name = cleanTextOnly.replace(/[\r\n]+/gm, " ").trim();
+            if (name && name != item.title) {
+              fields.title = name
+              Object.assign(item, fields)
+              setLocal(items.value, LOCAL_STORE_KEY.Items)
+            }
+            break;
+          case 'date':
+            const regex = /^\d{1,2}\.\d{1,2}\.\d{4}$/;
+            let { dateStart, dateEnd } = fields
+            dateStart = dateStart.trim()
+            dateEnd = dateEnd.trim()
+            const isS = !dateStart || regex.test(dateStart)
+            const isE = !dateEnd || regex.test(dateEnd)
+            if (!isS) { dateStart = item.dateStart }
+            if (!isE) { dateEnd = item.dateEnd }
+            if (isS || isE) {
+              Object.assign(item, fields)
+              setLocal(items.value, LOCAL_STORE_KEY.Items)
+            }
+            break;
+          default:
+            fields.id = id
+            fields.title = item.title
+            Object.assign(item, fields)
+            setLocal(items.value, LOCAL_STORE_KEY.Items)
+            break;
         }
       }
     } catch (error) {
@@ -161,9 +184,10 @@ export const useThemenStore = defineStore('item', () => {
    * Removes an item from the tree
    * @param {number} id - Item ID to remove
    */
-  function removeItem(id) { 
+  function removeItem(id) {
     try {
       items.value.delete(id)
+      setLocal(items.value, LOCAL_STORE_KEY.Items)
     } catch (error) {
       console.error('Failed to remove item:', error)
     }

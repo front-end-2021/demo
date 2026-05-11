@@ -69,3 +69,10 @@ export const KENNZAHL_OPTIONS = {
 export const ETYPE = {
     NUMBER: 'n', TEXT: 't'
 }
+export const LOCAL_STORE_KEY = {
+    Items: 'items',
+    Regions: 'regions',
+    Responsibles: 'responsibles',
+    Okrs: 'okrs',
+    Users: 'users'
+}

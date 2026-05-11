@@ -4,9 +4,9 @@
     <span class="date-end">{{ end }}</span>
   </span>
   <span v-else-if="start || end" class="date-range">
-    <span v-if="start" class="date-start">{{ start }}</span>
+    <span class="s--e" :class="[start ? 'date-start' : '']">{{ start }}</span>
     <span class="date-days" :class="[negCls]">{{ days }}</span>
-    <span v-if="end" class="date-end">{{ end }}</span>
+    <span class="s--e" :class="[end ? 'date-end' : '']">{{ end }}</span>
   </span>
 </template>
 
@@ -18,7 +18,7 @@ const props = defineProps({ start: String, end: String })
 const days = computed(() => {
   let sDate = props.start
   let eDate = props.end
-  if (!sDate && !eDate) return ''
+  if (!sDate || !eDate) return ''
 
   sDate = dateFrom(sDate)
   eDate = dateFrom(eDate)
@@ -41,18 +41,18 @@ const negCls = computed(() => {
   font-size: 11px;
   font-family: 'DM Mono', monospace;
 }
-
+.s--e {
+  white-space: nowrap;
+  min-width: 76px; min-height: 18px;
+  padding: 2px 5px; border-radius: 4px;
+}
 .date-start,
 .date-end {
-  background: #f0f4ff;
-  color: #4f6ef7;
-  padding: 2px 5px;
-  border-radius: 4px;
-  white-space: nowrap;
+  background: #f0f4ff; color: #4f6ef7;
 }
 
 .date-days {
-  padding: 2px 5px;
+  padding: 2px 5px; min-width: 36px;
   border-radius: 4px;
   white-space: nowrap;
 }
