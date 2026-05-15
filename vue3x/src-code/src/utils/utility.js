@@ -141,3 +141,4 @@ export function setLocal(items, key = LOCAL_STORE_KEY.Items) {
     }
 }
 function hasProp(x, prop) { return x.hasOwnProperty(prop) }
+export function maxId(arr) { return arr.reduce((max, id) => Math.max(max, id), 0) }

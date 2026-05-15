@@ -4,7 +4,7 @@ import { getUsers } from '../mockdata/account'
 
 export const useAccStore = defineStore('acc', () => {
     const users = ref(getUsers())
-    const account = ref(users[0])
+    const account = ref(users.value[0])
 
     return {
         users, account

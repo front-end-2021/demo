@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { KENNZAHL_OPTIONS, UNITS, ITEM_TYPES } from '../constants.js'
+import { KENNZAHL_OPTIONS, UNITS, ITEM_TYPES } from '../constants'
+import { maxId } from '../utils/utility'
 
 /**
  * Creates an empty KR (Key Result) object
@@ -41,7 +42,7 @@ export const useKRStore = defineStore('kr', () => {
         }),
         2: Object.assign(emptyKResult(2, UNITS.EFFECTIVE), {
             target: 33.0,
-            name: 'b', 
+            name: 'b',
             kennzahl: KENNZAHL_OPTIONS.index.value,
         }),
         3: Object.assign(emptyKResult(3, UNITS.NUMBER), {
@@ -107,11 +108,11 @@ export const useKRStore = defineStore('kr', () => {
     }
 
     function addKResult() {
-        const id = Math.max(...Object.keys(kResults.value).map(Number)) + 1
-        kResults.value[id] = Object.assign(emptyKResult(id, 1), {
+        const newId = maxId(Object.keys(kResults.value).map(Number)) + 1
+        kResults.value[newId] = Object.assign(emptyKResult(newId, 1), {
             lagging: true,
         })
-        krForm.value.idKResults.push(id)
+        krForm.value.idKResults.push(newId)
     }
 
     function deleteKResult(krId) {

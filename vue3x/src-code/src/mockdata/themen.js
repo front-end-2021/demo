@@ -5,16 +5,22 @@ import { ITEM_TYPES, TAG_TYPES, LOCAL_STORE_KEY } from '../constants.js'
  */
 export function emptyItem() {
     return {
-        id: 0, parentId: null, type: ITEM_TYPES.HAUPTZIEL, title: '', regions: [], lsresp: '', progress: '',
-        progressColor: '', dateStart: '', dateEnd: '', tags: [], expanded: true, done: false,
-        pinned: 0, team: [], category: [], anspruch: [], color: '',
+        id: 0, parentId: null, type: ITEM_TYPES.HAUPTZIEL, title: '', regions: [], lsresp: '',
+        progress: '', progressColor: '', dateStart: '', dateEnd: '', tags: [], expanded: true,
+        done: false, pinned: 0, team: [], category: [], anspruch: [], color: '',
     }
 }
 export function localX(x, type = 1) {
-    if (1 == type) return [x.id, x.type, x.parentId, x.title, x.regions, x.lsresp, x.progress, x.progressColor, x.dateStart, x.dateEnd, x.tags, x.expanded, x.done, x.color, x.category, x.team, x.pinned, x.anspruch];
+    if (1 == type) return [x.id, x.type, x.parentId, x.title, x.regions, x.lsresp, x.progress,
+    x.progressColor, x.dateStart, x.dateEnd, x.tags, x.expanded, x.done, x.color,
+    x.category, x.team, x.pinned, x.anspruch];
     if (2 == type) {
-        let [id, type, parentId, title, regions, lsresp, progress, progressColor, dateStart, dateEnd, tags, expanded, done, color, category, team, pinned, anspruch] = x
-        return { id, type, parentId, title, regions, lsresp, progress, progressColor, dateStart, dateEnd, tags, expanded, done, color, category, team, pinned, anspruch }
+        let [id, type, parentId, title, regions, lsresp, progress, progressColor, dateStart,
+            dateEnd, tags, expanded, done, color, category, team, pinned, anspruch] = x
+        return {
+            id, type, parentId, title, regions, lsresp, progress, progressColor, dateStart,
+            dateEnd, tags, expanded, done, color, category, team, pinned, anspruch
+        }
     }
     return x
 };

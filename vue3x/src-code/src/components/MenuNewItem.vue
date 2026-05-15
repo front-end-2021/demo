@@ -4,7 +4,7 @@
             <h5 class="sec-tlt">Ziele / Projekte</h5>
             <div class="menu-item" @click.stop="newItem(1)">
                 <div class="icon" v-html="icType[1]"></div>
-                <span>{{ aTyp[1]}}</span>
+                <span>{{ aTyp[1] }}</span>
             </div>
             <div class="menu-item" @click.stop="newItem(2)">
                 <div class="icon" v-html="icType[2]"></div>
@@ -88,6 +88,11 @@ const planStore = usePlanStore()
 
 function newItem(type) {
     let nItem = store.addItem(null, type)
+    const lsE = store.itemPanels
+    if (1 == lsE.length) {
+        let x = lsE[0]
+        if (!x.title) { store.removeItem(x.id) }
+    }
     store.itemPanels = [nItem]
     planStore.bindPopMenu('', '')
 }

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getItems, emptyItem } from '../mockdata/themen'
-import { filterMap, mapFind, setLocal } from '../utils/utility'
+import { filterMap, mapFind, setLocal, maxId } from '../utils/utility'
 import DOMPurify from 'dompurify';
 import { LOCAL_STORE_KEY } from '../constants'
 
@@ -137,7 +137,7 @@ export const useThemenStore = defineStore('item', () => {
             const isE = !dateEnd || regex.test(dateEnd)
             if (!isS) { dateStart = item.dateStart }
             if (!isE) { dateEnd = item.dateEnd }
-            if (isS || isE) {
+            if (isS && isE) {
               Object.assign(item, fields)
               setLocal(items.value, LOCAL_STORE_KEY.Items)
             }
@@ -165,15 +165,15 @@ export const useThemenStore = defineStore('item', () => {
   function addItem(parentId, type = 1, regions = []) {
     try {
       const parent = parentId ? items.value.get(parentId) : null
-      const maxId = Math.max(...filterMap(items.value, i => true, [], 'id'), 0)
-      const newItem = Object.assign(emptyItem(), {
-        id: maxId + 1, parentId,
+      const newId = maxId(filterMap(items.value, i => true, [], 'id')) + 1
+      const nItem = Object.assign(emptyItem(), {
+        id: newId, parentId,
         level: parent ? parent.level + 1 : 0,
         type, color: 'green', regions,
       })
-      items.value.set(newItem.id, newItem)
+      items.value.set(nItem.id, nItem)
       if (parent) parent.expanded = true
-      return newItem
+      return nItem
     } catch (error) {
       console.error('Failed to add item:', error)
       return null
@@ -186,6 +186,12 @@ export const useThemenStore = defineStore('item', () => {
    */
   function removeItem(id) {
     try {
+      const lsE = itemPanels.value
+      for (let ii = lsE.length - 1, x; -1 < ii; ii--) {
+        x = lsE[ii]
+        if (x.id != id) continue
+        lsE.splice(ii, 1)
+      }
       items.value.delete(id)
       setLocal(items.value, LOCAL_STORE_KEY.Items)
     } catch (error) {
