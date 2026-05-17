@@ -40,7 +40,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 1, type: ITEM_TYPES.INITIATIVE,
                     title: 'Initiative: Softwarelösungen für kleine Unternehmen',
-                    regions: ['Führungsteam'],
+                    regions: [1],
                     lsresp: 'S. Fischer',
                     progress: '+50%',
                     progressColor: 'orange',
@@ -50,7 +50,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 2, parentId: 1,
                     title: 'Hauptziel: Erfolgreiche Einführung eines neuen Softwareprodukts auf dem Markt',
-                    regions: ['Produktionsleitung', 'Marketing', 'Verkauf'],
+                    regions: [2, 3, 4],
                     lsresp: 'J. Depont',
                     progress: '+85%',
                     progressColor: 'green',
@@ -63,7 +63,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 3, parentId: 2, type: ITEM_TYPES.ETAPPENZIEL,
                     title: 'Etappenziel 1: Marktforschung',
-                    regions: ['Verkauf'],
+                    regions: [4],
                     lsresp: 'I. Horvat',
                     progress: '+50%',
                     progressColor: 'orange',
@@ -73,7 +73,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 4, parentId: 3, type: ITEM_TYPES.MASSNAHME,
                     title: 'Design und Prototyping des Produkts',
-                    regions: ['Logistik'],
+                    regions: [5],
                     lsresp: 'M. Benedetto',
                     progress: '+85%',
                     progressColor: 'green',
@@ -85,7 +85,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 5, parentId: 3, type: ITEM_TYPES.USER_STORY,
                     title: 'Erstellung der Marketingstrategie',
-                    regions: ['Qualiätssicherung'],
+                    regions: [6],
                     lsresp: 'K. Schneider',
                     progress: '-10%',
                     progressColor: 'red',
@@ -98,7 +98,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 6, parentId: 2, type: ITEM_TYPES.EPIC,
                     title: 'Etappenziel 2: Produktentwicklung und Usability-Tests',
-                    regions: ['Social Media', 'Verkauf', 'Marketing'],
+                    regions: [7, 4, 3],
                     lsresp: 'S. Fischer',
                     progress: '-10%',
                     progressColor: 'red',
@@ -108,7 +108,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 7, parentId: 6, type: ITEM_TYPES.FEATURE,
                     title: 'Erarbeitung des ersten Softwareprototyps...',
-                    regions: ['Marketing', 'Verkauf'],
+                    regions: [3, 4],
                     lsresp: 'J. Depont',
                     progress: '+50%',
                     progressColor: 'orange',
@@ -119,7 +119,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 8, parentId: 6, type: ITEM_TYPES.TASK,
                     title: 'Durchführung von Usability-Tests',
-                    regions: ['Support'],
+                    regions: [8],
                     lsresp: 'I. Horvat',
                     progress: '+85%',
                     progressColor: 'green',
@@ -131,7 +131,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 9, parentId: 2, type: ITEM_TYPES.ETAPPENZIEL,
                     title: 'Etappenziel 3: Marketing- und Vertriebskampagne vorbereiten',
-                    regions: ['Service', 'Logistik'],
+                    regions: [9, 5],
                     lsresp: 'M. Benedetto',
                     progress: '+85%',
                     progressColor: 'green',
@@ -143,7 +143,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 10, parentId: 2, type: ITEM_TYPES.ETAPPENZIEL,
                     title: 'Etappenziel 4: Launch und Post-Launch-Support',
-                    regions: ['Verkauf', 'Marketing'],
+                    regions: [4, 3],
                     lsresp: 'K. Schneider',
                     progress: '+50%',
                     progressColor: 'orange',
@@ -154,7 +154,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 11, parentId: 1, type: ITEM_TYPES.SZENARIO,
                     title: 'Hauptziel: Optimierung der internen Kommunikation und Steigerung der Zusammenarbeit implement long name check lorem ipslump',
-                    regions: ['Führungsteam'],
+                    regions: [1],
                     lsresp: 'S. Fischer',
                     progress: '+85%',
                     progressColor: 'green',
@@ -166,7 +166,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 12, parentId: 1,
                     title: 'Hauptziel: Expansion in internationale Märkte und Aufbau einer globalen Markenpräsenz',
-                    regions: ['Produktionsleitung'],
+                    regions: [2],
                     lsresp: 'J. Depont',
                     progress: '-10%',
                     progressColor: 'red',
@@ -177,7 +177,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 13, type: ITEM_TYPES.EPIC,
                     title: 'Steigerung der Kundenzufriedenheit und Bindung durch außergewöhnlichen Service',
-                    regions: ['Führungsteam'],
+                    regions: [1],
                     lsresp: 'I. Horvat',
                     progress: '+50%',
                     progressColor: 'orange',
@@ -188,7 +188,7 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 14, type: ITEM_TYPES.ORGANISATION,
                     title: 'Markenbekanntheit erhöhen und die Marktführerschaft im internationalen Umfeld ausbauen',
-                    regions: ['Führungsteam'],
+                    regions: [1],
                     lsresp: 'M. Benedetto',
                     expanded: false,
                     color: 'purple',
@@ -196,14 +196,14 @@ export function getItems() {
                 Object.assign(emptyItem(), {
                     id: 15, type: ITEM_TYPES.ORDNER,
                     title: 'Thema 01',
-                    regions: ['Produktionsleitung'],
+                    regions: [2],
                     expanded: false,
                     color: 'violet',
                 }),
                 Object.assign(emptyItem(), {
                     id: 16, type: ITEM_TYPES.SIGNAL,
                     title: 'Signal 001',
-                    regions: ['Verkauf'],
+                    regions: [4],
                     expanded: false,
                     color: 'violet',
                 }),

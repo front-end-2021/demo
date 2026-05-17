@@ -115,8 +115,10 @@ export const useThemenStore = defineStore('item', () => {
    */
   function updateItem(id, fields, type = '') {
     try {
+      fields = { ...fields }
       const item = items.value.get(id)
       if (item) {
+        fields.regions = item.regions
         switch (type) {
           case 'name':
             let txt = fields.title

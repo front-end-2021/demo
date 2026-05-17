@@ -32,7 +32,8 @@
 
     <!-- Region / Level -->
     <div class="col-region">
-      <span v-for="r in item.regions.slice(0, 3)" :key="r" class="region-pill">{{ r }}</span>
+      <span v-for="r in accStore.getRegionsBy(item.regions).slice(0, 3)" 
+        :key="r" class="region-pill">{{ r }}</span>
     </div>
 
     <!-- Verantwortlich -->
@@ -65,6 +66,7 @@
 <script setup>
 import { computed, onMounted, ref, onUpdated } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
+import { useAccStore } from '../stores/account.js'
 import { usePlanStore } from '../stores/plan.js'
 import { useKRStore } from '../stores/okr.js'
 import { MENU_KEYS, ITEM_TYPES } from '../constants.js'
@@ -78,6 +80,7 @@ const planStore = usePlanStore()
 const props = defineProps({ item: { type: Object, required: true } })
 const store = useThemenStore()
 const krStore = useKRStore()
+const accStore = useAccStore()
 const MENU_ITEM_COLOR_KEY = computed(() => MENU_KEYS.ITEM_COLOR(props.item.id))
 
 const hasChildren = computed(() => store.anyChild(props.item.id))

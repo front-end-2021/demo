@@ -84,16 +84,9 @@
         <!-- Region -->
         <div class="field-row">
           <label class="field-label">Region</label>
-          <div class="field-value">
-            <div class="tag-list">
-              <span v-for="r in localItem.regions" :key="r" class="region-tag">
-                {{ r }}
-                <button @click="removeRegion(r)" class="tag-remove">×</button>
-              </span>
-              <input class="tag-input" placeholder="Weitere Region hinzufügen" v-model="newRegion"
-                @keydown.enter="addRegion" />
-            </div>
-          </div>
+          <PopMultiChose :items="accStore.regions.map(x => x.title)" 
+            :values="localItem.regions" placeholder="Weitere Region hinzufügen"
+            @selection="selectRegion" @add:text="addRegion" @rm:text="removeRegion"/>
         </div>
 
         <!-- Team -->
@@ -156,10 +149,12 @@
 <script setup>
 import { reactive, watch, useTemplateRef, onMounted, onUpdated, ref, nextTick, computed } from 'vue'
 import { useThemenStore } from '../stores/themen.js'
+import { useAccStore } from '../stores/account.js'
 import { usePlanStore } from '../stores/plan.js'
 import { useKRStore } from '../stores/okr.js'
 import MiniGantt from './MiniGantt.vue'
 import PalletColor from './PalletColor.vue'
+import PopMultiChose from './PopMultiChose.vue'
 import { icType, styleSvgColor, clickTag, icArl, icArr, icDel, icClse } from '../utils/utility.js'
 import { ITEM_TYPES } from '../constants.js'
 
@@ -173,12 +168,17 @@ const isSecond = computed(() => 0 < props.panelIndex)
 const planStore = usePlanStore()
 const store = useThemenStore()
 const krStore = useKRStore()
-const newRegion = ref('')
+const accStore = useAccStore()
 
-const localItem = reactive({ ...props.item, region: [...(props.item.regions)], tags: [...(props.item.tags)] })
+const localItem = reactive({ ...props.item, 
+  regions: accStore.getRegionsBy(props.item.regions), 
+  tags: [...(props.item.tags)] }
+)
 
 watch(() => props.item, (v) => {
-  Object.assign(localItem, { ...v, region: [...(v.regions)], tags: [...(v.tags)] })
+  Object.assign(localItem, { ...v, 
+    regions: accStore.getRegionsBy(v.regions), 
+    tags: [...(v.tags)] })
 }, { deep: true })
 
 onMounted(async () => {
@@ -237,15 +237,27 @@ function toggleDone() {
   localItem.done = !localItem.done
   save()
 }
-function addRegion() {
-  if (newRegion.value.trim()) {
-    localItem.regions = [...localItem.regions, newRegion.value.trim()]
-    newRegion.value = ''
+function addRegion(txt) {
+  if (txt) {
+    const newR = accStore.addRegion(txt)
+    props.item.regions = [...props.item.regions, newR.id]
     save()
   }
 }
+function selectRegion(r){
+  const reg = accStore.regions.find(x => x.title == r)
+  if (reg) {
+    if (!props.item.regions.includes(reg.id)) {
+      props.item.regions = [...props.item.regions, reg.id]
+      save()
+    }
+  }
+}
 function removeRegion(r) {
-  localItem.regions = localItem.regions.filter(x => x !== r)
+  const reg = accStore.regions.find(x => x.title == r)
+  if (reg) {
+    props.item.regions = props.item.regions.filter(x => x !== reg.id)
+  }
   save()
 }
 function opFormParen() {
@@ -441,36 +453,6 @@ function clkTag(t) {
   flex: 1;
 }
 
-.tag-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-items: center;
-}
-
-.region-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  background: var(--accent-blue-light);
-  color: var(--accent-blue);
-  font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.tag-remove {
-  font-size: 13px;
-  line-height: 1;
-  color: var(--accent-blue);
-  opacity: 0.6;
-}
-
-.tag-remove:hover {
-  opacity: 1;
-}
-
-.tag-input,
 .plain-input {
   border: none;
   outline: none;
@@ -480,12 +462,10 @@ function clkTag(t) {
   width: 100%;
 }
 
-.tag-input::placeholder,
 .plain-input::placeholder {
   color: var(--text-muted);
 }
 
-.tag-input:focus,
 .plain-input:focus {
   color: var(--text-primary);
 }
