@@ -62,15 +62,12 @@ const props = defineProps({
 const store = useThemenStore()
 const accStore = useAccStore()
 
-const treeChild = computed(() => { return store.getChildChain(props.parent.id) })
+const treeChild = computed(() => { return store.getChildChain(props.parent.id, 0) })
 
 const lsArea = computed(() => {
   let grps = []
-  let ids = treeChild.value.map(i => i.id)
-  let levels = new Set(ids.map(id => store.levels[id]))
-  levels = [...levels].sort((a, b) => a - b)
-  let lvl1Ids = new Set(ids.filter(id => store.levels[id] == levels[0]))
-  let lsLv1 = treeChild.value.filter(i => lvl1Ids.has(i.id))
+  let lsLv1 = store.getChildChain(props.parent.id, 1)
+  
   
 
   return lsLv1
