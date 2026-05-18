@@ -1,5 +1,5 @@
 <template>
-  <div class="container" :class="{ 'second-panel': isSecond }">
+  <div class="ecntn" :class="{ 'second-panel': isSecond }">
     <!-- Panel toolbar -->
     <div class="etoolbar">
       <div class="pane-acts">
@@ -142,6 +142,7 @@
           </div>
         </div>
       </div>
+      <LinkAreas :parent="item" />
     </div>
   </div>
 </template>
@@ -155,6 +156,7 @@ import { useKRStore } from '../stores/okr.js'
 import MiniGantt from './MiniGantt.vue'
 import PalletColor from './PalletColor.vue'
 import PopMultiChose from './PopMultiChose.vue'
+import LinkAreas from './LinkAreas.vue'
 import { icType, styleSvgColor, clickTag, icArl, icArr, icDel, icClse } from '../utils/utility.js'
 import { ITEM_TYPES } from '../constants.js'
 
@@ -295,11 +297,11 @@ function clkTag(t) {
 }
 </script>
 <style scoped>
-.container {
+.ecntn {
   width: var(--panel-w);
   background: var(--surface);
   border-left: 1px solid var(--border);
-  display: flex;
+  display: flex; height: inherit;
   flex-direction: column;
 }
 

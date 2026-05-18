@@ -74,5 +74,6 @@ export const LOCAL_STORE_KEY = {
     Regions: 'regions',
     Responsibles: 'responsibles',
     Okrs: 'okrs',
-    Users: 'users'
+    Users: 'users',
+    Collapses: 'collapses',
 }

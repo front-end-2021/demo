@@ -1,6 +1,7 @@
 <template>
-  <div class="container" 
-    :class="[`level-${item.level}`, `eln${store.itemPanels.length}`, { selected: isSelected, 'type-initiative': ITEM_TYPES.INITIATIVE == item.type }]">
+  <div class="cntn" 
+    :class="[`level-${store.levels[item.id]}`, `eln${store.itemPanels.length}`, 
+      { selected: isSelected, 'type-initiative': ITEM_TYPES.INITIATIVE == item.type }]">
     <!-- Checkbox -->
     <div class="col-check">
       <button class="check-btn" :class="{ done: item.done }" @click.stop="store.toggleDone(item.id)">
@@ -13,7 +14,7 @@
 
     <!-- Expand toggle -->
     <div class="col-expand">
-      <button v-if="hasChildren" class="expnd-btn" :class="{ expanded: item.expanded }"
+      <button v-if="hasChildren" class="expnd-btn" :class="{ expnd: !store.collapses.has(item.id) }"
         @click.stop="store.toggleExpand(item.id)">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5">
           <path d="M9 18l6-6-6-6" />
@@ -23,7 +24,7 @@
 
     <!-- Title -->
     <div class="col-title" :style="{
-      paddingLeft: `${item.level * 20}px`, maxWidth: colTltWdth
+      paddingLeft: `${store.levels[item.id] * 20}px`, maxWidth: colTltWdth
     }">
       <span class="item-dot" v-html="icType[item.type]" :ref="el => itemIcon = el" @click.stop="togglePalletColors"></span>
       <span class="title-text" @click.stop="handleRowClick">{{ item.title }}</span>
@@ -135,35 +136,35 @@ function clkTag(t, item) {
 }
 </script>
 <style scoped>
-.container {
+.cntn {
   display: grid;
   grid-template-columns: 28px 20px auto 220px 120px 117px 216px 28px;
   align-items: center;
   min-height: var(--row-h);
   border-bottom: 1px solid var(--border);
   cursor: pointer;
-  padding: 0 4px;
+  padding: 0 4px; 
 }
 
-.container:hover {
+.cntn:hover {
   background: #f8f9fc;
 }
 
 @media (max-width: 1920px) {
-  .container.eln2 {
+  .cntn.eln2 {
     grid-template-columns: 28px 20px auto 0 0 117px 216px 28px;
   }
 }
 
-.container.type-initiative {
+.cntn.type-initiative {
   background: #fafbff;
 }
 
-.container.type-initiative:hover {
+.cntn.type-initiative:hover {
   background: #f3f4ff;
 }
 
-.container.selected {
+.cntn.selected {
   background: #eff6ff;
 }
 
@@ -211,7 +212,7 @@ function clkTag(t, item) {
   transition: transform 0.15s, color 0.12s;
 }
 
-.expnd-btn.expanded {
+.expnd-btn.expnd {
   transform: rotate(90deg);
 }
 

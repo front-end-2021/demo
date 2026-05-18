@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { getItems, emptyItem } from '../mockdata/themen'
+import { getItems, emptyItem, getCollapses } from '../mockdata/themen'
 import { filterMap, mapFind, setLocal, maxId } from '../utils/utility'
 import DOMPurify from 'dompurify';
 import { LOCAL_STORE_KEY } from '../constants'
@@ -8,7 +8,8 @@ import { LOCAL_STORE_KEY } from '../constants'
 export const useThemenStore = defineStore('item', () => {
   // ── Active panels ─────────────────────────────────────────────
   const itemPanels = ref([]) // array of item object (max 2 visible side panels)
-
+  const levels = ref({})
+  const collapses = ref(new Set(getCollapses()))
   // ── Data ──────────────────────────────────────────────────────
   let items = ref(new Map())
   try {
@@ -18,19 +19,15 @@ export const useThemenStore = defineStore('item', () => {
   }
 
   // ── Computed: visible flat list respecting expanded state ─────
-  /**
-   * Computes a flat list of visible items respecting expanded state
-   * @returns {Array} Flat list of visible items with level information
-   */
-  const visibleItems = computed(() => {
+  const treeItems = computed(() => {
     try {
       const result = []
       const genItems = (parentId, lvl) => {
         const children = filterMap(items.value, i => i.parentId === parentId, [])
         children.forEach(item => {
-          item.level = lvl
+          levels.value[item.id] = lvl
           result.push(item)
-          if (item.expanded) genItems(item.id, lvl + 1)
+          genItems(item.id, lvl + 1)
         })
       }
       genItems(null, 0)
@@ -39,6 +36,23 @@ export const useThemenStore = defineStore('item', () => {
       console.error('Failed to compute visible items:', error)
       return []
     }
+  })
+  /**
+   * Computes a flat list of visible items respecting expanded state
+   * @returns {Array} Flat list of visible items with level information
+   */
+  const visibleItems = computed(() => {
+    const result = []
+    let collapsedParents = new Set(collapses.value)
+    for (let item of treeItems.value) {
+      if (!item.parentId) { result.push(item) }
+      else if (collapsedParents.has(item.parentId)) {
+        collapsedParents.add(item.id)
+      } else {
+        result.push(item)
+      }
+    }
+    return result
   })
 
   /**
@@ -62,7 +76,19 @@ export const useThemenStore = defineStore('item', () => {
       return []
     }
   }
-
+  function getChildChain(itemId, level = 1) {
+    const result = []
+    let ids = new Set([itemId])
+    let lvl = level - 1
+    for (let item of treeItems.value) {
+      if (ids.has(item.parentId)) {
+        result.push(item)
+        if (0 == level || 0 < lvl) { ids.add(item.id) }
+        lvl--
+      }
+    }
+    return result
+  }
   /**
    * Checks if an item has any children
    * @param {number} id - Item ID to check
@@ -76,11 +102,12 @@ export const useThemenStore = defineStore('item', () => {
    */
   function toggleExpand(id) {
     try {
-      const item = items.value.get(id)
-      if (item) {
-        item.expanded = !item.expanded
-        setLocal(items.value, LOCAL_STORE_KEY.Items)
+      if (collapses.value.has(id)) {
+        collapses.value.delete(id)
+      } else {
+        collapses.value.add(id)
       }
+      setLocal(Array.from(collapses.value), LOCAL_STORE_KEY.Collapses)
     } catch (error) {
       console.error('Failed to toggle expand:', error)
     }
@@ -168,13 +195,14 @@ export const useThemenStore = defineStore('item', () => {
     try {
       const parent = parentId ? items.value.get(parentId) : null
       const newId = maxId(filterMap(items.value, i => true, [], 'id')) + 1
+      const level = levels.value[parentId] ? levels.value[parentId] + 1 : 0
       const nItem = Object.assign(emptyItem(), {
         id: newId, parentId,
-        level: parent ? parent.level + 1 : 0,
+        level,
         type, color: 'green', regions,
       })
       items.value.set(nItem.id, nItem)
-      if (parent) parent.expanded = true
+      if (parent) { collapses.value.delete(parentId) }
       return nItem
     } catch (error) {
       console.error('Failed to add item:', error)
@@ -202,8 +230,8 @@ export const useThemenStore = defineStore('item', () => {
   }
 
   return {
-    visibleItems, itemPanels, removeItem, items,
-    toggleExpand, toggleDone, closePanelAt,
-    updateItem, addItem, getParentChain, anyChild
+    visibleItems, itemPanels, items, levels, collapses, treeItems,
+    toggleExpand, toggleDone, closePanelAt, getChildChain,
+    updateItem, addItem, getParentChain, anyChild, removeItem
   }
 })
