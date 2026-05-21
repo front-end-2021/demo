@@ -77,3 +77,8 @@ export const LOCAL_STORE_KEY = {
     Users: 'users',
     Collapses: 'collapses',
 }
+export const ITEM_FTYPE = {
+    name: 'name',
+    date: 'date',
+    regionIds: 'regions',
+}

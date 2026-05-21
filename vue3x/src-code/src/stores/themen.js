@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { getItems, emptyItem, getCollapses } from '../mockdata/themen'
 import { filterMap, mapFind, setLocal, maxId } from '../utils/utility'
 import DOMPurify from 'dompurify';
-import { LOCAL_STORE_KEY } from '../constants'
+import { LOCAL_STORE_KEY, ITEM_FTYPE } from '../constants'
 
 export const useThemenStore = defineStore('item', () => {
   // ── Active panels ─────────────────────────────────────────────
@@ -142,41 +142,46 @@ export const useThemenStore = defineStore('item', () => {
    */
   function updateItem(id, fields, type = '') {
     try {
-      fields = { ...fields }
       const item = items.value.get(id)
       if (item) {
-        fields.regions = item.regions
-        switch (type) {
-          case 'name':
-            let txt = fields.title
-            const cleanTextOnly = DOMPurify.sanitize(txt, { ALLOWED_TAGS: [], KEEP_CONTENT: true });
-            const name = cleanTextOnly.replace(/[\r\n]+/gm, " ").trim();
-            if (name && name != item.title) {
-              fields.title = name
+        if (ITEM_FTYPE.regionIds === type) {
+          item.value.regions = fields
+          setLocal(items.value, LOCAL_STORE_KEY.Items)
+        } else {
+          fields = { ...fields }
+          fields.regions = item.regions
+          switch (type) {
+            case ITEM_FTYPE.name:
+              let txt = fields.title
+              const cleanTextOnly = DOMPurify.sanitize(txt, { ALLOWED_TAGS: [], KEEP_CONTENT: true });
+              const name = cleanTextOnly.replace(/[\r\n]+/gm, " ").trim();
+              if (name && name != item.title) {
+                fields.title = name
+                Object.assign(item, fields)
+                setLocal(items.value, LOCAL_STORE_KEY.Items)
+              }
+              break;
+            case ITEM_FTYPE.date:
+              const regex = /^\d{1,2}\.\d{1,2}\.\d{4}$/;
+              let { dateStart, dateEnd } = fields
+              dateStart = dateStart.trim()
+              dateEnd = dateEnd.trim()
+              const isS = !dateStart || regex.test(dateStart)
+              const isE = !dateEnd || regex.test(dateEnd)
+              if (!isS) { dateStart = item.dateStart }
+              if (!isE) { dateEnd = item.dateEnd }
+              if (isS && isE) {
+                Object.assign(item, fields)
+                setLocal(items.value, LOCAL_STORE_KEY.Items)
+              }
+              break;
+            default:
+              fields.id = id
+              fields.title = item.title
               Object.assign(item, fields)
               setLocal(items.value, LOCAL_STORE_KEY.Items)
-            }
-            break;
-          case 'date':
-            const regex = /^\d{1,2}\.\d{1,2}\.\d{4}$/;
-            let { dateStart, dateEnd } = fields
-            dateStart = dateStart.trim()
-            dateEnd = dateEnd.trim()
-            const isS = !dateStart || regex.test(dateStart)
-            const isE = !dateEnd || regex.test(dateEnd)
-            if (!isS) { dateStart = item.dateStart }
-            if (!isE) { dateEnd = item.dateEnd }
-            if (isS && isE) {
-              Object.assign(item, fields)
-              setLocal(items.value, LOCAL_STORE_KEY.Items)
-            }
-            break;
-          default:
-            fields.id = id
-            fields.title = item.title
-            Object.assign(item, fields)
-            setLocal(items.value, LOCAL_STORE_KEY.Items)
-            break;
+              break;
+          }
         }
       }
     } catch (error) {

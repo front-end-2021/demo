@@ -336,21 +336,15 @@ function changeSoll(item, val) {
 
 /* ── Data Row ── */
 .kr-data-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 0;
+  display: flex; align-items: flex-end;
+  gap: 6px; row-gap: 6px;
   min-width: 502px;
   padding: 10px 16px 2px;
-  flex-wrap: wrap;
-  row-gap: 10px;
 }
 
 .data-col {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-right: 20px;
-  min-width: 90px;
+  display: flex; flex-direction: column;
+  gap: 6px; min-width: 90px;
 }
 
 .col-label {

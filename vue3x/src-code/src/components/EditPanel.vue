@@ -158,7 +158,7 @@ import PalletColor from './PalletColor.vue'
 import PopMultiChose from './PopMultiChose.vue'
 import LinkAreas from './LinkAreas.vue'
 import { icType, styleSvgColor, clickTag, icArl, icArr, icDel, icClse } from '../utils/utility.js'
-import { ITEM_TYPES } from '../constants.js'
+import { ITEM_TYPES, ITEM_FTYPE } from '../constants.js'
 
 const dIcon = useTemplateRef('d-icn')
 const dName = useTemplateRef('d-nm')
@@ -203,7 +203,7 @@ function togglePalletColors() {
     planStore.bindPopMenu(key, props.item.color, props.item.id)
   }
 }
-function blurName() { store.updateItem(props.item.id, localItem, 'name') }
+function blurName() { store.updateItem(props.item.id, localItem, ITEM_FTYPE.name) }
 async function save() {
   let newName = localItem.title.trim()
   const item = props.item
@@ -215,7 +215,7 @@ async function save() {
   }
   store.updateItem(item.id, localItem)
 }
-async function svDate() { store.updateItem(props.item.id, localItem, 'date') }
+async function svDate() { store.updateItem(props.item.id, localItem, ITEM_FTYPE.date) }
 function closeX() {
   krStore.setKrForm(-1)
   store.closePanelAt(props.panelIndex)
@@ -242,15 +242,17 @@ function toggleDone() {
 function addRegion(txt) {
   if (txt) {
     const newR = accStore.addRegion(txt)
-    props.item.regions = [...props.item.regions, newR.id]
+    let item = props.item
+    store.updateItem(item.id, [...item.regions, newR.id], ITEM_FTYPE.regionIds)
     save()
   }
 }
 function selectRegion(r){
   const reg = accStore.regions.find(x => x.title == r)
   if (reg) {
-    if (!props.item.regions.includes(reg.id)) {
-      props.item.regions = [...props.item.regions, reg.id]
+    let item = props.item
+    if (!item.regions.includes(reg.id)) {
+      item.regions = [...item.regions, reg.id]
       save()
     }
   }
@@ -258,7 +260,8 @@ function selectRegion(r){
 function removeRegion(r) {
   const reg = accStore.regions.find(x => x.title == r)
   if (reg) {
-    props.item.regions = props.item.regions.filter(x => x !== reg.id)
+    let item = props.item
+    store.updateItem(item.id, item.regions.filter(x => x !== reg.id), ITEM_FTYPE.regionIds)
   }
   save()
 }

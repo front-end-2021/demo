@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getRegions, getUsers } from '../mockdata/account'
 import {maxId, setLocal} from '../utils/utility'
+import { LOCAL_STORE_KEY } from '../constants'
 
 export const useAccStore = defineStore('acc', () => {
     const users = ref(getUsers())
@@ -16,7 +17,7 @@ export const useAccStore = defineStore('acc', () => {
         let newId = maxId(regions.value.map(r => r.id)) + 1
         let newRegion = { id: newId, title: txt }
         regions.value.push(newRegion)
-        setLocal('regions', regions.value)
+        setLocal(regions.value, LOCAL_STORE_KEY.Regions)
         return newRegion
     }
 
