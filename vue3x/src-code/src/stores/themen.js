@@ -76,7 +76,7 @@ export const useThemenStore = defineStore('item', () => {
       return []
     }
   }
-  
+
   /**
    * Gets the child chain of an parent
    * @param {itemId} id - Parent item ID
@@ -229,11 +229,14 @@ export const useThemenStore = defineStore('item', () => {
   function removeItem(id) {
     try {
       const lsE = itemPanels.value
-      for (let ii = lsE.length - 1, x; -1 < ii; ii--) {
-        x = lsE[ii]
-        if (x.id != id) continue
+      let allCids = getChildChain(id, 0).map(x => x.id)
+      let dIds = new Set([id, ...allCids])
+      for (let ii = lsE.length - 1, xx; -1 < ii; ii--) {
+        xx = lsE[ii]
+        if (!dIds.has(xx.id)) { continue }
         lsE.splice(ii, 1)
       }
+      for (let cid of allCids) { items.value.delete(cid) }
       items.value.delete(id)
       setLocal(items.value, LOCAL_STORE_KEY.Items)
     } catch (error) {
