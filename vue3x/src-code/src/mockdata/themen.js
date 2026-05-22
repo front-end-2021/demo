@@ -1,4 +1,4 @@
-import { ITEM_TYPES, TAG_TYPES, LOCAL_STORE_KEY } from '../constants.js'
+import { ITEM_TYPES, TAG_TYPES, LOCAL_STORE_KEY } from '../constants'
 /**
  * Creates an empty item template with default values
  * @returns {Object} Empty item object with all required properties

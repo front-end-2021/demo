@@ -1,7 +1,6 @@
 <template>
-  <div class="cntn" 
-    :class="[`level-${store.levels[item.id]}`, `eln${store.itemPanels.length}`, 
-      { selected: isSelected, 'type-initiative': ITEM_TYPES.INITIATIVE == item.type }]">
+  <div class="cntn" :class="[`level-${store.levels[item.id]}`, `eln${store.itemPanels.length}`,
+  { selected: isSelected, 'type-initiative': ITEM_TYPES.INITIATIVE == item.type }]">
     <!-- Checkbox -->
     <div class="col-check">
       <button class="check-btn" :class="{ done: item.done }" @click.stop="store.toggleDone(item.id)">
@@ -26,15 +25,15 @@
     <div class="col-title" :style="{
       paddingLeft: `${store.levels[item.id] * 20}px`, maxWidth: colTltWdth
     }">
-      <span class="item-dot" v-html="icType[item.type]" :ref="el => itemIcon = el" @click.stop="togglePalletColors"></span>
+      <span class="item-dot" v-html="icType[item.type]" :ref="el => itemIcon = el"
+        @click.stop="togglePalletColors"></span>
       <span class="title-text" @click.stop="handleRowClick">{{ item.title }}</span>
       <PalletColor v-if="planStore.popMenu.key == MENU_ITEM_COLOR_KEY" :item="item" />
     </div>
 
     <!-- Region / Level -->
     <div class="col-region">
-      <span v-for="r in accStore.getRegionsBy(item.regions).slice(0, 3)" 
-        :key="r" class="region-pill">{{ r }}</span>
+      <span v-for="r in accStore.getRegionsBy(item.regions).slice(0, 3)" :key="r" class="region-pill">{{ r }}</span>
     </div>
 
     <!-- Verantwortlich -->
@@ -43,23 +42,23 @@
     </div>
 
     <!-- Progress + Tags -->
-    <div class="col-progress" v-if="props.item.type < ITEM_TYPES.ORDNER">
+    <div class="col-progress" v-if="item.type < ITEM_TYPES.ORDNER">
       <ProgressBadge :value="item.progress" :color="item.progressColor" />
-      <span v-for="t in item.tags" :key="t" class="inline-tag" :class="t.toLowerCase()" 
-        @click.stop="clkTag(t, item)">{{t}}</span>
+      <span v-for="t in item.tags" :key="t" class="inline-tag" :class="t.toLowerCase()"
+        @click.stop="clkTag(t, item)">{{ t }}</span>
     </div>
     <div v-else></div>
 
     <!-- Zeitraum -->
-    <div class="col-date" v-if="props.item.type < ITEM_TYPES.ORDNER">
+    <div class="col-date" v-if="item.type < ITEM_TYPES.ORDNER">
       <DateRange :start="item.dateStart" :end="item.dateEnd" />
     </div>
     <div v-else></div>
 
     <!-- Row checkbox -->
     <div class="col-rowcheck">
-      <input type="checkbox" class="row-checkbox" :checked="planStore.idChecks.has(props.item.id)"
-        @click.stop="planStore.toggleCheckFilter(props.item.id)" />
+      <input type="checkbox" class="row-checkbox" :checked="planStore.idChecks.has(item.id)"
+        @click.stop="planStore.toggleCheckFilter(item.id)" />
     </div>
   </div>
 </template>
@@ -95,13 +94,10 @@ const colTltWdth = computed(() => {
   if (1 == len) { wTlt -= (220 + 120) }
   return `${wTlt - fWdth}px`
 })
-onMounted(() => {
-  styleSvgColor(itemIcon, props.item.color)
-})
 
-onUpdated(() => {
-  styleSvgColor(itemIcon, props.item.color)
-})
+onMounted(() => { styleSvgColor(itemIcon, props.item.color) })
+onUpdated(() => { styleSvgColor(itemIcon, props.item.color) })
+
 async function handleRowClick() {
   if (planStore.popMenu.key) { planStore.bindPopMenu('', '') }
   const lsEdit = store.itemPanels
@@ -143,7 +139,7 @@ function clkTag(t, item) {
   min-height: var(--row-h);
   border-bottom: 1px solid var(--border);
   cursor: pointer;
-  padding: 0 4px; 
+  padding: 0 4px;
 }
 
 .cntn:hover {
@@ -235,13 +231,6 @@ function clkTag(t, item) {
   display: flex;
 }
 
-.item-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
 .title-text {
   font-size: 12.5px;
   color: var(--text-primary);
@@ -286,28 +275,9 @@ function clkTag(t, item) {
   justify-content: flex-end;
 }
 
-.inline-tag {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 1px 5px;
-  border-radius: 3px;
-}
-
 .inline-tag.kc {
   background: #fef3c7;
   color: #92400e;
-}
-
-.inline-tag.okr {
-  background: #ede9fe;
-  color: #5b21b6;
-}
-
-.col-date {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 6px;
 }
 
 .col-rowcheck {

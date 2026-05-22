@@ -193,3 +193,27 @@ select {
   align-items: center;
   gap: 2px;
 }
+
+.item-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.col-date {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 6px;
+}
+.inline-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.inline-tag.okr {
+  background: #ede9fe;
+  color: #5b21b6;
+}

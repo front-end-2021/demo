@@ -76,6 +76,13 @@ export const useThemenStore = defineStore('item', () => {
       return []
     }
   }
+  
+  /**
+   * Gets the child chain of an parent
+   * @param {itemId} id - Parent item ID
+   * @param {number} [level] - level of chain output (0 for all)
+   * @returns {Array} Chain of child items
+   */
   function getChildChain(itemId, level = 1) {
     const result = []
     let ids = new Set([itemId])
@@ -145,7 +152,7 @@ export const useThemenStore = defineStore('item', () => {
       const item = items.value.get(id)
       if (item) {
         if (ITEM_FTYPE.regionIds === type) {
-          item.value.regions = fields
+          item.regions = fields
           setLocal(items.value, LOCAL_STORE_KEY.Items)
         } else {
           fields = { ...fields }
@@ -203,9 +210,9 @@ export const useThemenStore = defineStore('item', () => {
       const level = levels.value[parentId] ? levels.value[parentId] + 1 : 0
       const nItem = Object.assign(emptyItem(), {
         id: newId, parentId,
-        level,
         type, color: 'green', regions,
       })
+      levels.value[newId] = level
       items.value.set(nItem.id, nItem)
       if (parent) { collapses.value.delete(parentId) }
       return nItem
