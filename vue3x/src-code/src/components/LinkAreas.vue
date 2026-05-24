@@ -101,16 +101,13 @@ function toggleMnChild(area) {
   aRegions.value = area.rgnids
   let _ls = []
   const paType = props.parent.type
-
-  if (paType < ITEM_TYPES.SIGNAL) {
-    let min = paType
-    let max = ITEM_TYPES.MASSNAHME
-    if (max < paType) { max = ITEM_TYPES.TASK }
-    if (max < paType) { max = ITEM_TYPES.AKTION }
-    if (max < paType) { max = ITEM_TYPES.SIGNAL }
-    for (let tt = min + 1; tt <= max; tt++) { _ls.push(tt) }
-  } 
-  if (paType == ITEM_TYPES.ORGANISATION) { _ls.push(ITEM_TYPES.ORDNER) }
+  if (ITEM_TYPES.ORGANISATION <= paType) { _ls.push(ITEM_TYPES.ORDNER) }
+  else {
+    _ls = Object.values(ITEM_TYPES)
+    _ls = _ls.filter(x => x < ITEM_TYPES.ORGANISATION && x != paType)
+    if (paType == ITEM_TYPES.ORDNER) { _ls.push(ITEM_TYPES.ORDNER) }
+    _ls.sort((a, b) => a - b)
+  }
   cTypes.value = _ls
 }
 const addArea = () => {
