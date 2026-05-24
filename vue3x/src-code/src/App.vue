@@ -23,13 +23,14 @@
 
       <div class="toolbar">
         <div class="toolbar-left">
-          <button class="add-btn" @click.stop="toggleMenuAddItem">
+          <button class="add-btn" @click.stop="toggleMenuAddItem" 
+            :style="{ color: 0 < store.itemPanels.length ? 'var(--text-secondary)' : ''}">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="M12 5v14M5 12h14" />
             </svg>
             Neues Element hinzufügen
           </button>
-          <MenuNewItem v-if="'menu-add' == planStore.popMenu.key" />
+          <MenuNewItem v-if="store.itemPanels.length < 1 && 'menu-add' == planStore.popMenu.key" />
           <div class="search-box">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8" />
@@ -142,10 +143,10 @@ function toggleChip(chip) {
   }
 }
 function toggleMenuAddItem() {
+  if (store.itemPanels.length) { return }
   const key = MENU_KEYS.ADD_ITEM
   if (key == planStore.popMenu.key) { planStore.bindPopMenu('', '') }
   else { planStore.bindPopMenu(key, '') }
-
 }
 function clckApp() {
   if (planStore.popMenu.key) { planStore.bindPopMenu('', '') }

@@ -1,5 +1,6 @@
-import { ITEM_TYPES, TAG_TYPES, LOCAL_STORE_KEY } from '../constants.js'
+import { ITEM_TYPES, TAG_TYPES, LOCAL_STORE_KEY } from '../constants'
 import { localX } from '../mockdata/themen.js'
+import { localR } from '../mockdata/account.js'
 
 /**
  * Maps item type IDs to their German labels
@@ -131,10 +132,13 @@ export const icClse = `<svg width="14" height="14" viewBox="0 0 24 24" fill="non
 export function setLocal(items, key = LOCAL_STORE_KEY.Items) {
     try {
         let arr = items
-        if (items instanceof Map || items instanceof Set) {
-            arr = Array.from(items.values())
+        if (items instanceof Map) { arr = Array.from(items.values()) }
+        else if (items instanceof Set) { arr = Array.from(items) }
+        if (key != LOCAL_STORE_KEY.Collapses) {
+            arr = arr.filter(x => hasProp(x, 'title') && x.title.length)
+            if (key == LOCAL_STORE_KEY.Items) { arr = arr.map(x => localX(x, 1)) }
+            if (key == LOCAL_STORE_KEY.Regions) { arr = arr.map(x => localR(x, 1)) }
         }
-        arr = arr.filter(x => hasProp(x, 'title') && x.title.length).map(x => localX(x, 1))
         localStorage.setItem(key, JSON.stringify(arr))
     } catch (error) {
         console.error('Failed to save items:', error)

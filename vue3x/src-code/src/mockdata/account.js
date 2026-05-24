@@ -20,6 +20,7 @@ export function getRegions(){
     let ls = localStorage.getItem(LOCAL_STORE_KEY.Regions)
     if (ls) {
         ls = JSON.parse(ls)
+        ls = ls.map(x => localR(x, 2))
     } else {
         ls = [
             { id: 1, title: 'Führungsteam' }, 
@@ -35,4 +36,9 @@ export function getRegions(){
 
     }
     return ls;
+}
+export function localR(r, type = 1) {
+    if(1 == type) return [r.id, r.title]
+    let [id, title] = r
+    return { id, title }
 }

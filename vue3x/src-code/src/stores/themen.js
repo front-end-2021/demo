@@ -236,8 +236,10 @@ export const useThemenStore = defineStore('item', () => {
         if (!dIds.has(xx.id)) { continue }
         lsE.splice(ii, 1)
       }
-      for (let cid of allCids) { items.value.delete(cid) }
-      items.value.delete(id)
+      for (let _id of dIds) { 
+        items.value.delete(_id)
+        delete levels.value[_id]
+      }
       setLocal(items.value, LOCAL_STORE_KEY.Items)
     } catch (error) {
       console.error('Failed to remove item:', error)

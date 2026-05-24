@@ -29,9 +29,13 @@
           <div v-if="!sCollaps.has(area.name)" class="a-cnt">
             <LinkRow v-for="xx in area.lsitem" :key="xx.id" :item="xx" :llvl="store.levels[parent.id]" />
           </div>
-          <button @click="addMilestone(area)" class="act-btn">
-            <span class="btn-plus">+</span> Etappenziel hinzufügen
-          </button>
+          <div style="position: relative;">
+            <button @click="toggleMnChild(area)" class="act-btn">
+              <span class="btn-plus">+</span> Etappenziel hinzufügen
+            </button>
+            <MenuNewItem v-if="cTypes.length && aRegions.join('.') == area.rgnids.join('.')" 
+              :types="cTypes" :pid="parent.id" :rgnids="aRegions" style="top:32px;"/>
+          </div>
         </div>
       </div>
     </div>
@@ -45,14 +49,16 @@ import { useThemenStore } from '../stores/themen.js'
 import { useAccStore } from '../stores/account.js'
 import { emptyItem } from '../mockdata/themen.js'
 import LinkRow from './LinkRow.vue'
+import MenuNewItem from './MenuNewItem.vue'
 
 const props = defineProps({
   parent: { type: Object, required: true },
 })
-
 const store = useThemenStore()
 const accStore = useAccStore()
 
+const cTypes = ref([])
+const aRegions = ref([])
 const sCollaps = ref(new Set())
 
 const lsArea = ref(getAreas(props.parent))
@@ -86,16 +92,27 @@ function getAreas(parent) {
   }
   return ls
 }
-const addMilestone = (area) => {
-  const name = prompt('Tên Etappenziel mới:')
-  if (name) {
-    let pa = props.parent
-    let nItem = store.addItem(pa.id, pa.type + 1, area.rgnids)
-    nItem.title = name
-    area.lsitem.push(nItem)
+function toggleMnChild(area) {
+  if (cTypes.value.length) {
+    cTypes.value = []
+    aRegions.value = []
+    return
   }
-}
+  aRegions.value = area.rgnids
+  let _ls = []
+  const paType = props.parent.type
 
+  if (paType < ITEM_TYPES.SIGNAL) {
+    let min = paType
+    let max = ITEM_TYPES.MASSNAHME
+    if (max < paType) { max = ITEM_TYPES.TASK }
+    if (max < paType) { max = ITEM_TYPES.AKTION }
+    if (max < paType) { max = ITEM_TYPES.SIGNAL }
+    for (let tt = min + 1; tt <= max; tt++) { _ls.push(tt) }
+  } 
+  if (paType == ITEM_TYPES.ORGANISATION) { _ls.push(ITEM_TYPES.ORDNER) }
+  cTypes.value = _ls
+}
 const addArea = () => {
   const name = prompt('Tên Bereich mới:')
   if (name) {
@@ -116,7 +133,6 @@ function toggleOpen(name) {
   }
 }
 </script>
-
 <style scoped>
 .p-wrp {
   display: flex;
@@ -222,18 +238,11 @@ function toggleOpen(name) {
 }
 
 .act-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  background-color: #e8f1f5;
-  border: none;
-  color: #1e293b;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; border: none; cursor: pointer;
+  background-color: #e8f1f5; color: #1e293b;
   transition: background-color 0.2s;
-  margin-top: 8px;
+  padding: 6px 12px; border-radius: 8px; margin-top: 8px;
 }
 
 .act-btn:hover {

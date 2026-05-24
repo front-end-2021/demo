@@ -1,101 +1,80 @@
 <template>
-    <div class="container a-down">
-        <div class="m-section">
-            <h5 class="sec-tlt">Ziele / Projekte</h5>
-            <div class="menu-item" @click.stop="newItem(1)">
-                <div class="icon" v-html="icType[1]"></div>
-                <span>{{ aTyp[1] }}</span>
-            </div>
-            <div class="menu-item" @click.stop="newItem(2)">
-                <div class="icon" v-html="icType[2]"></div>
-                <span>{{ aTyp[2] }}</span>
-            </div>
-            <div class="menu-item" @click.stop="newItem(3)">
-                <div class="icon" v-html="icType[3]"></div>
-                <span>{{ aTyp[3] }}</span>
-            </div>
-        </div>
-
-        <div class="m-section">
-            <h5 class="sec-tlt">Vorhaben</h5>
-            <div class="menu-item" @click.stop="newItem(4)">
-                <div class="icon" v-html="icType[4]"></div>
-                <span>{{ aTyp[4] }}</span>
-            </div>
-            <div class="menu-item" @click.stop="newItem(5)">
-                <div class="icon" v-html="icType[5]"></div>
-                <span>{{ aTyp[5] }}</span>
-            </div>
-            <div class="menu-item" @click.stop="newItem(6)">
-                <div class="icon" v-html="icType[6]"></div>
-                <span>{{ aTyp[6] }}</span>
-            </div>
-            <div class="menu-item" @click.stop="newItem(7)">
-                <div class="icon" v-html="icType[7]"></div>
-                <span>{{ aTyp[7] }}</span>
-            </div>
-        </div>
-
-        <div class="m-section">
-            <h5 class="sec-tlt">Strategisches Management</h5>
-            <div class="menu-item" @click.stop="newItem(8)">
-                <div class="icon" v-html="icType[8]"></div>
-                <span>{{ aTyp[8] }}</span>
-            </div>
-            <div class="menu-item" @click.stop="newItem(9)">
-                <div class="icon" v-html="icType[9]"></div>
-                <span>{{ aTyp[9] }}</span>
-            </div>
-            <div class="menu-item" @click.stop="newItem(10)">
-                <div class="icon" v-html="icType[10]"></div>
-                <span>{{ aTyp[10] }}</span>
-            </div>
-            <div class="menu-item" @click.stop="newItem(11)">
-                <div class="icon" v-html="icType[11]"></div>
-                <span>{{ aTyp[11] }}</span>
-            </div>
-        </div>
-
-        <div class="m-section">
-            <h5 class="sec-tlt">Themenfelder</h5>
-            <div class="menu-item" @click.stop="newItem(12)">
-                <div class="icon" v-html="icType[12]"></div>
-                <span>{{ aTyp[12] }}</span>
-            </div>
-            <div class="menu-item" @click.stop="newItem(13)">
-                <div class="icon" v-html="icType[13]"></div>
-                <span>{{ aTyp[13] }}</span>
-            </div>
-        </div>
-
-        <div class="m-section">
-            <h5 class="sec-tlt">CRM</h5>
-            <div class="menu-item" @click.stop="newItem(14)">
-                <div class="icon" v-html="icType[14]"></div>
-                <span>{{ aTyp[14] }}</span>
+    <div class="container a-down" ref="el">
+        <div class="m-section" v-for="mn in gMenus">
+            <h5 class="sec-tlt">{{ gTlt[mn.id] }}</h5>
+            <div class="menu-item" v-for="t in mn.types" @click.stop="newItem(t)">
+                <div class="icon" v-html="icType[t]"></div>
+                <span>{{ aTyp[t] }}</span>
             </div>
         </div>
     </div>
 </template>
 <script setup>
-import { ref } from 'vue'
-import { useThemenStore } from '../stores/themen.js'
-import { usePlanStore } from '../stores/plan.js'
-import { icType, aTyp } from '../utils/utility.js'
-
+import { ref, computed, onMounted } from 'vue'
+import { useThemenStore } from '../stores/themen'
+import { usePlanStore } from '../stores/plan'
+import { icType, aTyp } from '../utils/utility'
+import { ITEM_TYPES } from '../constants'
+const props = defineProps({
+    types: { type: Array, default: [] },
+    rgnids: { type: Array, default: [] },
+    pid: { type: Number, default: 0 },
+})
+const el = ref(null);
 const store = useThemenStore()
 const planStore = usePlanStore()
+const gTlt = {
+    1: 'Ziele / Projekte',
+    2: 'Vorhaben',
+    3: 'Strategisches Management',
+    4: 'Themenfelder',
+    5: 'CRM',
+}
+/**
+ * Group list of menu type
+ * @returns {Array} [ id: Number, types: [] ]
+ */
+const gMenus = computed(() => {
+    let arr = Object.values(ITEM_TYPES)
+    arr.sort((a, b) => a - b)
+    let lstyp = props.types.length ? props.types : arr // orderd
+    let grp = {
+        1: new Set([ITEM_TYPES.HAUPTZIEL, ITEM_TYPES.ETAPPENZIEL, ITEM_TYPES.MASSNAHME]),
+        2: new Set([ITEM_TYPES.EPIC, ITEM_TYPES.FEATURE, ITEM_TYPES.USER_STORY, ITEM_TYPES.TASK]),
+        3: new Set([ITEM_TYPES.SZENARIO, ITEM_TYPES.INITIATIVE, ITEM_TYPES.STRATEGISCHES_ZIEL, ITEM_TYPES.AKTION]),
+        4: new Set([ITEM_TYPES.ORDNER, ITEM_TYPES.SIGNAL]),
+        5: new Set([ITEM_TYPES.ORGANISATION])
+    }
+    let map = new Map()
+    for (let _t of lstyp) {
+        for (const kk in grp) {
+            let set = grp[kk]
+            if (set.has(_t)) {
+                pushTyp(kk, _t, map)
+                break;
+            }
+        }
+    }
+    console.log(map, lstyp)
+    return [...map.values()]
+    function pushTyp(key, typ, map) {
+        if (map.has(key)) { map.get(key).types.push(typ) }
+        else { map.set(key, { id: key, types: [typ] }) }
+    }
+})
 
 function newItem(type) {
-    let nItem = store.addItem(null, type)
-    const lsE = store.itemPanels
-    if (1 == lsE.length) {
-        let x = lsE[0]
+    let paId = 0 < props.pid ? props.pid : null
+    let nItem = store.addItem(paId, type, props.rgnids)
+    for (let x of new Set(store.itemPanels)) {
         if (!x.title) { store.removeItem(x.id) }
     }
     store.itemPanels = [nItem]
     planStore.bindPopMenu('', '')
 }
+onMounted(() => { 
+    
+ });
 </script>
 <style scoped>
 .container {
@@ -140,7 +119,6 @@ function newItem(type) {
 .sec-tlt,
 .menu-item {
     padding: 8px 8px 8px 26px;
-
 }
 
 .menu-item:hover {
