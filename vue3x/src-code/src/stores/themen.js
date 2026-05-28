@@ -4,28 +4,22 @@ import { getItems, emptyItem, getCollapses } from '../mockdata/themen'
 import { filterMap, mapFind, setLocal, maxId } from '../utils/utility'
 import DOMPurify from 'dompurify';
 import { LOCAL_STORE_KEY, ITEM_FTYPE } from '../constants'
+import { useGappStore } from './gapp'
 
 export const useThemenStore = defineStore('item', () => {
+    const gappStore = useGappStore()
+    
   // ── Active panels ─────────────────────────────────────────────
-  const itemPanels = ref([]) // array of item object (max 2 visible side panels)
-  const levels = ref({})
   const collapses = ref(new Set(getCollapses()))
-  // ── Data ──────────────────────────────────────────────────────
-  let items = ref(new Map())
-  try {
-    items.value = getItems() // map
-  } catch (error) {
-    console.error('Failed to load items from mockdata:', error)
-  }
 
   // ── Computed: visible flat list respecting expanded state ─────
   const treeItems = computed(() => {
     try {
       const result = []
       const genItems = (parentId, lvl) => {
-        const children = filterMap(items.value, i => i.parentId === parentId, [])
+        const children = filterMap(gappStore.items, i => i.parentId === parentId, [])
         children.forEach(item => {
-          levels.value[item.id] = lvl
+          gappStore.setLvl(item.id, lvl)
           result.push(item)
           genItems(item.id, lvl + 1)
         })
@@ -58,17 +52,17 @@ export const useThemenStore = defineStore('item', () => {
   /**
    * Gets the parent chain of an item
    * @param {number} itemId - Item ID
-   * @param {number} [level=0] - Max levels to traverse (0 for all)
+   * @param {number} [level=0] - Max level to traverse (0 for all)
    * @returns {Array} Chain of parent items
    */
   function getParentChain(itemId, level = 0) {
     try {
       const chain = []
-      let current = items.value.get(itemId)
+      let current = gappStore.items.get(itemId)
       while (current) {
         chain.unshift(current)
         if (0 < level && level == chain.length) { return chain }
-        current = current.parentId ? items.value.get(current.parentId) : null
+        current = current.parentId ? gappStore.items.get(current.parentId) : null
       }
       return chain
     } catch (error) {
@@ -101,7 +95,7 @@ export const useThemenStore = defineStore('item', () => {
    * @param {number} id - Item ID to check
    * @returns {Object|undefined} First child found or undefined
    */
-  function anyChild(id) { return mapFind(items.value, i => i.parentId === id) }
+  function anyChild(id) { return mapFind(gappStore.items, i => i.parentId === id) }
 
   /**
    * Toggles the expanded state of an item
@@ -126,10 +120,10 @@ export const useThemenStore = defineStore('item', () => {
    */
   function toggleDone(id) {
     try {
-      const item = items.value.get(id)
+      const item = gappStore.items.get(id)
       if (item) {
         item.done = !item.done
-        setLocal(items.value, LOCAL_STORE_KEY.Items)
+        setLocal(gappStore.items, LOCAL_STORE_KEY.Items)
       }
     } catch (error) {
       console.error('Failed to toggle done:', error)
@@ -140,7 +134,7 @@ export const useThemenStore = defineStore('item', () => {
    * Removes an edit panel at the specified index
    * @param {number} index - Panel index to close
    */
-  function closePanelAt(index) { if (-1 < index) { itemPanels.value.splice(index, 1) } }
+  function closePanelAt(index) { if (-1 < index) { gappStore.itemPanels.splice(index, 1) } }
 
   /**
    * Updates an item with new fields, sanitizing title input
@@ -149,11 +143,11 @@ export const useThemenStore = defineStore('item', () => {
    */
   function updateItem(id, fields, type = '') {
     try {
-      const item = items.value.get(id)
+      const item = gappStore.items.get(id)
       if (item) {
         if (ITEM_FTYPE.regionIds === type) {
           item.regions = fields
-          setLocal(items.value, LOCAL_STORE_KEY.Items)
+          setLocal(gappStore.items, LOCAL_STORE_KEY.Items)
         } else {
           fields = { ...fields }
           fields.regions = item.regions
@@ -165,7 +159,7 @@ export const useThemenStore = defineStore('item', () => {
               if (name && name != item.title) {
                 fields.title = name
                 Object.assign(item, fields)
-                setLocal(items.value, LOCAL_STORE_KEY.Items)
+                setLocal(gappStore.items, LOCAL_STORE_KEY.Items)
               }
               break;
             case ITEM_FTYPE.date:
@@ -179,14 +173,14 @@ export const useThemenStore = defineStore('item', () => {
               if (!isE) { dateEnd = item.dateEnd }
               if (isS && isE) {
                 Object.assign(item, fields)
-                setLocal(items.value, LOCAL_STORE_KEY.Items)
+                setLocal(gappStore.items, LOCAL_STORE_KEY.Items)
               }
               break;
             default:
               fields.id = id
               fields.title = item.title
               Object.assign(item, fields)
-              setLocal(items.value, LOCAL_STORE_KEY.Items)
+              setLocal(gappStore.items, LOCAL_STORE_KEY.Items)
               break;
           }
         }
@@ -205,15 +199,15 @@ export const useThemenStore = defineStore('item', () => {
    */
   function addItem(parentId, type = 1, regions = []) {
     try {
-      const parent = parentId ? items.value.get(parentId) : null
-      const newId = maxId(filterMap(items.value, i => true, [], 'id')) + 1
-      const level = levels.value[parentId] ? levels.value[parentId] + 1 : 0
+      const parent = parentId ? gappStore.items.get(parentId) : null
+      const newId = maxId(filterMap(gappStore.items, i => true, [], 'id')) + 1
+      const level = typeof gappStore.getLvl(parentId) == 'number' ? gappStore.getLvl(parentId) + 1 : 0
       const nItem = Object.assign(emptyItem(), {
         id: newId, parentId,
         type, color: 'green', regions,
       })
-      levels.value[newId] = level
-      items.value.set(nItem.id, nItem)
+      gappStore.setLvl(newId, level)
+      gappStore.items.set(nItem.id, nItem)
       if (parent) { collapses.value.delete(parentId) }
       return nItem
     } catch (error) {
@@ -228,7 +222,7 @@ export const useThemenStore = defineStore('item', () => {
    */
   function removeItem(id) {
     try {
-      const lsE = itemPanels.value
+      const lsE = gappStore.itemPanels
       let allCids = getChildChain(id, 0).map(x => x.id)
       let dIds = new Set([id, ...allCids])
       for (let ii = lsE.length - 1, xx; -1 < ii; ii--) {
@@ -237,17 +231,17 @@ export const useThemenStore = defineStore('item', () => {
         lsE.splice(ii, 1)
       }
       for (let _id of dIds) { 
-        items.value.delete(_id)
-        delete levels.value[_id]
+        gappStore.items.delete(_id)
+        delete gappStore.levels[_id]
       }
-      setLocal(items.value, LOCAL_STORE_KEY.Items)
+      setLocal(gappStore.items, LOCAL_STORE_KEY.Items)
     } catch (error) {
       console.error('Failed to remove item:', error)
     }
   }
 
   return {
-    visibleItems, itemPanels, items, levels, collapses, treeItems,
+    visibleItems, collapses, treeItems,
     toggleExpand, toggleDone, closePanelAt, getChildChain,
     updateItem, addItem, getParentChain, anyChild, removeItem
   }

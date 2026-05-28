@@ -27,27 +27,35 @@
             <h2 class="a-tlt">{{ area.name }}</h2>
           </div>
           <div v-if="!sCollaps.has(area.name)" class="a-cnt">
-            <LinkRow v-for="xx in area.lsitem" :key="xx.id" :item="xx" :llvl="store.levels[parent.id]" />
+            <LinkRow v-for="xx in area.lsitem" :key="xx.id" :item="xx" :llvl="gappStore.getLvl(parent.id)" />
           </div>
-          <div style="position: relative;">
-            <button @click="toggleMnChild(area)" class="act-btn">
+          <div v-if="area.rgnids.length" style="position: relative;">
+            <button @click.stop="toggleMnChild(area.rgnids)" class="act-btn">
               <span class="btn-plus">+</span> Etappenziel hinzufügen
             </button>
-            <MenuNewItem v-if="cTypes.length && aRegions.join('.') == area.rgnids.join('.')" 
+            <MenuNewItem v-if="`mnnew.${parent.id}_${area.rgnids.join('.')}` == gappStore.popMenu"
               :types="cTypes" :pid="parent.id" :rgnids="aRegions" style="top:32px;"/>
           </div>
         </div>
       </div>
+    </div>
+    <div style="position: relative;">
+      <button @click.stop="toggleMnChild([])" class="act-btn">
+          <span class="btn-plus">+</span> Etappenziel hinzufügen
+        </button>
+        <MenuNewItem v-if="`mnnew.${parent.id}_` == gappStore.popMenu" 
+          :types="cTypes" :pid="parent.id" :rgnids="aRegions" style="top:32px;"/>
     </div>
   </div>
 </template>
 <script setup>
 import { ref, computed } from 'vue'
 import { ITEM_TYPES, LOCAL_STORE_KEY } from '../constants'
-import { icType, styleSvgColor } from '../utils/utility.js'
-import { useThemenStore } from '../stores/themen.js'
-import { useAccStore } from '../stores/account.js'
-import { emptyItem } from '../mockdata/themen.js'
+import { icType, styleSvgColor } from '../utils/utility'
+import { useThemenStore } from '../stores/themen'
+import { useGappStore } from '../stores/gapp'
+import { useAccStore } from '../stores/account'
+import { emptyItem } from '../mockdata/themen'
 import LinkRow from './LinkRow.vue'
 import MenuNewItem from './MenuNewItem.vue'
 
@@ -56,6 +64,7 @@ const props = defineProps({
 })
 const store = useThemenStore()
 const accStore = useAccStore()
+const gappStore = useGappStore()
 
 const cTypes = ref([])
 const aRegions = ref([])
@@ -92,15 +101,19 @@ function getAreas(parent) {
   }
   return ls
 }
-function toggleMnChild(area) {
-  if (cTypes.value.length) {
-    cTypes.value = []
-    aRegions.value = []
+function toggleMnChild(rgnids) {
+  const oPpo = gappStore.popMenu
+  const parent = props.parent
+  const mnnew = `mnnew.${parent.id}_${rgnids.join('.')}`
+  let _ls = []
+  if (oPpo && oPpo == mnnew) {
+    cTypes.value = _ls
+    aRegions.value = _ls
+    gappStore.popMenu = ''
     return
   }
-  aRegions.value = area.rgnids
-  let _ls = []
-  const paType = props.parent.type
+  aRegions.value = rgnids
+  const paType = parent.type
   if (ITEM_TYPES.ORGANISATION <= paType) { _ls.push(ITEM_TYPES.ORDNER) }
   else {
     _ls = Object.values(ITEM_TYPES)
@@ -109,6 +122,9 @@ function toggleMnChild(area) {
     _ls.sort((a, b) => a - b)
   }
   cTypes.value = _ls
+  if(_ls.length) {
+    gappStore.popMenu = mnnew
+  }
 }
 const addArea = () => {
   const name = prompt('Tên Bereich mới:')
@@ -132,10 +148,9 @@ function toggleOpen(name) {
 </script>
 <style scoped>
 .p-wrp {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
+  display: flex; flex-direction: column;
+  /* align-items: center; */
+  justify-content: center; box-sizing: border-box;
 }
 
 .p-cnn {

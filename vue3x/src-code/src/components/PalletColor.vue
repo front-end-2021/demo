@@ -1,6 +1,6 @@
 <template>
     <div class="wrap a-down">
-        <div v-for="color in planStore.popMenu.colors" 
+        <div v-for="color in colors" 
             class="color-box" :style="{
                 backgroundColor: color,
                 borderColor: color == item.color ? '#bbb' : color
@@ -9,15 +9,29 @@
     </div>
 </template>
 <script setup>
-import { usePlanStore } from '../stores/plan.js'
+import { ref, computed } from 'vue'
+import { usePlanStore } from '../stores/plan'
+import { useGappStore } from '../stores/gapp'
+import { COLORS } from '../constants'
+
 const props = defineProps({
     item: { type: Object, required: true },
 })
 
+const gappStore = useGappStore()
 const planStore = usePlanStore()
+
+const colors = computed(() => {
+    let setC = new Set(COLORS)
+    let lsC = [...COLORS]
+    const color = props.item.color
+    if (!setC.has(color)) { lsC.push(color) }
+    return lsC
+})
+
 function selectColor(color) {
     props.item.color = color
-    planStore.bindPopMenu('', '')
+    gappStore.popMenu = ''
 }   
 </script>
 <style scoped>

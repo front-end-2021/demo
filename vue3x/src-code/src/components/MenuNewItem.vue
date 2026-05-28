@@ -12,6 +12,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useThemenStore } from '../stores/themen'
+import { useGappStore } from '../stores/gapp'
 import { usePlanStore } from '../stores/plan'
 import { icType, aTyp } from '../utils/utility'
 import { ITEM_TYPES } from '../constants'
@@ -21,6 +22,7 @@ const props = defineProps({
     pid: { type: Number, default: 0 },
 })
 const el = ref(null);
+const gappStore = useGappStore()
 const store = useThemenStore()
 const planStore = usePlanStore()
 const gTlt = {
@@ -55,7 +57,6 @@ const gMenus = computed(() => {
             }
         }
     }
-    console.log(map, lstyp)
     return [...map.values()]
     function pushTyp(key, typ, map) {
         if (map.has(key)) { map.get(key).types.push(typ) }
@@ -66,11 +67,16 @@ const gMenus = computed(() => {
 function newItem(type) {
     let paId = 0 < props.pid ? props.pid : null
     let nItem = store.addItem(paId, type, props.rgnids)
-    for (let x of new Set(store.itemPanels)) {
+    let lsE = gappStore.itemPanels
+    for (let x of new Set(lsE)) {
         if (!x.title) { store.removeItem(x.id) }
     }
-    store.itemPanels = [nItem]
-    planStore.bindPopMenu('', '')
+    if(0 < props.pid) {
+        lsE.splice(1, 0, nItem)
+    } else {
+        gappStore.itemPanels = [nItem]
+    }
+    gappStore.popMenu = ''
 }
 onMounted(() => { 
     

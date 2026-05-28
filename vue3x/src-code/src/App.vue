@@ -24,13 +24,13 @@
       <div class="toolbar">
         <div class="toolbar-left">
           <button class="add-btn" @click.stop="toggleMenuAddItem" 
-            :style="{ color: 0 < store.itemPanels.length ? 'var(--text-secondary)' : ''}">
+            :style="{ color: 0 < gappStore.itemPanels.length ? 'var(--text-secondary)' : ''}">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="M12 5v14M5 12h14" />
             </svg>
             Neues Element hinzufügen
           </button>
-          <MenuNewItem v-if="store.itemPanels.length < 1 && 'menu-add' == planStore.popMenu.key" />
+          <MenuNewItem v-if="gappStore.itemPanels.length < 1 && 'menu-add' === gappStore.popMenu" />
           <div class="search-box">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8" />
@@ -65,8 +65,8 @@
       </div>
 
       <div class="content-area">
-        <div class="table-section" :class="[`eln${store.itemPanels.length}`]">
-          <div class="table-header" :class="[`eln${store.itemPanels.length}`]">
+        <div class="table-section" :class="[`eln${gappStore.itemPanels.length}`]">
+          <div class="table-header" :class="[`eln${gappStore.itemPanels.length}`]">
             <div class="th-check"></div>
             <div class="th-expand"></div>
             <div class="th-title">Ziele / Projekte</div>
@@ -83,8 +83,8 @@
           </div>
         </div>
         
-        <div class="wrap-edits" :class="[`eln${store.itemPanels.length}`]">
-          <EditPanel v-for="(edit, ii) in store.itemPanels" 
+        <div class="wrap-edits" :class="[`eln${gappStore.itemPanels.length}`]">
+          <EditPanel v-for="(edit, ii) in gappStore.itemPanels" 
             :key="edit.id" :item="edit" :panel-index="ii" />
         </div>
       </div>
@@ -98,6 +98,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useThemenStore } from './stores/themen.js'
+import { useGappStore } from './stores/gapp.js'
 import { usePlanStore } from './stores/plan.js'
 import { useKRStore } from './stores/okr.js'
 import { MENU_KEYS } from './constants.js'
@@ -107,6 +108,7 @@ import EditPanel from './components/EditPanel.vue'
 import MenuNewItem from './components/MenuNewItem.vue'
 import KrForm from './components/KrForm.vue'
 
+const gappStore = useGappStore()
 const planStore = usePlanStore()
 const store = useThemenStore()
 const krStore = useKRStore()
@@ -143,13 +145,13 @@ function toggleChip(chip) {
   }
 }
 function toggleMenuAddItem() {
-  if (store.itemPanels.length) { return }
+  if (gappStore.itemPanels.length) { return }
   const key = MENU_KEYS.ADD_ITEM
-  if (key == planStore.popMenu.key) { planStore.bindPopMenu('', '') }
-  else { planStore.bindPopMenu(key, '') }
+  if (key === gappStore.popMenu) { gappStore.popMenu = '' }
+  else { gappStore.popMenu = key }
 }
 function clckApp() {
-  if (planStore.popMenu.key) { planStore.bindPopMenu('', '') }
+  if (gappStore.popMenu) { gappStore.popMenu = '' }
 }
 </script>
 <style scoped>

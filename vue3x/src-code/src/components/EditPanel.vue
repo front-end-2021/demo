@@ -49,7 +49,7 @@
           <span v-for="t in localItem.tags" :key="t" class="tag" :class="t.toLowerCase()"
             @click.stop="clkTag(t.toLowerCase())">{{ t }}</span>
         </div>
-        <PalletColor v-if="planStore.popMenu.key == `edit-item-${item.id}`" :item="item" />
+        <PalletColor v-if="gappStore.popMenu === `edit-item-${item.id}`" :item="item" />
       </div>
 
       <!-- Action buttons -->
@@ -149,10 +149,11 @@
 
 <script setup>
 import { reactive, watch, useTemplateRef, onMounted, onUpdated, ref, nextTick, computed } from 'vue'
-import { useThemenStore } from '../stores/themen.js'
-import { useAccStore } from '../stores/account.js'
-import { usePlanStore } from '../stores/plan.js'
-import { useKRStore } from '../stores/okr.js'
+import { useThemenStore } from '../stores/themen'
+import { useAccStore } from '../stores/account'
+import { useGappStore } from '../stores/gapp'
+import { usePlanStore } from '../stores/plan'
+import { useKRStore } from '../stores/okr'
 import MiniGantt from './MiniGantt.vue'
 import PalletColor from './PalletColor.vue'
 import PopMultiChose from './PopMultiChose.vue'
@@ -167,6 +168,7 @@ const props = defineProps({
   panelIndex: { type: Number, default: 0 },
 })
 const isSecond = computed(() => 0 < props.panelIndex)
+const gappStore = useGappStore()
 const planStore = usePlanStore()
 const store = useThemenStore()
 const krStore = useKRStore()
@@ -197,10 +199,10 @@ onUpdated(() => {
 
 function togglePalletColors() {
   const key = `edit-item-${props.item.id}`
-  if (key == planStore.popMenu.key) {
-    planStore.bindPopMenu('', '')
+  if (key == gappStore.popMenu) {
+    gappStore.popMenu = ''
   } else {
-    planStore.bindPopMenu(key, props.item.color, props.item.id)
+    gappStore.popMenu = key
   }
 }
 function blurName() { store.updateItem(props.item.id, localItem, ITEM_FTYPE.name) }
@@ -270,8 +272,8 @@ function opFormParen() {
   let parents = store.getParentChain(item.parentId, 1)
   if (parents.length) {
     let pa = parents[0]
-    store.itemPanels = store.itemPanels.filter(x => x.id == item.id)
-    store.itemPanels.unshift(pa)
+    gappStore.itemPanels = gappStore.itemPanels.filter(x => x.id == item.id)
+    gappStore.itemPanels.unshift(pa)
   }
 }
 function opFormChild() {
@@ -279,21 +281,21 @@ function opFormChild() {
   let child = store.anyChild(item.id)
   if (child) {
     krStore.setKrForm(-1)
-    store.itemPanels = store.itemPanels.filter(x => x.id == item.id)
-    store.itemPanels.push(child)
+    gappStore.itemPanels = gappStore.itemPanels.filter(x => x.id == item.id)
+    gappStore.itemPanels.push(child)
   }
 }
 function delItem() {
   const item = props.item
   let text = "Press a button!\nEither OK or Cancel.";
   if (confirm(text) == true) {
-    store.itemPanels = store.itemPanels.filter(x => x.id != item.id)
+    gappStore.itemPanels = gappStore.itemPanels.filter(x => x.id != item.id)
     store.removeItem(item.id) // pressed OK
   } else {/* "You canceled!" */ }
 }
 function clkTag(t) {
   const item = props.item
-  store.itemPanels = store.itemPanels.filter(x => x.id == item.id)
+  gappStore.itemPanels = gappStore.itemPanels.filter(x => x.id == item.id)
   if (!krStore.krForm || krStore.krForm.id != item.id) {
     clickTag(t, item, krStore)
   } else { clickTag(t, { id: -1 }, krStore) }

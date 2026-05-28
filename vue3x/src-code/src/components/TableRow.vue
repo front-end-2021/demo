@@ -1,5 +1,5 @@
 <template>
-  <div class="cntn" :class="[`level-${store.levels[item.id]}`, `eln${store.itemPanels.length}`,
+  <div class="cntn" :class="[`level-${gappStore.getLvl(item.id)}`, `eln${gappStore.itemPanels.length}`,
   { selected: isSelected, 'type-initiative': ITEM_TYPES.INITIATIVE == item.type }]">
     <!-- Checkbox -->
     <div class="col-check">
@@ -23,12 +23,12 @@
 
     <!-- Title -->
     <div class="col-title" :style="{
-      paddingLeft: `${store.levels[item.id] * 20}px`, maxWidth: colTltWdth
+      paddingLeft: `${gappStore.getLvl(item.id) * 20}px`, maxWidth: colTltWdth
     }">
       <span class="item-dot" v-html="icType[item.type]" :ref="el => itemIcon = el"
         @click.stop="togglePalletColors"></span>
       <span class="title-text" @click.stop="handleRowClick">{{ item.title }}</span>
-      <PalletColor v-if="planStore.popMenu.key == MENU_ITEM_COLOR_KEY" :item="item" />
+      <PalletColor v-if="gappStore.popMenu === MENU_ITEM_COLOR_KEY" :item="item" />
     </div>
 
     <!-- Region / Level -->
@@ -65,10 +65,11 @@
 
 <script setup>
 import { computed, onMounted, ref, onUpdated } from 'vue'
-import { useThemenStore } from '../stores/themen.js'
-import { useAccStore } from '../stores/account.js'
-import { usePlanStore } from '../stores/plan.js'
-import { useKRStore } from '../stores/okr.js'
+import { useThemenStore } from '../stores/themen'
+import { useGappStore } from '../stores/gapp'
+import { useAccStore } from '../stores/account'
+import { usePlanStore } from '../stores/plan'
+import { useKRStore } from '../stores/okr'
 import { MENU_KEYS, ITEM_TYPES } from '../constants.js'
 import ProgressBadge from './ProgressBadge.vue'
 import DateRange from './DateRange.vue'
@@ -76,6 +77,7 @@ import { icType, styleSvgColor, clickTag } from '../utils/utility.js'
 import PalletColor from './PalletColor.vue'
 
 let itemIcon = ref(null)
+const gappStore = useGappStore()
 const planStore = usePlanStore()
 const props = defineProps({ item: { type: Object, required: true } })
 const store = useThemenStore()
@@ -84,9 +86,9 @@ const accStore = useAccStore()
 const MENU_ITEM_COLOR_KEY = computed(() => MENU_KEYS.ITEM_COLOR(props.item.id))
 
 const hasChildren = computed(() => store.anyChild(props.item.id))
-const isSelected = computed(() => store.itemPanels.map(x => x.id).includes(props.item.id))
+const isSelected = computed(() => gappStore.itemPanels.map(x => x.id).includes(props.item.id))
 const colTltWdth = computed(() => {
-  const len = store.itemPanels.length
+  const len = gappStore.itemPanels.length
   if (len < 1) return ''
   const tmpW = planStore.gSize.wdthF * len
   let fWdth = tmpW + 3 + len * 30
@@ -99,8 +101,8 @@ onMounted(() => { styleSvgColor(itemIcon, props.item.color) })
 onUpdated(() => { styleSvgColor(itemIcon, props.item.color) })
 
 async function handleRowClick() {
-  if (planStore.popMenu.key) { planStore.bindPopMenu('', '') }
-  const lsEdit = store.itemPanels
+  if (gappStore.popMenu) { gappStore.popMenu = '' }
+  const lsEdit = gappStore.itemPanels
   const item = props.item
   let ii = lsEdit.findIndex(x => item.id == x.id)
   krStore.setKrForm(-1)
@@ -109,8 +111,8 @@ async function handleRowClick() {
   } else if (lsEdit.length < 1) {
     lsEdit.push(item)
   } else if (item.parentId) {
-    store.itemPanels = lsEdit.filter(x => x.id == item.parentId)
-    store.itemPanels.push(item)
+    gappStore.itemPanels = lsEdit.filter(x => x.id == item.parentId)
+    gappStore.itemPanels.push(item)
   } else {
     lsEdit.splice(0, 1, item)
     lsEdit.splice(1)
@@ -118,14 +120,14 @@ async function handleRowClick() {
 }
 function togglePalletColors() {
   const key = MENU_KEYS.ITEM_COLOR(props.item.id)
-  if (key == planStore.popMenu.key) {
-    planStore.bindPopMenu('', '')
+  if (key == gappStore.popMenu) {
+    gappStore.popMenu = ''
   } else {
-    planStore.bindPopMenu(key, props.item.color, props.item.id)
+    gappStore.popMenu = key
   }
 }
 function clkTag(t, item) {
-  const lsEdit = store.itemPanels
+  const lsEdit = gappStore.itemPanels
   lsEdit.splice(0)
   lsEdit.push(item)
   clickTag(t.toLowerCase(), item, krStore)
