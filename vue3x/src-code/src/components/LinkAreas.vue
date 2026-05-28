@@ -34,7 +34,7 @@
               <span class="btn-plus">+</span> Etappenziel hinzufügen
             </button>
             <MenuNewItem v-if="`mnnew.${parent.id}_${area.rgnids.join('.')}` == gappStore.popMenu"
-              :types="cTypes" :pid="parent.id" :rgnids="aRegions" style="top:32px;"/>
+              :types="eMenu.types" :pid="parent.id" :rgnids="eMenu.regions" style="top:32px;"/>
           </div>
         </div>
       </div>
@@ -44,7 +44,7 @@
           <span class="btn-plus">+</span> Etappenziel hinzufügen
         </button>
         <MenuNewItem v-if="`mnnew.${parent.id}_` == gappStore.popMenu" 
-          :types="cTypes" :pid="parent.id" :rgnids="aRegions" style="top:32px;"/>
+          :types="eMenu.types" :pid="parent.id" :rgnids="eMenu.regions" style="top:32px;"/>
     </div>
   </div>
 </template>
@@ -66,8 +66,8 @@ const store = useThemenStore()
 const accStore = useAccStore()
 const gappStore = useGappStore()
 
-const cTypes = ref([])
-const aRegions = ref([])
+const eMenu = { types: [], regions: [] }
+
 const sCollaps = ref(new Set())
 
 const lsArea = ref(getAreas(props.parent))
@@ -107,12 +107,12 @@ function toggleMnChild(rgnids) {
   const mnnew = `mnnew.${parent.id}_${rgnids.join('.')}`
   let _ls = []
   if (oPpo && oPpo == mnnew) {
-    cTypes.value = _ls
-    aRegions.value = _ls
+    eMenu.types = _ls
+    eMenu.regions = _ls
     gappStore.popMenu = ''
     return
   }
-  aRegions.value = rgnids
+  eMenu.regions = rgnids
   const paType = parent.type
   if (ITEM_TYPES.ORGANISATION <= paType) { _ls.push(ITEM_TYPES.ORDNER) }
   else {
@@ -121,7 +121,7 @@ function toggleMnChild(rgnids) {
     if (paType == ITEM_TYPES.ORDNER) { _ls.push(ITEM_TYPES.ORDNER) }
     _ls.sort((a, b) => a - b)
   }
-  cTypes.value = _ls
+  eMenu.types = _ls
   if(_ls.length) {
     gappStore.popMenu = mnnew
   }
