@@ -1,7 +1,6 @@
 <template>
   <div class="p-wrp">
     <div class="p-cnn">
-
       <div class="p-header">
         <div class="head-tlt-bx">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
@@ -49,7 +48,7 @@
   </div>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, provide, watch } from 'vue'
 import { ITEM_TYPES, LOCAL_STORE_KEY } from '../constants'
 import { icType, styleSvgColor } from '../utils/utility'
 import { useThemenStore } from '../stores/themen'
@@ -70,10 +69,10 @@ const eMenu = { types: [], regions: [] }
 
 const sCollaps = ref(new Set())
 
-const lsArea = ref(getAreas(props.parent))
+const lsArea = ref(getAreas())
 
-function getAreas(parent) {
-  let lsLv1 = store.getChildChain(parent.id, 1)
+function getAreas() {
+  let lsLv1 = store.getChildChain(props.parent.id, 1)
   lsLv1.sort((a, b) => b.regions.length - a.regions.length)
   let rIds = new Set(lsLv1.map(a => a.regions).flat())
   let regions = accStore.regions.filter(r => rIds.has(r.id))
@@ -101,6 +100,15 @@ function getAreas(parent) {
   }
   return ls
 }
+provide('genAreas', () => { lsArea.value = getAreas() })
+
+watch(gappStore.items, (map, o) => {
+  const paId = props.parent.id
+  let news = [...map.values()]
+  let child = news.find(x => paId == x.parentId)
+  if (child) { lsArea.value = getAreas() }
+}, { deep: true })
+
 function toggleMnChild(rgnids) {
   const oPpo = gappStore.popMenu
   const parent = props.parent
@@ -138,6 +146,7 @@ const addArea = () => {
   }
 }
 function toggleOpen(name) {
+  gappStore.popMenu = ''
   let set = sCollaps.value
   if (set.has(name)) {
     set.delete(name)

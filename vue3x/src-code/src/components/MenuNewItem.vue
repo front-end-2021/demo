@@ -1,6 +1,6 @@
 <template>
-    <div class="container a-down" ref="el">
-        <div class="m-section" v-for="mn in gMenus">
+    <div class="cnter a-down" ref="el">
+        <div class="m-st" v-for="mn in gMenus">
             <h5 class="sec-tlt">{{ gTlt[mn.id] }}</h5>
             <div class="menu-item" v-for="t in mn.types" @click.stop="newItem(t)">
                 <div class="icon" v-html="icType[t]"></div>
@@ -72,23 +72,33 @@ function newItem(type) {
         if (!x.title) { store.removeItem(x.id) }
     }
     if(0 < props.pid) {
-        lsE.splice(1, 0, nItem)
+        lsE.splice(1, 1, nItem)
     } else {
         gappStore.itemPanels = [nItem]
     }
     gappStore.popMenu = ''
 }
 onMounted(() => { 
-    
- });
+    let $el = el.value
+    let bound = $el.getBoundingClientRect()
+    if(window.innerHeight < bound.bottom) {
+        $el.style.top = 'initial'
+        $el.style.bottom = '32px'
+        bound = $el.getBoundingClientRect()
+        $el.style.position = 'fixed'
+        $el.style.top = `${bound.top + 10}px`
+        $el.style.left = `${bound.left}px`
+        $el.style.height = `${bound.height}px`
+    }
+});
 </script>
 <style scoped>
-.container {
+.cnter {
     background-color: #fff;
-    width: 280px;
+    width: 228px;
     position: absolute;
     top: 30px;
-    left: 0;
+    left: 18px;
     z-index: 2;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -96,20 +106,18 @@ onMounted(() => {
     overflow: hidden;
 }
 
-.m-section {
-    padding: 8px 0;
+.m-st {
+    padding: 2px 0;
     border-bottom: 1px solid #f0f0f0;
 }
 
-.m-section:last-child {
+.m-st:last-child {
     border-bottom: none;
 }
 
 .sec-tlt {
-    font-size: 14px;
-    font-weight: 600;
-    color: #000;
-    margin: 0;
+    font-weight: 600;cursor: default;
+    color: #000; margin: 0;
 }
 
 .menu-item {
@@ -118,13 +126,11 @@ onMounted(() => {
     cursor: pointer;
     transition: background 0.2s;
     color: #1a1a1a;
-    font-size: 12px;
     text-decoration: none;
 }
 
-.sec-tlt,
-.menu-item {
-    padding: 8px 8px 8px 26px;
+.sec-tlt, .menu-item {
+    padding: 6px 6px 6px 10px;font-size: 12px;
 }
 
 .menu-item:hover {

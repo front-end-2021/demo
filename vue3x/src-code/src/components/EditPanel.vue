@@ -3,7 +3,7 @@
     <!-- Panel toolbar -->
     <div class="etoolbar">
       <div class="pane-acts">
-        <button class="tool-btn" title="Vorheriger" @click="opFormParen" v-html="icArl"></button>
+        <button class="tool-btn" title="Vorheriger" @click="openFparent" v-html="icArl"></button>
         <button v-if="store.anyChild(item.id)" class="tool-btn" @click="opFormChild" v-html="icArr"></button>
         <button class="tool-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -39,7 +39,7 @@
     </div>
 
     <!-- Panel content -->
-    <div class="body">
+    <div class="body" @scroll="scrollBody">
       <!-- Title section -->
       <div class="tlt-section">
         <span class="item-dot" v-html="icType[item.type]" ref="d-icn" @click.stop="togglePalletColors"></span>
@@ -84,9 +84,9 @@
         <!-- Region -->
         <div class="field-row">
           <label class="field-label">Region</label>
-          <PopMultiChose :items="accStore.regions.map(x => x.title)" 
-            :values="localItem.regions" placeholder="Weitere Region hinzufügen"
-            @selection="selectRegion" @add:text="addRegion" @rm:text="removeRegion"/>
+          <PopMultiChose :items="accStore.regions.map(x => x.title)" :values="localItem.regions"
+            placeholder="Weitere Region hinzufügen" @selection="selectRegion" @add:text="addRegion"
+            @rm:text="removeRegion" />
         </div>
 
         <!-- Team -->
@@ -148,7 +148,7 @@
 </template>
 
 <script setup>
-import { reactive, watch, useTemplateRef, onMounted, onUpdated, ref, nextTick, computed } from 'vue'
+import { reactive, watch, useTemplateRef, onMounted, ref, nextTick, computed } from 'vue'
 import { useThemenStore } from '../stores/themen'
 import { useAccStore } from '../stores/account'
 import { useGappStore } from '../stores/gapp'
@@ -174,16 +174,22 @@ const store = useThemenStore()
 const krStore = useKRStore()
 const accStore = useAccStore()
 
-const localItem = reactive({ ...props.item, 
-  regions: accStore.getRegionsBy(props.item.regions), 
-  tags: [...(props.item.tags)] }
+const localItem = reactive({
+  ...props.item,
+  regions: accStore.getRegionsBy(props.item.regions),
+  tags: [...(props.item.tags)]
+}
 )
 
 watch(() => props.item, (v) => {
-  Object.assign(localItem, { ...v, 
-    regions: accStore.getRegionsBy(v.regions), 
-    tags: [...(v.tags)] })
+  Object.assign(localItem, {
+    ...v,
+    regions: accStore.getRegionsBy(v.regions),
+    tags: [...(v.tags)]
+  })
 }, { deep: true })
+
+watch(() => props.item.color, (c) => { styleSvgColor(dIcon, c) }, { deep: true })
 
 onMounted(async () => {
   styleSvgColor(dIcon, props.item.color)
@@ -192,10 +198,7 @@ onMounted(async () => {
   });
   dName.value.focus()
 })
-
-onUpdated(() => {
-  styleSvgColor(dIcon, props.item.color)
-})
+//onUpdated(() => { styleSvgColor(dIcon, props.item.color) })
 
 function togglePalletColors() {
   const key = `edit-item-${props.item.id}`
@@ -206,7 +209,7 @@ function togglePalletColors() {
   }
 }
 function blurName() { store.updateItem(props.item.id, localItem, ITEM_FTYPE.name) }
-async function save() {
+function save() {
   let newName = localItem.title.trim()
   const item = props.item
   if (!newName) {
@@ -217,7 +220,7 @@ async function save() {
   }
   store.updateItem(item.id, localItem)
 }
-async function svDate() { store.updateItem(props.item.id, localItem, ITEM_FTYPE.date) }
+function svDate() { store.updateItem(props.item.id, localItem, ITEM_FTYPE.date) }
 function closeX() {
   krStore.setKrForm(-1)
   store.closePanelAt(props.panelIndex)
@@ -244,17 +247,16 @@ function toggleDone() {
 function addRegion(txt) {
   if (txt) {
     const newR = accStore.addRegion(txt)
-    let item = props.item
-    store.updateItem(item.id, [...item.regions, newR.id], ITEM_FTYPE.regionIds)
+    store.updateItem(props.item.id, [...props.item.regions, newR.id], ITEM_FTYPE.regionIds)
     save()
   }
 }
-function selectRegion(r){
+function selectRegion(r) {
   const reg = accStore.regions.find(x => x.title == r)
   if (reg) {
     let item = props.item
     if (!item.regions.includes(reg.id)) {
-      item.regions = [...item.regions, reg.id]
+      store.updateItem(item.id, [...item.regions, reg.id], ITEM_FTYPE.regionIds)
       save()
     }
   }
@@ -262,12 +264,11 @@ function selectRegion(r){
 function removeRegion(r) {
   const reg = accStore.regions.find(x => x.title == r)
   if (reg) {
-    let item = props.item
-    store.updateItem(item.id, item.regions.filter(x => x !== reg.id), ITEM_FTYPE.regionIds)
+    store.updateItem(props.item.id, props.item.regions.filter(x => x !== reg.id), ITEM_FTYPE.regionIds)
   }
   save()
 }
-function opFormParen() {
+function openFparent() {
   const item = props.item
   let parents = store.getParentChain(item.parentId, 1)
   if (parents.length) {
@@ -300,13 +301,17 @@ function clkTag(t) {
     clickTag(t, item, krStore)
   } else { clickTag(t, { id: -1 }, krStore) }
 }
+function scrollBody(){
+  gappStore.popMenu = ''
+}
 </script>
 <style scoped>
 .ecntn {
   width: var(--panel-w);
   background: var(--surface);
   border-left: 1px solid var(--border);
-  display: flex; height: inherit;
+  display: flex;
+  height: inherit;
   flex-direction: column;
 }
 

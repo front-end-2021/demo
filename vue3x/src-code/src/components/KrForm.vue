@@ -53,14 +53,10 @@ function closeX() { store.setKrForm(-1) }
 .container {
     display: flex;background: var(--surface);
     flex-direction: column;
-    gap: 12px;height: 100%;
-    overflow-y: auto; animation: slideRl 0.51s ease;
+    gap: 12px;height: calc(100vh - 136px);
+    overflow-y: auto; animation: slideRl 0.36s ease;
     padding-bottom: 20px; transform-origin: left;
-    transition: width 0.3s ease;
-}
-@keyframes slideRl {
-    0% { transform: translateX(var(--panel-w)); opacity: 0;}
-    100% { transform: translateX(0); opacity: 1;}
+    transition: width 0.36s ease;
 }
 .title {
     font-size: 18px;

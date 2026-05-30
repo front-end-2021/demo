@@ -88,8 +88,8 @@
             :key="edit.id" :item="edit" :panel-index="ii" />
         </div>
       </div>
-      <div class="kr-form" :kri="krStore.krForm?.id">
-        <KrForm v-if="krStore.krForm" :kr="krStore.krForm" />
+      <div v-if="krStore.krForm" class="kr-form">
+        <KrForm  :kr="krStore.krForm" />
       </div>
     </div>
   </div>
@@ -158,16 +158,16 @@ function clckApp() {
 .content-area { flex: 1; }
 .table-section { 
   display: flex; flex-direction: column; height: 100%;
-  width: 100%; transition: width 0.6s ease; overflow-y: auto;
+  width: 100%; transition: width 0.36s ease; overflow-y: auto;
 }
 .table-section.eln1 { width: calc(100% - var(--panel-w)); }
 .table-section.eln2 { width: calc(100% - calc(2 * var(--panel-w))); }
 .wrap-edits {
   right:0; display: grid; grid-template-columns: 0 0;
-  transition: grid-template-columns 0.6s ease; height: 0;
+  transition: grid-template-columns 0.36s ease; height: 0;
 }
 .wrap-edits, .kr-form { position: fixed; bottom: 0; }
-.content-area, .wrap-edits.eln1, .wrap-edits.eln2, .kr-form[kri] { 
+.content-area, .wrap-edits.eln1, .wrap-edits.eln2 { 
   height: calc(100vh - 136px); 
 }
 .wrap-edits.eln1 { grid-template-columns: var(--panel-w) 0; }
@@ -175,7 +175,8 @@ function clckApp() {
   grid-template-columns: var(--panel-w) var(--panel-w);
  }
 .kr-form { right: var(--panel-w); z-index: 1;background: var(--surface);
-  border-left: 1px solid var(--border); }
+  border-left: 1px solid var(--border); animation: slideRl 0.36s ease;}
+
 .app-layout {
   display: flex;
   height: 100vh;

@@ -217,3 +217,7 @@ select {
   background: #ede9fe;
   color: #5b21b6;
 }
+@keyframes slideRl {
+    0% { transform: translateX(var(--panel-w)); opacity: 0;}
+    100% { transform: translateX(0); opacity: 1;}
+}
