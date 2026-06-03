@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, onUpdated } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useThemenStore } from '../stores/themen'
 import { useGappStore } from '../stores/gapp'
 import { useAccStore } from '../stores/account'
@@ -97,8 +97,9 @@ const colTltWdth = computed(() => {
   return `${wTlt - fWdth}px`
 })
 
+watch(() => props.item.color, (c) => { styleSvgColor(itemIcon, c) }, { deep: true })
+
 onMounted(() => { styleSvgColor(itemIcon, props.item.color) })
-onUpdated(() => { styleSvgColor(itemIcon, props.item.color) })
 
 async function handleRowClick() {
   if (gappStore.popMenu) { gappStore.popMenu = '' }

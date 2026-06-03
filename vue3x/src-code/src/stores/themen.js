@@ -120,9 +120,9 @@ export const useThemenStore = defineStore('item', () => {
   function closePanelAt(index) { if (-1 < index) { gappStore.itemPanels.splice(index, 1) } }
 
   /**
-   * Updates an item with new fields, sanitizing title input
+   * Updates an item with new value, sanitizing title input
    * @param {number} id - Item ID
-   * @param {Object} fields - Fields to update
+   * @param {Object} fields
    */
   function updateItem(id, fields, type = '') {
     try {
@@ -133,16 +133,13 @@ export const useThemenStore = defineStore('item', () => {
           item.regions = fields
           setLocal(mapItems, LOCAL_STORE_KEY.Items)
         } else {
-          fields = { ...fields }
-          fields.regions = item.regions
           switch (type) {
             case ITEM_FTYPE.name:
               let txt = fields.title
               const cleanTextOnly = DOMPurify.sanitize(txt, { ALLOWED_TAGS: [], KEEP_CONTENT: true });
               const name = cleanTextOnly.replace(/[\r\n]+/gm, " ").trim();
               if (name && name != item.title) {
-                fields.title = name
-                Object.assign(item, fields)
+                item.title = name
                 setLocal(mapItems, LOCAL_STORE_KEY.Items)
               }
               break;
@@ -151,16 +148,15 @@ export const useThemenStore = defineStore('item', () => {
               let { dateStart, dateEnd } = fields
               dateStart = dateStart.trim()
               dateEnd = dateEnd.trim()
-              const isS = !dateStart || regex.test(dateStart)
-              const isE = !dateEnd || regex.test(dateEnd)
-              if (!isS) { dateStart = item.dateStart }
-              if (!isE) { dateEnd = item.dateEnd }
-              if (isS && isE) {
-                Object.assign(item, fields)
-                setLocal(mapItems, LOCAL_STORE_KEY.Items)
-              }
+              const isS = dateStart && regex.test(dateStart)
+              const isE = dateEnd && regex.test(dateEnd)
+              if (isS) { item.dateStart = dateStart }
+              if (isE) { item.dateEnd = dateEnd }
+              if (isS || isE) { setLocal(mapItems, LOCAL_STORE_KEY.Items) }
               break;
             default:
+              fields = { ...fields }
+              fields.regions = item.regions
               fields.id = id
               fields.title = item.title
               Object.assign(item, fields)

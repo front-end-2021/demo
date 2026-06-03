@@ -1,5 +1,5 @@
 <template>
-  <div class="ecntn" :class="{ 'second-panel': isSecond }">
+  <div class="ecntn" :class="{ 'fom-nd': 0 < panelIndex }">
     <!-- Panel toolbar -->
     <div class="etoolbar">
       <div class="pane-acts">
@@ -7,31 +7,27 @@
         <button v-if="store.anyChild(item.id)" class="tool-btn" @click="opFormChild" v-html="icArr"></button>
         <button class="tool-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="2" />
-            <circle cx="6" cy="12" r="2" />
-            <circle cx="18" cy="12" r="2" />
+            <circle cx="12" cy="12" r="2" /><circle cx="6" cy="12" r="2" /><circle cx="18" cy="12" r="2" />
           </svg>
         </button>
+        <span style="font-size: 12px;">{{item.title ? 'Edit' : 'New'}}</span>
       </div>
       <div class="pane-acts">
         <button class="tool-btn" title="Löschen" @click="delItem" v-html="icDel"></button>
         <button class="tool-btn" title="Duplizieren">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="9" y="9" width="13" height="13" rx="2" />
-            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+            <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
           </svg>
         </button>
         <button class="tool-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <path d="M3 9h18M9 21V9" />
+            <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
           </svg>
         </button>
         <button class="tool-btn save-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" @click.stop="saveClose">
             <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
-            <polyline points="17 21 17 13 7 13 7 21" />
-            <polyline points="7 3 7 8 15 8" />
+            <polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" />
           </svg>
         </button>
         <button class="tool-btn close-btn" @click="closeX" v-html="icClse"></button>
@@ -76,8 +72,7 @@
         </div>
       </div>
 
-      <!-- Mini Gantt -->
-      <MiniGantt v-if="props.item.type < ITEM_TYPES.ORDNER" :item="item" />
+      <MiniGantt v-if="item.type < ITEM_TYPES.ORDNER" :item="item" />
 
       <!-- Fields -->
       <div class="p-fields">
@@ -125,7 +120,7 @@
         </div>
 
         <!-- Zeitraum -->
-        <div class="field-row" v-if="props.item.type < ITEM_TYPES.ORDNER">
+        <div class="field-row" v-if="item.type < ITEM_TYPES.ORDNER">
           <label class="field-label">Zeitraum</label>
           <div class="field-value date-fields">
             <input class="date-input" placeholder="Von" v-model="localItem.dateStart" @blur="svDate" type="text" />
@@ -167,7 +162,7 @@ const props = defineProps({
   item: { type: Object, required: true },
   panelIndex: { type: Number, default: 0 },
 })
-const isSecond = computed(() => 0 < props.panelIndex)
+
 const gappStore = useGappStore()
 const planStore = usePlanStore()
 const store = useThemenStore()
@@ -198,15 +193,11 @@ onMounted(async () => {
   });
   dName.value.focus()
 })
-//onUpdated(() => { styleSvgColor(dIcon, props.item.color) })
 
 function togglePalletColors() {
   const key = `edit-item-${props.item.id}`
-  if (key == gappStore.popMenu) {
-    gappStore.popMenu = ''
-  } else {
-    gappStore.popMenu = key
-  }
+  if (key == gappStore.popMenu) { gappStore.popMenu = '' }
+  else { gappStore.popMenu = key }
 }
 function blurName() { store.updateItem(props.item.id, localItem, ITEM_FTYPE.name) }
 function save() {

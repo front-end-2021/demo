@@ -50,7 +50,7 @@
 <script setup>
 import { ref, computed, provide, watch } from 'vue'
 import { ITEM_TYPES, LOCAL_STORE_KEY } from '../constants'
-import { icType, styleSvgColor } from '../utils/utility'
+import { icType } from '../utils/utility'
 import { useThemenStore } from '../stores/themen'
 import { useGappStore } from '../stores/gapp'
 import { useAccStore } from '../stores/account'
