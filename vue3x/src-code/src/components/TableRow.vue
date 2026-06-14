@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useThemenStore } from '../stores/themen'
 import { useGappStore } from '../stores/gapp'
 import { useAccStore } from '../stores/account'
