@@ -5,6 +5,7 @@ import { filterMap } from '../utils/utility'
 
 export const useGappStore = defineStore('gapp', () => {
     const popMenu = ref('')
+    const paddL = ref(1)
 
     const itemPanels = ref([]) // array of item object (max 2 visible side panels)
 
@@ -35,10 +36,12 @@ export const useGappStore = defineStore('gapp', () => {
         }
     })
 
-    function getLvl(id) { return levels.value[id] }
+    function isPadL(v) { return paddL.value === v }
+    function paddLeft(v) { paddL.value = v }
+    function getLvl(id) { return paddL.value * levels.value[id] }
     function setLvl(id, l) { levels.value[id] = l }
     return {
         popMenu, items, itemPanels, levels, treeItems,
-        getLvl, setLvl,
+        getLvl, setLvl, paddLeft, isPadL,
     }
 })

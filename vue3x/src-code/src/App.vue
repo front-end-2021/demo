@@ -44,13 +44,18 @@
         <button v-for="chip in chips" :key="chip" class="chip">{{ chip }}</button>
         <div class="table-icons">
           <button class="icon-btn-sm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 3v18" />
-            </svg></button>
+              stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 3v18" /></svg></button>
           <button class="icon-btn-sm"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2">
-              <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
-            </svg></button>
+              :style="{ color: gappStore.isPadL(0) ? 'var(--accent)' : ''}" @click.stop="gappStore.paddLeft(0)"
+              stroke-width="2"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg></button>
+          <button class="icon-btn-sm"><svg width="14" height="13" viewBox="0 0 14 13" fill="none" stroke="currentColor"
+            :style="{ color: gappStore.isPadL(1) ? 'var(--accent)' : ''}"  @click.stop="gappStore.paddLeft(1)">
+           <g>
+            <path d="M8.62 2.47V0.98C8.62 0.755 8.44 0.57 8.22 0.57L0.98 0.57C0.755 0.57 0.57 0.755 0.57 0.98V2.47C0.57 2.7 0.755 2.87 0.98 2.87L8.22 2.87C8.44 2.87 8.62 2.7 8.62 2.47Z" stroke-miterlimit="10"/>
+            <path d="M13.43 7.07V5.57C13.43 5.35 13.25 5.17 13 5.17L4 5.17C3.76 5.17 3.59 5.35 3.59 5.57V7.07C3.59 7.29 3.76 7.47 4 7.47H13C13.25 7.47 13.43 7.29 13.43 7.07Z" stroke-miterlimit="10"/>
+            <path d="M6.32 11.67V10C6.32 9.95 6.14 9.77 5.9 9.77H2.1C1.9 9.77 1.7 9.95 1.7 10V11.67C1.7 11.9 1.9 12 2.1 12H5.9C6.14 12 6.32 11.9 6.32 11.67Z" stroke-miterlimit="10"/>
+           </g>
+          </svg></button>
         </div>
       </div>
 
