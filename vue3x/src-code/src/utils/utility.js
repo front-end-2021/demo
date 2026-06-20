@@ -97,14 +97,16 @@ export function styleSvgColor(itemIcon, c) {
  * @param {string} txt - Date string in format "DD.MM.YYYY" or custom separator
  * @param {string} [sep='.'] - Date component separator
  * @param {number[]} [indexes=[0,1,2]] - Indexes for [day, month, year] components
+ * @param {number[]} [hmsm=[0, 0, 0, 1]] - Time components [hours, minutes, seconds, milliseconds]
  * @returns {Date} Parsed date object
  */
-export function dateFrom(txt, sep = '.', indexes = [0, 1, 2]) {
+export function dateFrom(txt, sep = '.', indexes = [0, 1, 2], hmsm = [0, 0, 0, 1]) {
     const parts = txt.split(sep);
     let day = parseInt(parts[indexes[0]])
     let month = parseInt(parts[indexes[1]])
     let year = parseInt(parts[indexes[2]])
-    return new Date(year, month - 1, day)
+    const [hours, minutes, seconds, milliseconds] = hmsm
+    return new Date(year, month - 1, day, hours, minutes, seconds, milliseconds)
 }
 
 /**

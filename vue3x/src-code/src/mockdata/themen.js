@@ -1,4 +1,4 @@
-import { ITEM_TYPES, TAG_TYPES, LOCAL_STORE_KEY } from '../constants'
+import { ITEM_TYPES, TAG_TYPES, LOCAL_STORE_KEY, OBJ_FIELD } from '../constants'
 /**
  * Creates an empty item template with default values
  * @returns {Object} Empty item object with all required properties
@@ -10,20 +10,16 @@ export function emptyItem() {
         done: false, pinned: 0, team: [], category: [], anspruch: [], color: '',
     }
 }
-export function localX(x, type = 1) {
-    if (1 == type) return [x.id, x.type, x.parentId, x.title, x.regions, x.lsresp, x.progress,
-    x.progressColor, x.dateStart, x.dateEnd, x.tags, x.done, x.color,
-    x.category, x.team, x.pinned, x.anspruch];
-    if (2 == type) {
-        let [id, type, parentId, title, regions, lsresp, progress, progressColor, dateStart,
-            dateEnd, tags, done, color, category, team, pinned, anspruch] = x
-        return {
-            id, type, parentId, title, regions, lsresp, progress, progressColor, dateStart,
-            dateEnd, tags, done, color, category, team, pinned, anspruch
-        }
+export function biObj(x, type = 1, fields = ['id']) {
+    let val = []
+    if (1 == type) { for (let field of fields) { val.push(x[field]) } }
+    else if (2 == type) {
+        val = {}
+        for (let ii = 0; ii < x.length; ii++) { val[fields[ii]] = x[ii] }
     }
-    return x
-};
+    return val
+}
+export function localX(x, type = 1) { return biObj(x, type, OBJ_FIELD.item) };
 /**
  * Loads items from local Storage or returns default mock data
  * Creates a Map structure for efficient item lookups by ID

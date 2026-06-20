@@ -78,7 +78,7 @@
       <div class="p-fields">
         <!-- Region -->
         <div class="field-row">
-          <label class="field-label">Region</label>
+          <label class="fld-lbl">Region</label>
           <PopMultiChose :items="accStore.regions.map(x => x.title)" :values="localItem.regions"
             placeholder="Weitere Region hinzufügen" @selection="selectRegion" @add:text="addRegion"
             @rm:text="removeRegion" />
@@ -86,8 +86,8 @@
 
         <!-- Team -->
         <div class="field-row">
-          <label class="field-label">Team / Abteilung</label>
-          <div class="field-value">
+          <label class="fld-lbl">Team / Abteilung</label>
+          <div class="fld-v">
             <input class="plain-input" placeholder="Neues Element hinzufügen" v-model="localItem.team[0]"
               @blur="save" />
           </div>
@@ -95,16 +95,16 @@
 
         <!-- Verantwortlich -->
         <div class="field-row">
-          <label class="field-label">Verantwortlich</label>
-          <div class="field-value">
+          <label class="fld-lbl">Verantwortlich</label>
+          <div class="fld-v">
             <input class="plain-input" placeholder="Neues Element hinzufügen" v-model="localItem.lsresp" @blur="save" />
           </div>
         </div>
 
         <!-- Kategorie -->
         <div class="field-row">
-          <label class="field-label">Kategorie</label>
-          <div class="field-value">
+          <label class="fld-lbl">Kategorie</label>
+          <div class="fld-v">
             <input class="plain-input" placeholder="Neues Element hinzufügen" v-model="localItem.category[0]"
               @blur="save" />
           </div>
@@ -112,8 +112,8 @@
 
         <!-- Anspruchsgruppe -->
         <div class="field-row">
-          <label class="field-label">Anspruchsgruppe</label>
-          <div class="field-value">
+          <label class="fld-lbl">Anspruchsgruppe</label>
+          <div class="fld-v">
             <input class="plain-input" placeholder="Neues Element hinzufügen" v-model="localItem.anspruch[0]"
               @blur="save" />
           </div>
@@ -121,18 +121,17 @@
 
         <!-- Zeitraum -->
         <div class="field-row" v-if="item.type < ITEM_TYPES.ORDNER">
-          <label class="field-label">Zeitraum</label>
-          <div class="field-value date-fields">
-            <input class="date-input" placeholder="Von" v-model="localItem.dateStart" @blur="svDate" type="text" />
+          <label class="fld-lbl">Zeitraum</label>
+          <DateRange :type="2" :start="localItem.dateStart" :end="localItem.dateEnd" @blur="svDate"
+            :names="[`start-${item.id}`, `end-${item.id}`]">
             <span class="date-sep">→</span>
-            <input class="date-input" placeholder="Bis" v-model="localItem.dateEnd" @blur="svDate" type="text" />
-          </div>
+          </DateRange>
         </div>
 
         <!-- Fortschritt -->
         <div class="field-row">
-          <label class="field-label">Fortschritt</label>
-          <div class="field-value">
+          <label class="fld-lbl">Fortschritt</label>
+          <div class="fld-v">
             <input class="plain-input" placeholder="z.B. +85%" v-model="localItem.progress" @blur="save" />
           </div>
         </div>
@@ -153,6 +152,7 @@ import MiniGantt from './MiniGantt.vue'
 import PalletColor from './PalletColor.vue'
 import PopMultiChose from './PopMultiChose.vue'
 import LinkAreas from './LinkAreas.vue'
+import DateRange from './DateRange.vue'
 import { icType, styleSvgColor, clickTag, icArl, icArr, icDel, icClse } from '../utils/utility.js'
 import { ITEM_TYPES, ITEM_FTYPE } from '../constants.js'
 
@@ -211,7 +211,10 @@ function save() {
   }
   store.updateItem(item.id, localItem)
 }
-function svDate() { store.updateItem(props.item.id, localItem, ITEM_FTYPE.date) }
+function svDate(obj) { 
+  localItem[obj.type] = obj.value
+  store.updateItem(props.item.id, localItem, ITEM_FTYPE.date) 
+}
 function closeX() {
   krStore.setKrForm(-1)
   store.closePanelAt(props.panelIndex)
@@ -443,8 +446,8 @@ function scrollBody(){
   border-bottom: none;
 }
 
-.field-label {
-  width: 130px;
+.fld-lbl {
+  width: 120px;
   flex-shrink: 0;
   font-size: 12px;
   font-weight: 500;
@@ -452,9 +455,7 @@ function scrollBody(){
   padding-top: 2px;
 }
 
-.field-value {
-  flex: 1;
-}
+.fld-v { flex: 1; }
 
 .plain-input {
   border: none;
@@ -471,26 +472,6 @@ function scrollBody(){
 
 .plain-input:focus {
   color: var(--text-primary);
-}
-
-.date-fields {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.date-input {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 3px 8px;
-  font-size: 12px;
-  width: 90px;
-  outline: none;
-  color: var(--text-primary);
-}
-
-.date-input:focus {
-  border-color: var(--accent-blue);
 }
 
 .date-sep {

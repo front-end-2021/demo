@@ -82,3 +82,9 @@ export const ITEM_FTYPE = {
     date: 'date',
     regionIds: 'regions',
 }
+export const OBJ_FIELD = {
+    item: ['id', 'type', 'parentId', 'title', 'regions', 'lsresp', 'progress', 'progressColor',
+        'dateStart', 'dateEnd', 'tags', 'done', 'color', 'category', 'team', 'pinned', 'anspruch'],
+    region: ['id', 'title'],
+    account: ['id', 'name', 'pass'],
+}
