@@ -93,7 +93,11 @@
         <div class="dates-track" ref="datesTrack">
           <div v-for="entry in dateEntries" class="date-col"
             :key="entry.date + entry.ist + entry.soll">
-            <div class="date-label">{{ entry.date }}</div>
+            <div class="d-grp">
+              <div class="date-lbl">{{ entry.date }}</div>
+              <button class="del-d" 
+                @click="delDate(entry)" title="Löschen" v-html="icDel"></button>
+            </div>
             <div class="date-values">
               <div class="dv">
                 <span class="dv-sub">Ist</span>
@@ -108,7 +112,6 @@
             </div>
           </div>
         </div>
-
         <button class="scroll-btn" @click="scrollRight" v-html="icArr"></button>
       </div>
       <button class="add-date-btn" @click="$emit('addDate', kr.id)" v-html="icAdd"></button>
@@ -183,6 +186,7 @@ function changeSoll(item, val) {
   item.soll = val
   store.kResults[props.kr.id].target = val
 }
+function delDate(item) { store.deleteDate(item.date) }
 </script>
 <style scoped>
 .kr-rowwrap {
@@ -487,20 +491,14 @@ function changeSoll(item, val) {
   padding: 4px 8px;
 }
 
-.date-col:last-child {
-  border-right: none;
+.date-col:last-child { border-right: none; }
+.d-grp { display: flex; align-items: end; gap: 3px; }
+.date-lbl {
+  font-size: 11px; color: var(--text-muted); white-space: nowrap;
 }
-
-.date-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  white-space: nowrap;
-}
-
-.date-values {
-  display: flex;
-  gap: 12px;
-}
+.del-d {color: transparent;}
+.d-grp .del-d:hover { color: var(--red); }
+.date-values { display: flex; gap: 12px; }
 
 .dv {
   display: flex;

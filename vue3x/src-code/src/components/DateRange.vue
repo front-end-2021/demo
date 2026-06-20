@@ -1,20 +1,20 @@
 <template>
   <template v-if="1 == type">
-  <span v-if="!start && end" class="date-range">
-    <span class="date-icon">↑</span>
-    <span class="date-end">{{ end }}</span>
-  </span>
-  <span v-else-if="start || end" class="date-range">
-    <span class="s--e" :class="[start ? 'date-start' : '']">{{ start }}</span>
-    <span class="date-days" :class="[negCls]">{{ days }}</span>
-    <span class="s--e" :class="[end ? 'date-end' : '']">{{ end }}</span>
-  </span>
+    <span v-if="!start && end" class="date-range">
+      <span class="date-icon">↑</span>
+      <span class="date-end">{{ end }}</span>
+    </span>
+    <span v-else-if="start || end" class="date-range">
+      <span class="s--e" :class="[start ? 'date-start' : '']">{{ start }}</span>
+      <span class="date-days" :class="[negCls]">{{ days }}</span>
+      <span class="s--e" :class="[end ? 'date-end' : '']">{{ end }}</span>
+    </span>
   </template>
   <div v-if="2 == type" class="date-fields">
     <input class="date-input" type="date" :name="names[0]" :max="max"
       v-model="vStat" placeholder="Von" @blur="onBlur('dateStart')"/>
     <slot></slot>
-    <input class="date-input"  type="date" :name="names[1]" :min="min"
+    <input class="date-input" type="date" :name="names[1]" :min="min"
       v-model="vEndt" placeholder="Bis" @blur="onBlur('dateEnd')"/>
   </div>
 </template>

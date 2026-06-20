@@ -1,6 +1,6 @@
 <template>
     <div class="container" :style="{ width: width + 'px'}">
-        <div class="etoolbar">
+        <div class="etoolbar" style="position: sticky; top: 0; background: var(--bg-card); z-index: 1;">
             <div class="left">
                 <button v-if="510 < width" class="collapse-btn" @click="width = 510" v-html="icArr + 'Einklappen'"></button>
                 <button v-else class="expand-btn" @click.stop="width = 780" v-html="icArl + 'Details anzeigen'"></button>                
@@ -59,7 +59,7 @@ function closeX() { store.setKrForm(-1) }
     transition: width 0.36s ease;
 }
 .title {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
     letter-spacing: -0.01em;

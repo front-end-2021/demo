@@ -58,11 +58,10 @@ export const useKRStore = defineStore('kr', () => {
         '8.5.2026': { 1: 77.0, 2: 23.0, 3: 69.0 },
         '11.12.2026': { 3: 77.0 },
     })
-    // ── Getters ────────────────────────────────────────────   
-    const activeDates = computed(() => krForm ? krForm.value.idDates : [])
 
     function getDateEntriesForKR(krId) {
-        return activeDates.value.map((date) => ({
+        let dates = krForm ? krForm.value.idDates : []
+        return dates.map((date) => ({
             date,
             ist: kDates.value[date]?.[krId] ?? null,
             soll: computeSoll(krId, date),
@@ -123,14 +122,23 @@ export const useKRStore = defineStore('kr', () => {
         if (obj) { krForm.value = obj }
         else { krForm.value = null }
     }
+    function deleteDate(date) {
+        let krIds = krForm.value.idKResults
+        let oj = kDates.value[date]
+        for (let id of krIds) { delete oj[id] }
+        if(0 == Object.entries(oj).length) { delete kDates.value[date] }
+        let dateIds = krForm.value.idDates
+        for (let ii = dateIds.length - 1; -1 < ii; ii--) {
+            if (dateIds[ii] === date) { dateIds.splice(ii, 1) }
+        }
+    }
     return {
         krForm,
         kResults,
         kDates,
-        activeDates,
         getDateEntriesForKR,
         getKI, getIst, getDelta,
-        updateKennzahl,
+        updateKennzahl, deleteDate,
         addDate, addKResult,
         deleteKResult, setKrForm,
     }
