@@ -1,0 +1,5 @@
+.vscode/
+src-code/.vscode/
+src-code/node_modules/
+src-code/dist/
+src-code/package-lock.json
