@@ -5,10 +5,11 @@ import { routeEdges } from '../utils/diagram'
 import ClassBox from './ClassBox.vue'
 import Icon from './Icon.vue'
 import { onDown, onMoving, onUp, dragging } from '../mixins/useResizer'
+import MonacoEditor from './MonacoEditor.vue'
 
-const SIDEBAR_MIN = 340
-const SIDEBAR_MAX = 900
-const srcWidth = ref(SIDEBAR_MIN) // chiều rộng mặc định của source panel
+const SOURCE_PANEL_MIN = 340
+const SOURCE_PANEL_MAX = 900
+const srcWidth = ref(SOURCE_PANEL_MIN) // chiều rộng mặc định của source panel
 const diagram = useDiagramStore()
 
 const canvas = ref(null)
@@ -111,7 +112,7 @@ onBeforeUnmount(() => {
 function setWidth(e) {
   let target = e.currentTarget
   let dW = e.clientX - parseInt(target.dataset.initx)
-  srcWidth.value = Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, Math.round(dW)))
+  srcWidth.value = Math.min(SOURCE_PANEL_MAX, Math.max(SOURCE_PANEL_MIN, Math.round(dW)))
 }
 </script>
 
@@ -147,15 +148,14 @@ function setWidth(e) {
     </div>
 
     <div class="work">
-      <aside v-if="codeOpen" class="source sbr" aria-label="Source code" :class="{ dragging }"
+      <aside v-if="codeOpen" class="source sbr b" aria-label="Source code" :class="{ dragging }"
         :style="{ width: srcWidth + 'px' }">
-        <label for="uml-source">C# source</label>
-        <textarea id="uml-source" v-model="diagram.source" spellcheck="false" wrap="off"
-          placeholder="Paste C# classes here…" />
+        <span class="src-title">C# source</span>
+        <MonacoEditor v-model="diagram.source" class="src-editor" aria-label="C# source" />
         <div class="resizer" role="separator" aria-orientation="vertical" parent=".sbr"
           title="Kéo để chỉnh độ rộng · double-click để thu gọn" @pointerdown="onDown"
           @pointermove="onMoving($event, setWidth)" @pointerup="onUp" @pointercancel="onUp"
-          @dblclick="srcWidth = SIDEBAR_MIN" />
+          @dblclick="srcWidth = SOURCE_PANEL_MIN" />
       </aside>
 
       <div ref="canvas" class="canvas" @pointerdown="onCanvasDown" @pointermove="trackMouse">
@@ -315,7 +315,7 @@ function setWidth(e) {
   background: var(--soft);
 }
 
-.source label {
+.source .src-title {
   padding: 8px 14px 6px;
   color: var(--muted);
   font-size: 11.5px;
@@ -324,13 +324,13 @@ function setWidth(e) {
   text-transform: uppercase;
 }
 
-.source textarea {
+.source .src-editor {
   flex: 1;
   min-height: 0;
   resize: none;
   border: 0;
   border-top: 1px solid var(--border);
-  padding: 10px 14px;
+  padding: 0 6px 0 0;
   background: #fff;
   font: 12px/1.55 var(--mono);
   white-space: pre;
@@ -338,11 +338,13 @@ function setWidth(e) {
   tab-size: 4;
 }
 
-.source textarea:focus {
+.source .src-editor:focus {
   outline: none;
   box-shadow: inset 0 0 0 2px var(--primary-soft);
 }
-
+.b.dragging .resizer[data-initx]::after {
+  background: var(--primary);
+}
 .canvas {
   position: relative;
   flex: 1;

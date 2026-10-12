@@ -8,7 +8,7 @@ export function onDown(e) {
   let target = e.currentTarget
   target.setPointerCapture(e.pointerId)
   let parent = target.closest(target.getAttribute('parent'))
-  let off = parent.getBoundingClientRect()
+  let off = parent ? parent.getBoundingClientRect() : { left: 0 }
   target.dataset.initx = off.left
   document.body.classList.add('is-resizing')
 }

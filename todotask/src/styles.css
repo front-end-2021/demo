@@ -133,7 +133,10 @@ input[type='checkbox']:checked {
   transition: background 0.15s;
 }
 
-.resizer:hover::after,
-.sbr.dragging .resizer::after {
+.resizer:hover::after {
   background: var(--primary);
 }
+.scrollbar.vertical > .slider,
+.scrollbar.vertical { width: 8px !important; }
+.scrollbar.horizontal > .slider,
+.scrollbar.horizontal { height: 8px !important;}

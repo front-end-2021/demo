@@ -19,7 +19,7 @@ function moving(e) {
 </script>
 
 <template>
-  <aside class="sbr" :class="{ expanded: ui.sidebarExpanded, dragging }" :style="{ width: ui.sidebarWidth + 'px' }">
+  <aside class="sbr a" :class="{ expanded: ui.sidebarExpanded, dragging }" :style="{ width: ui.sidebarWidth + 'px' }">
     <nav class="nav" aria-label="Areas">
       <button v-for="it in items" :key="it.key" class="item" :class="{ active: ui.activeArea === it.key }"
         :title="ui.sidebarExpanded ? '' : it.label" :aria-label="it.label" @click="ui.activeArea = it.key">
@@ -45,7 +45,9 @@ function moving(e) {
   border-right: 1px solid rgba(255, 255, 255, 0.6);
   z-index: 10;
 }
-
+.a.dragging .resizer[data-initx]::after {
+  background: var(--primary);
+}
 .nav {
   display: flex;
   flex-direction: column;
