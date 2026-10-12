@@ -1,45 +1,68 @@
 <script setup>
-import { store } from './store.js'
-import { getLsTaskType, getUsers, listLandToNode } from './repository.js';
-import { ref, provide, computed } from 'vue';
-import SnowflakeId from 'snowflake-id';
-import NavHead from './NavHead.vue';
-const SnfId = new SnowflakeId({ mid: 42, offset: (2020 - 1970) * 31536000 * 1000 });
-provide('$SnfId', SnfId);
+import { onBeforeUnmount, onMounted } from 'vue'
+import { useUiStore } from './stores/ui'
+import TopBar from './components/TopBar.vue'
+import SideBar from './components/SideBar.vue'
+import OverviewView from './components/OverviewView.vue'
+import TaskDrawer from './components/TaskDrawer.vue'
+import Icon from './components/Icon.vue'
 
-const Pagger = ref(null)
-provide('$Pagger', Pagger);
+const ui = useUiStore()
 
-const Project = ref(null)
-provide('$Project', Project);
-
-const editNodes = ref([])
-provide('$editNodes', editNodes);
-
-const TaskTypes = ref([{ Id: 0, Name: '' }]);
-provide('$taskTypes', TaskTypes);
-Promise.all([getLsTaskType(SnfId), getUsers(SnfId)]).then(([tTypes, users]) => {
-    let user = users[0];
-    TaskTypes.value = tTypes;
-    store.setUsers(users)
-    Promise.all([listLandToNode(SnfId)]).then(([r]) => {
-        store.setLands(r.lands)
-        store.setRegions(r.regions)
-        store.setMarkets(r.markets)
-        store.setProductGroups(r.prdGroups)
-        store.setProducts(r.products)
-        store.setSubmarkets(r.submarkets)
-        r.nodes[0].UserIds = new Set([user.Id]);
-        store.setNodes(r.nodes)
-        store.loggedIn({
-            Id: user.Id,
-            Name: user.Name,
-            RegionId: r.regions[0].Id,
-        })
-    })
-})
+let timer
+onMounted(() => (timer = setInterval(ui.tick, 30000)))
+onBeforeUnmount(() => clearInterval(timer))
 </script>
+
 <template>
-    <NavHead />
-    <component v-if="null != Pagger" :is="Pagger.comp"></component>
+  <div class="app">
+    <TopBar />
+    <div class="body">
+      <SideBar />
+      <main class="main">
+        <div class="card">
+          <OverviewView v-if="ui.activeTab === 'overview'" />
+          <div v-else class="soon">
+            <Icon name="check-circle" :size="34" />
+            <p>This section is coming soon.</p>
+          </div>
+        </div>
+      </main>
+      <TaskDrawer />
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--app-bg); /* nền phẳng */
+}
+.body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 10px;
+}
+.card {
+  height: 100%;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 30px rgba(52, 38, 120, 0.16);
+  overflow: hidden;
+}
+.soon {
+  height: 100%;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  color: var(--muted);
+}
+</style>
