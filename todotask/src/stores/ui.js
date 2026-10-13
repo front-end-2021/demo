@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { VIEWTYPE, LABELTYPE } from '../utils/common'
 
 export const SIDEBAR_MIN = 52
 export const SIDEBAR_MAX = 280
@@ -30,9 +31,9 @@ export const useUiStore = defineStore('ui', () => {
   }
 
   // --- Điều hướng ---
-  const activeArea = ref('mytasks') // sidebar
-  const activeTab = ref('overview') // topbar
-  const projectTab = ref('tasks') // tab trong overview
+  const activeArea = ref(VIEWTYPE.mtasks) // sidebar
+  const activeTab = ref(VIEWTYPE.ovview) // topbar
+  const projectTab = ref(VIEWTYPE.lstsk) // tab trong overview
 
   // --- Overview ---
   const collapsed = ref({})
@@ -54,9 +55,7 @@ export const useUiStore = defineStore('ui', () => {
     if (focusTitle) focusTick.value++
   }
 
-  function closeDrawer() {
-    drawerOpen.value = false
-  }
+  function closeDrawer() { drawerOpen.value = false }
 
   // --- Đồng hồ để cập nhật "x minutes ago" ---
   const now = ref(Date.now())

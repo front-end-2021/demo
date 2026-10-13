@@ -6,6 +6,7 @@ import SideBar from './components/SideBar.vue'
 import OverviewView from './components/OverviewView.vue'
 import TaskDrawer from './components/TaskDrawer.vue'
 import Icon from './components/Icon.vue'
+import { VIEWTYPE } from './utils/common.js'
 
 const ui = useUiStore()
 
@@ -21,7 +22,7 @@ onBeforeUnmount(() => clearInterval(timer))
       <SideBar />
       <main class="main">
         <div class="card">
-          <OverviewView v-if="ui.activeTab === 'overview'" />
+          <OverviewView v-if="ui.activeTab === VIEWTYPE.ovview" />
           <div v-else class="soon">
             <Icon name="check-circle" :size="34" />
             <p>This section is coming soon.</p>

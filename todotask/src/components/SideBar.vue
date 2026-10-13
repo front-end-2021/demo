@@ -3,15 +3,16 @@ import { ref } from 'vue'
 import { useUiStore, SIDEBAR_MIN } from '../stores/ui'
 import Icon from './Icon.vue'
 import { onDown, onMoving, onUp, dragging } from '../mixins/useResizer'
+import { VIEWTYPE, LABELTYPE } from '../utils/common.js'
 
 const ui = useUiStore()
 
 const items = [
-  { key: 'mytasks', label: 'My tasks', icon: 'check-square' },
-  { key: 'dashboard', label: 'Dashboard', icon: 'grid' },
-  { key: 'messages', label: 'Messages', icon: 'chat' },
-  { key: 'news', label: 'News', icon: 'newspaper' },
-  { key: 'todos', label: 'Todos', icon: 'checklist' },
+  { key: VIEWTYPE.mtasks, label: LABELTYPE.mtasks, icon: 'check-square' },
+  { key: VIEWTYPE.dboard, label: LABELTYPE.dboard, icon: 'grid' },
+  { key: VIEWTYPE.lsmess, label: LABELTYPE.lsmess, icon: 'chat' },
+  { key: VIEWTYPE.neews, label: LABELTYPE.neews, icon: 'newspaper' },
+  { key:  VIEWTYPE.lstodo, label: LABELTYPE.lstodo, icon: 'checklist' },
 ]
 function moving(e) {
   ui.setSidebarWidth(e.clientX) // sidebar nằm sát mép trái màn hình
