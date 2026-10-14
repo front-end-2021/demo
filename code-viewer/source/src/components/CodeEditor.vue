@@ -4,8 +4,11 @@
         <div class="code-viewer-header">
             <h4 style="margin:0;">📂 {{ fileDir }}{{ fileName }}</h4>
             <div class="header-meta">
-                <span class="language-badge">Ngôn ngữ: {{ currentLanguage.toUpperCase() }}</span>
-                <span class="file-size">Dung lượng: {{ (fileSize / 1024).toFixed(2) }} KB</span>
+                <span class="btnp" @click="saveFile" title="Change context file">Save</span>
+                <span v-if="'.cs' == fileExt" class="btnp" @click="removeLinesCs"
+                    title="Remove comments and empty lines">Clean</span>
+                <span class="language-badge">Ngôn ngữ: {{ currentLanguage }}</span>
+                <span class="file-size">Size: {{ (fileSize / 1024).toFixed(2) }} KB</span>
             </div>
         </div>
         <div ref="host" class="monaco-host" />
@@ -15,6 +18,8 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import * as monaco from 'monaco-editor';
+import { rmCommentsAndLines } from '../utils/csharp.js'
+//import { getSizeInBytes, formatSize } from '../utils/file.js'
 
 const props = defineProps({
     fileName: { type: String, required: true },
@@ -66,10 +71,7 @@ onMounted(() => {
         formatOnPaste: true,         // Tự động format khi paste code từ ngoài vào
         minimap: { enabled: true }
     })
-    editor.onDidChangeModelContent(() => {
-        const v = editor.getValue()
-        if (v !== props.modelValue) emit('update:modelValue', v)
-    })
+    // editor.onDidChangeModelContent(() => { let v = editor.getValue(); if (v !== props.modelValue) emit('update:modelValue', v) })
 })
 // Khi nơi khác đổi source (ví dụ nút Sample) thì cập nhật vào editor
 watch(
@@ -83,6 +85,13 @@ watch(
     },
 )
 onBeforeUnmount(() => editor?.dispose()) // panel Source dùng v-if nên phải dọn khi ẩn
+
+function removeLinesCs() {
+    const v = editor.getValue();
+    const cleanedValue = rmCommentsAndLines(v);
+    editor.setValue(cleanedValue);
+}
+function saveFile() { let v = editor.getValue(); if (v !== props.modelValue) { emit('update:modelValue', v) } }
 </script>
 
 <style scoped>
@@ -100,7 +109,7 @@ onBeforeUnmount(() => editor?.dispose()) // panel Source dùng v-if nên phải 
 }
 
 .code-viewer-header {
-    padding: 6px 12px;
+    padding: 4px 12px;
     background-color: #0088d2;
     border-bottom: 1px solid #0075b7;
     display: flex;

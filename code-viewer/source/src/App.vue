@@ -21,7 +21,7 @@
       </div>
 
       <div class="upload-zone pr20">
-        <label class="custom-upload-btn">
+        <label class="custom-upload-btn btnp">
           📁 Tải lên thư mục Project
           <input type="file" webkitdirectory directory multiple @change="handleFolderUpload" style="display: none;" />
         </label>

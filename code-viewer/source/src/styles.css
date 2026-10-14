@@ -109,34 +109,6 @@ input[type='checkbox']:checked {
   scrollbar-width: thin;
   scrollbar-color: #cfd4df transparent;
 }
-
-.resizer {
-  position: absolute;
-  top: 0;
-  right: -4px;
-  width: 9px;
-  height: 100%;
-  cursor: col-resize;
-  touch-action: none;
-  z-index: 5;
+.btnp {
+  background-color: #0075b7; color: white;  border-radius: 6px; cursor: pointer; padding: 1px 6px;
 }
-
-.resizer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 4px;
-  width: 2px;
-  border-radius: 2px;
-  background: transparent;
-  transition: background 0.15s;
-}
-
-.resizer:hover::after {
-  background: var(--primary);
-}
-.scrollbar.vertical > .slider,
-.scrollbar.vertical { width: 8px !important; }
-.scrollbar.horizontal > .slider,
-.scrollbar.horizontal { height: 8px !important;}

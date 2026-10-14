@@ -19,5 +19,6 @@ export default defineConfig({
       ],
      // globalAPI: true // Đăng ký biến toàn cục `window.monaco` để các thư viện bổ sung có thể truy cập
     })
+
   ],
 })
