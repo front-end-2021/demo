@@ -33,7 +33,7 @@ npm run build:single # build ra 1 file HTML: dist-single/index.html
   - Ô class hiển thị stereotype, lớp cha / interface, thuộc tính và phương thức với ký hiệu `+ - # ~` (abstract in nghiêng, static gạch chân).
   - Quan hệ tự động: kế thừa (mũi tên tam giác rỗng), hiện thực interface (nét đứt), association (field có kiểu là class khác) và aggregation (field kiểu danh sách `List<T>`, `T[]`...).
   - **Kéo thả** từng ô (bám lưới 10px), phím mũi tên dịch ô đang chọn (Shift = 50px). Chọn một ô thì quan hệ của nó được tô nổi bật.
-  - Đường nối được **vẽ tự động và né các ô class** (thuật toán A* trên lưới, ưu tiên ít khúc rẽ, hạn chế chạy trùng nhau); đi theo ngay khi kéo.
+  - Đường nối được **vẽ tự động và né các ô class** (thuật toán A* trên lưới, ưu tiên ít khúc rẽ); đi theo ngay khi kéo. Các đoạn giữa của đường nhiều khúc được **căn giữa khe hở** giữa hai ô (trái–phải hoặc trên–dưới) và **dịch sang hàng/cột bên cạnh để không chạy chồng lên đường khác** (bước 10px).
   - **Auto layout** xếp lớp cha ở trên, lớp con ở dưới. Zoom −/+ và Fit. Mã nguồn và vị trí được lưu trong `localStorage` (key `taskflow.diagram.v1`).
 - Phím `Esc` đóng form. Task mới mà chưa nhập gì sẽ tự bỏ khi đóng form.
 - Dữ liệu task lưu trong `localStorage` (key `taskflow.tasks.v1`); xoá key này để về dữ liệu mẫu.

@@ -114,6 +114,7 @@ export const snap = (v) => Math.round(v / GRID) * GRID
 const M = 6 // khoảng cách tối thiểu từ đường nối đến ô class
 const BEND = 6 // phí cho mỗi lần rẽ
 const OVERLAP = 2 // phí chạy trùng đoạn đã có đường khác
+const SLIDE_MAX = 6 // đoạn không kẹt giữa hai ô: được dịch tối đa 6 ô lưới (60px) mỗi phía để tránh trùng
 const DX = [1, 0, -1, 0] // 0 phải, 1 xuống, 2 trái, 3 lên
 const DY = [0, 1, 0, -1]
 const SIDE = { top: { out: 3, in: 1 }, bottom: { out: 1, in: 3 }, left: { out: 2, in: 0 }, right: { out: 0, in: 2 } }
@@ -310,6 +311,124 @@ function placeLabel(pts, text, boxes, taken) {
   return pick
 }
 
+/** Các nút lưới nằm trên đoạn ngang/dọc p→q. */
+function nodesOnSegment(p, q) {
+  const out = []
+  if (p.x === q.x) {
+    const i = p.x / GRID
+    for (let j = Math.ceil(Math.min(p.y, q.y) / GRID); j <= Math.floor(Math.max(p.y, q.y) / GRID); j++) out.push([i, j])
+  } else {
+    const j = p.y / GRID
+    for (let i = Math.ceil(Math.min(p.x, q.x) / GRID); i <= Math.floor(Math.max(p.x, q.x) / GRID); i++) out.push([i, j])
+  }
+  return out
+}
+
+/** Số bước lưới của đoạn p→q đang trùng với đoạn của một đường khác (used.H / used.V). */
+function countOverlap(p, q, used) {
+  if (!used || (p.x === q.x && p.y === q.y)) return 0
+  const horizontal = p.y === q.y
+  const ns = nodesOnSegment(p, q)
+  let c = 0
+  for (let n = 1; n < ns.length; n++) {
+    const [i, j] = ns[n]
+    const [pi, pj] = ns[n - 1]
+    if (horizontal ? used.H[j * used.cols + Math.min(i, pi)] : used.V[Math.min(j, pj) * used.cols + i]) c++
+  }
+  return c
+}
+
+/**
+ * Căn giữa các đoạn thẳng nằm giữa hai ô class.
+ * Với mỗi đoạn không chạm cổng (đoạn giữa của đường chữ Z, các đoạn giữa của đường nhiều khúc rẽ):
+ *  - đoạn dọc kẹt giữa một ô bên trái và một ô bên phải → dời ngang về giữa khe hở
+ *  - đoạn ngang kẹt giữa một ô phía trên và một ô phía dưới → dời dọc về giữa khe hở
+ * Chỉ trượt các đoạn "bậc thang" (hai đoạn kề cùng hướng, trượt không làm đường dài thêm), thử các vị trí
+ * trên lưới gần tâm nhất trước và lấy vị trí đầu tiên không đụng ô nào. Đoạn từ cổng ra nút lưới đầu tiên (sp, tp) giữ nguyên.
+ */
+function centerSegments(pts, boxes, sp, tp, isFree, used) {
+  const last = pts[pts.length - 1]
+  if (pts.length < 4 || !(sp.x === pts[0].x || sp.y === pts[0].y) || !(tp.x === last.x || tp.y === last.y)) return pts
+  let cur = pts
+  for (let pass = 0; pass < 2; pass++) {
+    for (let k = 1; k + 2 < cur.length; k++) cur = slideSegment(cur, k, boxes, sp, tp, isFree, used) ?? cur
+  }
+  return cur
+}
+
+function slideSegment(pts, k, boxes, sp, tp, isFree, used) {
+  const n = pts.length
+  const p = pts[k]
+  const q = pts[k + 1]
+  const vertical = p.x === q.x
+  const ax = vertical ? 'x' : 'y' // trục mà đoạn trượt trên đó
+  const sx = vertical ? 'y' : 'x' // trục dọc theo chiều dài đoạn
+  const lo = Math.min(p[sx], q[sx])
+  const hi = Math.max(p[sx], q[sx])
+  const at = p[ax]
+
+  // hai ô gần nhất ở hai bên của đoạn (chỉ xét ô có phần chồng lên đoạn theo chiều dài của nó)
+  let L = -Infinity
+  let R = Infinity
+  for (const b of Object.values(boxes)) {
+    const s0 = vertical ? b.y : b.x
+    const s1 = s0 + (vertical ? b.h : b.w)
+    if (!(s0 < hi && s1 > lo)) continue
+    const a0 = vertical ? b.x : b.y
+    const a1 = a0 + (vertical ? b.w : b.h)
+    if (a1 <= at) L = Math.max(L, a1)
+    else if (a0 >= at) R = Math.min(R, a0)
+  }
+  const bounded = Number.isFinite(L) && Number.isFinite(R)
+  const mid = bounded ? (L + R) / 2 : at
+
+  // số đoạn lưới của 3 đoạn bị ảnh hưởng (k-1, k, k+1) đang chạy trùng đường khác
+  const overlapOf = (m) => {
+    let c = 0
+    for (let a = k - 1; a <= k + 1; a++) c += countOverlap(m[a], m[a + 1], used)
+    return c
+  }
+  const now = overlapOf(pts)
+
+  const dPrev = Math.sign(at - pts[k - 1][ax])
+  const dNext = Math.sign(pts[k + 2][ax] - q[ax])
+  if (dPrev === 0 || dNext === 0) return null
+  const uShape = dPrev !== dNext
+  // đường quay đầu (chữ U) chỉ được trượt khi cần tránh trùng, vì trượt sẽ làm đường dài thêm
+  if (uShape && now === 0) return null
+  if (!bounded && now === 0) return null
+
+  const prevRef = k === 1 ? sp : pts[k - 1]
+  const nextRef = k + 2 === n - 1 ? tp : pts[k + 2]
+  const cands = []
+  if (bounded) {
+    for (let v = Math.ceil(L / GRID) * GRID; v <= R; v += GRID) {
+      if (v <= L || v === at) continue
+      if (now === 0 && Math.abs(v - mid) >= Math.abs(at - mid)) continue
+      cands.push(v)
+    }
+  } else {
+    for (let d = 1; d <= SLIDE_MAX; d++) cands.push(at + d * GRID, at - d * GRID)
+  }
+
+  const scored = []
+  for (const v of cands) {
+    // hai đoạn kề vẫn phải đi đúng hướng cũ (riêng đoạn ngay sau cổng được phép dài 0)
+    const okPrev = k === 1 ? (v - prevRef[ax]) * dPrev >= 0 : (v - prevRef[ax]) * dPrev > 0
+    const okNext = k + 2 === n - 1 ? (nextRef[ax] - v) * dNext >= 0 : (nextRef[ax] - v) * dNext > 0
+    if (!okPrev || !okNext) continue
+    const m = pts.map((pt) => ({ ...pt }))
+    m[k][ax] = v
+    m[k + 1][ax] = v
+    const ov = overlapOf(m)
+    if (now > 0 ? ov >= now : ov > 0) continue // phải ít trùng hơn hiện tại (hoặc không được gây trùng mới)
+    scored.push({ v, m, ov, d: bounded ? Math.abs(v - mid) : Math.abs(v - at) })
+  }
+  scored.sort((a, b) => a.ov - b.ov || a.d - b.d)
+  for (const c of scored) if (isFree([sp, ...c.m.slice(1, -1), tp])) return simplify(c.m)
+  return null
+}
+
 /**
  * @param relations  [{ key, from, to, kind, label }]
  * @param boxes      { [id]: { x, y, w, h } }
@@ -408,25 +527,34 @@ export function routeEdges(relations, boxes) {
     blocked[tCell] = 0
     ctx.gen++
     const nodes = astar(ctx, s, t, SIDE[e.sa].out, SIDE[e.sb].in)
-    blocked[sCell] = sOld
-    blocked[tCell] = tOld
 
     let pts
     if (nodes) {
-      for (let k = 1; k < nodes.length; k++) {
-        const p = nodes[k - 1]
-        const q = nodes[k]
-        if (p.j === q.j) ctx.usedH[p.j * cols + Math.min(p.i, q.i)] = 1
-        else ctx.usedV[Math.min(p.j, q.j) * cols + p.i] = 1
-      }
-      pts = [e.a, ...nodes.map((n) => ({ x: n.i * GRID, y: n.j * GRID })), e.b]
+      pts = simplify([e.a, ...nodes.map((n) => ({ x: n.i * GRID, y: n.j * GRID })), e.b])
+      // căn giữa các đoạn nằm giữa hai ô class (chạy khi hai nút s, t còn đang mở khoá)
+      const isFree = (m) =>
+        m.every((p, k) => k === 0 || nodesOnSegment(m[k - 1], p).every(([i, j]) => i >= 0 && j >= 0 && i < cols && j < rows && !blocked[j * cols + i]))
+      pts = centerSegments(pts, boxes, { x: s.i * GRID, y: s.j * GRID }, { x: t.i * GRID, y: t.j * GRID }, isFree, { H: ctx.usedH, V: ctx.usedV, cols })
     } else {
       // không tìm được đường: nối thẳng kiểu chữ L (có thể cắt qua ô khác)
       const sp = { x: s.i * GRID, y: s.j * GRID }
       const tp = { x: t.i * GRID, y: t.j * GRID }
-      pts = [e.a, sp, { x: tp.x, y: sp.y }, tp, e.b]
+      pts = simplify([e.a, sp, { x: tp.x, y: sp.y }, tp, e.b])
     }
-    pts = simplify(pts)
+    blocked[sCell] = sOld
+    blocked[tCell] = tOld
+
+    // đánh dấu các đoạn đã dùng (theo đường cuối cùng) để các đường sau tránh chạy trùng
+    for (let k = 1; k < pts.length; k++) {
+      const horizontal = pts[k].y === pts[k - 1].y
+      const ns = nodesOnSegment(pts[k - 1], pts[k])
+      for (let n = 1; n < ns.length; n++) {
+        const [i, j] = ns[n]
+        const [pi, pj] = ns[n - 1]
+        if (horizontal) ctx.usedH[j * cols + Math.min(i, pi)] = 1
+        else ctx.usedV[Math.min(j, pj) * cols + i] = 1
+      }
+    }
     const label = e.r.label ?? ''
     const lp = label ? placeLabel(pts, label, boxes, taken) : { x: 0, y: 0, anchor: 'middle' }
     out[e.idx] = { key: e.r.key, from: e.r.from, to: e.r.to, kind: e.r.kind, label, d: roundedPath(pts), points: pts, lx: lp.x, ly: lp.y, anchor: lp.anchor, routed: !!nodes }

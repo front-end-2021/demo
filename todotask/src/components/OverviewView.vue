@@ -36,16 +36,10 @@ const scrollEl = ref(null) // vùng cuộn .table-wrap, dùng làm `root` của 
 const TmThrotte = ref(150)
 
 // computed: tuỳ chọn giống IntersectionObserver API; root tự cập nhật khi scrollEl được gắn
-const OjIntersec = computed(() => ({
-  threshold: 0,
-  root: scrollEl.value,
-  rootMargin: '-10px 0px',
-}))
+const OjIntersec = computed(() => ({ threshold: 0, root: scrollEl.value, rootMargin: '-10px 0px', }))
 
 // Đánh dấu hàng trên DOM: data-in-view="true|false"
-function inViewport(isVisible, entry) {
-  entry.target.dataset.inView = String(isVisible)
-}
+function inViewport(isVisible, entry) { entry.target.dataset.inView = String(isVisible) }
 function clkTab(k) {
   ui.closeDrawer()
   ui.projectTab = k
