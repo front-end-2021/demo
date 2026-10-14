@@ -9,8 +9,7 @@ export default defineConfig({
     viteSingleFile({
       removeViteModuleLoader: false // Đảm bảo không ép inlining gây lỗi với worker asset
     }),
-    monacoEditorPlugin({
-      // Bật đầy đủ tất cả các language worker đi kèm của Monaco Editor
+    monacoEditorPlugin({ // Bật đầy đủ tất cả các language worker đi kèm của Monaco Editor
       languageWorkers: [
         'editorWorkerService', // Bắt buộc cho lõi của editor
         'css',                 // Phân tích cú pháp css, scss, less
@@ -18,8 +17,7 @@ export default defineConfig({
         'json',                // Phân tích cú pháp json
         'typescript'           // Phân tích cú pháp typescript, javascript
       ],
-      // Đăng ký biến toàn cục `window.monaco` để các thư viện bổ sung có thể truy cập
-     // globalAPI: true
+     // globalAPI: true // Đăng ký biến toàn cục `window.monaco` để các thư viện bổ sung có thể truy cập
     })
   ],
 })

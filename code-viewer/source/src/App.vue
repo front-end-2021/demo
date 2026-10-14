@@ -41,7 +41,7 @@
           <div v-for="file in filteredResults" :key="file.dir + file.name"
             :class="['file-item', selectedFilePath === file.dir + file.name ? 'active-file' : '']"
             @click="selectFile(file)">
-            <div class="file-path">{{ file.dir }}</div>
+            <div class="file-path">{{ file.sdir }}</div>
             <div class="file-name">📄 {{ file.name }}</div>
             <!-- Đoạn trích nội dung chứa từ khóa -->
             <div v-if="file.snippet" class="file-snippet">
@@ -103,7 +103,7 @@ const handleFolderUpload = async (event) => {
     let r = t.substring(0, l)
     r = `..${sep}${r.substring(f + 1)}${sep}`
     const dd = `..${sep}${sep}`
-    if (r.includes(dd)) { r = r.replaceAll(dd, t.substring(0, f + 1)); }
+    if (r.includes(dd)) { return r.replaceAll(dd,  `..${sep}`) }
     return r
   }
   for (const file of files) {
