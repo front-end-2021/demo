@@ -19,7 +19,7 @@ export default defineConfig({
         'typescript'           // Phân tích cú pháp typescript, javascript
       ],
       // Đăng ký biến toàn cục `window.monaco` để các thư viện bổ sung có thể truy cập
-      globalAPI: true
+     // globalAPI: true
     })
   ],
 })
