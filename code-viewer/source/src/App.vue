@@ -95,6 +95,10 @@ const handleFolderUpload = async (event) => {
 
   const gDir = (t, sep = '/') => {
     const l = t.lastIndexOf(sep);
+    return `${t.substring(0, l)}${sep}`
+  }
+  const sDir = (t, sep = '/') => {
+    const l = t.lastIndexOf(sep);
     const f = t.indexOf(sep);
     let r = t.substring(0, l)
     r = `..${sep}${r.substring(f + 1)}${sep}`
@@ -118,6 +122,7 @@ const handleFolderUpload = async (event) => {
       newMap.set(path, {
         name: file.name,
         ext: ext,
+        sdir: sDir(path),
         dir: gDir(path),
         size: file.size,
         content: text

@@ -15,12 +15,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import * as monaco from 'monaco-editor';
-// self.MonacoEnvironment = {
-//     getWorker() { // Cấu hình môi trường tối giản để không phụ thuộc vào file worker vật lý riêng lẻ
-//         //return new Worker(URL.createObjectURL(new Blob([''], { type: 'application/javascript' })))
-//         return new Worker('data:text/javascript;charset=utf-8,' + encodeURIComponent(''));// Trả về một worker giả lập hoặc cấu hình rỗng nếu chỉ dùng highlight cơ bản cho C#
-//     }
-// };
+
 const props = defineProps({
     fileName: { type: String, required: true },
     fileDir: { type: String, required: true },
