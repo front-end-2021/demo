@@ -1,39 +1,40 @@
-Dưới đây là hướng dẫn chi tiết và đoạn code mẫu hoàn chỉnh viết bằng Vue 3 (Composition API / <script setup>) tích hợp đầy đủ tính năng: lọc bỏ thư mục rác sinh ra khi build (bin, target, venv), nhận diện loại ngôn ngữ, sử dụng Debounce để tìm kiếm không lag và hiển thị đoạn trích (snippet) kết quả.
+# Code Viewer
 
-### 1. Cài đặt thư viện bổ sung (Khuyến nghị)
+Xem, tìm kiếm và chỉnh sửa nhanh mã nguồn của một thư mục dự án ngay trong trình duyệt (Vue 3 + Monaco). File chỉ được đọc cục bộ, không tải lên máy chủ.
 
-Để tính năng Debounce hoạt động chính xác và giao diện đọc code có màu sắc chuẩn dev, bạn mở terminal của project Vue 3 và cài đặt:
-bash
-npm install lodash-es prismjs
-Hãy thận trọng khi sử dụng mã.
-(Lưu ý: Bạn cũng có thể dùng highlight.js thay cho prismjs tùy sở thích).
+## Chạy
 
-### 2. Code mẫu hoàn chỉnh (App.vue)
+```bash
+npm install
+npm run dev          # phát triển
+npm run build        # build ra dist/
+```
 
+## Tính năng
 
-### 3. Những điểm mấu chốt được giải quyết trong Code mẫu:
+- Mở thư mục bằng nút hoặc **kéo thả** thư mục vào cửa sổ. Tự bỏ qua `bin`, `obj`, `node_modules`, `.git`, `venv`… và file > 5 MB.
+- Tìm trong tên và nội dung file (debounce 250 ms): hiện số lần khớp và dòng đầu tiên chứa từ khoá; mở file sẽ tô sáng mọi vị trí khớp và cuộn tới vị trí đầu.
+- Lọc theo đuôi file (kèm số lượng), kéo cạnh sidebar để đổi độ rộng.
+- Mỗi file giữ bản nháp và lịch sử hoàn tác riêng; file có thay đổi chưa lưu được đánh dấu chấm cam.
+- `Dọn comment` cho file `.cs` (hoàn tác được bằng Ctrl Z), tải file về máy.
+- Giao diện sáng/tối theo hệ điều hành, co giãn trên màn hình hẹp.
 
-1. **`BLACKLIST_FOLDERS` thực tế:** Loại ngay các folder sinh ra khi compile ứng dụng mã nguồn lớn. Bạn thử nạp một project `.NET` nó sẽ tự động lờ đi hàng nghìn file trong folder `obj` và `bin`, giúp app chạy cực mượt.
-2. **`ALLOWED_EXTENSIONS` chọn lọc:** Giới hạn chỉ đọc file code thuần văn bản. Nếu người dùng vô tình để các file ảnh (`.png`, `.jpg`) hay file cấu hình nặng dạng nhị phân, hệ thống sẽ bỏ qua không cố nạp vào `file.text()` nhằm tiết kiệm RAM tối đa.
-3. **Debounce (Trễ thông minh):** Sử dụng hàm `debounce` từ `lodash-es` giúp ích rất lớn. Khi gõ từ khóa "Controller", trình duyệt sẽ không thực hiện tìm kiếm liên tục sau mỗi chữ "C", "o", "n"... mà nó đợi bạn gõ xong hẳn, dừng 300ms rồi mới quét đồng loạt các file.
-4. **Snippet & Highlight:** Hiển thị vị trí xuất hiện của từ khóa cùng một đoạn ký tự trước/sau nó để người dùng biết nhanh bối cảnh dòng code đó là gì trước khi click xem toàn bộ file.
+## Phím tắt
 
-<FollowUp>
-Bạn có muốn tôi hỗ trợ thêm về phần nào dựa trên đoạn code này không?
-* Cách cấu hình **PrismJS** để tự động tô màu code (Syntax Highlighting) cho chuyên nghiệp.
-* Cách tạo thêm tính năng **nhấp đúp chuột để tải xuống (download)** file đã chỉnh sửa ngược lại máy tính.
-</FollowUp>
+| Phím | Tác dụng |
+| --- | --- |
+| Ctrl/⌘ K | Tìm kiếm |
+| ↑ ↓ / Enter | Di chuyển và mở file trong kết quả |
+| Esc | Xoá từ khoá |
+| Ctrl/⌘ S | Lưu file đang mở (vào phiên làm việc) |
 
+## Cấu trúc
 
-code-viewer-project/
-├── node_modules/             # Thư mục chứa các thư viện npm đã cài đặt
-├── public/                   # Thư mục chứa tài nguyên tĩnh (favicon, v.v...)
-├── src/                      # Thư mục chứa mã nguồn chính
-│   ├── assets/               # Chứa các file css, hình ảnh dùng chung
-│   ├── components/           # (Tùy chọn) Nơi chứa các component nhỏ tách rời
-│   ├── App.vue               # Component gốc chứa toàn bộ mã nguồn tôi đã cung cấp
-│   └── main.js               # File khởi tạo ứng dụng Vue 3
-├── .gitignore                # File cấu hình bỏ qua khi đẩy lên GitHub
-├── index.html                # File HTML chính (nơi Vue mount ứng dụng vào)
-├── package.json              # File quản lý thông tin dự án và các thư viện cài đặt
-└── vite.config.js            # File cấu hình của Vite
+```
+src/
+├── App.vue                   # thanh trên, sidebar kết quả, đọc thư mục, tìm kiếm
+├── components/CodeEditor.vue # Monaco editor + thanh công cụ của file
+├── styles.css                # toàn bộ CSS (token màu + class dùng chung)
+├── utils/csharp.js           # xoá comment C#
+└── utils/file.js             # tính / định dạng kích thước
+```
