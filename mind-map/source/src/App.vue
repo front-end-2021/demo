@@ -3,7 +3,7 @@
     <!-- Thanh điều khiển -->
     <header class="control-panel">
       <h2>Mind</h2>
-      <button class="btn-primary" :disabled="busy" @click="handleSelectFolder">📁 Chọn thư mục dự án</button>
+      <button class="btn-primary" :disabled="busy" @click="handleSelectFolder">📁 Folder dự án</button>
       <input ref="folderInput" type="file" webkitdirectory multiple hidden @change="onFolderInput" />
       <label class="check" title="Thư viện JS/CSS (jQuery, Bootstrap…), proxy WCF trong Service References, *.Designer.cs… mặc định bị bỏ qua vì làm sơ đồ phình to mà ít giá trị">
         <input v-model="includeVendor" type="checkbox" :disabled="busy" @change="reload" /> Gồm thư viện &amp; mã sinh tự động
@@ -12,7 +12,7 @@
       <template v-if="hasData">
         <!-- Điều hướng: Tổng quan › project -->
         <nav class="crumbs">
-          <button class="btn-secondary" :class="{ active: view === OVERVIEW }" @click="openView(OVERVIEW)">🗂 Tổng quan</button>
+          <button class="btn-secondary" :class="{ active: view === OVERVIEW }" @click="openView(OVERVIEW)">Tổng quan</button>
           <span>›</span>
           <select :value="view === OVERVIEW ? '' : view" @change="openView($event.target.value)">
             <option value="" disabled>Chọn project…</option>
@@ -20,8 +20,9 @@
           </select>
         </nav>
         <button v-if="layingOut" class="btn-secondary" @click="stopLayout">⏸ Dừng sắp xếp</button>
-        <button v-else class="btn-secondary" @click="reLayout">🔄 Sắp xếp lại</button>
-        <button class="btn-secondary" @click="renderer?.getCamera().animatedReset()">⤢ Vừa khung</button>
+        <button v-else class="btn-secondary" @click="reLayout">Sắp xếp lại</button>
+        <button class="btn-secondary" @click="renderer?.getCamera().animatedReset()">Vừa khung</button>
+        <button class="btn-secondary" :class="{ active: showReport }" :disabled="!report" @click="showReport = !showReport">Báo cáo</button>
         <button class="btn-secondary" :class="{ active: visibility !== 'all' }" :disabled="!canFilter"
           :title="canFilter ? `Đang hiện: ${VISIBILITY[visibility].showing}. Bấm để chuyển sang bước tiếp theo.` : 'Chỉ có một loại node (toàn bộ độc lập hoặc toàn bộ có liên kết)'"
           @click="cycleVisibility">
@@ -41,38 +42,46 @@
 
       <div v-if="!hasData && !busy" class="empty-state">
         <p v-if="!isError">Chọn thư mục dự án (có thể là cả solution lớn). Sơ đồ mở ở màn hình <b>Tổng quan</b>: mỗi node là một project.
-          Bấm vào một project để xem chi tiết class / hàm bên trong.</p>
+          Bấm vào một project để xem các file và quan hệ giữa chúng: import, render component, gọi API, kế thừa, dùng CSS…</p>
       </div>
       <div v-if="busy" class="busy"><div class="spinner"></div>{{ statusMessage }}</div>
 
       <!-- Chú thích -->
       <div v-if="hasData && view === OVERVIEW" class="legend">
-        <span>Mỗi node là một project (to hơn = nhiều class/hàm hơn)</span>
+        <span>Mỗi node là một project (to hơn = nhiều file hơn)</span>
         <span><i class="line"></i>số trên cạnh = số tham chiếu</span>
         <span><b>Bấm vào project để xem chi tiết</b></span>
       </div>
       <div v-else-if="hasData" class="legend">
         <label v-for="(color, kind) in KIND_COLORS" :key="kind" class="kind" :title="`Chọn hình dạng cho node ${KIND_LABELS[kind]}`">
           <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
-            <circle v-if="shapes[kind] === 'circle'" cx="6" cy="6" r="5" :fill="color" />
-            <rect v-else-if="shapes[kind] === 'square'" x="1.5" y="1.5" width="9" height="9" :fill="color" />
-            <polygon v-else points="6,0.8 11.5,10.5 0.5,10.5" :fill="color" />
+            <component :is="shapeIcon(shapes[kind]).tag" v-bind="shapeIcon(shapes[kind]).attrs" :fill="color" />
           </svg>
           {{ KIND_LABELS[kind] }}
           <select :value="shapes[kind]" @change="setShape(kind, $event.target.value)">
             <option v-for="(name, shape) in SHAPES" :key="shape" :value="shape">{{ name }}</option>
           </select>
         </label>
-        <span><i class="line"></i>Gọi / dùng</span>
-        <span><i class="line inherit"></i>Kế thừa</span>
-        <span><i class="line cross"></i>Sang project khác</span>
+        <span v-for="(label, kind) in EDGE_LABELS" :key="kind"><i class="line" :style="{ background: EDGE_COLORS[kind] }"></i>{{ label }}</span>
+        <span><i class="line faint"></i>Nét nhạt = suy đoán (khớp theo tên / URL)</span>
         <span><i class="ghost"></i>Node của project khác (bấm đúp để mở)</span>
       </div>
 
+      <!-- Báo cáo văn bản -->
+      <div v-if="showReport && report" class="report">
+        <div class="report-head">
+          <b>Báo cáo cấu trúc</b>
+          <button class="btn-secondary small" @click="copyReport">{{ copied ? 'Đã chép' : 'Chép Markdown' }}</button>
+          <button class="btn-secondary small" @click="showReport = false">✕</button>
+        </div>
+        <pre>{{ report }}</pre>
+      </div>
+
       <!-- Bảng thông tin -->
-      <div v-if="info" class="info">
+      <div v-if="info && !showReport" class="info">
         <b>{{ info.label }}</b>
         <span v-for="(line, i) in info.lines" :key="i">{{ line }}</span>
+        <span v-if="info.symbols?.length" class="symbols">Định nghĩa: {{ info.symbols.join(', ') }}</span>
         <button v-if="info.open" class="btn-primary small" @click="openView(info.open.view, info.open.focus)">Mở {{ info.open.label }} →</button>
       </div>
     </main>
@@ -83,13 +92,27 @@
 import { ref, computed, onBeforeUnmount } from 'vue'
 import Graph from 'graphology'
 import Sigma from 'sigma'
-import { SHAPES, nodeProgramClasses, drawNodeHover } from './utils/nodeShapes'
-import { listDirectory, listFileList } from './utils/sourceFiles'
+import { SHAPES, nodeProgramClasses, drawNodeHover, shapeIcon } from './analyzer/node-shapes'
+import { useAnalyzer, OVERVIEW } from './analyzer/useAnalyzer'
 
-const OVERVIEW = '__overview__'
-const KIND_COLORS = { class: '#38bdf8', function: '#eab308', file: '#94a3b8', html: '#fb923c', css: '#2dd4bf' }
-const KIND_LABELS = { class: 'Class', function: 'Hàm', file: 'File', html: 'HTML', css: 'CSS' }
-const EDGE_COLORS = { call: '#cbd5e1', inherit: '#7dd3fc', trigger: '#fdba74', style: '#99f6e4', cross: '#c4b5fd' }
+// Loại node (theo file) — xem uiType() trong analyzer/08-view-model.js
+const KIND_COLORS = {
+  component: '#10b981', module: '#eab308', backend: '#38bdf8', html: '#fb923c', css: '#2dd4bf',
+  endpoint: '#ef4444', route: '#6366f1', external: '#94a3b8',
+}
+const KIND_LABELS = {
+  component: 'Component', module: 'JS / TS', backend: 'Back-end', html: 'HTML', css: 'CSS',
+  endpoint: 'API endpoint', route: 'Route', external: 'Thư viện ngoài',
+}
+// Nhóm cạnh — xem EDGE_GROUPS trong analyzer/08-view-model.js
+const EDGE_COLORS = {
+  use: '#cbd5e1', inherit: '#7dd3fc', inject: '#a78bfa', api: '#f87171', event: '#fdba74',
+  route: '#a5b4fc', style: '#99f6e4', cross: '#c4b5fd',
+}
+const EDGE_LABELS = {
+  use: 'Import / dùng', inherit: 'Kế thừa', inject: 'Tiêm phụ thuộc', api: 'Gọi API',
+  event: 'Sự kiện / emit', route: 'Route', style: 'CSS', cross: 'Sang project khác',
+}
 const PROJECT_PALETTE = ['#2563eb', '#16a34a', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#db2777', '#65a30d', '#ea580c', '#0d9488', '#9333ea', '#ca8a04']
 const BIG = 5000 // từ ngưỡng này: cạnh không có mũi tên, ẩn cạnh khi kéo/zoom
 
@@ -108,6 +131,9 @@ const info = ref(null)
 const projects = ref([])
 const view = ref(OVERVIEW)
 const includeVendor = ref(false)
+const report = ref('')
+const showReport = ref(false)
+const copied = ref(false)
 
 const projectById = computed(() => new Map(projects.value.map((p, i) => [p.id, { ...p, color: PROJECT_PALETTE[i % PROJECT_PALETTE.length] }])))
 const projectName = (id) => projectById.value.get(id)?.label || id
@@ -123,9 +149,6 @@ const skippedText = computed(() => {
 
 let graph = null
 let renderer = null
-let worker = null
-let job = 0 // mỗi yêu cầu gửi Worker có số job riêng; message của job cũ bị bỏ qua
-let source = null // { items, markers } — danh sách file của thư mục đang mở (để tải lại khi đổi tuỳ chọn)
 let nodeIds = []
 let indexOf = new Map() // id node → vị trí trong mảng vị trí Worker gửi về
 let focused = null
@@ -136,9 +159,13 @@ let isOverview = true // màn hình hiện tại là tổng quan?
 
 /* ------------------------------ Hình dạng node ------------------------------ */
 
-// Hình dạng theo loại node — người dùng chọn ở bảng chú thích, lưu lại cho lần sau
-const SHAPE_KEY = 'code-mindmap.nodeShapes'
-const DEFAULT_SHAPES = { class: 'square', function: 'circle', file: 'triangle', html: 'triangle', css: 'circle' }
+// Hình dạng theo loại node — người dùng chọn ở bảng chú thích, lưu lại cho lần sau.
+// (Đổi khoá lưu khi đổi bộ mặc định, để lựa chọn đã lưu theo bộ cũ không che mất hình mới.)
+const SHAPE_KEY = 'code-mindmap.nodeShapes.v2'
+const DEFAULT_SHAPES = {
+  component: 'circle', module: 'diamond', backend: 'square', html: 'triangle', css: 'ellipse',
+  endpoint: 'square', route: 'pentagon', external: 'hexagon',
+}
 function loadShapes() {
   try {
     const saved = JSON.parse(localStorage.getItem(SHAPE_KEY) || '{}')
@@ -171,8 +198,8 @@ const VISIBILITY = {
   'no-isolated': { next: 'isolated-only', showing: 'node có liên kết', hide: (a) => a.isolated },
   'isolated-only': { next: 'all', showing: 'node độc lập', hide: (a) => !a.isolated },
 }
-VISIBILITY.all.button = computed(() => `🙈 Ẩn node độc lập (${fmt(isolatedCount.value)})`)
-VISIBILITY['no-isolated'].button = computed(() => `🙈 Ẩn node có liên kết (${fmt(linkedCount.value)})`)
+VISIBILITY.all.button = computed(() => `Ẩn node độc lập (${fmt(isolatedCount.value)})`)
+VISIBILITY['no-isolated'].button = computed(() => `Ẩn node có liên kết (${fmt(linkedCount.value)})`)
 VISIBILITY['isolated-only'].button = '👁 Hiện tất cả node'
 const canFilter = computed(() => isolatedCount.value > 0 && linkedCount.value > 0)
 const isHidden = (attr) => VISIBILITY[visibility.value].hide(attr)
@@ -200,7 +227,7 @@ function updateBBox() {
 
 /* ---------------------------------- Vẽ ---------------------------------- */
 
-/** Trộn màu với trắng (t = 0 → giữ nguyên, 1 → trắng) — dùng cho node của project khác. */
+/** Trộn màu với trắng (t = 0 → giữ nguyên, 1 → trắng) — dùng cho node của project khác và cạnh suy đoán. */
 function tint(hex, t) {
   const n = parseInt(hex.slice(1), 16)
   const mix = (c) => Math.round(c + (255 - c) * t)
@@ -235,6 +262,7 @@ function buildGraph({ view: v, nodes, edges, positions }) {
         label: n.ghost ? '' : fullLabel,
         fullLabel,
         file: n.file,
+        symbols: n.symbols,
         kind: n.type,
         project: n.project,
         ghost: !!n.ghost,
@@ -254,9 +282,11 @@ function buildGraph({ view: v, nodes, edges, positions }) {
       })
     } else {
       const crossProject = graph.getNodeAttribute(e.source, 'ghost') || graph.getNodeAttribute(e.target, 'ghost')
+      const base = crossProject ? EDGE_COLORS.cross : EDGE_COLORS[e.kind] || EDGE_COLORS.use
       graph.mergeEdge(e.source, e.target, {
         kind: e.kind,
-        color: crossProject ? EDGE_COLORS.cross : EDGE_COLORS[e.kind] || EDGE_COLORS.call,
+        kinds: e.kinds,
+        color: e.inferred ? tint(base, 0.55) : base, // cạnh suy đoán vẽ nhạt hơn
         size: Math.min(4, 0.8 + Math.log2(e.weight || 1)),
         type: big ? 'line' : 'arrow',
       })
@@ -376,9 +406,10 @@ function focus(id) {
       label: a.fullLabel || a.label,
       lines: [
         a.file,
-        `Project: ${projectName(a.project)}`,
-        `Gọi / dùng ${fmt(graph.outDegree(id))} · Được dùng bởi ${fmt(graph.inDegree(id))} (trong màn hình này)`,
-      ],
+        `${KIND_LABELS[a.kind] ?? a.kind} · Project: ${projectName(a.project)}`,
+        `Dùng ${fmt(graph.outDegree(id))} · Được dùng bởi ${fmt(graph.inDegree(id))} (trong màn hình này)`,
+      ].filter(Boolean),
+      symbols: a.symbols,
       open: a.ghost ? { view: a.project, focus: id, label: projectName(a.project) } : null,
     }
   }
@@ -391,7 +422,7 @@ function showProjectInfo(id) {
   info.value = {
     label: p.label,
     lines: [
-      `${fmt(p.files)} file · ${fmt(p.nodes)} class / hàm`,
+      `${fmt(p.files)} file · ${fmt(p.nodes)} node`,
       `Dùng project khác: ${fmt(p.edgesOut)} tham chiếu · Được dùng: ${fmt(p.edgesIn)}`,
       'Bấm để xem chi tiết',
     ],
@@ -416,12 +447,15 @@ function applyPositions(positions) {
   })
 }
 
-/* -------------------------------- Worker -------------------------------- */
-
-function send(message) {
-  job++
-  worker.postMessage({ ...message, job })
+async function copyReport() {
+  try {
+    await navigator.clipboard.writeText(report.value)
+    copied.value = true
+    setTimeout(() => (copied.value = false), 1500)
+  } catch { /* trình duyệt chặn clipboard */ }
 }
+
+/* ------------------------------- Bộ phân tích ------------------------------- */
 
 function fail(message) {
   isError.value = true
@@ -430,8 +464,7 @@ function fail(message) {
   layingOut.value = false
 }
 
-function onWorkerMessage({ data }) {
-  if (data.job !== job) return // message của yêu cầu cũ
+function onAnalyzerMessage(data) {
   try {
     switch (data.type) {
       case 'progress':
@@ -441,6 +474,7 @@ function onWorkerMessage({ data }) {
         projects.value = data.projects
         stats.value = data.stats
         skipped.value = data.skipped
+        report.value = data.report
         if (!data.projects.length) fail('Không tìm thấy file mã nguồn được hỗ trợ trong thư mục này.')
         break
       case 'graph':
@@ -468,61 +502,60 @@ function onWorkerMessage({ data }) {
   }
 }
 
-function startWorker() {
-  worker?.terminate() // giải phóng toàn bộ bộ nhớ của lần mở trước
-  worker = new Worker(new URL('./parser.worker.js', import.meta.url), { type: 'module' })
-  worker.onmessage = onWorkerMessage
-  worker.onerror = (e) => {
-    console.error(e)
-    fail(e.message
-      ? `Lỗi xử lý: ${e.message}`
-      : 'Bộ xử lý bị dừng đột ngột (thường do hết bộ nhớ). Thử mở thư mục nhỏ hơn hoặc bỏ chọn "Gồm thư viện & mã sinh tự động".')
-  }
-  worker.onmessageerror = () => fail('Không truyền được dữ liệu giữa giao diện và bộ xử lý.')
-}
+const analyzer = useAnalyzer({ onMessage: onAnalyzerMessage, onError: fail })
 
 function openView(v, focusNode = null) {
-  if (!worker || !v) return
+  if (!v || !hasData.value) return
   focus(null)
   pendingFocus = focusNode
   isError.value = false
   statusMessage.value = v === OVERVIEW ? 'Đang mở tổng quan…' : `Đang mở ${projectName(v)}…`
   view.value = v
-  send({ type: 'show', view: v })
+  analyzer.show(v)
 }
 
 function reLayout() {
   focus(null)
-  send({ type: 'show', view: view.value, relayout: true })
+  analyzer.show(view.value, { relayout: true })
 }
 
 function stopLayout() {
-  send({ type: 'stop', view: view.value }) // Worker giữ nguyên bố cục hiện tại cho màn hình này
+  analyzer.stop(view.value) // Worker giữ nguyên bố cục hiện tại cho màn hình này
   layingOut.value = false
   statusMessage.value = ''
 }
 
 /* ------------------------------ Mở thư mục ------------------------------ */
 
-function load() {
-  if (!source) return
+/** Xoá trạng thái của lần mở trước (giữ lại Sigma để dùng tiếp). */
+function resetView() {
   busy.value = true
   isError.value = false
   hasData.value = false
   stats.value = null
   skipped.value = null
   info.value = null
+  report.value = ''
+  showReport.value = false
   projects.value = []
   focused = null
   graph = null
-  renderer?.setGraph(new Graph()) // xoá sơ đồ cũ (giữ lại Sigma để dùng tiếp)
-  if (!source.items.length) return fail('Không tìm thấy file mã nguồn được hỗ trợ trong thư mục này.')
-  statusMessage.value = `Đang đọc ${fmt(source.items.length)} file…`
-  startWorker()
-  send({ type: 'load', items: source.items, markers: source.markers, includeVendor: includeVendor.value })
+  renderer?.setGraph(new Graph())
 }
 
-const reload = () => source && load()
+/** Bắt đầu phân tích; `start` trả về { count, started } từ useAnalyzer. */
+async function run(start) {
+  resetView()
+  statusMessage.value = 'Đang liệt kê file…'
+  try {
+    const { count, started } = await start()
+    if (!started) return fail('Không tìm thấy file nào trong thư mục này.')
+    statusMessage.value = `Đang đọc ${fmt(count)} file…`
+  } catch (err) {
+    console.error(err)
+    fail(`Không đọc được thư mục: ${err.message}`)
+  }
+}
 
 async function handleSelectFolder() {
   // Trình duyệt không hỗ trợ showDirectoryPicker (Firefox, Safari) → dùng <input webkitdirectory>
@@ -533,29 +566,27 @@ async function handleSelectFolder() {
   } catch {
     return // người dùng bấm Huỷ
   }
-  busy.value = true
-  isError.value = false
-  statusMessage.value = 'Đang liệt kê file…'
-  try {
-    source = await listDirectory(dirHandle, (n) => { statusMessage.value = `Đang liệt kê file… ${fmt(n)}` })
-    load()
-  } catch (err) {
-    console.error(err)
-    fail(`Không đọc được thư mục: ${err.message}`)
-  }
+  await run(() => analyzer.analyzeDirectory(dirHandle, {
+    includeVendor: includeVendor.value,
+    onCount: (n) => { statusMessage.value = `Đang liệt kê file… ${fmt(n)}` },
+  }))
 }
 
 function onFolderInput(e) {
   const list = e.target.files
-  if (list.length) {
-    source = listFileList(list)
-    load()
-  }
+  if (list.length) run(() => analyzer.analyzeFileList(list, { includeVendor: includeVendor.value }))
   e.target.value = ''
 }
 
+/** Đổi tuỳ chọn "Gồm thư viện & mã sinh tự động" → phân tích lại thư mục đang mở. */
+function reload() {
+  if (!analyzer.hasSource()) return
+  resetView()
+  statusMessage.value = 'Đang phân tích lại…'
+  analyzer.reload({ includeVendor: includeVendor.value })
+}
+
 onBeforeUnmount(() => {
-  worker?.terminate()
   renderer?.kill()
 })
 </script>
@@ -582,7 +613,7 @@ button:disabled { opacity: 0.5; cursor: default; }
 .muted { color: #94a3b8; }
 
 .canvas-container { flex: 1; position: relative; min-height: 0; }
-.graph-canvas { position: absolute; inset: 0; }
+.graph-canvas { position: absolute; inset: 0; height: calc(100% - 50px); }
 .empty-state {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   max-width: 460px; color: #94a3b8; font-size: 14px; line-height: 1.6; text-align: center; pointer-events: none;
@@ -595,18 +626,26 @@ button:disabled { opacity: 0.5; cursor: default; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .legend, .info {
-  position: absolute; z-index: 5; display: flex; gap: 6px 14px; padding: 8px 12px; font-size: 12px; color: #475569;
-  background: rgba(255, 255, 255, 0.94); border: 1px solid #e2e8f0; border-radius: 6px;
+  position: absolute; z-index: 5; display: flex; gap: 6px 14px; padding: 8px 12px 2px 12px; font-size: 12px; 
+  color: #475569; background: rgba(255, 255, 255, 0.94); border: 1px solid #e2e8f0; border-radius: 6px;
 }
-.legend { left: 12px; bottom: 12px; flex-wrap: wrap; align-items: center; max-width: calc(100% - 24px); }
+.legend { left: 12px; bottom: 0; flex-wrap: wrap; align-items: center; max-width: calc(100% - 24px); }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend .kind { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
 .legend select { font: inherit; font-size: 11px; color: #475569; padding: 1px 2px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; cursor: pointer; }
 .legend i.line { width: 16px; height: 2px; background: #94a3b8; }
-.legend i.line.inherit { background: #7dd3fc; }
-.legend i.line.cross { background: #c4b5fd; }
+.legend i.line.faint { background: #94a3b8; opacity: 0.4; }
 .legend i.ghost { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; border: 1px dashed #64748b; }
 .info { right: 12px; top: 12px; flex-direction: column; max-width: 380px; }
 .info b { color: #0f172a; font-size: 13px; word-break: break-all; }
 .info span { word-break: break-all; }
+.info .symbols { color: #64748b; word-break: normal; }
+.btn-secondary.small { padding: 4px 8px; font-size: 12px; }
+.report {
+  position: absolute; z-index: 6; right: 12px; top: 12px; bottom: 12px; width: min(560px, 50%);
+  display: flex; flex-direction: column; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+}
+.report-head { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #e2e8f0; }
+.report-head b { flex: 1; font-size: 13px; color: #0f172a; }
+.report pre { flex: 1; margin: 0; padding: 12px; overflow: auto; font-size: 12px; line-height: 1.5; white-space: pre-wrap; color: #334155; }
 </style>

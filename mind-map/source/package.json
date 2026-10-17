@@ -9,8 +9,17 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@babel/parser": "^8.0.7",
+        "@vue/compiler-sfc": "^3.5.44",
         "graphology": "^0.26.0",
+        "graphology-layout": "^0.6.1",
         "graphology-layout-forceatlas2": "^0.10.1",
+        "ignore": "^7.0.12",
+        "jsonc-parser": "^3.3.1",
+        "parse5": "^8.0.1",
+        "postcss": "^8.5.30",
+        "postcss-scss": "^4.0.9",
+        "postcss-selector-parser": "^7.1.6",
         "sigma": "^3.0.3",
         "vue": "^3.5.0"
     },
