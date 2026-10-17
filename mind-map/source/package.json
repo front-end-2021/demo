@@ -10,6 +10,7 @@
     },
     "dependencies": {
         "@babel/parser": "^8.0.7",
+        "@sigma/edge-curve": "^3.1.0",
         "@vue/compiler-sfc": "^3.5.44",
         "graphology": "^0.26.0",
         "graphology-layout": "^0.6.1",

@@ -5,14 +5,17 @@
       <h2>Mind</h2>
       <button class="btn-primary" :disabled="busy" @click="handleSelectFolder">📁 Folder dự án</button>
       <input ref="folderInput" type="file" webkitdirectory multiple hidden @change="onFolderInput" />
-      <label class="check" title="Thư viện JS/CSS (jQuery, Bootstrap…), proxy WCF trong Service References, *.Designer.cs… mặc định bị bỏ qua vì làm sơ đồ phình to mà ít giá trị">
-        <input v-model="includeVendor" type="checkbox" :disabled="busy" @change="reload" /> Gồm thư viện &amp; mã sinh tự động
+      <label class="check"
+        title="Thư viện JS/CSS (jQuery, Bootstrap…), proxy WCF trong Service References, *.Designer.cs… mặc định bị bỏ qua vì làm sơ đồ phình to mà ít giá trị">
+        <input v-model="includeVendor" type="checkbox" :disabled="busy" @change="reload" /> Gồm thư viện &amp; mã sinh
+        tự động
       </label>
 
       <template v-if="hasData">
         <!-- Điều hướng: Tổng quan › project -->
         <nav class="crumbs">
-          <button class="btn-secondary" :class="{ active: view === OVERVIEW }" @click="openView(OVERVIEW)">Tổng quan</button>
+          <button class="btn-secondary" :class="{ active: view === OVERVIEW }" @click="openView(OVERVIEW)">Tổng
+            quan</button>
           <span>›</span>
           <select :value="view === OVERVIEW ? '' : view" @change="openView($event.target.value)">
             <option value="" disabled>Chọn project…</option>
@@ -22,7 +25,8 @@
         <button v-if="layingOut" class="btn-secondary" @click="stopLayout">⏸ Dừng sắp xếp</button>
         <button v-else class="btn-secondary" @click="reLayout">Sắp xếp lại</button>
         <button class="btn-secondary" @click="renderer?.getCamera().animatedReset()">Vừa khung</button>
-        <button class="btn-secondary" :class="{ active: showReport }" :disabled="!report" @click="showReport = !showReport">Báo cáo</button>
+        <button class="btn-secondary" :class="{ active: showReport }" :disabled="!report"
+          @click="showReport = !showReport">Báo cáo</button>
         <button class="btn-secondary" :class="{ active: visibility !== 'all' }" :disabled="!canFilter"
           :title="canFilter ? `Đang hiện: ${VISIBILITY[visibility].showing}. Bấm để chuyển sang bước tiếp theo.` : 'Chỉ có một loại node (toàn bộ độc lập hoặc toàn bộ có liên kết)'"
           @click="cycleVisibility">
@@ -31,7 +35,9 @@
       </template>
       <div v-if="statusMessage" class="status-text" :class="{ error: isError }">{{ statusMessage }}</div>
       <div v-if="stats" class="stats" :title="skippedText">
-        {{ fmt(stats.files) }} file · {{ fmt(stats.nodes) }} node · {{ fmt(stats.edges) }} liên kết · {{ stats.projects }} project
+        {{ fmt(stats.files) }} file · {{ fmt(stats.nodes) }} node · {{ fmt(stats.edges) }} liên kết · {{ stats.projects
+        }}
+        project
         <span v-if="skippedText" class="muted">· {{ skippedText }}</span>
       </div>
     </header>
@@ -41,10 +47,16 @@
       <div ref="graphContainer" class="graph-canvas"></div>
 
       <div v-if="!hasData && !busy" class="empty-state">
-        <p v-if="!isError">Chọn thư mục dự án (có thể là cả solution lớn). Sơ đồ mở ở màn hình <b>Tổng quan</b>: mỗi node là một project.
-          Bấm vào một project để xem các file và quan hệ giữa chúng: import, render component, gọi API, kế thừa, dùng CSS…</p>
+        <p v-if="!isError">Chọn thư mục dự án (có thể là cả solution lớn). Sơ đồ mở ở màn hình <b>Tổng quan</b>: mỗi
+          node là
+          một project.
+          Bấm vào một project để xem các file và quan hệ giữa chúng: import, render component, gọi API, kế thừa, dùng
+          CSS…
+        </p>
       </div>
-      <div v-if="busy" class="busy"><div class="spinner"></div>{{ statusMessage }}</div>
+      <div v-if="busy" class="busy">
+        <div class="spinner"></div>{{ statusMessage }}
+      </div>
 
       <!-- Chú thích -->
       <div v-if="hasData && view === OVERVIEW" class="legend">
@@ -53,7 +65,8 @@
         <span><b>Bấm vào project để xem chi tiết</b></span>
       </div>
       <div v-else-if="hasData" class="legend">
-        <label v-for="(color, kind) in KIND_COLORS" :key="kind" class="kind" :title="`Chọn hình dạng cho node ${KIND_LABELS[kind]}`">
+        <label v-for="(color, kind) in KIND_COLORS" :key="kind" class="kind"
+          :title="`Chọn hình dạng cho node ${KIND_LABELS[kind]}`">
           <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true">
             <component :is="shapeIcon(shapes[kind]).tag" v-bind="shapeIcon(shapes[kind]).attrs" :fill="color" />
           </svg>
@@ -62,7 +75,8 @@
             <option v-for="(name, shape) in SHAPES" :key="shape" :value="shape">{{ name }}</option>
           </select>
         </label>
-        <span v-for="(label, kind) in EDGE_LABELS" :key="kind"><i class="line" :style="{ background: EDGE_COLORS[kind] }"></i>{{ label }}</span>
+        <span v-for="(label, kind) in EDGE_LABELS" :key="kind"><i class="line"
+            :style="{ background: EDGE_COLORS[kind] }"></i>{{ label }}</span>
         <span><i class="line faint"></i>Nét nhạt = suy đoán (khớp theo tên / URL)</span>
         <span><i class="ghost"></i>Node của project khác (bấm đúp để mở)</span>
       </div>
@@ -82,7 +96,8 @@
         <b>{{ info.label }}</b>
         <span v-for="(line, i) in info.lines" :key="i">{{ line }}</span>
         <span v-if="info.symbols?.length" class="symbols">Định nghĩa: {{ info.symbols.join(', ') }}</span>
-        <button v-if="info.open" class="btn-primary small" @click="openView(info.open.view, info.open.focus)">Mở {{ info.open.label }} →</button>
+        <button v-if="info.open" class="btn-primary small" @click="openView(info.open.view, info.open.focus)">Mở {{
+          info.open.label }} →</button>
       </div>
     </main>
   </div>
@@ -92,6 +107,7 @@
 import { ref, computed, onBeforeUnmount } from 'vue'
 import Graph from 'graphology'
 import Sigma from 'sigma'
+import EdgeCurveProgram, { EdgeCurvedArrowProgram } from "@sigma/edge-curve";
 import { SHAPES, nodeProgramClasses, drawNodeHover, shapeIcon } from './analyzer/node-shapes'
 import { useAnalyzer, OVERVIEW } from './analyzer/useAnalyzer'
 
@@ -271,28 +287,35 @@ function buildGraph({ view: v, nodes, edges, positions }) {
       })
     }
   })
-  for (const e of edges) {
-    if (overview) {
+  const sep = overview ? '=>' : '->'
+  const gKey = (a, b) => `${a}  ${sep}  ${b}`
+  const mDual = new Set(edges.map((e) => gKey(e.source, e.target)))
+  //console.log(edges, isOverview, mDual)
+  if (overview) {
+    for (const e of edges) {
       graph.mergeEdge(e.source, e.target, {
         kind: 'cross',
         label: fmt(e.weight),
         color: '#94a3b8',
         size: Math.min(8, 1 + Math.log10(e.weight + 1) * 1.6),
-        type: 'arrow',
+        type: "curved",       // Đặt loại cạnh là đường cong
+        curvature: 0.2,       // Độ uốn cong
       })
-    } else {
+    }
+  } else {
+    for (const e of edges) {
       const crossProject = graph.getNodeAttribute(e.source, 'ghost') || graph.getNodeAttribute(e.target, 'ghost')
       const base = crossProject ? EDGE_COLORS.cross : EDGE_COLORS[e.kind] || EDGE_COLORS.use
       graph.mergeEdge(e.source, e.target, {
         kind: e.kind,
         kinds: e.kinds,
         color: e.inferred ? tint(base, 0.55) : base, // cạnh suy đoán vẽ nhạt hơn
-        size: Math.min(4, 0.8 + Math.log2(e.weight || 1)),
-        type: big ? 'line' : 'arrow',
+        size: Math.min(3, 0.8 + Math.log2(e.weight || 1)),
+        type: "curved",       // Đặt loại cạnh là đường cong
+        curvature: 0.2,       // Độ uốn cong
       })
     }
   }
-
   // Kích thước theo số liên kết (vùng chi tiết) + đánh dấu node độc lập
   const base = nodes.length < 300 ? 9 : nodes.length < 3000 ? 5 : 3
   let isolated = 0
@@ -311,6 +334,10 @@ function buildGraph({ view: v, nodes, edges, positions }) {
   const settings = {
     defaultEdgeType: big ? 'line' : 'arrow',
     nodeProgramClasses, // tròn / vuông / tam giác
+    edgeProgramClasses: {
+      curved: EdgeCurveProgram,           // Dùng cho đường cong thường
+      curvedArrow: EdgeCurvedArrowProgram,// Dùng nếu muốn có mũi tên cong
+    },
     defaultNodeType: 'circle',
     defaultDrawNodeHover: drawNodeHover,
     renderEdgeLabels: overview, // tổng quan: hiện số tham chiếu trên cạnh
@@ -592,60 +619,295 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.app-container { display: flex; flex-direction: column; width: 100vw; height: 100vh; background-color: #f8f9fa; }
+.app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
 .control-panel {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 10px 12px; padding: 10px 20px;
-  background-color: #ffffff; border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
 }
-.control-panel h2 { margin: 0; font-size: 15px; color: #1e293b; }
-.btn-primary, .btn-secondary { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; }
-.btn-primary { background-color: #1d4ed8; color: white; }
-.btn-primary.small { padding: 6px 10px; font-size: 12px; align-self: flex-start; margin-top: 4px; }
-.btn-secondary { background-color: #e2e8f0; color: #334155; }
-.btn-secondary.active { background-color: #dbeafe; color: #1d4ed8; }
-button:disabled { opacity: 0.5; cursor: default; }
-.check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #475569; cursor: pointer; }
-.crumbs { display: inline-flex; align-items: center; gap: 6px; color: #94a3b8; }
-.crumbs select { max-width: 260px; padding: 7px 8px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; color: #0f172a; font: inherit; font-size: 13px; }
-.status-text { font-size: 13px; color: #2563eb; font-weight: 500; }
-.status-text.error { color: #dc2626; }
-.stats { margin-left: auto; font-size: 13px; color: #64748b; }
-.muted { color: #94a3b8; }
 
-.canvas-container { flex: 1; position: relative; min-height: 0; }
-.graph-canvas { position: absolute; inset: 0; height: calc(100% - 50px); }
+.control-panel h2 {
+  margin: 0;
+  font-size: 15px;
+  color: #1e293b;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: #1d4ed8;
+  color: white;
+}
+
+.btn-primary.small {
+  padding: 6px 10px;
+  font-size: 12px;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.btn-secondary {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.btn-secondary.active {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #475569;
+  cursor: pointer;
+}
+
+.crumbs {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #94a3b8;
+}
+
+.crumbs select {
+  max-width: 260px;
+  padding: 7px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #fff;
+  color: #0f172a;
+  font: inherit;
+  font-size: 13px;
+}
+
+.status-text {
+  font-size: 13px;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.status-text.error {
+  color: #dc2626;
+}
+
+.stats {
+  margin-left: auto;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.muted {
+  color: #94a3b8;
+}
+
+.canvas-container {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+.graph-canvas {
+  position: absolute;
+  inset: 0;
+  height: calc(100% - 50px);
+}
+
 .empty-state {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  max-width: 460px; color: #94a3b8; font-size: 14px; line-height: 1.6; text-align: center; pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 460px;
+  color: #94a3b8;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+  pointer-events: none;
 }
-.busy {
-  position: absolute; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 12px; background: rgba(248, 249, 250, 0.85); color: #334155; font-size: 14px;
-}
-.spinner { width: 28px; height: 28px; border: 3px solid #cbd5e1; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
 
-.legend, .info {
-  position: absolute; z-index: 5; display: flex; gap: 6px 14px; padding: 8px 12px 2px 12px; font-size: 12px; 
-  color: #475569; background: rgba(255, 255, 255, 0.94); border: 1px solid #e2e8f0; border-radius: 6px;
+.busy {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(248, 249, 250, 0.85);
+  color: #334155;
+  font-size: 14px;
 }
-.legend { left: 12px; bottom: 0; flex-wrap: wrap; align-items: center; max-width: calc(100% - 24px); }
-.legend span { display: inline-flex; align-items: center; gap: 6px; }
-.legend .kind { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
-.legend select { font: inherit; font-size: 11px; color: #475569; padding: 1px 2px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; cursor: pointer; }
-.legend i.line { width: 16px; height: 2px; background: #94a3b8; }
-.legend i.line.faint { background: #94a3b8; opacity: 0.4; }
-.legend i.ghost { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; border: 1px dashed #64748b; }
-.info { right: 12px; top: 12px; flex-direction: column; max-width: 380px; }
-.info b { color: #0f172a; font-size: 13px; word-break: break-all; }
-.info span { word-break: break-all; }
-.info .symbols { color: #64748b; word-break: normal; }
-.btn-secondary.small { padding: 4px 8px; font-size: 12px; }
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #cbd5e1;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.legend,
+.info {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  gap: 6px 14px;
+  padding: 8px 12px 2px 12px;
+  font-size: 12px;
+  color: #475569;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.legend {
+  left: 12px;
+  bottom: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: calc(100% - 24px);
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend .kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.legend select {
+  font: inherit;
+  font-size: 11px;
+  color: #475569;
+  padding: 1px 2px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.legend i.line {
+  width: 16px;
+  height: 2px;
+  background: #94a3b8;
+}
+
+.legend i.line.faint {
+  background: #94a3b8;
+  opacity: 0.4;
+}
+
+.legend i.ghost {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  border: 1px dashed #64748b;
+}
+
+.info {
+  right: 12px;
+  top: 12px;
+  flex-direction: column;
+  max-width: 380px;
+}
+
+.info b {
+  color: #0f172a;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.info span {
+  word-break: break-all;
+}
+
+.info .symbols {
+  color: #64748b;
+  word-break: normal;
+}
+
+.btn-secondary.small {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
 .report {
-  position: absolute; z-index: 6; right: 12px; top: 12px; bottom: 12px; width: min(560px, 50%);
-  display: flex; flex-direction: column; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
+  position: absolute;
+  z-index: 6;
+  right: 12px;
+  top: 12px;
+  bottom: 12px;
+  width: min(560px, 50%);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
 }
-.report-head { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #e2e8f0; }
-.report-head b { flex: 1; font-size: 13px; color: #0f172a; }
-.report pre { flex: 1; margin: 0; padding: 12px; overflow: auto; font-size: 12px; line-height: 1.5; white-space: pre-wrap; color: #334155; }
+
+.report-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.report-head b {
+  flex: 1;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.report pre {
+  flex: 1;
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  color: #334155;
+}
 </style>
