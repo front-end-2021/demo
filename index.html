@@ -1,33 +1,38 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
 <head>
-  <script>self["MonacoEnvironment"] = (function (paths) {
-          return { globalAPI: false, getWorkerUrl : function (moduleId, label) {
-              var result =  paths[label];
-              if (/^((http:)|(https:)|(file:)|(\/\/))/.test(result)) {
-                var currentUrl = String(window.location);
-                var currentOrigin = currentUrl.substr(0, currentUrl.length - window.location.hash.length - window.location.search.length - window.location.pathname.length);
-                if (result.substring(0, currentOrigin.length) !== currentOrigin) {
-                  var js = '/*' + label + '*/importScripts("' + result + '");';
-                  var blob = new Blob([js], { type: 'application/javascript' });
-                  return URL.createObjectURL(blob);
-                }
-              }
-              return result; } }; })({
-  "editorWorkerService": "/demo/monacoeditorwork/editor.worker.bundle.js",
-  "css": "/demo/monacoeditorwork/css.worker.bundle.js",
-  "html": "/demo/monacoeditorwork/html.worker.bundle.js",
-  "json": "/demo/monacoeditorwork/json.worker.bundle.js",
-  "typescript": "/demo/monacoeditorwork/ts.worker.bundle.js",
-  "javascript": "/demo/monacoeditorwork/ts.worker.bundle.js",
-  "less": "/demo/monacoeditorwork/css.worker.bundle.js",
-  "scss": "/demo/monacoeditorwork/css.worker.bundle.js",
-  "handlebars": "/demo/monacoeditorwork/html.worker.bundle.js",
-  "razor": "/demo/monacoeditorwork/html.worker.bundle.js"
-});</script>
-    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Code Explorer</title>
-  <script type="module" crossorigin src="/demo/assets/index-NxjQneRf.js"></script>
-  <link rel="stylesheet" crossorigin href="/demo/assets/index-Jsz56Pe5.css">
+    <title> Demo lazy load</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv='cache-control' content='no-cache' />
+    <meta http-equiv='expires' content='0' />
+    <meta http-equiv='pragma' content='no-cache' />
+    <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@100&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: Manjari; }
+    </style>
+    <style stl-grp-vtable>
+        table { font-size: 18px; }
+        colgroup col { background-color: #D6EEEE; }
+        th { height: 30px; padding: 0 12px; }
+        td { height: 24px; padding: 0 12px; }
+        td:first-child { width: 36px; }
+    </style>
 </head>
-<body><div id="app"></div></body></html>
+
+<body>
+    <main id="dainb-app">
+        <div class="content-view"></div>
+    </main>
+    <footer style="font-size: 3rem;"></footer>
+    <template id="dnb-table-view">
+        <table class="dnb-vlazy-tbl"></table>
+    </template>
+
+    <script src="/demo/lazyload/data.js"></script>
+    <script src="/demo/lazyload/components.js"></script>
+    <script src="/demo/lazyload/main.js"></script>
+</body>
+
+</html>
