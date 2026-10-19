@@ -2,8 +2,7 @@
 <html lang="vi">
 <head>
   <script>self["MonacoEnvironment"] = (function (paths) {
-          return {
-            globalAPI: false, getWorkerUrl : function (moduleId, label) {
+          return { globalAPI: false, getWorkerUrl : function (moduleId, label) {
               var result =  paths[label];
               if (/^((http:)|(https:)|(file:)|(\/\/))/.test(result)) {
                 var currentUrl = String(window.location);
@@ -14,23 +13,19 @@
                   return URL.createObjectURL(blob);
                 }
               }
-              return result;
-            }
-          };
-        })({
-  "editorWorkerService": "/monacoeditorwork/editor.worker.bundle.js",
-  "css": "/monacoeditorwork/css.worker.bundle.js",
-  "html": "/monacoeditorwork/html.worker.bundle.js",
-  "json": "/monacoeditorwork/json.worker.bundle.js",
-  "typescript": "/monacoeditorwork/ts.worker.bundle.js",
-  "javascript": "/monacoeditorwork/ts.worker.bundle.js",
-  "less": "/monacoeditorwork/css.worker.bundle.js",
-  "scss": "/monacoeditorwork/css.worker.bundle.js",
-  "handlebars": "/monacoeditorwork/html.worker.bundle.js",
-  "razor": "/monacoeditorwork/html.worker.bundle.js"
+              return result; } }; })({
+  "editorWorkerService": "/demo/monacoeditorwork/editor.worker.bundle.js",
+  "css": "/demo/monacoeditorwork/css.worker.bundle.js",
+  "html": "/demo/monacoeditorwork/html.worker.bundle.js",
+  "json": "/demo/monacoeditorwork/json.worker.bundle.js",
+  "typescript": "/demo/monacoeditorwork/ts.worker.bundle.js",
+  "javascript": "/demo/monacoeditorwork/ts.worker.bundle.js",
+  "less": "/demo/monacoeditorwork/css.worker.bundle.js",
+  "scss": "/demo/monacoeditorwork/css.worker.bundle.js",
+  "handlebars": "/demo/monacoeditorwork/html.worker.bundle.js",
+  "razor": "/demo/monacoeditorwork/html.worker.bundle.js"
 });</script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Code Explorer</title>
   <script type="module" crossorigin src="/demo/assets/index-NxjQneRf.js"></script>
   <link rel="stylesheet" crossorigin href="/demo/assets/index-Jsz56Pe5.css">
