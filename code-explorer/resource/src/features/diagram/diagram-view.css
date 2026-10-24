@@ -1,0 +1,215 @@
+/* Biến màu của khung sơ đồ class (giữ gói trong khung, không ảnh hưởng phần còn lại của ứng dụng) */
+.diagrams {
+    --text: #141b2d;
+    --text-2: #3b4458;
+    --muted: #7d8498;
+    --border: #e8ebf1;
+    --border-2: #dde1ea;
+    --primary: #2b7be4;
+    --primary-soft: #e8f1fd;
+    --mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, 'Liberation Mono', 'DejaVu Sans Mono', monospace;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    color: var(--text);
+    font-size: 13px;
+}
+
+/* ---------- Toolbar ---------- */
+.toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 16px;
+}
+
+.grow { flex: 1; }
+
+.lang {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--soft);
+    color: var(--text-2);
+    font: 600 11px var(--mono);
+}
+
+.stats {
+    margin-left: 6px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.sep {
+    width: 1px;
+    height: 20px;
+    margin: 0 4px;
+    background: var(--border-2);
+}
+
+.zoom {
+    min-width: 42px;
+    text-align: center;
+    color: var(--text-2);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Khu làm việc ---------- */
+.work {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+}
+
+.canvas {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    overflow: auto;
+    background: #fbfbfd;
+}
+
+.sizer { position: relative; }
+
+.content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+    /* lưới phẳng 20px */
+    background-image: linear-gradient(to right, #eceef4 1px, transparent 1px), linear-gradient(to bottom, #eceef4 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.edges {
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.edge path {
+    fill: none;
+    stroke: #3b4458;
+    stroke-width: 1.4;
+    transition: opacity 0.15s;
+}
+
+.edge.realization path { stroke-dasharray: 6 4; }
+
+.edge.hot path {
+    stroke: var(--primary);
+    stroke-width: 2;
+}
+
+.edge.dim { opacity: 0.28; }
+
+.label {
+    fill: var(--text-2);
+    font: 10.5px var(--mono);
+    paint-order: stroke;
+    stroke: #fbfbfd;
+    stroke-width: 4px;
+    stroke-linejoin: round;
+}
+
+.edge.hot .label { fill: var(--primary); }
+
+.empty {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    color: var(--muted);
+}
+
+/* ---------- Thanh trạng thái ---------- */
+.status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 28px;
+    padding: 0 16px;
+    background: var(--soft);
+    color: var(--text-2);
+    font: 11.5px var(--mono);
+}
+
+.sel { font-weight: 600; }
+
+.mouse {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+    .toolbar { padding: 8px 12px; }
+}
+/* ---------- Danh sách file trong sơ đồ & thông báo ---------- */
+.files {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 16px;
+    background: var(--soft);
+    font-size: 12px;
+}
+
+.hint { color: var(--muted); }
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    max-width: 240px;
+    padding: 1px 3px 1px 9px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--text-2);
+}
+
+.chip .nm {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chip button {
+    border: 0;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0 5px;
+    font: inherit;
+}
+
+.chip button:hover { color: var(--text); }
+
+.notice {
+    padding: 6px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+}
+
+.notice.warn {
+    background: #fffbeb;
+    color: #92400e;
+}
+
+.notice.err {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.empty p {
+    max-width: 380px;
+    margin: 0;
+    text-align: center;
+    line-height: 1.6;
+}

@@ -1,0 +1,68 @@
+html, body, #app {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: sans-serif;
+  background-color: #f8f9fa;
+}
+body {
+  --soft: #f6f7fa;
+}
+/* Nút dùng chung cho mọi component */
+.btn-primary,
+.btn-secondary {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: #1d4ed8;
+  color: white;
+}
+
+.btn-primary.small {
+  padding: 6px 10px;
+  font-size: 12px;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.btn-secondary {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.btn-secondary.active {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.btn-secondary.small {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Đang kéo thanh chia đôi: giữ con trỏ và không bôi đen chữ */
+body.is-resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+/* Monaco: từ khoá tìm kiếm được tô sáng và dòng vừa nhảy tới (decoration nằm ngoài scoped CSS của component) */
+.find-hit {
+  border-radius: 2px;
+  background: rgba(250, 204, 21, 0.45);
+}
+
+.jump-line {
+  background: rgba(250, 204, 21, 0.28);
+}
