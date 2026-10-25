@@ -371,7 +371,8 @@ test('nhiều ngôn ngữ trong một sơ đồ: parse riêng từng ngôn ngữ
 test('mọi ngôn ngữ: autoLayout xếp tầng và routeEdges không xuyên qua ô class', () => {
   for (const [label, r] of [['Java', parseJavaFiles(JAVA_FILES)], ['Kotlin', parseKotlin(KT)], ['Python', parsePythonFiles(PY_FILES)]]) {
     const layout = autoLayout(r, estimateSize)
-    const boxes = Object.fromEntries(r.types.map((t) => [t.id, { ...layout[t.id], ...estimateSize(t) }]))
+    //const boxes = Object.fromEntries(r.types.map((t) => [t.id, { ...layout[t.id], ...estimateSize(t) }]))
+    const boxes = new Map(r.types.map((t) => [t.id, { ...layout[t.id], ...estimateSize(t) }]))
     assert.ok(r.types.every((t) => Number.isFinite(layout[t.id]?.x) && Number.isFinite(layout[t.id]?.y)), label)
     const edges = routeEdges(r.relations, boxes)
     assert.equal(edges.length, r.relations.length, label)

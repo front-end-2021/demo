@@ -2,7 +2,7 @@
   <div class="app-container">
     <TopBar />
     <div ref="splitEl" class="main-split">
-      <template v-if="showExplorer">
+      <template v-if="ws.hasData && showExplorer">
         <ExplorerPanel :style="{ width: layout.explorerWidth + 'px' }" />
         <SplitHandle @drag="onDragExplorer" />
       </template>

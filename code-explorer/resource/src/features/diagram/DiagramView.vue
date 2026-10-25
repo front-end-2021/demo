@@ -13,19 +13,18 @@ const selection = useSelectionStore()
 const graph = useGraphStore()
 
 const canvas = ref(null)
-const content = ref(null)
 const zoom = ref(1)
 const view = reactive({ w: 0, h: 0 })
 const supported = supportedLabel()
 
 // ---------- hình học ----------
 const boxes = computed(() => {
-  const out = {}
+  const out = new Map()
   for (const t of diagram.types) {
     const p = diagram.positions[t.id]
     if (!p) continue
     const s = diagram.sizeOf(t)
-    out[t.id] = { x: p.x, y: p.y, w: s.w, h: s.h }
+    out.set(t.id, { x: p.x, y: p.y, w: s.w, h: s.h })
   }
   return out
 })
@@ -33,12 +32,11 @@ const boxes = computed(() => {
 const edges = computed(() => routeEdges(diagram.relations, boxes.value))
 
 const bounds = computed(() => {
-  let r = 0
-  let b = 0
-  for (const bx of Object.values(boxes.value)) {
+  let r = 0, b = 0
+  boxes.value.forEach((bx) => { 
     r = Math.max(r, bx.x + bx.w)
     b = Math.max(b, bx.y + bx.h)
-  }
+  })
   return { r, b }
 })
 
@@ -111,10 +109,9 @@ defineExpose({ arrange, zoom, zoomBy, fit })
       <button class="tool" :class="{ on: diagram.mode === 'follow' }" title="Sơ đồ luôn vẽ file đang chọn" @click="diagram.followSelection()">
         Theo file đang chọn
       </button>
-      <button class="tool" :disabled="!canAddCurrent" title="Thêm file đang chọn vào sơ đồ (cũng có thể Ctrl + bấm một file trong danh sách)"
-        @click="diagram.add(selection.filePath)">
-        + Thêm file đang chọn
-      </button>
+      <button class="tool" :disabled="!canAddCurrent" 
+        title="Thêm file đang chọn vào sơ đồ (cũng có thể Ctrl + bấm một file trong danh sách)"
+        @click="diagram.add(selection.filePath)">+ Thêm file đang chọn</button>
       <span class="stats">{{ diagram.types.length }} class · {{ edges.length }} quan hệ</span>
       <!-- <span class="grow" />
       <button class="tool" title="Xếp lại mọi class theo tầng kế thừa" @click="arrange">Xếp tự động</button>
@@ -143,7 +140,7 @@ defineExpose({ arrange, zoom, zoomBy, fit })
     <div class="work">
       <div ref="canvas" class="canvas" @pointerdown="onCanvasDown">
         <div class="sizer" :style="{ width: size.w * zoom + 'px', height: size.h * zoom + 'px' }">
-          <div ref="content" class="content" :style="{ width: size.w + 'px', height: size.h + 'px', transform: `scale(${zoom})` }">
+          <div class="content" :style="{ width: size.w + 'px', height: size.h + 'px', transform: `scale(${zoom})` }">
             <svg class="edges" :width="size.w" :height="size.h" aria-hidden="true">
               <defs>
                 <template v-for="state in ['n', 'h']" :key="state">

@@ -305,7 +305,13 @@ function placeLabel(pts, text, boxes, taken) {
   }
   cands.sort((p, q) => q.len - p.len)
   const hits = (r, o) => r.x < o.x + o.w && r.x + r.w > o.x && r.y < o.y + o.h && r.y + r.h > o.y
-  const free = (c) => !Object.values(boxes).some((b) => hits(c.rect, b)) && !taken.some((t) => hits(c.rect, t))
+  const mSome = (c) => {
+    for (let b of boxes.values()) {
+      if(hits(c.rect, b)) { return true }
+    }
+    return false
+  }
+  const free = (c) => !mSome(c) && !taken.some((t) => hits(c.rect, t))
   const pick = cands.find(free) ?? cands[0]
   taken.push(pick.rect)
   return pick
@@ -370,15 +376,15 @@ function slideSegment(pts, k, boxes, sp, tp, isFree, used) {
   // hai ô gần nhất ở hai bên của đoạn (chỉ xét ô có phần chồng lên đoạn theo chiều dài của nó)
   let L = -Infinity
   let R = Infinity
-  for (const b of Object.values(boxes)) {
+  boxes.forEach((b) => {
     const s0 = vertical ? b.y : b.x
     const s1 = s0 + (vertical ? b.h : b.w)
-    if (!(s0 < hi && s1 > lo)) continue
+    if (!(s0 < hi && s1 > lo)) { return } // continue
     const a0 = vertical ? b.x : b.y
     const a1 = a0 + (vertical ? b.w : b.h)
     if (a1 <= at) L = Math.max(L, a1)
     else if (a0 >= at) R = Math.min(R, a0)
-  }
+  })
   const bounded = Number.isFinite(L) && Number.isFinite(R)
   const mid = bounded ? (L + R) / 2 : at
 
@@ -431,14 +437,14 @@ function slideSegment(pts, k, boxes, sp, tp, isFree, used) {
 
 /**
  * @param relations  [{ key, from, to, kind, label }]
- * @param boxes      { [id]: { x, y, w, h } }
+ * @param boxes      Map { [id]: { x, y, w, h } }
  * @returns          [{ key, from, to, kind, d, points, label, lx, ly }]
  */
 export function routeEdges(relations, boxes) {
   const edges = relations
-    .filter((r) => boxes[r.from] && boxes[r.to] && r.from !== r.to)
+    .filter((r) => boxes.get(r.from) && boxes.get(r.to) && r.from !== r.to)
     .map((r, idx) => {
-      const [sa, sb] = pickSides(boxes[r.from], boxes[r.to])
+      const [sa, sb] = pickSides(boxes.get(r.from), boxes.get(r.to))
       return { r, idx, sa, sb }
     })
   if (!edges.length) return []
@@ -448,7 +454,7 @@ export function routeEdges(relations, boxes) {
   const addSlot = (id, side, edge, end, other) => {
     const key = `${id}|${side}`
     const horiz = side === 'top' || side === 'bottom'
-    const o = boxes[other]
+    const o = boxes.get(other)
     const sort = horiz ? o.x + o.w / 2 : o.y + o.h / 2
     if (!slots.has(key)) slots.set(key, { id, side, list: [] })
     slots.get(key).list.push({ edge, end, sort })
@@ -459,8 +465,8 @@ export function routeEdges(relations, boxes) {
   }
   for (const { id, side, list } of slots.values()) {
     list.sort((p, q) => p.sort - q.sort || p.edge.idx - q.edge.idx)
-    const ps = placePorts(boxes[id], side, list.length)
-    const b = boxes[id]
+    const ps = placePorts(boxes.get(id), side, list.length)
+    const b = boxes.get(id)
     list.forEach((item, k) => {
       const horiz = side === 'top' || side === 'bottom'
       const pt = horiz ? { x: ps[k], y: side === 'top' ? b.y : b.y + b.h } : { x: side === 'left' ? b.x : b.x + b.w, y: ps[k] }
@@ -469,26 +475,24 @@ export function routeEdges(relations, boxes) {
   }
 
   // ---- 2. lưới chắn ----
-  let maxR = 0
-  let maxB = 0
-  for (const b of Object.values(boxes)) {
+  let maxR = 0, maxB = 0
+  boxes.forEach((b) => {
     maxR = Math.max(maxR, b.x + b.w)
     maxB = Math.max(maxB, b.y + b.h)
-  }
+  })
   const cols = Math.ceil((maxR + 100) / GRID) + 2
   const rows = Math.ceil((maxB + 100) / GRID) + 2
   const blocked = new Uint8Array(cols * rows)
-  for (const b of Object.values(boxes)) {
+  boxes.forEach((b) => {
     const i0 = Math.floor((b.x - M) / GRID) + 1
     const i1 = Math.ceil((b.x + b.w + M) / GRID) - 1
     const j0 = Math.floor((b.y - M) / GRID) + 1
     const j1 = Math.ceil((b.y + b.h + M) / GRID) - 1
     for (let j = Math.max(0, j0); j <= Math.min(rows - 1, j1); j++) for (let i = Math.max(0, i0); i <= Math.min(cols - 1, i1); i++) blocked[j * cols + i] = 1
-  }
+  })
   const states = cols * rows * 4 + 1
   const ctx = {
-    cols,
-    rows,
+    cols, rows,
     blocked,
     usedH: new Uint8Array(cols * rows),
     usedV: new Uint8Array(cols * rows),
@@ -507,9 +511,7 @@ export function routeEdges(relations, boxes) {
     return { i: Math.ceil((pt.x + M + 0.01) / GRID), j: pt.y / GRID }
   }
   const order = [...edges].sort((p, q) => dist(p) - dist(q))
-  function dist(e) {
-    return Math.abs(e.a.x - e.b.x) + Math.abs(e.a.y - e.b.y)
-  }
+  function dist(e) { return Math.abs(e.a.x - e.b.x) + Math.abs(e.a.y - e.b.y) }
 
   const out = []
   const taken = []
@@ -572,10 +574,10 @@ export function segmentsCrossingBoxes(points, boxes) {
     const x1 = Math.max(a.x, b.x)
     const y0 = Math.min(a.y, b.y)
     const y1 = Math.max(a.y, b.y)
-    for (const [id, bx] of Object.entries(boxes)) {
+    boxes.forEach((bx, id) => {
       // phần bên trong thu nhỏ 1px: chạm viền (cổng) không tính là cắt
       if (x1 > bx.x + 1 && x0 < bx.x + bx.w - 1 && y1 > bx.y + 1 && y0 < bx.y + bx.h - 1) hits.push(id)
-    }
+    })
   }
   return hits
 }

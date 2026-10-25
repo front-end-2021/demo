@@ -7,7 +7,8 @@ import { SAMPLE_CSHARP } from './fixtures/sample-csharp.js'
 
 const model = parseCSharp(SAMPLE_CSHARP)
 const layout = autoLayout(model, estimateSize)
-const boxes = Object.fromEntries(model.types.map((t) => [t.id, { ...layout[t.id], ...estimateSize(t) }]))
+//const boxes = Object.fromEntries(model.types.map((t) => [t.id, { ...layout[t.id], ...estimateSize(t) }]))
+const boxes = new Map(model.types.map((t) => [t.id, { ...layout[t.id], ...estimateSize(t) }]))
 
 test('mẫu có namespace: id đầy đủ đi qua autoLayout — mọi class đều có vị trí hữu hạn', () => {
   assert.ok(model.types.length >= 5 && model.types.every((t) => t.id.startsWith('Demo.')))
@@ -37,7 +38,8 @@ test('hai class cùng tên khác namespace: hai ô riêng, cả hai đều có v
   const lay = autoLayout(m, estimateSize)
   assert.deepEqual(m.types.map((t) => t.id).sort(), ['A.SvcA', 'A.User', 'B.SvcB', 'B.User'])
   assert.ok(m.types.every((t) => lay[t.id]))
-  const bx = Object.fromEntries(m.types.map((t) => [t.id, { ...lay[t.id], ...estimateSize(t) }]))
+ // const bx = Object.fromEntries(m.types.map((t) => [t.id, { ...lay[t.id], ...estimateSize(t) }]))
+  const bx = new Map(m.types.map((t) => [t.id, { ...lay[t.id], ...estimateSize(t) }]))
   assert.deepEqual(routeEdges(m.relations, bx).map((e) => `${e.from}>${e.to}`).sort(), ['A.SvcA>A.User', 'B.SvcB>B.User'])
 })
 

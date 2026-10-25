@@ -6,8 +6,8 @@
     <input ref="folderInput" type="file" webkitdirectory multiple hidden @change="onFolderInput" />
     <label class="check"
       title="Thư viện JS/CSS (jQuery, Bootstrap…), proxy WCF trong Service References, *.Designer.cs… mặc định bị bỏ qua vì làm sơ đồ phình to mà ít giá trị">
-      <input v-model="settings.includeVendor" type="checkbox" :disabled="ws.busy" @change="ws.reload()" /> Gồm thư viện &amp; mã sinh
-      tự động
+      <input v-model="settings.includeVendor" type="checkbox" :disabled="ws.busy" 
+      @change="ws.reload()" /> Gồm thư viện &amp; mã sinh tự động
     </label>
 
     <template v-if="ws.hasData">
