@@ -77,15 +77,17 @@ export function useAnalyzer({ onMessage, onError } = {}) {
   /** Duyệt thư mục trên luồng chính (chỉ lấy handle, rất nhẹ), rồi giao cho Worker đọc & phân tích. */
   async function analyzeDirectory(dirHandle, { includeVendor = false, onCount } = {}) {
     const source = await createSourceFromDirectory(dirHandle, { onCount })
-    current = { source, options: { rootName: source.rootName, stripRootFolder: false } }
-    return { count: source.size, started: source.size > 0 && load({ includeVendor }) }
+    const rootName = source.rootName
+    current = { source, options: { rootName, stripRootFolder: false } }
+    return { count: source.size, started: source.size > 0 && load({ includeVendor }), rootName }
   }
 
   /** @param {FileList|File[]} fileList */
   function analyzeFileList(fileList, { includeVendor = false } = {}) {
     const source = createSourceFromFileList(fileList)
-    current = { source, options: { rootName: source.rootName, stripRootFolder: false } }
-    return { count: source.size, started: source.size > 0 && load({ includeVendor }) }
+    const rootName = source.rootName
+    current = { source, options: { rootName, stripRootFolder: false } }
+    return { count: source.size, started: source.size > 0 && load({ includeVendor }), rootName }
   }
 
   const reload = (options) => load(options)

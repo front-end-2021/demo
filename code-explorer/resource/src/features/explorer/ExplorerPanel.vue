@@ -213,7 +213,12 @@ watch(() => search.focusTick, async () => {
   border-color: #2563eb;
   background: #fff;
 }
-
+.search-input[type="search"]::-webkit-search-results-decoration,
+.search-input[type="search"]::-webkit-search-results-button,
+.search-input[type="search"]::-webkit-search-cancel-button,
+.search-input[type="search"]::-webkit-search-decoration {
+  display: none;
+}
 .search-box kbd,
 .search-box .clear {
   position: absolute;

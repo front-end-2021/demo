@@ -4,7 +4,6 @@
     --text-2: #3b4458;
     --muted: #7d8498;
     --border: #e8ebf1;
-    --border-2: #dde1ea;
     --primary: #2b7be4;
     --primary-soft: #e8f1fd;
     --mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, 'Liberation Mono', 'DejaVu Sans Mono', monospace;
@@ -41,21 +40,6 @@
     margin-left: 6px;
     color: var(--muted);
     font-size: 12px;
-}
-
-.sep {
-    width: 1px;
-    height: 20px;
-    margin: 0 4px;
-    background: var(--border-2);
-}
-
-.zoom {
-    min-width: 42px;
-    text-align: center;
-    color: var(--text-2);
-    font-size: 12px;
-    font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Khu làm việc ---------- */

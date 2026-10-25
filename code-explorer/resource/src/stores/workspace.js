@@ -16,6 +16,7 @@ import { ViewType } from '../utils/viewType'
 export const useWorkspaceStore = defineStore('workspace', () => {
   const settings = useSettingsStore()
 
+  const rootDir = ref('Chọn project…')
   const statusMessage = ref('')
   const isError = ref(false)
   const hasData = ref(false)
@@ -45,9 +46,7 @@ export const useWorkspaceStore = defineStore('workspace', () => {
   // ---------- nơi nhận kết quả vẽ (do stores/graph.js đăng ký) ----------
   // sink = { render(data), applyPositions(positions), clear() }
   let sink = null
-  function attachGraph(s) {
-    sink = s
-  }
+  function attachGraph(s) { sink = s }
 
   // ---------- message từ Worker ----------
   function fail(message) {
@@ -119,9 +118,10 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     resetView()
     statusMessage.value = 'Đang liệt kê file…'
     try {
-      const { count, started } = await start()
+      const { count, started, rootName } = await start()
       if (!started) return fail('Không tìm thấy file nào trong thư mục này.')
       statusMessage.value = `Đang đọc ${fmt(count)} file…`
+      rootDir.value = rootName
     } catch (err) {
       console.error(err)
       fail(`Không đọc được thư mục: ${err.message}`)
@@ -204,7 +204,7 @@ export const useWorkspaceStore = defineStore('workspace', () => {
 
   return {
     statusMessage, isError, hasData, busy, layingOut, stats, skipped, projects, view, report, showReport,
-    projectById, projectName, skippedText,
+    projectById, projectName, skippedText, rootDir,
     fileIndex, projectOfPath, search, related,
     hasFile, filePaths, readFile, statFile,
     attachGraph, pickDirectory, openFileList, reload, showView, relayout, stopLayout,

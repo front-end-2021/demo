@@ -22,10 +22,22 @@
             <button class="btn-secondary small" :class="{ active: gs.visibilityActive }" :disabled="!gs.canFilter"
               :title="gs.visibilityTitle" @click="gs.cycleVisibility()">{{ gs.visibilityLabel }}</button>
           </div>
+          <div class="bts" v-if="layout.centerTab === ViewType.clss">
+            <button class="btn-secondary small" title="Xếp lại mọi class theo tầng kế thừa" 
+              @click="diagVw.arrange">Xếp tự động</button>
+            <span class="sep" />
+            <button class="btn-secondary small" aria-label="Thu nhỏ" 
+              :disabled="dZoom <= 0.3" @click="diagVw.zoomBy(-0.1)">−</button>
+            <span class="zoom" aria-live="polite">{{ Math.round(dZoom * 100) }}%</span>
+            <button class="btn-secondary small" aria-label="Phóng to" 
+              :disabled="dZoom >= 2" @click="diagVw.zoomBy(0.1)">+</button>
+            <button class="btn-secondary small" title="Thu phóng cho vừa khung" 
+              @click="diagVw.fit">Vừa khung</button>
+          </div>
         </div>
         <!-- v-show: giữ nguyên Sigma (WebGL) khi chuyển tab; sơ đồ class thì dựng lại từ store mỗi lần mở -->
         <GraphView v-show="layout.centerTab === ViewType.graph" />
-        <DiagramView v-if="layout.centerTab === ViewType.clss" />
+        <DiagramView v-if="layout.centerTab === ViewType.clss" ref="diagVw"/>
       </div>
       <template v-if="layout.editorOpen">
         <SplitHandle @drag="onDragEditor" />
@@ -55,10 +67,13 @@ const ws = useWorkspaceStore()
 const gs = useGraphStore()
 const search = useSearchStore() // tạo sớm để kết quả tìm kiếm luôn được chuyển sang sơ đồ
 const diagram = useDiagramStore() // tạo sớm để chế độ "theo file đang chọn" luôn theo dõi việc chọn file
-
+const diagVw = ref(null)
 const splitEl = ref(null)
 const showExplorer = computed(() => layout.explorerOpen && !!ws.fileIndex)
-
+const dZoom = computed(() => {
+  if(diagVw.value == null) { return 0 }
+  return diagVw.value.zoom
+})
 // Explorer ở bên trái: độ rộng = vị trí con trỏ − mép trái vùng chứa. Editor ở bên phải: ngược lại.
 function onDragExplorer(clientX) {
   const rect = splitEl.value.getBoundingClientRect()
@@ -144,3 +159,4 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
   font-weight: 600;
 }
 </style>
+<style src="./utils/diag.css" scoped></style>

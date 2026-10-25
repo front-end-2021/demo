@@ -1,6 +1,6 @@
 <template>
   <!-- Thanh điều khiển -->
-  <header class="control-panel">
+  <header class="control-panel" :style="{ padding: ws.fileIndex != null ? '2px 20px' : '10px 20px'}">
     <h2>Code Explorer</h2>
     <button class="btn-primary" :disabled="ws.busy" @click="selectFolder">📁 Folder dự án</button>
     <input ref="folderInput" type="file" webkitdirectory multiple hidden @change="onFolderInput" />
@@ -17,7 +17,7 @@
           @click="gs.openView(ViewType.oviw)">Tổng quan</button>
         <span>›</span>
         <select :value="ws.view === ViewType.oviw ? '' : ws.view" @change="gs.openView($event.target.value)">
-          <option value="" disabled>Chọn project…</option>
+          <option value="" disabled>{{ws.rootDir}}</option>
           <option v-for="p in ws.projects" :key="p.id" :value="p.id">{{ p.label }} ({{ fmt(p.nodes) }})</option>
         </select>
       </nav>
@@ -72,7 +72,6 @@ function onFolderInput(e) {
   align-items: center;
   flex-wrap: wrap;
   gap: 10px 12px;
-  padding: 10px 20px;
   background-color: #ffffff;
   border-bottom: 1px solid #e2e8f0;
 }
@@ -86,7 +85,7 @@ function onFolderInput(e) {
 .check {
   display: inline-flex;
   align-items: center;
-  gap: 6px; width:126px;
+  gap: 6px; /*width:126px;*/
   font-size: 13px;
   color: #475569;
   cursor: pointer;

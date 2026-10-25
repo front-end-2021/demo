@@ -65,13 +65,9 @@ function onMove(id, x, y) {
 }
 
 /** Bấm class / thành viên → mở mã nguồn tại đúng dòng khai báo (graph.openFile lo việc chọn node và mở editor). */
-function onOpen({ path, line, name }) {
-  if (path) graph.openFile({ path, line, query: name })
-}
+function onOpen({ path, line, name }) { if (path) graph.openFile({ path, line, query: name }) }
 
-function onCanvasDown(e) {
-  if (!e.target.closest('.uml-box')) diagram.select(null)
-}
+function onCanvasDown(e) { if (!e.target.closest('.uml-box')) diagram.select(null) }
 
 const clampZoom = (z) => Math.min(2, Math.max(0.3, Math.round(z * 10) / 10))
 const zoomBy = (d) => (zoom.value = clampZoom(zoom.value + d))
@@ -82,9 +78,7 @@ function fit() {
   canvas.value.scrollTo(0, 0)
 }
 
-function arrange() {
-  diagram.autoArrange(Math.max(700, view.w / zoom.value - 60))
-}
+function arrange() { diagram.autoArrange(Math.max(700, view.w / zoom.value - 60)) }
 
 const isHot = (e) => diagram.selected && (e.from === diagram.selected || e.to === diagram.selected)
 const isDim = (e) => diagram.selected && !isHot(e)
@@ -108,6 +102,7 @@ onBeforeUnmount(() => {
   ro?.disconnect()
   cancelAnimationFrame(frame)
 })
+defineExpose({ arrange, zoom, zoomBy, fit })
 </script>
 
 <template>
@@ -121,13 +116,13 @@ onBeforeUnmount(() => {
         + Thêm file đang chọn
       </button>
       <span class="stats">{{ diagram.types.length }} class · {{ edges.length }} quan hệ</span>
-      <span class="grow" />
+      <!-- <span class="grow" />
       <button class="tool" title="Xếp lại mọi class theo tầng kế thừa" @click="arrange">Xếp tự động</button>
       <span class="sep" />
       <button class="tool square" aria-label="Thu nhỏ" :disabled="zoom <= 0.3" @click="zoomBy(-0.1)">−</button>
       <span class="zoom" aria-live="polite">{{ Math.round(zoom * 100) }}%</span>
       <button class="tool square" aria-label="Phóng to" :disabled="zoom >= 2" @click="zoomBy(0.1)">+</button>
-      <button class="tool" title="Thu phóng cho vừa khung" @click="fit">Vừa khung</button>
+      <button class="tool" title="Thu phóng cho vừa khung" @click="fit">Vừa khung</button> -->
     </div>
 
     <div v-if="diagram.files.length" class="files">
