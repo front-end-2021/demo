@@ -48,6 +48,7 @@
 </template>
 
 <script setup>
+defineOptions({ name: 'CodeExplorer' })
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import TopBar from './components/TopBar.vue'
 import SplitHandle from './components/SplitHandle.vue'

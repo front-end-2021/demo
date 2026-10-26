@@ -363,7 +363,7 @@ watch(() => search.focusTick, async () => {
 .badge,
 .kind {
   flex: none;
-  min-width: 26px;
+  min-width: 18px;
   padding: 0 2px;
   border-radius: 3px;
   font-size: 9px;

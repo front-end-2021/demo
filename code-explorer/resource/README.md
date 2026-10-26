@@ -80,7 +80,7 @@ Cấu hình dự án được đọc để giải quyết import chính xác hơ
 - **Luôn bỏ qua:**
   - Thư mục bắt đầu bằng dấu chấm (`.git`, `.vs`, `.idea`…) và `node_modules`, `bin`, `obj`, `dist`, `build`, `out`, `target`, `coverage`, `testresults`, `packages`, `__pycache__`, `venv`, `env`, `storybook-static`.
   - File nhị phân (ảnh, font, `.dll`, `.zip`, `.pdf`…), file khoá (`package-lock.json`, `yarn.lock`…), `*.min.js|css`, `*.map`, `*.d.ts`.
-  - File lớn hơn **1 MB**.
+  - File lớn hơn **3 MB**.
   - File khớp `.gitignore` ở thư mục gốc (khi **không** bật *Gồm thư viện & mã sinh tự động*).
 - **Bỏ qua mặc định** (bật lại bằng ô *Gồm thư viện & mã sinh tự động*):
   - Thư viện JS/CSS: theo tên (jquery, bootstrap, moment, lodash…), theo thư mục (`lib`, `libs`, `vendor`, `bower_components`, `third-party`…), hoặc nhận ra qua nội dung (banner bản quyền `/*!`, `@license`, khung UMD).
@@ -98,7 +98,8 @@ src/
 ├── components/TopBar.vue           thanh điều khiển
 ├── stores/                         Pinia: workspace (phân tích), graph (Sigma), settings, selection, layout, search
 ├── core/                           lõi dùng chung (path, ignore-rules, source, mask-comments) — có test: npm test
-├── features/explorer               danh sách file + tìm kiếm tên / symbol / nội dung (Ctrl K)
+├── features/explorer               danh sách file + tìm kiếm tên / symbol / nội dung (Ctrl K)
+
 ├── features/diagram                sơ đồ class (tab riêng): parser C# / Java / Kotlin / Python, hộp UML, đường nối, bấm để mở mã nguồn
 ├── features/editor                 panel mã nguồn chỉ đọc (Monaco, tải lười; nhảy dòng, tô sáng từ khoá; dải Định nghĩa · Dùng · Được dùng bởi)
 ├── features/graph, features/report giao diện sơ đồ (Sigma.js/WebGL) và báo cáo
@@ -106,7 +107,7 @@ src/
     ├── useAnalyzer.js              composable: cầu nối giao diện ↔ Worker (job mới huỷ job cũ)
     ├── analyzer.worker.js          Web Worker: phân tích, chia project, tính bố cục, giữ toàn bộ mô hình
     ├── pipeline.js                 nối các bước 01 → 06
-    ├── 01-collect-files.js         quét thư mục, lọc (thư mục, nhị phân, vendor, .gitignore, >1 MB)
+    ├── 01-collect-files.js         quét thư mục, lọc (thư mục, nhị phân, vendor, .gitignore, >3 MB)
     ├── 02-project-config.js        đọc cấu hình dự án: framework, alias, gốc Python, using C#…
     ├── 03-assign-adapters.js       gán mỗi file cho một language adapter theo đuôi file
     ├── 04-pass1-index.js           lượt 1: parse từng file, nhận diện framework, lập chỉ mục ký hiệu
@@ -151,5 +152,5 @@ Chọn thư mục ─► [luồng chính] liệt kê handle/file nhẹ
 - Node là **file**, chưa phải từng class / hàm; ký hiệu định nghĩa trong file (tối đa 12 mục) chỉ hiện trong bảng thông tin khi chọn node. Quan hệ method C#/Java được tính cho file chứa nó.
 - Bộ phân tích Java / Kotlin / C# / Python dựa trên biểu thức chính quy, không phải trình biên dịch, nên có thể sót hoặc nhầm trong các cú pháp phức tạp; các liên kết khớp theo tên / URL được đánh dấu *suy đoán* (nét nhạt).
 - `vite.config` / `webpack.config` là mã thực thi nên không được chạy, chỉ đọc khối `alias` bằng heuristic. `tsconfig` dùng `extends` sang file khác chưa được xử lý.
-- File lớn hơn 1 MB bị bỏ qua. Dự án cực lớn có thể hết bộ nhớ của Worker: hãy chọn thư mục nhỏ hơn hoặc bỏ chọn *Gồm thư viện & mã sinh tự động*.
+- File lớn hơn 3 MB bị bỏ qua. Dự án cực lớn có thể hết bộ nhớ của Worker: hãy chọn thư mục nhỏ hơn hoặc bỏ chọn *Gồm thư viện & mã sinh tự động*.
 - Giao diện hiện bằng tiếng Việt.

@@ -38,7 +38,7 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     if (!s) return ''
     const parts = []
     if (s.vendor + s.generated) parts.push(`bỏ qua ${fmt(s.vendor + s.generated)} file thư viện / sinh tự động`)
-    if (s.big) parts.push(`${fmt(s.big)} file > 1 MB`)
+    if (s.big) parts.push(`${fmt(s.big)} file > 3 MB`)
     if (s.error) parts.push(`${fmt(s.error)} file không đọc được`)
     return parts.join(', ')
   })

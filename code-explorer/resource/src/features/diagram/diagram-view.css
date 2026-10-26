@@ -37,16 +37,15 @@
 }
 
 .stats {
-    margin-left: 6px;
+    margin-left: 6px; margin-right: 6px;
     color: var(--muted);
     font-size: 12px;
 }
 
 /* ---------- Khu làm việc ---------- */
 .work {
-    flex: 1;
-    min-height: 0;
-    display: flex;
+    flex: 1; min-height: 0;
+    display: flex; flex-direction: column;
 }
 
 .canvas {
@@ -57,7 +56,7 @@
     background: #fbfbfd;
 }
 
-.sizer { position: relative; }
+.sizer { position: relative; flex-direction: column; }
 
 .content {
     position: absolute;
@@ -136,8 +135,7 @@
 .files {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
+    flex-wrap: wrap; gap: 6px; 
     padding: 6px 16px;
     background: var(--soft);
     font-size: 12px;
