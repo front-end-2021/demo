@@ -46,14 +46,12 @@
     </div>
   </div>
 </template>
-
 <script setup>
 defineOptions({ name: 'CodeExplorer' })
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, defineAsyncComponent } from 'vue'
 import TopBar from './components/TopBar.vue'
 import SplitHandle from './components/SplitHandle.vue'
 import GraphView from './features/graph/GraphView.vue'
-import EditorPanel from './features/editor/EditorPanel.vue'
 import ExplorerPanel from './features/explorer/ExplorerPanel.vue'
 import DiagramView from './features/diagram/DiagramView.vue'
 import { useLayoutStore } from './stores/layout'
@@ -62,6 +60,7 @@ import { useSearchStore } from './stores/search'
 import { useDiagramStore } from './stores/diagram'
 import { useGraphStore } from './stores/graph'
 import { ViewType } from './utils/viewType'
+const EditorPanel = defineAsyncComponent(() => import('./features/editor/EditorPanel.vue') )
 
 const layout = useLayoutStore()
 const ws = useWorkspaceStore()
@@ -99,7 +98,6 @@ async function onKeydown(e) {
 onMounted(() => window.addEventListener('keydown', onKeydown, true))
 onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown, true))
 </script>
-
 <style scoped>
 .app-container {
   display: flex;

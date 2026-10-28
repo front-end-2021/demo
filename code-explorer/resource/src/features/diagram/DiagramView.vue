@@ -87,16 +87,19 @@ const markerFor = (e) => {
   if (e.kind === 'aggregation') return { start: `url(#uml-diamond-${hot})`, end: `url(#uml-arrow-${hot})` }
   return { end: `url(#uml-arrow-${hot})` }
 }
+
 async function saveImage() {
   toImg.value = true
   diagram.select(null)
-  canvas.value.closest('.diagrams').style.pointerEvents = 'none'
+  const appWrap = () => document.querySelector('.app-container')
+  appWrap().style.pointerEvents = 'none'
   await nextTick()
   setTimeout(() => {
     domtoimage.toJpeg(canvas.value.querySelector('.sizer'), { quality: 0.99 })
       .then((dataUrl) => {
           var link = document.createElement('a');
-          link.download = 'my-image-name.jpeg';
+          let name = diagram.files.map(p => basename(p)).join('-').replaceAll('.', '_')
+          link.download =`${name}.jpeg`
           link.href = dataUrl;
           link.click();
           URL.revokeObjectURL(link.href);
@@ -104,10 +107,9 @@ async function saveImage() {
       .catch(err => {console.error(err)})
       .finally(() => {
         toImg.value = false
-        canvas.value.closest('.diagrams').style.pointerEvents = ''
+        appWrap().style.pointerEvents = ''
       })
-
-  }, 30) 
+  }, 3)
 }
 
 let ro

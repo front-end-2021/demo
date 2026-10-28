@@ -3,10 +3,7 @@
   <aside class="editor-panel">
     <header class="bar">
       <div class="crumbs" :title="path">
-        <template v-if="path">
-          <span v-for="(seg, i) in segments" :key="i" class="crumb">{{ seg }}<i>›</i></span>
-          <b>{{ fileName }}</b>
-        </template>
+        <div v-if="path" class="crumb"><i>{{ sPth }}</i><b>{{ fileName }}</b></div>
         <b v-else>Mã nguồn</b>
       </div>
       <span v-if="meta" class="meta">{{ meta }}</span>
@@ -63,7 +60,7 @@ const meta = ref('')
 // Đường dẫn ĐANG HIỂN THỊ. Khi bỏ chọn (bấm vào khoảng trống của sơ đồ) panel vẫn giữ file cuối cùng.
 const path = ref('')
 
-const segments = computed(() => path.value.split('/').slice(0, -1))
+const sPth = computed(() => path.value.split('/').slice(0, -1).join('/'))
 const fileName = computed(() => basename(path.value))
 const canStrip = computed(() => !!path.value && canStripComments(extname(path.value).slice(1)))
 
@@ -277,7 +274,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 10px;
+  padding: 2px 10px;
   background: #fff;
   font-size: 12px;
   color: #475569;
@@ -297,12 +294,9 @@ onBeforeUnmount(() => {
   direction: ltr;
   unicode-bidi: isolate;
 }
-
-.crumb i {
-  margin: 0 4px;
-  color: #94a3b8;
-  font-style: normal;
-}
+.crumb {display: inline-flex; flex-direction: column;}
+.crumb>i { font-size: 10px; }
+.crumb>b { font-size: 11px; }
 
 .crumbs b {
   color: #0f172a;
