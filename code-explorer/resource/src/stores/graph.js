@@ -155,7 +155,7 @@ export const useGraphStore = defineStore('graph', () => {
           label: fmt(e.weight),
           color: '#94a3b8',
           size: Math.min(8, 1 + Math.log10(e.weight + 1) * 1.6),
-          type: 'curved', // đường cong
+          type: 'curvedArrow',
           curvature: 0.2,
         })
       }
@@ -168,7 +168,7 @@ export const useGraphStore = defineStore('graph', () => {
           kinds: e.kinds,
           color: e.inferred ? tint(base, 0.55) : base, // cạnh suy đoán vẽ nhạt hơn
           size: Math.min(3, 0.8 + Math.log2(e.weight || 1)),
-          type: 'curved',
+          type: 'curvedArrow',
           curvature: 0.2,
         })
       }
@@ -190,10 +190,9 @@ export const useGraphStore = defineStore('graph', () => {
     if (!canFilter.value) visibility.value = 'all'
 
     const sigmaSettings = {
-      defaultEdgeType: big ? 'line' : 'arrow',
+      defaultEdgeType: 'curvedArrow',//big ? 'line' : 'arrow',
       nodeProgramClasses, // tròn / vuông / tam giác…
       edgeProgramClasses: {
-        curved: EdgeCurveProgram, // đường cong thường
         curvedArrow: EdgeCurvedArrowProgram, // đường cong có mũi tên
       },
       defaultNodeType: 'circle',

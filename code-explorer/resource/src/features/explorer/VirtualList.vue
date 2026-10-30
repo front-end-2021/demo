@@ -55,7 +55,7 @@ defineExpose({ scrollToIndex, resetScroll })
 .vlist {
   position: relative;
   height: 100%; scroll-behavior: smooth;
-  overflow-y: auto;
+  overflow-y: auto; scrollbar-width: thin;
 }
 
 .spacer {

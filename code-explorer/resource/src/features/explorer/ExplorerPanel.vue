@@ -247,7 +247,7 @@ watch(() => search.focusTick, async () => {
 }
 
 .chips {
-  flex: none;
+  flex: none; scrollbar-width: thin;
   display: flex;
   flex-wrap: wrap;
   gap: 4px; background: var(--soft);
