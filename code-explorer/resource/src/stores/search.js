@@ -101,7 +101,7 @@ export const useSearchStore = defineStore('search', () => {
   watch(() => workspace.fileIndex, () => {
     exts.value = new Set()
     clear()
-    filterLogs.value = [''] // định dùng clearFilterLogs
+    filterLogs.value = ['']
   })
   const setQuery = (value) => {
     query.value = value
@@ -152,19 +152,14 @@ export const useSearchStore = defineStore('search', () => {
     fLogs, filterLogs,
     addFilterLog: (text) => {
       let txt = text.trim()
-      filterLogs.value[0] = text
+      filterLogs.value[0] = text // cache filter input
       if (txt.length < 1) return
       if (highlight.value.files.size < 1) { return }
       let logs = fLogs.value.map(t => t.trim())
       if (logs.includes(txt)) return
       filterLogs.value.splice(1, 0, text) // thêm vào sau phần tử đầu tiên (cache filter input)
     },
-    selectFilterLog: (txt) => {
-      let aTx = query.value
-      let old = filterLogs.value[0].trim()
-      if (!old.length && aTx.length) { filterLogs.value[0] = aTx } // giữ lại cache filter input
-      setQuery(txt)
-    },
+    selectFilterLog: (txt) => { setQuery(txt) },
     clearFilterLogs,
   }
 })
