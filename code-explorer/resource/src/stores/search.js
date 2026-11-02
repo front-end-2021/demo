@@ -20,6 +20,9 @@ export const useSearchStore = defineStore('search', () => {
   const workspace = useWorkspaceStore()
   const graph = useGraphStore()
 
+  /* Lịch sử lọc (dùng cho tab Lịch sử lọc), phần tử đầu tiên là cache filter input*/
+  const filterLogs = ref([''])
+
   const query = ref('') // nội dung ô nhập (từng phím)
   const committed = ref('') // sau khi chờ ngừng gõ — chuỗi thật sự được tìm
   const exts = shallowRef(new Set()) // đuôi file đang lọc; rỗng = tất cả
@@ -73,45 +76,39 @@ export const useSearchStore = defineStore('search', () => {
     committed.value = q
     run()
   }
-
-  function setQuery(value) {
-    query.value = value
-    clearTimeout(timer)
-    if (!value.trim()) commit() // xoá hết thì trở về danh sách ngay, không chờ
-    else timer = setTimeout(commit, DEBOUNCE_MS)
+  const clearFilterLogs = (type = 0, ii) => {
+    const txt = filterLogs.value[0] // giữ lại cache filter input
+    if (2 != type && txt != query.value) { setQuery(txt) }
+    const emptyZero = () => filterLogs.value[0] = ''
+    switch (type) {
+      case 0: filterLogs.value = ['']; break // xoá hết
+      case 1:  // xoá một
+        filterLogs.value.splice(ii + 1, 1);
+        emptyZero()
+        break
+      case 2: emptyZero(); break // xoá cache filter input
+    }
   }
-
-  /** Enter: tìm ngay, không chờ. */
-  const commitNow = commit
-
   function clear() {
     clearTimeout(timer)
     query.value = ''
     commit()
+    filterLogs.value[0] = ''
   }
-
-  /** Bấm chip: bật/tắt một đuôi; Alt + bấm: chỉ chọn đuôi đó. Chọn đủ mọi đuôi = "Tất cả". */
-  function toggleExt(ext, only = false) {
-    let next
-    if (only) next = new Set([ext])
-    else {
-      next = new Set(exts.value)
-      if (!next.delete(ext)) next.add(ext)
-      if (next.size === extCounts.value.length) next = new Set()
-    }
-    exts.value = next
-  }
-
-  const resetFilters = () => { exts.value = new Set(); clear() }
-  const focusInput = () => { focusTick.value++ }
 
   // Đổi bộ lọc đuôi khi đang tìm → tìm lại; mở thư mục khác → bỏ hết
   watch(exts, () => { if (committed.value) run() })
   watch(() => workspace.fileIndex, () => {
     exts.value = new Set()
     clear()
+    filterLogs.value = [''] // định dùng clearFilterLogs
   })
-
+  const setQuery = (value) => {
+    query.value = value
+    clearTimeout(timer)
+    if (!value.trim()) commit() // xoá hết thì trở về danh sách ngay, không chờ
+    else timer = setTimeout(commit, DEBOUNCE_MS)
+  }
   // ---------- làm nổi bật trên sơ đồ ----------
   const highlight = computed(() => {
     if (!committed.value) return null
@@ -129,15 +126,45 @@ export const useSearchStore = defineStore('search', () => {
   })
   watch(highlight, (h) => graph.setHighlight(h), { immediate: true })
 
-  // ---------- chọn kết quả ----------
-  /** Mở file; line/query để editor nhảy tới dòng và tô sáng từ khoá. */
-  function open(path, { line = null } = {}) {
-    graph.openFile({ path, line, query: committed.value })
-  }
+  const fLogs = computed(() => filterLogs.value.slice(1)) // bỏ phần tử đầu tiên là cache filter input
 
   return {
     query, committed, exts, symbolHits, symbolTotal, contentHits, contentState, error, focusTick,
-    paths, extCounts, searching, listIndices, nameResult, highlight,
-    setQuery, commitNow, clear, toggleExt, resetFilters, focusInput, open,
+    paths, extCounts, searching, listIndices, nameResult, highlight, clear, setQuery,
+    commitNow: commit, /** Enter: tìm ngay, không chờ. */
+    /** Bấm chip: bật/tắt một đuôi; Alt + bấm: chỉ chọn đuôi đó. Chọn đủ mọi đuôi = "Tất cả". */
+    toggleExt: (ext, only = false) => {
+      let next
+      if (only) next = new Set([ext])
+      else {
+        next = new Set(exts.value)
+        if (!next.delete(ext)) next.add(ext)
+        if (next.size === extCounts.value.length) next = new Set()
+      }
+      exts.value = next
+    },
+    resetFilters: () => { exts.value = new Set(); clear() },
+    focusInput: () => { focusTick.value++ },
+    // ---------- chọn kết quả ----------
+    /** Mở file; line/query để editor nhảy tới dòng và tô sáng từ khoá. */
+    open: (path, { line = null } = {}) => { graph.openFile({ path, line, query: committed.value }) },
+    // ---------- lịch sử lọc ----------
+    fLogs, filterLogs,
+    addFilterLog: (text) => {
+      let txt = text.trim()
+      filterLogs.value[0] = text
+      if (txt.length < 1) return
+      if (highlight.value.files.size < 1) { return }
+      let logs = fLogs.value.map(t => t.trim())
+      if (logs.includes(txt)) return
+      filterLogs.value.splice(1, 0, text) // thêm vào sau phần tử đầu tiên (cache filter input)
+    },
+    selectFilterLog: (txt) => {
+      let aTx = query.value
+      let old = filterLogs.value[0].trim()
+      if (!old.length && aTx.length) { filterLogs.value[0] = aTx } // giữ lại cache filter input
+      setQuery(txt)
+    },
+    clearFilterLogs,
   }
 })

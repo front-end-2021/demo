@@ -12,9 +12,10 @@
             role="tab" @click="layout.centerTab = ViewType.graph">Sơ đồ file</button>
           <button class="ctab" :class="{ on: layout.centerTab === ViewType.clss }" role="tab"
             title="Sơ đồ class của các file đang chọn (Ctrl + bấm một file trong danh sách để thêm vào)" 
-            @click="layout.centerTab = ViewType.clss">
-            Sơ đồ class<b v-if="diagram.files.length">{{ diagram.files.length }}</b>
-          </button>
+            @click="layout.centerTab = ViewType.clss">Sơ đồ class<b v-if="diagram.files.length">{{ diagram.files.length }}</b></button>
+          <button class="ctab" :class="{ on: layout.centerTab === ViewType.fltlog }" role="tab"
+            title="Lịch sử lọc"
+            @click="layout.centerTab = ViewType.fltlog">Lịch sử lọc</button>
           <div class="bts" v-if="layout.centerTab === ViewType.graph">
             <button v-if="ws.layingOut" class="btn-secondary small" @click="ws.stopLayout()">⏸ Dừng sắp xếp</button>
             <button v-else class="btn-secondary small" @click="gs.reLayout()">Sắp xếp lại</button>
@@ -38,6 +39,7 @@
         <!-- v-show: giữ nguyên Sigma (WebGL) khi chuyển tab; sơ đồ class thì dựng lại từ store mỗi lần mở -->
         <GraphView v-show="layout.centerTab === ViewType.graph" />
         <DiagramView v-if="layout.centerTab === ViewType.clss" ref="diagVw"/>
+        <FilterLogs v-if="layout.centerTab === ViewType.fltlog" />
       </div>
       <template v-if="layout.editorOpen">
         <SplitHandle @drag="onDragEditor" />
@@ -50,6 +52,7 @@
 defineOptions({ name: 'CodeExplorer' })
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, defineAsyncComponent } from 'vue'
 import TopBar from './components/TopBar.vue'
+import FilterLogs from './components/FilterLogs.vue'
 import SplitHandle from './components/SplitHandle.vue'
 import GraphView from './features/graph/GraphView.vue'
 import ExplorerPanel from './features/explorer/ExplorerPanel.vue'

@@ -26,7 +26,7 @@
       <button class="btn-secondary" :class="{ active: layout.editorOpen }" title="Mở / đóng panel mã nguồn (bấm một node file để xem)"
         @click="layout.toggleEditor()">Mã nguồn</button>
       <button class="btn-secondary" :class="{ active: ws.showReport }" :disabled="!ws.report"
-        @click="ws.showReport = !ws.showReport">Báo cáo</button>
+        @click="clkBaocao">Báo cáo</button>
     </template>
     <div v-if="ws.statusMessage" class="status-text" :class="{ error: ws.isError }">{{ ws.statusMessage }}</div>
     <div v-if="ws.stats" class="stats" :title="ws.skippedText">
@@ -63,6 +63,10 @@ function onFolderInput(e) {
   const files = Array.from(e.target.files) // chép ra trước khi xoá giá trị của input
   e.target.value = ''
   ws.openFileList(files)
+}
+function clkBaocao() {
+  ws.showReport = !ws.showReport
+  layout.centerTab = ViewType.graph
 }
 </script>
 

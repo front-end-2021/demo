@@ -3,7 +3,8 @@
   <aside class="explorer">
     <div class="search-box">
       <input ref="inputEl" type="search" class="search-input" placeholder="Tìm tên file, symbol, nội dung…"
-        :value="search.query" @input="search.setQuery($event.target.value)" @keydown="onKey" />
+        :value="search.query" @input="search.setQuery($event.target.value)" @keydown="onKey" 
+        @blur="search.addFilterLog(search.query)" @keyup.enter="search.addFilterLog(search.query)"/>
       <button v-if="search.query" class="clear" title="Xoá (Esc)" @click="search.clear()">✕</button>
       <kbd v-else>Ctrl K</kbd>
     </div>

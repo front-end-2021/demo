@@ -46,7 +46,6 @@ export const useWorkspaceStore = defineStore('workspace', () => {
   // ---------- nơi nhận kết quả vẽ (do stores/graph.js đăng ký) ----------
   // sink = { render(data), applyPositions(positions), clear() }
   let sink = null
-  function attachGraph(s) { sink = s }
 
   // ---------- message từ Worker ----------
   function fail(message) {
@@ -128,85 +127,74 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     }
   }
 
-  /** Chrome / Edge: showDirectoryPicker (chỉ giữ handle, rất nhẹ). */
-  async function pickDirectory() {
-    let dirHandle
-    try {
-      dirHandle = await window.showDirectoryPicker()
-    } catch {
-      return // người dùng bấm Huỷ
-    }
-    await run(() => analyzer.analyzeDirectory(dirHandle, {
-      includeVendor: settings.includeVendor,
-      onCount: (n) => { statusMessage.value = `Đang liệt kê file… ${fmt(n)}` },
-    }))
-  }
-
-  /** Firefox / Safari: danh sách file từ <input webkitdirectory>. */
-  function openFileList(files) {
-    if (files?.length) run(() => analyzer.analyzeFileList(files, { includeVendor: settings.includeVendor }))
-  }
-
-  /** Đổi tuỳ chọn "Gồm thư viện & mã sinh tự động" → phân tích lại thư mục đang mở. */
-  function reload() {
-    if (!analyzer.hasSource()) return
-    resetView()
-    statusMessage.value = 'Đang phân tích lại…'
-    analyzer.reload({ includeVendor: settings.includeVendor })
-  }
-
-  // ---------- điều hướng & bố cục ----------
-  function showView(v) {
-    if (!v || !hasData.value) return
-    isError.value = false
-    statusMessage.value = v === ViewType.oviw ? 'Đang mở tổng quan…' : `Đang mở ${projectName(v)}…`
-    view.value = v
-    analyzer.show(v)
-  }
-
-  function relayout() {
-    analyzer.show(view.value, { relayout: true })
-  }
-
-  function stopLayout() {
-    analyzer.stop(view.value) // Worker giữ nguyên bố cục hiện tại cho màn hình này
-    layingOut.value = false
-    statusMessage.value = ''
-  }
-
   // ---------- chỉ mục file & tìm kiếm ----------
   const pathIndex = computed(() => (fileIndex.value ? new Map(fileIndex.value.paths.map((p, i) => [p, i])) : null))
-  /** Project (id) chứa file này, hoặc null nếu không thuộc project nào có sơ đồ. */
-  function projectOfPath(path) {
-    const i = pathIndex.value?.get(path)
-    if (i == null) return null
-    const k = fileIndex.value.pidx[i]
-    return k < 0 ? null : fileIndex.value.projectIds[k]
-  }
-  /** Tìm symbol + nội dung trong Worker (xem useAnalyzer.search). Trả về hàm huỷ. */
-  const search = (request, handlers) => analyzer.search(request, handlers)
-  /** Quan hệ của một file (Dùng / Được dùng bởi / Định nghĩa) — xem analyzer/related.js. null nếu chưa có dữ liệu. */
-  const related = (path) => analyzer.related(path)
-
-  // ---------- đọc nội dung file (editor, tìm kiếm, sơ đồ class dùng) ----------
-  // Đọc theo yêu cầu qua core/source.js, không giữ nội dung trong store. path = node.file / selection.filePath.
-  const hasFile = (path) => !!analyzer.getSource()?.has(path)
-  const filePaths = () => analyzer.getSource()?.paths() ?? []
 
   function requireSource(path) {
     const source = analyzer.getSource()
     if (!source) throw new SourceError('not-found', path, 'Chưa mở thư mục nào')
     return source
   }
-  /** @returns {Promise<string>} — ném SourceError (.code: not-found | binary | too-large | read-error) */
-  const readFile = async (path, options) => requireSource(path).read(path, options)
-  const statFile = async (path) => requireSource(path).stat(path)
 
   return {
     statusMessage, isError, hasData, busy, layingOut, stats, skipped, projects, view, report, showReport,
-    projectById, projectName, skippedText, rootDir,
-    fileIndex, projectOfPath, search, related,
-    hasFile, filePaths, readFile, statFile,
-    attachGraph, pickDirectory, openFileList, reload, showView, relayout, stopLayout,
+    projectById, skippedText, rootDir, fileIndex, projectName, 
+    /** Project (id) chứa file này, hoặc null nếu không thuộc project nào có sơ đồ. */
+    projectOfPath: (path) => {
+      const i = pathIndex.value?.get(path)
+      if (i == null) return null
+      const k = fileIndex.value.pidx[i]
+      return k < 0 ? null : fileIndex.value.projectIds[k]
+    },
+    /** Tìm symbol + nội dung trong Worker (xem useAnalyzer.search). Trả về hàm huỷ. */
+    search: (request, handlers) => analyzer.search(request, handlers),
+    /** Quan hệ của một file (Dùng / Được dùng bởi / Định nghĩa) — xem analyzer/related.js. null nếu chưa có dữ liệu. */
+    related: (path) => analyzer.related(path),
+    // ---------- đọc nội dung file (editor, tìm kiếm, sơ đồ class dùng) ----------
+    // Đọc theo yêu cầu qua core/source.js, không giữ nội dung trong store. path = node.file / selection.filePath.
+    hasFile: (path) => !!analyzer.getSource()?.has(path),
+    filePaths: () => analyzer.getSource()?.paths() ?? [],
+    /** @returns {Promise<string>} — ném SourceError (.code: not-found | binary | too-large | read-error) */
+    readFile: async (path, options) => requireSource(path).read(path, options),
+    statFile: async (path) => requireSource(path).stat(path),
+    attachGraph: (s) => { sink = s },
+    /** Chrome / Edge: showDirectoryPicker (chỉ giữ handle, rất nhẹ). */
+    pickDirectory: async () => {
+      let dirHandle
+      try {
+        dirHandle = await window.showDirectoryPicker()
+      } catch {
+        return // người dùng bấm Huỷ
+      }
+      await run(() => analyzer.analyzeDirectory(dirHandle, {
+        includeVendor: settings.includeVendor,
+        onCount: (n) => { statusMessage.value = `Đang liệt kê file… ${fmt(n)}` },
+      }))
+    },
+    /** Firefox / Safari: danh sách file từ <input webkitdirectory>. */
+    openFileList: (files) => {
+      if (files?.length) run(() => analyzer.analyzeFileList(files, { includeVendor: settings.includeVendor }))
+    },
+    /** Đổi tuỳ chọn "Gồm thư viện & mã sinh tự động" → phân tích lại thư mục đang mở. */
+    reload: () => {
+      if (!analyzer.hasSource()) return
+      resetView()
+      statusMessage.value = 'Đang phân tích lại…'
+      analyzer.reload({ includeVendor: settings.includeVendor })
+    },
+    // ---------- điều hướng & bố cục ----------
+    showView: (v) => {
+      if (!v || !hasData.value) return
+      isError.value = false
+      statusMessage.value = v === ViewType.oviw ? 'Đang mở tổng quan…' : `Đang mở ${projectName(v)}…`
+      view.value = v
+      analyzer.show(v)
+    },
+    relayout: () => { analyzer.show(view.value, { relayout: true }) },
+    stopLayout: () => {
+      analyzer.stop(view.value) // Worker giữ nguyên bố cục hiện tại cho màn hình này
+      layingOut.value = false
+      statusMessage.value = ''
+    },
   }
 })

@@ -26,7 +26,7 @@ function loadWidth(key, clamp, fallback) {
 }
 
 const saveWidth = (key, value) => {
- // try { localStorage.setItem(key, String(value)) } catch { /* bỏ qua */ }
+  // try { localStorage.setItem(key, String(value)) } catch { /* bỏ qua */ }
 }
 
 export const useLayoutStore = defineStore('layout', () => {
@@ -50,6 +50,7 @@ export const useLayoutStore = defineStore('layout', () => {
   watch(() => workspace.hasData, (has) => {
     if (!has) editorOpen.value = false
   })
+  watch(() => workspace.fileIndex, () => { centerTab.value = ViewType.graph })
 
   const toggleEditor = () => { editorOpen.value = !editorOpen.value }
   const toggleExplorer = () => { explorerOpen.value = !explorerOpen.value }
