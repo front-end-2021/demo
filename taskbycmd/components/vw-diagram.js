@@ -964,9 +964,9 @@ export const ViewCommands = {
                 target.style.height = ''
             }
         },
-        handleBeforeUnload(event) {
-            localStorage.setItem('CmdTypeExpand', this.TypeExpand);
-        }
+      //  handleBeforeUnload(e) {
+           // localStorage.setItem('CmdTypeExpand', this.TypeExpand);
+      //  }
     },
     created() {
         window.addEventListener('beforeunload', this.handleBeforeUnload)
