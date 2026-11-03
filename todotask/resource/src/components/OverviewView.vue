@@ -5,17 +5,14 @@ import { useUiStore } from '../stores/ui'
 import { formatDay, relativeTime, shortName } from '../utils/format'
 import Icon from './Icon.vue'
 import Avatar from './Avatar.vue'
-import DiagramsView from './DiagramsView.vue'
 import { VIEWTYPE, LABELTYPE } from '../utils/common.js'
 
 const store = useTaskStore()
 const ui = useUiStore()
 
 const projectTabs = [
-  { key: VIEWTYPE.prdetai, label: LABELTYPE.prdetai, icon: 'file-text' },
   { key: VIEWTYPE.lstsk, label: LABELTYPE.lstsk, icon: 'list-task' },
   { key: VIEWTYPE.tmmline, label: LABELTYPE.tmmline, icon: 'calendar' },
-  { key: VIEWTYPE.diagrm, label: LABELTYPE.diagrm, icon: 'diagram' },
   { key: VIEWTYPE.mems, label: LABELTYPE.mems, icon: 'people' },
 ]
 
@@ -48,7 +45,7 @@ function clkTab(k) {
 
 <template>
   <section class="overview">
-    <header v-if="ui.projectTab != VIEWTYPE.diagrm" class="project-head">
+    <header class="project-head">
       <div class="head-left">
         <p class="meta">
           <Icon name="clock" :size="14" />
@@ -135,8 +132,6 @@ function clkTab(k) {
         </div>
       </div>
     </div>
-
-    <DiagramsView v-else-if="ui.projectTab === VIEWTYPE.diagrm" />
 
     <div v-else class="soon">
       <Icon name="check-circle" :size="34" />

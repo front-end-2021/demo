@@ -1,0 +1,107 @@
+# 📂 .github/ → 📂 workflows/ → 📄 deploy-pages.yml
+Bật tính năng GitHub Actions trên GitHub. Sau khi bạn commit và push file YAML trên lên GitHub, bạn cần cấu hình lại nguồn của GitHub Pages:
+1. Truy cập vào kho lưu trữ của bạn trên GitHub.
+2. Chọn mục Settings (Cài đặt) ở thanh menu phía trên.
+3. Ở menu bên trái, tìm và click vào mục Pages.
+4. Tại phần Build and deployment, ở dòng Source, bạn đổi từ Deploy from a branch sang GitHub Actions.
+
+Tóm tắt từ khóa cấu hình trong paths của YAML:
+• - 'public/index.html': Chỉ theo dõi đúng 1 file trong thư mục public.
+• - '*/index.html': Chỉ theo dõi các file index ở thư mục con cấp 1 (ví dụ folder/index.html, không áp dụng cho folder/subfolder/index.html).
+• - '**/index.html': Theo dõi tất cả file index ở mọi ngóc ngách trong dự án.
+
+# deploy-pages.yml
+
+#region Case 1: index html in root
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    # 1. Kích hoạt khi có lệnh push
+    branches:
+      - main # Thay bằng tên branch của bạn (ví dụ: master, dev)
+    paths:
+      - 'index.html' # 2. CHỈ chạy khi file index.html có sự thay đổi
+
+# Cấp quyền cho GitHub Actions để đẩy giao diện lên Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Tránh xung đột nếu bạn push liên tục (hủy các lượt chạy cũ chưa xong)
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 3. Gom toàn bộ thư mục gốc (hoặc thư mục chứa index.html) thành file artifact
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' # Dấu chấm nghĩa là upload toàn bộ thư mục gốc. Nếu index.html nằm trong thư mục 'dist', hãy sửa thành 'dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+#endregion case 1
+
+#region Case 2: index html in folder public
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Thay bằng tên branch của bạn nếu cần (ví dụ: master)
+    paths:
+      - 'public/index.html' # 1. CHỈ chạy khi file index.html trong thư mục public thay đổi
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'public' # 2. Chỉ đóng gói và deploy các file nằm TRONG thư mục public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+#endregion case 2
+
+#region Case 3: index html in folder public
+
+#endregion case 3

@@ -1,12 +1,9 @@
 export const VIEWTYPE = {
     ovview: 1,
-    lsprj: 2,
-    caldr: 3,
-    rport: 4,
-    prdetai: 5,
+    caldr: 2,
+    rport: 3,
     lstsk: 6,
     tmmline: 7,
-    diagrm: 8,
     mems: 9,
     mtasks: 10,
     dboard: 11,
@@ -16,13 +13,10 @@ export const VIEWTYPE = {
 }
 export const LABELTYPE = {
     ovview: 'Overview',
-    lsprj: 'Projects',
     caldr: 'Calendar',
     rport: 'Reports',
-    prdetai: 'Project Details',
     lstsk: 'Tasks',
     tmmline: 'Timeline',
-    diagrm: 'Diagrams',
     mems: 'Members',
     mtasks: 'My tasks',
     dboard: 'Dashboard',

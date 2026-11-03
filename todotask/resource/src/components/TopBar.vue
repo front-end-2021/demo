@@ -9,7 +9,6 @@ const ui = useUiStore()
 
 const tabs = [
   { key: VIEWTYPE.ovview, label: LABELTYPE.ovview },
-  { key: VIEWTYPE.lsprj, label: LABELTYPE.lsprj },
   { key: VIEWTYPE.caldr, label: LABELTYPE.caldr },
   { key: VIEWTYPE.rport, label: LABELTYPE.rport },
 ]

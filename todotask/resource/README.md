@@ -48,7 +48,6 @@ src/
     ui.js      # Pinia: độ rộng sidebar, tab đang chọn, trạng thái form edit, nhóm thu gọn
   components/
     TopBar.vue  SideBar.vue  OverviewView.vue  TaskDrawer.vue
-    DiagramsView.vue  ClassBox.vue # tab Diagrams: sơ đồ UML, ô class kéo thả
     HistoryMenu.vue # icon History + popover timeline các thao tác của task
     Dropdown.vue # dropdown dùng chung (animation + shadow + phím tắt): Assignee, Priority, Status
     Icon.vue    # icon từ Bootstrap Icons (https://icons.getbootstrap.com/)

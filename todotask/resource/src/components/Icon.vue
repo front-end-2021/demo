@@ -8,7 +8,7 @@ import newspaper from 'bootstrap-icons/icons/newspaper.svg?raw'
 import checklist from 'bootstrap-icons/icons/card-checklist.svg?raw'
 import gear from 'bootstrap-icons/icons/gear.svg?raw'
 import clock from 'bootstrap-icons/icons/clock.svg?raw'
-import fileText from 'bootstrap-icons/icons/file-earmark-text.svg?raw'
+//import fileText from 'bootstrap-icons/icons/file-earmark-text.svg?raw'
 import listTask from 'bootstrap-icons/icons/list-task.svg?raw'
 import calendar from 'bootstrap-icons/icons/calendar3.svg?raw'
 import people from 'bootstrap-icons/icons/people.svg?raw'
@@ -51,7 +51,7 @@ const icons = {
   checklist,
   gear,
   clock,
-  'file-text': fileText,
+  // 'file-text': fileText,
   'list-task': listTask,
   calendar,
   people,
