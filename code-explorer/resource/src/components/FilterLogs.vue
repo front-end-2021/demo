@@ -6,7 +6,7 @@
             <button class="btn-secondary small" @click="removeLog(ii, log)">✕</button>
         </li>
     </ul>
-    <div v-else>
+    <div v-else class="d">
         Danh sách lịch sử tìm kiếm đang trống...
     </div>
 </template>
@@ -52,24 +52,19 @@ onBeforeUnmount(() => {
     padding-left: 18px;
     width: fit-content;
 }
-
 .a {
     display: flex;
     gap: 3px;
     background-color: white;
     border-radius: 6px;
 }
+.c {min-width: 72px;}
 
-.c {
-    min-width: 72px;
-}
-
-.a>* {
-    background-color: transparent;
-}
+.a>* {background-color: transparent;}
 
 .a>*:first-child {
     flex-grow: 1;
     text-align: left;
 }
+.d {padding: 24px;color: #64748b;}
 </style>
