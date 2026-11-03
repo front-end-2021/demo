@@ -9,12 +9,10 @@ const monacoEditorPlugin = monacoEditorPluginModule.default || monacoEditorPlugi
 export const explorerPlugins = () => [
   vue(),
   viteSingleFile({
-    // Tắt cấu hình tự động ép một số thiết lập nếu cần, nhưng mặc định để true sẽ tối ưu inline
-    useRecommendedBuildConfig: true,
+    useRecommendedBuildConfig: true, // Tắt cấu hình tự động ép một số thiết lập nếu cần, nhưng mặc định để true sẽ tối ưu inline
     removeViteModuleLoader: false, // Đảm bảo không ép inlining gây lỗi với worker asset
   }),
   monacoEditorPlugin({
-    // Worker cho Monaco (editor đọc mã nguồn): lõi + các ngôn ngữ có language service riêng
-    languageWorkers: ['editorWorkerService', 'css', 'html', 'json', 'typescript'],
+    languageWorkers: ['editorWorkerService', 'css', 'html', 'json', 'typescript'], // Worker cho Monaco (editor đọc mã nguồn): lõi + các ngôn ngữ có language service riêng
   }),
 ]
