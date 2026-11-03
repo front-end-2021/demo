@@ -1,5 +1,5 @@
 <template>
-    <ul class="b" v-if="1 < search.fLogs.length">
+    <ul class="b" v-if="0 < search.fLogs.length">
         <li v-for="(log, ii) in search.fLogs" class="a" :key="ii">
             <button class="btn-secondary small c" :class="[indexLog == ii ? 'active' : '']"
                 @click="selectLog(log, ii)">{{ log }}</button>
