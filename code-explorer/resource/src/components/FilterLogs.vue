@@ -58,7 +58,7 @@ onBeforeUnmount(() => {
     background-color: white;
     border-radius: 6px;
 }
-.c {min-width: 72px;}
+.c { min-width: 72px; text-align:left; }
 
 .a>* {background-color: transparent;}
 

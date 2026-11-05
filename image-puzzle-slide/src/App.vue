@@ -1,7 +1,6 @@
 <script>
 //import CryptoJS from 'crypto-js'
 import Cell from './Cell.vue';
-import CacheCell from './CacheCell.vue';
 import SlidingPuzzle from './ImagePuzzle.js'
 import Settings from './Settings.vue'
 
@@ -9,24 +8,23 @@ export default {
     name: 'DaiNb.vApp',
     components: {
         'cell-node': Cell,
-        'cache-cell': CacheCell,
         'settings-panel': Settings,
     },
     data() {
         return {
             Size: 150,
-            Cols: 3,
-            Rows: 4,
-            ActiveNode: null,
+            Cols: 3, Rows: 4,
+            DragNode: null,
             Level: 1,
             Grid: [],
             ZeroId: 0,
             GameStats: 'Get Start',
             mImgIndex: new Map(),
             ImgSrc: 'https://m.media-amazon.com/images/M/MV5BNmFiM2FkYTYtY2FiOS00ZWJkLTkyOTgtNmFmODI4NjcwNDgzXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg',
-            SlideTitles: [],
-            CopTitles: new Map(),
-            TempObj: null,
+            TimeMoving: 300, // msec
+            CellMoving: false,
+            SelectId: -2, MpIdXy: new Map(),
+            TempObj: null, // settings
             History: [],
             LogMoves: null,
             TimeReplay: 100, // msec
@@ -56,22 +54,46 @@ export default {
         },
     },
     methods: {
+        moveTileToBlank(source, target) {
+            if (this.GameStats === 'Completed' || !this.Grid.length) return;
+            const grid = this.Grid//.map(row => [...row]);
+            const tileId = grid[source.y]?.[source.x];
+            const blankId = grid[target.y]?.[target.x];
+            if (tileId === undefined || blankId !== this.BlankPoint) return;
+            if (Math.abs(source.x - target.x) + Math.abs(source.y - target.y) !== 1) return;
+            
+            this.CellMoving = true
+            let src = this.MpIdXy.get(tileId)
+            src.left = this.genLeft(target.x)
+            src.top = this.genTop(target.y)
+
+            setTimeout(() => {
+                this.logMoves([source.x, source.y], [target.x, target.y]);
+                grid[target.y][target.x] = tileId;
+                grid[source.y][source.x] = blankId;
+                this.GameStats = this.checkGameStat(grid, this.GameStats);
+
+                this.CellMoving = false
+            }, this.TimeMoving)
+        },
         rejectGame() {
             let timmer = this.RepTimer
             if (0 < timmer) {
                 clearInterval(timmer)
                 this.RepTimer = -1
             }
+            this.MpIdXy.clear()
             this.Grid = []
             this.ZeroId = 0
             this.GameStats = 'Get Start'
         },
         startGame() {
-            this.ActiveNode = null
+            this.MpIdXy.clear()
             let puzzle = new SlidingPuzzle(this.Rows, this.Cols, this.BlankPoint);
             let level = this.Level
             if (level < 1) level = 1
             this.Grid = puzzle.scramble(level * 33);
+            this.SelectId = -2
             this.ZeroId = 0
             this.GameStats = 0
             this.LogMoves = {
@@ -80,43 +102,6 @@ export default {
                 grid: JSON.stringify(this.Grid),
                 rows: this.Rows,
                 cols: this.Cols,
-            }
-        },
-        genActvNode(type = 'set', node) {
-            let obj = this.ActiveNode
-            if ('set' == type) {
-                const neibours = getNeibours.call(this, node.x, node.y)
-                obj = {
-                    id: node.id, x: node.x, y: node.y,
-                    ArrNear: neibours
-                }
-            }
-            if ('get' == type) return obj
-            this.ActiveNode = obj
-
-            function getNeibours(iix, iiy) {
-                const grid = this.Grid
-                if (iiy < 0) {
-                    if (this.BlankPoint == grid[0][0]) return new Set([-1])
-                    return new Set([grid[0][0]])
-                }
-                let ls = [
-                    [iix - 1, iiy], [iix + 1, iiy], [iix, iiy - 1], [iix, iiy + 1]
-                ]
-                ls = ls.filter(p => 0 <= p[0] && 0 <= p[1])
-                ls = ls.filter(p => p[0] < this.Cols && p[1] < this.Rows)
-
-                let set = new Set(ls.map(([x, y]) => grid[y][x]))
-                if (0 == iix && 0 == iiy) {
-                    if (0 == grid[0][0]) {
-                        set.add(-1)
-                        set.delete(0)
-                    } else if (this.BlankPoint == grid[0][0]) {
-                        set.delete(-1)
-                        set.add(0)
-                    }
-                }
-                return set
             }
         },
         checkGameStat(grid, count = 0) {
@@ -245,7 +230,7 @@ export default {
         replayGame() {
             const _histories = this.History
             if (!_histories.length) return
-            if(0 < this.RepTimer) return;
+            if (0 < this.RepTimer) return;
             let history = _histories[0]
             if (this.Rows != history.rows || this.Cols != history.cols) {
                 this.Rows = history.rows
@@ -259,40 +244,47 @@ export default {
             this.GameStats = 0
             this.ZeroId = 0
             let moves = JSON.parse(history.moves)
-            this.RepTimer = setInterval(() => {
-                if (moves.length < 1) {
-                    clearInterval(this.RepTimer)
-                    _grid[0][0] = 0
-                    this.Grid = [..._grid]
-                    this.ZeroId = -1
-                    this.GameStats = 'Completed'
-                    this.RepTimer = -1
-                    return
-                }
-                let move = moves.shift()
-                let [x, y, side] = move.split(':')
-                x = parseInt(x)
-                y = parseInt(y)
-                let bx = x, by = y
-                switch (side) {
-                    case '1': by -= 1; break
-                    case '2': by += 1; break
-                    case '3': bx -= 1; break
-                    case '4': bx += 1; break
-                }
-                let node1 = _grid[by][bx]
-                _grid[by][bx] = _grid[y][x]
-                _grid[y][x] = node1
-                this.Grid = [..._grid]
-            }, this.TimeReplay * 10)
+            this.$nextTick(() => {
+                this.RepTimer = setInterval(() => {
+                    if (moves.length < 1) {
+                        clearInterval(this.RepTimer)
+                        _grid[0][0] = 0
+                        this.ZeroId = -1
+                        this.GameStats = 'Completed'
+                        this.RepTimer = -1
+                        return
+                    }
+                    let move = moves.shift()
+                    let [x, y, side] = move.split(':')
+                    x = parseInt(x)
+                    y = parseInt(y)
+                    let bx = x, by = y
+                    switch (side) {
+                        case '1': by -= 1; break
+                        case '2': by += 1; break
+                        case '3': bx -= 1; break
+                        case '4': bx += 1; break
+                    }
+                    _grid = this.Grid
+                    let idSelecting = _grid[y][x]
+                    let src = this.MpIdXy.get(idSelecting)
+                    src.left = this.genLeft(bx)
+                    src.top = this.genTop(by)
+
+                    setTimeout(() => {
+                        _grid[y][x] = _grid[by][bx]
+                        _grid[by][bx] = idSelecting
+                    }, this.TimeMoving)
+                }, this.TimeReplay * 10)
+            })
         },
-    },
-    watch: {
-        //GameStats(stat) { },
+        genLeft(x) { return x * this.Size },
+        genTop(y) { return y * this.Size + this.Size },
     },
     created() {
         this.onChangeSize()
     },
+    // watch: { },
     //beforeMount() {  },
     //mounted() { },
     //beforeUpdate() { },
@@ -314,8 +306,7 @@ export default {
     <section>
         <div class="posrelative flex">
             <div class="posrelative wrapboard" v-bind:style="{
-                width: (Cols * Size) + 'px',
-                height: (Rows * Size + Size) + 'px'
+                width: (Cols * Size) + 'px', height: (Rows * Size + Size) + 'px'
             }">
                 <div v-if="!Grid.length" class="posabsolute" style="top: 6px;" v-bind:style="{
                     left: (Size + 6) + 'px',
@@ -324,9 +315,7 @@ export default {
                     <div>Level: {{ Level }}</div>
                 </div>
 
-                <cache-cell v-for="cell in SlideTitles" class="posabsolute" :key="'s' + cell.id" :id="cell.id"
-                    :x="cell.x" :y="cell.y"></cache-cell>
-                <cell-node v-if="Grid.length" :id="ZeroId" :x="0" :y="-1"></cell-node>
+                <cell-node v-if="Grid.length" :id="ZeroId" :x="0" :y="-1" :key="'z' + ZeroId"></cell-node>
                 <template v-for="(row, y) in Grid">
                     <cell-node v-for="(id, x) in row" :key="id" :id="id" :x="x" :y="y"></cell-node>
                 </template>
@@ -352,7 +341,7 @@ export default {
             <span v-if="Grid.length < 1 || 'Completed' == GameStats" class="btn_" @click.stop="startGame">Start
                 game</span>
             <span v-else class="btn_" @click.stop="rejectGame">Reject</span>
-            <div class="btn_" v-bind:style="{ pointerEvents: 0 < RepTimer ? 'none' : ''}">
+            <div class="btn_" v-bind:style="{ pointerEvents: 0 < RepTimer ? 'none' : '' }">
                 <label for="fileInput">Upload image</label>
                 <input type="file" id="fileInput" accept="image/*" @change="splitImage" style="display:none;" />
             </div>

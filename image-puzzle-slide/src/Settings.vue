@@ -5,29 +5,39 @@
         <div class="flex hcenter vcenter panelbody">
             <h2 style="margin-top: 0; margin-bottom: 0;">Settings</h2>
             <div class="flex h24 vcenter" style="gap: 8px;">
-                <strong>Cols</strong>
+                <strong class="a">Cols</strong>
                 <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeCols(-1)">-</div>
-                <strong>{{ Cols }}</strong>
+                <strong class="b">{{ Cols }}</strong>
                 <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeCols(1)">+</div>
+                <span class="c"></span>
             </div>
             <div class="flex h24 vcenter" style="gap: 8px;">
-                <strong>Rows</strong>
+                <strong class="a">Rows</strong>
                 <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeRows(-1)">-</div>
-                <strong>{{ Rows }}</strong>
+                <strong class="b">{{ Rows }}</strong>
                 <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeRows(1)">+</div>
+                <span class="c"></span>
             </div>
             <div class="flex h24 vcenter" style="gap: 8px;">
-                <strong>Level</strong>
+                <strong class="a">Level</strong>
                 <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeLevel(-1)">-</div>
-                <strong>{{ Level }}</strong>
+                <strong class="b">{{ Level }}</strong>
                 <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeLevel(1)">+</div>
+                <span class="c"></span>
             </div>
             <div class="flex h24 vcenter" style="gap: 8px;">
-                <strong>Time replay</strong>
+                <strong class="a">Time replay</strong>
                 <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeTimeReplay(-10)">-</div>
-                <strong>{{ TimeReplay }}</strong>
+                <strong class="b">{{ TimeReplay }}</strong>
                 <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeTimeReplay(10)">+</div>
-                <span>milisec</span>
+                <span class="c">milisec</span>
+            </div>
+            <div class="flex h24 vcenter" style="gap: 8px;">
+                <strong class="a">Time slide</strong>
+                <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeTimeSlide(-10)">-</div>
+                <strong class="b">{{ TimeMoving }}</strong>
+                <div class="w24 h24 inline-flex mini_btn hcenter" @click.stop="changeTimeSlide(10)">+</div>
+                <span class="c">milisec</span>
             </div>
         </div>
     </div>
@@ -37,6 +47,9 @@
 width: 300px; height: 240px; flex-direction: column;gap: 6px;
 background-color: white; border-radius: 24px; 
 }
+.a { width: 97px; text-align: right; }
+.b { width: 30px; text-align: center; }
+.c { width: 62px; text-align: left; }
 </style>
 <script>
 export default {
@@ -50,6 +63,7 @@ export default {
             Rows: root.Rows,
             Level: root.Level,
             TimeReplay: root.TimeReplay,
+            TimeMoving: root.TimeMoving,
         }
     },
     methods: {
@@ -68,11 +82,6 @@ export default {
             if (newVal < 1) return
             this.Level = newVal
         },
-        changeLevel(v) {
-            let newVal = this.Level + v
-            if (newVal < 1) return
-            this.Level = newVal
-        },
         changeTimeReplay(v) {
             let newVal = this.TimeReplay + v
             if (newVal < 20) return
@@ -85,6 +94,7 @@ export default {
             let rows = this.Rows
             root.Level = this.Level
             root.TimeReplay = this.TimeReplay
+            root.TimeMoving = this.TimeMoving
             if (cols != root.Cols || rows != root.Rows) {
                 if (0 < root.Grid.length) root.rejectGame()
                 root.Cols = cols
@@ -93,6 +103,11 @@ export default {
                 let img = document.querySelector("img#dnbPicQuest")
                 root.fillImgTitles(img)
             }
+        },
+        changeTimeSlide(t){
+            let v = this.TimeMoving + t
+            if (v < 10) return
+            this.TimeMoving = v
         },
     },
 }

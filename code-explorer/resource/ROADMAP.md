@@ -18,7 +18,7 @@ Tổng quan (project)  →  Project (file)  →  File (class + thành viên)
 | **M3** | Explorer (danh sách file, chip đuôi file) + tìm kiếm tên / symbol / nội dung (Worker), làm nổi bật node trên sơ đồ, nhảy dòng và tô sáng từ khoá trong editor | **Xong**, đã thử tay |
 | **M4** | Dải quan hệ trong editor: **Định nghĩa · Dùng · Được dùng bởi**, nhảy tới dòng định nghĩa / dòng đang dùng, kể cả sang project khác và qua lời gọi API | **Xong**, đã thử tay (lỗi lệch số "Dùng / Được dùng bởi" giữa bảng thông tin node và dải quan hệ đã được bạn sửa ở M4.2) |
 | **M5** | Sơ đồ class **C#** cho các file đang chọn: tab riêng, bấm class / thành viên nhảy tới đúng dòng, nhiều file, namespace | **Xong**, đã thử tay |
-| **M5b** | Sơ đồ class **Java**, **Kotlin** và **Python** cho các file đang chọn (Kotlin có parser riêng, không dùng chung với Java) | **Xong phần mã** — 111 test qua; **chờ thử tay** (checklist M5b) |
+| **M5b** | Sơ đồ class **Java**, **Kotlin** và **Python** cho các file đang chọn (Kotlin có parser riêng, không dùng chung với Java) | **Xong**, đã thử tay (checklist M5b) |
 
 **Đã bỏ khỏi phạm vi:** sửa và lưu file ra đĩa, phân tích lại từng file. Ứng dụng chỉ đọc.
 
@@ -303,6 +303,7 @@ Thử trên mã nguồn thật của bạn, mỗi ngôn ngữ một lần. Mọi
 
 ## Ghi chú về M5b
 
+- **Trạng thái thử tay:** checklist M5b đã được thử trên mã nguồn thực tế; mốc M5b được xác nhận hoàn tất.
 - **Kiểm chứng ở phía tôi**: 111 test (kèm đối chiếu parser C# với bản gốc sau khi tách phần nối quan hệ), 1.200 đầu vào bị cắt xén / chèn ký tự mở cho ba parser (0 lỗi, lần chậm nhất 49 ms), và đo hiệu năng: file ~3 MB (70–100 nghìn dòng, 14.000 kiểu) mất khoảng 1 giây ở cả ba ngôn ngữ; file điển hình vài chục ms. Chưa chạy trên mã nguồn thật của bạn và chưa chạy giao diện.
 - **Đây là parser dựa trên regex và đếm ngoặc, không phải trình biên dịch**. Cố ý KHÔNG bao phủ: lớp cục bộ / ẩn danh trong thân hàm (Java, Kotlin, Python), hàm và thuộc tính mức file không thuộc class nào (Kotlin, Python), thuộc tính Python gán ở method khác ngoài `__init__` / `__post_init__`, alias import (`from m import A as B`), kiểu suy luận phức tạp. Nếu một file cho kết quả sai, gửi tôi đoạn khai báo gây lỗi.
 - Kotlin `.kts` (script) và Python `.pyi` (stub) chưa được nhận diện.
